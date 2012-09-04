@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.codehaus.sonar-plugins</groupId>
+    <artifactId>parent</artifactId>
+    <version>14</version>
+  </parent>
+
+  <groupId>org.codehaus.sonar-plugins.java</groupId>
+  <artifactId>java</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Sonar Java</name>
+  <inceptionYear>2012</inceptionYear>
+  <organization>
+    <name>SonarSource</name>
+  </organization>
+  <licenses>
+    <license>
+      <name>GNU LGPL 3</name>
+      <url>http://www.gnu.org/licenses/lgpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>godin</id>
+      <name>Evgeny Mandrikov</name>
+      <organization>SonarSource</organization>
+    </developer>
+  </developers>
+
+  <!--
+  <modules>
+    <module>sonar-java-plugin</module>
+  </modules>
+  -->
+
+  <scm>
+    <connection>scm:git:git@github.com:SonarSource/sonar-java.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarSource/sonar-java.git</developerConnection>
+    <url>https://github.com/SonarSource/sonar-java</url>
+  </scm>
+  <!--
+  <issueManagement>
+    <system></system>
+    <url></url>
+  </issueManagement>
+  -->
+  <ciManagement>
+    <system>Cloudbees</system>
+    <url>https://sonarplugins.ci.cloudbees.com/job/java/</url>
+  </ciManagement>
+
+  <properties>
+    <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+
+    <sonar.version>3.1</sonar.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.codehaus.sonar</groupId>
+        <artifactId>sonar-plugin-api</artifactId>
+        <version>${sonar.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+</project>
