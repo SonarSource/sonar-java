@@ -34,11 +34,9 @@
     </developer>
   </developers>
 
-  <!--
   <modules>
     <module>sonar-java-plugin</module>
   </modules>
-  -->
 
   <scm>
     <connection>scm:git:git@github.com:SonarSource/sonar-java.git</connection>
@@ -57,6 +55,8 @@
   </ciManagement>
 
   <properties>
+    <license.title>Sonar Java</license.title>
+
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
     <sonar.version>3.1</sonar.version>
@@ -67,6 +67,11 @@
       <dependency>
         <groupId>org.codehaus.sonar</groupId>
         <artifactId>sonar-plugin-api</artifactId>
+        <version>${sonar.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.sonar</groupId>
+        <artifactId>sonar-testing-harness</artifactId>
         <version>${sonar.version}</version>
       </dependency>
     </dependencies>
