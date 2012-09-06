@@ -37,6 +37,7 @@
   <modules>
     <module>java-squid</module>
     <module>java-checks</module>
+    <module>sonar-squid-java-plugin</module>
     <module>sonar-java-plugin</module>
     <module>sslr-java-toolkit</module>
   </modules>
