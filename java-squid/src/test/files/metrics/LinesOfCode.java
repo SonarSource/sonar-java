@@ -1,0 +1,6 @@
+/*
+ * Header
+ */
+
+public class HelloWorld {
+}
