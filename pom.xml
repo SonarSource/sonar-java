@@ -36,6 +36,7 @@
 
   <modules>
     <module>java-squid</module>
+    <module>java-checks</module>
     <module>sonar-java-plugin</module>
     <module>sslr-java-toolkit</module>
   </modules>
@@ -74,6 +75,11 @@
       <dependency>
         <groupId>org.codehaus.sonar</groupId>
         <artifactId>sonar-testing-harness</artifactId>
+        <version>${sonar.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.sonar</groupId>
+        <artifactId>sonar-squid</artifactId>
         <version>${sonar.version}</version>
       </dependency>
 
