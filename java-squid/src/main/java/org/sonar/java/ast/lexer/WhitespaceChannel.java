@@ -20,12 +20,11 @@
 package org.sonar.java.ast.lexer;
 
 import com.sonar.sslr.impl.Lexer;
-import com.sonar.sslr.impl.channel.BlackHoleChannel;
 import org.sonar.channel.Channel;
 import org.sonar.channel.CodeReader;
 
 /**
- * An equivalent of {@link BlackHoleChannel} with regular expression "\s++".
+ * An equivalent of {@link com.sonar.sslr.impl.channel.BlackHoleChannel} with regular expression "\s++".
  * However provides better performance, since implemented without regular expression.
  */
 public class WhitespaceChannel extends Channel<Lexer> {

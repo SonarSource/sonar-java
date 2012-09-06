@@ -34,6 +34,8 @@ import org.sonar.squid.api.*;
 import org.sonar.squid.indexer.QueryByType;
 import org.sonar.squid.indexer.SquidIndex;
 
+import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +53,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     this(conf, null, visitors);
   }
 
-  public JavaSquid(JavaConfiguration conf, FileLinesContextFactory fileLinesContextFactory, CodeVisitor... visitors) {
+  public JavaSquid(JavaConfiguration conf, @Nullable FileLinesContextFactory fileLinesContextFactory, CodeVisitor... visitors) {
     astScanner = JavaAstScanner.create(conf);
     if (fileLinesContextFactory != null) {
       astScanner.accept(new FileLinesVisitor(fileLinesContextFactory));

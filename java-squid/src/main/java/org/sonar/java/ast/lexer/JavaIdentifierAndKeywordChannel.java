@@ -24,14 +24,13 @@ import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.TokenType;
 import com.sonar.sslr.impl.Lexer;
-import com.sonar.sslr.impl.channel.IdentifierAndKeywordChannel;
 import org.sonar.channel.Channel;
 import org.sonar.channel.CodeReader;
 
 import java.util.Map;
 
 /**
- * An equivalent of {@link IdentifierAndKeywordChannel} with regular expression "\p{javaJavaIdentifierStart}++\p{javaJavaIdentifierPart}*+".
+ * An equivalent of {@link com.sonar.sslr.impl.channel.IdentifierAndKeywordChannel} with regular expression "\p{javaJavaIdentifierStart}++\p{javaJavaIdentifierPart}*+".
  * However provides better performance, since implemented without regular expression.
  */
 public class JavaIdentifierAndKeywordChannel extends Channel<Lexer> {

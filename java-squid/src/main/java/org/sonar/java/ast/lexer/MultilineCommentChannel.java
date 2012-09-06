@@ -22,14 +22,13 @@ package org.sonar.java.ast.lexer;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
 import com.sonar.sslr.impl.Lexer;
-import com.sonar.sslr.impl.channel.CommentRegexpChannel;
 import org.sonar.channel.Channel;
 import org.sonar.channel.CodeReader;
 
 import static com.sonar.sslr.api.GenericTokenType.COMMENT;
 
 /**
- * An equivalent of {@link CommentRegexpChannel} with regular expression "/\*[\s\S]*?\*\/".
+ * An equivalent of {@link com.sonar.sslr.impl.channel.CommentRegexpChannel} with regular expression "/\*[\s\S]*?\*\/".
  * However provides better performance, since implemented without regular expression.
  */
 public class MultilineCommentChannel extends Channel<Lexer> {
