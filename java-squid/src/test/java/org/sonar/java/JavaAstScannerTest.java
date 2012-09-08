@@ -77,7 +77,7 @@ public class JavaAstScannerTest {
   @Test
   public void methods() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Methods.java"));
-    assertThat(file.getInt(JavaMetric.METHODS)).isEqualTo(2);
+    assertThat(file.getInt(JavaMetric.METHODS)).isEqualTo(6);
   }
 
   @Test
