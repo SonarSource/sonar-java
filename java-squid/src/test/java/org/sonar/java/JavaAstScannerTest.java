@@ -45,7 +45,7 @@ public class JavaAstScannerTest {
   @Test
   public void lines() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Lines.java"));
-    assertThat(file.getInt(JavaMetric.LINES)).isEqualTo(7);
+    assertThat(file.getInt(JavaMetric.LINES)).isEqualTo(6);
   }
 
   @Test

@@ -54,11 +54,6 @@ public class SquidUserGuideTest {
     project = (SourceProject) index.search(new QueryByType(SourceProject.class)).iterator().next();
   }
 
-  /**
-   * SSLRSQBR-10
-   */
-  private static final int LINES_CORRECTION = 273;
-
   @Test
   public void measures_on_project() throws Exception {
     assertThat(project.getInt(JavaMetric.PACKAGES)).isEqualTo(12);
@@ -70,7 +65,7 @@ public class SquidUserGuideTest {
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(JavaMetric.ACCESSORS)).isEqualTo(3805 + 69);
     // FIXME assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(3805);
     // FIXME assertThat(project.getInt(JavaMetric.ACCESSORS)).isEqualTo(69);
-    assertThat(project.getInt(JavaMetric.LINES) - LINES_CORRECTION).isEqualTo(63852);
+    assertThat(project.getInt(JavaMetric.LINES)).isEqualTo(63852);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(26323);
     // TODO assertEquals(6426, project.getInt(Metric.BLANK_LINES));
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(12666);

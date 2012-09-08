@@ -22,7 +22,10 @@ package org.sonar.java;
 import com.sonar.sslr.api.CommentAnalyser;
 import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.squid.SquidAstVisitor;
-import com.sonar.sslr.squid.metrics.*;
+import com.sonar.sslr.squid.metrics.CommentsVisitor;
+import com.sonar.sslr.squid.metrics.ComplexityVisitor;
+import com.sonar.sslr.squid.metrics.CounterVisitor;
+import com.sonar.sslr.squid.metrics.LinesOfCodeVisitor;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaKeyword;
@@ -108,7 +111,8 @@ public final class JavaAstScanner {
 
     /* Metrics */
 
-    builder.withSquidAstVisitor(new LinesVisitor<JavaGrammar>(JavaMetric.LINES));
+    builder.withSquidAstVisitor(new LinesVisitor(conf.getCharset()));
+
     builder.withSquidAstVisitor(new LinesOfCodeVisitor<JavaGrammar>(JavaMetric.LINES_OF_CODE));
     builder.withSquidAstVisitor(CommentsVisitor.<JavaGrammar> builder().withCommentMetric(JavaMetric.COMMENT_LINES)
         .withBlankCommentMetric(JavaMetric.COMMENT_BLANK_LINES)

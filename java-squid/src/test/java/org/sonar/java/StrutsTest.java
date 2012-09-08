@@ -53,11 +53,6 @@ public class StrutsTest {
     project = (SourceProject) index.search(new QueryByType(SourceProject.class)).iterator().next();
   }
 
-  /**
-   * SSLRSQBR-10
-   */
-  private static final int LINES_CORRECTION = 134;
-
   // FIXME compare with previous values
   @Test
   public void measures_on_project() throws Exception {
@@ -70,7 +65,7 @@ public class StrutsTest {
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(JavaMetric.ACCESSORS)).isEqualTo(1485);
     assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(1178);
     assertThat(project.getInt(JavaMetric.ACCESSORS)).isEqualTo(307);
-    assertThat(project.getInt(JavaMetric.LINES) - LINES_CORRECTION).isEqualTo(32744);
+    assertThat(project.getInt(JavaMetric.LINES)).isEqualTo(32744);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(14007);
     // TODO assertEquals(6426, project.getInt(Metric.BLANK_LINES));
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(6895);
