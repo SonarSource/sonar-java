@@ -33,6 +33,7 @@ public final class CheckList {
   public static List<Class> getChecks() {
     return ImmutableList.<Class> of(
         // AST
+        ParsingErrorCheck.class,
         BreakCheck.class,
         ContinueCheck.class,
         MethodComplexityCheck.class,
@@ -44,9 +45,8 @@ public final class CheckList {
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
-//        LCOM4Check.class,
+        LCOM4Check.class,
         ArchitectureCheck.class,
-//        ParsingErrorCheck.class,
         CallToDeprecatedMethodCheck.class,
         UnusedProtectedMethodCheck.class,
         UnusedPrivateMethodCheck.class);
