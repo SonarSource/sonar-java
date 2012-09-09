@@ -79,6 +79,7 @@ public final class JavaAstScanner {
 
     /* Classes */
     builder.withSquidAstVisitor(new ClassVisitor());
+    builder.withSquidAstVisitor(new AnonymousInnerClassVisitor());
 
     /* Methods */
     builder.withSquidAstVisitor(new MethodVisitor());
