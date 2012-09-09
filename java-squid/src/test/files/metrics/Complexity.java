@@ -13,10 +13,10 @@ public class HelloWorld  {
     do { // +1 do-statement
     } while (false);
 
-    switch (ch) { // +1 switch-statement
+    switch (ch) {
       case 'a': // +1 case
       case 'b': // +1 case
-      default: // +1 default
+      default:
         break;
     }
 
