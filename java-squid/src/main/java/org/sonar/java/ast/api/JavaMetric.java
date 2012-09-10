@@ -25,7 +25,7 @@ import org.sonar.squid.measures.MetricDef;
 public enum JavaMetric implements MetricDef {
 
   FILES,
-  LINES,
+  LINES(false),
   LINES_OF_CODE,
   COMMENT_LINES,
   COMMENT_BLANK_LINES,
@@ -36,6 +36,15 @@ public enum JavaMetric implements MetricDef {
   PACKAGES,
   ACCESSORS;
 
+  private boolean aggregateIfThereIsAlreadyAValue = true;
+
+  JavaMetric() {
+  }
+
+  JavaMetric(boolean aggregateIfThereIsAlreadyAValue) {
+    this.aggregateIfThereIsAlreadyAValue = aggregateIfThereIsAlreadyAValue;
+  }
+
   public String getName() {
     return name();
   }
@@ -45,7 +54,7 @@ public enum JavaMetric implements MetricDef {
   }
 
   public boolean aggregateIfThereIsAlreadyAValue() {
-    return true;
+    return aggregateIfThereIsAlreadyAValue;
   }
 
   public boolean isThereAggregationFormula() {

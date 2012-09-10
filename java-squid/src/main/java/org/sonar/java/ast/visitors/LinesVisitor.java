@@ -19,9 +19,12 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.squid.api.SourceCode;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -36,6 +39,18 @@ public class LinesVisitor extends JavaAstVisitor {
 
   public LinesVisitor(Charset charset) {
     this.charset = charset;
+  }
+
+  @Override
+  public void init() {
+    subscribeTo(JavaPunctuator.RWING);
+  }
+
+  @Override
+  public void visitNode(AstNode astNode) {
+    SourceCode sourceCode = getContext().peekSourceCode();
+    Preconditions.checkState(sourceCode.getStartAtLine() != -1 && sourceCode.getEndAtLine() != -1);
+    sourceCode.setMeasure(JavaMetric.LINES, sourceCode.getEndAtLine() - sourceCode.getStartAtLine() + 1);
   }
 
   @Override

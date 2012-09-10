@@ -86,6 +86,8 @@ public final class JavaAstScanner {
     }
     builder.withSquidAstVisitor(new PublicApiVisitor());
 
+    builder.withSquidAstVisitor(new EndAtLineVisitor());
+
     /* Comments */
     builder.setCommentAnalyser(
         new CommentAnalyser() {
