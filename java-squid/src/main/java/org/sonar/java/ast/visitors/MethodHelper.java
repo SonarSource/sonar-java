@@ -69,8 +69,12 @@ public class MethodHelper {
     return false;
   }
 
+  public boolean isConstructor() {
+    return astNode.is(grammar.constructorDeclaratorRest);
+  }
+
   public AstNode getReturnType() {
-    final AstNode typeNode = getName().previousSibling();
+    final AstNode typeNode = getName().previousAstNode();
     Preconditions.checkState(typeNode.is(JavaKeyword.VOID, grammar.type));
     return typeNode;
   }
@@ -90,6 +94,10 @@ public class MethodHelper {
 
   public List<AstNode> getParameters() {
     AstNode node = astNode.findFirstDirectChild(grammar.formalParameters);
+    if (node == null) {
+      // in case of annotationMethodRest
+      return Collections.emptyList();
+    }
     return node.findChildren(grammar.formalParameterDecls);
   }
 

@@ -19,10 +19,23 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.GenericTokenType;
+import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.signature.JvmJavaType;
+import org.sonar.java.signature.MethodSignature;
+import org.sonar.java.signature.MethodSignaturePrinter;
+import org.sonar.java.signature.Parameter;
 import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourceMethod;
+
+import java.util.List;
+import java.util.Map;
 
 public class MethodVisitor extends JavaAstVisitor {
 
@@ -33,7 +46,7 @@ public class MethodVisitor extends JavaAstVisitor {
 
   @Override
   public void visitNode(AstNode astNode) {
-    String methodName = buildMethodSignature(astNode);
+    String methodName = buildMethodSignature(new MethodHelper(getContext().getGrammar(), astNode));
     SourceClass sourceClass = peekSourceClass();
     SourceMethod sourceMethod = new SourceMethod(sourceClass, methodName, astNode.getTokenLine());
     sourceMethod.setMeasure(JavaMetric.METHODS, 1);
@@ -45,13 +58,72 @@ public class MethodVisitor extends JavaAstVisitor {
     getContext().popSourceCode();
   }
 
-  private String buildMethodSignature(AstNode astNode) {
-    // TODO use real signature?
-    return extractMethodName(astNode) + ":" + astNode.getTokenLine();
+  private String buildMethodSignature(MethodHelper methodHelper) {
+    String methodName = extractMethodName(methodHelper);
+    Parameter returnType = extractMethodReturnType(methodHelper);
+    List<Parameter> argumentTypes = extractMethodArgumentTypes(methodHelper);
+    MethodSignature signature = new MethodSignature(methodName, returnType, argumentTypes);
+    return MethodSignaturePrinter.print(signature);
   }
 
-  private String extractMethodName(AstNode astNode) {
-    return new MethodHelper(getContext().getGrammar(), astNode).getName().getTokenValue();
+  private String extractMethodName(MethodHelper methodHelper) {
+    if (methodHelper.isConstructor()) {
+      return "<init>";
+    }
+    return methodHelper.getName().getTokenValue();
+  }
+
+  private Parameter extractMethodReturnType(MethodHelper methodHelper) {
+    if (methodHelper.isConstructor()) {
+      return new Parameter(JvmJavaType.V, false);
+    }
+    Parameter returnType = extractArgumentAndReturnType(methodHelper.getReturnType());
+    return new Parameter(returnType);
+  }
+
+  private List<Parameter> extractMethodArgumentTypes(MethodHelper methodHelper) {
+    List<Parameter> argumentTypes = Lists.newArrayList();
+    for (AstNode astNode : methodHelper.getParameters()) {
+      for (AstNode type : astNode.findChildren(getContext().getGrammar().type)) {
+        argumentTypes.add(extractArgumentAndReturnType(type));
+      }
+    }
+    return argumentTypes;
+  }
+
+  private Parameter extractArgumentAndReturnType(AstNode astNode) {
+    Preconditions.checkArgument(astNode.is(JavaKeyword.VOID, getContext().getGrammar().type));
+    if (astNode.is(JavaKeyword.VOID)) {
+      return new Parameter(JvmJavaType.V, false);
+    }
+    boolean isArray = astNode.hasDirectChildren(getContext().getGrammar().dim);
+    if (astNode.getFirstChild().is(getContext().getGrammar().basicType)) {
+      return new Parameter(JAVA_TYPE_MAPPING.get(astNode.getFirstChild().getFirstChild().getType()), isArray);
+    } else if (astNode.getFirstChild().is(getContext().getGrammar().classType)) {
+      return new Parameter(extractClassName(astNode.getFirstChild()), isArray);
+    } else {
+      throw new IllegalStateException();
+    }
+  }
+
+  private String extractClassName(AstNode astNode) {
+    Preconditions.checkArgument(astNode.is(getContext().getGrammar().classType));
+    // TODO Godin: verify
+    return Iterables.getLast(astNode.findDirectChildren(GenericTokenType.IDENTIFIER)).getTokenValue();
+  }
+
+  private static final Map<JavaKeyword, JvmJavaType> JAVA_TYPE_MAPPING = Maps.newHashMap();
+
+  static {
+    JAVA_TYPE_MAPPING.put(JavaKeyword.BYTE, JvmJavaType.B);
+    JAVA_TYPE_MAPPING.put(JavaKeyword.CHAR, JvmJavaType.C);
+    JAVA_TYPE_MAPPING.put(JavaKeyword.SHORT, JvmJavaType.S);
+    JAVA_TYPE_MAPPING.put(JavaKeyword.INT, JvmJavaType.I);
+    JAVA_TYPE_MAPPING.put(JavaKeyword.LONG, JvmJavaType.J);
+    JAVA_TYPE_MAPPING.put(JavaKeyword.BOOLEAN, JvmJavaType.Z);
+    JAVA_TYPE_MAPPING.put(JavaKeyword.FLOAT, JvmJavaType.F);
+    JAVA_TYPE_MAPPING.put(JavaKeyword.DOUBLE, JvmJavaType.D);
+    JAVA_TYPE_MAPPING.put(JavaKeyword.VOID, JvmJavaType.V);
   }
 
 }
