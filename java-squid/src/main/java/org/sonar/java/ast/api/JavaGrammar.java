@@ -69,6 +69,7 @@ public abstract class JavaGrammar extends Grammar {
   public Rule classBody;
 
   public Rule classBodyDeclaration;
+  public Rule classInitDeclaration;
 
   public Rule block;
   public Rule memberDecl;

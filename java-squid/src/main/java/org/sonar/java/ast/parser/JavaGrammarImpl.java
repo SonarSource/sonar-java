@@ -217,8 +217,9 @@ public class JavaGrammarImpl extends JavaGrammar {
     classBody.is(LWING, o2n(classBodyDeclaration), RWING);
     classBodyDeclaration.is(or(
         SEMI,
-        and(opt(STATIC), block),
+        classInitDeclaration,
         and(o2n(modifier), memberDecl)));
+    classInitDeclaration.is(opt(STATIC), block);
     memberDecl.is(or(
         and(typeParameters, genericMethodOrConstructorRest),
         and(type, IDENTIFIER, methodDeclaratorRest),

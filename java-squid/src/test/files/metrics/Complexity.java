@@ -1,5 +1,11 @@
 public class HelloWorld  {
 
+  { // +1 initialization block
+  }
+
+  static { // +1 static initialization block
+  }
+
   public void sayHello() { // +1 method
     if (true) { // +1 if-statement
     }

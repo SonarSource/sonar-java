@@ -33,6 +33,7 @@ public class ComplexityVisitor extends JavaAstVisitor {
     SquidAstVisitorContext<JavaGrammar> context = getContext();
     subscribeTo(
         // Entry points
+        context.getGrammar().classInitDeclaration,
         context.getGrammar().methodBody,
         // Branching nodes
         context.getGrammar().ifStatement,
