@@ -75,6 +75,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     }
   }
 
+  @VisibleForTesting
   public void scan(Collection<File> sourceDirectories, Collection<File> bytecodeFilesOrDirectories) {
     List<File> sourceFiles = Lists.newArrayList();
     for (File dir : sourceDirectories) {
@@ -83,7 +84,6 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     scanFiles(sourceFiles, bytecodeFilesOrDirectories);
   }
 
-  @VisibleForTesting
   public void scanFiles(Collection<File> sourceFiles, Collection<File> bytecodeFilesOrDirectories) {
     // TODO
     scanSources(sourceFiles);
