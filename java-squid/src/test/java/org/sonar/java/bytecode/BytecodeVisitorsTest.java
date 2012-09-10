@@ -61,7 +61,7 @@ public class BytecodeVisitorsTest {
   public static void setup() {
     JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
     JavaSquid squid = new JavaSquid(conf);
-    squid.scan(
+    squid.scanDirectories(
         Collections.singleton(new File("src/test/files/bytecode/src")),
         Collections.singleton(new File("src/test/files/bytecode/bin")));
     index = squid.getIndex();

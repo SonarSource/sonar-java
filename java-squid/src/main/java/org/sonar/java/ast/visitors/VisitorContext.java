@@ -23,6 +23,7 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.CommentAnalyser;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.SquidAstVisitorContext;
+import org.sonar.api.resources.InputFile;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.squid.api.*;
 
@@ -144,6 +145,16 @@ public class VisitorContext extends SquidAstVisitorContext<JavaGrammar> {
     } else {
       throw new IllegalStateException("Unable to log a check message on source code '" + (peekSourceCode() == null ? "[NULL]" : peekSourceCode().getKey()) + "'");
     }
+  }
+
+  private InputFile inputFile;
+
+  public void setInputFile(InputFile inputFile) {
+    this.inputFile = inputFile;
+  }
+
+  public InputFile getInputFile() {
+    return inputFile;
   }
 
 }

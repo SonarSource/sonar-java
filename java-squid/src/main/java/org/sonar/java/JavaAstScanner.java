@@ -25,6 +25,8 @@ import com.sonar.sslr.squid.SquidAstVisitor;
 import com.sonar.sslr.squid.metrics.CommentsVisitor;
 import com.sonar.sslr.squid.metrics.CounterVisitor;
 import com.sonar.sslr.squid.metrics.LinesOfCodeVisitor;
+import org.sonar.api.resources.InputFile;
+import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaKeyword;
@@ -53,7 +55,8 @@ public final class JavaAstScanner {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
     org.sonar.java.ast.AstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitors);
-    scanner.scan(Collections.singleton(file));
+    InputFile inputFile = InputFileUtils.create(file.getParentFile(), file);
+    scanner.scan(Collections.singleton(inputFile));
     Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));
     if (sources.size() != 1) {
       throw new IllegalStateException("Only one SourceFile was expected whereas " + sources.size() + " has been returned.");

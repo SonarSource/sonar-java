@@ -29,6 +29,7 @@ import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.ast.AstWalker;
 import com.sonar.sslr.squid.SquidAstVisitor;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.resources.InputFile;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.visitors.VisitorContext;
@@ -57,7 +58,7 @@ public class AstScanner {
     this.parser = parser;
   }
 
-  public void scan(Collection<File> files) {
+  public void scan(Collection<InputFile> files) {
     SourceProject project = new SourceProject("Java Project");
     index.index(project);
     project.setSourceCodeIndexer(index);
@@ -72,8 +73,10 @@ public class AstScanner {
 
     AstWalker astWalker = new AstWalker(visitors);
 
-    for (File file : files) {
+    for (InputFile inputFile : files) {
+      File file = inputFile.getFile();
       context.setFile(file);
+      context.setInputFile(inputFile);
 
       try {
         AstNode ast = parser.parse(file);

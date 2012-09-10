@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.api.resources.InputFile;
+import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.squid.api.CodeVisitor;
@@ -37,15 +39,16 @@ public class BytecodeFixture {
   }
 
   public static SourceFile scan(String target, CodeVisitor visitor) {
-    File sourceFile = new File("src/test/java/org/sonar/java/checks/targets/" + target + ".java");
+    File baseDir = new File("src/test/java/");
+    InputFile sourceFile = InputFileUtils.create(baseDir, new File(baseDir, "org/sonar/java/checks/targets/" + target + ".java"));
     File bytecodeFile = new File("target/test-classes/");
 
-    if (!sourceFile.isFile()) {
+    if (!sourceFile.getFile().isFile()) {
       throw new IllegalArgumentException("File '" + sourceFile + "' not found.");
     }
 
     JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), visitor);
-    javaSquid.scanFiles(Collections.singleton(sourceFile), Collections.singleton(bytecodeFile));
+    javaSquid.scan(Collections.singleton(sourceFile), Collections.singleton(bytecodeFile));
 
     Collection<SourceCode> sources = javaSquid.getIndex().search(new QueryByType(SourceFile.class));
     if (sources.size() != 1) {

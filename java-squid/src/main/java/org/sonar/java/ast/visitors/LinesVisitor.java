@@ -30,9 +30,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
-/**
- * Workaround for SSLRSQBR-10
- */
 public class LinesVisitor extends JavaAstVisitor {
 
   private final Charset charset;
@@ -53,6 +50,9 @@ public class LinesVisitor extends JavaAstVisitor {
     sourceCode.setMeasure(JavaMetric.LINES, sourceCode.getEndAtLine() - sourceCode.getStartAtLine() + 1);
   }
 
+  /**
+   * Workaround for SSLRSQBR-10
+   */
   @Override
   public void leaveFile(AstNode astNode) {
     try {

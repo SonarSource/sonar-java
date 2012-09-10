@@ -21,7 +21,11 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.apache.commons.lang.StringUtils;
+import org.sonar.api.resources.InputFile;
+import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.squid.api.AnalysisException;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourcePackage;
 import org.sonar.squid.api.SourceProject;
@@ -55,16 +59,19 @@ public class PackageVisitor extends JavaAstVisitor {
 
   private String getPackageKey(AstNode astNode) {
     if (astNode == null) {
-      // TODO error during parse, e.g. empty file
+      // TODO error during parse?
       return "";
     }
+    String packageKey;
     if (astNode.getChild(0).is(getContext().getGrammar().packageDeclaration)) {
       AstNode packageNameNode = astNode.getChild(0).findFirstDirectChild(getContext().getGrammar().qualifiedIdentifier);
-      String packageName = getAstNodeValue(packageNameNode);
-      return packageName.replace('.', '/');
+      packageKey = getAstNodeValue(packageNameNode).replace('.', '/');
     } else {
-      return "";
+      // Guess package key from directory
+      packageKey = InputFileUtils.getRelativeDirectory(getInputFile());
     }
+    checkPhysicalDirectory(packageKey);
+    return packageKey;
   }
 
   private static String getAstNodeValue(AstNode astNode) {
@@ -73,6 +80,30 @@ public class PackageVisitor extends JavaAstVisitor {
       sb.append(child.getTokenValue());
     }
     return sb.toString();
+  }
+
+  private InputFile getInputFile() {
+    return ((VisitorContext) getContext()).getInputFile(); // TODO Unchecked cast
+  }
+
+  /**
+   * Check that package declaration is consistent with the physical location of Java file.
+   * It aims to detect two cases :
+   * - wrong package declaration : "package org.foo" stored in the directory "org/bar"
+   * - source directory badly configured : src/ instead of src/main/java/
+   *
+   * @since 2.8
+   */
+  private void checkPhysicalDirectory(String key) {
+    String relativeDirectory = InputFileUtils.getRelativeDirectory(getInputFile());
+    // both relativeDirectory and key use slash '/' as separator
+    if (!StringUtils.equals(relativeDirectory, key)) {
+      String packageName = StringUtils.replace(key, "/", ".");
+      if (StringUtils.contains(relativeDirectory, key) || StringUtils.contains(key, relativeDirectory)) {
+        throw new AnalysisException(String.format("The source directory does not correspond to the package declaration %s", packageName));
+      }
+      throw new AnalysisException(String.format("The package declaration %s does not correspond to the file path %s", packageName, getInputFile().getRelativePath()));
+    }
   }
 
 }

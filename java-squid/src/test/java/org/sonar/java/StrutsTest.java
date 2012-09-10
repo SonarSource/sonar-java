@@ -47,7 +47,7 @@ public class StrutsTest {
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     squid = new JavaSquid(conf);
-    squid.scan(Collections.singleton(srcDir), Collections.singleton(binDir));
+    squid.scanDirectories(Collections.singleton(srcDir), Collections.singleton(binDir));
 
     SourceCodeSearchEngine index = squid.getIndex();
     project = (SourceProject) index.search(new QueryByType(SourceProject.class)).iterator().next();

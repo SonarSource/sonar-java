@@ -23,6 +23,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.resources.InputFile;
+import org.sonar.api.resources.InputFileUtils;
 import org.sonar.api.utils.TimeProfiler;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.graph.DirectedGraphAccessor;
@@ -76,15 +78,25 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
   }
 
   @VisibleForTesting
-  public void scan(Collection<File> sourceDirectories, Collection<File> bytecodeFilesOrDirectories) {
-    List<File> sourceFiles = Lists.newArrayList();
+  public void scanDirectories(Collection<File> sourceDirectories, Collection<File> bytecodeFilesOrDirectories) {
+    List<InputFile> sourceFiles = Lists.newArrayList();
     for (File dir : sourceDirectories) {
-      sourceFiles.addAll(FileUtils.listFiles(dir, new String[] {"java"}, true));
+      sourceFiles.addAll(InputFileUtils.create(dir, FileUtils.listFiles(dir, new String[] {"java"}, true)));
     }
-    scanFiles(sourceFiles, bytecodeFilesOrDirectories);
+    scan(sourceFiles, bytecodeFilesOrDirectories);
   }
 
+  @VisibleForTesting
+  @Deprecated
   public void scanFiles(Collection<File> sourceFiles, Collection<File> bytecodeFilesOrDirectories) {
+    Collection<InputFile> inputFiles = Lists.newArrayList();
+    for (File file : sourceFiles) {
+      inputFiles.add(InputFileUtils.create(file.getParentFile(), file));
+    }
+    scan(inputFiles, bytecodeFilesOrDirectories);
+  }
+
+  public void scan(Collection<InputFile> sourceFiles, Collection<File> bytecodeFilesOrDirectories) {
     // TODO
     scanSources(sourceFiles);
     scanBytecode(bytecodeFilesOrDirectories);
@@ -94,7 +106,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     // decorator.decorateWith(Metric.values());
   }
 
-  private void scanSources(Collection<File> sourceFiles) {
+  private void scanSources(Collection<InputFile> sourceFiles) {
     TimeProfiler profiler = new TimeProfiler(getClass()).start("Java AST scan");
     astScanner.scan(sourceFiles);
     profiler.stop();

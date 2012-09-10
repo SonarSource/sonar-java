@@ -29,7 +29,7 @@ import org.sonar.api.checks.AnnotationCheckFactory;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.InputFileUtils;
+import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
@@ -69,15 +69,15 @@ public class JavaSquidSensor implements Sensor {
     Collection<CodeVisitor> checks = annotationCheckFactory.getChecks();
 
     JavaSquid squid = new JavaSquid(createConfiguration(project), fileLinesContextFactory, checks.toArray(new CodeVisitor[checks.size()]));
-    squid.scanFiles(getSourceFiles(project), getBytecodeFiles(project));
+    squid.scan(getSourceFiles(project), getBytecodeFiles(project));
 
     new Bridges(squid).save(context, project, annotationCheckFactory);
 
     save(squid.getIndex().search(new QueryByType(SourceFile.class)));
   }
 
-  private List<File> getSourceFiles(Project project) {
-    return InputFileUtils.toFiles(project.getFileSystem().mainFiles(Java.KEY));
+  private List<InputFile> getSourceFiles(Project project) {
+    return project.getFileSystem().mainFiles(Java.KEY);
   }
 
   private List<File> getBytecodeFiles(Project project) {

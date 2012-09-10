@@ -22,6 +22,8 @@ package org.sonar.java;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import org.sonar.api.resources.InputFile;
+import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squid.api.SourceFile;
@@ -29,6 +31,7 @@ import org.sonar.squid.api.SourceProject;
 import org.sonar.squid.indexer.QueryByType;
 
 import java.io.File;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -37,7 +40,10 @@ public class JavaAstScannerTest {
   @Test
   public void files() {
     AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8));
-    scanner.scan(ImmutableList.of(new File("src/test/files/metrics/Lines.java"), new File("src/test/files/metrics/LinesOfCode.java")));
+    File baseDir = new File("src/test/files/metrics");
+    List<InputFile> inputFiles = InputFileUtils.create(baseDir,
+        ImmutableList.of(new File("src/test/files/metrics/Lines.java"), new File("src/test/files/metrics/LinesOfCode.java")));
+    scanner.scan(inputFiles);
     SourceProject project = (SourceProject) scanner.getIndex().search(new QueryByType(SourceProject.class)).iterator().next();
     assertThat(project.getInt(JavaMetric.FILES)).isEqualTo(2);
   }
@@ -89,7 +95,10 @@ public class JavaAstScannerTest {
   @Test
   public void packages() {
     AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8));
-    scanner.scan(ImmutableList.of(new File("src/test/files/metrics/Packages.java")));
+    File baseDir = new File("src/test/files/metrics");
+    List<InputFile> inputFiles = InputFileUtils.create(baseDir,
+        ImmutableList.of(new File("src/test/files/metrics/Packages.java")));
+    scanner.scan(inputFiles);
     SourceProject project = (SourceProject) scanner.getIndex().search(new QueryByType(SourceProject.class)).iterator().next();
     assertThat(project.getInt(JavaMetric.PACKAGES)).isEqualTo(1);
   }
