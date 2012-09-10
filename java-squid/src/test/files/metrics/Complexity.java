@@ -25,6 +25,8 @@ public class HelloWorld  {
     } catch (Exception e) { // +1 catch-clause
       return; // +1 return-statement
     }
+
+    return; // +0 last return-statement
   }
 
 }

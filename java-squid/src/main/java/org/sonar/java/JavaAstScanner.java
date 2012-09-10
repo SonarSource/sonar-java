@@ -23,14 +23,12 @@ import com.sonar.sslr.api.CommentAnalyser;
 import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.squid.SquidAstVisitor;
 import com.sonar.sslr.squid.metrics.CommentsVisitor;
-import com.sonar.sslr.squid.metrics.ComplexityVisitor;
 import com.sonar.sslr.squid.metrics.CounterVisitor;
 import com.sonar.sslr.squid.metrics.LinesOfCodeVisitor;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.*;
 import org.sonar.squid.api.SourceCode;
@@ -147,25 +145,8 @@ public final class JavaAstScanner {
             parser.getGrammar().catchClause,
             parser.getGrammar().finally_)
         .build());
-    builder.withSquidAstVisitor(ComplexityVisitor.<JavaGrammar> builder()
-        .setMetricDef(JavaMetric.COMPLEXITY)
-        .subscribeTo(
-            // Entry points
-            parser.getGrammar().methodBody,
-            // Branching nodes
-            parser.getGrammar().ifStatement,
-            parser.getGrammar().forStatement,
-            parser.getGrammar().whileStatement,
-            parser.getGrammar().doStatement,
-            JavaKeyword.CASE,
-            parser.getGrammar().returnStatement,
-            parser.getGrammar().throwStatement,
-            parser.getGrammar().catchClause,
-            // Expressions
-            JavaPunctuator.QUERY,
-            JavaPunctuator.ANDAND,
-            JavaPunctuator.OROR)
-        .build());
+
+    builder.withSquidAstVisitor(new ComplexityVisitor());
 
     /* External visitors (typically Check ones) */
     for (SquidAstVisitor<JavaGrammar> visitor : visitors) {
