@@ -63,13 +63,13 @@ public class SquidUserGuideTest {
     // TODO assertEquals(27, project.getInt(Metric.INTERFACES));
     // TODO assertEquals(33, project.getInt(Metric.ABSTRACT_CLASSES));
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(JavaMetric.ACCESSORS)).isEqualTo(3805 + 69);
-    // FIXME assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(3805);
-    // FIXME assertThat(project.getInt(JavaMetric.ACCESSORS)).isEqualTo(69);
+    assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(3805);
+    assertThat(project.getInt(JavaMetric.ACCESSORS)).isEqualTo(69);
     assertThat(project.getInt(JavaMetric.LINES)).isEqualTo(63852);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(26323);
     // TODO assertEquals(6426, project.getInt(Metric.BLANK_LINES));
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(12666);
-    // FIXME assertThat(project.getInt(JavaMetric.COMPLEXITY)).isEqualTo(8475);
+    assertThat(project.getInt(JavaMetric.COMPLEXITY)).isEqualTo(8389); // FIXME 8475
     // TODO assertEquals(4668, project.getInt(Metric.BRANCHES));
     assertThat(project.getInt(JavaMetric.COMMENT_LINES)).isEqualTo(21184);
     assertThat(project.getInt(JavaMetric.COMMENT_BLANK_LINES)).isEqualTo(9995);

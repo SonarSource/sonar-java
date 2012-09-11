@@ -19,7 +19,9 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.GenericTokenType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squid.api.SourceMethod;
@@ -37,9 +39,11 @@ public class AccessorVisitor extends JavaAstVisitor {
   public void visitNode(AstNode astNode) {
     SourceMethod sourceMethod = (SourceMethod) getContext().peekSourceCode();
 
-    MethodHelper methodHelper = new MethodHelper(getContext().getGrammar(), astNode);
-    if (methodHelper.isPublic() && isAccessor(methodHelper)) {
-      sourceMethod.setMeasure(JavaMetric.ACCESSORS, 1);
+    if (astNode.is(getContext().getGrammar().methodDeclaratorRest, getContext().getGrammar().voidMethodDeclaratorRest, getContext().getGrammar().constructorDeclaratorRest)) {
+      MethodHelper methodHelper = new MethodHelper(getContext().getGrammar(), astNode);
+      if (methodHelper.isPublic() && isAccessor(methodHelper)) {
+        sourceMethod.setMeasure(JavaMetric.ACCESSORS, 1);
+      }
     }
   }
 
@@ -62,9 +66,12 @@ public class AccessorVisitor extends JavaAstVisitor {
   private boolean isValidGetter(MethodHelper method) {
     String methodName = method.getName().getTokenValue();
     if (methodName.startsWith("get") && !method.hasParameters() && !method.getReturnType().is(JavaKeyword.VOID)) {
-      // TODO Godin: in previous version we had a more complex check of method body
       List<AstNode> statements = method.getStatements();
-      return statements.size() == 1 && "return".equals(statements.get(0).getTokenValue());
+      if (statements.size() == 1) {
+        AstNode blockStatement = statements.get(0);
+        Preconditions.checkState(blockStatement.is(getContext().getGrammar().blockStatement));
+        return inspectGetterMethodBody(blockStatement.getFirstChild().getFirstChild());
+      }
     }
     return false;
   }
@@ -72,9 +79,26 @@ public class AccessorVisitor extends JavaAstVisitor {
   private boolean isValidSetter(MethodHelper method) {
     String methodName = method.getName().getTokenValue();
     if (methodName.startsWith("set") && (method.getParameters().size() == 1) && method.getReturnType().is(JavaKeyword.VOID)) {
-      // TODO Godin: in previous version we had a more complex check of method body
       List<AstNode> statements = method.getStatements();
-      return statements.size() == 1 && "this".equals(statements.get(0).getTokenValue());
+      if (statements.size() == 1) {
+        AstNode blockStatement = statements.get(0);
+        Preconditions.checkState(blockStatement.is(getContext().getGrammar().blockStatement));
+        return inspectSetterMethodBody(blockStatement.getFirstChild().getFirstChild());
+        // return false;
+      }
+    }
+    return false;
+  }
+
+  private boolean inspectSetterMethodBody(AstNode astNode) {
+    if (astNode.is(getContext().getGrammar().expressionStatement)) {
+      AstNode expression = astNode.findFirstChild(getContext().getGrammar().expression);
+      AstNode assignmentExpression = expression.getFirstChild();
+      if (assignmentExpression.is(getContext().getGrammar().assignmentExpression)) {
+        // TODO in previous version we had a more complex check
+        AstNode varToAssign = assignmentExpression.findFirstChild(GenericTokenType.IDENTIFIER);
+        return findPrivateClassVariable(varToAssign);
+      }
     }
     return false;
   }
@@ -82,9 +106,62 @@ public class AccessorVisitor extends JavaAstVisitor {
   private boolean isValidBooleanGetter(MethodHelper method) {
     String methodName = method.getName().getTokenValue();
     if (methodName.startsWith("is") && !method.hasParameters() && hasBooleanReturnType(method)) {
-      // TODO Godin: in previous version we had a more complex check of method body
       List<AstNode> statements = method.getStatements();
-      return statements.size() == 1 && "return".equals(statements.get(0).getTokenValue());
+      if (statements.size() == 1) {
+        AstNode blockStatement = statements.get(0);
+        Preconditions.checkState(blockStatement.is(getContext().getGrammar().blockStatement));
+        return inspectGetterMethodBody(blockStatement.getFirstChild().getFirstChild());
+      }
+    }
+    return false;
+  }
+
+  private boolean inspectGetterMethodBody(AstNode astNode) {
+    if (astNode.is(getContext().getGrammar().returnStatement) && astNode.hasDirectChildren(getContext().getGrammar().expression)) {
+      AstNode expression = astNode.findFirstDirectChild(getContext().getGrammar().expression);
+      if (expression.getNumberOfChildren() == 1 && expression.getFirstChild().is(getContext().getGrammar().primary)) {
+        AstNode primary = expression.getFirstChild();
+        if (primary.getNumberOfChildren() == 1 && primary.getFirstChild().is(getContext().getGrammar().qualifiedIdentifier)) {
+          AstNode qualifiedIdentifier = primary.getFirstChild();
+          if (qualifiedIdentifier.getNumberOfChildren() == 1) {
+            AstNode varReturned = qualifiedIdentifier.getFirstChild();
+            if (varReturned != null) {
+              if (findPrivateClassVariable(varReturned)) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  private boolean findPrivateClassVariable(AstNode varReturned) {
+    AstNode classBody = varReturned.findFirstParent(getContext().getGrammar().classBody);
+    for (AstNode classBodyDeclaration : classBody.findDirectChildren(getContext().getGrammar().classBodyDeclaration)) {
+      if (!hasPrivateModifier(classBodyDeclaration)) {
+        continue;
+      }
+
+      for (AstNode memberDecl : classBodyDeclaration.findDirectChildren(getContext().getGrammar().memberDecl)) {
+        if (memberDecl.getFirstChild().is(getContext().getGrammar().fieldDeclaration)) {
+          for (AstNode variableDeclarator : memberDecl.findChildren(getContext().getGrammar().variableDeclarator)) {
+            if (varReturned.getTokenValue().equals(variableDeclarator.getFirstChild().getTokenValue())) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  private boolean hasPrivateModifier(AstNode classBodyDeclaration) {
+    for (AstNode modifierNode : classBodyDeclaration.findDirectChildren(getContext().getGrammar().modifier)) {
+      if (modifierNode.getChild(0).is(JavaKeyword.PRIVATE)) {
+        return true;
+      }
     }
     return false;
   }
