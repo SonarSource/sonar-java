@@ -50,6 +50,8 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
   private final BytecodeScanner bytecodeScanner;
   private final DirectedGraph<SourceCode, SourceCodeEdge> graph = new DirectedGraph<SourceCode, SourceCodeEdge>();
 
+  private boolean bytecodeScanned = false;
+
   @VisibleForTesting
   public JavaSquid(JavaConfiguration conf, CodeVisitor... visitors) {
     this(conf, null, visitors);
@@ -103,9 +105,32 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
   }
 
   private void scanBytecode(Collection<File> bytecodeFilesOrDirectories) {
-    TimeProfiler profiler = new TimeProfiler(getClass()).start("Java bytecode scan");
-    bytecodeScanner.scan(bytecodeFilesOrDirectories);
-    profiler.stop();
+    if (hasBytecode(bytecodeFilesOrDirectories)) {
+      TimeProfiler profiler = new TimeProfiler(getClass()).start("Java bytecode scan");
+      bytecodeScanner.scan(bytecodeFilesOrDirectories);
+      bytecodeScanned = true;
+      profiler.stop();
+    } else {
+      bytecodeScanned = false;
+    }
+  }
+
+  static boolean hasBytecode(Collection<File> bytecodeFilesOrDirectories) {
+    if (bytecodeFilesOrDirectories == null) {
+      return false;
+    }
+    for (File bytecodeFilesOrDirectory : bytecodeFilesOrDirectories) {
+      if (bytecodeFilesOrDirectory.exists() &&
+          (bytecodeFilesOrDirectory.isFile() ||
+          !FileUtils.listFiles(bytecodeFilesOrDirectory, new String[] {"class"}, true).isEmpty())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean isBytecodeScanned() {
+    return bytecodeScanned;
   }
 
   public SquidIndex getIndex() {

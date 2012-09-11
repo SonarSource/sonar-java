@@ -51,7 +51,7 @@ public class Bridges {
 
     ResourceIndex resourceIndex = new ResourceIndex().loadSquidResources(squid, context, project);
     List<Bridge> bridges = BridgeFactory.create(
-        true /* TODO bytecodeScanned */,
+        squid.isBytecodeScanned(),
         skipPackageDesignAnalysis,
         context,
         checkFactory,
