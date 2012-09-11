@@ -86,16 +86,6 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     scan(sourceFiles, bytecodeFilesOrDirectories);
   }
 
-  @VisibleForTesting
-  @Deprecated
-  public void scanFiles(Collection<File> sourceFiles, Collection<File> bytecodeFilesOrDirectories) {
-    Collection<InputFile> inputFiles = Lists.newArrayList();
-    for (File file : sourceFiles) {
-      inputFiles.add(InputFileUtils.create(file.getParentFile(), file));
-    }
-    scan(inputFiles, bytecodeFilesOrDirectories);
-  }
-
   public void scan(Collection<InputFile> sourceFiles, Collection<File> bytecodeFilesOrDirectories) {
     // TODO
     scanSources(sourceFiles);

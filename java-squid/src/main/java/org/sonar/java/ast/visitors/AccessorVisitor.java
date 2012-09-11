@@ -43,8 +43,6 @@ public class AccessorVisitor extends JavaAstVisitor {
     if (astNode.is(getContext().getGrammar().methodDeclaratorRest, getContext().getGrammar().voidMethodDeclaratorRest, getContext().getGrammar().constructorDeclaratorRest)) {
       MethodHelper methodHelper = new MethodHelper(getContext().getGrammar(), astNode);
       if (methodHelper.isPublic() && isAccessor(methodHelper)) {
-        // FIXME replace JavaMetric.ACCESSORS by Metric.ACCESSORS so SourceMethod#isAccessor() will work
-        sourceMethod.setMeasure(JavaMetric.ACCESSORS, 1);
         sourceMethod.setMeasure(Metric.ACCESSORS, 1);
       }
     }
@@ -53,7 +51,7 @@ public class AccessorVisitor extends JavaAstVisitor {
   @Override
   public void leaveNode(AstNode astNode) {
     SourceMethod sourceMethod = (SourceMethod) getContext().peekSourceCode();
-    if (sourceMethod.getInt(JavaMetric.ACCESSORS) != 0) {
+    if (sourceMethod.isAccessor()) {
       sourceMethod.setMeasure(Metric.PUBLIC_API, 0);
       sourceMethod.setMeasure(Metric.PUBLIC_DOC_API, 0);
       sourceMethod.setMeasure(JavaMetric.METHODS, 0);

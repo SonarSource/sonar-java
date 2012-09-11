@@ -34,6 +34,7 @@ import org.sonar.squid.api.*;
 import org.sonar.squid.indexer.QueryByMeasure;
 import org.sonar.squid.indexer.QueryByType;
 import org.sonar.squid.indexer.SquidIndex;
+import org.sonar.squid.measures.Metric;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -99,7 +100,7 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
             .setSignature(squidMethod.getName())
             .setFromLine(squidMethod.getStartAtLine())
             .setToLine(squidMethod.getEndAtLine())
-            .setAccessor(squidMethod.getInt(JavaMetric.ACCESSORS) > 0)
+            .setAccessor(squidMethod.getInt(Metric.ACCESSORS) > 0)
             .create();
 
         context.index(sonarMethod, sonarClass);

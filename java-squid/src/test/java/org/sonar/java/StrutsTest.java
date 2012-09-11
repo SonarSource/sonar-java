@@ -62,8 +62,8 @@ public class StrutsTest {
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(146);
     // TODO assertEquals(27, project.getInt(Metric.INTERFACES));
     // TODO assertEquals(33, project.getInt(Metric.ABSTRACT_CLASSES));
-    assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(JavaMetric.ACCESSORS)).isEqualTo(1437 + 48);
-    assertThat(project.getInt(JavaMetric.ACCESSORS)).isEqualTo(48);
+    assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(1437 + 48);
+    assertThat(project.getInt(Metric.ACCESSORS)).isEqualTo(48);
     assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(1437);
     assertThat(project.getInt(JavaMetric.LINES)).isEqualTo(32744);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(14007);
