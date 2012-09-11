@@ -20,7 +20,6 @@
 package org.sonar.java.ast.visitors;
 
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.SquidAstVisitorContext;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
@@ -30,20 +29,27 @@ public class ComplexityVisitor extends JavaAstVisitor {
 
   @Override
   public void init() {
-    SquidAstVisitorContext<JavaGrammar> context = getContext();
+    JavaGrammar grammar = getContext().getGrammar();
     subscribeTo(
+        // FIXME hacks
+        grammar.methodDeclaratorRest,
+        grammar.voidMethodDeclaratorRest,
+        grammar.constructorDeclaratorRest,
+        grammar.interfaceMethodDeclaratorRest,
+        grammar.voidInterfaceMethodDeclaratorsRest,
+        grammar.annotationMethodRest,
         // Entry points
-        context.getGrammar().classInitDeclaration,
-        context.getGrammar().methodBody,
+        grammar.classInitDeclaration,
+        // FIXME context.getGrammar().methodBody,
         // Branching nodes
-        context.getGrammar().ifStatement,
-        context.getGrammar().forStatement,
-        context.getGrammar().whileStatement,
-        context.getGrammar().doStatement,
+        grammar.ifStatement,
+        grammar.forStatement,
+        grammar.whileStatement,
+        grammar.doStatement,
         JavaKeyword.CASE,
-        context.getGrammar().returnStatement,
-        context.getGrammar().throwStatement,
-        context.getGrammar().catchClause,
+        grammar.returnStatement,
+        grammar.throwStatement,
+        grammar.catchClause,
         // Expressions
         JavaPunctuator.QUERY,
         JavaPunctuator.ANDAND,
@@ -59,14 +65,9 @@ public class ComplexityVisitor extends JavaAstVisitor {
   }
 
   private boolean isLastReturnStatement(AstNode astNode) {
-    if (!astNode.nextAstNode().is(JavaPunctuator.RWING)) {
-      return false;
-    }
-    AstNode block = astNode.findFirstParent(getContext().getGrammar().block);
-    if (block.getParent().is(getContext().getGrammar().methodBody)) {
-      return true;
-    }
-    return false;
+    AstNode parent = astNode.getParent().getParent().getParent();
+    AstNode block = astNode.findFirstParent(getContext().getGrammar().blockStatements);
+    return block.getParent().getParent().is(getContext().getGrammar().methodBody) && parent == block;
   }
 
 }

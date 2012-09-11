@@ -69,7 +69,7 @@ public class SquidUserGuideTest {
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(26323);
     // TODO assertEquals(6426, project.getInt(Metric.BLANK_LINES));
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(12666);
-    assertThat(project.getInt(JavaMetric.COMPLEXITY)).isEqualTo(8389); // FIXME 8475
+    assertThat(project.getInt(JavaMetric.COMPLEXITY)).isEqualTo(8475);
     // TODO assertEquals(4668, project.getInt(Metric.BRANCHES));
     assertThat(project.getInt(JavaMetric.COMMENT_LINES)).isEqualTo(21184);
     assertThat(project.getInt(JavaMetric.COMMENT_BLANK_LINES)).isEqualTo(9995);
