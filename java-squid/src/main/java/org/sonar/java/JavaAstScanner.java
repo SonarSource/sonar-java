@@ -24,7 +24,6 @@ import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.squid.SquidAstVisitor;
 import com.sonar.sslr.squid.metrics.CommentsVisitor;
 import com.sonar.sslr.squid.metrics.CounterVisitor;
-import com.sonar.sslr.squid.metrics.LinesOfCodeVisitor;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.AstScanner;
@@ -117,7 +116,7 @@ public final class JavaAstScanner {
 
     builder.withSquidAstVisitor(new LinesVisitor(conf.getCharset()));
 
-    builder.withSquidAstVisitor(new LinesOfCodeVisitor<JavaGrammar>(JavaMetric.LINES_OF_CODE));
+    builder.withSquidAstVisitor(new LinesOfCodeVisitor());
     builder.withSquidAstVisitor(CommentsVisitor.<JavaGrammar> builder().withCommentMetric(JavaMetric.COMMENT_LINES)
         .withBlankCommentMetric(JavaMetric.COMMENT_BLANK_LINES)
         .withNoSonar(true)

@@ -48,7 +48,9 @@ public class MethodVisitor extends JavaAstVisitor {
   public void visitNode(AstNode astNode) {
     String methodName = buildMethodSignature(new MethodHelper(getContext().getGrammar(), astNode));
     SourceClass sourceClass = peekSourceClass();
-    SourceMethod sourceMethod = new SourceMethod(sourceClass, methodName, astNode.getTokenLine());
+    // TODO hack grammar to get proper start line
+    int startLine = PublicApiVisitor.getDeclaration(getContext().getGrammar(), astNode).getTokenLine();
+    SourceMethod sourceMethod = new SourceMethod(sourceClass, methodName, startLine);
     sourceMethod.setMeasure(JavaMetric.METHODS, 1);
     getContext().addSourceCode(sourceMethod);
   }

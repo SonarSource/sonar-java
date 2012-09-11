@@ -26,7 +26,7 @@ public enum JavaMetric implements MetricDef {
 
   FILES,
   LINES(false),
-  LINES_OF_CODE,
+  LINES_OF_CODE(false),
   COMMENT_LINES,
   COMMENT_BLANK_LINES,
   STATEMENTS,

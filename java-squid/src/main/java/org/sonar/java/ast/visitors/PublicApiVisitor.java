@@ -159,8 +159,11 @@ public class PublicApiVisitor extends JavaAstVisitor {
   }
 
   private AstNode getDeclaration(AstNode astNode) {
+    return getDeclaration(getContext().getGrammar(), astNode);
+  }
+
+  public static AstNode getDeclaration(JavaGrammar grammar, AstNode astNode) {
     AstNode declaration;
-    JavaGrammar grammar = getContext().getGrammar();
     if (astNode.getParent().is(grammar.memberDecl)) {
       declaration = astNode.getParent().getParent();
       Preconditions.checkState(declaration.is(grammar.classBodyDeclaration));
