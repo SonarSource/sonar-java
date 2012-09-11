@@ -77,26 +77,27 @@ public class MethodVisitor extends JavaAstVisitor {
     if (methodHelper.isConstructor()) {
       return new Parameter(JvmJavaType.V, false);
     }
-    Parameter returnType = extractArgumentAndReturnType(methodHelper.getReturnType());
-    return new Parameter(returnType);
+    AstNode returnType = methodHelper.getReturnType();
+    boolean isArray = returnType.hasDirectChildren(getContext().getGrammar().dim);
+    return new Parameter(extractArgumentAndReturnType(returnType, isArray));
   }
 
   private List<Parameter> extractMethodArgumentTypes(MethodHelper methodHelper) {
     List<Parameter> argumentTypes = Lists.newArrayList();
     for (AstNode astNode : methodHelper.getParameters()) {
-      for (AstNode type : astNode.findChildren(getContext().getGrammar().type)) {
-        argumentTypes.add(extractArgumentAndReturnType(type));
-      }
+      AstNode type = astNode.findFirstDirectChild(getContext().getGrammar().type);
+      boolean isArray = type.hasDirectChildren(getContext().getGrammar().dim)
+          || astNode.findFirstChild(getContext().getGrammar().variableDeclaratorId).hasDirectChildren(getContext().getGrammar().dim);
+      argumentTypes.add(extractArgumentAndReturnType(type, isArray));
     }
     return argumentTypes;
   }
 
-  private Parameter extractArgumentAndReturnType(AstNode astNode) {
+  private Parameter extractArgumentAndReturnType(AstNode astNode, boolean isArray) {
     Preconditions.checkArgument(astNode.is(JavaKeyword.VOID, getContext().getGrammar().type));
     if (astNode.is(JavaKeyword.VOID)) {
       return new Parameter(JvmJavaType.V, false);
     }
-    boolean isArray = astNode.hasDirectChildren(getContext().getGrammar().dim);
     if (astNode.getFirstChild().is(getContext().getGrammar().basicType)) {
       return new Parameter(JAVA_TYPE_MAPPING.get(astNode.getFirstChild().getFirstChild().getType()), isArray);
     } else if (astNode.getFirstChild().is(getContext().getGrammar().classType)) {
