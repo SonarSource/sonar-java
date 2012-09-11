@@ -25,6 +25,7 @@ import com.sonar.sslr.api.GenericTokenType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squid.api.SourceMethod;
+import org.sonar.squid.measures.Metric;
 
 import java.util.List;
 
@@ -42,7 +43,9 @@ public class AccessorVisitor extends JavaAstVisitor {
     if (astNode.is(getContext().getGrammar().methodDeclaratorRest, getContext().getGrammar().voidMethodDeclaratorRest, getContext().getGrammar().constructorDeclaratorRest)) {
       MethodHelper methodHelper = new MethodHelper(getContext().getGrammar(), astNode);
       if (methodHelper.isPublic() && isAccessor(methodHelper)) {
+        // FIXME replace JavaMetric.ACCESSORS by Metric.ACCESSORS so SourceMethod#isAccessor() will work
         sourceMethod.setMeasure(JavaMetric.ACCESSORS, 1);
+        sourceMethod.setMeasure(Metric.ACCESSORS, 1);
       }
     }
   }
@@ -51,9 +54,8 @@ public class AccessorVisitor extends JavaAstVisitor {
   public void leaveNode(AstNode astNode) {
     SourceMethod sourceMethod = (SourceMethod) getContext().peekSourceCode();
     if (sourceMethod.getInt(JavaMetric.ACCESSORS) != 0) {
-      // TODO
-      // sourceMethod.setMeasure(Metric.PUBLIC_API, 0);
-      // sourceMethod.setMeasure(Metric.PUBLIC_DOC_API, 0);
+      sourceMethod.setMeasure(Metric.PUBLIC_API, 0);
+      sourceMethod.setMeasure(Metric.PUBLIC_DOC_API, 0);
       sourceMethod.setMeasure(JavaMetric.METHODS, 0);
       sourceMethod.setMeasure(JavaMetric.COMPLEXITY, 0);
     }

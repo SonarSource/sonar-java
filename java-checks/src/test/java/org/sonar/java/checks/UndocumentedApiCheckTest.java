@@ -34,8 +34,6 @@ public class UndocumentedApiCheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        // FIXME should not be violation on line 7
-        .next().atLine(7).withMessage("Avoid undocumented API.")
         .next().atLine(10).withMessage("Avoid undocumented API.")
         .next().atLine(14)
         .next().atLine(17)

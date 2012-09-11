@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
+import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaMetric;
@@ -75,9 +76,9 @@ public class SquidUserGuideTest {
     assertThat(project.getInt(JavaMetric.COMMENT_BLANK_LINES)).isEqualTo(9995);
     // TODO assertEquals(17908, project.getInt(Metric.COMMENT_LINES_WITHOUT_HEADER));
     // TODO assertEquals(0.40, project.getDouble(Metric.COMMENT_LINES_DENSITY), 0.01);
-    // FIXME assertThat(project.getInt(Metric.PUBLIC_API)).isEqualTo(3257);
-    // FIXME assertThat(project.getInt(Metric.PUBLIC_DOC_API)).isEqualTo(2008);
-    // FIXME assertThat(project.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY)).isEqualTo(0.66, Delta.delta(0.01));
+    assertThat(project.getInt(Metric.PUBLIC_API)).isEqualTo(3257);
+    assertThat(project.getInt(Metric.PUBLIC_DOC_API)).isEqualTo(2008);
+    assertThat(project.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY)).isEqualTo(0.62, Delta.delta(0.01));
   }
 
   @Test

@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.JavaAstCheck;
+import org.sonar.java.ast.visitors.PublicApiVisitor;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceMethod;
 import org.sonar.squid.measures.Metric;
@@ -40,14 +41,7 @@ public class UndocumentedApiCheck extends JavaAstCheck {
 
   @Override
   public void init() {
-    subscribeTo(
-        getContext().getGrammar().classDeclaration,
-        getContext().getGrammar().enumDeclaration,
-        getContext().getGrammar().interfaceDeclaration,
-        getContext().getGrammar().annotationTypeDeclaration,
-        getContext().getGrammar().classBodyDeclaration,
-        getContext().getGrammar().interfaceBodyDeclaration,
-        getContext().getGrammar().annotationTypeElementDeclaration);
+    PublicApiVisitor.subscribe(this);
   }
 
   @Override

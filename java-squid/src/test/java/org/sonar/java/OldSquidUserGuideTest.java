@@ -83,6 +83,7 @@ public class OldSquidUserGuideTest {
     assertThat(project.getDouble(Metric.COMMENT_LINES_DENSITY)).isEqualTo(0.4, Delta.delta(0.01));
     assertThat(project.getInt(Metric.PUBLIC_API)).isEqualTo(3257);
     assertThat(project.getInt(Metric.PUBLIC_DOC_API)).isEqualTo(2008);
+    assertThat(project.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY)).isEqualTo(0.62, Delta.delta(0.01));
   }
 
 }
