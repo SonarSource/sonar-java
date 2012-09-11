@@ -223,13 +223,14 @@ public class JavaGrammarImpl extends JavaGrammar {
     memberDecl.is(or(
         and(typeParameters, genericMethodOrConstructorRest),
         and(type, IDENTIFIER, methodDeclaratorRest),
-        and(type, variableDeclarators, SEMI),
+        fieldDeclaration,
         and(VOID, IDENTIFIER, voidMethodDeclaratorRest),
         and(IDENTIFIER, constructorDeclaratorRest),
         interfaceDeclaration,
         classDeclaration,
         enumDeclaration,
         annotationTypeDeclaration));
+    fieldDeclaration.is(type, variableDeclarators, SEMI);
     genericMethodOrConstructorRest.is(or(
         and(or(type, VOID), IDENTIFIER, methodDeclaratorRest),
         and(IDENTIFIER, constructorDeclaratorRest)));
@@ -436,7 +437,8 @@ public class JavaGrammarImpl extends JavaGrammar {
   private void expressions() {
     statementExpression.is(expression);
     constantExpression.is(expression);
-    expression.is(conditionalExpression, o2n(assignmentOperator, conditionalExpression));
+    expression.is(assignmentExpression);
+    assignmentExpression.is(conditionalExpression, o2n(assignmentOperator, conditionalExpression)).skipIfOneChild();
     assignmentOperator.is(or(
         EQU,
         PLUSEQU,
@@ -450,23 +452,23 @@ public class JavaGrammarImpl extends JavaGrammar {
         SLEQU,
         srequ,
         bsrequ));
-    conditionalExpression.is(conditionalOrExpression, o2n(QUERY, expression, COLON, conditionalOrExpression));
-    conditionalOrExpression.is(conditionalAndExpression, o2n(OROR, conditionalAndExpression));
-    conditionalAndExpression.is(inclusiveOrExpression, o2n(ANDAND, inclusiveOrExpression));
-    inclusiveOrExpression.is(exclusiveOrExpression, o2n(OR, exclusiveOrExpression));
-    exclusiveOrExpression.is(andExpression, o2n(HAT, andExpression));
-    andExpression.is(equalityExpression, o2n(AND, equalityExpression));
-    equalityExpression.is(relationalExpression, o2n(or(EQUAL, NOTEQUAL), relationalExpression));
+    conditionalExpression.is(conditionalOrExpression, o2n(QUERY, expression, COLON, conditionalOrExpression)).skipIfOneChild();
+    conditionalOrExpression.is(conditionalAndExpression, o2n(OROR, conditionalAndExpression)).skipIfOneChild();
+    conditionalAndExpression.is(inclusiveOrExpression, o2n(ANDAND, inclusiveOrExpression)).skipIfOneChild();
+    inclusiveOrExpression.is(exclusiveOrExpression, o2n(OR, exclusiveOrExpression)).skipIfOneChild();
+    exclusiveOrExpression.is(andExpression, o2n(HAT, andExpression)).skipIfOneChild();
+    andExpression.is(equalityExpression, o2n(AND, equalityExpression)).skipIfOneChild();
+    equalityExpression.is(relationalExpression, o2n(or(EQUAL, NOTEQUAL), relationalExpression)).skipIfOneChild();
     relationalExpression.is(shiftExpression, o2n(or(
         and(or(ge, GT, LE, LT), shiftExpression),
-        and(INSTANCEOF, referenceType))));
-    shiftExpression.is(additiveExpression, o2n(or(SL, bsr, sr), additiveExpression));
-    additiveExpression.is(multiplicativeExpression, o2n(or(PLUS, MINUS), multiplicativeExpression));
-    multiplicativeExpression.is(unaryExpression, o2n(or(STAR, DIV, MOD), unaryExpression));
+        and(INSTANCEOF, referenceType)))).skipIfOneChild();
+    shiftExpression.is(additiveExpression, o2n(or(SL, bsr, sr), additiveExpression)).skipIfOneChild();
+    additiveExpression.is(multiplicativeExpression, o2n(or(PLUS, MINUS), multiplicativeExpression)).skipIfOneChild();
+    multiplicativeExpression.is(unaryExpression, o2n(or(STAR, DIV, MOD), unaryExpression)).skipIfOneChild();
     unaryExpression.is(or(
         and(prefixOp, unaryExpression),
         and(LPAR, type, RPAR, unaryExpression),
-        and(primary, o2n(selector), o2n(postFixOp))));
+        and(primary, o2n(selector), o2n(postFixOp)))).skipIfOneChild();
     primary.is(or(
         parExpression,
         and(nonWildcardTypeArguments, or(explicitGenericInvocationSuffix, and(THIS, arguments))),

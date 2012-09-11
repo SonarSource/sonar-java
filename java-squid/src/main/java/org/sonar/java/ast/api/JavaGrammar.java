@@ -74,6 +74,8 @@ public abstract class JavaGrammar extends Grammar {
   public Rule block;
   public Rule memberDecl;
 
+  public Rule fieldDeclaration;
+
   public Rule genericMethodOrConstructorRest;
   public Rule type;
   public Rule methodDeclaratorRest;
@@ -193,6 +195,7 @@ public abstract class JavaGrammar extends Grammar {
   public Rule elementValues;
   public Rule singleElementAnnotationRest;
 
+  public Rule assignmentExpression;
   public Rule assignmentOperator;
   public Rule conditionalOrExpression;
   public Rule conditionalAndExpression;
