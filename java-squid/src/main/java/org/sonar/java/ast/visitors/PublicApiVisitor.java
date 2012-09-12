@@ -181,10 +181,14 @@ public class PublicApiVisitor extends JavaAstVisitor {
       Preconditions.checkState(declaration.is(grammar.annotationTypeElementDeclaration));
     } else if (astNode.getParent().is(grammar.typeDeclaration)) {
       declaration = astNode.getParent();
+    } else if (astNode.getParent().is(grammar.blockStatement)) {
+      declaration = astNode.getParent();
+    } else if (astNode.getParent().is(grammar.annotationTypeElementRest)) {
+      declaration = astNode.getParent().getParent();
+      Preconditions.checkState(declaration.is(grammar.annotationTypeElementDeclaration));
     } else {
       throw new IllegalStateException(astNode.getParent().getType().toString());
     }
     return declaration;
   }
-
 }
