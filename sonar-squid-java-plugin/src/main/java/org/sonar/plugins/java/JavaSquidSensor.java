@@ -66,10 +66,15 @@ public class JavaSquidSensor implements Sensor {
   }
 
   public void analyse(Project project, SensorContext context) {
+    List<InputFile> sourceFiles = getSourceFiles(project);
+    if (sourceFiles.isEmpty()) {
+      return;
+    }
+
     Collection<CodeVisitor> checks = annotationCheckFactory.getChecks();
 
     JavaSquid squid = new JavaSquid(createConfiguration(project), fileLinesContextFactory, checks.toArray(new CodeVisitor[checks.size()]));
-    squid.scan(getSourceFiles(project), getBytecodeFiles(project));
+    squid.scan(sourceFiles, getBytecodeFiles(project));
 
     new Bridges(squid).save(context, project, annotationCheckFactory);
 
