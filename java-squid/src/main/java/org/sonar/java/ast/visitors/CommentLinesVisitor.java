@@ -25,6 +25,8 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.squid.api.SourceCode;
 
 import java.util.Set;
 
@@ -32,6 +34,11 @@ public class CommentLinesVisitor extends JavaAstVisitor implements AstAndTokenVi
 
   private Set<Integer> comments = Sets.newHashSet();
   private boolean seenFirstToken;
+
+  @Override
+  public void init() {
+    subscribeTo(JavaPunctuator.RWING);
+  }
 
   @Override
   public void visitFile(AstNode astNode) {
@@ -58,6 +65,18 @@ public class CommentLinesVisitor extends JavaAstVisitor implements AstAndTokenVi
       }
     }
     seenFirstToken = true;
+  }
+
+  @Override
+  public void leaveNode(AstNode astNode) {
+    SourceCode sourceCode = getContext().peekSourceCode();
+    int commentlines = 0;
+    for (int line = sourceCode.getStartAtLine(); line <= sourceCode.getEndAtLine(); line++) {
+      if (comments.contains(line)) {
+        commentlines++;
+      }
+    }
+    sourceCode.setMeasure(JavaMetric.COMMENT_LINES_WITHOUT_HEADER, commentlines);
   }
 
   public void leaveFile(AstNode ast) {
