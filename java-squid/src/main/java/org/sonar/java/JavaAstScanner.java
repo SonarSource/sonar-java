@@ -117,10 +117,11 @@ public final class JavaAstScanner {
     builder.withSquidAstVisitor(new LinesVisitor(conf.getCharset()));
 
     builder.withSquidAstVisitor(new LinesOfCodeVisitor());
-    builder.withSquidAstVisitor(CommentsVisitor.<JavaGrammar> builder().withCommentMetric(JavaMetric.COMMENT_LINES)
+    builder.withSquidAstVisitor(new CommentLinesVisitor());
+    builder.withSquidAstVisitor(CommentsVisitor.<JavaGrammar> builder()
         .withBlankCommentMetric(JavaMetric.COMMENT_BLANK_LINES)
         .withNoSonar(true)
-        .withIgnoreHeaderComment(conf.getIgnoreHeaderComments())
+        .withIgnoreHeaderComment(true)
         .build());
     builder.withSquidAstVisitor(CounterVisitor.<JavaGrammar> builder()
         .setMetricDef(JavaMetric.STATEMENTS)

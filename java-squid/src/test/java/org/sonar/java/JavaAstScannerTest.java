@@ -63,8 +63,7 @@ public class JavaAstScannerTest {
   @Test
   public void comments() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Comments.java"));
-    assertThat(file.getInt(JavaMetric.COMMENT_LINES)).isEqualTo(4);
-    assertThat(file.getInt(JavaMetric.COMMENT_BLANK_LINES)).isEqualTo(6);
+    assertThat(file.getInt(JavaMetric.COMMENT_LINES_WITHOUT_HEADER)).isEqualTo(3);
     assertThat(file.getNoSonarTagLines()).contains(15).hasSize(1);
   }
 

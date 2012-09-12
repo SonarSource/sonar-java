@@ -58,8 +58,7 @@ public final class CopyBasicMeasuresBridge extends Bridge {
   private void copyStandard(SourceCode squidCode, Resource sonarResource) {
     copy(squidCode, sonarResource, JavaMetric.LINES_OF_CODE, CoreMetrics.NCLOC);
     copy(squidCode, sonarResource, JavaMetric.LINES, CoreMetrics.LINES);
-    // TODO was COMMENT_LINES_WITHOUT_HEADER
-    copy(squidCode, sonarResource, JavaMetric.COMMENT_LINES, CoreMetrics.COMMENT_LINES);
+    copy(squidCode, sonarResource, JavaMetric.COMMENT_LINES_WITHOUT_HEADER, CoreMetrics.COMMENT_LINES);
     copy(squidCode, sonarResource, Metric.PUBLIC_API, CoreMetrics.PUBLIC_API);
     copy(squidCode, sonarResource, JavaMetric.COMPLEXITY, CoreMetrics.COMPLEXITY);
     copy(squidCode, sonarResource, JavaMetric.STATEMENTS, CoreMetrics.STATEMENTS);

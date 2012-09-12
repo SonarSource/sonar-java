@@ -38,11 +38,6 @@ public class JavaConfiguration {
     return charset;
   }
 
-  public boolean getIgnoreHeaderComments() {
-    // TODO should be configurable
-    return false;
-  }
-
   public Set<String> getFieldsToExcludeFromLcom4Calculation() {
     return fieldsToExcludeFromLcom4Calculation;
   }
