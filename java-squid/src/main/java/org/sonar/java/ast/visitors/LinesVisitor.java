@@ -55,6 +55,10 @@ public class LinesVisitor extends JavaAstVisitor {
    */
   @Override
   public void leaveFile(AstNode astNode) {
+    if (astNode == null) {
+      // TODO do not compute number of lines, when not able to parse
+      return;
+    }
     try {
       List<String> lines = Files.readLines(getContext().getFile(), charset);
       getContext().peekSourceCode().setMeasure(JavaMetric.LINES, lines.size());
