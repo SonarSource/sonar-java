@@ -20,15 +20,17 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 import com.sonar.sslr.api.*;
 import org.sonar.api.batch.SquidUtils;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.resources.JavaFile;
-import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squid.api.SourceFile;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
 
@@ -38,11 +40,13 @@ import java.util.Set;
 public class FileLinesVisitor extends JavaAstVisitor implements AstAndTokenVisitor {
 
   private final FileLinesContextFactory fileLinesContextFactory;
+  private final Charset charset;
   private final Set<Integer> linesOfCode = Sets.newHashSet();
   private final Set<Integer> linesOfComments = Sets.newHashSet();
 
-  public FileLinesVisitor(FileLinesContextFactory fileLinesContextFactory) {
+  public FileLinesVisitor(FileLinesContextFactory fileLinesContextFactory, Charset charset) {
     this.fileLinesContextFactory = fileLinesContextFactory;
+    this.charset = charset;
   }
 
   @Override
@@ -51,7 +55,13 @@ public class FileLinesVisitor extends JavaAstVisitor implements AstAndTokenVisit
     JavaFile javaFile = SquidUtils.convertJavaFileKeyFromSquidFormat(file.getKey());
     FileLinesContext fileLinesContext = fileLinesContextFactory.createFor(javaFile);
 
-    int fileLength = file.getInt(JavaMetric.LINES);
+    // TODO minimize access to files, another one in LinesVisitor
+    int fileLength;
+    try {
+      fileLength = Files.readLines(getContext().getFile(), charset).size();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     for (int line = 1; line <= fileLength; line++) {
       fileLinesContext.setIntValue(CoreMetrics.NCLOC_DATA_KEY, line, linesOfCode.contains(line) ? 1 : 0);
       fileLinesContext.setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, line, linesOfComments.contains(line) ? 1 : 0);

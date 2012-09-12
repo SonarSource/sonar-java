@@ -60,7 +60,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
   public JavaSquid(JavaConfiguration conf, @Nullable FileLinesContextFactory fileLinesContextFactory, CodeVisitor... visitors) {
     astScanner = JavaAstScanner.create(conf);
     if (fileLinesContextFactory != null) {
-      astScanner.accept(new FileLinesVisitor(fileLinesContextFactory));
+      astScanner.accept(new FileLinesVisitor(fileLinesContextFactory, conf.getCharset()));
     }
 
     squidIndex = (SquidIndex) astScanner.getIndex(); // TODO unchecked cast
