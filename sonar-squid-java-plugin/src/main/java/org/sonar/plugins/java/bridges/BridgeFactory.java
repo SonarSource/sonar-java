@@ -39,7 +39,7 @@ public final class BridgeFactory {
         new CopyBasicMeasuresBridge(),
         new PackagesBridge(),
         new PublicUndocumentedApiBridge(),
-        // new NoSonarFilterLoader(noSonarFilter),
+        new NoSonarFilterLoader(noSonarFilter),
         new ChidamberKemererBridge(),
         new RobertCMartinBridge(),
         new Lcom4BlocksBridge(),

@@ -84,7 +84,6 @@ public class AccessorVisitor extends JavaAstVisitor {
         AstNode blockStatement = statements.get(0);
         Preconditions.checkState(blockStatement.is(getContext().getGrammar().blockStatement));
         return inspectSetterMethodBody(blockStatement.getFirstChild().getFirstChild());
-        // return false;
       }
     }
     return false;
@@ -125,10 +124,8 @@ public class AccessorVisitor extends JavaAstVisitor {
           AstNode qualifiedIdentifier = primary.getFirstChild();
           if (qualifiedIdentifier.getNumberOfChildren() == 1) {
             AstNode varReturned = qualifiedIdentifier.getFirstChild();
-            if (varReturned != null) {
-              if (findPrivateClassVariable(varReturned)) {
-                return true;
-              }
+            if (findPrivateClassVariable(varReturned)) {
+              return true;
             }
           }
         }

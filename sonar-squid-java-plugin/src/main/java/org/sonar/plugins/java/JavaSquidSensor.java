@@ -24,22 +24,17 @@ import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.SquidUtils;
 import org.sonar.api.checks.AnnotationCheckFactory;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Java;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.checks.CheckList;
 import org.sonar.squid.api.CodeVisitor;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.indexer.QueryByType;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -76,9 +71,7 @@ public class JavaSquidSensor implements Sensor {
     JavaSquid squid = new JavaSquid(createConfiguration(project), fileLinesContextFactory, checks.toArray(new CodeVisitor[checks.size()]));
     squid.scan(sourceFiles, getBytecodeFiles(project));
 
-    new Bridges(squid).save(context, project, annotationCheckFactory);
-
-    save(squid.getIndex().search(new QueryByType(SourceFile.class)));
+    new Bridges(squid).save(context, project, annotationCheckFactory, noSonarFilter);
   }
 
   private List<InputFile> getSourceFiles(Project project) {
@@ -110,15 +103,6 @@ public class JavaSquidSensor implements Sensor {
     }
 
     return conf;
-  }
-
-  // TODO replace by NoSonarBridge
-  private void save(Collection<SourceCode> squidSourceFiles) {
-    for (SourceCode squidSourceFile : squidSourceFiles) {
-      SourceFile squidFile = (SourceFile) squidSourceFile;
-      JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(squidFile.getKey());
-      noSonarFilter.addResource(sonarFile, squidFile.getNoSonarTagLines());
-    }
   }
 
   @Override
