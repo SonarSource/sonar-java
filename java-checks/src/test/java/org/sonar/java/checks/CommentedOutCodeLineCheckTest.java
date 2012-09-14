@@ -19,14 +19,28 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Ignore;
+import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
+import org.sonar.java.JavaAstScanner;
+import org.sonar.squid.api.SourceFile;
+
+import java.io.File;
 
 public class CommentedOutCodeLineCheckTest {
 
-  @Ignore("Not yet implemented")
+  private CommentedOutCodeLineCheck check = new CommentedOutCodeLineCheck();
+
   @Test
   public void test() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CommentedCode.java"), check);
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(32).withMessage("This block of commented-out lines of code should be removed.")
+        .next().atLine(38)
+        .next().atLine(44)
+        // TODO .next().atLine(50)
+        // TODO .next().atLine(66)
+        .next().atLine(75)
+        .noMore();
   }
 
 }

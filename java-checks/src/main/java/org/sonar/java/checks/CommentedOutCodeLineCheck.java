@@ -19,15 +19,118 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.Lists;
+import com.sonar.sslr.api.AstAndTokenVisitor;
+import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.Token;
+import com.sonar.sslr.api.Trivia;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.JavaAstCheck;
+import org.sonar.squid.recognizer.CodeRecognizer;
+
+import java.util.Collections;
+import java.util.List;
 
 @Rule(key = "CommentedOutCodeLine", priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class CommentedOutCodeLineCheck extends JavaAstCheck {
+public class CommentedOutCodeLineCheck extends JavaAstCheck implements AstAndTokenVisitor {
 
-  // FIXME
+  private static final double THRESHOLD = 0.9;
+
+  private final CodeRecognizer codeRecognizer;
+
+  private List<Token> comments;
+
+  public CommentedOutCodeLineCheck() {
+    codeRecognizer = new CodeRecognizer(THRESHOLD, new JavaFootprint());
+  }
+
+  @Override
+  public void visitFile(AstNode astNode) {
+    comments = Lists.newArrayList();
+  }
+
+  /**
+   * Creates candidates for commented-out code - all comment blocks.
+   */
+  public void visitToken(Token token) {
+    for (Trivia trivia : token.getTrivia()) {
+      if (trivia.isComment()) {
+        Token comment = trivia.getToken();
+        if (!isHeader(comment) && !isJavadoc(comment.getOriginalValue()) && !isJSNI(comment.getOriginalValue())) {
+          comments.add(trivia.getToken());
+        }
+      }
+    }
+  }
+
+  /**
+   * We assume that comment on a first line - is a header with license.
+   * However possible to imagine corner case: file may contain commented-out code starting from first line.
+   * But we assume that probability of this is really low.
+   */
+  private static boolean isHeader(Token comment) {
+    return comment.getLine() == 1;
+  }
+
+  /**
+   * Detects commented-out code in remaining candidates.
+   */
+  @Override
+  public void leaveFile(AstNode astNode) {
+    List<Integer> commentedOutCodeLines = Lists.newArrayList();
+    for (Token comment : comments) {
+      String[] lines = getContext().getCommentAnalyser().getContents(comment.getOriginalValue()).split("(\r)?\n|\r", -1);
+      for (int i = 0; i < lines.length; i++) {
+        if (codeRecognizer.isLineOfCode(lines[i])) {
+          // Mark all remaining lines from this comment as a commented out lines of code
+          for (int j = i; j < lines.length; j++) {
+            commentedOutCodeLines.add(comment.getLine() + j);
+          }
+          break;
+        }
+      }
+    }
+
+    // Greedy algorithm to split lines on blocks and to report only one violation per block
+    Collections.sort(commentedOutCodeLines);
+    int prev = Integer.MIN_VALUE;
+    for (int i = 0; i < commentedOutCodeLines.size(); i++) {
+      int current = commentedOutCodeLines.get(i);
+      if (prev + 1 < current) {
+        getContext().createLineViolation(this, "This block of commented-out lines of code should be removed.", current);
+      }
+      prev = current;
+    }
+
+    comments = null;
+  }
+
+  /**
+   * TODO more precise
+   * From documentation for Javadoc-tool:
+   * Documentation comments should be recognized only when placed
+   * immediately before class, interface, constructor, method, or field declarations.
+   */
+  private boolean isJavadoc(String comment) {
+    return StringUtils.startsWith(comment, "/**");
+  }
+
+  /**
+   * TODO more precise
+   * From GWT documentation:
+   * JSNI methods are declared native and contain JavaScript code in a specially formatted comment block
+   * between the end of the parameter list and the trailing semicolon.
+   * A JSNI comment block begins with the exact token {@link #START_JSNI} and ends with the exact token {@link #END_JSNI}.
+   */
+  private boolean isJSNI(String comment) {
+    return StringUtils.startsWith(comment, START_JSNI) && StringUtils.endsWith(comment, END_JSNI);
+  }
+
+  private static final String START_JSNI = "/*-{";
+  private static final String END_JSNI = "}-*/";
 
 }
