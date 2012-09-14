@@ -135,7 +135,7 @@ public class AccessorVisitor extends JavaAstVisitor {
   }
 
   private boolean findPrivateClassVariable(AstNode varReturned) {
-    AstNode classBody = varReturned.findFirstParent(getContext().getGrammar().classBody);
+    AstNode classBody = varReturned.findFirstParent(getContext().getGrammar().classBodyDeclaration).getParent();
     for (AstNode classBodyDeclaration : classBody.findDirectChildren(getContext().getGrammar().classBodyDeclaration)) {
       if (!hasPrivateModifier(classBodyDeclaration)) {
         continue;
