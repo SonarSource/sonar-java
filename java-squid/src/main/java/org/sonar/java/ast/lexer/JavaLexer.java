@@ -23,6 +23,7 @@ import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.impl.Lexer;
 import com.sonar.sslr.impl.channel.PunctuatorChannel;
 import com.sonar.sslr.impl.channel.RegexpChannel;
+import com.sonar.sslr.impl.channel.UnknownCharacterChannel;
 import org.sonar.channel.Channel;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
@@ -42,8 +43,6 @@ public final class JavaLexer {
   private static final String INT_SUFFIX = "[lL]";
 
   public static Lexer create(Charset charset) {
-    // FIXME BOM
-
     Lexer.Builder builder = Lexer.builder()
         .withCharset(charset)
         .withFailIfNoChannelToConsumeOneCharacter(true)
@@ -85,7 +84,9 @@ public final class JavaLexer {
 
         .withChannel(new JavaIdentifierAndKeywordChannel(JavaKeyword.values()))
 
-        .withChannel(new PunctuatorChannel(JavaPunctuator.values()));
+        .withChannel(new PunctuatorChannel(JavaPunctuator.values()))
+
+        .withChannel(new UnknownCharacterChannel(true));
 
     return builder.build();
   }
