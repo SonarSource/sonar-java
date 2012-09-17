@@ -21,9 +21,7 @@ package org.sonar.plugins.java;
 
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.CoreProperties;
-import org.sonar.api.batch.ProjectClasspath;
-import org.sonar.api.batch.Sensor;
-import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.*;
 import org.sonar.api.checks.AnnotationCheckFactory;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -33,6 +31,7 @@ import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
+import org.sonar.java.api.JavaUtils;
 import org.sonar.java.checks.CheckList;
 import org.sonar.squid.api.CodeVisitor;
 
@@ -42,6 +41,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+@Phase(name = Phase.Name.PRE)
+@DependsUpon(JavaUtils.BARRIER_BEFORE_SQUID)
+@DependedUpon(value = JavaUtils.BARRIER_AFTER_SQUID)
 public class JavaSquidSensor implements Sensor {
 
   private final AnnotationCheckFactory annotationCheckFactory;
