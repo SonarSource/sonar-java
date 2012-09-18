@@ -19,7 +19,7 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.sonar.sslr</groupId>
-      <artifactId>sslr-devkit</artifactId>
+      <artifactId>sslr-toolkit</artifactId>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -55,7 +55,9 @@
               <includes>
                 <include>${project.groupId}:java-squid</include>
                 <include>org.codehaus.sonar.sslr:sslr-core</include>
-                <include>org.codehaus.sonar.sslr:sslr-devkit</include>
+                <include>org.codehaus.sonar.sslr:sslr-xpath</include>
+                <include>jaxen:jaxen</include>
+                <include>org.codehaus.sonar.sslr:sslr-toolkit</include>
                 <include>org.codehaus.sonar:sonar-colorizer</include>
                 <include>org.codehaus.sonar:sonar-squid</include>
                 <include>org.codehaus.sonar:sonar-channel</include>
@@ -89,8 +91,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>2000000</maxsize>
-                  <minsize>1500000</minsize>
+                  <maxsize>2200000</maxsize>
+                  <minsize>2100000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>

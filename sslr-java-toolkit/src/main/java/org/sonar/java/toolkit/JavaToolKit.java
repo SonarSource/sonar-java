@@ -20,13 +20,11 @@
 package org.sonar.java.toolkit;
 
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.devkit.SsdkGui;
-import com.sonar.sslr.impl.Parser;
 import org.sonar.colorizer.KeywordsTokenizer;
 import org.sonar.colorizer.Tokenizer;
-import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.sslr.toolkit.Toolkit;
 
 import java.util.List;
 
@@ -37,11 +35,7 @@ public final class JavaToolKit {
 
   public static void main(String[] args) {
     System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SSDK");
-    Parser<JavaGrammar> parser = JavaParser.create();
-    SsdkGui cppSsdkGui = new SsdkGui(parser, getJavaTokenizers());
-    cppSsdkGui.setVisible(true);
-    cppSsdkGui.setSize(1000, 800);
-    cppSsdkGui.setTitle("SSLR Java Toolkit");
+    new Toolkit(JavaParser.create(), getJavaTokenizers(), "SSLR Java Toolkit").run();
   }
 
   public static List<Tokenizer> getJavaTokenizers() {
