@@ -57,16 +57,8 @@ public class Lcom4BlocksBridge extends Bridge {
     }
   }
 
-  protected void sortBlocks(List<Set<AsmResource>> blocks) {
-    Collections.sort(blocks, new Comparator<Set>() {
-      public int compare(Set set1, Set set2) {
-        return set1.size() - set2.size();
-      }
-    });
-  }
-
   protected String serialize(List<Set<AsmResource>> blocks) {
-    sortBlocks(blocks);
+    Collections.sort(blocks, new SetsComparator());
 
     StringBuilder sb = new StringBuilder();
     sb.append('[');
@@ -109,25 +101,31 @@ public class Lcom4BlocksBridge extends Bridge {
   protected List<AsmResource> sortResourcesInBlock(Set<AsmResource> block) {
     List<AsmResource> result = Lists.newArrayList();
     result.addAll(block);
-
-    Collections.sort(result, new Comparator<AsmResource>() {
-      public int compare(AsmResource asmResource1, AsmResource asmResource2) {
-        int result = compareType(asmResource1, asmResource2);
-        if (result == 0) {
-          result = asmResource1.toString().compareTo(asmResource2.toString());
-        }
-        return result;
-      }
-
-      private int compareType(AsmResource asmResource1, AsmResource asmResource2) {
-        if (asmResource1 instanceof AsmField) {
-          return (asmResource2 instanceof AsmField) ? 0 : -1;
-        }
-        return (asmResource2 instanceof AsmMethod) ? 0 : 1;
-      }
-    });
-
+    Collections.sort(result, new ResourcesComparator());
     return result;
+  }
+
+  private static class SetsComparator implements Comparator<Set> {
+    public int compare(Set set1, Set set2) {
+      return set1.size() - set2.size();
+    }
+  }
+
+  private static class ResourcesComparator implements Comparator<AsmResource> {
+    public int compare(AsmResource asmResource1, AsmResource asmResource2) {
+      int result = compareType(asmResource1, asmResource2);
+      if (result == 0) {
+        result = asmResource1.toString().compareTo(asmResource2.toString());
+      }
+      return result;
+    }
+
+    private int compareType(AsmResource asmResource1, AsmResource asmResource2) {
+      if (asmResource1 instanceof AsmField) {
+        return (asmResource2 instanceof AsmField) ? 0 : -1;
+      }
+      return (asmResource2 instanceof AsmMethod) ? 0 : 1;
+    }
   }
 
   private static String toQualifier(AsmResource asmResource) {
