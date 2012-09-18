@@ -55,23 +55,15 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
 
   @Override
   protected Class<?> findClass(String name) throws ClassNotFoundException {
-    byte[] classBytes = loadClassBytes(name);
-    if (classBytes == null) {
-      throw new ClassNotFoundException(name);
-    }
-    // TODO Godin: definePackage ?
-    return defineClass(name, classBytes, 0, classBytes.length);
-  }
-
-  private byte[] loadClassBytes(String name) {
     String resourceName = name.replace('.', '/') + ".class";
     for (Loader loader : loaders) {
       byte[] classBytes = loader.loadBytes(resourceName);
       if (classBytes != null) {
-        return classBytes;
+        // TODO Godin: definePackage ?
+        return defineClass(name, classBytes, 0, classBytes.length);
       }
     }
-    return null;
+    throw new ClassNotFoundException(name);
   }
 
   @Override
