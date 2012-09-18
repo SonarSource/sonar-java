@@ -43,7 +43,7 @@ public class CycleBetweenPackagesCheck extends BytecodeVisitor {
   @CheckForNull
   public static ActiveRule getActiveRule(CheckFactory checkFactory) {
     for (Object check : checkFactory.getChecks()) {
-      if (check.getClass().getName() == CycleBetweenPackagesCheck.class.getName()) {
+      if (CycleBetweenPackagesCheck.class.equals(check.getClass())) {
         return checkFactory.getActiveRule(check);
       }
     }
