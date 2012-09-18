@@ -65,7 +65,7 @@ public class CheckListTest {
           .isNotNull();
     }
 
-    ResourceBundle resourceBundle = ResourceBundle.getBundle("org.sonar.l10n.java", Locale.ENGLISH);
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("org.sonar.l10n.squidjava", Locale.ENGLISH);
 
     Set<String> keys = Sets.newHashSet();
     List<Rule> rules = new AnnotationRuleParser().parse("repositoryKey", checks);
@@ -74,7 +74,7 @@ public class CheckListTest {
       keys.add(rule.getKey());
 
       resourceBundle.getString("rule." + CheckList.REPOSITORY_KEY + "." + rule.getKey() + ".name");
-      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + rule.getKey() + ".html"))
+      assertThat(getClass().getResource("/org/sonar/l10n/squidjava/rules/" + CheckList.REPOSITORY_KEY + "/" + rule.getKey() + ".html"))
           .overridingErrorMessage("No description for " + rule.getKey())
           .isNotNull();
 
