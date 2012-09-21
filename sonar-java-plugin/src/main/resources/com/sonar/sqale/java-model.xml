@@ -1284,7 +1284,7 @@
       </chc>
       <chc>
         <rule-repo>checkstyle</rule-repo>
-        <rule-key>com.puppycrawl.tools.checkstyle.checks.indentation.TrailingCommentCheck</rule-key>
+        <rule-key>com.puppycrawl.tools.checkstyle.checks.TrailingCommentCheck</rule-key>
         <prop>
           <key>remediationFactor</key>
           <val>10.0</val>
