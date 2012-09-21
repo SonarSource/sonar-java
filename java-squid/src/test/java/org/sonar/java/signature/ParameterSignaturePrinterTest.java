@@ -32,7 +32,7 @@ public class ParameterSignaturePrinterTest {
 
   @Test
   public void testPrintObject() {
-    assertThat(ParameterSignaturePrinter.print(new Parameter(JvmJavaType.L, "String", false))).isEqualTo("LString;");
+    assertThat(ParameterSignaturePrinter.print(new Parameter("String", false))).isEqualTo("LString;");
   }
 
   @Test
@@ -42,7 +42,7 @@ public class ParameterSignaturePrinterTest {
 
   @Test
   public void testPrintArrayOfObject() {
-    assertThat(ParameterSignaturePrinter.print(new Parameter(JvmJavaType.L, "String", true))).isEqualTo("[LString;");
+    assertThat(ParameterSignaturePrinter.print(new Parameter("String", true))).isEqualTo("[LString;");
   }
 
 }

@@ -34,7 +34,7 @@ public class MethodSignaturePrinterTest {
     MethodSignature method = new MethodSignature("read", new Parameter(JvmJavaType.V, false), argumentTypes);
     assertThat(MethodSignaturePrinter.print(method)).isEqualTo("read()V");
 
-    argumentTypes.add(new Parameter(JvmJavaType.L, "java/lang/String", true));
+    argumentTypes.add(new Parameter("java/lang/String", true));
     method = new MethodSignature("read", new Parameter("org/sonar/squid/Squid", false), argumentTypes);
     assertThat(MethodSignaturePrinter.print(method)).isEqualTo("read([LString;)LSquid;");
 

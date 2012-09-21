@@ -32,7 +32,7 @@ import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourceMethod;
 import org.sonar.squid.indexer.SquidIndex;
 
-public class BytecodeVisitor implements CodeVisitor {
+public abstract class BytecodeVisitor implements CodeVisitor {
 
   SquidIndex index;
 

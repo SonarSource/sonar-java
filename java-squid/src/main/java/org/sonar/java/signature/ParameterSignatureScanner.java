@@ -71,8 +71,6 @@ public final class ParameterSignatureScanner {
 
   private Parameter next() {
     boolean isArray = false;
-    String classCanonicalName = null;
-
     while (signature.charAt(index) == ARRAY) {
       isArray = true;
       index++;
@@ -82,6 +80,7 @@ public final class ParameterSignatureScanner {
     index = index + 1;
 
     if (jvmJavaType == JvmJavaType.L || jvmJavaType == JvmJavaType.T) {
+      String classCanonicalName;
       int semicolonIndex = searchEndOfParameterSignature(signature, index);
       int inferiorCharIndex = signature.indexOf('<', index);
       if (inferiorCharIndex != -1 && inferiorCharIndex < semicolonIndex) {
@@ -91,8 +90,9 @@ public final class ParameterSignatureScanner {
       }
       index = semicolonIndex + 1;
       jvmJavaType = JvmJavaType.L;
+      return new Parameter(classCanonicalName, isArray);
     }
-    return new Parameter(jvmJavaType, classCanonicalName, isArray);
+    return new Parameter(jvmJavaType, isArray);
   }
 
   private int searchEndOfParameterSignature(String signature, int index) {

@@ -32,9 +32,14 @@ public class ParameterTest {
 
   @Test
   public void testArgumentAndReturnTypeJavaTypeBoolean() {
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("With an Object JavaType, this is mandatory to specify the canonical name of the class.");
+    thrown.expect(IllegalArgumentException.class);
     new Parameter(JvmJavaType.L, false);
+  }
+
+  @Test
+  public void test() {
+    thrown.expect(IllegalArgumentException.class);
+    new Parameter("", false);
   }
 
   @Test

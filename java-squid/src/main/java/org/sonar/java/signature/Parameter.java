@@ -26,25 +26,27 @@ public class Parameter {
   private final boolean isArray;
 
   public Parameter(JvmJavaType jvmJavaType, boolean isArray) {
-    this(jvmJavaType, null, isArray);
+    if (jvmJavaType == JvmJavaType.L) {
+      throw new IllegalArgumentException();
+    }
+    this.jvmJavaType = jvmJavaType;
+    this.className = null;
+    this.isArray = isArray;
   }
 
   public Parameter(String classCanonicalName, boolean isArray) {
-    this(JvmJavaType.L, classCanonicalName, isArray);
-  }
-
-  Parameter(JvmJavaType jvmJavaType, String classCanonicalName, boolean isArray) {
-    if (jvmJavaType == JvmJavaType.L && (classCanonicalName == null || "".equals(classCanonicalName))) {
-      // TODO Godin: I believe that we should throw IllegalArgumentException instead
-      throw new IllegalStateException("With an Object JavaType, this is mandatory to specify the canonical name of the class.");
+    if (classCanonicalName == null || "".equals(classCanonicalName)) {
+      throw new IllegalArgumentException("With an Object JavaType, this is mandatory to specify the canonical name of the class.");
     }
-    this.jvmJavaType = jvmJavaType;
+    this.jvmJavaType = JvmJavaType.L;
     this.className = extractClassName(classCanonicalName);
     this.isArray = isArray;
   }
 
-  public Parameter(Parameter parameter) {
-    this(parameter.jvmJavaType, parameter.className, parameter.isArray);
+  public Parameter(Parameter other) {
+    this.jvmJavaType = other.jvmJavaType;
+    this.className = other.className;
+    this.isArray = other.isArray;
   }
 
   public boolean isVoid() {
@@ -68,9 +70,6 @@ public class Parameter {
   }
 
   private String extractClassName(String classCanonicalName) {
-    if (classCanonicalName == null) {
-      return null;
-    }
     int slashIndex = classCanonicalName.lastIndexOf('/');
     int dollarIndex = classCanonicalName.lastIndexOf('$');
     if (slashIndex != -1 || dollarIndex != -1) {
