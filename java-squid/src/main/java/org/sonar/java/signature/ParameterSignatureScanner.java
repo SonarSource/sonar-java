@@ -89,9 +89,9 @@ public final class ParameterSignatureScanner {
         classCanonicalName = signature.substring(index, semicolonIndex);
       }
       index = semicolonIndex + 1;
-      jvmJavaType = JvmJavaType.L;
       return new Parameter(classCanonicalName, isArray);
     }
+
     return new Parameter(jvmJavaType, isArray);
   }
 
