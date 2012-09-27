@@ -1,9 +1,9 @@
 public class HelloWorld  {
 
-  { // +1 initialization block
+  { // +0 initialization block
   }
 
-  static { // +1 static initialization block
+  static { // +0 static initialization block
   }
 
   public void sayHello() { // +1 method

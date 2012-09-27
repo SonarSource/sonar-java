@@ -32,7 +32,6 @@ public class ComplexityVisitor extends JavaAstVisitor {
     JavaGrammar grammar = getContext().getGrammar();
     subscribeTo(
         // Entry points
-        grammar.classInitDeclaration,
         grammar.methodBody,
         // Branching nodes
         grammar.ifStatement,
