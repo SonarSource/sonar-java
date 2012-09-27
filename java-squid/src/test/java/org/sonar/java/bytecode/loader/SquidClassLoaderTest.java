@@ -81,6 +81,16 @@ public class SquidClassLoaderTest {
     classLoader.close();
   }
 
+  /**
+   * SONAR-3693
+   */
+  @Test
+  public void not_jar_is_ignored() throws Exception {
+    File jar = new File("src/test/files/bytecode/src/tags/TagName.java");
+    SquidClassLoader classLoader = new SquidClassLoader(Arrays.asList(jar));
+    classLoader.close();
+  }
+
   @Test
   public void createFromDirectory() throws Exception {
     File dir = new File("src/test/files/bytecode/bin/");
