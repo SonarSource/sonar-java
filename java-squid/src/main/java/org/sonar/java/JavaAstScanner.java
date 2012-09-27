@@ -28,7 +28,6 @@ import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.*;
@@ -133,8 +132,7 @@ public final class JavaAstScanner {
             parser.getGrammar().forStatement,
             parser.getGrammar().whileStatement,
             parser.getGrammar().doStatement,
-            // TODO Godin: in my opinion, following node should be included, but it is not counted in previous version
-            // parser.getGrammar().tryStatement,
+            parser.getGrammar().tryStatement,
             parser.getGrammar().switchStatement,
             parser.getGrammar().synchronizedStatement,
             parser.getGrammar().returnStatement,
@@ -142,13 +140,7 @@ public final class JavaAstScanner {
             parser.getGrammar().breakStatement,
             parser.getGrammar().continueStatement,
             parser.getGrammar().expressionStatement,
-            parser.getGrammar().emptyStatement,
-            // TODO Godin: in my opinion, following nodes should not be included, but they are counted in previous version
-            JavaKeyword.ELSE,
-            parser.getGrammar().labeledStatement,
-            parser.getGrammar().switchLabel,
-            parser.getGrammar().catchClause,
-            parser.getGrammar().finally_)
+            parser.getGrammar().emptyStatement)
         .build());
 
     builder.withSquidAstVisitor(new ComplexityVisitor());

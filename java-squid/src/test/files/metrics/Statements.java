@@ -5,42 +5,45 @@ public class HelloWorld {
   }
 
   public void sayHello() {
-    int localVar; // +1
-    localVar = 42; // +1
+    int localVar; // +1 local-variable-declaration-statement
+    localVar = 42; // +1 expression-statement
 
-    assert true : "not true"; // +1
+    assert true : "not true"; // +1 assert-statement
 
-    if (true) { // +1
-    } else { // +1
+    if (true) { // +1 if-statement
+    } else {
     }
 
-    for (int i = 0; i < 10; i++) { // +1
+    for (int i = 0; i < 10; i++) { // +1 for-statement
     }
 
-    label: // +1
-    while (false) { // +1
-      continue; // +1
+    label: // +0
+    while (false) { // +1 while-statement
+      continue; // +1 continue-statement
     }
 
-    do { // +1
+    do { // +1 do-while-statement
     } while (false);
 
-    try {
-      throw new RuntimeException(); // +1
-    } catch (Exception e) { // +1
+    try { // +1 try-statement
+      throw new RuntimeException(); // +1 throw-statement
+    } catch (Exception e) {
+    } finally {
     }
 
-    switch (ch) { // +1
-      case 'a': // +1
-      case 'b': // +1
-      default: // +1
-        break; // +1
+    switch (ch) { // +1 switch-statement
+      case 'a':
+      case 'b':
+      default:
+        break; // +1 break-statement
     }
 
-    synchronized (this) { // +1
+    synchronized (this) { // +1 synchronized-statement
     }
 
-    return; // +1
+    ; // +1 empty-statement
+
+    return; // +1 return-statement
   }
 
 }

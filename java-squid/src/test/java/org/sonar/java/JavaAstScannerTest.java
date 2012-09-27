@@ -70,7 +70,7 @@ public class JavaAstScannerTest {
   @Test
   public void statements() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Statements.java"));
-    assertThat(file.getInt(JavaMetric.STATEMENTS)).isEqualTo(20);
+    assertThat(file.getInt(JavaMetric.STATEMENTS)).isEqualTo(16);
   }
 
   @Test

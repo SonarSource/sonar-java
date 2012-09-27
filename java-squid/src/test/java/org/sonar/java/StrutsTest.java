@@ -68,7 +68,7 @@ public class StrutsTest {
     assertThat(project.getInt(JavaMetric.LINES)).isEqualTo(32744);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(14007);
     // TODO assertEquals(6426, project.getInt(Metric.BLANK_LINES));
-    assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(6895);
+    assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(6403);
     assertThat(project.getInt(JavaMetric.COMPLEXITY)).isEqualTo(3957 - 145 /* SONAR-3793 */- 1 /* SONAR-3794 */);
     // TODO assertEquals(4668, project.getInt(Metric.BRANCHES));
     // assertThat(project.getInt(JavaMetric.COMMENT_LINES)).isEqualTo(9573);
