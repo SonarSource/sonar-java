@@ -31,16 +31,9 @@ public class ComplexityVisitor extends JavaAstVisitor {
   public void init() {
     JavaGrammar grammar = getContext().getGrammar();
     subscribeTo(
-        // FIXME hacks
-        grammar.methodDeclaratorRest,
-        grammar.voidMethodDeclaratorRest,
-        grammar.constructorDeclaratorRest,
-        grammar.interfaceMethodDeclaratorRest,
-        grammar.voidInterfaceMethodDeclaratorsRest,
-        grammar.annotationMethodRest,
         // Entry points
         grammar.classInitDeclaration,
-        // FIXME context.getGrammar().methodBody,
+        grammar.methodBody,
         // Branching nodes
         grammar.ifStatement,
         grammar.forStatement,

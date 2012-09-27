@@ -36,3 +36,15 @@ public class HelloWorld  {
   }
 
 }
+
+interface Interface {
+  void method(); // +0
+}
+
+abstract class AbstractClass {
+  abstract void method(); // +0
+}
+
+@interface Annotation {
+  String value(); // +0
+}
