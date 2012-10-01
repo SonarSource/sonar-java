@@ -48,6 +48,7 @@ public final class CheckList {
         LCOM4Check.class,
         ArchitectureCheck.class,
         CallToDeprecatedMethodCheck.class,
+        CallToFileDeleteOnExitMethodCheck.class,
         UnusedProtectedMethodCheck.class,
         UnusedPrivateMethodCheck.class);
   }
