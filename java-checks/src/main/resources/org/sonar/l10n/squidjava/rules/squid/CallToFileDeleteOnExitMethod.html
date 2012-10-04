@@ -1,6 +1,5 @@
 <p>Usage of method File#deleteOnExit() is not recommended for following reasons:</p>
 <ul>
-  <li>only deletes for normal JVM shutdowns, but not when JVM was killed or crashed</li>
-  <li>only deletes on JVM shutdown - not good for long running server processes</li>
-  <li>consumes memory for each file scheduled for deletion</li>
+  <li>The deletion occurs only in case of normal JVM shutdown but not when the JVM is killed or crashes</li>
+  <li>For each file handler, the memory associated to this handler is released only at the end of the process</li>
 </ul>
