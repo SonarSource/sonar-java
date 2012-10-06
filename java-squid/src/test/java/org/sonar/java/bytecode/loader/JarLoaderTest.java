@@ -20,7 +20,9 @@
 package org.sonar.java.bytecode.loader;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -28,12 +30,16 @@ import java.io.InputStream;
 import java.net.URL;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 public class JarLoaderTest {
 
-  @Test(expected = IllegalArgumentException.class)
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  @Test
   public void shouldThrowIllegalArgumentException() throws Exception {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("file can't be null");
     new JarLoader(null);
   }
 
@@ -58,12 +64,9 @@ public class JarLoaderTest {
 
     loader.close();
 
-    try {
-      loader.findResource("META-INF/MANIFEST.MF");
-      fail();
-    } catch (IllegalStateException e) {
-      // ok
-    }
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("zip file closed");
+    loader.findResource("META-INF/MANIFEST.MF");
   }
 
   @Test
@@ -80,12 +83,9 @@ public class JarLoaderTest {
 
     loader.close();
 
-    try {
-      loader.loadBytes("META-INF/MANIFEST.MF");
-      fail();
-    } catch (IllegalStateException e) {
-      // ok
-    }
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("zip file closed");
+    loader.loadBytes("META-INF/MANIFEST.MF");
   }
 
   @Test
@@ -94,6 +94,14 @@ public class JarLoaderTest {
     JarLoader loader = new JarLoader(jar);
     loader.close();
     loader.close();
+  }
+
+  @Test
+  public void testCorruptedJar() {
+    File jar = new File("src/test/files/bytecode/src/tags/TagName.java");
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("Unable to open " + jar.getAbsolutePath());
+    new JarLoader(jar);
   }
 
 }

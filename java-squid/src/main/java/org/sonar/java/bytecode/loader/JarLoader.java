@@ -37,14 +37,18 @@ class JarLoader implements Loader {
   private final URL jarUrl;
 
   /**
-   * @throws IOException if an I/O error has occurred
+   * @throws IllegalStateException if an I/O error has occurred
    */
-  public JarLoader(File file) throws IOException {
+  public JarLoader(File file) {
     if (file == null) {
       throw new IllegalArgumentException("file can't be null");
     }
-    jarFile = new JarFile(file);
-    jarUrl = new URL("jar", "", -1, file.getAbsolutePath() + "!/");
+    try {
+      jarFile = new JarFile(file);
+      jarUrl = new URL("jar", "", -1, file.getAbsolutePath() + "!/");
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to open " + file.getAbsolutePath(), e);
+    }
   }
 
   public URL findResource(String name) {
@@ -69,6 +73,8 @@ class JarLoader implements Loader {
       is = jarFile.getInputStream(entry);
       return IOUtils.toByteArray(is);
     } catch (IOException e) {
+      // TODO Godin: not sure that we should silently ignore exception here,
+      // e.g. it can be thrown if file corrupted
       return null;
     } finally {
       IOUtils.closeQuietly(is);

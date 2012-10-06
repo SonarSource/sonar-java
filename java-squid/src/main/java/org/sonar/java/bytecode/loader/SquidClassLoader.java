@@ -39,7 +39,7 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
   /**
    * @param files ordered list of files and directories from which to load classes and resources
    */
-  public SquidClassLoader(List<File> files) throws IOException {
+  public SquidClassLoader(List<File> files) {
     super(null);
     loaders = new ArrayList<Loader>();
     for (File file : files) {

@@ -19,18 +19,24 @@
  */
 package org.sonar.java.bytecode.loader;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.File;
 import java.net.URL;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 public class FileSystemLoaderTest {
 
-  @Test(expected = IllegalArgumentException.class)
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  @Test
   public void shouldThrowIllegalArgumentException() throws Exception {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("baseDir can't be null");
     new FileSystemLoader(null);
   }
 
@@ -48,12 +54,9 @@ public class FileSystemLoaderTest {
 
     loader.close();
 
-    try {
-      loader.findResource("tags/TagName.class");
-      fail();
-    } catch (IllegalStateException e) {
-      // ok
-    }
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("Loader closed");
+    loader.findResource("tags/TagName.class");
   }
 
   @Test
@@ -67,12 +70,9 @@ public class FileSystemLoaderTest {
 
     loader.close();
 
-    try {
-      loader.loadBytes("tags/TagName.class");
-      fail();
-    } catch (IllegalStateException e) {
-      // ok
-    }
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("Loader closed");
+    loader.loadBytes("tags/TagName.class");
   }
 
   @Test
