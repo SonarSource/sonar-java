@@ -45,12 +45,14 @@ public final class SnippetCheck extends JavaAstCheck implements AstAndTokenVisit
 
   @RuleProperty(
     key = "dontExample",
-    defaultValue = "" + DEFAULT_DONT_EXAMPLE)
+    defaultValue = "" + DEFAULT_DONT_EXAMPLE,
+    type = "TEXT")
   public String dontExample = DEFAULT_DONT_EXAMPLE;
 
   @RuleProperty(
     key = "doExample",
-    defaultValue = "" + DEFAULT_DO_EXAMPLE)
+    defaultValue = "" + DEFAULT_DO_EXAMPLE,
+    type = "TEXT")
   public String doExample = DEFAULT_DO_EXAMPLE;
 
   private List<Token> tokensToBeMatched;
