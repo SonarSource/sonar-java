@@ -31,10 +31,17 @@ public class EmptyFileCheckTest {
   private EmptyFileCheck check = new EmptyFileCheck();
 
   @Test
-  public void test() {
+  public void test_empty_file() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyFile.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().withMessage("This Java file is empty")
+        .noMore();
+  }
+
+  @Test
+  public void test_non_empty_file() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NonEmptyFile.java"), check);
+    CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
   }
 
