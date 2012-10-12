@@ -21,22 +21,18 @@ package org.sonar.java.ast;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AuditListener;
-import com.sonar.sslr.api.CommentAnalyser;
-import com.sonar.sslr.api.RecognitionException;
+import com.sonar.sslr.api.*;
 import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.ast.AstWalker;
+import com.sonar.sslr.impl.events.ExtendedStackTrace;
 import com.sonar.sslr.squid.SquidAstVisitor;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.InputFile;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.visitors.VisitorContext;
-import org.sonar.squid.api.CodeVisitor;
-import org.sonar.squid.api.SourceCodeSearchEngine;
-import org.sonar.squid.api.SourceCodeTreeDecorator;
-import org.sonar.squid.api.SourceProject;
+import org.sonar.squid.api.*;
 import org.sonar.squid.indexer.SquidIndex;
 
 import java.io.File;
@@ -48,14 +44,22 @@ import java.util.List;
  */
 public class AstScanner {
 
+  private static final Logger LOG = LoggerFactory.getLogger(AstScanner.class);
+
   private final SquidIndex index = new SquidIndex();
   private final List<SquidAstVisitor<JavaGrammar>> visitors = Lists.newArrayList();
   private final List<AuditListener> auditListeners = Lists.newArrayList();
   private final Parser<JavaGrammar> parser;
+  private final Parser<JavaGrammar> parserDebug;
   private CommentAnalyser commentAnalyser;
 
   public AstScanner(Parser<JavaGrammar> parser) {
     this.parser = parser;
+    this.parserDebug = Parser.builder(parser)
+        .setParsingEventListeners()
+        .setExtendedStackTrace(new ExtendedStackTrace())
+        .setRecognictionExceptionListener(this.auditListeners.toArray(new AuditListener[this.auditListeners.size()]))
+        .build();
   }
 
   public void scan(Collection<InputFile> files) {
@@ -82,22 +86,44 @@ public class AstScanner {
         AstNode ast = parser.parse(file);
         astWalker.walkAndVisit(ast);
       } catch (RecognitionException e) {
-        LoggerFactory.getLogger(getClass()).error("Unable to parse source file : " + file.getAbsolutePath());
+        LOG.error("Unable to parse source file : " + file.getAbsolutePath());
 
-        // TODO support extended stack trace
+        try {
+          if (e.isToRetryWithExtendStackTrace()) {
+            try {
+              parserDebug.parse(file);
+            } catch (RecognitionException re) {
+              e = re;
+            } catch (Exception e2) {
+              LOG.error("Unable to get an extended stack trace on file : " + file.getAbsolutePath(), e2);
+            }
 
-        // Process the exception
-        for (SquidAstVisitor<JavaGrammar> visitor : visitors) {
-          visitor.visitFile(null);
+            // Log the recognition exception
+            LOG.error(e.getMessage());
+          } else {
+            LOG.error(e.getMessage(), e);
+          }
+
+          // Process the exception
+          for (SquidAstVisitor<? extends Grammar> visitor : visitors) {
+            visitor.visitFile(null);
+          }
+
+          for (AuditListener auditListener : auditListeners) {
+            auditListener.processRecognitionException(e);
+          }
+
+          for (SquidAstVisitor<? extends Grammar> visitor : Iterables.reverse(visitors)) {
+            visitor.leaveFile(null);
+          }
+
+        } catch (Exception e2) {
+          String errorMessage = "Sonar is unable to analyze file : '" + file.getAbsolutePath() + "'";
+          throw new AnalysisException(errorMessage, e);
         }
-
-        for (AuditListener auditListener : auditListeners) {
-          auditListener.processRecognitionException(e);
-        }
-
-        for (SquidAstVisitor<JavaGrammar> visitor : Iterables.reverse(visitors)) {
-          visitor.leaveFile(null);
-        }
+      } catch (Exception e) {
+        String errorMessage = "Sonar is unable to analyze file : '" + file.getAbsolutePath() + "'";
+        throw new AnalysisException(errorMessage, e);
       }
     }
 

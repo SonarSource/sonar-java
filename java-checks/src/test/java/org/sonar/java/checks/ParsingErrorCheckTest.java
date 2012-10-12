@@ -26,6 +26,8 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
+import static org.hamcrest.Matchers.containsString;
+
 public class ParsingErrorCheckTest {
 
   private ParsingErrorCheck check = new ParsingErrorCheck();
@@ -34,7 +36,7 @@ public class ParsingErrorCheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ParsingError.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1) // TODO .withMessageThat(containsString("IDENTIFIER expected but \"EOF\" [EOF] found"))
+        .next().atLine(1).withMessageThat(containsString("IDENTIFIER expected but \"EOF\" [EOF] found"))
         .noMore();
   }
 
