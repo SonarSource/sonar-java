@@ -20,17 +20,23 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmMethod;
 
-import static org.junit.Assert.assertFalse;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SerializableContractTest {
 
   @Test
   public void testMethodMatch() {
-    AsmMethod getter = new AsmMethod(new AsmClass("/com/sonar/Test"), "getParameter", "()I");
-    assertFalse(SerializableContract.methodMatch(getter));
+    AsmMethod method = mock(AsmMethod.class);
+    when(method.getName()).thenReturn("writeObject", "readObject", "writeReplace", "readResolve", "getParameter");
+    assertThat(SerializableContract.methodMatch(method)).isTrue();
+    assertThat(SerializableContract.methodMatch(method)).isTrue();
+    assertThat(SerializableContract.methodMatch(method)).isTrue();
+    assertThat(SerializableContract.methodMatch(method)).isTrue();
+    assertThat(SerializableContract.methodMatch(method)).isFalse();
   }
 
 }
