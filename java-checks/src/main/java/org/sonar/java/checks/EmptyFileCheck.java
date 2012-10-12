@@ -19,21 +19,35 @@
  */
 package org.sonar.java.checks;
 
+import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.Token;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.JavaAstCheck;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.measures.Metric;
+
+import static com.sonar.sslr.api.GenericTokenType.EOF;
 
 @Rule(key = "EmptyFile", priority = Priority.MAJOR)
-public final class EmptyFileCheck extends JavaAstCheck {
+public final class EmptyFileCheck extends JavaAstCheck implements AstAndTokenVisitor {
+
+  private boolean empty;
+
+  @Override
+  public void visitFile(AstNode astNode) {
+    empty = true;
+  }
+
+  public void visitToken(Token token) {
+    if (token.getType() != EOF) {
+      empty = false;
+    }
+  }
 
   @Override
   public void leaveFile(AstNode astNode) {
-    SourceFile sourceFile = peekSourceFile();
-    int loc = sourceFile.getInt(Metric.LINES_OF_CODE);
-    if (loc == 0) {
+    // Note that we can't use LINES_OF_CODE here, because this measure computed after execution of this visitor
+    if (empty) {
       getContext().createFileViolation(this, "This Java file is empty");
     }
   }
