@@ -67,9 +67,6 @@ public final class JavaAstScanner {
 
     AstScanner builder = new AstScanner(parser);
 
-    /* Metrics */
-    // builder.withMetrics(JavaMetric.values());
-
     /* Packages */
     builder.withSquidAstVisitor(new PackageVisitor());
 

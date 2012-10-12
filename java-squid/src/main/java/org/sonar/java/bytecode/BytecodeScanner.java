@@ -31,10 +31,9 @@ import org.sonar.squid.indexer.QueryByType;
 import org.sonar.squid.indexer.SquidIndex;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
 
@@ -90,13 +89,7 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
 
   @Override
   public Collection<Class<? extends BytecodeVisitor>> getVisitorClasses() {
-    List<Class<? extends BytecodeVisitor>> visitorClasses = new ArrayList<Class<? extends BytecodeVisitor>>();
-    // visitorClasses.add(DITVisitor.class);
-    // visitorClasses.add(RFCVisitor.class);
-    // visitorClasses.add(NOCVisitor.class);
-    // visitorClasses.add(LCOM4Visitor.class);
-    // visitorClasses.add(DependenciesVisitor.class);
-    return visitorClasses;
+    return Collections.emptyList();
   }
 
   @Override

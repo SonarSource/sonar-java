@@ -89,13 +89,8 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
   }
 
   public void scan(Collection<InputFile> sourceFiles, Collection<File> bytecodeFilesOrDirectories) {
-    // TODO
     scanSources(sourceFiles);
     scanBytecode(bytecodeFilesOrDirectories);
-
-    // SourceProject project = (SourceProject) squidIndex.search(new QueryByType(SourceProject.class)).iterator().next();
-    // SourceCodeTreeDecorator decorator = new SourceCodeTreeDecorator(project);
-    // decorator.decorateWith(Metric.values());
   }
 
   private void scanSources(Collection<InputFile> sourceFiles) {
