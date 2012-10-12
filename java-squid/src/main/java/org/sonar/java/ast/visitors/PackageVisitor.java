@@ -58,12 +58,8 @@ public class PackageVisitor extends JavaAstVisitor {
   }
 
   private String getPackageKey(AstNode astNode) {
-    if (astNode == null) {
-      // TODO error during parse?
-      return "";
-    }
     String packageKey;
-    if (astNode.getChild(0).is(getContext().getGrammar().packageDeclaration)) {
+    if (astNode != null && astNode.getChild(0).is(getContext().getGrammar().packageDeclaration)) {
       AstNode packageNameNode = astNode.getChild(0).findFirstDirectChild(getContext().getGrammar().qualifiedIdentifier);
       packageKey = getAstNodeValue(packageNameNode).replace('.', '/');
     } else {
