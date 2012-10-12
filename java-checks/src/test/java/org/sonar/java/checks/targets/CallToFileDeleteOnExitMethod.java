@@ -24,7 +24,8 @@ import java.io.File;
 public class CallToFileDeleteOnExitMethod {
 
   public void doWork(File file) {
-    file.deleteOnExit();
+    file.deleteOnExit(); // NOK
+    file.delete(); // OK
   }
 
 }

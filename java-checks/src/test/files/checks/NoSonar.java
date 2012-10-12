@@ -1,3 +1,4 @@
 public class HelloWorld {
-// NOSONAR
+// NOSONAR NOK
+// OK
 }
