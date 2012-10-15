@@ -35,6 +35,10 @@ public class HelloWorld  {
     return; // +0 last return-statement
   }
 
+  public void conditional_expression(List<?> list) { // question mark should not be treated as a conditional-expression, so only +1 for method
+    int i = list == null ? 0 : 1; // +1 conditional-expression
+  }
+
 }
 
 interface Interface {
