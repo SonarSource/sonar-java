@@ -43,7 +43,7 @@ public class ComplexityVisitor extends JavaAstVisitor {
         grammar.throwStatement,
         grammar.catchClause,
         // Expressions
-        JavaPunctuator.QUERY,
+        grammar.conditionalExpression,
         JavaPunctuator.ANDAND,
         JavaPunctuator.OROR);
   }

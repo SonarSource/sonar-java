@@ -76,7 +76,7 @@ public class JavaAstScannerTest {
   @Test
   public void complexity() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Complexity.java"));
-    assertThat(file.getInt(JavaMetric.COMPLEXITY)).isEqualTo(10);
+    assertThat(file.getInt(JavaMetric.COMPLEXITY)).isEqualTo(12);
   }
 
   @Test
