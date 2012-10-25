@@ -27,7 +27,7 @@ public class JavaPluginTest {
 
   @Test
   public void testGetExtensions() {
-    assertThat(new JavaPlugin().getExtensions().size()).isEqualTo(1);
+    assertThat(new JavaPlugin().getExtensions()).hasSize(2);
   }
 
 }

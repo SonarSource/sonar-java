@@ -17,27 +17,34 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java;
+package org.sonar.plugins.java.api;
 
-import com.google.common.collect.ImmutableList;
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
-import org.sonar.api.SonarPlugin;
-import org.sonar.plugins.java.api.JavaSettings;
+import org.sonar.api.BatchExtension;
+import org.sonar.api.ServerExtension;
+import org.sonar.api.config.Settings;
 
-import java.util.List;
+/**
+ * @since 1.1
+ */
+public class JavaSettings implements BatchExtension, ServerExtension {
 
-@Properties(
-  @Property(
-    key = "sonar.java.coveragePlugin",
-    name = "Code coverage plugin", description = "Key of the code coverage plugin to use for unit tests.",
-    defaultValue = "jacoco",
-    global = true, project = true)
-)
-public final class JavaPlugin extends SonarPlugin {
+  private static final String PROPERTY_COVERAGE_PLUGIN = "sonar.java.coveragePlugin";
 
-  public List<?> getExtensions() {
-    return ImmutableList.of(JavaCommonRulesEngineProvider.class, JavaSettings.class);
+  private Settings settings;
+
+  public JavaSettings(Settings settings) {
+    this.settings = settings;
   }
 
+  /**
+   * @since 1.1
+   */
+  public String getEnabledCoveragePlugin() {
+    // backward-compatibility with the property '' that has been deprecated in sonar 3.4.
+    String[] keys = settings.getStringArray("sonar.core.codeCoveragePlugin");
+    if (keys.length>0) {
+      return keys[0];
+    }
+    return settings.getString(PROPERTY_COVERAGE_PLUGIN);
+  }
 }
