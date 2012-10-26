@@ -40,7 +40,7 @@ public class JavaSettings implements BatchExtension, ServerExtension {
    * @since 1.1
    */
   public String getEnabledCoveragePlugin() {
-    // backward-compatibility with the property '' that has been deprecated in sonar 3.4.
+    // backward-compatibility with the property that has been deprecated in sonar 3.4.
     String[] keys = settings.getStringArray("sonar.core.codeCoveragePlugin");
     if (keys.length>0) {
       return keys[0];
