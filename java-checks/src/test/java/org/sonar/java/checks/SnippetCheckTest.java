@@ -55,4 +55,48 @@ public class SnippetCheckTest {
         .next().atLine(3).withMessage("This should be rewritten as: 1L");
   }
 
+  @Test
+  public void value_identical() {
+    SnippetCheck check = new SnippetCheck();
+    check.dontExample = "assertThat(value).isEqualTo(true);";
+    check.doExample = "assertThat(value).isTrue();";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/snippet/ValueIdentical.java"), check);
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(9);
+  }
+
+  @Test
+  public void value_replaced() {
+    SnippetCheck check = new SnippetCheck();
+    check.dontExample = "assertThat(value).isEqualTo(true);";
+    check.doExample = "assertThat(value).isTrue();";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/snippet/ValueReplaced.java"), check);
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(9);
+  }
+
+  @Test
+  public void value_qualified_replacement() {
+    SnippetCheck check = new SnippetCheck();
+    check.dontExample = "assertThat(value).isEqualTo(true);";
+    check.doExample = "assertThat(value).isTrue();";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/snippet/ValueQualifiedReplacement.java"), check);
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(9);
+  }
+
+  @Test
+  public void value_method_call() {
+    SnippetCheck check = new SnippetCheck();
+    check.dontExample = "assertThat(value).isEqualTo(true);";
+    check.doExample = "assertThat(value).isTrue();";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/snippet/ValueMethodCall.java"), check);
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(7);
+  }
+
 }
