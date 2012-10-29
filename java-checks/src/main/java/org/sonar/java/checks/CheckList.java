@@ -42,6 +42,7 @@ public final class CheckList {
         NoSonarCheck.class,
         CommentedOutCodeLineCheck.class,
         EmptyFileCheck.class,
+        SnippetCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
