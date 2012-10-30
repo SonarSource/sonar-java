@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.java.api;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
@@ -27,28 +28,29 @@ import org.sonar.plugins.java.JavaPlugin;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaSettingsTest {
+
+  JavaSettings javaSettings;
+  Settings settings;
+
+  @Before
+  public void init() {
+    settings = new Settings(new PropertyDefinitions(JavaSettings.class));
+    javaSettings = new JavaSettings(settings);
+  }
+
   @Test
   public void default_coverage_plugin_is_jacoco() {
-    Settings settings = new Settings(new PropertyDefinitions(JavaPlugin.class));
-    JavaSettings javaSettings = new JavaSettings(settings);
-
     assertThat(javaSettings.getEnabledCoveragePlugin()).isEqualTo("jacoco");
   }
 
   @Test
   public void should_change_coverage_plugin() {
-    Settings settings = new Settings(new PropertyDefinitions(JavaPlugin.class));
     settings.setProperty("sonar.java.coveragePlugin", "cobertura");
-    JavaSettings javaSettings = new JavaSettings(settings);
-
     assertThat(javaSettings.getEnabledCoveragePlugin()).isEqualTo("cobertura");
   }
 
   @Test
   public void should_support_deprecated_coverage_property() {
-    Settings settings = new Settings(new PropertyDefinitions(JavaPlugin.class));
-    JavaSettings javaSettings = new JavaSettings(settings);
-
     // many values
     settings.setProperty("sonar.core.codeCoveragePlugin", "clover,cobertura");
     assertThat(javaSettings.getEnabledCoveragePlugin()).isEqualTo("clover");

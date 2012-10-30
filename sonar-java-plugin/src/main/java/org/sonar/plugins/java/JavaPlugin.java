@@ -20,20 +20,11 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
 import org.sonar.api.SonarPlugin;
 import org.sonar.plugins.java.api.JavaSettings;
 
 import java.util.List;
 
-@Properties(
-  @Property(
-    key = "sonar.java.coveragePlugin",
-    name = "Code coverage plugin", description = "Key of the code coverage plugin to use for unit tests.",
-    defaultValue = "jacoco",
-    global = true, project = true)
-)
 public final class JavaPlugin extends SonarPlugin {
 
   public List<?> getExtensions() {

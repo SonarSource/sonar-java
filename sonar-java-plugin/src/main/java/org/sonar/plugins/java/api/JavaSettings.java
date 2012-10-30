@@ -20,12 +20,23 @@
 package org.sonar.plugins.java.api;
 
 import org.sonar.api.BatchExtension;
+import org.sonar.api.Properties;
+import org.sonar.api.Property;
 import org.sonar.api.ServerExtension;
 import org.sonar.api.config.Settings;
 
 /**
  * @since 1.1
  */
+@Properties(
+  @Property(
+    key = "sonar.java.coveragePlugin",
+    name = "Code coverage plugin", description = "Key of the code coverage plugin to use for unit tests.",
+    defaultValue = "jacoco",
+    global = true, project = true,
+    category = "java")
+)
+
 public class JavaSettings implements BatchExtension, ServerExtension {
 
   private static final String PROPERTY_COVERAGE_PLUGIN = "sonar.java.coveragePlugin";
@@ -42,7 +53,7 @@ public class JavaSettings implements BatchExtension, ServerExtension {
   public String getEnabledCoveragePlugin() {
     // backward-compatibility with the property that has been deprecated in sonar 3.4.
     String[] keys = settings.getStringArray("sonar.core.codeCoveragePlugin");
-    if (keys.length>0) {
+    if (keys.length > 0) {
       return keys[0];
     }
     return settings.getString(PROPERTY_COVERAGE_PLUGIN);
