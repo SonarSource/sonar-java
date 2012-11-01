@@ -21,63 +21,54 @@ package org.sonar.java.checks.codesnippet;
 
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.fest.assertions.Assertions.assertThat;
 
-public class LCSTest {
+public class LcsTest {
 
   @Test
   public void getLength() {
-    assertThat(new LCS("", "").getLength()).isEqualTo(0);
-    assertThat(new LCS("foo", "foo").getLength()).isEqualTo(3);
-    assertThat(new LCS("foo", "__f_o_o").getLength()).isEqualTo(3);
-    assertThat(new LCS("__f_o_o", "foo").getLength()).isEqualTo(3);
-    assertThat(new LCS("__f_o_o", "foo").getLength()).isEqualTo(3);
+    assertThat(newLcs("", "").getLength()).isEqualTo(0);
+    assertThat(newLcs("foo", "foo").getLength()).isEqualTo(3);
+    assertThat(newLcs("foo", "__f_o_o").getLength()).isEqualTo(3);
+    assertThat(newLcs("__f_o_o", "foo").getLength()).isEqualTo(3);
+    assertThat(newLcs("__f_o_o", "foo").getLength()).isEqualTo(3);
 
-    LCS lcs = new LCS("foo", "foo");
+    Lcs<Character> lcs = newLcs("foo", "foo");
     assertThat(lcs.getLength()).isEqualTo(3);
     assertThat(lcs.getLength()).isEqualTo(3);
   }
 
   @Test
-  public void getGroups() {
-    assertThat(new LCS("", "").getGroups()).containsExactly();
-    assertThat(new LCS("a", "a").getGroups()).containsExactly(new Group().append(0, 0));
-    assertThat(new LCS("a", "ab").getGroups()).containsExactly(new Group().append(0, 0));
-    assertThat(new LCS("a", "ba").getGroups()).containsExactly(new Group().append(0, 1));
-    assertThat(new LCS("baa", "aa").getGroups()).containsExactly(new Group().append(1, 0).append(2, 1));
-    assertThat(new LCS("faaaf", "fbf").getGroups()).containsExactly(new Group().append(0, 0), new Group().append(4, 2));
-    assertThat(new LCS("haha", "ohha").getGroups()).containsExactly(new Group().append(0, 1), new Group().append(2, 2).append(3, 3));
+  public void getCommonGroups() {
+    assertThat(newLcs("", "").getCommonGroups()).containsExactly();
+    assertThat(newLcs("a", "a").getCommonGroups()).containsExactly(new CommonGroup().append(0, 0));
+    assertThat(newLcs("a", "ab").getCommonGroups()).containsExactly(new CommonGroup().append(0, 0));
+    assertThat(newLcs("a", "ba").getCommonGroups()).containsExactly(new CommonGroup().append(0, 1));
+    assertThat(newLcs("baa", "aa").getCommonGroups()).containsExactly(new CommonGroup().append(1, 0).append(2, 1));
+    assertThat(newLcs("faaaf", "fbf").getCommonGroups()).containsExactly(new CommonGroup().append(0, 0), new CommonGroup().append(4, 2));
+    assertThat(newLcs("haha", "ohha").getCommonGroups()).containsExactly(new CommonGroup().append(0, 1), new CommonGroup().append(2, 2).append(3, 3));
 
-    LCS lcs = new LCS("foo", "foo");
-    assertThat(lcs.getGroups()).containsExactly(new Group().append(0, 0).append(1, 1).append(2, 2));
-    assertThat(lcs.getGroups()).containsExactly(new Group().append(0, 0).append(1, 1).append(2, 2));
+    Lcs<Character> lcs = newLcs("foo", "foo");
+    assertThat(lcs.getCommonGroups()).containsExactly(new CommonGroup().append(0, 0).append(1, 1).append(2, 2));
+    assertThat(lcs.getCommonGroups()).containsExactly(new CommonGroup().append(0, 0).append(1, 1).append(2, 2));
   }
 
   @Test
-  public void foo() {
-    String inputI = "assertThat(foo.size()).isEqualTo(5);";
-    String inputJ = "assertThat(bar.size()).isEqualTo(10);";
-    LCS lcs = new LCS(inputI, inputJ);
+  public void getVaryingGroups() {
+    assertThat(newLcs("", "").getVaryingGroups()).containsExactly();
+    assertThat(newLcs("a", "a").getVaryingGroups()).containsExactly();
+    assertThat(newLcs("ab", "a").getVaryingGroups()).containsExactly(new VaryingGroup().appendI(1));
+    assertThat(newLcs("a", "ab").getVaryingGroups()).containsExactly(new VaryingGroup().appendJ(1));
+    assertThat(newLcs("ba", "a").getVaryingGroups()).containsExactly(new VaryingGroup().appendI(0));
+    assertThat(newLcs("a", "ba").getVaryingGroups()).containsExactly(new VaryingGroup().appendJ(0));
 
-    List<Group> groups = lcs.getGroups();
-    for (Group group : groups) {
-      System.out.println("Group:");
-      System.out.println(" I: " + getGroup(inputI, group.getIndexesI()));
-      System.out.println(" J: " + getGroup(inputJ, group.getIndexesJ()));
-      System.out.println();
-    }
+    Lcs<Character> lcs = newLcs("abc", "b");
+    assertThat(lcs.getVaryingGroups()).containsExactly(new VaryingGroup().appendI(0), new VaryingGroup().appendI(2));
+    assertThat(lcs.getVaryingGroups()).containsExactly(new VaryingGroup().appendI(0), new VaryingGroup().appendI(2));
   }
 
-  private String getGroup(String input, List<Integer> indexes) {
-    StringBuilder sb = new StringBuilder();
-
-    for (Integer index : indexes) {
-      sb.append(input.charAt(index));
-    }
-
-    return sb.toString();
+  private Lcs<Character> newLcs(String inputI, String inputJ) {
+    return new Lcs<Character>(new TestCharacterElementSequence(inputI), new TestCharacterElementSequence(inputJ), new TestCharacterComparator());
   }
 
 }

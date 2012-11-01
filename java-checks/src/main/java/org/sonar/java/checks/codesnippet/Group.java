@@ -23,24 +23,10 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
-public class Group {
+public abstract class Group {
 
-  private final List<Integer> indexesI = Lists.newLinkedList();
-  private final List<Integer> indexesJ = Lists.newLinkedList();
-
-  public Group prepend(int i, int j) {
-    indexesI.add(0, i);
-    indexesJ.add(0, j);
-
-    return this;
-  }
-
-  public Group append(int i, int j) {
-    indexesI.add(i);
-    indexesJ.add(j);
-
-    return this;
-  }
+  protected final List<Integer> indexesI = Lists.newLinkedList();
+  protected final List<Integer> indexesJ = Lists.newLinkedList();
 
   public List<Integer> getIndexesI() {
     return indexesI;

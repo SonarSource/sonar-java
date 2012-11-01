@@ -21,25 +21,31 @@ package org.sonar.java.checks.codesnippet;
 
 import com.google.common.collect.Lists;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class LCS {
+public class Lcs<T> {
 
-  private final String inputI;
-  private final String inputJ;
-  private boolean isCComputed;
+  private final ElementSequence<T> inputI;
+  private final ElementSequence<T> inputJ;
+  private final Comparator<T> comparator;
+  private boolean isCComputed = false;
   private final int[][] c;
-  private boolean areGroupsComputed;
-  private final List<Group> groups = Lists.newArrayList();
+  private boolean areCommonGroupsComputed = false;
+  private final List<CommonGroup> commonGroups = Lists.newArrayList();
+  private boolean areVaryingGroupsComputed = false;
+  private final List<VaryingGroup> varyingGroups = Lists.newArrayList();
 
-  public LCS(String inputI, String inputJ) {
+  public Lcs(ElementSequence<T> inputI, ElementSequence<T> inputJ, Comparator<T> comparator) {
     checkNotNull(inputI);
     checkNotNull(inputJ);
+    checkNotNull(comparator);
 
     this.inputI = inputI;
     this.inputJ = inputJ;
+    this.comparator = comparator;
     this.c = new int[inputI.length() + 1][inputJ.length() + 1];
   }
 
@@ -53,7 +59,7 @@ public class LCS {
   private void computeC() {
     for (int i = 1; i <= inputI.length(); i++) {
       for (int j = 1; j <= inputJ.length(); j++) {
-        if (inputI.charAt(i - 1) == inputJ.charAt(j - 1)) {
+        if (comparator.compare(inputI.elementAt(i - 1), inputJ.elementAt(j - 1)) == 0) {
           c[i][j] = c[i - 1][j - 1] + 1;
         } else {
           c[i][j] = Math.max(c[i - 1][j], c[i][j - 1]);
@@ -67,30 +73,30 @@ public class LCS {
     return c[inputI.length()][inputJ.length()];
   }
 
-  private void ensureGroupsComputed() {
-    if (!areGroupsComputed) {
-      computeGroups();
-      areGroupsComputed = true;
+  private void ensureCommonGroupsComputed() {
+    if (!areCommonGroupsComputed) {
+      computeCommonGroups();
+      areCommonGroupsComputed = true;
     }
   }
 
-  private void computeGroups() {
+  private void computeCommonGroups() {
     ensureCComputed();
 
     int i = inputI.length();
     int j = inputJ.length();
 
     while (i != 0 && j != 0) {
-      if (inputI.charAt(i - 1) == inputJ.charAt(j - 1)) {
-        Group currentGroup = new Group();
+      if (comparator.compare(inputI.elementAt(i - 1), inputJ.elementAt(j - 1)) == 0) {
+        CommonGroup currentCommonGroup = new CommonGroup();
 
         do {
-          currentGroup.prepend(i - 1, j - 1);
+          currentCommonGroup.prepend(i - 1, j - 1);
           i--;
           j--;
-        } while (i != 0 && j != 0 && inputI.charAt(i - 1) == inputJ.charAt(j - 1));
+        } while (i != 0 && j != 0 && comparator.compare(inputI.elementAt(i - 1), inputJ.elementAt(j - 1)) == 0);
 
-        groups.add(0, currentGroup);
+        commonGroups.add(0, currentCommonGroup);
       } else if (c[i - 1][j] == c[i][j]) {
         i--;
       } else {
@@ -99,9 +105,61 @@ public class LCS {
     }
   }
 
-  public List<Group> getGroups() {
-    ensureGroupsComputed();
-    return groups;
+  public List<CommonGroup> getCommonGroups() {
+    ensureCommonGroupsComputed();
+    return commonGroups;
+  }
+
+  private void ensureVaryingGroupsComputed() {
+    if (!areVaryingGroupsComputed) {
+      computeVaryingGroups();
+      areVaryingGroupsComputed = true;
+    }
+  }
+
+  private void computeVaryingGroups() {
+    ensureCommonGroupsComputed();
+
+    int i = 0;
+    int j = 0;
+
+    for (CommonGroup commonGroup : commonGroups) {
+      List<Integer> indexesI = commonGroup.getIndexesI();
+      List<Integer> indexesJ = commonGroup.getIndexesJ();
+
+      VaryingGroup varyingGroup = getVaryingGroup(i, j, indexesI.get(0), indexesJ.get(0));
+      if (!varyingGroup.isEmpty()) {
+        varyingGroups.add(varyingGroup);
+      }
+
+      i = indexesI.get(indexesI.size() - 1) + 1;
+      j = indexesJ.get(indexesJ.size() - 1) + 1;
+    }
+
+    VaryingGroup varyingGroup = getVaryingGroup(i, j, inputI.length(), inputJ.length());
+    if (!varyingGroup.isEmpty()) {
+      varyingGroups.add(varyingGroup);
+    }
+  }
+
+  private VaryingGroup getVaryingGroup(int firstI, int firstJ, int lastI, int lastJ) {
+    VaryingGroup varyingGroup = new VaryingGroup();
+
+    for (int i = firstI; i < lastI; i++) {
+      varyingGroup.appendI(i);
+    }
+
+    for (int j = firstJ; j < lastJ; j++) {
+      varyingGroup.appendJ(j);
+      j++;
+    }
+
+    return varyingGroup;
+  }
+
+  public List<VaryingGroup> getVaryingGroups() {
+    ensureVaryingGroupsComputed();
+    return varyingGroups;
   }
 
 }
