@@ -19,13 +19,10 @@
  */
 package org.sonar.java.checks.codesnippet;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.Token;
-import com.sonar.sslr.impl.Lexer;
-import com.sonar.sslr.impl.LexerException;
 import com.sonar.sslr.impl.Parser;
 import org.sonar.java.checks.codesnippet.PrefixParser.PrefixParseResult;
 
@@ -38,34 +35,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Classifier {
 
-  private final Lexer lexer;
   private final PrefixParser prefixParser;
   private final Parser<? extends Grammar> parser;
   private final Set<Rule> rules;
 
-  public Classifier(Lexer lexer, Parser<? extends Grammar> parser, Set<Rule> rules) {
-    this.lexer = lexer;
+  public Classifier(Parser<? extends Grammar> parser, Set<Rule> rules) {
     this.prefixParser = new PrefixParser(parser);
     this.parser = parser;
     this.rules = rules;
   }
 
-  public Set<Rule> getMatchingRules(Collection<String> inputs) {
-    checkNotNull(inputs);
-    checkArgument(!inputs.isEmpty(), "inputs cannot be empty");
+  public Set<Rule> getMatchingRules(Collection<List<Token>> inputsTokens) {
+    checkNotNull(inputsTokens);
+    checkArgument(!inputsTokens.isEmpty(), "inputsTokens cannot be empty");
 
     Set<Rule> matchingRules = Sets.newHashSet();
-
-    List<List<Token>> inputsTokens = Lists.newArrayList();
-    for (String input : inputs) {
-      try {
-        List<Token> tokens = lexer.lex(input);
-        tokens = removeEofToken(tokens);
-        inputsTokens.add(tokens);
-      } catch (LexerException e) {
-        throw new IllegalArgumentException("Unable to lex the input: " + input, e);
-      }
-    }
 
     for (Rule rule : rules) {
       parser.setRootRule(rule);
@@ -83,10 +67,6 @@ public class Classifier {
     }
 
     return matchingRules;
-  }
-
-  private List<Token> removeEofToken(List<Token> tokens) {
-    return tokens.subList(0, tokens.size() - 1);
   }
 
 }

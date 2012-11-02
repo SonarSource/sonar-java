@@ -25,13 +25,16 @@ import com.google.common.collect.Sets;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Rule;
+import com.sonar.sslr.api.Token;
 import com.sonar.sslr.impl.Lexer;
 import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.channel.BlackHoleChannel;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static com.sonar.sslr.impl.channel.RegexpChannelBuilder.regexp;
 import static org.fest.assertions.Assertions.assertThat;
@@ -43,37 +46,41 @@ public class ClassifierTest {
 
   @Test
   public void getMatchingRules() {
-    Lexer l = getLexer();
     Parser<MyGrammar> p = getParser();
     MyGrammar g = p.getGrammar();
 
-    assertThat(new Classifier(l, p, Collections.EMPTY_SET).getMatchingRules(Lists.newArrayList("foo"))).containsOnly();
-    assertThat(new Classifier(l, p, Sets.newHashSet(g.foo)).getMatchingRules(Lists.newArrayList("bla"))).containsOnly(g.foo);
-    assertThat(new Classifier(l, p, Sets.newHashSet(g.foo, g.bar)).getMatchingRules(Lists.newArrayList("bla"))).containsOnly(g.foo, g.bar);
-    assertThat(new Classifier(l, p, Sets.newHashSet(g.foo, g.bar, g.baz)).getMatchingRules(Lists.newArrayList("bla"))).containsOnly(g.foo, g.bar);
-    assertThat(new Classifier(l, p, Sets.newHashSet(g.foo)).getMatchingRules(Lists.newArrayList("bla", " "))).containsOnly();
-    assertThat(new Classifier(l, p, Sets.newHashSet(g.foo, g.baz)).getMatchingRules(Lists.newArrayList("bla bla"))).containsOnly(g.baz);
+    assertThat(new Classifier(p, Collections.EMPTY_SET).getMatchingRules(getInputsTokens(Lists.newArrayList("foo")))).containsOnly();
+    assertThat(new Classifier(p, Sets.newHashSet(g.foo)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo);
+    assertThat(new Classifier(p, Sets.newHashSet(g.foo, g.bar)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo, g.bar);
+    assertThat(new Classifier(p, Sets.newHashSet(g.foo, g.bar, g.baz)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo, g.bar);
+    assertThat(new Classifier(p, Sets.newHashSet(g.foo)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla", " ")))).containsOnly();
+    assertThat(new Classifier(p, Sets.newHashSet(g.foo, g.baz)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla bla")))).containsOnly(g.baz);
   }
 
   @Test
   public void should_fail_with_empty_inputs() {
     thrown.expect(IllegalArgumentException.class);
 
-    Lexer l = getLexer();
     Parser<MyGrammar> p = getParser();
 
-    assertThat(new Classifier(l, p, Collections.EMPTY_SET).getMatchingRules(Collections.EMPTY_LIST)).containsOnly();
+    assertThat(new Classifier(p, Collections.EMPTY_SET).getMatchingRules(Collections.EMPTY_LIST)).containsOnly();
   }
 
-  @Test
-  public void should_fail_with_invalid_input() {
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("Unable to lex the input: _");
+  private Collection<List<Token>> getInputsTokens(List<String> inputs) {
+    Lexer lexer = getLexer();
+    Collection<List<Token>> inputsTokens = Lists.newArrayList();
 
-    Lexer l = getLexer();
-    Parser<MyGrammar> p = getParser();
+    for (String input : inputs) {
+      List<Token> tokens = lexer.lex(input);
+      tokens = getTokensWithoutEof(tokens);
+      inputsTokens.add(tokens);
+    }
 
-    assertThat(new Classifier(l, p, Collections.EMPTY_SET).getMatchingRules(Lists.newArrayList("_"))).containsOnly();
+    return inputsTokens;
+  }
+
+  private List<Token> getTokensWithoutEof(List<Token> tokens) {
+    return tokens.subList(0, tokens.size() - 1);
   }
 
   private Lexer getLexer() {
