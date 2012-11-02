@@ -49,7 +49,7 @@ public class PrefixParserTest {
     p.setRootRule(g.bar);
     assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
     p.setRootRule(g.baz);
-    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.PARTIAL_MATCH);
+    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.PREFIX_MATCH);
 
     tokens = getLexer().lex("foo bar");
     tokens = tokens.subList(0, tokens.size() - 1); // Remove EOF

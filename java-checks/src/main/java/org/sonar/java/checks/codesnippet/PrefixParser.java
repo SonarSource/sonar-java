@@ -48,7 +48,7 @@ public class PrefixParser {
       int lastAttemptedTokenIndex = parser.getParsingState().getOutpostMatcherTokenIndex();
 
       return lastAttemptedTokenIndex == tokens.size() ?
-          PrefixParseResult.PARTIAL_MATCH :
+          PrefixParseResult.PREFIX_MATCH :
           PrefixParseResult.MISMATCH;
     }
   }
@@ -56,7 +56,7 @@ public class PrefixParser {
   enum PrefixParseResult {
     MISMATCH,
     FULL_MATCH,
-    PARTIAL_MATCH
+    PREFIX_MATCH
   }
 
 }
