@@ -34,7 +34,7 @@ import java.util.List;
 import static com.sonar.sslr.impl.channel.RegexpChannelBuilder.regexp;
 import static org.fest.assertions.Assertions.assertThat;
 
-public class PartialParserTest {
+public class PrefixParserTest {
 
   @Test
   public void parsePartially() {
@@ -43,13 +43,13 @@ public class PartialParserTest {
     List<Token> tokens = getLexer().lex("foo");
     tokens = tokens.subList(0, tokens.size() - 1); // Remove EOF
 
-    PartialParser partialParser = new PartialParser(p);
+    PrefixParser partialParser = new PrefixParser(p);
     p.setRootRule(g.foo);
-    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PartialParser.PartialParseResult.MISMATCH);
+    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
     p.setRootRule(g.bar);
-    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PartialParser.PartialParseResult.FULL_MATCH);
+    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
     p.setRootRule(g.baz);
-    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PartialParser.PartialParseResult.PARTIAL_MATCH);
+    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.PARTIAL_MATCH);
   }
 
   private Lexer getLexer() {

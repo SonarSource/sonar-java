@@ -26,29 +26,29 @@ import com.sonar.sslr.impl.Parser;
 
 import java.util.List;
 
-public class PartialParser {
+public class PrefixParser {
 
   public final Parser<? extends Grammar> parser;
 
-  public PartialParser(Parser<? extends Grammar> parser) {
+  public PrefixParser(Parser<? extends Grammar> parser) {
     this.parser = parser;
   }
 
-  public PartialParseResult parsePartially(List<Token> tokens) {
+  public PrefixParseResult parsePartially(List<Token> tokens) {
     try {
       parser.parse(tokens);
 
-      return PartialParseResult.FULL_MATCH;
+      return PrefixParseResult.FULL_MATCH;
     } catch (RecognitionException re) {
       int lastAttemptedTokenIndex = parser.getParsingState().getOutpostMatcherTokenIndex();
 
       return lastAttemptedTokenIndex == tokens.size() ?
-          PartialParseResult.PARTIAL_MATCH :
-          PartialParseResult.MISMATCH;
+          PrefixParseResult.PARTIAL_MATCH :
+          PrefixParseResult.MISMATCH;
     }
   }
 
-  enum PartialParseResult {
+  enum PrefixParseResult {
     MISMATCH,
     FULL_MATCH,
     PARTIAL_MATCH
