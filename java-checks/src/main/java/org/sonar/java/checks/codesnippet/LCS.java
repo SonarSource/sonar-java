@@ -36,6 +36,7 @@ public class Lcs<T> {
   private boolean areCommonGroupsComputed = false;
   private final List<CommonGroup> commonGroups = Lists.newArrayList();
   private boolean areVaryingGroupsComputed = false;
+  private final List<Group> groups = Lists.newArrayList();
   private final List<VaryingGroup> varyingGroups = Lists.newArrayList();
 
   public Lcs(ElementSequence<T> inputI, ElementSequence<T> inputJ, Comparator<T> comparator) {
@@ -129,8 +130,11 @@ public class Lcs<T> {
 
       VaryingGroup varyingGroup = getVaryingGroup(i, j, indexesI.get(0), indexesJ.get(0));
       if (!varyingGroup.isEmpty()) {
+        groups.add(varyingGroup);
         varyingGroups.add(varyingGroup);
       }
+
+      groups.add(commonGroup);
 
       i = indexesI.get(indexesI.size() - 1) + 1;
       j = indexesJ.get(indexesJ.size() - 1) + 1;
@@ -138,6 +142,7 @@ public class Lcs<T> {
 
     VaryingGroup varyingGroup = getVaryingGroup(i, j, inputI.length(), inputJ.length());
     if (!varyingGroup.isEmpty()) {
+      groups.add(varyingGroup);
       varyingGroups.add(varyingGroup);
     }
   }
@@ -160,6 +165,11 @@ public class Lcs<T> {
   public List<VaryingGroup> getVaryingGroups() {
     ensureVaryingGroupsComputed();
     return varyingGroups;
+  }
+
+  public List<Group> getGroups() {
+    ensureVaryingGroupsComputed();
+    return groups;
   }
 
 }

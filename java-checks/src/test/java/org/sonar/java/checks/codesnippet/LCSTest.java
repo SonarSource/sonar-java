@@ -67,6 +67,19 @@ public class LcsTest {
     assertThat(lcs.getVaryingGroups()).containsExactly(new VaryingGroup().appendI(0), new VaryingGroup().appendI(2));
   }
 
+  @Test
+  public void getGroups() {
+    assertThat(newLcs("", "").getGroups()).containsExactly();
+    assertThat(newLcs("a", "a").getGroups()).containsExactly(new CommonGroup().append(0, 0));
+    assertThat(newLcs("ab", "a").getGroups()).containsExactly(new CommonGroup().append(0, 0), new VaryingGroup().appendI(1));
+    assertThat(newLcs("ba", "a").getGroups()).containsExactly(new VaryingGroup().appendI(0), new CommonGroup().append(1, 0));
+    assertThat(newLcs("abab", "aab").getGroups()).containsExactly(new CommonGroup().append(0, 0), new VaryingGroup().appendI(1), new CommonGroup().append(2, 1).append(3, 2));
+
+    Lcs<Character> lcs = newLcs("ab", "a");
+    assertThat(lcs.getGroups()).containsExactly(new CommonGroup().append(0, 0), new VaryingGroup().appendI(1));
+    assertThat(lcs.getGroups()).containsExactly(new CommonGroup().append(0, 0), new VaryingGroup().appendI(1));
+  }
+
   private Lcs<Character> newLcs(String inputI, String inputJ) {
     return new Lcs<Character>(new TestCharacterElementSequence(inputI), new TestCharacterElementSequence(inputJ), new TestCharacterComparator());
   }
