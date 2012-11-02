@@ -37,7 +37,7 @@ import static org.fest.assertions.Assertions.assertThat;
 public class PrefixParserTest {
 
   @Test
-  public void parsePartially() {
+  public void parse() {
     Parser<MyGrammar> p = getParser();
     MyGrammar g = p.getGrammar();
     List<Token> tokens = getLexer().lex("foo");
@@ -45,19 +45,19 @@ public class PrefixParserTest {
 
     PrefixParser partialParser = new PrefixParser(p);
     p.setRootRule(g.foo);
-    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
+    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
     p.setRootRule(g.bar);
-    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
+    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
     p.setRootRule(g.baz);
-    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.PARTIAL_MATCH);
+    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.PARTIAL_MATCH);
 
     tokens = getLexer().lex("foo bar");
     tokens = tokens.subList(0, tokens.size() - 1); // Remove EOF
 
     p.setRootRule(g.bar);
-    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
+    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
     p.setRootRule(g.baz);
-    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
+    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
   }
 
   private Lexer getLexer() {

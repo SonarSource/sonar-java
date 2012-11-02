@@ -43,25 +43,37 @@ public class ClassifierTest {
 
   @Test
   public void getMatchingRules() {
+    Lexer l = getLexer();
     Parser<MyGrammar> p = getParser();
     MyGrammar g = p.getGrammar();
 
-    assertThat(new Classifier(p, Collections.EMPTY_SET).getMatchingRules(Lists.newArrayList("foo"))).containsOnly();
-    assertThat(new Classifier(p, Sets.newHashSet(g.foo)).getMatchingRules(Lists.newArrayList("bla"))).containsOnly(g.foo);
-    assertThat(new Classifier(p, Sets.newHashSet(g.foo, g.bar)).getMatchingRules(Lists.newArrayList("bla"))).containsOnly(g.foo, g.bar);
-    assertThat(new Classifier(p, Sets.newHashSet(g.foo, g.bar, g.baz)).getMatchingRules(Lists.newArrayList("bla"))).containsOnly(g.foo, g.bar);
-    assertThat(new Classifier(p, Sets.newHashSet(g.foo)).getMatchingRules(Lists.newArrayList("bla", " "))).containsOnly();
-    assertThat(new Classifier(p, Sets.newHashSet(g.foo, g.baz)).getMatchingRules(Lists.newArrayList("bla bla"))).containsOnly(g.baz);
-
+    assertThat(new Classifier(l, p, Collections.EMPTY_SET).getMatchingRules(Lists.newArrayList("foo"))).containsOnly();
+    assertThat(new Classifier(l, p, Sets.newHashSet(g.foo)).getMatchingRules(Lists.newArrayList("bla"))).containsOnly(g.foo);
+    assertThat(new Classifier(l, p, Sets.newHashSet(g.foo, g.bar)).getMatchingRules(Lists.newArrayList("bla"))).containsOnly(g.foo, g.bar);
+    assertThat(new Classifier(l, p, Sets.newHashSet(g.foo, g.bar, g.baz)).getMatchingRules(Lists.newArrayList("bla"))).containsOnly(g.foo, g.bar);
+    assertThat(new Classifier(l, p, Sets.newHashSet(g.foo)).getMatchingRules(Lists.newArrayList("bla", " "))).containsOnly();
+    assertThat(new Classifier(l, p, Sets.newHashSet(g.foo, g.baz)).getMatchingRules(Lists.newArrayList("bla bla"))).containsOnly(g.baz);
   }
 
   @Test
   public void should_fail_with_empty_inputs() {
     thrown.expect(IllegalArgumentException.class);
 
+    Lexer l = getLexer();
     Parser<MyGrammar> p = getParser();
 
-    assertThat(new Classifier(p, Collections.EMPTY_SET).getMatchingRules(Collections.EMPTY_LIST)).containsOnly();
+    assertThat(new Classifier(l, p, Collections.EMPTY_SET).getMatchingRules(Collections.EMPTY_LIST)).containsOnly();
+  }
+
+  @Test
+  public void should_fail_with_invalid_input() {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("Unable to lex the input: _");
+
+    Lexer l = getLexer();
+    Parser<MyGrammar> p = getParser();
+
+    assertThat(new Classifier(l, p, Collections.EMPTY_SET).getMatchingRules(Lists.newArrayList("_"))).containsOnly();
   }
 
   private Lexer getLexer() {
@@ -86,9 +98,9 @@ public class ClassifierTest {
     public Rule baz;
 
     public MyGrammar() {
-      foo.is(GenericTokenType.IDENTIFIER, GenericTokenType.EOF);
-      bar.is(GenericTokenType.IDENTIFIER, GenericTokenType.EOF);
-      baz.is(GenericTokenType.IDENTIFIER, GenericTokenType.IDENTIFIER, GenericTokenType.EOF);
+      foo.is(GenericTokenType.IDENTIFIER);
+      bar.is(GenericTokenType.IDENTIFIER);
+      baz.is(GenericTokenType.IDENTIFIER, GenericTokenType.IDENTIFIER);
     }
 
     @Override

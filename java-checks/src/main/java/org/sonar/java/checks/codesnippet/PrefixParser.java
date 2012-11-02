@@ -34,7 +34,7 @@ public class PrefixParser {
     this.parser = parser;
   }
 
-  public PrefixParseResult parsePartially(List<Token> tokens) {
+  public PrefixParseResult parse(List<Token> tokens) {
 
     try {
       parser.parse(tokens);
