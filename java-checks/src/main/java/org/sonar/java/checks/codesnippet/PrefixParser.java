@@ -35,10 +35,15 @@ public class PrefixParser {
   }
 
   public PrefixParseResult parsePartially(List<Token> tokens) {
+
     try {
       parser.parse(tokens);
 
-      return PrefixParseResult.FULL_MATCH;
+      int lastAttemptedTokenIndex = parser.getParsingState().getOutpostMatcherTokenIndex();
+
+      return lastAttemptedTokenIndex == tokens.size() - 1 ?
+          PrefixParseResult.FULL_MATCH :
+          PrefixParseResult.MISMATCH;
     } catch (RecognitionException re) {
       int lastAttemptedTokenIndex = parser.getParsingState().getOutpostMatcherTokenIndex();
 

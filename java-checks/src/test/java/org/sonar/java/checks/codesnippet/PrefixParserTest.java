@@ -50,6 +50,14 @@ public class PrefixParserTest {
     assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
     p.setRootRule(g.baz);
     assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.PARTIAL_MATCH);
+
+    tokens = getLexer().lex("foo bar");
+    tokens = tokens.subList(0, tokens.size() - 1); // Remove EOF
+
+    p.setRootRule(g.bar);
+    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
+    p.setRootRule(g.baz);
+    assertThat(partialParser.parsePartially(tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
   }
 
   private Lexer getLexer() {
