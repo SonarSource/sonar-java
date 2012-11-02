@@ -48,13 +48,14 @@ public class ClassifierTest {
   public void getMatchingRules() {
     Parser<MyGrammar> p = getParser();
     MyGrammar g = p.getGrammar();
+    PrefixParser prefixParser = new PrefixParser(p);
 
-    assertThat(new Classifier(p, Collections.EMPTY_SET).getMatchingRules(getInputsTokens(Lists.newArrayList("foo")))).containsOnly();
-    assertThat(new Classifier(p, Sets.newHashSet(g.foo)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo);
-    assertThat(new Classifier(p, Sets.newHashSet(g.foo, g.bar)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo, g.bar);
-    assertThat(new Classifier(p, Sets.newHashSet(g.foo, g.bar, g.baz)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo, g.bar);
-    assertThat(new Classifier(p, Sets.newHashSet(g.foo)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla", " ")))).containsOnly();
-    assertThat(new Classifier(p, Sets.newHashSet(g.foo, g.baz)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla bla")))).containsOnly(g.baz);
+    assertThat(new Classifier(prefixParser, Collections.EMPTY_SET).getMatchingRules(getInputsTokens(Lists.newArrayList("foo")))).containsOnly();
+    assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo);
+    assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo, g.bar)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo, g.bar);
+    assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo, g.bar, g.baz)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo, g.bar);
+    assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla", " ")))).containsOnly();
+    assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo, g.baz)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla bla")))).containsOnly(g.baz);
   }
 
   @Test
@@ -62,8 +63,9 @@ public class ClassifierTest {
     thrown.expect(IllegalArgumentException.class);
 
     Parser<MyGrammar> p = getParser();
+    PrefixParser prefixParser = new PrefixParser(p);
 
-    assertThat(new Classifier(p, Collections.EMPTY_SET).getMatchingRules(Collections.EMPTY_LIST)).containsOnly();
+    assertThat(new Classifier(prefixParser, Collections.EMPTY_SET).getMatchingRules(Collections.EMPTY_LIST)).containsOnly();
   }
 
   private Collection<List<Token>> getInputsTokens(List<String> inputs) {

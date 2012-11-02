@@ -20,10 +20,8 @@
 package org.sonar.java.checks.codesnippet;
 
 import com.google.common.collect.Sets;
-import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.Token;
-import com.sonar.sslr.impl.Parser;
 import org.sonar.java.checks.codesnippet.PrefixParser.PrefixParseResult;
 
 import java.util.Collection;
@@ -36,12 +34,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class Classifier {
 
   private final PrefixParser prefixParser;
-  private final Parser<? extends Grammar> parser;
   private final Set<Rule> rules;
 
-  public Classifier(Parser<? extends Grammar> parser, Set<Rule> rules) {
-    this.prefixParser = new PrefixParser(parser);
-    this.parser = parser;
+  public Classifier(PrefixParser prefixParser, Set<Rule> rules) {
+    checkNotNull(prefixParser);
+    checkNotNull(rules);
+
+    this.prefixParser = prefixParser;
     this.rules = rules;
   }
 
@@ -52,11 +51,9 @@ public class Classifier {
     Set<Rule> matchingRules = Sets.newHashSet();
 
     for (Rule rule : rules) {
-      parser.setRootRule(rule);
-
       boolean allInputsMatched = true;
       for (List<Token> inputTokens : inputsTokens) {
-        if (prefixParser.parse(inputTokens) != PrefixParseResult.FULL_MATCH) {
+        if (prefixParser.parse(rule, inputTokens) != PrefixParseResult.FULL_MATCH) {
           allInputsMatched = false;
           break;
         }

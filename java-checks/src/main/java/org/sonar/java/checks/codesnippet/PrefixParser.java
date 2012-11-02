@@ -21,6 +21,7 @@ package org.sonar.java.checks.codesnippet;
 
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.RecognitionException;
+import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.impl.Parser;
 
@@ -34,9 +35,12 @@ public class PrefixParser {
     this.parser = parser;
   }
 
-  public PrefixParseResult parse(List<Token> tokens) {
+  public PrefixParseResult parse(Rule rule, List<Token> tokens) {
+
+    Rule previousRootRule = parser.getRootRule();
 
     try {
+      parser.setRootRule(rule);
       parser.parse(tokens);
 
       int lastAttemptedTokenIndex = parser.getParsingState().getOutpostMatcherTokenIndex();
@@ -50,6 +54,8 @@ public class PrefixParser {
       return lastAttemptedTokenIndex == tokens.size() ?
           PrefixParseResult.PREFIX_MATCH :
           PrefixParseResult.MISMATCH;
+    } finally {
+      parser.setRootRule(previousRootRule);
     }
   }
 

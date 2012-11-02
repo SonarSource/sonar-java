@@ -28,7 +28,9 @@ import com.sonar.sslr.impl.Lexer;
 import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.channel.BlackHoleChannel;
 import org.junit.Test;
+import org.sonar.java.checks.codesnippet.PrefixParser.PrefixParseResult;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.sonar.sslr.impl.channel.RegexpChannelBuilder.regexp;
@@ -43,21 +45,46 @@ public class PrefixParserTest {
     List<Token> tokens = getLexer().lex("foo");
     tokens = tokens.subList(0, tokens.size() - 1); // Remove EOF
 
-    PrefixParser partialParser = new PrefixParser(p);
-    p.setRootRule(g.foo);
-    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
-    p.setRootRule(g.bar);
-    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
-    p.setRootRule(g.baz);
-    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.PREFIX_MATCH);
+    PrefixParser prefixParser = new PrefixParser(p);
+    assertThat(prefixParser.parse(g.foo, tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
+    assertThat(prefixParser.parse(g.bar, tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
+    assertThat(prefixParser.parse(g.baz, tokens)).isEqualTo(PrefixParser.PrefixParseResult.PREFIX_MATCH);
 
     tokens = getLexer().lex("foo bar");
     tokens = tokens.subList(0, tokens.size() - 1); // Remove EOF
 
-    p.setRootRule(g.bar);
-    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
-    p.setRootRule(g.baz);
-    assertThat(partialParser.parse(tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
+    assertThat(prefixParser.parse(g.bar, tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
+    assertThat(prefixParser.parse(g.baz, tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
+  }
+
+  @Test
+  public void should_restore_previous_parse_root_rule_upon_success() {
+    Parser<MyGrammar> p = getParser();
+    MyGrammar g = p.getGrammar();
+    List<Token> tokens = getLexer().lex("foo");
+    tokens = tokens.subList(0, tokens.size() - 1); // Remove EOF
+
+    p.setRootRule(g.foo);
+
+    PrefixParser prefixParser = new PrefixParser(p);
+    assertThat(p.getRootRule()).isEqualTo(g.foo);
+
+    assertThat(prefixParser.parse(g.bar, tokens)).isEqualTo(PrefixParseResult.FULL_MATCH);
+    assertThat(p.getRootRule()).isEqualTo(g.foo);
+  }
+
+  @Test
+  public void should_restore_previous_parse_root_rule_upon_error() {
+    Parser<MyGrammar> p = getParser();
+    MyGrammar g = p.getGrammar();
+
+    p.setRootRule(g.foo);
+
+    PrefixParser prefixParser = new PrefixParser(p);
+    assertThat(p.getRootRule()).isEqualTo(g.foo);
+
+    assertThat(prefixParser.parse(g.bar, Collections.EMPTY_LIST)).isEqualTo(PrefixParseResult.PREFIX_MATCH);
+    assertThat(p.getRootRule()).isEqualTo(g.foo);
   }
 
   private Lexer getLexer() {
