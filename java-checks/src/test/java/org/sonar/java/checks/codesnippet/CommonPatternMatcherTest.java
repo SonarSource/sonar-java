@@ -131,7 +131,7 @@ public class CommonPatternMatcherTest {
 
     PatternMatcher nextPatternMatcher = mock(PatternMatcher.class);
     when(nextPatternMatcher.isMatching(Lists.newArrayList(token2, token3))).thenReturn(true);
-    CommonPatternMatcher patternMatcher = new CommonPatternMatcher(nextPatternMatcher, tokensToMatch, comparator);
+    CommonPatternMatcher patternMatcher = new CommonPatternMatcher(tokensToMatch, comparator, nextPatternMatcher);
 
     assertThat(patternMatcher.isMatching(Lists.newArrayList(token1, token2, token3))).isEqualTo(true);
     assertThat(patternMatcher.isMatching(Lists.newArrayList(token1, token2))).isEqualTo(false);

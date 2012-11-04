@@ -19,16 +19,19 @@
  */
 package org.sonar.java.checks.codesnippet;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.TokenType;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.sonar.java.checks.codesnippet.PrefixParser.PrefixParseResult;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -40,6 +43,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class VaryingPatternMatcherTest {
+
+  @org.junit.Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  @Test
+  public void should_fail_with_empty_rules() {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("rules must contain at least one element");
+
+    new VaryingPatternMatcher(mock(PrefixParser.class), Collections.EMPTY_SET, mock(CommonPatternMatcher.class));
+  }
 
   @Test
   public void isMatching_no_hit() {
@@ -61,7 +75,7 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token3, token1);
 
-    assertThat(new VaryingPatternMatcher(nextCommonPatternMatcher, prefixParser, rule).isMatching(tokens)).isEqualTo(false);
+    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).isMatching(tokens)).isEqualTo(false);
 
     verify(comparator, times(2)).compare(token1, token2);
     verify(comparator).compare(token3, token2);
@@ -89,7 +103,7 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token2, token3, token2);
 
-    assertThat(new VaryingPatternMatcher(nextCommonPatternMatcher, prefixParser, rule).isMatching(tokens)).isEqualTo(false);
+    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).isMatching(tokens)).isEqualTo(false);
 
     verify(prefixParser).parse(rule, Lists.newArrayList(token1));
     verify(comparator).compare(token1, token2);
@@ -119,7 +133,7 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token2, token3, token2);
 
-    assertThat(new VaryingPatternMatcher(nextCommonPatternMatcher, prefixParser, rule).isMatching(tokens)).isEqualTo(true);
+    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).isMatching(tokens)).isEqualTo(true);
 
     verify(prefixParser).parse(rule, Lists.newArrayList(token1));
     verify(comparator).compare(token1, token2);
@@ -150,7 +164,7 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token2, token3, token2);
 
-    assertThat(new VaryingPatternMatcher(nextCommonPatternMatcher, prefixParser, rule).isMatching(tokens)).isEqualTo(true);
+    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).isMatching(tokens)).isEqualTo(true);
 
     verify(prefixParser).parse(rule, Lists.newArrayList(token1));
     verify(prefixParser).parse(rule, Lists.newArrayList(token1, token2, token3));
@@ -183,7 +197,7 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token2, token3, token2);
 
-    assertThat(new VaryingPatternMatcher(nextCommonPatternMatcher, prefixParser, rule).isMatching(tokens)).isEqualTo(true);
+    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).isMatching(tokens)).isEqualTo(true);
 
     verify(prefixParser).parse(rule, Lists.newArrayList(token1));
     verify(prefixParser).parse(rule, Lists.newArrayList(token1, token2, token3));
@@ -201,7 +215,8 @@ public class VaryingPatternMatcherTest {
     CommonPatternMatcher nextCommonPatternMatcher = mock(CommonPatternMatcher.class);
     when(nextCommonPatternMatcher.getTokensToMatch()).thenReturn(Lists.newArrayList(token1, token2));
 
-    assertThat(new VaryingPatternMatcher(nextCommonPatternMatcher, mock(PrefixParser.class), mock(Rule.class)).getNextCommonPatternMatcherTokenToMatch()).isEqualTo(token1);
+    Rule rule = mock(Rule.class);
+    assertThat(new VaryingPatternMatcher(mock(PrefixParser.class), ImmutableSet.of(rule), nextCommonPatternMatcher).getNextCommonPatternMatcherTokenToMatch()).isEqualTo(token1);
   }
 
   @Test
@@ -211,7 +226,8 @@ public class VaryingPatternMatcherTest {
     CommonPatternMatcher nextCommonPatternMatcher = mock(CommonPatternMatcher.class);
     when(nextCommonPatternMatcher.getComparator()).thenReturn(comparator);
 
-    assertThat(new VaryingPatternMatcher(nextCommonPatternMatcher, mock(PrefixParser.class), mock(Rule.class)).getNextCommonPatternMatcherComparator()).isEqualTo(comparator);
+    Rule rule = mock(Rule.class);
+    assertThat(new VaryingPatternMatcher(mock(PrefixParser.class), ImmutableSet.of(rule), nextCommonPatternMatcher).getNextCommonPatternMatcherComparator()).isEqualTo(comparator);
   }
 
   private Token mockToken(String value) {

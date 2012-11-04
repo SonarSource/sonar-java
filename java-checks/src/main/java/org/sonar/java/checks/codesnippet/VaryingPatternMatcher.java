@@ -20,49 +20,60 @@
 package org.sonar.java.checks.codesnippet;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.checks.codesnippet.PrefixParser.PrefixParseResult;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class VaryingPatternMatcher extends PatternMatcher {
 
   private final PrefixParser prefixParser;
-  private final Rule rule;
+  private final Set<Rule> rules;
 
-  public VaryingPatternMatcher(CommonPatternMatcher nextCommonPatternMatcher, PrefixParser prefixParser, Rule rule) {
+  public VaryingPatternMatcher(PrefixParser prefixParser, Set<Rule> rules, CommonPatternMatcher nextCommonPatternMatcher) {
     super(nextCommonPatternMatcher);
 
     checkNotNull(prefixParser);
-    checkNotNull(rule);
+    checkNotNull(rules);
+    checkArgument(rules.size() >= 1, "rules must contain at least one element");
 
     this.prefixParser = prefixParser;
-    this.rule = rule;
+    this.rules = rules;
   }
 
   @Override
   public boolean isMatching(List<Token> tokens) {
-    boolean result = false;
-
+    Set<Rule> ruleCandidates = Sets.newHashSet(rules);
     Token nextCommonPatternMatcherTokenToMatch = getNextCommonPatternMatcherTokenToMatch();
 
     int prefixMatchTokens = 0;
     for (Token token : tokens) {
       if (getNextCommonPatternMatcherComparator().compare(token, nextCommonPatternMatcherTokenToMatch) == 0) {
-        PrefixParser.PrefixParseResult prefixParseResult = prefixParser.parse(rule, tokens.subList(0, prefixMatchTokens));
+        ImmutableSet.Builder<Rule> mismatchingRules = ImmutableSet.builder();
 
-        if (prefixParseResult == PrefixParseResult.MISMATCH) {
+        for (Rule ruleCandidate : ruleCandidates) {
+          PrefixParser.PrefixParseResult prefixParseResult = prefixParser.parse(ruleCandidate, tokens.subList(0, prefixMatchTokens));
 
-          result = false;
-          break;
-        } else if (prefixParseResult == PrefixParseResult.FULL_MATCH &&
-          getNextPatternMatcher().isMatching(tokens.subList(prefixMatchTokens, tokens.size()))) {
+          if (prefixParseResult == PrefixParseResult.MISMATCH) {
+            mismatchingRules.add(ruleCandidate);
+          } else if (prefixParseResult == PrefixParseResult.FULL_MATCH &&
+            getNextPatternMatcher().isMatching(tokens.subList(prefixMatchTokens, tokens.size()))) {
 
-          result = true;
+            return true;
+          }
+        }
+
+        ruleCandidates.removeAll(mismatchingRules.build());
+
+        if (ruleCandidates.isEmpty()) {
           break;
         }
       }
@@ -70,7 +81,7 @@ public class VaryingPatternMatcher extends PatternMatcher {
       prefixMatchTokens++;
     }
 
-    return result;
+    return false;
   }
 
   @VisibleForTesting

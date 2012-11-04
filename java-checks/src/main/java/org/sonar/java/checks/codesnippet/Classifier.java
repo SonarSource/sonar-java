@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.codesnippet;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet;
 import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.checks.codesnippet.PrefixParser.PrefixParseResult;
@@ -30,6 +30,7 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 public class Classifier {
 
@@ -48,22 +49,22 @@ public class Classifier {
     checkNotNull(inputsTokens);
     checkArgument(!inputsTokens.isEmpty(), "inputsTokens cannot be empty");
 
-    Set<Rule> matchingRules = Sets.newHashSet();
+    ImmutableSet.Builder<Rule> matchingRulesBuilder = ImmutableSet.builder();
 
-    for (Rule rule : rules) {
-      boolean allInputsMatched = true;
-      for (List<Token> inputTokens : inputsTokens) {
-        if (prefixParser.parse(rule, inputTokens) != PrefixParseResult.FULL_MATCH) {
-          allInputsMatched = false;
-          break;
+    for (List<Token> inputTokens : inputsTokens) {
+      boolean atLeastOneRuleMatched = false;
+
+      for (Rule rule : rules) {
+        if (prefixParser.parse(rule, inputTokens) == PrefixParseResult.FULL_MATCH) {
+          matchingRulesBuilder.add(rule);
+          atLeastOneRuleMatched = true;
         }
       }
-      if (allInputsMatched) {
-        matchingRules.add(rule);
-      }
+
+      checkState(atLeastOneRuleMatched, "no rule matched the input: " + inputsTokens + " (rules attempted: " + rules + ")");
     }
 
-    return matchingRules;
+    return matchingRulesBuilder.build();
   }
 
 }

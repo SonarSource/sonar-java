@@ -50,12 +50,11 @@ public class ClassifierTest {
     MyGrammar g = p.getGrammar();
     PrefixParser prefixParser = new PrefixParser(p);
 
-    assertThat(new Classifier(prefixParser, Collections.EMPTY_SET).getMatchingRules(getInputsTokens(Lists.newArrayList("foo")))).containsOnly();
     assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo);
     assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo, g.bar)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo, g.bar);
     assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo, g.bar, g.baz)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo, g.bar);
-    assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla", " ")))).containsOnly();
     assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo, g.baz)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla bla")))).containsOnly(g.baz);
+    assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo, g.baz)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla", "bla bla")))).containsOnly(g.foo, g.baz);
   }
 
   @Test
@@ -66,6 +65,16 @@ public class ClassifierTest {
     PrefixParser prefixParser = new PrefixParser(p);
 
     assertThat(new Classifier(prefixParser, Collections.EMPTY_SET).getMatchingRules(Collections.EMPTY_LIST)).containsOnly();
+  }
+
+  @Test
+  public void should_fail_when_no_rule_matched_a_given_input() {
+    thrown.expect(IllegalStateException.class);
+
+    Parser<MyGrammar> p = getParser();
+    PrefixParser prefixParser = new PrefixParser(p);
+
+    assertThat(new Classifier(prefixParser, Collections.EMPTY_SET).getMatchingRules(getInputsTokens(Lists.newArrayList("foo")))).containsOnly();
   }
 
   private Collection<List<Token>> getInputsTokens(List<String> inputs) {

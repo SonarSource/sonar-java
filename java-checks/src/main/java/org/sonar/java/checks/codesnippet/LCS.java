@@ -156,7 +156,6 @@ public class Lcs<T> {
 
     for (int j = firstJ; j < lastJ; j++) {
       varyingGroup.appendJ(j);
-      j++;
     }
 
     return varyingGroup;

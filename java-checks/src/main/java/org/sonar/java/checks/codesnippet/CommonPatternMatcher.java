@@ -33,10 +33,10 @@ public class CommonPatternMatcher extends PatternMatcher {
   private final Comparator<Token> comparator;
 
   public CommonPatternMatcher(List<Token> tokensToMatch, Comparator<Token> comparator) {
-    this(null, tokensToMatch, comparator);
+    this(tokensToMatch, comparator, null);
   }
 
-  public CommonPatternMatcher(PatternMatcher nextPatternMatcher, List<Token> tokensToMatch, Comparator<Token> comparator) {
+  public CommonPatternMatcher(List<Token> tokensToMatch, Comparator<Token> comparator, PatternMatcher nextPatternMatcher) {
     super(nextPatternMatcher);
 
     checkNotNull(tokensToMatch);
