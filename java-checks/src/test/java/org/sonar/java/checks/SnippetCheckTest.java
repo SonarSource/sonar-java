@@ -103,4 +103,16 @@ public class SnippetCheckTest {
         .next().atLine(7);
   }
 
+  @Test
+  public void value_method_call_switched_examples() {
+    SnippetCheck check = new SnippetCheck();
+    check.dontExample1 = "assertThat(value).isEqualTo(true);";
+    check.doExample1 = "assertThat(value).isTrue();";
+    check.dontExample2 = "assertThat(hehe()).isEqualTo(true);";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/snippet/ValueMethodCall.java"), check);
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(7);
+  }
+
 }
