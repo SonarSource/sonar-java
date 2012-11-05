@@ -31,8 +31,11 @@ public class Lcs<T> {
   private final ElementSequence<T> inputI;
   private final ElementSequence<T> inputJ;
   private final Comparator<T> comparator;
-  private boolean isCComputed = false;
+  private boolean areCAndDComputed = false;
+  /* c contains the longest common subsequence length */
   private final int[][] c;
+  /* d contains the longest valid distance to a match (used when backtracking in C) */
+  private final int[][] d;
   private boolean areCommonGroupsComputed = false;
   private final List<CommonGroup> commonGroups = Lists.newArrayList();
   private boolean areVaryingGroupsComputed = false;
@@ -48,29 +51,39 @@ public class Lcs<T> {
     this.inputJ = inputJ;
     this.comparator = comparator;
     this.c = new int[inputI.length() + 1][inputJ.length() + 1];
+    this.d = new int[inputI.length() + 1][inputJ.length() + 1];
   }
 
-  private void ensureCComputed() {
-    if (!isCComputed) {
-      computeC();
-      isCComputed = true;
+  private void ensureCAndDComputed() {
+    if (!areCAndDComputed) {
+      computeCAndD();
+      areCAndDComputed = true;
     }
   }
 
-  private void computeC() {
+  private void computeCAndD() {
     for (int i = 1; i <= inputI.length(); i++) {
       for (int j = 1; j <= inputJ.length(); j++) {
         if (comparator.compare(inputI.elementAt(i - 1), inputJ.elementAt(j - 1)) == 0) {
           c[i][j] = c[i - 1][j - 1] + 1;
+          d[i][j] = 0;
         } else {
           c[i][j] = Math.max(c[i - 1][j], c[i][j - 1]);
+
+          if (c[i - 1][j] > c[i][j - 1]) {
+            d[i][j] = d[i - 1][j] + 1;
+          } else if (c[i - 1][j] < c[i][j - 1]) {
+            d[i][j] = d[i][j - 1] + 1;
+          } else {
+            d[i][j] = Math.max(d[i - 1][j], d[i][j - 1]) + 1;
+          }
         }
       }
     }
   }
 
   public int getLength() {
-    ensureCComputed();
+    ensureCAndDComputed();
     return c[inputI.length()][inputJ.length()];
   }
 
@@ -82,7 +95,7 @@ public class Lcs<T> {
   }
 
   private void computeCommonGroups() {
-    ensureCComputed();
+    ensureCAndDComputed();
 
     int i = inputI.length();
     int j = inputJ.length();
@@ -98,7 +111,7 @@ public class Lcs<T> {
         } while (i != 0 && j != 0 && comparator.compare(inputI.elementAt(i - 1), inputJ.elementAt(j - 1)) == 0);
 
         commonGroups.add(0, currentCommonGroup);
-      } else if (c[i - 1][j] == c[i][j]) {
+      } else if (c[i - 1][j] > c[i][j - 1] || d[i - 1][j] > d[i][j - 1]) {
         i--;
       } else {
         j--;

@@ -54,6 +54,20 @@ public class LcsTest {
   }
 
   @Test
+  public void getCommonGroups_should_always_prefer_longest_varying_group() {
+    assertThat(newLcs("a(b())", "a(f)").getCommonGroups()).containsExactly(new CommonGroup().append(0, 0).append(1, 1), new CommonGroup().append(5, 3));
+    assertThat(newLcs("a(f)", "a(b())").getCommonGroups()).containsExactly(new CommonGroup().append(0, 0).append(1, 1), new CommonGroup().append(3, 5));
+    assertThat(newLcs("a(b()).c(d())", "a(f).c(e)").getCommonGroups()).containsExactly(
+        new CommonGroup().append(0, 0).append(1, 1),
+        new CommonGroup().append(5, 3).append(6, 4).append(7, 5).append(8, 6),
+        new CommonGroup().append(12, 8));
+    assertThat(newLcs("a(b()).c(d)", "a(f).c(e())").getCommonGroups()).containsExactly(
+        new CommonGroup().append(0, 0).append(1, 1),
+        new CommonGroup().append(5, 3).append(6, 4).append(7, 5).append(8, 6),
+        new CommonGroup().append(10, 10));
+  }
+
+  @Test
   public void getVaryingGroups() {
     assertThat(newLcs("", "").getVaryingGroups()).containsExactly();
     assertThat(newLcs("a", "a").getVaryingGroups()).containsExactly();
