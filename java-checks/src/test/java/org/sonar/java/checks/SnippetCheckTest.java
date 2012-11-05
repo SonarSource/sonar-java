@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
@@ -93,10 +92,9 @@ public class SnippetCheckTest {
   }
 
   @Test
-  @Ignore("bad LCS found")
   public void value_method_call() {
     SnippetCheck check = new SnippetCheck();
-    check.dontExample1 = "assertThat(value).isEqualTo(true);";
+    check.dontExample1 = "assertThat(value()).isEqualTo(true);";
     check.doExample1 = "assertThat(value).isTrue();";
     check.dontExample2 = "assertThat(hehe).isEqualTo(true);";
 
