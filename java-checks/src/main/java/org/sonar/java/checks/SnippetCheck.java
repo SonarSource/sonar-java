@@ -39,6 +39,7 @@ import org.sonar.java.checks.codesnippet.JavaPatternGrammar;
 import org.sonar.java.checks.codesnippet.Lcs;
 import org.sonar.java.checks.codesnippet.PatternMatcher;
 import org.sonar.java.checks.codesnippet.PatternMatcherBuilder;
+import org.sonar.java.checks.codesnippet.PatternMatcherResult;
 import org.sonar.java.checks.codesnippet.PrefixParser;
 import org.sonar.java.checks.codesnippet.TokenElementSequence;
 import org.sonar.java.checks.codesnippet.TokenOriginalValueComparator;
@@ -76,13 +77,15 @@ public final class SnippetCheck extends JavaAstCheck implements AstAndTokenVisit
     type = "TEXT")
   public String dontExample2 = DEFAULT_DONT_EXAMPLE2;
 
+  private static final Comparator<Token> COMPARATOR = new TokenOriginalValueComparator();
+
   private final List<Token> tokens = Lists.newLinkedList();
+  private Token firstTokenAfterPrefix = null;
   private PatternMatcher patternMatcher = null;
 
   @Override
   public void init() {
     Lexer lexer = JavaLexer.create(Charset.forName("UTF-8"));
-    Comparator<Token> comparator = new TokenOriginalValueComparator();
 
     if (!StringUtils.isEmpty(dontExample1) && !StringUtils.isEmpty(dontExample2)) {
       TokenElementSequence inputI = new TokenElementSequence(getTokensWithoutEof(lexer.lex(dontExample1)));
@@ -102,21 +105,35 @@ public final class SnippetCheck extends JavaAstCheck implements AstAndTokenVisit
 
       PrefixParser prefixParser = new PrefixParser(parser);
 
-      PatternMatcherBuilder patternMatcherBuilder = new PatternMatcherBuilder(inputI, inputJ, comparator, prefixParser, rules);
+      PatternMatcherBuilder patternMatcherBuilder = new PatternMatcherBuilder(inputI, inputJ, COMPARATOR, prefixParser, rules);
 
-      Lcs<Token> lcs = new Lcs<Token>(inputI, inputJ, comparator);
+      Lcs<Token> lcs = new Lcs<Token>(inputI, inputJ, COMPARATOR);
       List<Group> groups = lcs.getGroups();
 
       patternMatcher = patternMatcherBuilder.getPatternMatcher(groups);
     } else if (!StringUtils.isEmpty(dontExample1)) {
       List<Token> tokensToMatch = getTokensWithoutEof(lexer.lex(dontExample1));
 
-      patternMatcher = new CommonPatternMatcher(tokensToMatch, comparator);
+      patternMatcher = new CommonPatternMatcher(tokensToMatch, COMPARATOR);
+    }
+
+    if (!StringUtils.isEmpty(dontExample1) && !StringUtils.isEmpty(doExample1)) {
+      List<Token> dontExample1Tokens = getTokensWithoutEof(lexer.lex(dontExample1));
+      List<Token> doExample1Tokens = getTokensWithoutEof(lexer.lex(doExample1));
+
+      if (dontExample1Tokens.size() < doExample1Tokens.size() && isPrefix(dontExample1Tokens, doExample1Tokens)) {
+        firstTokenAfterPrefix = doExample1Tokens.get(dontExample1Tokens.size());
+      }
     }
   }
 
   private List<Token> getTokensWithoutEof(List<Token> tokens) {
     return tokens.subList(0, tokens.size() - 1);
+  }
+
+  private boolean isPrefix(List<Token> potentialPrefix, List<Token> input) {
+    CommonPatternMatcher commonPatternMatcher = new CommonPatternMatcher(potentialPrefix, COMPARATOR);
+    return commonPatternMatcher.match(input).isMatching();
   }
 
   @Override
@@ -132,13 +149,36 @@ public final class SnippetCheck extends JavaAstCheck implements AstAndTokenVisit
   public void leaveFile(AstNode node) {
     if (patternMatcher != null) {
       while (!tokens.isEmpty()) {
-        if (patternMatcher.match(tokens).isMatching()) {
+        PatternMatcherResult patternMatcherResult = patternMatcher.match(tokens);
+        if (patternMatcherResult.isMatching() && !isPrefixFalsePositive(patternMatcherResult, tokens)) {
           getContext().createLineViolation(this, "This should be rewritten as: {0}", tokens.get(0), doExample1);
         }
 
         tokens.remove(0);
       }
     }
+  }
+
+  private boolean isPrefixFalsePositive(PatternMatcherResult patternMatcherResult, List<Token> tokens) {
+    if (firstTokenAfterPrefix == null) {
+      return false;
+    }
+
+    int matchingToIndex = getMatchingToIndex(patternMatcherResult);
+
+    return matchingToIndex < tokens.size() ?
+        COMPARATOR.compare(firstTokenAfterPrefix, tokens.get(matchingToIndex)) == 0 : false;
+  }
+
+  private int getMatchingToIndex(PatternMatcherResult patternMatcherResult) {
+    int lastMatchedTokenIndex = 0;
+
+    for (PatternMatcherResult currentPatternMatcherResult = patternMatcherResult; currentPatternMatcherResult != null; currentPatternMatcherResult = currentPatternMatcherResult
+        .getNextPatternMatcherResult()) {
+      lastMatchedTokenIndex += currentPatternMatcherResult.getMatchingToIndex();
+    }
+
+    return lastMatchedTokenIndex;
   }
 
 }

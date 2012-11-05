@@ -115,4 +115,49 @@ public class SnippetCheckTest {
         .next().atLine(7);
   }
 
+  @Test
+  public void prefix() {
+    SnippetCheck check = new SnippetCheck();
+    check.dontExample1 = "@Ignore";
+    check.doExample1 = "@Ignore(\"message\")";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/snippet/Prefix.java"), check);
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(8);
+  }
+
+  @Test
+  public void suffix() {
+    SnippetCheck check = new SnippetCheck();
+    check.dontExample1 = "@Test(expected = IllegalArgumentException.class)";
+    check.doExample1 = "@Test";
+    check.dontExample2 = "@Test(expected = NullPointerException.class)";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/snippet/Suffix.java"), check);
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(7);
+  }
+
+  @Test
+  public void no_do_example() {
+    SnippetCheck check = new SnippetCheck();
+    check.dontExample1 = "java.util.List";
+    check.doExample1 = "";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/snippet/NoDoExample.java"), check);
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(1);
+  }
+
+  @Test
+  public void longer_replacement() {
+    SnippetCheck check = new SnippetCheck();
+    check.dontExample1 = "org.foo";
+    check.doExample1 = "org.example.foo";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/snippet/LongerReplacement.java"), check);
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(1);
+  }
+
 }
