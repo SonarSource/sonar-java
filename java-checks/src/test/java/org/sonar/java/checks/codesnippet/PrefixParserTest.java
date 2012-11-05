@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.sonar.sslr.impl.channel.RegexpChannelBuilder.regexp;
+import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.opt;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class PrefixParserTest {
@@ -42,16 +43,15 @@ public class PrefixParserTest {
   public void parse() {
     Parser<MyGrammar> p = getParser();
     MyGrammar g = p.getGrammar();
-    List<Token> tokens = getLexer().lex("foo");
-    tokens = tokens.subList(0, tokens.size() - 1); // Remove EOF
+    List<Token> tokens = lex("foo");
 
     PrefixParser prefixParser = new PrefixParser(p);
     assertThat(prefixParser.parse(g.foo, tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
     assertThat(prefixParser.parse(g.bar, tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
+    assertThat(prefixParser.parse(g.bar2, tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
     assertThat(prefixParser.parse(g.baz, tokens)).isEqualTo(PrefixParser.PrefixParseResult.PREFIX_MATCH);
 
-    tokens = getLexer().lex("foo bar");
-    tokens = tokens.subList(0, tokens.size() - 1); // Remove EOF
+    tokens = lex("foo bar");
 
     assertThat(prefixParser.parse(g.bar, tokens)).isEqualTo(PrefixParser.PrefixParseResult.MISMATCH);
     assertThat(prefixParser.parse(g.baz, tokens)).isEqualTo(PrefixParser.PrefixParseResult.FULL_MATCH);
@@ -61,8 +61,7 @@ public class PrefixParserTest {
   public void should_restore_previous_parse_root_rule_upon_success() {
     Parser<MyGrammar> p = getParser();
     MyGrammar g = p.getGrammar();
-    List<Token> tokens = getLexer().lex("foo");
-    tokens = tokens.subList(0, tokens.size() - 1); // Remove EOF
+    List<Token> tokens = lex("foo");
 
     p.setRootRule(g.foo);
 
@@ -87,6 +86,11 @@ public class PrefixParserTest {
     assertThat(p.getRootRule()).isEqualTo(g.foo);
   }
 
+  private List<Token> lex(String input) {
+    List<Token> tokens = getLexer().lex(input);
+    return tokens.subList(0, tokens.size() - 1);
+  }
+
   private Lexer getLexer() {
     return Lexer.builder()
         .withFailIfNoChannelToConsumeOneCharacter(true)
@@ -106,12 +110,14 @@ public class PrefixParserTest {
 
     public Rule foo;
     public Rule bar;
+    public Rule bar2;
     public Rule baz;
     public Rule qux;
 
     public MyGrammar() {
       foo.is(GenericTokenType.LITERAL);
       bar.is(GenericTokenType.IDENTIFIER);
+      bar2.is(GenericTokenType.IDENTIFIER, opt(GenericTokenType.IDENTIFIER));
       baz.is(GenericTokenType.IDENTIFIER, GenericTokenType.IDENTIFIER);
       qux.is(GenericTokenType.IDENTIFIER, GenericTokenType.LITERAL);
     }

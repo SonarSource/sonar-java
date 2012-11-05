@@ -61,7 +61,7 @@ public class Classifier {
         }
       }
 
-      checkState(atLeastOneRuleMatched, "no rule matched the input: " + inputsTokens + " (rules attempted: " + rules + ")");
+      checkState(atLeastOneRuleMatched, "no rule matched the input: " + inputTokens + " (rules attempted: " + rules + ")");
     }
 
     return matchingRulesBuilder.build();

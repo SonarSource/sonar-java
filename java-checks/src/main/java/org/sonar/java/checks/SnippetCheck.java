@@ -19,131 +19,126 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.Token;
+import com.sonar.sslr.impl.Lexer;
+import com.sonar.sslr.impl.Parser;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Cardinality;
 import org.sonar.check.Priority;
-import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.lexer.JavaLexer;
 import org.sonar.java.ast.visitors.JavaAstCheck;
+import org.sonar.java.checks.codesnippet.CommonPatternMatcher;
+import org.sonar.java.checks.codesnippet.Group;
+import org.sonar.java.checks.codesnippet.JavaPatternGrammar;
+import org.sonar.java.checks.codesnippet.Lcs;
+import org.sonar.java.checks.codesnippet.PatternMatcher;
+import org.sonar.java.checks.codesnippet.PatternMatcherBuilder;
+import org.sonar.java.checks.codesnippet.PrefixParser;
+import org.sonar.java.checks.codesnippet.TokenElementSequence;
+import org.sonar.java.checks.codesnippet.TokenOriginalValueComparator;
 
 import java.nio.charset.Charset;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
-@Rule(
+@org.sonar.check.Rule(
   key = "Snippet",
   priority = Priority.MAJOR,
   cardinality = Cardinality.MULTIPLE)
 public final class SnippetCheck extends JavaAstCheck implements AstAndTokenVisitor {
 
-  private static final String DEFAULT_DONT_EXAMPLE = "";
-  private static final String DEFAULT_DO_EXAMPLE = "";
+  private static final String DEFAULT_DONT_EXAMPLE1 = "";
+  private static final String DEFAULT_DO_EXAMPLE1 = "";
+
+  private static final String DEFAULT_DONT_EXAMPLE2 = "";
 
   @RuleProperty(
-    key = "dontExample",
-    defaultValue = "" + DEFAULT_DONT_EXAMPLE,
+    key = "dontExample1",
+    defaultValue = "" + DEFAULT_DONT_EXAMPLE1,
     type = "TEXT")
-  public String dontExample = DEFAULT_DONT_EXAMPLE;
+  public String dontExample1 = DEFAULT_DONT_EXAMPLE1;
+  @RuleProperty(
+    key = "doExample1",
+    defaultValue = "" + DEFAULT_DO_EXAMPLE1,
+    type = "TEXT")
+  public String doExample1 = DEFAULT_DO_EXAMPLE1;
 
   @RuleProperty(
-    key = "doExample",
-    defaultValue = "" + DEFAULT_DO_EXAMPLE,
+    key = "dontExample2",
+    defaultValue = "" + DEFAULT_DONT_EXAMPLE2,
     type = "TEXT")
-  public String doExample = DEFAULT_DO_EXAMPLE;
+  public String dontExample2 = DEFAULT_DONT_EXAMPLE2;
 
-  private List<Token> tokensToBeMatched;
-  private int tokenIndexToBeMatched;
-  private PlaceholderState placeholderState;
-  private int placeholderParenthesesBalancedLevel;
-
-  private enum PlaceholderState {
-    IN,
-    OUT,
-    LEAVING
-  }
+  private final List<Token> tokens = Lists.newLinkedList();
+  private PatternMatcher patternMatcher = null;
 
   @Override
   public void init() {
-    if (!StringUtils.isEmpty(dontExample)) {
-      tokensToBeMatched = JavaLexer.create(Charset.forName("UTF-8")).lex(dontExample);
+    Lexer lexer = JavaLexer.create(Charset.forName("UTF-8"));
+    Comparator<Token> comparator = new TokenOriginalValueComparator();
 
-      // Exclude the EOF token
-      tokensToBeMatched = tokensToBeMatched.subList(0, tokensToBeMatched.size() - 1);
+    if (!StringUtils.isEmpty(dontExample1) && !StringUtils.isEmpty(dontExample2)) {
+      TokenElementSequence inputI = new TokenElementSequence(getTokensWithoutEof(lexer.lex(dontExample1)));
+      TokenElementSequence inputJ = new TokenElementSequence(getTokensWithoutEof(lexer.lex(dontExample2)));
 
-      // "value" cannot be last
-      // "value(" is not allowed
-      // "value.value" is not allowed
-    } else {
-      tokensToBeMatched = Lists.newArrayList();
+      JavaPatternGrammar g = new JavaPatternGrammar();
+      Parser<JavaPatternGrammar> parser = g.getParser(lexer);
+      Set<Rule> rules = ImmutableSet.of(
+          g.characterLiteral,
+          g.stringLiteral,
+          g.nullLiteral,
+          g.booleanLiteral,
+          g.integerLiteral,
+          g.floatingLiteral,
+          g.qualifiedIdentifier,
+          g.methodCall);
+
+      PrefixParser prefixParser = new PrefixParser(parser);
+
+      PatternMatcherBuilder patternMatcherBuilder = new PatternMatcherBuilder(inputI, inputJ, comparator, prefixParser, rules);
+
+      Lcs<Token> lcs = new Lcs<Token>(inputI, inputJ, comparator);
+      List<Group> groups = lcs.getGroups();
+
+      patternMatcher = patternMatcherBuilder.getPatternMatcher(groups);
+    } else if (!StringUtils.isEmpty(dontExample1)) {
+      List<Token> tokensToMatch = getTokensWithoutEof(lexer.lex(dontExample1));
+
+      patternMatcher = new CommonPatternMatcher(tokensToMatch, comparator);
     }
+  }
+
+  private List<Token> getTokensWithoutEof(List<Token> tokens) {
+    return tokens.subList(0, tokens.size() - 1);
   }
 
   @Override
   public void visitFile(AstNode node) {
-    tokenIndexToBeMatched = 0;
-    placeholderState = PlaceholderState.OUT;
+    tokens.clear();
   }
 
   public void visitToken(Token token) {
-    if (!tokensToBeMatched.isEmpty()) {
-      updatePlaceholderState(token);
-
-      if (placeholderState == PlaceholderState.OUT) {
-        String expectedValue = tokensToBeMatched.get(tokenIndexToBeMatched).getOriginalValue();
-        String actualValue = token.getOriginalValue();
-
-        if (actualValue.equals(expectedValue)) {
-          tokenIndexToBeMatched++;
-          if (tokenIndexToBeMatched == tokensToBeMatched.size()) {
-            getContext().createLineViolation(this, "This should be rewritten as: " + doExample, token);
-            tokenIndexToBeMatched = 0;
-          }
-        } else {
-          tokenIndexToBeMatched = 0;
-        }
-      }
-    }
+    tokens.add(token);
   }
 
-  private void updatePlaceholderState(Token token) {
-    String expectedValue = tokensToBeMatched.get(tokenIndexToBeMatched).getOriginalValue();
-    String actualValue = token.getOriginalValue();
-
-    if (placeholderState == PlaceholderState.LEAVING) {
-
-      if (actualValue.equals(expectedValue)) {
-        placeholderState = PlaceholderState.OUT;
-      } else {
-        placeholderState = PlaceholderState.IN;
-      }
-    }
-
-    if (placeholderState == PlaceholderState.IN) {
-      if ("(".equals(actualValue)) {
-        placeholderParenthesesBalancedLevel++;
-      } else if (")".equals(actualValue) && placeholderParenthesesBalancedLevel > 0) {
-        placeholderParenthesesBalancedLevel--;
-      } else if (placeholderParenthesesBalancedLevel == 0) {
-        if (",".equals(actualValue)) {
-          placeholderState = PlaceholderState.OUT;
-        } else if (".".equals(actualValue)) {
-          placeholderState = PlaceholderState.LEAVING;
-        } else if (actualValue.equals(expectedValue)) {
-          placeholderState = PlaceholderState.OUT;
+  @Override
+  public void leaveFile(AstNode node) {
+    if (patternMatcher != null) {
+      while (!tokens.isEmpty()) {
+        if (patternMatcher.isMatching(tokens)) {
+          getContext().createLineViolation(this, "This should be rewritten as: {0}", tokens.get(0), doExample1);
         }
-      }
-    } else if (isPlaceholder(tokensToBeMatched.get(tokenIndexToBeMatched))) {
-      placeholderState = PlaceholderState.IN;
-      tokenIndexToBeMatched++;
-    }
-  }
 
-  private boolean isPlaceholder(Token token) {
-    return "value".equals(token.getOriginalValue());
+        tokens.remove(0);
+      }
+    }
   }
 
 }

@@ -43,9 +43,9 @@ public class PrefixParser {
       parser.setRootRule(rule);
       parser.parse(tokens);
 
-      int lastAttemptedTokenIndex = parser.getParsingState().getOutpostMatcherTokenIndex();
+      int lexerIndex = parser.getParsingState().lexerIndex;
 
-      return lastAttemptedTokenIndex == tokens.size() - 1 ?
+      return lexerIndex == tokens.size() ?
           PrefixParseResult.FULL_MATCH :
           PrefixParseResult.MISMATCH;
     } catch (RecognitionException re) {
