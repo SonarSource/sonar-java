@@ -51,6 +51,7 @@ public class ClassifierTest {
     PrefixParser prefixParser = new PrefixParser(p);
 
     assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo);
+    assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla", "bar")))).containsOnly(g.foo);
     assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo, g.bar)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo, g.bar);
     assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo, g.bar, g.baz)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla")))).containsOnly(g.foo, g.bar);
     assertThat(new Classifier(prefixParser, Sets.newHashSet(g.foo, g.baz)).getMatchingRules(getInputsTokens(Lists.newArrayList("bla bla")))).containsOnly(g.baz);

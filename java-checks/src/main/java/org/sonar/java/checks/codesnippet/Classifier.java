@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.codesnippet;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.checks.codesnippet.PrefixParser.PrefixParseResult;
@@ -49,14 +49,18 @@ public class Classifier {
     checkNotNull(inputsTokens);
     checkArgument(!inputsTokens.isEmpty(), "inputsTokens cannot be empty");
 
-    ImmutableSet.Builder<Rule> matchingRulesBuilder = ImmutableSet.builder();
+    Set<Rule> matchingRules = Sets.newHashSet();
 
     for (List<Token> inputTokens : inputsTokens) {
       boolean atLeastOneRuleMatched = false;
 
       for (Rule rule : rules) {
+        if (matchingRules.contains(rule) && atLeastOneRuleMatched) {
+          continue;
+        }
+
         if (prefixParser.parse(rule, inputTokens) == PrefixParseResult.FULL_MATCH) {
-          matchingRulesBuilder.add(rule);
+          matchingRules.add(rule);
           atLeastOneRuleMatched = true;
         }
       }
@@ -64,7 +68,7 @@ public class Classifier {
       checkState(atLeastOneRuleMatched, "no rule matched the input: " + inputTokens + " (rules attempted: " + rules + ")");
     }
 
-    return matchingRulesBuilder.build();
+    return matchingRules;
   }
 
 }
