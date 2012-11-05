@@ -50,7 +50,7 @@ public class VaryingPatternMatcher extends PatternMatcher {
   }
 
   @Override
-  public boolean isMatching(List<Token> tokens) {
+  public PatternMatcherResult match(List<Token> tokens) {
     Set<Rule> ruleCandidates = Sets.newHashSet(rules);
     Token nextCommonPatternMatcherTokenToMatch = getNextCommonPatternMatcherTokenToMatch();
 
@@ -64,10 +64,12 @@ public class VaryingPatternMatcher extends PatternMatcher {
 
           if (prefixParseResult == PrefixParseResult.MISMATCH) {
             mismatchingRules.add(ruleCandidate);
-          } else if (prefixParseResult == PrefixParseResult.FULL_MATCH &&
-            getNextPatternMatcher().isMatching(tokens.subList(prefixMatchTokens, tokens.size()))) {
+          } else if (prefixParseResult == PrefixParseResult.FULL_MATCH) {
+            PatternMatcherResult nextPatternMatcherResult = getNextPatternMatcher().match(tokens.subList(prefixMatchTokens, tokens.size()));
 
-            return true;
+            if (nextPatternMatcherResult.isMatching()) {
+              return new PatternMatcherResult(prefixMatchTokens, nextPatternMatcherResult);
+            }
           }
         }
 
@@ -81,7 +83,7 @@ public class VaryingPatternMatcher extends PatternMatcher {
       prefixMatchTokens++;
     }
 
-    return false;
+    return PatternMatcherResult.getMismatch();
   }
 
   @VisibleForTesting

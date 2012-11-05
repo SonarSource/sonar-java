@@ -25,6 +25,7 @@ import com.sonar.sslr.api.TokenType;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -77,7 +78,7 @@ public class CommonPatternMatcherTest {
     List<Token> tokens = mock(List.class);
     when(tokensToMatch.size()).thenReturn(1);
 
-    assertThat(new CommonPatternMatcher(tokensToMatch, mock(Comparator.class)).isMatching(tokens)).isEqualTo(false);
+    assertThat(new CommonPatternMatcher(tokensToMatch, mock(Comparator.class)).match(tokens).isMatching()).isEqualTo(false);
   }
 
   @Test
@@ -92,7 +93,7 @@ public class CommonPatternMatcherTest {
 
     CommonPatternMatcher patternMatcher = new CommonPatternMatcher(tokensToMatch, comparator);
 
-    assertThat(patternMatcher.isMatching(Lists.newArrayList(token1, token2, token3))).isEqualTo(true);
+    assertThat(patternMatcher.match(Lists.newArrayList(token1, token2, token3)).isMatching()).isEqualTo(true);
     verify(comparator).compare(token1, token1);
     verify(comparator).compare(token2, token2);
     verify(comparator, never()).compare(token3, token3);
@@ -112,7 +113,7 @@ public class CommonPatternMatcherTest {
 
     CommonPatternMatcher patternMatcher = new CommonPatternMatcher(tokensToMatch, comparator);
 
-    assertThat(patternMatcher.isMatching(Lists.newArrayList(token1, token2, token3))).isEqualTo(false);
+    assertThat(patternMatcher.match(Lists.newArrayList(token1, token2, token3)).isMatching()).isEqualTo(false);
     verify(comparator).compare(token1, token1);
     verify(comparator).compare(token3, token2);
     verify(comparator, never()).compare(token2, token2);
@@ -130,11 +131,15 @@ public class CommonPatternMatcherTest {
     Comparator<Token> comparator = mock(Comparator.class);
 
     PatternMatcher nextPatternMatcher = mock(PatternMatcher.class);
-    when(nextPatternMatcher.isMatching(Lists.newArrayList(token2, token3))).thenReturn(true);
+    PatternMatcherResult nextPatternMatcherResultFalse = mock(PatternMatcherResult.class);
+    PatternMatcherResult nextPatternMatcherResultTrue = mock(PatternMatcherResult.class);
+    when(nextPatternMatcherResultTrue.isMatching()).thenReturn(true);
+    when(nextPatternMatcher.match(Mockito.anyList())).thenReturn(nextPatternMatcherResultFalse);
+    when(nextPatternMatcher.match(Lists.newArrayList(token2, token3))).thenReturn(nextPatternMatcherResultTrue);
     CommonPatternMatcher patternMatcher = new CommonPatternMatcher(tokensToMatch, comparator, nextPatternMatcher);
 
-    assertThat(patternMatcher.isMatching(Lists.newArrayList(token1, token2, token3))).isEqualTo(true);
-    assertThat(patternMatcher.isMatching(Lists.newArrayList(token1, token2))).isEqualTo(false);
+    assertThat(patternMatcher.match(Lists.newArrayList(token1, token2, token3)).isMatching()).isEqualTo(true);
+    assertThat(patternMatcher.match(Lists.newArrayList(token1, token2)).isMatching()).isEqualTo(false);
   }
 
   private Token mockToken(String value) {

@@ -132,7 +132,7 @@ public final class SnippetCheck extends JavaAstCheck implements AstAndTokenVisit
   public void leaveFile(AstNode node) {
     if (patternMatcher != null) {
       while (!tokens.isEmpty()) {
-        if (patternMatcher.isMatching(tokens)) {
+        if (patternMatcher.match(tokens).isMatching()) {
           getContext().createLineViolation(this, "This should be rewritten as: {0}", tokens.get(0), doExample1);
         }
 

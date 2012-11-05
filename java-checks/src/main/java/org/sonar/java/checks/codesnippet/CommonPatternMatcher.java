@@ -57,9 +57,9 @@ public class CommonPatternMatcher extends PatternMatcher {
   }
 
   @Override
-  public boolean isMatching(List<Token> tokens) {
+  public PatternMatcherResult match(List<Token> tokens) {
     if (tokens.size() < tokensToMatch.size()) {
-      return false;
+      return PatternMatcherResult.getMismatch();
     }
 
     for (int i = 0; i < tokensToMatch.size(); i++) {
@@ -67,14 +67,14 @@ public class CommonPatternMatcher extends PatternMatcher {
       Token token = tokens.get(i);
 
       if (comparator.compare(tokenToMatch, token) != 0) {
-        return false;
+        return PatternMatcherResult.getMismatch();
       }
     }
 
     if (hasNextPatternMatcher()) {
-      return getNextPatternMatcher().isMatching(tokens.subList(tokensToMatch.size(), tokens.size()));
+      return new PatternMatcherResult(tokensToMatch.size(), getNextPatternMatcher().match(tokens.subList(tokensToMatch.size(), tokens.size())));
     } else {
-      return true;
+      return new PatternMatcherResult(tokensToMatch.size());
     }
   }
 

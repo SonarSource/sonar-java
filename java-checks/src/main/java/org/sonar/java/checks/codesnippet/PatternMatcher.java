@@ -39,6 +39,6 @@ public abstract class PatternMatcher {
     return nextPatternMatcher != null;
   }
 
-  public abstract boolean isMatching(List<Token> tokens);
+  public abstract PatternMatcherResult match(List<Token> tokens);
 
 }

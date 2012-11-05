@@ -75,7 +75,7 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token3, token1);
 
-    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).isMatching(tokens)).isEqualTo(false);
+    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).match(tokens).isMatching()).isEqualTo(false);
 
     verify(comparator, times(2)).compare(token1, token2);
     verify(comparator).compare(token3, token2);
@@ -94,7 +94,11 @@ public class VaryingPatternMatcherTest {
     CommonPatternMatcher nextCommonPatternMatcher = mock(CommonPatternMatcher.class);
     when(nextCommonPatternMatcher.getTokensToMatch()).thenReturn(Lists.newArrayList(token2));
     when(nextCommonPatternMatcher.getComparator()).thenReturn(comparator);
-    when(nextCommonPatternMatcher.isMatching(Lists.newArrayList(token2, token3, token2))).thenReturn(true);
+    PatternMatcherResult nextCommonPatternMatcherResultFalse = mock(PatternMatcherResult.class);
+    PatternMatcherResult nextCommonPatternMatcherResultTrue = mock(PatternMatcherResult.class);
+    when(nextCommonPatternMatcherResultTrue.isMatching()).thenReturn(true);
+    when(nextCommonPatternMatcher.match(Mockito.anyList())).thenReturn(nextCommonPatternMatcherResultFalse);
+    when(nextCommonPatternMatcher.match(Lists.newArrayList(token2, token3, token2))).thenReturn(nextCommonPatternMatcherResultTrue);
 
     Rule rule = mock(Rule.class);
 
@@ -103,12 +107,12 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token2, token3, token2);
 
-    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).isMatching(tokens)).isEqualTo(false);
+    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).match(tokens).isMatching()).isEqualTo(false);
 
     verify(prefixParser).parse(rule, Lists.newArrayList(token1));
     verify(comparator).compare(token1, token2);
     verify(comparator).compare(token2, token2);
-    verify(nextCommonPatternMatcher, never()).isMatching(Lists.newArrayList(token2, token3, token2));
+    verify(nextCommonPatternMatcher, never()).match(Lists.newArrayList(token2, token3, token2));
   }
 
   @Test
@@ -124,7 +128,11 @@ public class VaryingPatternMatcherTest {
     CommonPatternMatcher nextCommonPatternMatcher = mock(CommonPatternMatcher.class);
     when(nextCommonPatternMatcher.getTokensToMatch()).thenReturn(Lists.newArrayList(token2));
     when(nextCommonPatternMatcher.getComparator()).thenReturn(comparator);
-    when(nextCommonPatternMatcher.isMatching(Lists.newArrayList(token2, token3, token2))).thenReturn(true);
+    PatternMatcherResult nextCommonPatternMatcherResultFalse = mock(PatternMatcherResult.class);
+    PatternMatcherResult nextCommonPatternMatcherResultTrue = mock(PatternMatcherResult.class);
+    when(nextCommonPatternMatcherResultTrue.isMatching()).thenReturn(true);
+    when(nextCommonPatternMatcher.match(Mockito.anyList())).thenReturn(nextCommonPatternMatcherResultFalse);
+    when(nextCommonPatternMatcher.match(Lists.newArrayList(token2, token3, token2))).thenReturn(nextCommonPatternMatcherResultTrue);
 
     Rule rule = mock(Rule.class);
 
@@ -133,12 +141,12 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token2, token3, token2);
 
-    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).isMatching(tokens)).isEqualTo(true);
+    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).match(tokens).isMatching()).isEqualTo(true);
 
     verify(prefixParser).parse(rule, Lists.newArrayList(token1));
     verify(comparator).compare(token1, token2);
     verify(comparator).compare(token2, token2);
-    verify(nextCommonPatternMatcher).isMatching(Lists.newArrayList(token2, token3, token2));
+    verify(nextCommonPatternMatcher).match(Lists.newArrayList(token2, token3, token2));
   }
 
   @Test
@@ -154,7 +162,11 @@ public class VaryingPatternMatcherTest {
     CommonPatternMatcher nextCommonPatternMatcher = mock(CommonPatternMatcher.class);
     when(nextCommonPatternMatcher.getTokensToMatch()).thenReturn(Lists.newArrayList(token2));
     when(nextCommonPatternMatcher.getComparator()).thenReturn(comparator);
-    when(nextCommonPatternMatcher.isMatching(Lists.newArrayList(token2))).thenReturn(true);
+    PatternMatcherResult nextCommonPatternMatcherResultFalse = mock(PatternMatcherResult.class);
+    PatternMatcherResult nextCommonPatternMatcherResultTrue = mock(PatternMatcherResult.class);
+    when(nextCommonPatternMatcherResultTrue.isMatching()).thenReturn(true);
+    when(nextCommonPatternMatcher.match(Mockito.anyList())).thenReturn(nextCommonPatternMatcherResultFalse);
+    when(nextCommonPatternMatcher.match(Lists.newArrayList(token2))).thenReturn(nextCommonPatternMatcherResultTrue);
 
     Rule rule = mock(Rule.class);
 
@@ -164,14 +176,14 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token2, token3, token2);
 
-    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).isMatching(tokens)).isEqualTo(true);
+    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).match(tokens).isMatching()).isEqualTo(true);
 
     verify(prefixParser).parse(rule, Lists.newArrayList(token1));
     verify(prefixParser).parse(rule, Lists.newArrayList(token1, token2, token3));
     verify(comparator).compare(token1, token2);
     verify(comparator, times(2)).compare(token2, token2);
     verify(comparator).compare(token3, token2);
-    verify(nextCommonPatternMatcher).isMatching(Lists.newArrayList(token2));
+    verify(nextCommonPatternMatcher).match(Lists.newArrayList(token2));
   }
 
   @Test
@@ -187,7 +199,11 @@ public class VaryingPatternMatcherTest {
     CommonPatternMatcher nextCommonPatternMatcher = mock(CommonPatternMatcher.class);
     when(nextCommonPatternMatcher.getTokensToMatch()).thenReturn(Lists.newArrayList(token2));
     when(nextCommonPatternMatcher.getComparator()).thenReturn(comparator);
-    when(nextCommonPatternMatcher.isMatching(Lists.newArrayList(token2))).thenReturn(true);
+    PatternMatcherResult nextCommonPatternMatcherResultFalse = mock(PatternMatcherResult.class);
+    PatternMatcherResult nextCommonPatternMatcherResultTrue = mock(PatternMatcherResult.class);
+    when(nextCommonPatternMatcherResultTrue.isMatching()).thenReturn(true);
+    when(nextCommonPatternMatcher.match(Mockito.anyList())).thenReturn(nextCommonPatternMatcherResultFalse);
+    when(nextCommonPatternMatcher.match(Lists.newArrayList(token2))).thenReturn(nextCommonPatternMatcherResultTrue);
 
     Rule rule = mock(Rule.class);
 
@@ -197,14 +213,14 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token2, token3, token2);
 
-    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).isMatching(tokens)).isEqualTo(true);
+    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).match(tokens).isMatching()).isEqualTo(true);
 
     verify(prefixParser).parse(rule, Lists.newArrayList(token1));
     verify(prefixParser).parse(rule, Lists.newArrayList(token1, token2, token3));
     verify(comparator).compare(token1, token2);
     verify(comparator, times(2)).compare(token2, token2);
     verify(comparator).compare(token3, token2);
-    verify(nextCommonPatternMatcher).isMatching(Lists.newArrayList(token2));
+    verify(nextCommonPatternMatcher).match(Lists.newArrayList(token2));
   }
 
   @Test
