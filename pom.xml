@@ -43,6 +43,7 @@
     <module>sonar-checkstyle-plugin</module>
     <module>sonar-surefire-plugin</module>
     <module>sonar-cobertura-plugin</module>
+    <module>sonar-jacoco-plugin</module>
     <module>sslr-java-toolkit</module>
   </modules>
 
