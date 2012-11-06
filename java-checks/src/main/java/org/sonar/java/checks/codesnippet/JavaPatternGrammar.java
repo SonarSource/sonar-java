@@ -47,6 +47,8 @@ public class JavaPatternGrammar extends Grammar {
   public Rule methodCall;
 
   public JavaPatternGrammar() {
+    super();
+
     identifier.is(or(
         GenericTokenType.IDENTIFIER,
         JavaKeyword.THIS,
