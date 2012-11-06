@@ -43,6 +43,7 @@ public final class CheckList {
         CommentedOutCodeLineCheck.class,
         EmptyFileCheck.class,
         SnippetCheck.class,
+        XPathCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
