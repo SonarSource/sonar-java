@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -8,10 +9,10 @@
     <version>1.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>sonar-surefire-plugin</artifactId>
+  <artifactId>sonar-cobertura-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
-  <name>Sonar Java :: Surefire Plugin</name>
+  <name>Sonar Java :: Cobertura Plugin</name>
 
   <dependencies>
     <dependency>
@@ -19,6 +20,16 @@
       <artifactId>sonar-plugin-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.sonar-plugins.java</groupId>
+      <artifactId>sonar-java-plugin</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- TODO http://jira.codehaus.org/browse/SONAR-2011
+    We need following dependency, otherwise we will receive compilation error
+    -->
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-project</artifactId>
@@ -29,6 +40,11 @@
     <dependency>
       <groupId>org.codehaus.sonar</groupId>
       <artifactId>sonar-testing-harness</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easytesting</groupId>
+      <artifactId>fest-assert</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -47,11 +63,10 @@
         <groupId>org.codehaus.sonar</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
         <configuration>
-          <pluginKey>surefire</pluginKey>
-          <pluginName>Surefire</pluginName>
-          <pluginClass>org.sonar.plugins.surefire.SurefirePlugin</pluginClass>
-          <pluginDescription>
-            <![CDATA[Get results of unit tests with <a href='http://maven.apache.org/plugins/maven-surefire-plugin/'>Surefire</a>.]]></pluginDescription>
+          <pluginKey>cobertura</pluginKey>
+          <pluginName>Cobertura</pluginName>
+          <pluginClass>org.sonar.plugins.cobertura.CoberturaPlugin</pluginClass>
+          <pluginDescription><![CDATA[Get code coverage with <a href="http://cobertura.sourceforge.net/">Cobertura</a>.]]></pluginDescription>
         </configuration>
       </plugin>
       <!-- Running JUnit tests in parallel -->
