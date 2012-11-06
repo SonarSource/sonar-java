@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
-import org.sonar.plugins.java.JavaPlugin;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -59,4 +58,5 @@ public class JavaSettingsTest {
     settings.setProperty("sonar.core.codeCoveragePlugin", "emma");
     assertThat(javaSettings.getEnabledCoveragePlugin()).isEqualTo("emma");
   }
+
 }

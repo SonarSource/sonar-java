@@ -42,6 +42,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JavaSourceImporterTest {
 
@@ -57,10 +58,10 @@ public class JavaSourceImporterTest {
 
   @Test
   public void should_execute_on_java_project() {
-    Project project = new Project("key");
-    project.setLanguageKey("java");
+    Project project = mock(Project.class);
+    when(project.getLanguageKey()).thenReturn("java");
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
-    project.setLanguageKey("py");
+    when(project.getLanguageKey()).thenReturn("py");
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 

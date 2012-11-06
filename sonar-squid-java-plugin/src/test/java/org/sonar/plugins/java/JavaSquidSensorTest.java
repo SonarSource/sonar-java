@@ -29,6 +29,7 @@ import org.sonar.api.resources.Project;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JavaSquidSensorTest {
 
@@ -41,10 +42,10 @@ public class JavaSquidSensorTest {
 
   @Test
   public void should_execute_on_java_project() {
-    Project project = new Project("key");
-    project.setLanguageKey("java");
+    Project project = mock(Project.class);
+    when(project.getLanguageKey()).thenReturn("java");
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
-    project.setLanguageKey("py");
+    when(project.getLanguageKey()).thenReturn("py");
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 
