@@ -8,44 +8,56 @@
     <version>1.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>sonar-pmd-plugin</artifactId>
+  <artifactId>sonar-checkstyle-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
-  <name>Sonar Java :: PMD Plugin</name>
-  <description>PMD is a tool that looks for potential problems like possible bugs, dead code, suboptimal code, overcomplicated expressions or duplicate code.</description>
+  <name>Sonar Java :: Checkstyle Plugin</name>
+  <description>Checkstyle is a code analyser to help programmers write Java code that adheres to a coding standard.</description>
 
   <properties>
-    <pmd.version>4.3</pmd.version>
+    <checkstyle.version>5.6</checkstyle.version>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.codehaus.sonar</groupId>
-      <artifactId>sonar-java-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.codehaus.sonar</groupId>
       <artifactId>sonar-plugin-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>pmd</groupId>
-      <artifactId>pmd</artifactId>
-      <version>${pmd.version}</version>
+      <groupId>com.puppycrawl.tools</groupId>
+      <artifactId>checkstyle</artifactId>
+      <version>${checkstyle.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
         <exclusion>
-          <!-- optimization for JAR size -->
-          <groupId>ant</groupId>
-          <artifactId>ant</artifactId>
+          <groupId>com.google.collections</groupId>
+          <artifactId>google-collections</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>xom</groupId>
-          <artifactId>xom</artifactId>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-collections</groupId>
+          <artifactId>commons-collections</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-cli</groupId>
+          <artifactId>commons-cli</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- See SONAR-2512 -->
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Checkstyle 5.5 declares this dependency, whereas 5.1 not -->
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -67,15 +79,6 @@
       <artifactId>sonar-testing-harness</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <!--
-    <dependency>
-      <groupId>org.codehaus.sonar.plugins</groupId>
-      <artifactId>sonar-l10n-en-plugin</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    -->
   </dependencies>
 
   <build>
@@ -85,7 +88,6 @@
         <filtering>true</filtering>
       </resource>
     </resources>
-
     <testResources>
       <testResource>
         <directory>${basedir}/src/main/resources</directory>
@@ -94,16 +96,16 @@
         <directory>${basedir}/src/test/resources</directory>
       </testResource>
     </testResources>
-
     <plugins>
       <plugin>
         <groupId>org.codehaus.sonar</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
         <configuration>
-          <pluginKey>pmd</pluginKey>
-          <pluginName>PMD</pluginName>
-          <pluginDescription><![CDATA[Analyze Java code with <a href="http://pmd.sourceforge.net/">PMD</a> ${pmd.version}.]]></pluginDescription>
-          <pluginClass>org.sonar.plugins.pmd.PmdPlugin</pluginClass>
+          <pluginKey>checkstyle</pluginKey>
+          <pluginName>Checkstyle</pluginName>
+          <pluginClass>org.sonar.plugins.checkstyle.CheckstylePlugin</pluginClass>
+          <pluginDescription>
+            <![CDATA[Analyze Java code with <a href="http://checkstyle.sourceforge.net/">Checkstyle</a> ${checkstyle.version}.]]></pluginDescription>
         </configuration>
       </plugin>
       <plugin>
@@ -119,8 +121,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>1600000</maxsize>
-                  <minsize>1400000</minsize>
+                  <maxsize>1100000</maxsize>
+                  <minsize>1000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
@@ -129,6 +131,16 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <!-- Running JUnit tests in parallel -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <parallel>methods</parallel>
+          <threadCount>3</threadCount>
+          <perCoreThreadCount>true</perCoreThreadCount>
+        </configuration>
       </plugin>
     </plugins>
   </build>
