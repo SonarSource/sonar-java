@@ -22,6 +22,7 @@ package org.sonar.java.ast.lexer;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.TokenType;
 import com.sonar.sslr.impl.Lexer;
+import com.sonar.sslr.impl.LexerException;
 import org.sonar.channel.Channel;
 import org.sonar.channel.CodeReader;
 
@@ -42,6 +43,9 @@ public class CharacterLiteralChannel extends Channel<Lexer> {
     if (code.peek() != ch) {
       return false;
     }
+
+    sb.delete(0, sb.length());
+
     int line = code.getCursor().getLine();
     int column = code.getCursor().getColumn();
     char prev;
@@ -52,7 +56,11 @@ public class CharacterLiteralChannel extends Channel<Lexer> {
         prev = (char) code.pop();
         sb.append(prev);
       }
-    } while (code.peek() != ch);
+    } while (code.peek() != ch && !isPrematureEnd(code.peek()));
+
+    if (isPrematureEnd(code.peek())) {
+      throw new LexerException("Invalid literal");
+    }
 
     sb.append((char) code.pop());
     String value = sb.toString();
@@ -67,9 +75,11 @@ public class CharacterLiteralChannel extends Channel<Lexer> {
 
     lexer.addToken(token);
 
-    sb.delete(0, sb.length());
-
     return true;
+  }
+
+  private static boolean isPrematureEnd(int ch) {
+    return ch == -1 || ch == '\n' || ch == '\r';
   }
 
 }

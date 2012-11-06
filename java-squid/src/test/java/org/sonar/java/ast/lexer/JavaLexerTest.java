@@ -22,9 +22,12 @@ package org.sonar.java.ast.lexer;
 import com.google.common.base.Charsets;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.impl.Lexer;
+import com.sonar.sslr.impl.LexerException;
 import com.sonar.sslr.impl.channel.UnknownCharacterChannel;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
@@ -37,6 +40,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class JavaLexerTest {
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
   private static Lexer lexer;
 
@@ -237,6 +243,12 @@ public class JavaLexerTest {
     assertThat("unicode escape", lexer.lex("'\\u005c\\u005c'"), hasToken("'\\u005c\\u005c'", JavaTokenType.CHARACTER_LITERAL));
   }
 
+  @Test
+  public void incomplete_character_literal() {
+    thrown.expect(LexerException.class);
+    lexer.lex("'\n'");
+  }
+
   /**
    * http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#3.10.5
    * http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#3.10.6
@@ -250,6 +262,12 @@ public class JavaLexerTest {
         hasToken("\"string, which contains \\\"escaped double quotes\\\"\"", GenericTokenType.LITERAL));
     assertThat("octal escape", lexer.lex("\"string \\177\""), hasToken("\"string \\177\"", GenericTokenType.LITERAL));
     assertThat("unicode escape", lexer.lex("\"string \\u03a9\""), hasToken("\"string \\u03a9\"", GenericTokenType.LITERAL));
+  }
+
+  @Test
+  public void incomplete_string_literal() {
+    thrown.expect(LexerException.class);
+    lexer.lex("\"");
   }
 
   /**
