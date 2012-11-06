@@ -36,6 +36,7 @@ import org.sonar.java.ast.visitors.JavaAstCheck;
 import org.sonar.java.checks.codesnippet.CommonPatternMatcher;
 import org.sonar.java.checks.codesnippet.Group;
 import org.sonar.java.checks.codesnippet.JavaPatternGrammar;
+import org.sonar.java.checks.codesnippet.JavaPatternGrammarImpl;
 import org.sonar.java.checks.codesnippet.Lcs;
 import org.sonar.java.checks.codesnippet.PatternMatcher;
 import org.sonar.java.checks.codesnippet.PatternMatcherBuilder;
@@ -91,7 +92,7 @@ public final class SnippetCheck extends JavaAstCheck implements AstAndTokenVisit
       TokenElementSequence inputI = new TokenElementSequence(getTokensWithoutEof(lexer.lex(dontExample1)));
       TokenElementSequence inputJ = new TokenElementSequence(getTokensWithoutEof(lexer.lex(dontExample2)));
 
-      JavaPatternGrammar g = new JavaPatternGrammar();
+      JavaPatternGrammarImpl g = new JavaPatternGrammarImpl();
       Parser<JavaPatternGrammar> parser = g.getParser(lexer);
       Set<Rule> rules = ImmutableSet.of(
           g.characterLiteral,

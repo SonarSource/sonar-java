@@ -23,10 +23,11 @@ import com.google.common.base.Charsets;
 import com.sonar.sslr.impl.Parser;
 import org.sonar.java.ast.lexer.JavaLexer;
 import org.sonar.java.checks.codesnippet.JavaPatternGrammar;
+import org.sonar.java.checks.codesnippet.JavaPatternGrammarImpl;
 
 public abstract class RuleTest {
 
-  protected JavaPatternGrammar g = new JavaPatternGrammar();
+  protected JavaPatternGrammarImpl g = new JavaPatternGrammarImpl();
   protected Parser<JavaPatternGrammar> p = g.getParser(JavaLexer.create(Charsets.UTF_8));
 
 }

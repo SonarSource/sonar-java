@@ -21,9 +21,12 @@ package org.sonar.java.checks.codesnippet;
 
 import com.sonar.sslr.api.Token;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class TokenOriginalValueComparator implements Comparator<Token> {
+public class TokenOriginalValueComparator implements Comparator<Token>, Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   public int compare(Token o1, Token o2) {
     return o1.getOriginalValue().compareTo(o2.getOriginalValue());

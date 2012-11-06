@@ -19,9 +19,12 @@
  */
 package org.sonar.java.checks.codesnippet;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class CharacterComparator implements Comparator<Character> {
+public class CharacterComparator implements Comparator<Character>, Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   public int compare(Character o1, Character o2) {
     return o1.compareTo(o2);
