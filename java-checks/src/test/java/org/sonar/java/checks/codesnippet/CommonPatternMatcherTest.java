@@ -93,7 +93,10 @@ public class CommonPatternMatcherTest {
 
     CommonPatternMatcher patternMatcher = new CommonPatternMatcher(tokensToMatch, comparator);
 
-    assertThat(patternMatcher.match(Lists.newArrayList(token1, token2, token3)).isMatching()).isEqualTo(true);
+    PatternMatcherResult result = patternMatcher.match(Lists.newArrayList(token1, token2, token3));
+    assertThat(result.isMatching()).isEqualTo(true);
+    assertThat(result.getMatchingToIndex()).isEqualTo(2);
+
     verify(comparator).compare(token1, token1);
     verify(comparator).compare(token2, token2);
     verify(comparator, never()).compare(token3, token3);
@@ -114,6 +117,7 @@ public class CommonPatternMatcherTest {
     CommonPatternMatcher patternMatcher = new CommonPatternMatcher(tokensToMatch, comparator);
 
     assertThat(patternMatcher.match(Lists.newArrayList(token1, token2, token3)).isMatching()).isEqualTo(false);
+
     verify(comparator).compare(token1, token1);
     verify(comparator).compare(token3, token2);
     verify(comparator, never()).compare(token2, token2);

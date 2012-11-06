@@ -141,7 +141,9 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token2, token3, token2);
 
-    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).match(tokens).isMatching()).isEqualTo(true);
+    PatternMatcherResult result = new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).match(tokens);
+    assertThat(result.isMatching()).isEqualTo(true);
+    assertThat(result.getMatchingToIndex()).isEqualTo(1);
 
     verify(prefixParser).parse(rule, Lists.newArrayList(token1));
     verify(comparator).compare(token1, token2);
@@ -176,7 +178,9 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token2, token3, token2);
 
-    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).match(tokens).isMatching()).isEqualTo(true);
+    PatternMatcherResult result = new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).match(tokens);
+    assertThat(result.isMatching()).isEqualTo(true);
+    assertThat(result.getMatchingToIndex()).isEqualTo(3);
 
     verify(prefixParser).parse(rule, Lists.newArrayList(token1));
     verify(prefixParser).parse(rule, Lists.newArrayList(token1, token2, token3));
@@ -213,7 +217,9 @@ public class VaryingPatternMatcherTest {
 
     List<Token> tokens = Lists.newArrayList(token1, token2, token3, token2);
 
-    assertThat(new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).match(tokens).isMatching()).isEqualTo(true);
+    PatternMatcherResult result = new VaryingPatternMatcher(prefixParser, ImmutableSet.of(rule), nextCommonPatternMatcher).match(tokens);
+    assertThat(result.isMatching()).isEqualTo(true);
+    assertThat(result.getMatchingToIndex()).isEqualTo(3);
 
     verify(prefixParser).parse(rule, Lists.newArrayList(token1));
     verify(prefixParser).parse(rule, Lists.newArrayList(token1, token2, token3));
