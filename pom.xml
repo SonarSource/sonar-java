@@ -41,6 +41,7 @@
     <module>sonar-java-plugin</module>
     <module>sonar-pmd-plugin</module>
     <module>sonar-checkstyle-plugin</module>
+    <module>sonar-surefire-plugin</module>
     <module>sslr-java-toolkit</module>
   </modules>
 
