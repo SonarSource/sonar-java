@@ -46,8 +46,8 @@ public class JavaPatternGrammarImpl extends JavaPatternGrammar {
     booleanLiteral.is(or(
         JavaKeyword.TRUE,
         JavaKeyword.FALSE));
-    integerLiteral.is(JavaTokenType.INTEGER_LITERAL);
-    floatingLiteral.is(JavaTokenType.FLOATING_LITERAL);
+    integerLiteral.is(or(JavaTokenType.INTEGER_LITERAL, JavaTokenType.LONG_LITERAL));
+    floatingLiteral.is(or(JavaTokenType.FLOAT_LITERAL, JavaTokenType.DOUBLE_LITERAL));
     qualifiedIdentifier.is(identifier,
         o2n(or(
             and(JavaPunctuator.DOT, identifier),

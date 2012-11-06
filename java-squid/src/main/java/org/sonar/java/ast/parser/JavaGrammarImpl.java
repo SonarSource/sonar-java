@@ -125,8 +125,10 @@ import static org.sonar.java.ast.api.JavaPunctuator.STAR;
 import static org.sonar.java.ast.api.JavaPunctuator.STAREQU;
 import static org.sonar.java.ast.api.JavaPunctuator.TILDA;
 import static org.sonar.java.ast.api.JavaTokenType.CHARACTER_LITERAL;
-import static org.sonar.java.ast.api.JavaTokenType.FLOATING_LITERAL;
+import static org.sonar.java.ast.api.JavaTokenType.DOUBLE_LITERAL;
+import static org.sonar.java.ast.api.JavaTokenType.FLOAT_LITERAL;
 import static org.sonar.java.ast.api.JavaTokenType.INTEGER_LITERAL;
+import static org.sonar.java.ast.api.JavaTokenType.LONG_LITERAL;
 
 public class JavaGrammarImpl extends JavaGrammar {
 
@@ -154,8 +156,10 @@ public class JavaGrammarImpl extends JavaGrammar {
    */
   private void literals() {
     literal.is(or(
-        FLOATING_LITERAL,
+        FLOAT_LITERAL,
         INTEGER_LITERAL,
+        DOUBLE_LITERAL,
+        LONG_LITERAL,
         CHARACTER_LITERAL,
         LITERAL,
         TRUE,

@@ -25,7 +25,9 @@ import com.sonar.sslr.api.TokenType;
 public enum JavaTokenType implements TokenType {
   CHARACTER_LITERAL,
   INTEGER_LITERAL,
-  FLOATING_LITERAL;
+  FLOAT_LITERAL,
+  LONG_LITERAL,
+  DOUBLE_LITERAL;
 
   public String getName() {
     return name();

@@ -23,19 +23,28 @@ import com.sonar.sslr.impl.Lexer;
 import org.sonar.channel.Channel;
 import org.sonar.channel.CodeReader;
 
-public class CharStartChannel extends Channel<Lexer> {
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-  private final char ch;
-  private final Channel<Lexer> channel;
+public abstract class NumericLiteralChannel extends Channel<Lexer> {
 
-  public CharStartChannel(char ch, Channel<Lexer> channel) {
-    this.ch = ch;
-    this.channel = channel;
+  private final Matcher matcher;
+  private final StringBuilder tmpBuilder = new StringBuilder();
+
+  public NumericLiteralChannel(String regexp) {
+    matcher = Pattern.compile(regexp).matcher("");
   }
 
+  protected abstract void consume(String value, CodeReader code, Lexer lexer);
+
   @Override
-  public boolean consume(CodeReader code, Lexer output) {
-    return (code.peek() == ch) && channel.consume(code, output);
+  public boolean consume(CodeReader code, Lexer lexer) {
+    if (code.popTo(matcher, tmpBuilder) > 0) {
+      consume(tmpBuilder.toString(), code, lexer);
+      tmpBuilder.delete(0, tmpBuilder.length());
+      return true;
+    }
+    return false;
   }
 
 }
