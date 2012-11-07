@@ -28,7 +28,6 @@ import org.sonar.squid.api.SourceCode;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.List;
 
 public class LinesVisitor extends JavaAstVisitor {
 
@@ -60,8 +59,9 @@ public class LinesVisitor extends JavaAstVisitor {
       return;
     }
     try {
-      List<String> lines = Files.readLines(getContext().getFile(), charset);
-      getContext().peekSourceCode().setMeasure(JavaMetric.LINES, lines.size());
+      String content = Files.toString(getContext().getFile(), charset);
+      String[] lines = content.split("(\r)?\n|\r", -1);
+      getContext().peekSourceCode().setMeasure(JavaMetric.LINES, lines.length);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

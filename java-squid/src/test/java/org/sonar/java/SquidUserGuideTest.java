@@ -66,7 +66,7 @@ public class SquidUserGuideTest {
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(3805 + 69);
     assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(3805);
     assertThat(project.getInt(Metric.ACCESSORS)).isEqualTo(69);
-    assertThat(project.getInt(JavaMetric.LINES)).isEqualTo(63852);
+    assertThat(project.getInt(JavaMetric.LINES)).isEqualTo(64125);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(26323);
     // TODO assertEquals(6426, project.getInt(Metric.BLANK_LINES));
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(12047);
