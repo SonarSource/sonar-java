@@ -33,10 +33,10 @@ public class FloatLiteralChannel extends NumericLiteralChannel {
 
   private static final String FLOAT_LITERAL = "(?:" +
       // Decimal
-      "[0-9_]++\\.([0-9_]++)?+" + EXP + "?+" + FLOAT_SUFFIX + "?+" +
+      "[0-9][0-9_]*+\\.([0-9_]++)?+" + EXP + "?+" + FLOAT_SUFFIX + "?+" +
       "|" + "\\.[0-9][0-9_]*+" + EXP + "?+" + FLOAT_SUFFIX + "?+" +
-      "|" + "[0-9_]++" + FLOAT_SUFFIX +
-      "|" + "[0-9_]++" + EXP + FLOAT_SUFFIX + "?+" +
+      "|" + "[0-9][0-9_]*+" + FLOAT_SUFFIX +
+      "|" + "[0-9][0-9_]*+" + EXP + FLOAT_SUFFIX + "?+" +
       // Hexadecimal
       "|" + "0[xX][0-9_a-fA-F]++\\.[0-9_a-fA-F]*+" + BINARY_EXP + "?+" + FLOAT_SUFFIX + "?+" +
       "|" + "0[xX][0-9_a-fA-F]++" + BINARY_EXP + FLOAT_SUFFIX + "?+" +

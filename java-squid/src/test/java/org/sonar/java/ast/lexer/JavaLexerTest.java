@@ -217,6 +217,7 @@ public class JavaLexerTest {
     assertThat(lexer.lex("5_______2"), hasToken("5_______2", JavaTokenType.INTEGER_LITERAL));
 
     assertThat(lexer.lex("_0"), hasToken("_0", GenericTokenType.IDENTIFIER));
+    assertThat(lexer.lex("_d"), hasToken("_d", GenericTokenType.IDENTIFIER));
     assertThat(lexer.lex("._list"), allOf(hasToken(".", JavaPunctuator.DOT), hasToken("_list", GenericTokenType.IDENTIFIER)));
   }
 
