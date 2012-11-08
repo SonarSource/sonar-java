@@ -19,13 +19,9 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Regexp Header]]></name>
     <configKey><![CDATA[Checker/RegexpHeader]]></configKey>
-    <param>
-      <key>header</key>
-      <type>s</type>
+    <param key="header" type="TEXT">
     </param>
-    <param>
-      <key>multiLines</key>
-      <type>s</type>
+    <param key="multiLines" type="TEXT">
     </param>
   </rule>
 
