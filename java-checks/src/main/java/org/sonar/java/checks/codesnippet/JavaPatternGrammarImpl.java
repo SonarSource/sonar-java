@@ -28,32 +28,32 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 
 import static com.sonar.sslr.impl.matcher.GrammarFunctions.Advanced.bridge;
+import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.firstOf;
 import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.and;
 import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.o2n;
 import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.one2n;
-import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.or;
 
 public class JavaPatternGrammarImpl extends JavaPatternGrammar {
 
   public JavaPatternGrammarImpl() {
-    identifier.is(or(
+    identifier.is(firstOf(
         GenericTokenType.IDENTIFIER,
         JavaKeyword.THIS,
         JavaKeyword.SUPER));
     characterLiteral.is(JavaTokenType.CHARACTER_LITERAL);
     stringLiteral.is(GenericTokenType.LITERAL);
     nullLiteral.is(JavaKeyword.NULL);
-    booleanLiteral.is(or(
+    booleanLiteral.is(firstOf(
         JavaKeyword.TRUE,
         JavaKeyword.FALSE));
-    integerLiteral.is(or(JavaTokenType.INTEGER_LITERAL, JavaTokenType.LONG_LITERAL));
-    floatingLiteral.is(or(JavaTokenType.FLOAT_LITERAL, JavaTokenType.DOUBLE_LITERAL));
+    integerLiteral.is(firstOf(JavaTokenType.INTEGER_LITERAL, JavaTokenType.LONG_LITERAL));
+    floatingLiteral.is(firstOf(JavaTokenType.FLOAT_LITERAL, JavaTokenType.DOUBLE_LITERAL));
     qualifiedIdentifier.is(identifier,
-        o2n(or(
+        o2n(firstOf(
             and(JavaPunctuator.DOT, identifier),
             and(bridge(JavaPunctuator.LPAR, JavaPunctuator.RPAR), JavaPunctuator.DOT, identifier))));
     methodCall.is(identifier,
-        one2n(or(
+        one2n(firstOf(
             bridge(JavaPunctuator.LPAR, JavaPunctuator.RPAR),
             and(one2n(JavaPunctuator.DOT, identifier), bridge(JavaPunctuator.LPAR, JavaPunctuator.RPAR)))));
   }

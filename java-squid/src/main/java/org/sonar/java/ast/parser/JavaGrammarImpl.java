@@ -29,7 +29,7 @@ import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.and;
 import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.o2n;
 import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.one2n;
 import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.opt;
-import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.or;
+import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.firstOf;
 import static org.sonar.java.ast.api.JavaKeyword.ABSTRACT;
 import static org.sonar.java.ast.api.JavaKeyword.ASSERT;
 import static org.sonar.java.ast.api.JavaKeyword.BOOLEAN;
@@ -155,7 +155,7 @@ public class JavaGrammarImpl extends JavaGrammar {
    * 3.10. Literals
    */
   private void literals() {
-    literal.is(or(
+    literal.is(firstOf(
         FLOAT_LITERAL,
         INTEGER_LITERAL,
         DOUBLE_LITERAL,
@@ -171,20 +171,20 @@ public class JavaGrammarImpl extends JavaGrammar {
    * 4. Types, Values and Variables
    */
   private void types() {
-    type.is(or(basicType, classType), o2n(dim));
-    referenceType.is(or(
+    type.is(firstOf(basicType, classType), o2n(dim));
+    referenceType.is(firstOf(
         and(basicType, o2n(dim)),
         and(classType, o2n(dim))));
     classType.is(IDENTIFIER, opt(typeArguments), o2n(DOT, IDENTIFIER, opt(typeArguments)));
     classTypeList.is(classType, o2n(COMMA, classType));
     typeArguments.is(LT, typeArgument, o2n(COMMA, typeArgument), GT);
-    typeArgument.is(or(
+    typeArgument.is(firstOf(
         referenceType,
-        and(QUERY, opt(or(EXTENDS, SUPER), referenceType))));
+        and(QUERY, opt(firstOf(EXTENDS, SUPER), referenceType))));
     typeParameters.is(LT, typeParameter, o2n(COMMA, typeParameter), GT);
     typeParameter.is(IDENTIFIER, opt(EXTENDS, bound));
     bound.is(classType, o2n(AND, classType));
-    modifier.is(or(
+    modifier.is(firstOf(
         annotation,
         PUBLIC,
         PROTECTED,
@@ -207,8 +207,8 @@ public class JavaGrammarImpl extends JavaGrammar {
 
     packageDeclaration.is(o2n(annotation), PACKAGE, qualifiedIdentifier, SEMI);
     importDeclaration.is(IMPORT, opt(STATIC), qualifiedIdentifier, opt(DOT, STAR), SEMI);
-    typeDeclaration.is(or(
-        and(o2n(modifier), or(classDeclaration, enumDeclaration, interfaceDeclaration, annotationTypeDeclaration)),
+    typeDeclaration.is(firstOf(
+        and(o2n(modifier), firstOf(classDeclaration, enumDeclaration, interfaceDeclaration, annotationTypeDeclaration)),
         SEMI));
   }
 
@@ -219,12 +219,12 @@ public class JavaGrammarImpl extends JavaGrammar {
     classDeclaration.is(CLASS, IDENTIFIER, opt(typeParameters), opt(EXTENDS, classType), opt(IMPLEMENTS, classTypeList), classBody);
 
     classBody.is(LWING, o2n(classBodyDeclaration), RWING);
-    classBodyDeclaration.is(or(
+    classBodyDeclaration.is(firstOf(
         SEMI,
         classInitDeclaration,
         and(o2n(modifier), memberDecl)));
     classInitDeclaration.is(opt(STATIC), block);
-    memberDecl.is(or(
+    memberDecl.is(firstOf(
         and(typeParameters, genericMethodOrConstructorRest),
         and(type, IDENTIFIER, methodDeclaratorRest),
         fieldDeclaration,
@@ -235,11 +235,11 @@ public class JavaGrammarImpl extends JavaGrammar {
         enumDeclaration,
         annotationTypeDeclaration));
     fieldDeclaration.is(type, variableDeclarators, SEMI);
-    genericMethodOrConstructorRest.is(or(
-        and(or(type, VOID), IDENTIFIER, methodDeclaratorRest),
+    genericMethodOrConstructorRest.is(firstOf(
+        and(firstOf(type, VOID), IDENTIFIER, methodDeclaratorRest),
         and(IDENTIFIER, constructorDeclaratorRest)));
-    methodDeclaratorRest.is(formalParameters, o2n(dim), opt(THROWS, classTypeList), or(methodBody, SEMI));
-    voidMethodDeclaratorRest.is(formalParameters, opt(THROWS, classTypeList), or(methodBody, SEMI));
+    methodDeclaratorRest.is(formalParameters, o2n(dim), opt(THROWS, classTypeList), firstOf(methodBody, SEMI));
+    voidMethodDeclaratorRest.is(formalParameters, opt(THROWS, classTypeList), firstOf(methodBody, SEMI));
     constructorDeclaratorRest.is(formalParameters, opt(THROWS, classTypeList), methodBody);
     methodBody.is(block);
   }
@@ -262,10 +262,10 @@ public class JavaGrammarImpl extends JavaGrammar {
     interfaceDeclaration.is(INTERFACE, IDENTIFIER, opt(typeParameters), opt(EXTENDS, classTypeList), interfaceBody);
 
     interfaceBody.is(LWING, o2n(interfaceBodyDeclaration), RWING);
-    interfaceBodyDeclaration.is(or(
+    interfaceBodyDeclaration.is(firstOf(
         and(o2n(modifier), interfaceMemberDecl),
         SEMI));
-    interfaceMemberDecl.is(or(
+    interfaceMemberDecl.is(firstOf(
         interfaceMethodOrFieldDecl,
         interfaceGenericMethodDecl,
         and(VOID, IDENTIFIER, voidInterfaceMethodDeclaratorsRest),
@@ -274,11 +274,11 @@ public class JavaGrammarImpl extends JavaGrammar {
         classDeclaration,
         enumDeclaration));
     interfaceMethodOrFieldDecl.is(type, IDENTIFIER, interfaceMethodOrFieldRest);
-    interfaceMethodOrFieldRest.is(or(
+    interfaceMethodOrFieldRest.is(firstOf(
         and(constantDeclaratorsRest, SEMI),
         interfaceMethodDeclaratorRest));
     interfaceMethodDeclaratorRest.is(formalParameters, o2n(dim), opt(THROWS, classTypeList), SEMI);
-    interfaceGenericMethodDecl.is(typeParameters, or(type, VOID), IDENTIFIER, interfaceMethodDeclaratorRest);
+    interfaceGenericMethodDecl.is(typeParameters, firstOf(type, VOID), IDENTIFIER, interfaceMethodDeclaratorRest);
     voidInterfaceMethodDeclaratorsRest.is(formalParameters, opt(THROWS, classTypeList), SEMI);
     constantDeclaratorsRest.is(constantDeclaratorRest, o2n(COMMA, constantDeclarator));
     constantDeclarator.is(IDENTIFIER, constantDeclaratorRest);
@@ -290,9 +290,9 @@ public class JavaGrammarImpl extends JavaGrammar {
    */
   private void formalParameters() {
     formalParameters.is(LPAR, opt(formalParameterDecls), RPAR);
-    formalParameter.is(o2n(or(FINAL, annotation)), type, variableDeclaratorId);
-    formalParameterDecls.is(o2n(or(FINAL, annotation)), type, formalParametersDeclsRest);
-    formalParametersDeclsRest.is(or(
+    formalParameter.is(o2n(firstOf(FINAL, annotation)), type, variableDeclaratorId);
+    formalParameterDecls.is(o2n(firstOf(FINAL, annotation)), type, formalParametersDeclsRest);
+    formalParametersDeclsRest.is(firstOf(
         and(variableDeclaratorId, opt(COMMA, formalParameterDecls)),
         and(ELLIPSIS, variableDeclaratorId)));
     variableDeclaratorId.is(IDENTIFIER, o2n(dim));
@@ -304,29 +304,29 @@ public class JavaGrammarImpl extends JavaGrammar {
   private void annotations() {
     annotationTypeDeclaration.is(AT, INTERFACE, IDENTIFIER, annotationTypeBody);
     annotationTypeBody.is(LWING, o2n(annotationTypeElementDeclaration), RWING);
-    annotationTypeElementDeclaration.is(or(
+    annotationTypeElementDeclaration.is(firstOf(
         and(o2n(modifier), annotationTypeElementRest),
         SEMI));
-    annotationTypeElementRest.is(or(
+    annotationTypeElementRest.is(firstOf(
         and(type, annotationMethodOrConstantRest, SEMI),
         classDeclaration,
         enumDeclaration,
         interfaceDeclaration,
         annotationTypeDeclaration));
-    annotationMethodOrConstantRest.is(or(
+    annotationMethodOrConstantRest.is(firstOf(
         annotationMethodRest,
         annotationConstantRest));
     annotationMethodRest.is(IDENTIFIER, LPAR, RPAR, opt(defaultValue));
     annotationConstantRest.is(variableDeclarators);
     defaultValue.is(DEFAULT, elementValue);
     annotation.is(AT, qualifiedIdentifier, opt(annotationRest));
-    annotationRest.is(or(
+    annotationRest.is(firstOf(
         normalAnnotationRest,
         singleElementAnnotationRest));
     normalAnnotationRest.is(LPAR, opt(elementValuePairs), RPAR);
     elementValuePairs.is(elementValuePair, o2n(COMMA, elementValuePair));
     elementValuePair.is(IDENTIFIER, EQU, elementValue);
-    elementValue.is(or(
+    elementValue.is(firstOf(
         conditionalExpression,
         annotation,
         elementValueArrayInitializer));
@@ -342,21 +342,21 @@ public class JavaGrammarImpl extends JavaGrammar {
     // 14.2. Blocks
     block.is(LWING, blockStatements, RWING);
     blockStatements.is(o2n(blockStatement));
-    blockStatement.is(or(
+    blockStatement.is(firstOf(
         localVariableDeclarationStatement,
-        and(o2n(modifier), or(classDeclaration, enumDeclaration)),
+        and(o2n(modifier), firstOf(classDeclaration, enumDeclaration)),
         statement));
 
     // 14.4. Local Variable Declaration Statements
     localVariableDeclarationStatement.is(variableModifiers, type, variableDeclarators, SEMI);
-    variableModifiers.is(o2n(or(
+    variableModifiers.is(o2n(firstOf(
         annotation,
         FINAL)));
     variableDeclarators.is(variableDeclarator, o2n(COMMA, variableDeclarator));
     variableDeclarator.is(IDENTIFIER, o2n(dim), opt(EQU, variableInitializer));
 
     // 14.5. Statements
-    statement.is(or(
+    statement.is(firstOf(
         block,
         assertStatement,
         ifStatement,
@@ -389,7 +389,7 @@ public class JavaGrammarImpl extends JavaGrammar {
     switchStatement.is(SWITCH, parExpression, LWING, switchBlockStatementGroups, RWING);
     switchBlockStatementGroups.is(o2n(switchBlockStatementGroup));
     switchBlockStatementGroup.is(switchLabel, blockStatements);
-    switchLabel.is(or(
+    switchLabel.is(firstOf(
         and(CASE, constantExpression, COLON),
         and(CASE, enumConstantName, COLON),
         and(DEFAULT, COLON)));
@@ -401,11 +401,11 @@ public class JavaGrammarImpl extends JavaGrammar {
     doStatement.is(DO, statement, WHILE, parExpression, SEMI);
 
     // 14.14. The for Statement
-    forStatement.is(or(
+    forStatement.is(firstOf(
         and(FOR, LPAR, opt(forInit), SEMI, opt(expression), SEMI, opt(forUpdate), RPAR, statement),
         and(FOR, LPAR, formalParameter, COLON, expression, RPAR, statement)));
-    forInit.is(or(
-        and(o2n(or(FINAL, annotation)), type, variableDeclarators),
+    forInit.is(firstOf(
+        and(o2n(firstOf(FINAL, annotation)), type, variableDeclarators),
         and(statementExpression, o2n(COMMA, statementExpression))));
     forUpdate.is(statementExpression, o2n(COMMA, statementExpression));
 
@@ -421,8 +421,8 @@ public class JavaGrammarImpl extends JavaGrammar {
     synchronizedStatement.is(SYNCHRONIZED, parExpression, block);
 
     // 14.20. The try Statement
-    tryStatement.is(or(
-        and(TRY, block, or(and(one2n(catchClause), opt(finally_)), finally_)),
+    tryStatement.is(firstOf(
+        and(TRY, block, firstOf(and(one2n(catchClause), opt(finally_)), finally_)),
         tryWithResourcesStatement));
     tryWithResourcesStatement.is(TRY, resourceSpecification, block, o2n(catchClause), opt(finally_));
     resourceSpecification.is(LPAR, resource, o2n(SEMI, resource), opt(SEMI), RPAR);
@@ -443,7 +443,7 @@ public class JavaGrammarImpl extends JavaGrammar {
     constantExpression.is(expression);
     expression.is(assignmentExpression);
     assignmentExpression.is(conditionalExpression, o2n(assignmentOperator, conditionalExpression)).skipIfOneChild();
-    assignmentOperator.is(or(
+    assignmentOperator.is(firstOf(
         EQU,
         PLUSEQU,
         MINUSEQU,
@@ -462,20 +462,20 @@ public class JavaGrammarImpl extends JavaGrammar {
     inclusiveOrExpression.is(exclusiveOrExpression, o2n(OR, exclusiveOrExpression)).skipIfOneChild();
     exclusiveOrExpression.is(andExpression, o2n(HAT, andExpression)).skipIfOneChild();
     andExpression.is(equalityExpression, o2n(AND, equalityExpression)).skipIfOneChild();
-    equalityExpression.is(relationalExpression, o2n(or(EQUAL, NOTEQUAL), relationalExpression)).skipIfOneChild();
-    relationalExpression.is(shiftExpression, o2n(or(
-        and(or(ge, GT, LE, LT), shiftExpression),
+    equalityExpression.is(relationalExpression, o2n(firstOf(EQUAL, NOTEQUAL), relationalExpression)).skipIfOneChild();
+    relationalExpression.is(shiftExpression, o2n(firstOf(
+        and(firstOf(ge, GT, LE, LT), shiftExpression),
         and(INSTANCEOF, referenceType)))).skipIfOneChild();
-    shiftExpression.is(additiveExpression, o2n(or(SL, bsr, sr), additiveExpression)).skipIfOneChild();
-    additiveExpression.is(multiplicativeExpression, o2n(or(PLUS, MINUS), multiplicativeExpression)).skipIfOneChild();
-    multiplicativeExpression.is(unaryExpression, o2n(or(STAR, DIV, MOD), unaryExpression)).skipIfOneChild();
-    unaryExpression.is(or(
+    shiftExpression.is(additiveExpression, o2n(firstOf(SL, bsr, sr), additiveExpression)).skipIfOneChild();
+    additiveExpression.is(multiplicativeExpression, o2n(firstOf(PLUS, MINUS), multiplicativeExpression)).skipIfOneChild();
+    multiplicativeExpression.is(unaryExpression, o2n(firstOf(STAR, DIV, MOD), unaryExpression)).skipIfOneChild();
+    unaryExpression.is(firstOf(
         and(prefixOp, unaryExpression),
         and(LPAR, type, RPAR, unaryExpression),
         and(primary, o2n(selector), o2n(postFixOp)))).skipIfOneChild();
-    primary.is(or(
+    primary.is(firstOf(
         parExpression,
-        and(nonWildcardTypeArguments, or(explicitGenericInvocationSuffix, and(THIS, arguments))),
+        and(nonWildcardTypeArguments, firstOf(explicitGenericInvocationSuffix, and(THIS, arguments))),
         and(THIS, opt(arguments)),
         and(SUPER, superSuffix),
         literal,
@@ -483,10 +483,10 @@ public class JavaGrammarImpl extends JavaGrammar {
         and(qualifiedIdentifier, opt(identifierSuffix)),
         and(basicType, o2n(dim), DOT, CLASS),
         and(VOID, DOT, CLASS)));
-    identifierSuffix.is(or(
-        and(LBRK, or(and(RBRK, o2n(dim), DOT, CLASS), and(expression, RBRK))),
+    identifierSuffix.is(firstOf(
+        and(LBRK, firstOf(and(RBRK, o2n(dim), DOT, CLASS), and(expression, RBRK))),
         arguments,
-        and(DOT, or(
+        and(DOT, firstOf(
             CLASS,
             explicitGenericInvocation,
             THIS,
@@ -494,30 +494,30 @@ public class JavaGrammarImpl extends JavaGrammar {
             and(NEW, opt(nonWildcardTypeArguments), innerCreator)))));
     explicitGenericInvocation.is(nonWildcardTypeArguments, explicitGenericInvocationSuffix);
     nonWildcardTypeArguments.is(LT, referenceType, o2n(COMMA, referenceType), GT);
-    explicitGenericInvocationSuffix.is(or(
+    explicitGenericInvocationSuffix.is(firstOf(
         and(SUPER, superSuffix),
         and(IDENTIFIER, arguments)));
-    prefixOp.is(or(
+    prefixOp.is(firstOf(
         INC,
         DEC,
         BANG,
         TILDA,
         PLUS,
         MINUS));
-    postFixOp.is(or(
+    postFixOp.is(firstOf(
         INC,
         DEC));
-    selector.is(or(
+    selector.is(firstOf(
         and(DOT, IDENTIFIER, opt(arguments)),
         and(DOT, explicitGenericInvocation),
         and(DOT, THIS),
         and(DOT, SUPER, superSuffix),
         and(DOT, NEW, opt(nonWildcardTypeArguments), innerCreator),
         dimExpr));
-    superSuffix.is(or(
+    superSuffix.is(firstOf(
         arguments,
         and(DOT, IDENTIFIER, opt(arguments))));
-    basicType.is(or(
+    basicType.is(firstOf(
         BYTE,
         SHORT,
         CHAR,
@@ -527,18 +527,18 @@ public class JavaGrammarImpl extends JavaGrammar {
         DOUBLE,
         BOOLEAN));
     arguments.is(LPAR, opt(expression, o2n(COMMA, expression)), RPAR);
-    creator.is(or(
+    creator.is(firstOf(
         and(opt(nonWildcardTypeArguments), createdName, classCreatorRest),
-        and(opt(nonWildcardTypeArguments), or(classType, basicType), arrayCreatorRest)));
+        and(opt(nonWildcardTypeArguments), firstOf(classType, basicType), arrayCreatorRest)));
     createdName.is(IDENTIFIER, opt(nonWildcardTypeArguments), o2n(DOT, IDENTIFIER, opt(nonWildcardTypeArguments)));
     innerCreator.is(IDENTIFIER, classCreatorRest);
-    arrayCreatorRest.is(LBRK, or(
+    arrayCreatorRest.is(LBRK, firstOf(
         and(RBRK, o2n(dim), arrayInitializer),
         and(expression, RBRK, o2n(dimExpr), o2n(dim))));
     classCreatorRest.is(opt(diamond), arguments, opt(classBody));
     diamond.is(LT, GT);
     arrayInitializer.is(LWING, opt(variableInitializer, o2n(COMMA, variableInitializer)), opt(COMMA), RWING);
-    variableInitializer.is(or(arrayInitializer, expression));
+    variableInitializer.is(firstOf(arrayInitializer, expression));
     parExpression.is(LPAR, expression, RPAR);
     qualifiedIdentifier.is(IDENTIFIER, o2n(DOT, IDENTIFIER));
     dim.is(LBRK, RBRK);
