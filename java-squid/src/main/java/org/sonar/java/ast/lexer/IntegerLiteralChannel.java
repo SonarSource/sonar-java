@@ -29,7 +29,7 @@ public class IntegerLiteralChannel extends NumericLiteralChannel {
 
   private static final String INT_SUFFIX = "[lL]?+";
 
-  private static final String INTEGER_LITERAL = "(?:" +
+  public static final String INTEGER_LITERAL = "(?:" +
       // Hexadecimal
       "0[xX][0-9_a-fA-F]++" +
       // Binary (Java 7)

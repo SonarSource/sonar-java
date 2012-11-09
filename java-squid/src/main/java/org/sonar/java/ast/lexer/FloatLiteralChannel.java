@@ -31,7 +31,7 @@ public class FloatLiteralChannel extends NumericLiteralChannel {
 
   private static final String FLOAT_SUFFIX = "[fFdD]";
 
-  private static final String FLOAT_LITERAL = "(?:" +
+  public static final String FLOAT_LITERAL = "(?:" +
       // Decimal
       "[0-9][0-9_]*+\\.([0-9_]++)?+" + EXP + "?+" + FLOAT_SUFFIX + "?+" +
       "|" + "\\.[0-9][0-9_]*+" + EXP + "?+" + FLOAT_SUFFIX + "?+" +

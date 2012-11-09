@@ -25,6 +25,8 @@ import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.java.ast.lexer.FloatLiteralChannel;
+import org.sonar.java.ast.lexer.IntegerLiteralChannel;
 
 import static org.sonar.sslr.parser.GrammarOperators.endOfInput;
 import static org.sonar.sslr.parser.GrammarOperators.firstOf;
@@ -191,8 +193,6 @@ public class JavaGrammarImpl extends JavaGrammar {
   }
 
   private Rule
-      exp,
-      binaryExp,
       letterOrDigit,
       keyword,
       spacing;
@@ -212,28 +212,8 @@ public class JavaGrammarImpl extends JavaGrammar {
     characterLiteral.is(token(JavaTokenType.CHARACTER_LITERAL, characterLiteral()), spacing).skip();
     stringLiteral.is(token(GenericTokenType.LITERAL, stringLiteral()), spacing).skip();
 
-    // FIXME underscore (Java 7)
-    exp.is(firstOf("E", "e"), optional(firstOf("+", "-")), decimalDigits());
-    binaryExp.is(firstOf("P", "p"), optional(firstOf("+", "-")), decimalDigits());
-    floatingLiteral.is(token(JavaTokenType.FLOAT_LITERAL, firstOf(
-        sequence(".", decimalDigits(), optional(exp), optional(firstOf("f", "F", "d", "D"))),
-        sequence(
-            decimalDigits(),
-            firstOf(
-                sequence(".", optional(decimalDigits()), optional(exp), optional(firstOf("f", "F", "d", "D"))),
-                firstOf("f", "F", "d", "D"),
-                sequence(exp, optional(firstOf("f", "F", "d", "D"))))),
-        sequence(
-            firstOf("0x", "0X"),
-            hexDigits(),
-            firstOf(
-                sequence(".", optional(hexDigits()), optional(binaryExp), optional(firstOf("f", "F", "d", "D"))),
-                sequence(binaryExp, optional(firstOf("f", "F", "d", "D"))))
-        ))), spacing).skip();
-    integerLiteral.is(token(JavaTokenType.INTEGER_LITERAL, firstOf(
-        sequence(firstOf("0x", "0X"), hexDigits(), optional(firstOf("L", "l"))),
-        sequence(firstOf("0b", "0B"), binaryDigits(), optional(firstOf("L", "l"))),
-        sequence(decimalDigits(), optional(firstOf("L", "l"))))), spacing).skip();
+    floatingLiteral.is(token(JavaTokenType.FLOAT_LITERAL, regexp(FloatLiteralChannel.FLOAT_LITERAL)), spacing).skip();
+    integerLiteral.is(token(JavaTokenType.INTEGER_LITERAL, regexp(IntegerLiteralChannel.INTEGER_LITERAL)), spacing).skip();
 
     keyword.is(firstOf("assert", "break", "case", "catch", "class", "const", "continue", "default", "do", "else",
         "enum", "extends", "finally", "final", "for", "goto", "if", "implements", "import", "interface",
@@ -254,18 +234,6 @@ public class JavaGrammarImpl extends JavaGrammar {
         // FIXME DOUBLE_LITERAL,
         // FIXME LONG_LITERAL,
         ));
-  }
-
-  private Object decimalDigits() {
-    return regexp("[0-9]++");
-  }
-
-  private Object hexDigits() {
-    return regexp("[0-9a-fA-F]++");
-  }
-
-  private Object binaryDigits() {
-    return regexp("[01]++");
   }
 
   private Object characterLiteral() {
