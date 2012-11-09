@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FinallyTest {
   Parser<JavaGrammar> p = JavaParser.create();
@@ -41,7 +40,8 @@ public class FinallyTest {
   public void ok() {
     g.block.mock();
 
-    assertThat(p, parse("finally block"));
+    assertThat(p)
+        .matches("finally block");
   }
 
 }

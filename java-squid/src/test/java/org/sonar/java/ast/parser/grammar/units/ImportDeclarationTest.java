@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ImportDeclarationTest {
 
@@ -42,16 +41,18 @@ public class ImportDeclarationTest {
   public void ok() {
     g.qualifiedIdentifier.mock();
 
-    assertThat(p, parse("import qualifiedIdentifier ;"));
-    assertThat(p, parse("import qualifiedIdentifier . * ;"));
-    assertThat(p, parse("import static qualifiedIdentifier ;"));
-    assertThat(p, parse("import static qualifiedIdentifier . * ;"));
+    assertThat(p)
+        .matches("import qualifiedIdentifier ;")
+        .matches("import qualifiedIdentifier . * ;")
+        .matches("import static qualifiedIdentifier ;")
+        .matches("import static qualifiedIdentifier . * ;");
   }
 
   @Test
   public void realLife() {
-    assertThat(p, parse("import org.example.HelloWorld;"));
-    assertThat(p, parse("import static org.junit.Assert.assertThat;"));
+    assertThat(p)
+        .matches("import org.example.HelloWorld;")
+        .matches("import static org.junit.Assert.assertThat;");
   }
 
 }

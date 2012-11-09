@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TryStatementTest {
 
@@ -44,18 +43,21 @@ public class TryStatementTest {
     g.catchClause.mock();
     g.finally_.mock();
 
-    assertThat(p, parse("try block catchClause catchClause finally_"));
-    assertThat(p, parse("try block catchClause finally_"));
-    assertThat(p, parse("try block finally_"));
+    assertThat(p)
+        .matches("try block catchClause catchClause finally_")
+        .matches("try block catchClause finally_")
+        .matches("try block finally_");
   }
 
   @Test
   public void realLife() {
     // Java 7: multi-catch
-    assertThat(p, parse("try {} catch (ClassNotFoundException | IllegalAccessException ex) {}"));
+    assertThat(p)
+        .matches("try {} catch (ClassNotFoundException | IllegalAccessException ex) {}");
     // Java 7: try-with-resources
-    assertThat(p, parse("try (Resource resource = new Resource()) {}"));
-    assertThat(p, parse("try (Resource resource = new Resource()) {} catch (Expception e) {} finally {}"));
+    assertThat(p)
+        .matches("try (Resource resource = new Resource()) {}")
+        .matches("try (Resource resource = new Resource()) {} catch (Expception e) {} finally {}");
   }
 
 }

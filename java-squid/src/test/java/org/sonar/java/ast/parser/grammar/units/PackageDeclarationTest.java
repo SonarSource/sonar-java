@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class PackageDeclarationTest {
 
@@ -43,13 +42,15 @@ public class PackageDeclarationTest {
     g.annotation.mock();
     g.qualifiedIdentifier.mock();
 
-    assertThat(p, parse("package qualifiedIdentifier ;"));
-    assertThat(p, parse("annotation annotation package qualifiedIdentifier ;"));
+    assertThat(p)
+        .matches("package qualifiedIdentifier ;")
+        .matches("annotation annotation package qualifiedIdentifier ;");
   }
 
   @Test
   public void realLife() {
-    assertThat(p, parse("package org.example;"));
+    assertThat(p)
+        .matches("package org.example;");
   }
 
 }

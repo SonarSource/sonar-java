@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class LabeledStatementTest {
 
@@ -42,7 +41,8 @@ public class LabeledStatementTest {
   public void okLabel() {
     g.block.mock();
 
-    assertThat(p, parse("identifier : block"));
+    assertThat(p)
+        .matches("identifier : block");
   }
 
 }

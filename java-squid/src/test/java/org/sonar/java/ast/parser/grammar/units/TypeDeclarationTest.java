@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeDeclarationTest {
 
@@ -46,20 +45,20 @@ public class TypeDeclarationTest {
     g.interfaceDeclaration.mock();
     g.annotationTypeDeclaration.mock();
 
-    assertThat(p, parse("classDeclaration"));
-    assertThat(p, parse("enumDeclaration"));
-    assertThat(p, parse("interfaceDeclaration"));
-    assertThat(p, parse("annotationTypeDeclaration"));
-
-    assertThat(p, parse("modifier classDeclaration"));
-    assertThat(p, parse("modifier modifier classDeclaration"));
-
-    assertThat(p, parse(";"));
+    assertThat(p)
+        .matches("classDeclaration")
+        .matches("enumDeclaration")
+        .matches("interfaceDeclaration")
+        .matches("annotationTypeDeclaration")
+        .matches("modifier classDeclaration")
+        .matches("modifier modifier classDeclaration")
+        .matches(";");
   }
 
   @Test
   public void realLife() {
-    assertThat(p, parse("public static final class HelloWorld { }"));
+    assertThat(p)
+        .matches("public static final class HelloWorld { }");
   }
 
 }

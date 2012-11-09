@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ForUpdateTest {
   Parser<JavaGrammar> p = JavaParser.create();
@@ -41,8 +40,9 @@ public class ForUpdateTest {
   public void ok() {
     g.statementExpression.mock();
 
-    assertThat(p, parse("statementExpression , statementExpression"));
-    assertThat(p, parse("statementExpression"));
+    assertThat(p)
+        .matches("statementExpression , statementExpression")
+        .matches("statementExpression");
   }
 
 }

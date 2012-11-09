@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ClassDeclarationTest {
 
@@ -45,15 +44,17 @@ public class ClassDeclarationTest {
     g.classTypeList.mock();
     g.classBody.mock();
 
-    assertThat(p, parse("class identifier typeParameters extends classType implements classTypeList classBody"));
-    assertThat(p, parse("class identifier typeParameters extends classType classBody"));
-    assertThat(p, parse("class identifier typeParameters classBody"));
-    assertThat(p, parse("class identifier classBody"));
+    assertThat(p)
+        .matches("class identifier typeParameters extends classType implements classTypeList classBody")
+        .matches("class identifier typeParameters extends classType classBody")
+        .matches("class identifier typeParameters classBody")
+        .matches("class identifier classBody");
   }
 
   @Test
   public void realLife() {
-    assertThat(p, parse("class HelloWorld { }"));
+    assertThat(p)
+        .matches("class HelloWorld { }");
   }
 
 }

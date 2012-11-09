@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParameterDeclsTest {
 
@@ -43,12 +42,13 @@ public class FormalParameterDeclsTest {
     g.annotation.mock();
     g.formalParametersDeclsRest.mock();
 
-    assertThat(p, parse("type formalParametersDeclsRest"));
-    assertThat(p, parse("final type formalParametersDeclsRest"));
-    assertThat(p, parse("annotation type formalParametersDeclsRest"));
-    assertThat(p, parse("final final type formalParametersDeclsRest"));
-    assertThat(p, parse("annotation annotation type formalParametersDeclsRest"));
-    assertThat(p, parse("annotation final annotation final type formalParametersDeclsRest"));
+    assertThat(p)
+        .matches("type formalParametersDeclsRest")
+        .matches("final type formalParametersDeclsRest")
+        .matches("annotation type formalParametersDeclsRest")
+        .matches("final final type formalParametersDeclsRest")
+        .matches("annotation annotation type formalParametersDeclsRest")
+        .matches("annotation final annotation final type formalParametersDeclsRest");
   }
 
 }

@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class IfStatementTest {
 
@@ -43,8 +42,9 @@ public class IfStatementTest {
     g.block.mock();
     g.parExpression.mock();
 
-    assertThat(p, parse("if parExpression block"));
-    assertThat(p, parse("if parExpression block else block"));
+    assertThat(p)
+        .matches("if parExpression block")
+        .matches("if parExpression block else block");
   }
 
 }

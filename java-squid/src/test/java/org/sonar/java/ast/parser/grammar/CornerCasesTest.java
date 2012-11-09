@@ -24,8 +24,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CornerCasesTest {
 
@@ -35,19 +34,19 @@ public class CornerCasesTest {
   @Test
   public void test() {
     p.setRootRule(g.ge);
-    assertThat(p, parse(">="));
+    assertThat(p).matches(">=");
 
     p.setRootRule(g.sr);
-    assertThat(p, parse(">>"));
+    assertThat(p).matches(">>");
 
     p.setRootRule(g.srequ);
-    assertThat(p, parse(">>="));
+    assertThat(p).matches(">>=");
 
     p.setRootRule(g.bsr);
-    assertThat(p, parse(">>>"));
+    assertThat(p).matches(">>>");
 
     p.setRootRule(g.bsrequ);
-    assertThat(p, parse(">>>="));
+    assertThat(p).matches(">>>=");
   }
 
 }

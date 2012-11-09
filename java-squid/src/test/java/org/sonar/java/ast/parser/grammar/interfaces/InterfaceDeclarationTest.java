@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class InterfaceDeclarationTest {
 
@@ -44,14 +43,16 @@ public class InterfaceDeclarationTest {
     g.classTypeList.mock();
     g.interfaceBody.mock();
 
-    assertThat(p, parse("interface identifier typeParameters extends classTypeList interfaceBody"));
-    assertThat(p, parse("interface identifier typeParameters interfaceBody"));
-    assertThat(p, parse("interface identifier interfaceBody"));
+    assertThat(p)
+        .matches("interface identifier typeParameters extends classTypeList interfaceBody")
+        .matches("interface identifier typeParameters interfaceBody")
+        .matches("interface identifier interfaceBody");
   }
 
   @Test
   public void realLife() {
-    assertThat(p, parse("interface HelloWorld { }"));
+    assertThat(p)
+        .matches("interface HelloWorld { }");
   }
 
 }

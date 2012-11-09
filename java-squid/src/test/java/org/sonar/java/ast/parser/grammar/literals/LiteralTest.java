@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class LiteralTest {
 
@@ -40,13 +39,14 @@ public class LiteralTest {
 
   @Test
   public void realLife() {
-    assertThat(p, parse("1.0"));
-    assertThat(p, parse("1"));
-    assertThat(p, parse("'a'"));
-    assertThat(p, parse("\"string\""));
-    assertThat(p, parse("true"));
-    assertThat(p, parse("false"));
-    assertThat(p, parse("null"));
+    assertThat(p)
+        .matches("1.0")
+        .matches("1")
+        .matches("'a'")
+        .matches("\"string\"")
+        .matches("true")
+        .matches("false")
+        .matches("null");
   }
 
 }

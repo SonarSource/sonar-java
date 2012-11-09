@@ -25,8 +25,8 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
+
 
 public class EnumConstantsTest {
 
@@ -42,8 +42,9 @@ public class EnumConstantsTest {
   public void ok() {
     g.enumConstant.mock();
 
-    assertThat(p, parse("enumConstant"));
-    assertThat(p, parse("enumConstant , enumConstant"));
+    assertThat(p)
+        .matches("enumConstant")
+        .matches("enumConstant , enumConstant");
   }
 
 }

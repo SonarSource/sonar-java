@@ -25,9 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.notParse;
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class VariableDeclaratorTest {
   Parser<JavaGrammar> p = JavaParser.create();
@@ -43,17 +41,19 @@ public class VariableDeclaratorTest {
     g.dim.mock();
     g.variableInitializer.mock();
 
-    assertThat(p, parse("identifier dim dim = variableInitializer"));
-    assertThat(p, parse("identifier dim dim"));
-    assertThat(p, parse("identifier dim = variableInitializer"));
-    assertThat(p, parse("identifier dim"));
-    assertThat(p, parse("identifier = variableInitializer"));
-    assertThat(p, parse("identifier"));
+    assertThat(p)
+        .matches("identifier dim dim = variableInitializer")
+        .matches("identifier dim dim")
+        .matches("identifier dim = variableInitializer")
+        .matches("identifier dim")
+        .matches("identifier = variableInitializer")
+        .matches("identifier");
   }
 
   @Test
   public void ko() {
-    assertThat(p, notParse(""));
+    assertThat(p)
+        .notMatches("");
   }
 
 }

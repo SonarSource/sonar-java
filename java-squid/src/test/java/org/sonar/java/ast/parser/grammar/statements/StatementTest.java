@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class StatementTest {
 
@@ -57,22 +56,23 @@ public class StatementTest {
     g.expressionStatement.mock();
     g.emptyStatement.mock();
 
-    assertThat(p, parse("block"));
-    assertThat(p, parse("emptyStatement"));
-    assertThat(p, parse("labeledStatement"));
-    assertThat(p, parse("expressionStatement"));
-    assertThat(p, parse("ifStatement"));
-    assertThat(p, parse("assertStatement"));
-    assertThat(p, parse("switchStatement"));
-    assertThat(p, parse("whileStatement"));
-    assertThat(p, parse("doStatement"));
-    assertThat(p, parse("forStatement"));
-    assertThat(p, parse("breakStatement"));
-    assertThat(p, parse("continueStatement"));
-    assertThat(p, parse("returnStatement"));
-    assertThat(p, parse("throwStatement"));
-    assertThat(p, parse("synchronizedStatement"));
-    assertThat(p, parse("tryStatement"));
+    assertThat(p)
+        .matches("block")
+        .matches("emptyStatement")
+        .matches("labeledStatement")
+        .matches("expressionStatement")
+        .matches("ifStatement")
+        .matches("assertStatement")
+        .matches("switchStatement")
+        .matches("whileStatement")
+        .matches("doStatement")
+        .matches("forStatement")
+        .matches("breakStatement")
+        .matches("continueStatement")
+        .matches("returnStatement")
+        .matches("throwStatement")
+        .matches("synchronizedStatement")
+        .matches("tryStatement");
   }
 
 }

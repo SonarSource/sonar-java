@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class BlockStatementTest {
 
@@ -46,10 +45,11 @@ public class BlockStatementTest {
     g.classDeclaration.mock();
     g.enumDeclaration.mock();
 
-    assertThat(p, parse("localVariableDeclarationStatement"));
-    assertThat(p, parse("modifier classDeclaration"));
-    assertThat(p, parse("modifier enumDeclaration"));
-    assertThat(p, parse("statement"));
+    assertThat(p)
+        .matches("localVariableDeclarationStatement")
+        .matches("modifier classDeclaration")
+        .matches("modifier enumDeclaration")
+        .matches("statement");
   }
 
 }

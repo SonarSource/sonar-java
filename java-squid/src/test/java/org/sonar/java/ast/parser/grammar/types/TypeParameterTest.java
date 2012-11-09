@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeParameterTest {
 
@@ -42,8 +41,9 @@ public class TypeParameterTest {
   public void ok() {
     g.bound.mock();
 
-    assertThat(p, parse("identifier"));
-    assertThat(p, parse("identifier extends bound"));
+    assertThat(p)
+        .matches("identifier")
+        .matches("identifier extends bound");
   }
 
 }

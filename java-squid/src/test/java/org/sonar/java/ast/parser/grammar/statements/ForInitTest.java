@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ForInitTest {
   Parser<JavaGrammar> p = JavaParser.create();
@@ -43,9 +42,10 @@ public class ForInitTest {
     g.variableDeclarators.mock();
     g.statementExpression.mock();
 
-    assertThat(p, parse("final type variableDeclarators"));
-    assertThat(p, parse("statementExpression , statementExpression"));
-    assertThat(p, parse("statementExpression"));
+    assertThat(p)
+        .matches("final type variableDeclarators")
+        .matches("statementExpression , statementExpression")
+        .matches("statementExpression");
   }
 
 }

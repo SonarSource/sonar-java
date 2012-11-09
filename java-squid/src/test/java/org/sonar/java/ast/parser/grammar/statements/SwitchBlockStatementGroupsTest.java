@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SwitchBlockStatementGroupsTest {
   Parser<JavaGrammar> p = JavaParser.create();
@@ -41,9 +40,10 @@ public class SwitchBlockStatementGroupsTest {
   public void ok() {
     g.switchBlockStatementGroup.mock();
 
-    assertThat(p, parse(""));
-    assertThat(p, parse("switchBlockStatementGroup"));
-    assertThat(p, parse("switchBlockStatementGroup switchBlockStatementGroup"));
+    assertThat(p)
+        .matches("")
+        .matches("switchBlockStatementGroup")
+        .matches("switchBlockStatementGroup switchBlockStatementGroup");
   }
 
 }

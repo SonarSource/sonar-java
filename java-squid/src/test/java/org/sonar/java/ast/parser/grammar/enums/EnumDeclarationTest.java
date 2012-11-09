@@ -25,9 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
-
+import static org.sonar.sslr.tests.Assertions.assertThat;
 public class EnumDeclarationTest {
 
   Parser<JavaGrammar> p = JavaParser.create();
@@ -43,12 +41,14 @@ public class EnumDeclarationTest {
     g.classTypeList.mock();
     g.enumBody.mock();
 
-    assertThat(p, parse("enum identifier implements classTypeList enumBody"));
+    assertThat(p)
+        .matches("enum identifier implements classTypeList enumBody");
   }
 
   @Test
   public void realLife() {
-    assertThat(p, parse("enum HelloWorld { }"));
+    assertThat(p)
+        .matches("enum HelloWorld { }");
   }
 
 }

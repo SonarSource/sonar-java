@@ -26,8 +26,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ExpressionTest {
 
@@ -45,17 +44,20 @@ public class ExpressionTest {
    */
   @Test
   public void error() {
-    assertThat(p, parse("a = b + 1 = c + 2"));
+    assertThat(p)
+        .matches("a = b + 1 = c + 2");
   }
 
   @Test
   public void realLife() {
-    assertThat(p, parse("b >> 4"));
-    assertThat(p, parse("b >>= 4"));
-    assertThat(p, parse("b >>> 4"));
-    assertThat(p, parse("b >>>= 4"));
+    assertThat(p)
+        .matches("b >> 4")
+        .matches("b >>= 4")
+        .matches("b >>> 4")
+        .matches("b >>>= 4");
     // Java 7: diamond
-    assertThat(p, parse("new HashMap<>()"));
+    assertThat(p)
+        .matches("new HashMap<>()");
   }
 
 }

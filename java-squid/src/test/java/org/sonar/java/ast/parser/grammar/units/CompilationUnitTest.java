@@ -26,8 +26,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CompilationUnitTest {
 
@@ -45,23 +44,25 @@ public class CompilationUnitTest {
     g.importDeclaration.mock();
     g.typeDeclaration.mock();
 
-    assertThat(p, parse("packageDeclaration importDeclaration importDeclaration typeDeclaration typeDeclaration"));
-    assertThat(p, parse("packageDeclaration importDeclaration typeDeclaration"));
-    assertThat(p, parse("packageDeclaration importDeclaration"));
-    assertThat(p, parse("packageDeclaration"));
-    assertThat(p, parse(""));
+    assertThat(p)
+        .matches("packageDeclaration importDeclaration importDeclaration typeDeclaration typeDeclaration")
+        .matches("packageDeclaration importDeclaration typeDeclaration")
+        .matches("packageDeclaration importDeclaration")
+        .matches("packageDeclaration")
+        .matches("");
   }
 
   @Test
   public void realLife() {
-    assertThat(p, parse(lines(
-        "package org.example;",
-        "",
-        "public class HelloWorld {",
-        "  public static void main(String[] args) {",
-        "    System.out.println(\"Hello World!\");",
-        "  }",
-        "}")));
+    assertThat(p)
+        .matches(lines(
+            "package org.example;",
+            "",
+            "public class HelloWorld {",
+            "  public static void main(String[] args) {",
+            "    System.out.println(\"Hello World!\");",
+            "  }",
+            "}"));
   }
 
   private static String lines(String... lines) {

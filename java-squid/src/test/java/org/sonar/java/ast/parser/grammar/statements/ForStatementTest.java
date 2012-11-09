@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ForStatementTest {
 
@@ -45,18 +44,19 @@ public class ForStatementTest {
     g.forUpdate.mock();
     g.formalParameter.mock();
 
-    assertThat(p, parse("for ( forInit ; expression ; forUpdate ) block"));
-    assertThat(p, parse("for ( ; expression ; forUpdate ) block"));
-    assertThat(p, parse("for ( ; ; forUpdate ) block"));
-    assertThat(p, parse("for ( ; ; ) block"));
-
-    assertThat(p, parse("for ( formalParameter : expression ) block"));
+    assertThat(p)
+        .matches("for ( forInit ; expression ; forUpdate ) block")
+        .matches("for ( ; expression ; forUpdate ) block")
+        .matches("for ( ; ; forUpdate ) block")
+        .matches("for ( ; ; ) block")
+        .matches("for ( formalParameter : expression ) block");
   }
 
   @Test
   public void realLife() {
-    assertThat(p, parse("for (int i = 0; i < 10; i++) {} "));
-    assertThat(p, parse("for (File file : files) {} "));
+    assertThat(p)
+        .matches("for (int i = 0; i < 10; i++) {} ")
+        .matches("for (File file : files) {} ");
   }
 
 }

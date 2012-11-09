@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class MemberDeclTest {
 
@@ -40,8 +39,9 @@ public class MemberDeclTest {
 
   @Test
   public void realLife() {
-    assertThat(p, parse("Map<SomeType<?>,SomeType<?>> member;"));
-    assertThat(p, parse("Map < SomeType < ? > , SomeType < ? > > member;"));
+    assertThat(p)
+        .matches("Map<SomeType<?>,SomeType<?>> member;")
+        .matches("Map < SomeType < ? > , SomeType < ? > > member;");
   }
 
 }

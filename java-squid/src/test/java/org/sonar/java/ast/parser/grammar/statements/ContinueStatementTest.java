@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ContinueStatementTest {
 
@@ -40,8 +39,9 @@ public class ContinueStatementTest {
 
   @Test
   public void ok() {
-    assertThat(p, parse("continue;"));
-    assertThat(p, parse("continue identifier;"));
+    assertThat(p)
+        .matches("continue;")
+        .matches("continue identifier;");
   }
 
 }

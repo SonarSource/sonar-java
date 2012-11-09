@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeArgumentTest {
 
@@ -42,10 +41,11 @@ public class TypeArgumentTest {
   public void ok() {
     g.referenceType.mock();
 
-    assertThat(p, parse("referenceType"));
-    assertThat(p, parse("?"));
-    assertThat(p, parse("? extends referenceType"));
-    assertThat(p, parse("? super referenceType"));
+    assertThat(p)
+        .matches("referenceType")
+        .matches("?")
+        .matches("? extends referenceType")
+        .matches("? super referenceType");
   }
 
 }

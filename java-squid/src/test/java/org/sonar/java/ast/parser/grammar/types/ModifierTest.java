@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ModifierTest {
 
@@ -42,18 +41,19 @@ public class ModifierTest {
   public void ok() {
     g.annotation.mock();
 
-    assertThat(p, parse("annotation"));
-    assertThat(p, parse("public"));
-    assertThat(p, parse("protected"));
-    assertThat(p, parse("private"));
-    assertThat(p, parse("static"));
-    assertThat(p, parse("abstract"));
-    assertThat(p, parse("final"));
-    assertThat(p, parse("native"));
-    assertThat(p, parse("synchronized"));
-    assertThat(p, parse("transient"));
-    assertThat(p, parse("volatile"));
-    assertThat(p, parse("strictfp"));
+    assertThat(p)
+        .matches("annotation")
+        .matches("public")
+        .matches("protected")
+        .matches("private")
+        .matches("static")
+        .matches("abstract")
+        .matches("final")
+        .matches("native")
+        .matches("synchronized")
+        .matches("transient")
+        .matches("volatile")
+        .matches("strictfp");
   }
 
 }

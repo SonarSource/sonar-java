@@ -25,9 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
-
+import static org.sonar.sslr.tests.Assertions.assertThat;
 public class EnumConstantTest {
 
   Parser<JavaGrammar> p = JavaParser.create();
@@ -44,11 +42,12 @@ public class EnumConstantTest {
     g.arguments.mock();
     g.classBody.mock();
 
-    assertThat(p, parse("identifier"));
-    assertThat(p, parse("annotation identifier"));
-    assertThat(p, parse("annotation identifier arguments"));
-    assertThat(p, parse("annotation identifier classBody"));
-    assertThat(p, parse("annotation identifier arguments classBody"));
+    assertThat(p)
+        .matches("identifier")
+        .matches("annotation identifier")
+        .matches("annotation identifier arguments")
+        .matches("annotation identifier classBody")
+        .matches("annotation identifier arguments classBody");
   }
 
 }

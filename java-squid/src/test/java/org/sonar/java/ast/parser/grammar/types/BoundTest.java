@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class BoundTest {
 
@@ -42,8 +41,9 @@ public class BoundTest {
   public void ok() {
     g.classType.mock();
 
-    assertThat(p, parse("classType"));
-    assertThat(p, parse("classType & classType"));
+    assertThat(p)
+        .matches("classType")
+        .matches("classType & classType");
   }
 
 }

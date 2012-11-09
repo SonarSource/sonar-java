@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class VariableDeclaratorsTest {
 
@@ -42,9 +41,10 @@ public class VariableDeclaratorsTest {
   public void ok() {
     g.variableDeclarator.mock();
 
-    assertThat(p, parse("variableDeclarator , variableDeclarator, variableDeclarator"));
-    assertThat(p, parse("variableDeclarator , variableDeclarator"));
-    assertThat(p, parse("variableDeclarator"));
+    assertThat(p)
+        .matches("variableDeclarator , variableDeclarator, variableDeclarator")
+        .matches("variableDeclarator , variableDeclarator")
+        .matches("variableDeclarator");
   }
 
 }

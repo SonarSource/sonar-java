@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ClassTypeTest {
 
@@ -42,10 +41,11 @@ public class ClassTypeTest {
   public void ok() {
     g.typeArguments.mock();
 
-    assertThat(p, parse("identifier"));
-    assertThat(p, parse("identifier typeArguments"));
-    assertThat(p, parse("identifier typeArguments . identifier typeArguments"));
-    assertThat(p, parse("identifier typeArguments . identifier typeArguments . identifier typeArguments"));
+    assertThat(p)
+        .matches("identifier")
+        .matches("identifier typeArguments")
+        .matches("identifier typeArguments . identifier typeArguments")
+        .matches("identifier typeArguments . identifier typeArguments . identifier typeArguments");
   }
 
 }

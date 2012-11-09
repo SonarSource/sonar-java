@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class RelationalExpressionTest {
 
@@ -40,10 +39,11 @@ public class RelationalExpressionTest {
 
   @Test
   public void realLife() {
-    assertThat(p, parse("i < 10"));
-    assertThat(p, parse("i <= 10"));
-    assertThat(p, parse("b > 4"));
-    assertThat(p, parse("b >= 4"));
+    assertThat(p)
+        .matches("i < 10")
+        .matches("i <= 10")
+        .matches("b > 4")
+        .matches("b >= 4");
   }
 
 }

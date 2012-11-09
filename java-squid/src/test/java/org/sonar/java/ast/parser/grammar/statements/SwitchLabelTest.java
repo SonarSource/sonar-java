@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SwitchLabelTest {
   Parser<JavaGrammar> p = JavaParser.create();
@@ -42,9 +41,10 @@ public class SwitchLabelTest {
     g.constantExpression.mock();
     g.enumConstantName.mock();
 
-    assertThat(p, parse("case constantExpression :"));
-    assertThat(p, parse("case enumConstantName :"));
-    assertThat(p, parse("default :"));
+    assertThat(p)
+        .matches("case constantExpression :")
+        .matches("case enumConstantName :")
+        .matches("default :");
   }
 
 }

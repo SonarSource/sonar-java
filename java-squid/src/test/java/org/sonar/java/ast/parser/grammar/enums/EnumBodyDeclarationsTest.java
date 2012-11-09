@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 
-import static com.sonar.sslr.test.parser.ParserMatchers.parse;
-import static org.junit.Assert.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class EnumBodyDeclarationsTest {
 
@@ -42,9 +41,10 @@ public class EnumBodyDeclarationsTest {
   public void ok() {
     g.classBodyDeclaration.mock();
 
-    assertThat(p, parse(";"));
-    assertThat(p, parse("; classBodyDeclaration"));
-    assertThat(p, parse("; classBodyDeclaration classBodyDeclaration"));
+    assertThat(p)
+        .matches(";")
+        .matches("; classBodyDeclaration")
+        .matches("; classBodyDeclaration classBodyDeclaration");
   }
 
 }
