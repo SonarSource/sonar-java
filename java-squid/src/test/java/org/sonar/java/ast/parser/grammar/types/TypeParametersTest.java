@@ -19,29 +19,21 @@
  */
 package org.sonar.java.ast.parser.grammar.types;
 
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeParametersTest {
 
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
-
-  @Before
-  public void init() {
-    p.setRootRule(g.typeParameters);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
     g.typeParameter.mock();
 
-    assertThat(p)
+    assertThat(g.typeParameters)
         .matches("< typeParameter >")
         .matches("< typeParameter , typeParameter >");
   }

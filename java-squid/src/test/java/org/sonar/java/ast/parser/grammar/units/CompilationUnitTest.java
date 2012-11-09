@@ -20,23 +20,15 @@
 package org.sonar.java.ast.parser.grammar.units;
 
 import com.google.common.base.Joiner;
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CompilationUnitTest {
 
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
-
-  @Before
-  public void init() {
-    p.setRootRule(g.compilationUnit);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
@@ -44,7 +36,7 @@ public class CompilationUnitTest {
     g.importDeclaration.mock();
     g.typeDeclaration.mock();
 
-    assertThat(p)
+    assertThat(g.compilationUnit)
         .matches("packageDeclaration importDeclaration importDeclaration typeDeclaration typeDeclaration")
         .matches("packageDeclaration importDeclaration typeDeclaration")
         .matches("packageDeclaration importDeclaration")
@@ -54,7 +46,7 @@ public class CompilationUnitTest {
 
   @Test
   public void realLife() {
-    assertThat(p)
+    assertThat(g.compilationUnit)
         .matches(lines(
             "package org.example;",
             "",

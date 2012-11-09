@@ -19,29 +19,22 @@
  */
 package org.sonar.java.ast.parser.grammar.statements;
 
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class VariableDeclaratorTest {
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
 
-  @Before
-  public void init() {
-    p.setRootRule(g.variableDeclarator);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
     g.dim.mock();
     g.variableInitializer.mock();
 
-    assertThat(p)
+    assertThat(g.variableDeclarator)
         .matches("identifier dim dim = variableInitializer")
         .matches("identifier dim dim")
         .matches("identifier dim = variableInitializer")
@@ -52,7 +45,7 @@ public class VariableDeclaratorTest {
 
   @Test
   public void ko() {
-    assertThat(p)
+    assertThat(g.variableDeclarator)
         .notMatches("");
   }
 

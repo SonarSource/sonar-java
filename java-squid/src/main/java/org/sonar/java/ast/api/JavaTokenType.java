@@ -27,7 +27,9 @@ public enum JavaTokenType implements TokenType {
   INTEGER_LITERAL,
   FLOAT_LITERAL,
   LONG_LITERAL,
-  DOUBLE_LITERAL;
+  DOUBLE_LITERAL,
+
+  SPECIAL;
 
   public String getName() {
     return name();

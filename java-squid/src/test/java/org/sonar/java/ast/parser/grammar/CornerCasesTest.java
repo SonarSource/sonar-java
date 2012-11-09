@@ -19,34 +19,23 @@
  */
 package org.sonar.java.ast.parser.grammar;
 
-import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CornerCasesTest {
 
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void test() {
-    p.setRootRule(g.ge);
-    assertThat(p).matches(">=");
-
-    p.setRootRule(g.sr);
-    assertThat(p).matches(">>");
-
-    p.setRootRule(g.srequ);
-    assertThat(p).matches(">>=");
-
-    p.setRootRule(g.bsr);
-    assertThat(p).matches(">>>");
-
-    p.setRootRule(g.bsrequ);
-    assertThat(p).matches(">>>=");
+    assertThat(g.ge).matches(">=");
+    assertThat(g.sr).matches(">>");
+    assertThat(g.srequ).matches(">>=");
+    assertThat(g.bsr).matches(">>>");
+    assertThat(g.bsrequ).matches(">>>=");
   }
 
 }

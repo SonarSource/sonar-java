@@ -19,37 +19,29 @@
  */
 package org.sonar.java.ast.parser.grammar.units;
 
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class PackageDeclarationTest {
 
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
-
-  @Before
-  public void init() {
-    p.setRootRule(g.packageDeclaration);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
     g.annotation.mock();
     g.qualifiedIdentifier.mock();
 
-    assertThat(p)
+    assertThat(g.packageDeclaration)
         .matches("package qualifiedIdentifier ;")
         .matches("annotation annotation package qualifiedIdentifier ;");
   }
 
   @Test
   public void realLife() {
-    assertThat(p)
+    assertThat(g.packageDeclaration)
         .matches("package org.example;");
   }
 

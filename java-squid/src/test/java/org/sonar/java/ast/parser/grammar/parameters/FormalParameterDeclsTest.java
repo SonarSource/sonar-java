@@ -19,30 +19,22 @@
  */
 package org.sonar.java.ast.parser.grammar.parameters;
 
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParameterDeclsTest {
 
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
-
-  @Before
-  public void init() {
-    p.setRootRule(g.formalParameterDecls);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
     g.annotation.mock();
     g.formalParametersDeclsRest.mock();
 
-    assertThat(p)
+    assertThat(g.formalParameterDecls)
         .matches("type formalParametersDeclsRest")
         .matches("final type formalParametersDeclsRest")
         .matches("annotation type formalParametersDeclsRest")

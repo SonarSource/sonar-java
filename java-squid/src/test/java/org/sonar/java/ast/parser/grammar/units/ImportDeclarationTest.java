@@ -19,29 +19,21 @@
  */
 package org.sonar.java.ast.parser.grammar.units;
 
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ImportDeclarationTest {
 
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
-
-  @Before
-  public void init() {
-    p.setRootRule(g.importDeclaration);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
     g.qualifiedIdentifier.mock();
 
-    assertThat(p)
+    assertThat(g.importDeclaration)
         .matches("import qualifiedIdentifier ;")
         .matches("import qualifiedIdentifier . * ;")
         .matches("import static qualifiedIdentifier ;")
@@ -50,7 +42,7 @@ public class ImportDeclarationTest {
 
   @Test
   public void realLife() {
-    assertThat(p)
+    assertThat(g.importDeclaration)
         .matches("import org.example.HelloWorld;")
         .matches("import static org.junit.Assert.assertThat;");
   }

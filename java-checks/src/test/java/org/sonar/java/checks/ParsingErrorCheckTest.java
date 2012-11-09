@@ -36,7 +36,7 @@ public class ParsingErrorCheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ParsingError.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessageThat(containsString("IDENTIFIER expected but \"EOF\" [EOF] found"))
+        .next().atLine(1).withMessageThat(containsString("Parse error"))
         .noMore();
   }
 

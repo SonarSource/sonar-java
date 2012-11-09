@@ -19,29 +19,22 @@
  */
 package org.sonar.java.ast.parser.grammar.statements;
 
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SwitchBlockStatementGroupTest {
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
 
-  @Before
-  public void init() {
-    p.setRootRule(g.switchBlockStatementGroup);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
     g.switchLabel.mock();
     g.blockStatements.mock();
 
-    assertThat(p)
+    assertThat(g.switchBlockStatementGroup)
         .matches("switchLabel blockStatements");
   }
 

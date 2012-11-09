@@ -19,44 +19,34 @@
  */
 package org.sonar.java.ast.parser.grammar.expressions;
 
-import com.sonar.sslr.impl.Parser;
-import com.sonar.sslr.impl.events.ExtendedStackTrace;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ExpressionTest {
 
-  ExtendedStackTrace extendedStackTrace = new ExtendedStackTrace();
-  Parser<JavaGrammar> p = JavaParser.create(extendedStackTrace);
-  JavaGrammar g = p.getGrammar();
-
-  @Before
-  public void init() {
-    p.setRootRule(g.expression);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   /**
    * Our grammar accepts such constructions, whereas should not.
    */
   @Test
   public void error() {
-    assertThat(p)
+    assertThat(g.expression)
         .matches("a = b + 1 = c + 2");
   }
 
   @Test
   public void realLife() {
-    assertThat(p)
+    assertThat(g.expression)
         .matches("b >> 4")
         .matches("b >>= 4")
         .matches("b >>> 4")
         .matches("b >>>= 4");
     // Java 7: diamond
-    assertThat(p)
+    assertThat(g.expression)
         .matches("new HashMap<>()");
   }
 

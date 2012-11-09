@@ -19,23 +19,15 @@
  */
 package org.sonar.java.ast.parser.grammar.statements;
 
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TryStatementTest {
 
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
-
-  @Before
-  public void init() {
-    p.setRootRule(g.statement);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
@@ -43,7 +35,7 @@ public class TryStatementTest {
     g.catchClause.mock();
     g.finally_.mock();
 
-    assertThat(p)
+    assertThat(g.statement)
         .matches("try block catchClause catchClause finally_")
         .matches("try block catchClause finally_")
         .matches("try block finally_");
@@ -52,10 +44,10 @@ public class TryStatementTest {
   @Test
   public void realLife() {
     // Java 7: multi-catch
-    assertThat(p)
+    assertThat(g.statement)
         .matches("try {} catch (ClassNotFoundException | IllegalAccessException ex) {}");
     // Java 7: try-with-resources
-    assertThat(p)
+    assertThat(g.statement)
         .matches("try (Resource resource = new Resource()) {}")
         .matches("try (Resource resource = new Resource()) {} catch (Expception e) {} finally {}");
   }

@@ -19,23 +19,15 @@
  */
 package org.sonar.java.ast.parser.grammar.parameters;
 
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParameterTest {
 
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
-
-  @Before
-  public void init() {
-    p.setRootRule(g.formalParameter);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
@@ -43,7 +35,7 @@ public class FormalParameterTest {
     g.type.mock();
     g.variableDeclaratorId.mock();
 
-    assertThat(p)
+    assertThat(g.formalParameter)
         .matches("type variableDeclaratorId")
         .matches("final type variableDeclaratorId")
         .matches("annotation type variableDeclaratorId")

@@ -19,23 +19,15 @@
  */
 package org.sonar.java.ast.parser.grammar.statements;
 
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ForStatementTest {
 
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
-
-  @Before
-  public void init() {
-    p.setRootRule(g.forStatement);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
@@ -44,7 +36,7 @@ public class ForStatementTest {
     g.forUpdate.mock();
     g.formalParameter.mock();
 
-    assertThat(p)
+    assertThat(g.forStatement)
         .matches("for ( forInit ; expression ; forUpdate ) block")
         .matches("for ( ; expression ; forUpdate ) block")
         .matches("for ( ; ; forUpdate ) block")
@@ -54,7 +46,7 @@ public class ForStatementTest {
 
   @Test
   public void realLife() {
-    assertThat(p)
+    assertThat(g.forStatement)
         .matches("for (int i = 0; i < 10; i++) {} ")
         .matches("for (File file : files) {} ");
   }

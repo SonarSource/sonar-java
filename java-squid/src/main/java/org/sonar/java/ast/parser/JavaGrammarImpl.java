@@ -19,125 +19,29 @@
  */
 package org.sonar.java.ast.parser;
 
+import com.sonar.sslr.api.GenericTokenType;
+import com.sonar.sslr.api.Rule;
 import org.sonar.java.ast.api.JavaGrammar;
+import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.api.JavaTokenType;
 
-import static com.sonar.sslr.api.GenericTokenType.EOF;
-import static com.sonar.sslr.api.GenericTokenType.IDENTIFIER;
-import static com.sonar.sslr.api.GenericTokenType.LITERAL;
-import static com.sonar.sslr.impl.matcher.GrammarFunctions.Advanced.adjacent;
-import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.and;
-import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.o2n;
-import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.one2n;
-import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.opt;
-import static com.sonar.sslr.impl.matcher.GrammarFunctions.Standard.firstOf;
-import static org.sonar.java.ast.api.JavaKeyword.ABSTRACT;
-import static org.sonar.java.ast.api.JavaKeyword.ASSERT;
-import static org.sonar.java.ast.api.JavaKeyword.BOOLEAN;
-import static org.sonar.java.ast.api.JavaKeyword.BREAK;
-import static org.sonar.java.ast.api.JavaKeyword.BYTE;
-import static org.sonar.java.ast.api.JavaKeyword.CASE;
-import static org.sonar.java.ast.api.JavaKeyword.CATCH;
-import static org.sonar.java.ast.api.JavaKeyword.CHAR;
-import static org.sonar.java.ast.api.JavaKeyword.CLASS;
-import static org.sonar.java.ast.api.JavaKeyword.CONTINUE;
-import static org.sonar.java.ast.api.JavaKeyword.DEFAULT;
-import static org.sonar.java.ast.api.JavaKeyword.DO;
-import static org.sonar.java.ast.api.JavaKeyword.DOUBLE;
-import static org.sonar.java.ast.api.JavaKeyword.ELSE;
-import static org.sonar.java.ast.api.JavaKeyword.ENUM;
-import static org.sonar.java.ast.api.JavaKeyword.EXTENDS;
-import static org.sonar.java.ast.api.JavaKeyword.FALSE;
-import static org.sonar.java.ast.api.JavaKeyword.FINAL;
-import static org.sonar.java.ast.api.JavaKeyword.FINALLY;
-import static org.sonar.java.ast.api.JavaKeyword.FLOAT;
-import static org.sonar.java.ast.api.JavaKeyword.FOR;
-import static org.sonar.java.ast.api.JavaKeyword.IF;
-import static org.sonar.java.ast.api.JavaKeyword.IMPLEMENTS;
-import static org.sonar.java.ast.api.JavaKeyword.IMPORT;
-import static org.sonar.java.ast.api.JavaKeyword.INSTANCEOF;
-import static org.sonar.java.ast.api.JavaKeyword.INT;
-import static org.sonar.java.ast.api.JavaKeyword.INTERFACE;
-import static org.sonar.java.ast.api.JavaKeyword.LONG;
-import static org.sonar.java.ast.api.JavaKeyword.NATIVE;
-import static org.sonar.java.ast.api.JavaKeyword.NEW;
-import static org.sonar.java.ast.api.JavaKeyword.NULL;
-import static org.sonar.java.ast.api.JavaKeyword.PACKAGE;
-import static org.sonar.java.ast.api.JavaKeyword.PRIVATE;
-import static org.sonar.java.ast.api.JavaKeyword.PROTECTED;
-import static org.sonar.java.ast.api.JavaKeyword.PUBLIC;
-import static org.sonar.java.ast.api.JavaKeyword.RETURN;
-import static org.sonar.java.ast.api.JavaKeyword.SHORT;
-import static org.sonar.java.ast.api.JavaKeyword.STATIC;
-import static org.sonar.java.ast.api.JavaKeyword.STRICTFP;
-import static org.sonar.java.ast.api.JavaKeyword.SUPER;
-import static org.sonar.java.ast.api.JavaKeyword.SWITCH;
-import static org.sonar.java.ast.api.JavaKeyword.SYNCHRONIZED;
-import static org.sonar.java.ast.api.JavaKeyword.THIS;
-import static org.sonar.java.ast.api.JavaKeyword.THROW;
-import static org.sonar.java.ast.api.JavaKeyword.THROWS;
-import static org.sonar.java.ast.api.JavaKeyword.TRANSIENT;
-import static org.sonar.java.ast.api.JavaKeyword.TRUE;
-import static org.sonar.java.ast.api.JavaKeyword.TRY;
-import static org.sonar.java.ast.api.JavaKeyword.VOID;
-import static org.sonar.java.ast.api.JavaKeyword.VOLATILE;
-import static org.sonar.java.ast.api.JavaKeyword.WHILE;
-import static org.sonar.java.ast.api.JavaPunctuator.AND;
-import static org.sonar.java.ast.api.JavaPunctuator.ANDAND;
-import static org.sonar.java.ast.api.JavaPunctuator.ANDEQU;
-import static org.sonar.java.ast.api.JavaPunctuator.AT;
-import static org.sonar.java.ast.api.JavaPunctuator.BANG;
-import static org.sonar.java.ast.api.JavaPunctuator.COLON;
-import static org.sonar.java.ast.api.JavaPunctuator.COMMA;
-import static org.sonar.java.ast.api.JavaPunctuator.DEC;
-import static org.sonar.java.ast.api.JavaPunctuator.DIV;
-import static org.sonar.java.ast.api.JavaPunctuator.DIVEQU;
-import static org.sonar.java.ast.api.JavaPunctuator.DOT;
-import static org.sonar.java.ast.api.JavaPunctuator.ELLIPSIS;
-import static org.sonar.java.ast.api.JavaPunctuator.EQU;
-import static org.sonar.java.ast.api.JavaPunctuator.EQUAL;
-import static org.sonar.java.ast.api.JavaPunctuator.GT;
-import static org.sonar.java.ast.api.JavaPunctuator.HAT;
-import static org.sonar.java.ast.api.JavaPunctuator.HATEQU;
-import static org.sonar.java.ast.api.JavaPunctuator.INC;
-import static org.sonar.java.ast.api.JavaPunctuator.LBRK;
-import static org.sonar.java.ast.api.JavaPunctuator.LE;
-import static org.sonar.java.ast.api.JavaPunctuator.LPAR;
-import static org.sonar.java.ast.api.JavaPunctuator.LT;
-import static org.sonar.java.ast.api.JavaPunctuator.LWING;
-import static org.sonar.java.ast.api.JavaPunctuator.MINUS;
-import static org.sonar.java.ast.api.JavaPunctuator.MINUSEQU;
-import static org.sonar.java.ast.api.JavaPunctuator.MOD;
-import static org.sonar.java.ast.api.JavaPunctuator.MODEQU;
-import static org.sonar.java.ast.api.JavaPunctuator.NOTEQUAL;
-import static org.sonar.java.ast.api.JavaPunctuator.OR;
-import static org.sonar.java.ast.api.JavaPunctuator.OREQU;
-import static org.sonar.java.ast.api.JavaPunctuator.OROR;
-import static org.sonar.java.ast.api.JavaPunctuator.PLUS;
-import static org.sonar.java.ast.api.JavaPunctuator.PLUSEQU;
-import static org.sonar.java.ast.api.JavaPunctuator.QUERY;
-import static org.sonar.java.ast.api.JavaPunctuator.RBRK;
-import static org.sonar.java.ast.api.JavaPunctuator.RPAR;
-import static org.sonar.java.ast.api.JavaPunctuator.RWING;
-import static org.sonar.java.ast.api.JavaPunctuator.SEMI;
-import static org.sonar.java.ast.api.JavaPunctuator.SL;
-import static org.sonar.java.ast.api.JavaPunctuator.SLEQU;
-import static org.sonar.java.ast.api.JavaPunctuator.STAR;
-import static org.sonar.java.ast.api.JavaPunctuator.STAREQU;
-import static org.sonar.java.ast.api.JavaPunctuator.TILDA;
-import static org.sonar.java.ast.api.JavaTokenType.CHARACTER_LITERAL;
-import static org.sonar.java.ast.api.JavaTokenType.DOUBLE_LITERAL;
-import static org.sonar.java.ast.api.JavaTokenType.FLOAT_LITERAL;
-import static org.sonar.java.ast.api.JavaTokenType.INTEGER_LITERAL;
-import static org.sonar.java.ast.api.JavaTokenType.LONG_LITERAL;
+import static org.sonar.sslr.parser.GrammarOperators.endOfInput;
+import static org.sonar.sslr.parser.GrammarOperators.firstOf;
+import static org.sonar.sslr.parser.GrammarOperators.next;
+import static org.sonar.sslr.parser.GrammarOperators.nextNot;
+import static org.sonar.sslr.parser.GrammarOperators.oneOrMore;
+import static org.sonar.sslr.parser.GrammarOperators.optional;
+import static org.sonar.sslr.parser.GrammarOperators.regexp;
+import static org.sonar.sslr.parser.GrammarOperators.sequence;
+import static org.sonar.sslr.parser.GrammarOperators.token;
+import static org.sonar.sslr.parser.GrammarOperators.zeroOrMore;
 
 public class JavaGrammarImpl extends JavaGrammar {
 
   public JavaGrammarImpl() {
-    ge.is(GT, adjacent(EQU));
-    sr.is(GT, adjacent(GT));
-    srequ.is(GT, adjacent(GT), adjacent(EQU));
-    bsr.is(GT, adjacent(GT), adjacent(GT));
-    bsrequ.is(GT, adjacent(GT), adjacent(GT), adjacent(EQU));
+    punctuators();
+    keywords();
 
     compilationsUnits();
     classDeclaration();
@@ -151,96 +55,323 @@ public class JavaGrammarImpl extends JavaGrammar {
     literals();
   }
 
+  private void punctuators() {
+    at.is(punctuator("@")).skip();
+    and.is(punctuator("&", nextNot(firstOf("=", "&")))).skip();
+    andand.is(punctuator("&&")).skip();
+    andequ.is(punctuator("&=")).skip();
+    bang.is(punctuator("!", nextNot("="))).skip();
+    bsr.is(punctuator(">>>", nextNot("="))).skip();
+    bsrequ.is(punctuator(">>>=")).skip();
+    colon.is(punctuator(":")).skip();
+    comma.is(punctuator(",")).skip();
+    dec.is(punctuator("--")).skip();
+    div.is(punctuator("/", nextNot("="))).skip();
+    divequ.is(punctuator("/=")).skip();
+    dot.is(punctuator(".")).skip();
+    ellipsis.is(punctuator("...")).skip();
+    equ.is(punctuator("=", nextNot("="))).skip();
+    equal.is(punctuator("==")).skip();
+    ge.is(punctuator(">=")).skip();
+    gt.is(punctuator(">", nextNot(firstOf("=", ">")))).skip();
+    hat.is(punctuator("^", nextNot("="))).skip();
+    hatequ.is(punctuator("^=")).skip();
+    inc.is(punctuator("++")).skip();
+    lbrk.is(punctuator("[")).skip();
+    lt.is(punctuator("<", nextNot(firstOf("=", "<")))).skip();
+    le.is(punctuator("<=")).skip();
+    lpar.is(punctuator("(")).skip();
+    lwing.is(punctuator("{")).skip();
+    minus.is(punctuator("-", nextNot(firstOf("-", "=")))).skip();
+    minsequ.is(punctuator("-=")).skip();
+    mod.is(punctuator("%", nextNot("="))).skip();
+    modequ.is(punctuator("%=")).skip();
+    notequal.is(punctuator("!=")).skip();
+    or.is(punctuator("|", nextNot(firstOf("=", "|")))).skip();
+    orequ.is(punctuator("|=")).skip();
+    oror.is(punctuator("||")).skip();
+    plus.is(punctuator("+", nextNot(firstOf("=", "+")))).skip();
+    plusequ.is(punctuator("+=")).skip();
+    query.is(punctuator("?")).skip();
+    rbrk.is(punctuator("]")).skip();
+    rpar.is(punctuator(")")).skip();
+    rwing.is(punctuator("}")).skip();
+    semi.is(punctuator(";")).skip();
+    sl.is(punctuator("<<", nextNot("="))).skip();
+    slequ.is(punctuator("<<=")).skip();
+    sr.is(punctuator(">>", nextNot(firstOf("=", ">")))).skip();
+    srequ.is(punctuator(">>=")).skip();
+    star.is(punctuator("*", nextNot("="))).skip();
+    starequ.is(punctuator("*=")).skip();
+    tilda.is(punctuator("~")).skip();
+
+    lpoint.is(punctuator("<")).skip();
+    rpoint.is(punctuator(">")).skip();
+  }
+
+  private void keywords() {
+    assertKeyword.is(keyword("assert")).skip();
+    breakKeyword.is(keyword("break")).skip();
+    caseKeyword.is(keyword("case")).skip();
+    catchKeyword.is(keyword("catch")).skip();
+    classKeyword.is(keyword("class")).skip();
+    continueKeyword.is(keyword("continue")).skip();
+    defaultKeyword.is(keyword("default")).skip();
+    doKeyword.is(keyword("do")).skip();
+    elseKeyword.is(keyword("else")).skip();
+    enumKeyword.is(keyword("enum")).skip();
+    extendsKeyword.is(keyword("extends")).skip();
+    finallyKeyword.is(keyword("finally")).skip();
+    finalKeyword.is(keyword("final")).skip();
+    forKeyword.is(keyword("for")).skip();
+    ifKeyword.is(keyword("if")).skip();
+    implementsKeyword.is(keyword("implements")).skip();
+    importKeyword.is(keyword("import")).skip();
+    interfaceKeyword.is(keyword("interface")).skip();
+    instanceofKeyword.is(keyword("instanceof")).skip();
+    newKeyword.is(keyword("new")).skip();
+    packageKeyword.is(keyword("package")).skip();
+    returnKeyword.is(keyword("return")).skip();
+    staticKeyword.is(keyword("static")).skip();
+    superKeyword.is(keyword("super")).skip();
+    switchKeyword.is(keyword("switch")).skip();
+    synchronizedKeyword.is(keyword("synchronized")).skip();
+    thisKeyword.is(keyword("this")).skip();
+    throwsKeyword.is(keyword("throws")).skip();
+    throwKeyword.is(keyword("throw")).skip();
+    tryKeyword.is(keyword("try")).skip();
+    voidKeyword.is(keyword("void")).skip();
+    whileKeyword.is(keyword("while")).skip();
+    trueKeyword.is(keyword("true")).skip();
+    falseKeyword.is(keyword("false")).skip();
+    nullKeyword.is(keyword("null")).skip();
+    publicKeyword.is(keyword("public")).skip();
+    protectedKeyword.is(keyword("protected")).skip();
+    privateKeyword.is(keyword("private")).skip();
+    abstractKeyword.is(keyword("abstract")).skip();
+    nativeKeyword.is(keyword("native")).skip();
+    transientKeyword.is(keyword("transient")).skip();
+    volatileKeyword.is(keyword("volatile")).skip();
+    strictfpKeyword.is(keyword("strictfp")).skip();
+    byteKeyword.is(keyword("byte")).skip();
+    shortKeyword.is(keyword("short")).skip();
+    charKeyword.is(keyword("char")).skip();
+    intKeyword.is(keyword("int")).skip();
+    longKeyword.is(keyword("long")).skip();
+    floatKeyword.is(keyword("float")).skip();
+    doubleKeyword.is(keyword("double")).skip();
+    booleanKeyword.is(keyword("boolean")).skip();
+  }
+
+  private Object keyword(String value) {
+    for (JavaKeyword tokenType : JavaKeyword.values()) {
+      if (value.equals(tokenType.getValue())) {
+        return sequence(token(tokenType, value), nextNot(letterOrDigit), spacing);
+      }
+    }
+    throw new IllegalStateException(value);
+  }
+
+  private Object punctuator(String value) {
+    for (JavaPunctuator tokenType : JavaPunctuator.values()) {
+      if (value.equals(tokenType.getValue())) {
+        return sequence(token(tokenType, value), spacing);
+      }
+    }
+    return sequence(token(JavaTokenType.SPECIAL, value), spacing);
+  }
+
+  private Object punctuator(String value, Object element) {
+    for (JavaPunctuator tokenType : JavaPunctuator.values()) {
+      if (value.equals(tokenType.getValue())) {
+        return sequence(token(tokenType, value), element, spacing);
+      }
+    }
+    return sequence(token(JavaTokenType.SPECIAL, value), element, spacing);
+  }
+
+  private Rule
+      exp,
+      binaryExp,
+      letterOrDigit,
+      keyword,
+      spacing;
+
   /**
    * 3.10. Literals
    */
   private void literals() {
+    spacing.is(
+        whitespace(),
+        zeroOrMore(
+            token(GenericTokenType.COMMENT, firstOf(inlineComment(), multilineComment())),
+            whitespace())).skip();
+
+    eof.is(token(GenericTokenType.EOF, endOfInput())).skip();
+
+    characterLiteral.is(token(JavaTokenType.CHARACTER_LITERAL, characterLiteral()), spacing).skip();
+    stringLiteral.is(token(GenericTokenType.LITERAL, stringLiteral()), spacing).skip();
+
+    // FIXME underscore (Java 7)
+    exp.is(firstOf("E", "e"), optional(firstOf("+", "-")), decimalDigits());
+    binaryExp.is(firstOf("P", "p"), optional(firstOf("+", "-")), decimalDigits());
+    floatingLiteral.is(token(JavaTokenType.FLOAT_LITERAL, firstOf(
+        sequence(".", decimalDigits(), optional(exp), optional(firstOf("f", "F", "d", "D"))),
+        sequence(
+            decimalDigits(),
+            firstOf(
+                sequence(".", optional(decimalDigits()), optional(exp), optional(firstOf("f", "F", "d", "D"))),
+                firstOf("f", "F", "d", "D"),
+                sequence(exp, optional(firstOf("f", "F", "d", "D"))))),
+        sequence(
+            firstOf("0x", "0X"),
+            hexDigits(),
+            firstOf(
+                sequence(".", optional(hexDigits()), optional(binaryExp), optional(firstOf("f", "F", "d", "D"))),
+                sequence(binaryExp, optional(firstOf("f", "F", "d", "D"))))
+        ))), spacing).skip();
+    integerLiteral.is(token(JavaTokenType.INTEGER_LITERAL, firstOf(
+        sequence(firstOf("0x", "0X"), hexDigits(), optional(firstOf("L", "l"))),
+        sequence(firstOf("0b", "0B"), binaryDigits(), optional(firstOf("L", "l"))),
+        sequence(decimalDigits(), optional(firstOf("L", "l"))))), spacing).skip();
+
+    keyword.is(firstOf("assert", "break", "case", "catch", "class", "const", "continue", "default", "do", "else",
+        "enum", "extends", "finally", "final", "for", "goto", "if", "implements", "import", "interface",
+        "instanceof", "new", "package", "return", "static", "super", "switch", "synchronized", "this",
+        "throws", "throw", "try", "void", "while"
+        ), nextNot(letterOrDigit));
+    letterOrDigit.is(javaIdentifierPart());
+    identifier.is(nextNot(keyword), token(GenericTokenType.IDENTIFIER, javaIdentifier()), spacing).skip();
+
     literal.is(firstOf(
-        FLOAT_LITERAL,
-        INTEGER_LITERAL,
-        DOUBLE_LITERAL,
-        LONG_LITERAL,
-        CHARACTER_LITERAL,
-        LITERAL,
-        TRUE,
-        FALSE,
-        NULL));
+        trueKeyword,
+        falseKeyword,
+        nullKeyword,
+        characterLiteral,
+        stringLiteral,
+        floatingLiteral,
+        integerLiteral
+        // FIXME DOUBLE_LITERAL,
+        // FIXME LONG_LITERAL,
+        ));
+
+    root.is(spacing, compilationUnit).skip();
+  }
+
+  private Object decimalDigits() {
+    return regexp("[0-9]++");
+  }
+
+  private Object hexDigits() {
+    return regexp("[0-9a-fA-F]++");
+  }
+
+  private Object binaryDigits() {
+    return regexp("[01]++");
+  }
+
+  private Object characterLiteral() {
+    return sequence(next("'"), regexp("'([^'\\\\]*+(\\\\[\\s\\S])?+)*+'"));
+  }
+
+  private Object stringLiteral() {
+    return sequence(next("\""), regexp("\"([^\"\\\\]*+(\\\\[\\s\\S])?+)*+\""));
+  }
+
+  private Object whitespace() {
+    return regexp("\\s*+");
+  }
+
+  private Object inlineComment() {
+    return regexp("//[^\\n\\r]*+");
+  }
+
+  private Object multilineComment() {
+    return regexp("/\\*[\\s\\S]*?\\*\\/");
+  }
+
+  private Object javaIdentifier() {
+    return regexp("\\p{javaJavaIdentifierStart}++\\p{javaJavaIdentifierPart}*+");
+  }
+
+  private Object javaIdentifierPart() {
+    return regexp("\\p{javaJavaIdentifierPart}");
   }
 
   /**
    * 4. Types, Values and Variables
    */
   private void types() {
-    type.is(firstOf(basicType, classType), o2n(dim));
+    type.is(firstOf(basicType, classType), zeroOrMore(dim));
     referenceType.is(firstOf(
-        and(basicType, o2n(dim)),
-        and(classType, o2n(dim))));
-    classType.is(IDENTIFIER, opt(typeArguments), o2n(DOT, IDENTIFIER, opt(typeArguments)));
-    classTypeList.is(classType, o2n(COMMA, classType));
-    typeArguments.is(LT, typeArgument, o2n(COMMA, typeArgument), GT);
+        sequence(basicType, zeroOrMore(dim)),
+        sequence(classType, zeroOrMore(dim))));
+    classType.is(identifier, optional(typeArguments), zeroOrMore(dot, identifier, optional(typeArguments)));
+    classTypeList.is(classType, zeroOrMore(comma, classType));
+    typeArguments.is(lpoint, typeArgument, zeroOrMore(comma, typeArgument), rpoint);
     typeArgument.is(firstOf(
         referenceType,
-        and(QUERY, opt(firstOf(EXTENDS, SUPER), referenceType))));
-    typeParameters.is(LT, typeParameter, o2n(COMMA, typeParameter), GT);
-    typeParameter.is(IDENTIFIER, opt(EXTENDS, bound));
-    bound.is(classType, o2n(AND, classType));
+        sequence(query, optional(firstOf(extendsKeyword, superKeyword), referenceType))));
+    typeParameters.is(lpoint, typeParameter, zeroOrMore(comma, typeParameter), rpoint);
+    typeParameter.is(identifier, optional(extendsKeyword, bound));
+    bound.is(classType, zeroOrMore(and, classType));
     modifier.is(firstOf(
         annotation,
-        PUBLIC,
-        PROTECTED,
-        PRIVATE,
-        STATIC,
-        ABSTRACT,
-        FINAL,
-        NATIVE,
-        SYNCHRONIZED,
-        TRANSIENT,
-        VOLATILE,
-        STRICTFP));
+        publicKeyword,
+        protectedKeyword,
+        privateKeyword,
+        staticKeyword,
+        abstractKeyword,
+        finalKeyword,
+        nativeKeyword,
+        synchronizedKeyword,
+        transientKeyword,
+        volatileKeyword,
+        strictfpKeyword));
   }
 
   /**
    * 7.3. Compilation Units
    */
   private void compilationsUnits() {
-    compilationUnit.is(opt(packageDeclaration), o2n(importDeclaration), o2n(typeDeclaration), EOF);
+    compilationUnit.is(optional(packageDeclaration), zeroOrMore(importDeclaration), zeroOrMore(typeDeclaration), eof);
 
-    packageDeclaration.is(o2n(annotation), PACKAGE, qualifiedIdentifier, SEMI);
-    importDeclaration.is(IMPORT, opt(STATIC), qualifiedIdentifier, opt(DOT, STAR), SEMI);
+    packageDeclaration.is(zeroOrMore(annotation), packageKeyword, qualifiedIdentifier, semi);
+    importDeclaration.is(importKeyword, optional(staticKeyword), qualifiedIdentifier, optional(dot, star), semi);
     typeDeclaration.is(firstOf(
-        and(o2n(modifier), firstOf(classDeclaration, enumDeclaration, interfaceDeclaration, annotationTypeDeclaration)),
-        SEMI));
+        sequence(zeroOrMore(modifier), firstOf(classDeclaration, enumDeclaration, interfaceDeclaration, annotationTypeDeclaration)),
+        semi));
   }
 
   /**
    * 8.1. Class Declaration
    */
   private void classDeclaration() {
-    classDeclaration.is(CLASS, IDENTIFIER, opt(typeParameters), opt(EXTENDS, classType), opt(IMPLEMENTS, classTypeList), classBody);
+    classDeclaration.is(classKeyword, identifier, optional(typeParameters), optional(extendsKeyword, classType), optional(implementsKeyword, classTypeList), classBody);
 
-    classBody.is(LWING, o2n(classBodyDeclaration), RWING);
+    classBody.is(lwing, zeroOrMore(classBodyDeclaration), rwing);
     classBodyDeclaration.is(firstOf(
-        SEMI,
+        semi,
         classInitDeclaration,
-        and(o2n(modifier), memberDecl)));
-    classInitDeclaration.is(opt(STATIC), block);
+        sequence(zeroOrMore(modifier), memberDecl)));
+    classInitDeclaration.is(optional(staticKeyword), block);
     memberDecl.is(firstOf(
-        and(typeParameters, genericMethodOrConstructorRest),
-        and(type, IDENTIFIER, methodDeclaratorRest),
+        sequence(typeParameters, genericMethodOrConstructorRest),
+        sequence(type, identifier, methodDeclaratorRest),
         fieldDeclaration,
-        and(VOID, IDENTIFIER, voidMethodDeclaratorRest),
-        and(IDENTIFIER, constructorDeclaratorRest),
+        sequence(voidKeyword, identifier, voidMethodDeclaratorRest),
+        sequence(identifier, constructorDeclaratorRest),
         interfaceDeclaration,
         classDeclaration,
         enumDeclaration,
         annotationTypeDeclaration));
-    fieldDeclaration.is(type, variableDeclarators, SEMI);
+    fieldDeclaration.is(type, variableDeclarators, semi);
     genericMethodOrConstructorRest.is(firstOf(
-        and(firstOf(type, VOID), IDENTIFIER, methodDeclaratorRest),
-        and(IDENTIFIER, constructorDeclaratorRest)));
-    methodDeclaratorRest.is(formalParameters, o2n(dim), opt(THROWS, classTypeList), firstOf(methodBody, SEMI));
-    voidMethodDeclaratorRest.is(formalParameters, opt(THROWS, classTypeList), firstOf(methodBody, SEMI));
-    constructorDeclaratorRest.is(formalParameters, opt(THROWS, classTypeList), methodBody);
+        sequence(firstOf(type, voidKeyword), identifier, methodDeclaratorRest),
+        sequence(identifier, constructorDeclaratorRest)));
+    methodDeclaratorRest.is(formalParameters, zeroOrMore(dim), optional(throwsKeyword, classTypeList), firstOf(methodBody, semi));
+    voidMethodDeclaratorRest.is(formalParameters, optional(throwsKeyword, classTypeList), firstOf(methodBody, semi));
+    constructorDeclaratorRest.is(formalParameters, optional(throwsKeyword, classTypeList), methodBody);
     methodBody.is(block);
   }
 
@@ -248,67 +379,67 @@ public class JavaGrammarImpl extends JavaGrammar {
    * 8.9. Enums
    */
   private void enums() {
-    enumDeclaration.is(ENUM, IDENTIFIER, opt(IMPLEMENTS, classTypeList), enumBody);
-    enumBody.is(LWING, opt(enumConstants), opt(COMMA), opt(enumBodyDeclarations), RWING);
-    enumConstants.is(enumConstant, o2n(COMMA, enumConstant));
-    enumConstant.is(o2n(annotation), IDENTIFIER, opt(arguments), opt(classBody));
-    enumBodyDeclarations.is(SEMI, o2n(classBodyDeclaration));
+    enumDeclaration.is(enumKeyword, identifier, optional(implementsKeyword, classTypeList), enumBody);
+    enumBody.is(lwing, optional(enumConstants), optional(comma), optional(enumBodyDeclarations), rwing);
+    enumConstants.is(enumConstant, zeroOrMore(comma, enumConstant));
+    enumConstant.is(zeroOrMore(annotation), identifier, optional(arguments), optional(classBody));
+    enumBodyDeclarations.is(semi, zeroOrMore(classBodyDeclaration));
   }
 
   /**
    * 9.1. Interface Declarations
    */
   private void interfaceDeclarations() {
-    interfaceDeclaration.is(INTERFACE, IDENTIFIER, opt(typeParameters), opt(EXTENDS, classTypeList), interfaceBody);
+    interfaceDeclaration.is(interfaceKeyword, identifier, optional(typeParameters), optional(extendsKeyword, classTypeList), interfaceBody);
 
-    interfaceBody.is(LWING, o2n(interfaceBodyDeclaration), RWING);
+    interfaceBody.is(lwing, zeroOrMore(interfaceBodyDeclaration), rwing);
     interfaceBodyDeclaration.is(firstOf(
-        and(o2n(modifier), interfaceMemberDecl),
-        SEMI));
+        sequence(zeroOrMore(modifier), interfaceMemberDecl),
+        semi));
     interfaceMemberDecl.is(firstOf(
         interfaceMethodOrFieldDecl,
         interfaceGenericMethodDecl,
-        and(VOID, IDENTIFIER, voidInterfaceMethodDeclaratorsRest),
+        sequence(voidKeyword, identifier, voidInterfaceMethodDeclaratorsRest),
         interfaceDeclaration,
         annotationTypeDeclaration,
         classDeclaration,
         enumDeclaration));
-    interfaceMethodOrFieldDecl.is(type, IDENTIFIER, interfaceMethodOrFieldRest);
+    interfaceMethodOrFieldDecl.is(type, identifier, interfaceMethodOrFieldRest);
     interfaceMethodOrFieldRest.is(firstOf(
-        and(constantDeclaratorsRest, SEMI),
+        sequence(constantDeclaratorsRest, semi),
         interfaceMethodDeclaratorRest));
-    interfaceMethodDeclaratorRest.is(formalParameters, o2n(dim), opt(THROWS, classTypeList), SEMI);
-    interfaceGenericMethodDecl.is(typeParameters, firstOf(type, VOID), IDENTIFIER, interfaceMethodDeclaratorRest);
-    voidInterfaceMethodDeclaratorsRest.is(formalParameters, opt(THROWS, classTypeList), SEMI);
-    constantDeclaratorsRest.is(constantDeclaratorRest, o2n(COMMA, constantDeclarator));
-    constantDeclarator.is(IDENTIFIER, constantDeclaratorRest);
-    constantDeclaratorRest.is(o2n(dim), EQU, variableInitializer);
+    interfaceMethodDeclaratorRest.is(formalParameters, zeroOrMore(dim), optional(throwsKeyword, classTypeList), semi);
+    interfaceGenericMethodDecl.is(typeParameters, firstOf(type, voidKeyword), identifier, interfaceMethodDeclaratorRest);
+    voidInterfaceMethodDeclaratorsRest.is(formalParameters, optional(throwsKeyword, classTypeList), semi);
+    constantDeclaratorsRest.is(constantDeclaratorRest, zeroOrMore(comma, constantDeclarator));
+    constantDeclarator.is(identifier, constantDeclaratorRest);
+    constantDeclaratorRest.is(zeroOrMore(dim), equ, variableInitializer);
   }
 
   /**
    * 8.4.1. Formal Parameters
    */
   private void formalParameters() {
-    formalParameters.is(LPAR, opt(formalParameterDecls), RPAR);
-    formalParameter.is(o2n(firstOf(FINAL, annotation)), type, variableDeclaratorId);
-    formalParameterDecls.is(o2n(firstOf(FINAL, annotation)), type, formalParametersDeclsRest);
+    formalParameters.is(lpar, optional(formalParameterDecls), rpar);
+    formalParameter.is(zeroOrMore(firstOf(finalKeyword, annotation)), type, variableDeclaratorId);
+    formalParameterDecls.is(zeroOrMore(firstOf(finalKeyword, annotation)), type, formalParametersDeclsRest);
     formalParametersDeclsRest.is(firstOf(
-        and(variableDeclaratorId, opt(COMMA, formalParameterDecls)),
-        and(ELLIPSIS, variableDeclaratorId)));
-    variableDeclaratorId.is(IDENTIFIER, o2n(dim));
+        sequence(variableDeclaratorId, optional(comma, formalParameterDecls)),
+        sequence(ellipsis, variableDeclaratorId)));
+    variableDeclaratorId.is(identifier, zeroOrMore(dim));
   }
 
   /**
    * 9.7. Annotations
    */
   private void annotations() {
-    annotationTypeDeclaration.is(AT, INTERFACE, IDENTIFIER, annotationTypeBody);
-    annotationTypeBody.is(LWING, o2n(annotationTypeElementDeclaration), RWING);
+    annotationTypeDeclaration.is(at, interfaceKeyword, identifier, annotationTypeBody);
+    annotationTypeBody.is(lwing, zeroOrMore(annotationTypeElementDeclaration), rwing);
     annotationTypeElementDeclaration.is(firstOf(
-        and(o2n(modifier), annotationTypeElementRest),
-        SEMI));
+        sequence(zeroOrMore(modifier), annotationTypeElementRest),
+        semi));
     annotationTypeElementRest.is(firstOf(
-        and(type, annotationMethodOrConstantRest, SEMI),
+        sequence(type, annotationMethodOrConstantRest, semi),
         classDeclaration,
         enumDeclaration,
         interfaceDeclaration,
@@ -316,23 +447,23 @@ public class JavaGrammarImpl extends JavaGrammar {
     annotationMethodOrConstantRest.is(firstOf(
         annotationMethodRest,
         annotationConstantRest));
-    annotationMethodRest.is(IDENTIFIER, LPAR, RPAR, opt(defaultValue));
+    annotationMethodRest.is(identifier, lpar, rpar, optional(defaultValue));
     annotationConstantRest.is(variableDeclarators);
-    defaultValue.is(DEFAULT, elementValue);
-    annotation.is(AT, qualifiedIdentifier, opt(annotationRest));
+    defaultValue.is(defaultKeyword, elementValue);
+    annotation.is(at, qualifiedIdentifier, optional(annotationRest));
     annotationRest.is(firstOf(
         normalAnnotationRest,
         singleElementAnnotationRest));
-    normalAnnotationRest.is(LPAR, opt(elementValuePairs), RPAR);
-    elementValuePairs.is(elementValuePair, o2n(COMMA, elementValuePair));
-    elementValuePair.is(IDENTIFIER, EQU, elementValue);
+    normalAnnotationRest.is(lpar, optional(elementValuePairs), rpar);
+    elementValuePairs.is(elementValuePair, zeroOrMore(comma, elementValuePair));
+    elementValuePair.is(identifier, equ, elementValue);
     elementValue.is(firstOf(
         conditionalExpression,
         annotation,
         elementValueArrayInitializer));
-    elementValueArrayInitializer.is(LWING, opt(elementValues), opt(COMMA), RWING);
-    elementValues.is(elementValue, o2n(COMMA, elementValue));
-    singleElementAnnotationRest.is(LPAR, elementValue, RPAR);
+    elementValueArrayInitializer.is(lwing, optional(elementValues), optional(comma), rwing);
+    elementValues.is(elementValue, zeroOrMore(comma, elementValue));
+    singleElementAnnotationRest.is(lpar, elementValue, rpar);
   }
 
   /**
@@ -340,20 +471,20 @@ public class JavaGrammarImpl extends JavaGrammar {
    */
   private void blocksAndStatements() {
     // 14.2. Blocks
-    block.is(LWING, blockStatements, RWING);
-    blockStatements.is(o2n(blockStatement));
+    block.is(lwing, blockStatements, rwing);
+    blockStatements.is(zeroOrMore(blockStatement));
     blockStatement.is(firstOf(
         localVariableDeclarationStatement,
-        and(o2n(modifier), firstOf(classDeclaration, enumDeclaration)),
+        sequence(zeroOrMore(modifier), firstOf(classDeclaration, enumDeclaration)),
         statement));
 
     // 14.4. Local Variable Declaration Statements
-    localVariableDeclarationStatement.is(variableModifiers, type, variableDeclarators, SEMI);
-    variableModifiers.is(o2n(firstOf(
+    localVariableDeclarationStatement.is(variableModifiers, type, variableDeclarators, semi);
+    variableModifiers.is(zeroOrMore(firstOf(
         annotation,
-        FINAL)));
-    variableDeclarators.is(variableDeclarator, o2n(COMMA, variableDeclarator));
-    variableDeclarator.is(IDENTIFIER, o2n(dim), opt(EQU, variableInitializer));
+        finalKeyword)));
+    variableDeclarators.is(variableDeclarator, zeroOrMore(comma, variableDeclarator));
+    variableDeclarator.is(identifier, zeroOrMore(dim), optional(equ, variableInitializer));
 
     // 14.5. Statements
     statement.is(firstOf(
@@ -375,64 +506,64 @@ public class JavaGrammarImpl extends JavaGrammar {
         emptyStatement));
 
     // 14.6. The Empty Statement
-    emptyStatement.is(SEMI);
+    emptyStatement.is(semi);
     // 14.7. Labeled Statements
-    labeledStatement.is(IDENTIFIER, COLON, statement);
+    labeledStatement.is(identifier, colon, statement);
     // 14.8. Expression Statements
-    expressionStatement.is(statementExpression, SEMI);
+    expressionStatement.is(statementExpression, semi);
     // 14.9. The if Statement
-    ifStatement.is(IF, parExpression, statement, opt(ELSE, statement));
+    ifStatement.is(ifKeyword, parExpression, statement, optional(elseKeyword, statement));
     // 14.10. The assert Statement
-    assertStatement.is(ASSERT, expression, opt(COLON, expression), SEMI);
+    assertStatement.is(assertKeyword, expression, optional(colon, expression), semi);
 
     // 14.11. The switch statement
-    switchStatement.is(SWITCH, parExpression, LWING, switchBlockStatementGroups, RWING);
-    switchBlockStatementGroups.is(o2n(switchBlockStatementGroup));
+    switchStatement.is(switchKeyword, parExpression, lwing, switchBlockStatementGroups, rwing);
+    switchBlockStatementGroups.is(zeroOrMore(switchBlockStatementGroup));
     switchBlockStatementGroup.is(switchLabel, blockStatements);
     switchLabel.is(firstOf(
-        and(CASE, constantExpression, COLON),
-        and(CASE, enumConstantName, COLON),
-        and(DEFAULT, COLON)));
-    enumConstantName.is(IDENTIFIER);
+        sequence(caseKeyword, constantExpression, colon),
+        sequence(caseKeyword, enumConstantName, colon),
+        sequence(defaultKeyword, colon)));
+    enumConstantName.is(identifier);
 
     // 14.12. The while Statement
-    whileStatement.is(WHILE, parExpression, statement);
+    whileStatement.is(whileKeyword, parExpression, statement);
     // 14.13. The do Statement
-    doStatement.is(DO, statement, WHILE, parExpression, SEMI);
+    doStatement.is(doKeyword, statement, whileKeyword, parExpression, semi);
 
     // 14.14. The for Statement
     forStatement.is(firstOf(
-        and(FOR, LPAR, opt(forInit), SEMI, opt(expression), SEMI, opt(forUpdate), RPAR, statement),
-        and(FOR, LPAR, formalParameter, COLON, expression, RPAR, statement)));
+        sequence(forKeyword, lpar, optional(forInit), semi, optional(expression), semi, optional(forUpdate), rpar, statement),
+        sequence(forKeyword, lpar, formalParameter, colon, expression, rpar, statement)));
     forInit.is(firstOf(
-        and(o2n(firstOf(FINAL, annotation)), type, variableDeclarators),
-        and(statementExpression, o2n(COMMA, statementExpression))));
-    forUpdate.is(statementExpression, o2n(COMMA, statementExpression));
+        sequence(zeroOrMore(firstOf(finalKeyword, annotation)), type, variableDeclarators),
+        sequence(statementExpression, zeroOrMore(comma, statementExpression))));
+    forUpdate.is(statementExpression, zeroOrMore(comma, statementExpression));
 
     // 14.15. The break Statement
-    breakStatement.is(BREAK, opt(IDENTIFIER), SEMI);
+    breakStatement.is(breakKeyword, optional(identifier), semi);
     // 14.16. The continue Statement
-    continueStatement.is(CONTINUE, opt(IDENTIFIER), SEMI);
+    continueStatement.is(continueKeyword, optional(identifier), semi);
     // 14.17. The return Statement
-    returnStatement.is(RETURN, opt(expression), SEMI);
+    returnStatement.is(returnKeyword, optional(expression), semi);
     // 14.18. The throw Statement
-    throwStatement.is(THROW, expression, SEMI);
+    throwStatement.is(throwKeyword, expression, semi);
     // 14.19. The synchronized Statement
-    synchronizedStatement.is(SYNCHRONIZED, parExpression, block);
+    synchronizedStatement.is(synchronizedKeyword, parExpression, block);
 
     // 14.20. The try Statement
     tryStatement.is(firstOf(
-        and(TRY, block, firstOf(and(one2n(catchClause), opt(finally_)), finally_)),
+        sequence(tryKeyword, block, firstOf(sequence(oneOrMore(catchClause), optional(finally_)), finally_)),
         tryWithResourcesStatement));
-    tryWithResourcesStatement.is(TRY, resourceSpecification, block, o2n(catchClause), opt(finally_));
-    resourceSpecification.is(LPAR, resource, o2n(SEMI, resource), opt(SEMI), RPAR);
-    resource.is(opt(variableModifiers), type, variableDeclaratorId, EQU, expression);
+    tryWithResourcesStatement.is(tryKeyword, resourceSpecification, block, zeroOrMore(catchClause), optional(finally_));
+    resourceSpecification.is(lpar, resource, zeroOrMore(semi, resource), optional(semi), rpar);
+    resource.is(optional(variableModifiers), type, variableDeclaratorId, equ, expression);
 
-    catchClause.is(CATCH, LPAR, catchFormalParameter, RPAR, block);
-    catchFormalParameter.is(opt(variableModifiers), catchType, variableDeclaratorId);
-    catchType.is(classType, o2n(OR, classType));
+    catchClause.is(catchKeyword, lpar, catchFormalParameter, rpar, block);
+    catchFormalParameter.is(optional(variableModifiers), catchType, variableDeclaratorId);
+    catchType.is(classType, zeroOrMore(or, classType));
 
-    finally_.is(FINALLY, block);
+    finally_.is(finallyKeyword, block);
   }
 
   /**
@@ -442,107 +573,107 @@ public class JavaGrammarImpl extends JavaGrammar {
     statementExpression.is(expression);
     constantExpression.is(expression);
     expression.is(assignmentExpression);
-    assignmentExpression.is(conditionalExpression, o2n(assignmentOperator, conditionalExpression)).skipIfOneChild();
+    assignmentExpression.is(conditionalExpression, zeroOrMore(assignmentOperator, conditionalExpression)).skipIfOneChild();
     assignmentOperator.is(firstOf(
-        EQU,
-        PLUSEQU,
-        MINUSEQU,
-        STAREQU,
-        DIVEQU,
-        ANDEQU,
-        OREQU,
-        HATEQU,
-        MODEQU,
-        SLEQU,
+        equ,
+        plusequ,
+        minsequ,
+        starequ,
+        divequ,
+        andequ,
+        orequ,
+        hatequ,
+        modequ,
+        slequ,
         srequ,
         bsrequ));
-    conditionalExpression.is(conditionalOrExpression, o2n(QUERY, expression, COLON, conditionalOrExpression)).skipIfOneChild();
-    conditionalOrExpression.is(conditionalAndExpression, o2n(OROR, conditionalAndExpression)).skipIfOneChild();
-    conditionalAndExpression.is(inclusiveOrExpression, o2n(ANDAND, inclusiveOrExpression)).skipIfOneChild();
-    inclusiveOrExpression.is(exclusiveOrExpression, o2n(OR, exclusiveOrExpression)).skipIfOneChild();
-    exclusiveOrExpression.is(andExpression, o2n(HAT, andExpression)).skipIfOneChild();
-    andExpression.is(equalityExpression, o2n(AND, equalityExpression)).skipIfOneChild();
-    equalityExpression.is(relationalExpression, o2n(firstOf(EQUAL, NOTEQUAL), relationalExpression)).skipIfOneChild();
-    relationalExpression.is(shiftExpression, o2n(firstOf(
-        and(firstOf(ge, GT, LE, LT), shiftExpression),
-        and(INSTANCEOF, referenceType)))).skipIfOneChild();
-    shiftExpression.is(additiveExpression, o2n(firstOf(SL, bsr, sr), additiveExpression)).skipIfOneChild();
-    additiveExpression.is(multiplicativeExpression, o2n(firstOf(PLUS, MINUS), multiplicativeExpression)).skipIfOneChild();
-    multiplicativeExpression.is(unaryExpression, o2n(firstOf(STAR, DIV, MOD), unaryExpression)).skipIfOneChild();
+    conditionalExpression.is(conditionalOrExpression, zeroOrMore(query, expression, colon, conditionalOrExpression)).skipIfOneChild();
+    conditionalOrExpression.is(conditionalAndExpression, zeroOrMore(oror, conditionalAndExpression)).skipIfOneChild();
+    conditionalAndExpression.is(inclusiveOrExpression, zeroOrMore(andand, inclusiveOrExpression)).skipIfOneChild();
+    inclusiveOrExpression.is(exclusiveOrExpression, zeroOrMore(or, exclusiveOrExpression)).skipIfOneChild();
+    exclusiveOrExpression.is(andExpression, zeroOrMore(hat, andExpression)).skipIfOneChild();
+    andExpression.is(equalityExpression, zeroOrMore(and, equalityExpression)).skipIfOneChild();
+    equalityExpression.is(relationalExpression, zeroOrMore(firstOf(equal, notequal), relationalExpression)).skipIfOneChild();
+    relationalExpression.is(shiftExpression, zeroOrMore(firstOf(
+        sequence(firstOf(ge, gt, le, lt), shiftExpression),
+        sequence(instanceofKeyword, referenceType)))).skipIfOneChild();
+    shiftExpression.is(additiveExpression, zeroOrMore(firstOf(sl, bsr, sr), additiveExpression)).skipIfOneChild();
+    additiveExpression.is(multiplicativeExpression, zeroOrMore(firstOf(plus, minus), multiplicativeExpression)).skipIfOneChild();
+    multiplicativeExpression.is(unaryExpression, zeroOrMore(firstOf(star, div, mod), unaryExpression)).skipIfOneChild();
     unaryExpression.is(firstOf(
-        and(prefixOp, unaryExpression),
-        and(LPAR, type, RPAR, unaryExpression),
-        and(primary, o2n(selector), o2n(postFixOp)))).skipIfOneChild();
+        sequence(prefixOp, unaryExpression),
+        sequence(lpar, type, rpar, unaryExpression),
+        sequence(primary, zeroOrMore(selector), zeroOrMore(postFixOp)))).skipIfOneChild();
     primary.is(firstOf(
         parExpression,
-        and(nonWildcardTypeArguments, firstOf(explicitGenericInvocationSuffix, and(THIS, arguments))),
-        and(THIS, opt(arguments)),
-        and(SUPER, superSuffix),
+        sequence(nonWildcardTypeArguments, firstOf(explicitGenericInvocationSuffix, sequence(thisKeyword, arguments))),
+        sequence(thisKeyword, optional(arguments)),
+        sequence(superKeyword, superSuffix),
         literal,
-        and(NEW, creator),
-        and(qualifiedIdentifier, opt(identifierSuffix)),
-        and(basicType, o2n(dim), DOT, CLASS),
-        and(VOID, DOT, CLASS)));
+        sequence(newKeyword, creator),
+        sequence(qualifiedIdentifier, optional(identifierSuffix)),
+        sequence(basicType, zeroOrMore(dim), dot, classKeyword),
+        sequence(voidKeyword, dot, classKeyword)));
     identifierSuffix.is(firstOf(
-        and(LBRK, firstOf(and(RBRK, o2n(dim), DOT, CLASS), and(expression, RBRK))),
+        sequence(lbrk, firstOf(sequence(rbrk, zeroOrMore(dim), dot, classKeyword), sequence(expression, rbrk))),
         arguments,
-        and(DOT, firstOf(
-            CLASS,
+        sequence(dot, firstOf(
+            classKeyword,
             explicitGenericInvocation,
-            THIS,
-            and(SUPER, arguments),
-            and(NEW, opt(nonWildcardTypeArguments), innerCreator)))));
+            thisKeyword,
+            sequence(superKeyword, arguments),
+            sequence(newKeyword, optional(nonWildcardTypeArguments), innerCreator)))));
     explicitGenericInvocation.is(nonWildcardTypeArguments, explicitGenericInvocationSuffix);
-    nonWildcardTypeArguments.is(LT, referenceType, o2n(COMMA, referenceType), GT);
+    nonWildcardTypeArguments.is(lpoint, referenceType, zeroOrMore(comma, referenceType), rpoint);
     explicitGenericInvocationSuffix.is(firstOf(
-        and(SUPER, superSuffix),
-        and(IDENTIFIER, arguments)));
+        sequence(superKeyword, superSuffix),
+        sequence(identifier, arguments)));
     prefixOp.is(firstOf(
-        INC,
-        DEC,
-        BANG,
-        TILDA,
-        PLUS,
-        MINUS));
+        inc,
+        dec,
+        bang,
+        tilda,
+        plus,
+        minus));
     postFixOp.is(firstOf(
-        INC,
-        DEC));
+        inc,
+        dec));
     selector.is(firstOf(
-        and(DOT, IDENTIFIER, opt(arguments)),
-        and(DOT, explicitGenericInvocation),
-        and(DOT, THIS),
-        and(DOT, SUPER, superSuffix),
-        and(DOT, NEW, opt(nonWildcardTypeArguments), innerCreator),
+        sequence(dot, identifier, optional(arguments)),
+        sequence(dot, explicitGenericInvocation),
+        sequence(dot, thisKeyword),
+        sequence(dot, superKeyword, superSuffix),
+        sequence(dot, newKeyword, optional(nonWildcardTypeArguments), innerCreator),
         dimExpr));
     superSuffix.is(firstOf(
         arguments,
-        and(DOT, IDENTIFIER, opt(arguments))));
+        sequence(dot, identifier, optional(arguments))));
     basicType.is(firstOf(
-        BYTE,
-        SHORT,
-        CHAR,
-        INT,
-        LONG,
-        FLOAT,
-        DOUBLE,
-        BOOLEAN));
-    arguments.is(LPAR, opt(expression, o2n(COMMA, expression)), RPAR);
+        byteKeyword,
+        shortKeyword,
+        charKeyword,
+        intKeyword,
+        longKeyword,
+        floatKeyword,
+        doubleKeyword,
+        booleanKeyword));
+    arguments.is(lpar, optional(expression, zeroOrMore(comma, expression)), rpar);
     creator.is(firstOf(
-        and(opt(nonWildcardTypeArguments), createdName, classCreatorRest),
-        and(opt(nonWildcardTypeArguments), firstOf(classType, basicType), arrayCreatorRest)));
-    createdName.is(IDENTIFIER, opt(nonWildcardTypeArguments), o2n(DOT, IDENTIFIER, opt(nonWildcardTypeArguments)));
-    innerCreator.is(IDENTIFIER, classCreatorRest);
-    arrayCreatorRest.is(LBRK, firstOf(
-        and(RBRK, o2n(dim), arrayInitializer),
-        and(expression, RBRK, o2n(dimExpr), o2n(dim))));
-    classCreatorRest.is(opt(diamond), arguments, opt(classBody));
-    diamond.is(LT, GT);
-    arrayInitializer.is(LWING, opt(variableInitializer, o2n(COMMA, variableInitializer)), opt(COMMA), RWING);
+        sequence(optional(nonWildcardTypeArguments), createdName, classCreatorRest),
+        sequence(optional(nonWildcardTypeArguments), firstOf(classType, basicType), arrayCreatorRest)));
+    createdName.is(identifier, optional(nonWildcardTypeArguments), zeroOrMore(dot, identifier, optional(nonWildcardTypeArguments)));
+    innerCreator.is(identifier, classCreatorRest);
+    arrayCreatorRest.is(lbrk, firstOf(
+        sequence(rbrk, zeroOrMore(dim), arrayInitializer),
+        sequence(expression, rbrk, zeroOrMore(dimExpr), zeroOrMore(dim))));
+    classCreatorRest.is(optional(diamond), arguments, optional(classBody));
+    diamond.is(lt, gt);
+    arrayInitializer.is(lwing, optional(variableInitializer, zeroOrMore(comma, variableInitializer)), optional(comma), rwing);
     variableInitializer.is(firstOf(arrayInitializer, expression));
-    parExpression.is(LPAR, expression, RPAR);
-    qualifiedIdentifier.is(IDENTIFIER, o2n(DOT, IDENTIFIER));
-    dim.is(LBRK, RBRK);
-    dimExpr.is(LBRK, expression, RBRK);
+    parExpression.is(lpar, expression, rpar);
+    qualifiedIdentifier.is(identifier, zeroOrMore(dot, identifier));
+    dim.is(lbrk, rbrk);
+    dimExpr.is(lbrk, expression, rbrk);
   }
 
 }

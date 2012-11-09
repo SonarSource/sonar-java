@@ -19,35 +19,10 @@
  */
 package org.sonar.java.ast.api;
 
-import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Rule;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
-public abstract class JavaGrammar extends Grammar {
-
-  /**
-   * >=
-   */
-  public Rule ge;
-
-  /**
-   * >>
-   */
-  public Rule sr;
-
-  /**
-   * >>=
-   */
-  public Rule srequ;
-
-  /**
-   * >>>
-   */
-  public Rule bsr;
-
-  /**
-   * >>>=
-   */
-  public Rule bsrequ;
+public abstract class JavaGrammar extends LexerlessGrammar {
 
   public Rule compilationUnit;
   public Rule packageDeclaration;
@@ -227,9 +202,126 @@ public abstract class JavaGrammar extends Grammar {
   public Rule arrayCreatorRest;
   public Rule arrayInitializer;
 
+  public Rule
+      at, // @
+      and, // &
+      andand, // &&
+      andequ, // &=
+      bang, // !
+      bsr, // >>>
+      bsrequ, // >>>=
+      colon, // :
+      comma, // ,
+      dec, // --
+      div, // /
+      divequ, // /=
+      dot, // .
+      ellipsis, // ...
+      equ, // =
+      equal, // ==
+      ge, // >=
+      gt, // >
+      hat, // ^
+      hatequ, // ^=
+      inc, // ++
+      lbrk, // [
+      lt, // <
+      le, // <=
+      lpar, // )
+      lwing, // {
+      minus, // -
+      minsequ, // -=
+      mod, // %
+      modequ, // %=
+      notequal, // !=
+      or, // |
+      orequ, // |=
+      oror, // ||
+      plus, // +
+      plusequ, // +=
+      query, // ?
+      rbrk, // ]
+      rpar, // )
+      rwing, // }
+      semi, // ;
+      sl, // <<
+      slequ, // <<=
+      sr, // >>
+      srequ, // >>=
+      star, // *
+      starequ, // *=
+      tilda, // ~
+
+      lpoint, // <
+      rpoint // >
+      ;
+
+  public Rule
+      assertKeyword,
+      breakKeyword,
+      caseKeyword,
+      catchKeyword,
+      classKeyword,
+      continueKeyword,
+      defaultKeyword,
+      doKeyword,
+      elseKeyword,
+      enumKeyword,
+      extendsKeyword,
+      finallyKeyword,
+      finalKeyword,
+      forKeyword,
+      ifKeyword,
+      implementsKeyword,
+      importKeyword,
+      interfaceKeyword,
+      instanceofKeyword,
+      newKeyword,
+      packageKeyword,
+      returnKeyword,
+      staticKeyword,
+      superKeyword,
+      switchKeyword,
+      synchronizedKeyword,
+      thisKeyword,
+      throwsKeyword,
+      throwKeyword,
+      tryKeyword,
+      voidKeyword,
+      whileKeyword,
+      trueKeyword,
+      falseKeyword,
+      nullKeyword,
+      publicKeyword,
+      protectedKeyword,
+      privateKeyword,
+      abstractKeyword,
+      nativeKeyword,
+      transientKeyword,
+      volatileKeyword,
+      strictfpKeyword,
+      byteKeyword,
+      shortKeyword,
+      charKeyword,
+      intKeyword,
+      longKeyword,
+      floatKeyword,
+      doubleKeyword,
+      booleanKeyword;
+
+  public Rule
+      identifier,
+      eof,
+      floatingLiteral,
+      integerLiteral,
+      characterLiteral,
+      stringLiteral;
+
+  public Rule root;
+
   @Override
   public Rule getRootRule() {
-    return compilationUnit;
+    return root;
   }
 
 }

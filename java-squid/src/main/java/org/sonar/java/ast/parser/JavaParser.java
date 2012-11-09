@@ -24,7 +24,7 @@ import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.events.ParsingEventListener;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.lexer.JavaLexer;
+import org.sonar.sslr.parser.ParserAdapter;
 
 import java.nio.charset.Charset;
 
@@ -39,8 +39,7 @@ public final class JavaParser {
   }
 
   public static Parser<JavaGrammar> create(JavaConfiguration conf, ParsingEventListener... parsingEventListeners) {
-    return Parser.builder((JavaGrammar) new JavaGrammarImpl()).withLexer(JavaLexer.create(conf.getCharset()))
-        .setParsingEventListeners(parsingEventListeners).build();
+    return new ParserAdapter<JavaGrammar>(conf.getCharset(), new JavaGrammarImpl());
   }
 
 }

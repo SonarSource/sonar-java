@@ -19,35 +19,28 @@
  */
 package org.sonar.java.ast.parser.grammar.enums;
 
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
+
 public class EnumDeclarationTest {
 
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
-
-  @Before
-  public void init() {
-    p.setRootRule(g.enumDeclaration);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
     g.classTypeList.mock();
     g.enumBody.mock();
 
-    assertThat(p)
+    assertThat(g.enumDeclaration)
         .matches("enum identifier implements classTypeList enumBody");
   }
 
   @Test
   public void realLife() {
-    assertThat(p)
+    assertThat(g.enumDeclaration)
         .matches("enum HelloWorld { }");
   }
 

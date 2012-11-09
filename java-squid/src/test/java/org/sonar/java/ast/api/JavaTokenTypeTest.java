@@ -29,7 +29,7 @@ public class JavaTokenTypeTest {
 
   @Test
   public void test() {
-    assertThat(JavaTokenType.values()).hasSize(5);
+    assertThat(JavaTokenType.values()).hasSize(6);
 
     AstNode astNode = mock(AstNode.class);
     for (JavaTokenType tokenType : JavaTokenType.values()) {

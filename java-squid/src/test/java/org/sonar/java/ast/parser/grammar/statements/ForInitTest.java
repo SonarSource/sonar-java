@@ -19,22 +19,15 @@
  */
 package org.sonar.java.ast.parser.grammar.statements;
 
-import com.sonar.sslr.impl.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ForInitTest {
-  Parser<JavaGrammar> p = JavaParser.create();
-  JavaGrammar g = p.getGrammar();
 
-  @Before
-  public void init() {
-    p.setRootRule(g.forInit);
-  }
+  JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
@@ -42,7 +35,7 @@ public class ForInitTest {
     g.variableDeclarators.mock();
     g.statementExpression.mock();
 
-    assertThat(p)
+    assertThat(g.forInit)
         .matches("final type variableDeclarators")
         .matches("statementExpression , statementExpression")
         .matches("statementExpression");
