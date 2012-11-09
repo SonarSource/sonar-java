@@ -317,11 +317,9 @@ public abstract class JavaGrammar extends LexerlessGrammar {
       characterLiteral,
       stringLiteral;
 
-  public Rule root;
-
   @Override
   public Rule getRootRule() {
-    return root;
+    return compilationUnit;
   }
 
 }

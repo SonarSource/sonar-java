@@ -254,8 +254,6 @@ public class JavaGrammarImpl extends JavaGrammar {
         // FIXME DOUBLE_LITERAL,
         // FIXME LONG_LITERAL,
         ));
-
-    root.is(spacing, compilationUnit).skip();
   }
 
   private Object decimalDigits() {
@@ -334,7 +332,7 @@ public class JavaGrammarImpl extends JavaGrammar {
    * 7.3. Compilation Units
    */
   private void compilationsUnits() {
-    compilationUnit.is(optional(packageDeclaration), zeroOrMore(importDeclaration), zeroOrMore(typeDeclaration), eof);
+    compilationUnit.is(spacing, optional(packageDeclaration), zeroOrMore(importDeclaration), zeroOrMore(typeDeclaration), eof);
 
     packageDeclaration.is(zeroOrMore(annotation), packageKeyword, qualifiedIdentifier, semi);
     importDeclaration.is(importKeyword, optional(staticKeyword), qualifiedIdentifier, optional(dot, star), semi);
