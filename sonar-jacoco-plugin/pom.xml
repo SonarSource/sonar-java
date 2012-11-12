@@ -12,7 +12,7 @@
   <packaging>sonar-plugin</packaging>
 
   <name>Sonar Java :: JaCoCo Plugin</name>
-  <description>JaCoCo is an alternative to Clover and Cobertura to measure coverage by unit tests</description>
+  <description><![CDATA[Get code coverage with <a href="http://www.jacoco.org/jacoco/">JaCoCo</a>.]]></description>
   <url>http://docs.codehaus.org/display/SONAR/JaCoCo+Plugin</url>
   <inceptionYear>2010</inceptionYear>
   <organization>
