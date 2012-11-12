@@ -20,7 +20,6 @@
 package org.sonar.java.ast.parser;
 
 import com.sonar.sslr.api.GenericTokenType;
-import com.sonar.sslr.api.Rule;
 import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
@@ -191,11 +190,6 @@ public class JavaGrammarImpl extends JavaGrammar {
     }
     return sequence(token(JavaTokenType.SPECIAL, value), element, spacing);
   }
-
-  private Rule
-      letterOrDigit,
-      keyword,
-      spacing;
 
   /**
    * 3.10. Literals

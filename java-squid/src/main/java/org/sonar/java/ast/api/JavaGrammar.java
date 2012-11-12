@@ -202,120 +202,120 @@ public abstract class JavaGrammar extends LexerlessGrammar {
   public Rule arrayCreatorRest;
   public Rule arrayInitializer;
 
-  public Rule
-      at, // @
-      and, // &
-      andand, // &&
-      andequ, // &=
-      bang, // !
-      bsr, // >>>
-      bsrequ, // >>>=
-      colon, // :
-      comma, // ,
-      dec, // --
-      div, // /
-      divequ, // /=
-      dot, // .
-      ellipsis, // ...
-      equ, // =
-      equal, // ==
-      ge, // >=
-      gt, // >
-      hat, // ^
-      hatequ, // ^=
-      inc, // ++
-      lbrk, // [
-      lt, // <
-      le, // <=
-      lpar, // )
-      lwing, // {
-      minus, // -
-      minsequ, // -=
-      mod, // %
-      modequ, // %=
-      notequal, // !=
-      or, // |
-      orequ, // |=
-      oror, // ||
-      plus, // +
-      plusequ, // +=
-      query, // ?
-      rbrk, // ]
-      rpar, // )
-      rwing, // }
-      semi, // ;
-      sl, // <<
-      slequ, // <<=
-      sr, // >>
-      srequ, // >>=
-      star, // *
-      starequ, // *=
-      tilda, // ~
+  public Rule at; // @
+  public Rule and; // &
+  public Rule andand; // &&
+  public Rule andequ; // &=
+  public Rule bang; // !
+  public Rule bsr; // >>>
+  public Rule bsrequ; // >>>=
+  public Rule colon; // :
+  public Rule comma; // ,
+  public Rule dec; // --
+  public Rule div; // /
+  public Rule divequ; // /=
+  public Rule dot; // .
+  public Rule ellipsis; // ...
+  public Rule equ; // =
+  public Rule equal; // ==
+  public Rule ge; // >=
+  public Rule gt; // >
+  public Rule hat; // ^
+  public Rule hatequ; // ^=
+  public Rule inc; // ++
+  public Rule lbrk; // [
+  public Rule lt; // <
+  public Rule le; // <=
+  public Rule lpar; // )
+  public Rule lwing; // {
+  public Rule minus; // -
+  public Rule minsequ; // -=
+  public Rule mod; // %
+  public Rule modequ; // %=
+  public Rule notequal; // !=
+  public Rule or; // |
+  public Rule orequ; // |=
+  public Rule oror; // ||
+  public Rule plus; // +
+  public Rule plusequ; // +=
+  public Rule query; // ?
+  public Rule rbrk; // ]
+  public Rule rpar; // )
+  public Rule rwing; // }
+  public Rule semi; // ;
+  public Rule sl; // <<
+  public Rule slequ; // <<=
+  public Rule sr; // >>
+  public Rule srequ; // >>=
+  public Rule star; // *
+  public Rule starequ; // *=
+  public Rule tilda; // ~
 
-      lpoint, // <
-      rpoint // >
-      ;
+  public Rule lpoint; // <
+  public Rule rpoint; // >
 
-  public Rule
-      assertKeyword,
-      breakKeyword,
-      caseKeyword,
-      catchKeyword,
-      classKeyword,
-      continueKeyword,
-      defaultKeyword,
-      doKeyword,
-      elseKeyword,
-      enumKeyword,
-      extendsKeyword,
-      finallyKeyword,
-      finalKeyword,
-      forKeyword,
-      ifKeyword,
-      implementsKeyword,
-      importKeyword,
-      interfaceKeyword,
-      instanceofKeyword,
-      newKeyword,
-      packageKeyword,
-      returnKeyword,
-      staticKeyword,
-      superKeyword,
-      switchKeyword,
-      synchronizedKeyword,
-      thisKeyword,
-      throwsKeyword,
-      throwKeyword,
-      tryKeyword,
-      voidKeyword,
-      whileKeyword,
-      trueKeyword,
-      falseKeyword,
-      nullKeyword,
-      publicKeyword,
-      protectedKeyword,
-      privateKeyword,
-      abstractKeyword,
-      nativeKeyword,
-      transientKeyword,
-      volatileKeyword,
-      strictfpKeyword,
-      byteKeyword,
-      shortKeyword,
-      charKeyword,
-      intKeyword,
-      longKeyword,
-      floatKeyword,
-      doubleKeyword,
-      booleanKeyword;
+  public Rule assertKeyword;
+  public Rule breakKeyword;
+  public Rule caseKeyword;
+  public Rule catchKeyword;
+  public Rule classKeyword;
+  public Rule continueKeyword;
+  public Rule defaultKeyword;
+  public Rule doKeyword;
+  public Rule elseKeyword;
+  public Rule enumKeyword;
+  public Rule extendsKeyword;
+  public Rule finallyKeyword;
+  public Rule finalKeyword;
+  public Rule forKeyword;
+  public Rule ifKeyword;
+  public Rule implementsKeyword;
+  public Rule importKeyword;
+  public Rule interfaceKeyword;
+  public Rule instanceofKeyword;
+  public Rule newKeyword;
+  public Rule packageKeyword;
+  public Rule returnKeyword;
+  public Rule staticKeyword;
+  public Rule superKeyword;
+  public Rule switchKeyword;
+  public Rule synchronizedKeyword;
+  public Rule thisKeyword;
+  public Rule throwsKeyword;
+  public Rule throwKeyword;
+  public Rule tryKeyword;
+  public Rule voidKeyword;
+  public Rule whileKeyword;
+  public Rule trueKeyword;
+  public Rule falseKeyword;
+  public Rule nullKeyword;
+  public Rule publicKeyword;
+  public Rule protectedKeyword;
+  public Rule privateKeyword;
+  public Rule abstractKeyword;
+  public Rule nativeKeyword;
+  public Rule transientKeyword;
+  public Rule volatileKeyword;
+  public Rule strictfpKeyword;
+  public Rule byteKeyword;
+  public Rule shortKeyword;
+  public Rule charKeyword;
+  public Rule intKeyword;
+  public Rule longKeyword;
+  public Rule floatKeyword;
+  public Rule doubleKeyword;
+  public Rule booleanKeyword;
 
-  public Rule
-      identifier,
-      eof,
-      floatingLiteral,
-      integerLiteral,
-      characterLiteral,
-      stringLiteral;
+  public Rule identifier;
+  public Rule eof;
+  public Rule floatingLiteral;
+  public Rule integerLiteral;
+  public Rule characterLiteral;
+  public Rule stringLiteral;
+
+  protected Rule letterOrDigit;
+  protected Rule keyword;
+  protected Rule spacing;
 
   @Override
   public Rule getRootRule() {
