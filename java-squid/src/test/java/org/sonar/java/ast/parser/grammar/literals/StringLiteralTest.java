@@ -25,42 +25,25 @@ import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
-public class LiteralTest {
+public class StringLiteralTest {
 
   JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
-    g.trueKeyword.mock();
-    g.falseKeyword.mock();
-    g.nullKeyword.mock();
-    g.characterLiteral.mock();
-    g.stringLiteral.mock();
-    g.floatLiteral.mock();
-    g.longLiteral.mock();
-    g.integerLiteral.mock();
-
-    assertThat(g.literal)
-        .matches("trueKeyword")
-        .matches("falseKeyword")
-        .matches("nullKeyword")
-        .matches("characterLiteral")
-        .matches("stringLiteral")
-        .matches("floatLiteral")
-        .matches("longLiteral")
-        .matches("integerLiteral");
+    assertThat(g.stringLiteral)
+        .as("regular string").matches("\"string\"")
+        .as("empty string").matches("\"\"")
+        .as("escaped LF").matches("\"\\n\"")
+        .as("escaped double quotes").matches("\"string, which contains \\\"escaped double quotes\\\"\"")
+        .as("octal escape").matches("\"string \\177\"")
+        .as("unicode escape").matches("\"string \\u03a9\"");
   }
 
   @Test
-  public void realLife() {
-    assertThat(g.literal)
-        .matches("1.0")
-        .matches("1")
-        .matches("'a'")
-        .matches("\"string\"")
-        .matches("true")
-        .matches("false")
-        .matches("null");
+  public void nok() {
+    assertThat(g.stringLiteral)
+        .notMatches("\"");
   }
 
 }

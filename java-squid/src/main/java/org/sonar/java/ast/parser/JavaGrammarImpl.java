@@ -206,8 +206,32 @@ public class JavaGrammarImpl extends JavaGrammar {
     characterLiteral.is(token(JavaTokenType.CHARACTER_LITERAL, characterLiteral()), spacing).skip();
     stringLiteral.is(token(GenericTokenType.LITERAL, stringLiteral()), spacing).skip();
 
-    floatingLiteral.is(token(JavaTokenType.FLOAT_LITERAL, regexp(FloatLiteralChannel.FLOAT_LITERAL)), spacing).skip();
-    integerLiteral.is(token(JavaTokenType.INTEGER_LITERAL, regexp(IntegerLiteralChannel.INTEGER_LITERAL)), spacing).skip();
+    floatLiteralPart.is(regexp("(?:" +
+      // Decimal
+      "[0-9][0-9_]*+\\.([0-9_]++)?+" + FloatLiteralChannel.EXP + "?+" +
+      "|" + "\\.[0-9][0-9_]*+" + FloatLiteralChannel.EXP + "?+" +
+      // "|" + "[0-9][0-9_]*+" +
+      "|" + "[0-9][0-9_]*+" + FloatLiteralChannel.EXP +
+      // Hexadecimal
+      "|" + "0[xX][0-9_a-fA-F]++\\.[0-9_a-fA-F]*+" + FloatLiteralChannel.BINARY_EXP +
+      "|" + "0[xX][0-9_a-fA-F]++" + FloatLiteralChannel.BINARY_EXP +
+      ")")).skip();
+    floatLiteral.is(token(JavaTokenType.FLOAT_LITERAL,
+        firstOf(
+            sequence(floatLiteralPart, firstOf("F", "f")),
+            sequence(regexp("[0-9][0-9_]*+"), firstOf("F", "f"))
+        ))
+        , spacing).skip();
+    doubleLiteral.is(token(JavaTokenType.DOUBLE_LITERAL,
+        firstOf(
+            sequence(floatLiteralPart, optional(firstOf("D", "d"))),
+            sequence(regexp("[0-9][0-9_]*+"), firstOf("D", "d"))
+        ))
+        , spacing).skip();
+
+    integerLiteralPart.is(regexp(IntegerLiteralChannel.INTEGER_LITERAL)).skip();
+    longLiteral.is(token(JavaTokenType.LONG_LITERAL, sequence(integerLiteralPart, firstOf("L", "l"))), spacing).skip();
+    integerLiteral.is(token(JavaTokenType.INTEGER_LITERAL, integerLiteralPart), spacing).skip();
 
     keyword.is(firstOf("assert", "break", "case", "catch", "class", "const", "continue", "default", "do", "else",
         "enum", "extends", "finally", "final", "for", "goto", "if", "implements", "import", "interface",
@@ -223,11 +247,10 @@ public class JavaGrammarImpl extends JavaGrammar {
         nullKeyword,
         characterLiteral,
         stringLiteral,
-        floatingLiteral,
-        integerLiteral
-        // FIXME DOUBLE_LITERAL,
-        // FIXME LONG_LITERAL,
-        ));
+        floatLiteral,
+        doubleLiteral,
+        longLiteral,
+        integerLiteral));
   }
 
   private Object characterLiteral() {

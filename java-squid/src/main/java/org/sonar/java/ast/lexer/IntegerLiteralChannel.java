@@ -27,7 +27,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 
 public class IntegerLiteralChannel extends NumericLiteralChannel {
 
-  private static final String INT_SUFFIX = "[lL]?+";
+  private static final String LONG_SUFFIX = "[lL]";
 
   public static final String INTEGER_LITERAL = "(?:" +
       // Hexadecimal
@@ -36,12 +36,12 @@ public class IntegerLiteralChannel extends NumericLiteralChannel {
       "|" + "0[bB][01_]++" +
       // Decimal and Octal
       "|" + "[0-9][0-9_]*+" +
-      ")" + INT_SUFFIX;
+      ")";
 
   private final Token.Builder tokenBuilder = Token.builder();
 
   public IntegerLiteralChannel() {
-    super(INTEGER_LITERAL);
+    super(INTEGER_LITERAL + LONG_SUFFIX + "?+");
   }
 
   protected void consume(String value, CodeReader code, Lexer lexer) {

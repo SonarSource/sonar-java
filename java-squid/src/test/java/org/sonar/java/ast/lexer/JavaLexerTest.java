@@ -196,6 +196,7 @@ public class JavaLexerTest {
     assertThat(lexer.lex("0XAF.BCp-1D"), hasToken("0XAF.BCp-1D", JavaTokenType.DOUBLE_LITERAL));
 
     // without dot
+    assertThat(lexer.lex("0xAF"), not(hasToken("0xAF", JavaTokenType.DOUBLE_LITERAL)));
     assertThat(lexer.lex("0xAFp1"), hasToken("0xAFp1", JavaTokenType.DOUBLE_LITERAL));
     assertThat(lexer.lex("0XAFp+1"), hasToken("0XAFp+1", JavaTokenType.DOUBLE_LITERAL));
     assertThat(lexer.lex("0xAFp-1"), hasToken("0xAFp-1", JavaTokenType.DOUBLE_LITERAL));

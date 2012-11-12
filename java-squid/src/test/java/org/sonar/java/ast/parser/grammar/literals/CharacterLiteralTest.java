@@ -25,42 +25,20 @@ import org.sonar.java.ast.parser.JavaGrammarImpl;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
-public class LiteralTest {
+public class CharacterLiteralTest {
 
   JavaGrammar g = new JavaGrammarImpl();
 
   @Test
   public void ok() {
-    g.trueKeyword.mock();
-    g.falseKeyword.mock();
-    g.nullKeyword.mock();
-    g.characterLiteral.mock();
-    g.stringLiteral.mock();
-    g.floatLiteral.mock();
-    g.longLiteral.mock();
-    g.integerLiteral.mock();
-
-    assertThat(g.literal)
-        .matches("trueKeyword")
-        .matches("falseKeyword")
-        .matches("nullKeyword")
-        .matches("characterLiteral")
-        .matches("stringLiteral")
-        .matches("floatLiteral")
-        .matches("longLiteral")
-        .matches("integerLiteral");
-  }
-
-  @Test
-  public void realLife() {
-    assertThat(g.literal)
-        .matches("1.0")
-        .matches("1")
-        .matches("'a'")
-        .matches("\"string\"")
-        .matches("true")
-        .matches("false")
-        .matches("null");
+    assertThat(g.characterLiteral)
+        .as("single character").matches("'a'")
+        .as("escaped LF").matches("'\\n'")
+        .as("escaped quote").matches("'\\''")
+        .as("octal escape").matches("'\\177'")
+        .as("unicode escape").matches("'\\u03a9'")
+        .as("unicode escape").matches("'\\uuuu005Cr'")
+        .as("unicode escape").matches("'\\u005c\\u005c'");
   }
 
 }

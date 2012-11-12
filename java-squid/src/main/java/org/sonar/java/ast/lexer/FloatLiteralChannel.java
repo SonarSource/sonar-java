@@ -26,8 +26,8 @@ import org.sonar.java.ast.api.JavaTokenType;
 
 public class FloatLiteralChannel extends NumericLiteralChannel {
 
-  private static final String EXP = "([Ee][+-]?+[0-9_]++)";
-  private static final String BINARY_EXP = "([Pp][+-]?+[0-9_]++)";
+  public static final String EXP = "([Ee][+-]?+[0-9_]++)";
+  public static final String BINARY_EXP = "([Pp][+-]?+[0-9_]++)";
 
   private static final String FLOAT_SUFFIX = "[fFdD]";
 
