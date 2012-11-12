@@ -37,6 +37,7 @@ import static com.sonar.sslr.test.lexer.LexerMatchers.hasToken;
 import static com.sonar.sslr.test.lexer.LexerMatchers.hasTokens;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class JavaLexerTest {
@@ -177,19 +178,19 @@ public class JavaLexerTest {
     // Hexadecimal
 
     // with dot at the end
-    assertThat(lexer.lex("0xAF."), hasToken("0xAF.", JavaTokenType.DOUBLE_LITERAL));
+    assertThat(lexer.lex("0xAF."), not(hasToken("0xAF.", JavaTokenType.DOUBLE_LITERAL)));
     assertThat(lexer.lex("0XAF.P1"), hasToken("0XAF.P1", JavaTokenType.DOUBLE_LITERAL));
     assertThat(lexer.lex("0xAF.p+1"), hasToken("0xAF.p+1", JavaTokenType.DOUBLE_LITERAL));
     assertThat(lexer.lex("0XAF.p-1"), hasToken("0XAF.p-1", JavaTokenType.DOUBLE_LITERAL));
-    assertThat(lexer.lex("0xAF.f"), hasToken("0xAF.f", JavaTokenType.FLOAT_LITERAL));
+    assertThat(lexer.lex("0xAF.f"), not(hasToken("0xAF.f", JavaTokenType.FLOAT_LITERAL)));
 
     // with dot between
-    assertThat(lexer.lex("0XAF.BC"), hasToken("0XAF.BC", JavaTokenType.DOUBLE_LITERAL));
+    assertThat(lexer.lex("0XAF.BC"), not(hasToken("0XAF.BC", JavaTokenType.DOUBLE_LITERAL)));
     assertThat(lexer.lex("0xAF.BCP1"), hasToken("0xAF.BCP1", JavaTokenType.DOUBLE_LITERAL));
     assertThat(lexer.lex("0XAF.BCp+1"), hasToken("0XAF.BCp+1", JavaTokenType.DOUBLE_LITERAL));
     assertThat(lexer.lex("0xAF.BCP-1"), hasToken("0xAF.BCP-1", JavaTokenType.DOUBLE_LITERAL));
 
-    assertThat(lexer.lex("0xAF.BCf"), hasToken("0xAF.BCf", JavaTokenType.FLOAT_LITERAL));
+    assertThat(lexer.lex("0xAF.BCf"), not(hasToken("0xAF.BCf", JavaTokenType.FLOAT_LITERAL)));
     assertThat(lexer.lex("0xAF.BCp1F"), hasToken("0xAF.BCp1F", JavaTokenType.FLOAT_LITERAL));
     assertThat(lexer.lex("0XAF.BCP+1d"), hasToken("0XAF.BCP+1d", JavaTokenType.DOUBLE_LITERAL));
     assertThat(lexer.lex("0XAF.BCp-1D"), hasToken("0XAF.BCp-1D", JavaTokenType.DOUBLE_LITERAL));
