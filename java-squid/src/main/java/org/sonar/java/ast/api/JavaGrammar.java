@@ -315,8 +315,6 @@ public abstract class JavaGrammar extends LexerlessGrammar {
   public Rule characterLiteral;
   public Rule stringLiteral;
 
-  protected Rule floatLiteralPart;
-  protected Rule integerLiteralPart;
   protected Rule letterOrDigit;
   protected Rule keyword;
   protected Rule spacing;

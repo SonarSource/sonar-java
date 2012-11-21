@@ -175,6 +175,9 @@ public class JavaLexerTest {
     assertThat(lexer.lex("1234e+1d"), hasToken("1234e+1d", JavaTokenType.DOUBLE_LITERAL));
     assertThat(lexer.lex("1234E-1D"), hasToken("1234E-1D", JavaTokenType.DOUBLE_LITERAL));
 
+    assertThat(lexer.lex("1234f"), hasToken("1234f", JavaTokenType.FLOAT_LITERAL));
+    assertThat(lexer.lex("1234d"), hasToken("1234d", JavaTokenType.DOUBLE_LITERAL));
+
     // Hexadecimal
 
     // with dot at the end

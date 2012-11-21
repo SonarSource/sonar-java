@@ -26,21 +26,25 @@ import org.sonar.java.ast.api.JavaTokenType;
 
 public class FloatLiteralChannel extends NumericLiteralChannel {
 
-  public static final String EXP = "([Ee][+-]?+[0-9_]++)";
-  public static final String BINARY_EXP = "([Pp][+-]?+[0-9_]++)";
+  public static final String EXP = "(?:[Ee][+-]?+[0-9_]++)";
+  public static final String BINARY_EXP = "(?:[Pp][+-]?+[0-9_]++)";
 
   private static final String FLOAT_SUFFIX = "[fFdD]";
 
+  public static final String FLOATING_LITERAL_WITHOUT_SUFFIX = "(?:" +
+    // Decimal
+    "[0-9][0-9_]*+\\.([0-9_]++)?+" + FloatLiteralChannel.EXP + "?+" +
+    "|" + "\\.[0-9][0-9_]*+" + FloatLiteralChannel.EXP + "?+" +
+    "|" + "[0-9][0-9_]*+" + FloatLiteralChannel.EXP +
+    // Hexadecimal
+    "|" + "0[xX][0-9_a-fA-F]++\\.[0-9_a-fA-F]*+" + FloatLiteralChannel.BINARY_EXP +
+    "|" + "0[xX][0-9_a-fA-F]++" + FloatLiteralChannel.BINARY_EXP +
+    ")";
+
   public static final String FLOAT_LITERAL = "(?:" +
-      // Decimal
-      "[0-9][0-9_]*+\\.([0-9_]++)?+" + EXP + "?+" + FLOAT_SUFFIX + "?+" +
-      "|" + "\\.[0-9][0-9_]*+" + EXP + "?+" + FLOAT_SUFFIX + "?+" +
-      "|" + "[0-9][0-9_]*+" + FLOAT_SUFFIX +
-      "|" + "[0-9][0-9_]*+" + EXP + FLOAT_SUFFIX + "?+" +
-      // Hexadecimal
-      "|" + "0[xX][0-9_a-fA-F]++\\.[0-9_a-fA-F]*+" + BINARY_EXP + FLOAT_SUFFIX + "?+" +
-      "|" + "0[xX][0-9_a-fA-F]++" + BINARY_EXP + FLOAT_SUFFIX + "?+" +
-      ")";
+    FLOATING_LITERAL_WITHOUT_SUFFIX + FLOAT_SUFFIX + "?+" +
+    "|" + "[0-9][0-9_]*+" + FLOAT_SUFFIX +
+    ")";
 
   private final Token.Builder tokenBuilder = Token.builder();
 
@@ -48,6 +52,7 @@ public class FloatLiteralChannel extends NumericLiteralChannel {
     super(FLOAT_LITERAL);
   }
 
+  @Override
   protected void consume(String value, CodeReader code, Lexer lexer) {
     Token token = tokenBuilder
         .setType(value.endsWith("f") || value.endsWith("F") ? JavaTokenType.FLOAT_LITERAL : JavaTokenType.DOUBLE_LITERAL)
