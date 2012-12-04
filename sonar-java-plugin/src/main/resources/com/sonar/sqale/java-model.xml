@@ -9375,19 +9375,6 @@
       <key>SYNCHRONIZATION_RELIABILITY</key>
       <name>Synchronization related reliability</name>
       <chc>
-        <rule-repo>checkstyle</rule-repo>
-        <rule-key>com.puppycrawl.tools.checkstyle.checks.coding.DoubleCheckedLockingCheck</rule-key>
-        <prop>
-          <key>remediationFactor</key>
-          <val>3.0</val>
-          <txt>h</txt>
-        </prop>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>linear</txt>
-        </prop>
-      </chc>
-      <chc>
         <rule-repo>pmd</rule-repo>
         <rule-key>UseNotifyAllInsteadOfNotify</rule-key>
         <prop>
