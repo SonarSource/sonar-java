@@ -61,7 +61,8 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
     for (SourceCode squidPackage : packages) {
       JavaPackage sonarPackage = SquidUtils.convertJavaPackageKeyFromSquidFormat(squidPackage.getKey());
       context.index(sonarPackage);
-      put(squidPackage, context.getResource(sonarPackage)); // resource is reloaded to get the id
+      // resource is reloaded to get the id:
+      put(squidPackage, context.getResource(sonarPackage));
     }
   }
 
@@ -71,7 +72,8 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
       JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(squidFile.getKey());
       JavaPackage sonarPackage = (JavaPackage) get(squidFile.getParent(SourcePackage.class));
       context.index(sonarFile, sonarPackage);
-      put(squidFile, context.getResource(sonarFile)); // resource is reloaded to get the id
+      // resource is reloaded to get the id:
+      put(squidFile, context.getResource(sonarFile));
     }
   }
 

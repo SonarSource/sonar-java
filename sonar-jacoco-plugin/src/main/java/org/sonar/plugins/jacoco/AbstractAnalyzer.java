@@ -109,10 +109,12 @@ public abstract class AbstractAnalyzer {
 
     JavaFile resourceInContext = context.getResource(resource);
     if (null == resourceInContext) {
-      return null; // Do not save measures on resource which doesn't exist in the context
+      // Do not save measures on resource which doesn't exist in the context
+      return null;
     }
     if (ResourceUtils.isUnitTestClass(resourceInContext)) {
-      return null; // Ignore unit tests
+      // Ignore unit tests
+      return null;
     }
 
     return resourceInContext;

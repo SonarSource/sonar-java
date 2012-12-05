@@ -215,8 +215,7 @@ public class JavaGrammarImpl extends JavaGrammar {
     keyword.is(firstOf("assert", "break", "case", "catch", "class", "const", "continue", "default", "do", "else",
         "enum", "extends", "finally", "final", "for", "goto", "if", "implements", "import", "interface",
         "instanceof", "new", "package", "return", "static", "super", "switch", "synchronized", "this",
-        "throws", "throw", "try", "void", "while"
-        ), nextNot(letterOrDigit));
+        "throws", "throw", "try", "void", "while"), nextNot(letterOrDigit));
     letterOrDigit.is(javaIdentifierPart());
     identifier.is(nextNot(keyword), token(GenericTokenType.IDENTIFIER, javaIdentifier()), spacing).skip();
 

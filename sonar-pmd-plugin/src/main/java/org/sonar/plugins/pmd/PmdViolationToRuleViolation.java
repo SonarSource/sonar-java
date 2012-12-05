@@ -46,12 +46,14 @@ public class PmdViolationToRuleViolation implements BatchExtension {
   public Violation toViolation(IRuleViolation pmdViolation, SensorContext context) {
     Resource resource = findResourceFor(pmdViolation);
     if (context.getResource(resource) == null) {
-      return null; // Save violations only for existing resources
+      // Save violations only for existing resources
+      return null;
     }
 
     Rule rule = findRuleFor(pmdViolation);
     if (rule == null) {
-      return null; // Save violations only for enabled rules
+      // Save violations only for enabled rules
+      return null;
     }
 
     int lineId = pmdViolation.getBeginLine();

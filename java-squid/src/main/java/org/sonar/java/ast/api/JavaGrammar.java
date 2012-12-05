@@ -202,57 +202,57 @@ public abstract class JavaGrammar extends LexerlessGrammar {
   public Rule arrayCreatorRest;
   public Rule arrayInitializer;
 
-  public Rule at; // @
-  public Rule and; // &
-  public Rule andand; // &&
-  public Rule andequ; // &=
-  public Rule bang; // !
-  public Rule bsr; // >>>
-  public Rule bsrequ; // >>>=
-  public Rule colon; // :
-  public Rule comma; // ,
-  public Rule dec; // --
-  public Rule div; // /
-  public Rule divequ; // /=
-  public Rule dot; // .
-  public Rule ellipsis; // ...
-  public Rule equ; // =
-  public Rule equal; // ==
-  public Rule ge; // >=
-  public Rule gt; // >
-  public Rule hat; // ^
-  public Rule hatequ; // ^=
-  public Rule inc; // ++
-  public Rule lbrk; // [
-  public Rule lt; // <
-  public Rule le; // <=
-  public Rule lpar; // )
-  public Rule lwing; // {
-  public Rule minus; // -
-  public Rule minsequ; // -=
-  public Rule mod; // %
-  public Rule modequ; // %=
-  public Rule notequal; // !=
-  public Rule or; // |
-  public Rule orequ; // |=
-  public Rule oror; // ||
-  public Rule plus; // +
-  public Rule plusequ; // +=
-  public Rule query; // ?
-  public Rule rbrk; // ]
-  public Rule rpar; // )
-  public Rule rwing; // }
-  public Rule semi; // ;
-  public Rule sl; // <<
-  public Rule slequ; // <<=
-  public Rule sr; // >>
-  public Rule srequ; // >>=
-  public Rule star; // *
-  public Rule starequ; // *=
-  public Rule tilda; // ~
+  public Rule at;
+  public Rule and;
+  public Rule andand;
+  public Rule andequ;
+  public Rule bang;
+  public Rule bsr;
+  public Rule bsrequ;
+  public Rule colon;
+  public Rule comma;
+  public Rule dec;
+  public Rule div;
+  public Rule divequ;
+  public Rule dot;
+  public Rule ellipsis;
+  public Rule equ;
+  public Rule equal;
+  public Rule ge;
+  public Rule gt;
+  public Rule hat;
+  public Rule hatequ;
+  public Rule inc;
+  public Rule lbrk;
+  public Rule lt;
+  public Rule le;
+  public Rule lpar;
+  public Rule lwing;
+  public Rule minus;
+  public Rule minsequ;
+  public Rule mod;
+  public Rule modequ;
+  public Rule notequal;
+  public Rule or;
+  public Rule orequ;
+  public Rule oror;
+  public Rule plus;
+  public Rule plusequ;
+  public Rule query;
+  public Rule rbrk;
+  public Rule rpar;
+  public Rule rwing;
+  public Rule semi;
+  public Rule sl;
+  public Rule slequ;
+  public Rule sr;
+  public Rule srequ;
+  public Rule star;
+  public Rule starequ;
+  public Rule tilda;
 
-  public Rule lpoint; // <
-  public Rule rpoint; // >
+  public Rule lpoint;
+  public Rule rpoint;
 
   public Rule assertKeyword;
   public Rule breakKeyword;

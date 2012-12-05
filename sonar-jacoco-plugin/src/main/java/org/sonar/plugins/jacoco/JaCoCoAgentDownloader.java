@@ -52,7 +52,8 @@ public class JaCoCoAgentDownloader implements BatchExtension {
     try {
       File agent = File.createTempFile("jacocoagent", ".jar");
       AgentJar.extractTo(agent);
-      FileUtils.forceDeleteOnExit(agent); // TODO evil method
+      // TODO evil method
+      FileUtils.forceDeleteOnExit(agent);
       JaCoCoUtils.LOG.info("JaCoCo agent (version " + JaCoCo.VERSION + ") extracted: {}", agent);
       return agent;
     } catch (IOException e) {

@@ -22,9 +22,18 @@ package org.sonar.java.bytecode.asm;
 public abstract class AsmClassProvider {
 
   public enum DETAIL_LEVEL {
-    NOTHING(1), // Nothing is loaded from the bytecode
-    STRUCTURE(2), // superclass and interfaces are loaded along with fields and methods but not types used by fields or methods
-    STRUCTURE_AND_CALLS(3);// calls to other methods are loaded
+    /**
+     * Nothing is loaded from the bytecode
+     */
+    NOTHING(1),
+    /**
+     * Superclass and interfaces are loaded along with fields and methods but not types used by fields or methods
+     */
+    STRUCTURE(2),
+    /**
+     * Calls to other methods are loaded
+     */
+    STRUCTURE_AND_CALLS(3);
 
     private int internalLevel;
 

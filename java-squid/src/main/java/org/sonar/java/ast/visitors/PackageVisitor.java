@@ -79,7 +79,8 @@ public class PackageVisitor extends JavaAstVisitor {
   }
 
   private InputFile getInputFile() {
-    return ((VisitorContext) getContext()).getInputFile(); // TODO Unchecked cast
+    // TODO Unchecked cast
+    return ((VisitorContext) getContext()).getInputFile();
   }
 
   /**

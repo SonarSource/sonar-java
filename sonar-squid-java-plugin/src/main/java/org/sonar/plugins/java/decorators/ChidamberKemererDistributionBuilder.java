@@ -34,7 +34,7 @@ import org.sonar.api.resources.Scopes;
 
 public final class ChidamberKemererDistributionBuilder implements Decorator {
 
-  private static final Integer[] LCOM4_LIMITS = {2, 3, 4, 5, 10}; // 1 is excluded
+  private static final Integer[] LCOM4_LIMITS = {/* 1 is excluded */2, 3, 4, 5, 10};
   private static final Integer[] RFC_LIMITS = {0, 5, 10, 20, 30, 50, 90, 150};
 
   @DependedUpon

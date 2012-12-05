@@ -155,7 +155,8 @@ public class AsmMethod extends AsmResource {
       accessedFieldIsThisMethodRecursive = true;
       return null;
     } else {
-      accessedFieldBeingComputed = true; // Prevents infinite recursion on recursive methods.
+      // Prevents infinite recursion on recursive methods:
+      accessedFieldBeingComputed = true;
       computeAccessedField();
       if (accessedFieldIsThisMethodRecursive) {
         // We already returned null previously during the computation, so we must return null for consistency

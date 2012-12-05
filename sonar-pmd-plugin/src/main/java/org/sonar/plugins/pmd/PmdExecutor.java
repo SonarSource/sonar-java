@@ -21,11 +21,7 @@ package org.sonar.plugins.pmd;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Closeables;
-import net.sourceforge.pmd.Report;
-import net.sourceforge.pmd.RuleContext;
-import net.sourceforge.pmd.RuleSet;
-import net.sourceforge.pmd.RuleSetFactory;
-import net.sourceforge.pmd.RuleSets;
+import net.sourceforge.pmd.*;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.InputFile;
@@ -86,12 +82,14 @@ public class PmdExecutor implements BatchExtension {
 
   public void executeRules(PmdTemplate pmdFactory, RuleContext ruleContext, List<InputFile> files, String repositoryKey) {
     if (files.isEmpty()) {
-      return; // Nothing to analyse
+      // Nothing to analyze
+      return;
     }
 
     RuleSets rulesets = createRulesets(repositoryKey);
     if (rulesets.getAllRules().isEmpty()) {
-      return; // No rule
+      // No rule
+      return;
     }
 
     Charset encoding = projectFileSystem.getSourceCharset();

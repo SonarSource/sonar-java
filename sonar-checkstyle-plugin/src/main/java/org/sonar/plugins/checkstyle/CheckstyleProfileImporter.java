@@ -58,7 +58,8 @@ public class CheckstyleProfileImporter extends ProfileImporter {
     RulesProfile profile = RulesProfile.create();
     try {
       SMHierarchicCursor rootC = inputFactory.rootElementCursor(reader);
-      rootC.advance(); // <module name="Checker">
+      // <module name="Checker">
+      rootC.advance();
       SMInputCursor rootModulesCursor = rootC.childElementCursor(MODULE_NODE);
       while (rootModulesCursor.getNext() != null) {
         String configKey = rootModulesCursor.getAttrValue("name");
