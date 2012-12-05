@@ -54,7 +54,7 @@ import java.util.Set;
   key = "Snippet",
   priority = Priority.MAJOR,
   cardinality = Cardinality.MULTIPLE)
-public final class SnippetCheck extends JavaAstCheck implements AstAndTokenVisitor {
+public final class SnippetCheckDisabled extends JavaAstCheck implements AstAndTokenVisitor {
 
   private static final String DEFAULT_DONT_EXAMPLE1 = "";
   private static final String DEFAULT_DO_EXAMPLE1 = "";

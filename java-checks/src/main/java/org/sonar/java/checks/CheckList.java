@@ -42,7 +42,6 @@ public final class CheckList {
         NoSonarCheck.class,
         CommentedOutCodeLineCheck.class,
         EmptyFileCheck.class,
-        SnippetCheck.class,
         XPathCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,

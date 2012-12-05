@@ -36,7 +36,7 @@ public class SnippetCheckTest {
 
   @Test
   public void empty() {
-    SnippetCheck check = new SnippetCheck();
+    SnippetCheckDisabled check = new SnippetCheckDisabled();
     assertThat(check.dontExample1).isEqualTo("");
     assertThat(check.dontExample2).isEqualTo("");
     assertThat(check.doExample1).isEqualTo("");
@@ -47,7 +47,7 @@ public class SnippetCheckTest {
 
   @Test
   public void constant() {
-    SnippetCheck check = new SnippetCheck();
+    SnippetCheckDisabled check = new SnippetCheckDisabled();
     check.dontExample1 = "1l";
     check.doExample1 = "1L";
 
@@ -58,7 +58,7 @@ public class SnippetCheckTest {
 
   @Test
   public void value_identical() {
-    SnippetCheck check = new SnippetCheck();
+    SnippetCheckDisabled check = new SnippetCheckDisabled();
     check.dontExample1 = "assertThat(value).isEqualTo(true);";
     check.doExample1 = "assertThat(value).isTrue();";
 
@@ -69,7 +69,7 @@ public class SnippetCheckTest {
 
   @Test
   public void value_replaced() {
-    SnippetCheck check = new SnippetCheck();
+    SnippetCheckDisabled check = new SnippetCheckDisabled();
     check.dontExample1 = "assertThat(value).isEqualTo(true);";
     check.doExample1 = "assertThat(value).isTrue();";
     check.dontExample2 = "assertThat(otherValue).isEqualTo(true);";
@@ -81,7 +81,7 @@ public class SnippetCheckTest {
 
   @Test
   public void value_qualified_replacement() {
-    SnippetCheck check = new SnippetCheck();
+    SnippetCheckDisabled check = new SnippetCheckDisabled();
     check.dontExample1 = "assertThat(value).isEqualTo(true);";
     check.doExample1 = "assertThat(value).isTrue();";
     check.dontExample2 = "assertThat(foo.bar).isEqualTo(true);";
@@ -93,7 +93,7 @@ public class SnippetCheckTest {
 
   @Test
   public void value_method_call() {
-    SnippetCheck check = new SnippetCheck();
+    SnippetCheckDisabled check = new SnippetCheckDisabled();
     check.dontExample1 = "assertThat(value()).isEqualTo(true);";
     check.doExample1 = "assertThat(value).isTrue();";
     check.dontExample2 = "assertThat(hehe).isEqualTo(true);";
@@ -105,7 +105,7 @@ public class SnippetCheckTest {
 
   @Test
   public void value_method_call_switched_examples() {
-    SnippetCheck check = new SnippetCheck();
+    SnippetCheckDisabled check = new SnippetCheckDisabled();
     check.dontExample1 = "assertThat(value).isEqualTo(true);";
     check.doExample1 = "assertThat(value).isTrue();";
     check.dontExample2 = "assertThat(hehe()).isEqualTo(true);";
@@ -117,7 +117,7 @@ public class SnippetCheckTest {
 
   @Test
   public void prefix() {
-    SnippetCheck check = new SnippetCheck();
+    SnippetCheckDisabled check = new SnippetCheckDisabled();
     check.dontExample1 = "@Ignore";
     check.doExample1 = "@Ignore(\"message\")";
 
@@ -128,7 +128,7 @@ public class SnippetCheckTest {
 
   @Test
   public void suffix() {
-    SnippetCheck check = new SnippetCheck();
+    SnippetCheckDisabled check = new SnippetCheckDisabled();
     check.dontExample1 = "@Test(expected = IllegalArgumentException.class)";
     check.doExample1 = "@Test";
     check.dontExample2 = "@Test(expected = NullPointerException.class)";
@@ -140,7 +140,7 @@ public class SnippetCheckTest {
 
   @Test
   public void no_do_example() {
-    SnippetCheck check = new SnippetCheck();
+    SnippetCheckDisabled check = new SnippetCheckDisabled();
     check.dontExample1 = "java.util.List";
     check.doExample1 = "";
 
@@ -151,7 +151,7 @@ public class SnippetCheckTest {
 
   @Test
   public void longer_replacement() {
-    SnippetCheck check = new SnippetCheck();
+    SnippetCheckDisabled check = new SnippetCheckDisabled();
     check.dontExample1 = "org.foo";
     check.doExample1 = "org.example.foo";
 
