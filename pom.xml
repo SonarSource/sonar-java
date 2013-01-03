@@ -54,12 +54,10 @@
     <url>https://github.com/SonarSource/sonar-java</url>
     <tag>HEAD</tag>
   </scm>
-  <!--
   <issueManagement>
-    <system></system>
-    <url></url>
+    <system>JIRA</system>
+    <url>http://jira.codehaus.org/browse/SONARJAVA</url>
   </issueManagement>
-  -->
   <ciManagement>
     <system>Cloudbees</system>
     <url>https://sonarplugins.ci.cloudbees.com/job/java/</url>
