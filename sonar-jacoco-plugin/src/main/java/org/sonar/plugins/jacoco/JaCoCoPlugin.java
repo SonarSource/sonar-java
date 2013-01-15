@@ -21,6 +21,7 @@ package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.SonarPlugin;
+import org.sonar.api.tests.ProjectTests;
 
 import java.util.List;
 
@@ -39,6 +40,8 @@ public class JaCoCoPlugin extends SonarPlugin {
         JaCoCoSensor.class,
         // Integration tests
         JaCoCoItSensor.class,
-        JaCoCoOverallSensor.class);
+        JaCoCoOverallSensor.class,
+        ProjectTests.class
+    );
   }
 }

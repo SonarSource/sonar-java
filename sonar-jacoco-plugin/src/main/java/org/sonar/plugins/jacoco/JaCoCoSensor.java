@@ -19,28 +19,43 @@
  */
 package org.sonar.plugins.jacoco;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.sonar.api.batch.CoverageExtension;
+import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.tests.ProjectTests;
 
 import java.util.Collection;
 
 /**
  * @author Evgeny Mandrikov
  */
-public class JaCoCoSensor implements Sensor, CoverageExtension {
+public class JaCoCoSensor implements Sensor {
 
   private JacocoConfiguration configuration;
+  private ProjectTests projectTests;
 
-  public JaCoCoSensor(JacocoConfiguration configuration) {
+  @VisibleForTesting
+  JaCoCoSensor(JacocoConfiguration configuration){
     this.configuration = configuration;
   }
 
+  public JaCoCoSensor(JacocoConfiguration configuration, ProjectTests projectTests) {
+    this.configuration = configuration;
+    this.projectTests = projectTests;
+  }
+
+  @DependsUpon
+  public String dependsUponSurefireSensors() {
+    return "surefire-java";
+  }
+
   public void analyse(Project project, SensorContext context) {
-    new UnitTestsAnalyzer().analyse(project, context);
+    new UnitTestsAnalyzer().analyse(project, context, projectTests);
   }
 
   public boolean shouldExecuteOnProject(Project project) {

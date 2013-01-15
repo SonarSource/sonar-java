@@ -20,11 +20,19 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import org.apache.commons.lang.StringUtils;
 import org.jacoco.core.analysis.*;
+import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataReader;
 import org.jacoco.core.data.ExecutionDataStore;
+import org.jacoco.core.data.IExecutionDataVisitor;
+import org.jacoco.core.data.ISessionInfoVisitor;
+import org.jacoco.core.data.SessionInfo;
 import org.jacoco.core.data.SessionInfoStore;
 import org.jacoco.core.runtime.WildcardMatcher;
 import org.sonar.api.batch.SensorContext;
@@ -33,12 +41,19 @@ import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ResourceUtils;
+import org.sonar.api.tests.ProjectTests;
 import org.sonar.api.utils.SonarException;
+
+import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * @author Evgeny Mandrikov
@@ -46,6 +61,10 @@ import java.util.Collection;
 public abstract class AbstractAnalyzer {
 
   public final void analyse(Project project, SensorContext context) {
+    analyse(project, context, null);
+  }
+
+  public final void analyse(Project project, SensorContext context, ProjectTests projectTests) {
     final File buildOutputDir = project.getFileSystem().getBuildOutputDir();
     if (!buildOutputDir.exists()) {
       JaCoCoUtils.LOG.info("Project coverage is set to 0% as build output directory does not exist: {}", buildOutputDir);
@@ -56,43 +75,84 @@ public abstract class AbstractAnalyzer {
 
     WildcardMatcher excludes = new WildcardMatcher(Strings.nullToEmpty(getExcludes(project)));
     try {
-      readExecutionData(jacocoExecutionData, buildOutputDir, context, excludes);
+      readExecutionData(jacocoExecutionData, buildOutputDir, context, excludes, projectTests);
     } catch (IOException e) {
       throw new SonarException(e);
     }
   }
 
-  public final void readExecutionData(File jacocoExecutionData, File buildOutputDir, SensorContext context, WildcardMatcher excludes) throws IOException {
-    SessionInfoStore sessionInfoStore = new SessionInfoStore();
-    ExecutionDataStore executionDataStore = new ExecutionDataStore();
+  public final void readExecutionData(File jacocoExecutionData, File buildOutputDir, SensorContext context, WildcardMatcher excludes,
+                                      ProjectTests projectTests) throws IOException {
+    final SessionInfoStore sessionInfoStore = new SessionInfoStore();
+    final ExecutionDataStore executionDataStore = new ExecutionDataStore();
+    final MultipleDataStoreSession multipleDataStoreSession = new MultipleDataStoreSession();
 
     if (jacocoExecutionData == null || !jacocoExecutionData.exists() || !jacocoExecutionData.isFile()) {
       JaCoCoUtils.LOG.info("Project coverage is set to 0% as no JaCoCo execution data has been dumped: {}", jacocoExecutionData);
     } else {
       JaCoCoUtils.LOG.info("Analysing {}", jacocoExecutionData);
       ExecutionDataReader reader = new ExecutionDataReader(new FileInputStream(jacocoExecutionData));
-      reader.setSessionInfoVisitor(sessionInfoStore);
-      reader.setExecutionDataVisitor(executionDataStore);
+      reader.setSessionInfoVisitor(new ISessionInfoVisitor() {
+        public void visitSessionInfo(final SessionInfo info) {
+          sessionInfoStore.visitSessionInfo(info);
+          multipleDataStoreSession.addSession(info);
+        }
+      });
+      reader.setExecutionDataVisitor(new IExecutionDataVisitor() {
+        public void visitClassExecution(final ExecutionData data) {
+          executionDataStore.visitClassExecution(data);
+          multipleDataStoreSession.visitClassExecution(data);
+        }
+      });
       reader.read();
     }
 
-    CoverageBuilder coverageBuilder = new CoverageBuilder();
-    Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
-    analyzeAll(analyzer, buildOutputDir);
-
+    CoverageBuilder coverageBuilder = analyze(executionDataStore, buildOutputDir);
     int analyzedResources = 0;
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       JavaFile resource = getResource(coverage, context);
       if (resource != null) {
         if (!isExcluded(coverage, excludes)) {
-          analyzeFile(resource, coverage, context);
+          CoverageMeasuresBuilder builder = analyzeFile(resource, coverage, context);
+          saveMeasures(context, resource, builder.createMeasures());
         }
         analyzedResources++;
       }
     }
     if (analyzedResources == 0) {
       JaCoCoUtils.LOG.warn("Coverage information was not collected. Perhaps you forget to include debug information into compiled classes?");
+    } else {
+      analyzeLinesCoverage(multipleDataStoreSession, buildOutputDir, context, excludes, projectTests);
     }
+  }
+
+  private void analyzeLinesCoverage(MultipleDataStoreSession multipleDataStoreSession, File buildOutputDir, SensorContext context, WildcardMatcher excludes,
+                                    ProjectTests projectTests){
+    for (Map.Entry<SessionInfo, ExecutionDataStore> entry : multipleDataStoreSession.getDataStoreBySession().entrySet()){
+      SessionInfo sessionInfo = entry.getKey();
+      String id = sessionInfo.getId();
+      String test = Iterables.getLast(Splitter.on(".").split(id));
+      String fileTest = StringUtils.removeEnd(id, "." + test);
+      ExecutionDataStore executionDataStore = entry.getValue();
+      CoverageBuilder coverageBuilder = analyze(executionDataStore, buildOutputDir);
+
+      for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
+        JavaFile resource = getResource(coverage, context);
+        if (resource != null) {
+          if (!isExcluded(coverage, excludes)) {
+            CoverageMeasuresBuilder builder = analyzeFile(resource, coverage, context);
+            projectTests.cover(fileTest, test, "", builder.getHitsByLine().keySet());
+          }
+        }
+      }
+    }
+  }
+
+  private CoverageBuilder analyze(ExecutionDataStore executionDataStore, File buildOutputDir){
+    CoverageBuilder coverageBuilder = new CoverageBuilder();
+    Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
+    analyzeAll(analyzer, buildOutputDir);
+    return coverageBuilder;
   }
 
   private static boolean isExcluded(ISourceFileCoverage coverage, WildcardMatcher excludesMatcher) {
@@ -137,7 +197,7 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  private void analyzeFile(JavaFile resource, ISourceFileCoverage coverage, SensorContext context) {
+  private CoverageMeasuresBuilder analyzeFile(JavaFile resource, ISourceFileCoverage coverage, SensorContext context) {
     CoverageMeasuresBuilder builder = CoverageMeasuresBuilder.create();
     for (int lineId = coverage.getFirstLine(); lineId <= coverage.getLastLine(); lineId++) {
       final int hits;
@@ -165,8 +225,7 @@ public abstract class AbstractAnalyzer {
         builder.setConditions(lineId, conditions, coveredConditions);
       }
     }
-
-    saveMeasures(context, resource, builder.createMeasures());
+    return builder;
   }
 
   protected abstract void saveMeasures(SensorContext context, JavaFile resource, Collection<Measure> measures);
@@ -174,5 +233,31 @@ public abstract class AbstractAnalyzer {
   protected abstract String getReportPath(Project project);
 
   protected abstract String getExcludes(Project project);
+
+  class MultipleDataStoreSession {
+    private Map<SessionInfo, ExecutionDataStore> dataStoreBySession;
+    private SessionInfo lastSessionInfo;
+
+    public MultipleDataStoreSession() {
+      dataStoreBySession = newHashMap();
+    }
+
+    public void addSession(SessionInfo info){
+      dataStoreBySession.put(info, new ExecutionDataStore());
+      lastSessionInfo = info;
+    }
+
+    public void visitClassExecution(ExecutionData data){
+        getDataStoreFromLastSession().visitClassExecution(data);
+    }
+
+    private ExecutionDataStore getDataStoreFromLastSession() {
+      return dataStoreBySession.get(lastSessionInfo);
+    }
+
+    public Map<SessionInfo, ExecutionDataStore> getDataStoreBySession(){
+      return dataStoreBySession;
+    }
+  }
 
 }
