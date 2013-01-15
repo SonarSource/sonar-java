@@ -67,7 +67,7 @@ public class SurefireSensorTest {
   @Before
   public void before(){
     ProjectTests projectTests = mock(ProjectTests.class);
-    surefireSensor = new SurefireSensor(projectTests);
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(projectTests));
   }
 
   @Test

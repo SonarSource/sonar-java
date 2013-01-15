@@ -26,15 +26,12 @@ import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.tests.ProjectTests;
-import org.sonar.api.tests.Test;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.api.utils.SonarException;
 import org.sonar.api.utils.StaxParser;
 import org.sonar.plugins.surefire.data.SurefireStaxHandler;
 import org.sonar.plugins.surefire.data.UnitTestClassReport;
 import org.sonar.plugins.surefire.data.UnitTestIndex;
-import org.sonar.plugins.surefire.data.UnitTestResult;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -47,7 +44,7 @@ import java.util.Map;
  */
 public abstract class AbstractSurefireParser {
 
-  public void collect(Project project, SensorContext context, File reportsDir, ProjectTests projectTests) {
+  public void collect(Project project, SensorContext context, File reportsDir) {
     File[] xmlFiles = getReports(reportsDir);
 
     if (xmlFiles.length == 0) {
@@ -56,7 +53,7 @@ public abstract class AbstractSurefireParser {
         context.saveMeasure(CoreMetrics.TESTS, 0.0);
       }
     } else {
-      parseFiles(context, xmlFiles, projectTests);
+      parseFiles(context, xmlFiles);
     }
   }
 
@@ -80,11 +77,11 @@ public abstract class AbstractSurefireParser {
     });
   }
 
-  private void parseFiles(SensorContext context, File[] reports, ProjectTests projectTests) {
+  private void parseFiles(SensorContext context, File[] reports) {
     UnitTestIndex index = new UnitTestIndex();
     parseFiles(reports, index);
     sanitize(index);
-    save(index, context, projectTests);
+    save(index, context);
   }
 
   private void parseFiles(File[] reports, UnitTestIndex index) {
@@ -109,26 +106,29 @@ public abstract class AbstractSurefireParser {
     }
   }
 
-  private void save(UnitTestIndex index, SensorContext context, ProjectTests projectTests) {
+  private void save(UnitTestIndex index, SensorContext context) {
     for (Map.Entry<String, UnitTestClassReport> entry : index.getIndexByClassname().entrySet()) {
       UnitTestClassReport report = entry.getValue();
       if (report.getTests() > 0) {
         Resource resource = getUnitTestResource(entry.getKey());
-        double testsCount = report.getTests() - report.getSkipped();
-        saveMeasure(context, resource, CoreMetrics.SKIPPED_TESTS, report.getSkipped());
-        saveMeasure(context, resource, CoreMetrics.TESTS, testsCount);
-        saveMeasure(context, resource, CoreMetrics.TEST_ERRORS, report.getErrors());
-        saveMeasure(context, resource, CoreMetrics.TEST_FAILURES, report.getFailures());
-        saveMeasure(context, resource, CoreMetrics.TEST_EXECUTION_TIME, report.getDurationMilliseconds());
-        double passedTests = testsCount - report.getErrors() - report.getFailures();
-        if (testsCount > 0) {
-          double percentage = passedTests * 100d / testsCount;
-          saveMeasure(context, resource, CoreMetrics.TEST_SUCCESS_DENSITY, ParsingUtils.scaleValue(percentage));
-        }
-        saveResults(context, resource, report);
-        registerTests(resource, report, projectTests);
+        save(entry.getValue(), resource, context);
       }
     }
+  }
+
+  private void save(UnitTestClassReport report, Resource resource, SensorContext context) {
+      double testsCount = report.getTests() - report.getSkipped();
+      saveMeasure(context, resource, CoreMetrics.SKIPPED_TESTS, report.getSkipped());
+      saveMeasure(context, resource, CoreMetrics.TESTS, testsCount);
+      saveMeasure(context, resource, CoreMetrics.TEST_ERRORS, report.getErrors());
+      saveMeasure(context, resource, CoreMetrics.TEST_FAILURES, report.getFailures());
+      saveMeasure(context, resource, CoreMetrics.TEST_EXECUTION_TIME, report.getDurationMilliseconds());
+      double passedTests = testsCount - report.getErrors() - report.getFailures();
+      if (testsCount > 0) {
+        double percentage = passedTests * 100d / testsCount;
+        saveMeasure(context, resource, CoreMetrics.TEST_SUCCESS_DENSITY, ParsingUtils.scaleValue(percentage));
+      }
+      saveResults(context, resource, report);
   }
 
   private void saveMeasure(SensorContext context, Resource resource, Metric metric, double value) {
@@ -137,16 +137,8 @@ public abstract class AbstractSurefireParser {
     }
   }
 
-  private void saveResults(SensorContext context, Resource resource, UnitTestClassReport report) {
+  protected void saveResults(SensorContext context, Resource resource, UnitTestClassReport report) {
     context.saveMeasure(resource, new Measure(CoreMetrics.TEST_DATA, report.toXml()));
-  }
-
-  private void registerTests(Resource resource, UnitTestClassReport report, ProjectTests projectTests){
-    for (UnitTestResult unitTestResult : report.getResults()) {
-      Test test = new Test(unitTestResult.getName());
-      test.setDurationMilliseconds(unitTestResult.getDurationMilliseconds()).setStatus(unitTestResult.getStatus());
-      projectTests.addTest(resource.getKey(), test);
-    }
   }
 
   protected abstract Resource<?> getUnitTestResource(String classKey);

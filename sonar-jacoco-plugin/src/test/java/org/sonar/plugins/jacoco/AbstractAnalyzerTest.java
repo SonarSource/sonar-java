@@ -33,6 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class AbstractAnalyzerTest {
+
   ISourceFileCoverage coverage = mock(ISourceFileCoverage.class);
   SensorContext context = mock(SensorContext.class);
 

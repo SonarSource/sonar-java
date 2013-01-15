@@ -61,7 +61,7 @@ public class AbstractSurefireParserTest {
     AbstractSurefireParser parser = newParser();
     SensorContext context = mockContext();
 
-    parser.collect(new Project("foo"), context, getDir("multipleReports"), projectTests);
+    parser.collect(new Project("foo"), context, getDir("multipleReports"));
 
     // Only 6 tests measures should be stored, no more: the TESTS-AllTests.xml must not be read as there's 1 file result per unit test
     // (SONAR-2841).
@@ -76,7 +76,7 @@ public class AbstractSurefireParserTest {
     AbstractSurefireParser parser = newParser();
     SensorContext context = mockContext();
 
-    parser.collect(new Project("foo"), context, getDir("onlyTestSuiteReport"), projectTests);
+    parser.collect(new Project("foo"), context, getDir("onlyTestSuiteReport"));
 
     verify(context, times(2)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TESTS), anyDouble());
     verify(context, times(2)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_ERRORS), anyDouble());
@@ -92,7 +92,7 @@ public class AbstractSurefireParserTest {
     SensorContext context = mockContext();
     Project project = mock(Project.class);
 
-    parser.collect(project, context, getDir("noReports"), projectTests);
+    parser.collect(project, context, getDir("noReports"));
 
     verify(context).saveMeasure(CoreMetrics.TESTS, 0.0);
   }
@@ -107,7 +107,7 @@ public class AbstractSurefireParserTest {
     Project project = mock(Project.class);
     when(project.getModules()).thenReturn(Arrays.asList(new Project("foo")));
 
-    parser.collect(project, context, getDir("noReports"), projectTests);
+    parser.collect(project, context, getDir("noReports"));
 
     verify(context, never()).saveMeasure(CoreMetrics.TESTS, 0.0);
   }
@@ -117,7 +117,7 @@ public class AbstractSurefireParserTest {
     AbstractSurefireParser parser = newParser();
     SensorContext context = mockContext();
 
-    parser.collect(new Project("foo"), context, getDir("noTests"), projectTests);
+    parser.collect(new Project("foo"), context, getDir("noTests"));
 
     verify(context, never()).saveMeasure(any(Resource.class), any(Metric.class), anyDouble());
   }
@@ -134,7 +134,7 @@ public class AbstractSurefireParserTest {
       }
     }), eq(false))).thenReturn(true);
 
-    parser.collect(new Project("foo"), context, getDir("innerClasses"), projectTests);
+    parser.collect(new Project("foo"), context, getDir("innerClasses"));
 
     verify(context)
         .saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap")), eq(CoreMetrics.TESTS), eq(7.0));
@@ -149,7 +149,7 @@ public class AbstractSurefireParserTest {
     AbstractSurefireParser parser = newParser();
 
     SensorContext context = mockContext();
-    parser.collect(new Project("foo"), context, getDir("nestedInnerClasses"), projectTests);
+    parser.collect(new Project("foo"), context, getDir("nestedInnerClasses"));
 
     verify(context).saveMeasure(
         argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.sonar.plugins.surefire.NestedInnerTest")),

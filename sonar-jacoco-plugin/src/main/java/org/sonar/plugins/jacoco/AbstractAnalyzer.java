@@ -158,6 +158,18 @@ public abstract class AbstractAnalyzer {
     }
   }
 
+  private class LastSessionInfo {
+    private SessionInfo lastSessionInfo;
+
+    public void addSession(SessionInfo info) {
+      lastSessionInfo = info;
+    }
+
+    public SessionInfo getLastSessionInfo() {
+      return lastSessionInfo;
+    }
+  }
+
   private void analyzeTestCoverage(SessionInfo sessionInfo, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes,
                                    ProjectTests projectTests) {
     String id = sessionInfo.getId();
@@ -250,17 +262,5 @@ public abstract class AbstractAnalyzer {
   protected abstract String getReportPath(Project project);
 
   protected abstract String getExcludes(Project project);
-
-  class LastSessionInfo {
-    private SessionInfo lastSessionInfo;
-
-    public void addSession(SessionInfo info) {
-      lastSessionInfo = info;
-    }
-
-    public SessionInfo getLastSessionInfo() {
-      return lastSessionInfo;
-    }
-  }
 
 }

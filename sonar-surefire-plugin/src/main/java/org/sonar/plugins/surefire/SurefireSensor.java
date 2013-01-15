@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.surefire;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.CoverageExtension;
@@ -28,11 +27,7 @@ import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.resources.Java;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
-import org.sonar.api.tests.ProjectTests;
-import org.sonar.plugins.surefire.api.AbstractSurefireParser;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.io.File;
@@ -42,10 +37,10 @@ public class SurefireSensor implements Sensor {
 
   private static Logger logger = LoggerFactory.getLogger(SurefireSensor.class);
 
-  private ProjectTests projectTests;
+  private final SurefireJavaParser surefireJavaParser;
 
-  public SurefireSensor(ProjectTests projectTests) {
-    this.projectTests = projectTests;
+  public SurefireSensor(SurefireJavaParser surefireJavaParser) {
+    this.surefireJavaParser = surefireJavaParser;
   }
 
   @DependsUpon
@@ -64,16 +59,7 @@ public class SurefireSensor implements Sensor {
 
   protected void collect(Project project, SensorContext context, File reportsDir) {
     logger.info("parsing {}", reportsDir);
-    new AbstractSurefireParser() {
-      @Override
-      protected Resource<?> getUnitTestResource(String classKey) {
-        if (!StringUtils.contains(classKey, "$")) {
-          // temporary hack waiting for http://jira.codehaus.org/browse/SONAR-1865
-          return new JavaFile(classKey, true);
-        }
-        return null;
-      }
-    }.collect(project, context, reportsDir, projectTests);
+    surefireJavaParser.collect(project, context, reportsDir);
   }
 
   @Override

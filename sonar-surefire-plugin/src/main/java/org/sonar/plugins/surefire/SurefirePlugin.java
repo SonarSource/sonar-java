@@ -41,6 +41,7 @@ public final class SurefirePlugin extends SonarPlugin {
   public List<?> getExtensions() {
     return ImmutableList.of(
         SurefireSensor.class,
+        SurefireJavaParser.class,
         ProjectTests.class
     );
   }
