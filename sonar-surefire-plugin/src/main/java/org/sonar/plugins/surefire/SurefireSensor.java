@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.surefire;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +43,6 @@ public class SurefireSensor implements Sensor {
   private static Logger logger = LoggerFactory.getLogger(SurefireSensor.class);
 
   private ProjectTests projectTests;
-
-  @VisibleForTesting
-  SurefireSensor() {
-  }
 
   public SurefireSensor(ProjectTests projectTests) {
     this.projectTests = projectTests;

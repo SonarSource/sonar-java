@@ -32,6 +32,7 @@ import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.api.tests.ProjectTests;
 import org.sonar.api.utils.SonarException;
 
 import java.io.BufferedInputStream;
@@ -47,9 +48,11 @@ public class JaCoCoOverallSensor implements Sensor {
   public static final String JACOCO_OVERALL = "jacoco-overall.exec";
 
   private final JacocoConfiguration configuration;
+  private final ProjectTests projectTests;
 
-  public JaCoCoOverallSensor(JacocoConfiguration configuration) {
+  public JaCoCoOverallSensor(JacocoConfiguration configuration, ProjectTests projectTests) {
     this.configuration = configuration;
+    this.projectTests = projectTests;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
@@ -70,7 +73,7 @@ public class JaCoCoOverallSensor implements Sensor {
 
     mergeReports(reportOverall, reportUTs, reportITs);
 
-    new OverallAnalyzer(reportOverall).analyse(project, context);
+    new OverallAnalyzer(reportOverall).analyse(project, context, projectTests);
   }
 
   private void mergeReports(File reportOverall, File... reports) {

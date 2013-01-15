@@ -26,6 +26,7 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.tests.ProjectTests;
 
 import java.util.Collection;
 
@@ -34,9 +35,11 @@ import java.util.Collection;
  */
 public class JaCoCoItSensor implements Sensor {
   private JacocoConfiguration configuration;
+  private final ProjectTests projectTests;
 
-  public JaCoCoItSensor(JacocoConfiguration configuration) {
+  public JaCoCoItSensor(JacocoConfiguration configuration, ProjectTests projectTests) {
     this.configuration = configuration;
+    this.projectTests = projectTests;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
@@ -44,7 +47,7 @@ public class JaCoCoItSensor implements Sensor {
   }
 
   public void analyse(Project project, SensorContext context) {
-    new ITAnalyzer().analyse(project, context);
+    new ITAnalyzer().analyse(project, context, projectTests);
   }
 
   class ITAnalyzer extends AbstractAnalyzer {

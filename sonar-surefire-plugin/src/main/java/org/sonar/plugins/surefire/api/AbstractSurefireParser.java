@@ -19,12 +19,6 @@
  */
 package org.sonar.plugins.surefire.api;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Map;
-
-import javax.xml.stream.XMLStreamException;
-
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.CoreMetrics;
@@ -42,14 +36,16 @@ import org.sonar.plugins.surefire.data.UnitTestClassReport;
 import org.sonar.plugins.surefire.data.UnitTestIndex;
 import org.sonar.plugins.surefire.data.UnitTestResult;
 
+import javax.xml.stream.XMLStreamException;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.Map;
+
 /**
  * @since 2.4
  */
 public abstract class AbstractSurefireParser {
-
-  public void collect(Project project, SensorContext context, File reportsDir) {
-    collect(project,  context, reportsDir, null);
-  }
 
   public void collect(Project project, SensorContext context, File reportsDir, ProjectTests projectTests) {
     File[] xmlFiles = getReports(reportsDir);

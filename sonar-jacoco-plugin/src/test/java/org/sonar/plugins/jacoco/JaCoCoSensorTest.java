@@ -31,6 +31,7 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.test.IsMeasure;
+import org.sonar.api.tests.ProjectTests;
 import org.sonar.test.TestUtils;
 
 import java.io.File;
@@ -57,6 +58,7 @@ public class JaCoCoSensorTest {
   private static File outputDir;
 
   private JacocoConfiguration configuration;
+  private ProjectTests projectTests;
   private JaCoCoSensor sensor;
 
   @BeforeClass
@@ -70,7 +72,8 @@ public class JaCoCoSensorTest {
   @Before
   public void setUp() {
     configuration = mock(JacocoConfiguration.class);
-    sensor = new JaCoCoSensor(configuration);
+    projectTests = mock(ProjectTests.class);
+    sensor = new JaCoCoSensor(configuration, projectTests);
   }
 
   @Test

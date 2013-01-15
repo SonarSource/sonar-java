@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.annotations.VisibleForTesting;
-import org.sonar.api.batch.CoverageExtension;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
@@ -38,11 +36,6 @@ public class JaCoCoSensor implements Sensor {
 
   private JacocoConfiguration configuration;
   private ProjectTests projectTests;
-
-  @VisibleForTesting
-  JaCoCoSensor(JacocoConfiguration configuration){
-    this.configuration = configuration;
-  }
 
   public JaCoCoSensor(JacocoConfiguration configuration, ProjectTests projectTests) {
     this.configuration = configuration;

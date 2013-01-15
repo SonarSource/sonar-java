@@ -20,6 +20,7 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.io.Files;
+import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.CoreMetrics;
@@ -28,6 +29,7 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.test.IsMeasure;
+import org.sonar.api.tests.ProjectTests;
 import org.sonar.test.TestUtils;
 
 import java.io.File;
@@ -44,11 +46,22 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 public class JaCoCoOverallSensorTest {
-  private final JacocoConfiguration configuration = mock(JacocoConfiguration.class);
-  private final SensorContext context = mock(SensorContext.class);
-  private final ProjectFileSystem pfs = mock(ProjectFileSystem.class);
-  private final Project project = mock(Project.class);
-  private final JaCoCoOverallSensor sensor = new JaCoCoOverallSensor(configuration);
+  private JacocoConfiguration configuration;
+  private SensorContext context;
+  private ProjectFileSystem pfs;
+  private Project project;
+  private ProjectTests projectTests;
+  private JaCoCoOverallSensor sensor;
+
+  @Before
+  public void before(){
+    configuration = mock(JacocoConfiguration.class);
+    context = mock(SensorContext.class);
+    pfs = mock(ProjectFileSystem.class);
+    project = mock(Project.class);
+    projectTests = mock(ProjectTests.class);
+    sensor = new JaCoCoOverallSensor(configuration, projectTests);
+  }
 
   @Test
   public void should_execute_if_report_path_is_set() {

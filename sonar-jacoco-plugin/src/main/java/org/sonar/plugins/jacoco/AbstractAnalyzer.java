@@ -20,6 +20,7 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
@@ -82,10 +83,6 @@ public abstract class AbstractAnalyzer {
     }
 
     return resourceInContext;
-  }
-
-  public final void analyse(Project project, SensorContext context) {
-    analyse(project, context, null);
   }
 
   public final void analyse(Project project, SensorContext context, ProjectTests projectTests) {
@@ -164,16 +161,20 @@ public abstract class AbstractAnalyzer {
   private void analyzeTestCoverage(SessionInfo sessionInfo, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes,
                                    ProjectTests projectTests) {
     String id = sessionInfo.getId();
-    String test = Iterables.getLast(Splitter.on(".").split(id));
-    String fileTest = StringUtils.removeEnd(id, "." + test);
-    CoverageBuilder coverageBuilder = analyze(executionDataStore, buildOutputDir);
+    if (CharMatcher.anyOf(".").countIn(id) < 2) {
+      // As we do not have a convention for the id, we use this hack to detect if the id is a test or not
+    } else {
+      String test = Iterables.getLast(Splitter.on(".").split(id));
+      String fileTest = StringUtils.removeEnd(id, "." + test);
+      CoverageBuilder coverageBuilder = analyze(executionDataStore, buildOutputDir);
 
-    for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
-      JavaFile resource = getResource(coverage, context);
-      if (resource != null) {
-        if (!isExcluded(coverage, excludes)) {
-          CoverageMeasuresBuilder builder = analyzeFile(resource, coverage, context);
-          projectTests.cover(fileTest, test, resource.getKey(), getLinesCover(builder));
+      for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
+        JavaFile resource = getResource(coverage, context);
+        if (resource != null) {
+          if (!isExcluded(coverage, excludes)) {
+            CoverageMeasuresBuilder builder = analyzeFile(resource, coverage, context);
+            projectTests.cover(fileTest, test, resource.getKey(), getLinesCover(builder));
+          }
         }
       }
     }
