@@ -37,6 +37,7 @@ import org.sonar.test.TestUtils;
 import java.io.File;
 import java.io.IOException;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -59,6 +61,11 @@ public class JaCoCoSensorTest {
 
   private JacocoConfiguration configuration;
   private ProjectTests projectTests;
+
+  private SensorContext context;
+  private ProjectFileSystem pfs;
+  private Project project;
+
   private JaCoCoSensor sensor;
 
   @BeforeClass
@@ -71,6 +78,10 @@ public class JaCoCoSensorTest {
 
   @Before
   public void setUp() {
+    context = mock(SensorContext.class);
+    pfs = mock(ProjectFileSystem.class);
+    project = mock(Project.class);
+
     configuration = mock(JacocoConfiguration.class);
     projectTests = mock(ProjectTests.class);
     sensor = new JaCoCoSensor(configuration, projectTests);
@@ -82,7 +93,7 @@ public class JaCoCoSensorTest {
   }
 
   @Test
-  public void shouldExecuteIfEnabled() {
+  public void should_execute_if_enabled() {
     Project project = mock(Project.class);
 
     when(configuration.isEnabled(project)).thenReturn(true);
@@ -93,11 +104,8 @@ public class JaCoCoSensorTest {
   }
 
   @Test
-  public void testReadExecutionData() {
+  public void test_read_execution_data() {
     JavaFile resource = new JavaFile("org.sonar.plugins.jacoco.tests.Hello");
-    SensorContext context = mock(SensorContext.class);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
-    Project project = mock(Project.class);
     when(context.getResource(any(Resource.class))).thenReturn(resource);
     when(pfs.getBuildOutputDir()).thenReturn(outputDir);
     when(pfs.resolvePath(anyString())).thenReturn(jacocoExecutionData);
@@ -119,10 +127,26 @@ public class JaCoCoSensorTest {
   }
 
   @Test
-  public void doNotSaveMeasureOnResourceWhichDoesntExistInTheContext() {
-    SensorContext context = mock(SensorContext.class);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
-    Project project = mock(Project.class);
+  public void test_read_execution_data_for_lines_covered_by_tests() throws IOException {
+    jacocoExecutionData = new File(outputDir, "jacoco_unit_test.exec");
+    Files.copy(TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest/App.class.toCopy"),
+        new File(jacocoExecutionData.getParentFile(), "Hello.class"));
+
+    JavaFile resource = new JavaFile("org.example.App");
+    when(context.getResource(any(Resource.class))).thenReturn(resource);
+    when(pfs.getBuildOutputDir()).thenReturn(outputDir);
+    when(pfs.resolvePath(anyString())).thenReturn(jacocoExecutionData);
+    when(project.getFileSystem()).thenReturn(pfs);
+
+    sensor.analyse(project, context);
+
+    verify(projectTests).cover("org.example.FirstTest", "test", "org.example.App", newArrayList(3, 6));
+    verify(projectTests).cover("org.example.SecondTest", "test", "org.example.App", newArrayList(3, 10));
+    verifyNoMoreInteractions(projectTests);
+  }
+
+  @Test
+  public void do_not_save_measure_on_resource_which_doesnt_exist_in_the_context() {
     when(context.getResource(any(Resource.class))).thenReturn(null);
     when(pfs.getBuildOutputDir()).thenReturn(outputDir);
     when(project.getFileSystem()).thenReturn(pfs);
@@ -130,5 +154,15 @@ public class JaCoCoSensorTest {
     sensor.analyse(project, context);
 
     verify(context, never()).saveMeasure(any(Resource.class), any(Measure.class));
+  }
+
+  @Test
+  public void should_do_nothing_if_output_dir_does_not_exists() {
+    when(pfs.getBuildOutputDir()).thenReturn(new File("nowhere"));
+    when(project.getFileSystem()).thenReturn(pfs);
+
+    sensor.analyse(project, context);
+
+    verifyZeroInteractions(context);
   }
 }

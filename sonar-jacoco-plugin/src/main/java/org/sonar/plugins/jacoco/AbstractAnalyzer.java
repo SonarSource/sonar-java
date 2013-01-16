@@ -97,7 +97,7 @@ public abstract class AbstractAnalyzer {
     WildcardMatcher excludes = new WildcardMatcher(Strings.nullToEmpty(getExcludes(project)));
     try {
       readExecutionData(jacocoExecutionData, buildOutputDir, context, excludes);
-      readTestsCoverageData(jacocoExecutionData, buildOutputDir, context, excludes, projectTests);
+      readLinesCoveredByTestsData(jacocoExecutionData, buildOutputDir, context, excludes, projectTests);
     } catch (IOException e) {
       throw new SonarException(e);
     }
@@ -134,8 +134,8 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  public final void readTestsCoverageData(File jacocoExecutionData, final File buildOutputDir, final SensorContext context, final WildcardMatcher excludes,
-                                          final ProjectTests projectTests) throws IOException {
+  public final void readLinesCoveredByTestsData(File jacocoExecutionData, final File buildOutputDir, final SensorContext context, final WildcardMatcher excludes,
+                                                final ProjectTests projectTests) throws IOException {
     if (jacocoExecutionData == null || !jacocoExecutionData.exists() || !jacocoExecutionData.isFile()) {
       JaCoCoUtils.LOG.info("No JaCoCo execution data for tests has been dumped: {}", jacocoExecutionData);
     } else {
@@ -151,7 +151,7 @@ public abstract class AbstractAnalyzer {
         public void visitClassExecution(final ExecutionData data) {
           ExecutionDataStore executionDataStore = new ExecutionDataStore();
           executionDataStore.visitClassExecution(data);
-          analyzeTestCoverage(lastSessionInfo.getLastSessionInfo(), executionDataStore, buildOutputDir, context, excludes, projectTests);
+          analyzeLinesCoveredByTests(lastSessionInfo.getLastSessionInfo(), executionDataStore, buildOutputDir, context, excludes, projectTests);
         }
       });
       reader.read();
@@ -170,8 +170,8 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  private void analyzeTestCoverage(SessionInfo sessionInfo, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes,
-                                   ProjectTests projectTests) {
+  private void analyzeLinesCoveredByTests(SessionInfo sessionInfo, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes,
+                                          ProjectTests projectTests) {
     String id = sessionInfo.getId();
     if (CharMatcher.anyOf(".").countIn(id) < 2) {
       // As we do not have a convention for the id, we use this hack to detect if the id is a test or not
