@@ -50,7 +50,11 @@ public class SurefireJavaParser extends AbstractSurefireParser implements BatchE
   private void registerTests(Resource resource, UnitTestClassReport report) {
     for (UnitTestResult unitTestResult : report.getResults()) {
       Test test = new Test(unitTestResult.getName());
-      test.setDurationMilliseconds(unitTestResult.getDurationMilliseconds()).setStatus(unitTestResult.getStatus());
+      test.setDurationMilliseconds(unitTestResult.getDurationMilliseconds())
+          .setStatus(unitTestResult.getStatus())
+          .setMessage(unitTestResult.getMessage())
+          .setStackTrace(unitTestResult.getStackTrace())
+      ;
       projectTests.addTest(resource.getKey(), test);
     }
   }

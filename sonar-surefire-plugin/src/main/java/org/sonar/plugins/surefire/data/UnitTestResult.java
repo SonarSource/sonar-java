@@ -48,6 +48,10 @@ public final class UnitTestResult {
     return this;
   }
 
+  public String getStackTrace() {
+    return stackTrace;
+  }
+
   public UnitTestResult setStackTrace(String stackTrace) {
     this.stackTrace = stackTrace;
     return this;
