@@ -54,7 +54,7 @@ public class SurefireJavaParserTest {
   }
 
   @Test
-  public void shouldAggregateReports() throws URISyntaxException {
+  public void should_aggregate_reports() throws URISyntaxException {
     SensorContext context = mockContext();
 
     parser.collect(new Project("foo"), context, getDir("multipleReports"));
@@ -67,13 +67,15 @@ public class SurefireJavaParserTest {
   }
 
   @Test
-  public void shouldRegisterTests() throws URISyntaxException {
+  public void should_register_tests() throws URISyntaxException {
     SensorContext context = mockContext();
 
     parser.collect(new Project("foo"), context, getDir("multipleReports"));
 
-    verify(projectTests).addTest("ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest", new org.sonar.api.tests.Test("testGetUnKnownCollector"));
-    verify(projectTests).addTest("ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest", new org.sonar.api.tests.Test("testGetJDependsCollector"));
+    verify(projectTests).addTest("ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest",
+        new org.sonar.api.tests.Test("testGetUnKnownCollector").setStatus("ok").setDurationMilliseconds(35));
+    verify(projectTests).addTest("ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest",
+        new org.sonar.api.tests.Test("testGetJDependsCollector").setStatus("ok").setDurationMilliseconds(35));
   }
 
   private java.io.File getDir(String dirname) throws URISyntaxException {
