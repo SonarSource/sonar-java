@@ -123,7 +123,7 @@ public abstract class AbstractAnalyzer {
       JavaFile resource = getResource(coverage, context);
       if (resource != null) {
         if (!isExcluded(coverage, excludes)) {
-          CoverageMeasuresBuilder builder = analyzeFile(resource, coverage, context);
+          CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
           saveMeasures(context, resource, builder.createMeasures());
         }
         analyzedResources++;
@@ -158,7 +158,7 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  private class LastSessionInfo {
+  private static class LastSessionInfo {
     private SessionInfo lastSessionInfo;
 
     public void addSession(SessionInfo info) {
@@ -182,11 +182,9 @@ public abstract class AbstractAnalyzer {
 
       for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
         JavaFile resource = getResource(coverage, context);
-        if (resource != null) {
-          if (!isExcluded(coverage, excludes)) {
-            CoverageMeasuresBuilder builder = analyzeFile(resource, coverage, context);
-            projectTests.cover(fileTest, test, resource.getKey(), getLinesCover(builder));
-          }
+        if (resource != null && !isExcluded(coverage, excludes)) {
+          CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
+          projectTests.cover(fileTest, test, resource.getKey(), getLinesCover(builder));
         }
       }
     }
@@ -226,7 +224,7 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  private CoverageMeasuresBuilder analyzeFile(JavaFile resource, ISourceFileCoverage coverage, SensorContext context) {
+  private CoverageMeasuresBuilder analyzeFile(JavaFile resource, ISourceFileCoverage coverage) {
     CoverageMeasuresBuilder builder = CoverageMeasuresBuilder.create();
     for (int lineId = coverage.getFirstLine(); lineId <= coverage.getLastLine(); lineId++) {
       final int hits;

@@ -117,18 +117,18 @@ public abstract class AbstractSurefireParser {
   }
 
   private void save(UnitTestClassReport report, Resource resource, SensorContext context) {
-      double testsCount = report.getTests() - report.getSkipped();
-      saveMeasure(context, resource, CoreMetrics.SKIPPED_TESTS, report.getSkipped());
-      saveMeasure(context, resource, CoreMetrics.TESTS, testsCount);
-      saveMeasure(context, resource, CoreMetrics.TEST_ERRORS, report.getErrors());
-      saveMeasure(context, resource, CoreMetrics.TEST_FAILURES, report.getFailures());
-      saveMeasure(context, resource, CoreMetrics.TEST_EXECUTION_TIME, report.getDurationMilliseconds());
-      double passedTests = testsCount - report.getErrors() - report.getFailures();
-      if (testsCount > 0) {
-        double percentage = passedTests * 100d / testsCount;
-        saveMeasure(context, resource, CoreMetrics.TEST_SUCCESS_DENSITY, ParsingUtils.scaleValue(percentage));
-      }
-      saveResults(context, resource, report);
+    double testsCount = report.getTests() - report.getSkipped();
+    saveMeasure(context, resource, CoreMetrics.SKIPPED_TESTS, report.getSkipped());
+    saveMeasure(context, resource, CoreMetrics.TESTS, testsCount);
+    saveMeasure(context, resource, CoreMetrics.TEST_ERRORS, report.getErrors());
+    saveMeasure(context, resource, CoreMetrics.TEST_FAILURES, report.getFailures());
+    saveMeasure(context, resource, CoreMetrics.TEST_EXECUTION_TIME, report.getDurationMilliseconds());
+    double passedTests = testsCount - report.getErrors() - report.getFailures();
+    if (testsCount > 0) {
+      double percentage = passedTests * 100d / testsCount;
+      saveMeasure(context, resource, CoreMetrics.TEST_SUCCESS_DENSITY, ParsingUtils.scaleValue(percentage));
+    }
+    saveResults(context, resource, report);
   }
 
   private void saveMeasure(SensorContext context, Resource resource, Metric metric, double value) {
