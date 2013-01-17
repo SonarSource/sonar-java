@@ -73,7 +73,7 @@ public class JaCoCoOverallSensor implements Sensor {
 
     mergeReports(reportOverall, reportUTs, reportITs);
 
-    new OverallAnalyzer(reportOverall).analyse(project, context, projectTests);
+    new OverallAnalyzer(reportOverall, projectTests).analyse(project, context);
   }
 
   private void mergeReports(File reportOverall, File... reports) {
@@ -116,7 +116,8 @@ public class JaCoCoOverallSensor implements Sensor {
   class OverallAnalyzer extends AbstractAnalyzer {
     private final File report;
 
-    OverallAnalyzer(File report) {
+    OverallAnalyzer(File report, ProjectTests projectTests) {
+      super(projectTests);
       this.report = report;
     }
 

@@ -47,10 +47,14 @@ public class JaCoCoItSensor implements Sensor {
   }
 
   public void analyse(Project project, SensorContext context) {
-    new ITAnalyzer().analyse(project, context, projectTests);
+    new ITAnalyzer(projectTests).analyse(project, context);
   }
 
   class ITAnalyzer extends AbstractAnalyzer {
+    public ITAnalyzer(ProjectTests projectTests) {
+      super(projectTests);
+    }
+
     @Override
     protected String getReportPath(Project project) {
       return configuration.getItReportPath();

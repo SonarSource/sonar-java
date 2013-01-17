@@ -60,6 +60,12 @@ import static com.google.common.collect.Lists.newArrayList;
  */
 public abstract class AbstractAnalyzer {
 
+  private final ProjectTests projectTests;
+
+  public AbstractAnalyzer (ProjectTests projectTests) {
+    this.projectTests = projectTests;
+  }
+
   private static boolean isExcluded(ISourceFileCoverage coverage, WildcardMatcher excludesMatcher) {
     String name = coverage.getPackageName() + "/" + coverage.getName();
     return excludesMatcher.matches(name);
@@ -85,7 +91,7 @@ public abstract class AbstractAnalyzer {
     return resourceInContext;
   }
 
-  public final void analyse(Project project, SensorContext context, ProjectTests projectTests) {
+  public final void analyse(Project project, SensorContext context) {
     final File buildOutputDir = project.getFileSystem().getBuildOutputDir();
     if (!buildOutputDir.exists()) {
       JaCoCoUtils.LOG.info("Project coverage is set to 0% as build output directory does not exist: {}", buildOutputDir);
@@ -97,7 +103,7 @@ public abstract class AbstractAnalyzer {
     WildcardMatcher excludes = new WildcardMatcher(Strings.nullToEmpty(getExcludes(project)));
     try {
       readExecutionData(jacocoExecutionData, buildOutputDir, context, excludes);
-      readLinesCoveredByTestsData(jacocoExecutionData, buildOutputDir, context, excludes, projectTests);
+      readLinesCoveredByTestsData(jacocoExecutionData, buildOutputDir, context, excludes);
     } catch (IOException e) {
       throw new SonarException(e);
     }
@@ -134,8 +140,7 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  public final void readLinesCoveredByTestsData(File jacocoExecutionData, final File buildOutputDir, final SensorContext context, final WildcardMatcher excludes,
-                                                final ProjectTests projectTests) throws IOException {
+  public final void readLinesCoveredByTestsData(File jacocoExecutionData, final File buildOutputDir, final SensorContext context, final WildcardMatcher excludes) throws IOException {
     if (jacocoExecutionData == null || !jacocoExecutionData.exists() || !jacocoExecutionData.isFile()) {
       JaCoCoUtils.LOG.info("No JaCoCo execution data for tests has been dumped: {}", jacocoExecutionData);
     } else {
@@ -151,7 +156,7 @@ public abstract class AbstractAnalyzer {
         public void visitClassExecution(final ExecutionData data) {
           ExecutionDataStore executionDataStore = new ExecutionDataStore();
           executionDataStore.visitClassExecution(data);
-          analyzeLinesCoveredByTests(lastSessionInfo.getLastSessionInfo(), executionDataStore, buildOutputDir, context, excludes, projectTests);
+          analyzeLinesCoveredByTests(lastSessionInfo.getLastSessionInfo(), executionDataStore, buildOutputDir, context, excludes);
         }
       });
       reader.read();
@@ -170,8 +175,7 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  private void analyzeLinesCoveredByTests(SessionInfo sessionInfo, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes,
-                                          ProjectTests projectTests) {
+  private void analyzeLinesCoveredByTests(SessionInfo sessionInfo, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes) {
     String id = sessionInfo.getId();
     if (CharMatcher.anyOf(".").countIn(id) < 2) {
       // As we do not have a convention for the id, we use this hack to detect if the id is a test or not

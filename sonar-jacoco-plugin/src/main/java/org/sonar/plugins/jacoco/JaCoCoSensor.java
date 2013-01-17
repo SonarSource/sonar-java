@@ -48,7 +48,7 @@ public class JaCoCoSensor implements Sensor {
   }
 
   public void analyse(Project project, SensorContext context) {
-    new UnitTestsAnalyzer().analyse(project, context, projectTests);
+    new UnitTestsAnalyzer(projectTests).analyse(project, context);
   }
 
   public boolean shouldExecuteOnProject(Project project) {
@@ -56,6 +56,10 @@ public class JaCoCoSensor implements Sensor {
   }
 
   class UnitTestsAnalyzer extends AbstractAnalyzer {
+    public UnitTestsAnalyzer(ProjectTests projectTests) {
+      super(projectTests);
+    }
+
     @Override
     protected String getReportPath(Project project) {
       return configuration.getReportPath();
