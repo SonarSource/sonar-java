@@ -62,7 +62,7 @@ public abstract class AbstractAnalyzer {
 
   private final ProjectTests projectTests;
 
-  public AbstractAnalyzer (ProjectTests projectTests) {
+  public AbstractAnalyzer(ProjectTests projectTests) {
     this.projectTests = projectTests;
   }
 
@@ -140,7 +140,8 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  public final void readLinesCoveredByTestsData(File jacocoExecutionData, final File buildOutputDir, final SensorContext context, final WildcardMatcher excludes) throws IOException {
+  public final void readLinesCoveredByTestsData(File jacocoExecutionData, final File buildOutputDir, final SensorContext context, final WildcardMatcher excludes)
+      throws IOException {
     if (jacocoExecutionData == null || !jacocoExecutionData.exists() || !jacocoExecutionData.isFile()) {
       JaCoCoUtils.LOG.info("No JaCoCo execution data for tests has been dumped: {}", jacocoExecutionData);
     } else {
@@ -160,18 +161,6 @@ public abstract class AbstractAnalyzer {
         }
       });
       reader.read();
-    }
-  }
-
-  private static class LastSessionInfo {
-    private SessionInfo lastSessionInfo;
-
-    public void addSession(SessionInfo info) {
-      lastSessionInfo = info;
-    }
-
-    public SessionInfo getLastSessionInfo() {
-      return lastSessionInfo;
     }
   }
 
@@ -264,5 +253,17 @@ public abstract class AbstractAnalyzer {
   protected abstract String getReportPath(Project project);
 
   protected abstract String getExcludes(Project project);
+
+  private static class LastSessionInfo {
+    private SessionInfo lastSessionInfo;
+
+    public void addSession(SessionInfo info) {
+      lastSessionInfo = info;
+    }
+
+    public SessionInfo getLastSessionInfo() {
+      return lastSessionInfo;
+    }
+  }
 
 }
