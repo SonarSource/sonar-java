@@ -21,7 +21,6 @@ package org.sonar.plugins.surefire;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
@@ -80,7 +79,8 @@ public class SurefireJavaParserTest {
     when(testCase.setStatus(anyString())).thenReturn(testCase);
     MutableTestPlan testPlan = mock(MutableTestPlan.class);
     when(testPlan.addTestCase(anyString())).thenReturn(testCase);
-    when(perspectives.as(argThat(new ResourceMacher("ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest")), eq(MutableTestPlan.class))).thenReturn(testPlan);
+    when(perspectives.as(argThat(new IsResource(Scopes.FILE, Qualifiers.UNIT_TEST_FILE, "ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest")),
+        eq(MutableTestPlan.class))).thenReturn(testPlan);
 
     parser.collect(new Project("foo"), context, getDir("multipleReports"));
 
@@ -98,16 +98,4 @@ public class SurefireJavaParserTest {
     return context;
   }
 
-  class ResourceMacher extends ArgumentMatcher<Resource> {
-
-    private String resourceKey;
-
-    ResourceMacher(String resourceKey) {
-      this.resourceKey = resourceKey;
-    }
-
-    public boolean matches(Object resource) {
-      return ((Resource) resource).getKey().equals(resourceKey);
-    }
-  }
 }
