@@ -21,7 +21,9 @@ package org.sonar.plugins.surefire;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Qualifiers;
@@ -29,12 +31,15 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
 import org.sonar.api.test.IsMeasure;
 import org.sonar.api.test.IsResource;
-import org.sonar.api.tests.ProjectTests;
+import org.sonar.api.test.MutableTestCase;
+import org.sonar.api.test.MutableTestPlan;
 
 import java.net.URISyntaxException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -44,13 +49,13 @@ import static org.mockito.Mockito.when;
 
 public class SurefireJavaParserTest {
 
-  private ProjectTests projectTests;
+  private ResourcePerspectives perspectives;
   private SurefireJavaParser parser;
 
   @Before
   public void before() {
-    projectTests = mock(ProjectTests.class);
-    parser = new SurefireJavaParser(projectTests);
+    perspectives = mock(ResourcePerspectives.class);
+    parser = new SurefireJavaParser(perspectives);
   }
 
   @Test
@@ -70,12 +75,17 @@ public class SurefireJavaParserTest {
   public void should_register_tests() throws URISyntaxException {
     SensorContext context = mockContext();
 
+    MutableTestCase testCase = mock(MutableTestCase.class);
+    when(testCase.setDurationInMs(anyLong())).thenReturn(testCase);
+    when(testCase.setStatus(anyString())).thenReturn(testCase);
+    MutableTestPlan testPlan = mock(MutableTestPlan.class);
+    when(testPlan.addTestCase(anyString())).thenReturn(testCase);
+    when(perspectives.as(argThat(new ResourceMacher("ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest")), eq(MutableTestPlan.class))).thenReturn(testPlan);
+
     parser.collect(new Project("foo"), context, getDir("multipleReports"));
 
-    verify(projectTests).addTest("ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest",
-        new org.sonar.api.tests.Test("testGetUnKnownCollector").setStatus("ok").setDurationMilliseconds(35));
-    verify(projectTests).addTest("ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest",
-        new org.sonar.api.tests.Test("testGetJDependsCollector").setStatus("ok").setDurationMilliseconds(35));
+    verify(testPlan).addTestCase("testGetUnKnownCollector");
+    verify(testPlan).addTestCase("testGetJDependsCollector");
   }
 
   private java.io.File getDir(String dirname) throws URISyntaxException {
@@ -86,5 +96,18 @@ public class SurefireJavaParserTest {
     SensorContext context = mock(SensorContext.class);
     when(context.isIndexed(any(Resource.class), eq(false))).thenReturn(true);
     return context;
+  }
+
+  class ResourceMacher extends ArgumentMatcher<Resource> {
+
+    private String resourceKey;
+
+    ResourceMacher(String resourceKey) {
+      this.resourceKey = resourceKey;
+    }
+
+    public boolean matches(Object resource) {
+      return ((Resource) resource).getKey().equals(resourceKey);
+    }
   }
 }

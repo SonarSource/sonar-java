@@ -28,6 +28,7 @@ import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.Metric;
@@ -40,7 +41,6 @@ import org.sonar.api.resources.Scopes;
 import org.sonar.api.test.IsMeasure;
 import org.sonar.api.test.IsResource;
 import org.sonar.api.test.MavenTestUtils;
-import org.sonar.api.tests.ProjectTests;
 
 import java.io.File;
 import java.io.FileReader;
@@ -66,8 +66,8 @@ public class SurefireSensorTest {
 
   @Before
   public void before(){
-    ProjectTests projectTests = mock(ProjectTests.class);
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(projectTests));
+    ResourcePerspectives perspectives = mock(ResourcePerspectives.class);
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives));
   }
 
   @Test

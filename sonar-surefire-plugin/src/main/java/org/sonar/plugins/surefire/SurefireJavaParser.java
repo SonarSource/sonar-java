@@ -21,12 +21,12 @@ package org.sonar.plugins.surefire;
 
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.tests.ProjectTests;
-import org.sonar.api.tests.Test;
+import org.sonar.api.test.MutableTestPlan;
 import org.sonar.plugins.surefire.api.AbstractSurefireParser;
 import org.sonar.plugins.surefire.data.UnitTestClassReport;
 import org.sonar.plugins.surefire.data.UnitTestResult;
@@ -36,10 +36,10 @@ import org.sonar.plugins.surefire.data.UnitTestResult;
  */
 public class SurefireJavaParser extends AbstractSurefireParser implements BatchExtension {
 
-  private final ProjectTests projectTests;
+  private final ResourcePerspectives perspectives;
 
-  public SurefireJavaParser(ProjectTests projectTests) {
-    this.projectTests = projectTests;
+  public SurefireJavaParser(ResourcePerspectives perspectives) {
+    this.perspectives = perspectives;
   }
 
   protected void saveResults(SensorContext context, Resource resource, UnitTestClassReport report) {
@@ -47,15 +47,16 @@ public class SurefireJavaParser extends AbstractSurefireParser implements BatchE
     registerTests(resource, report);
   }
 
-  private void registerTests(Resource resource, UnitTestClassReport report) {
+  private void registerTests(Resource testFile, UnitTestClassReport report) {
     for (UnitTestResult unitTestResult : report.getResults()) {
-      Test test = new Test(unitTestResult.getName());
-      test.setDurationMilliseconds(unitTestResult.getDurationMilliseconds())
-          .setStatus(unitTestResult.getStatus())
-          .setMessage(unitTestResult.getMessage())
-          .setStackTrace(unitTestResult.getStackTrace())
-      ;
-      projectTests.addTest(resource.getKey(), test);
+
+      MutableTestPlan testPlan = perspectives.as(testFile, MutableTestPlan.class);
+      if (testPlan != null) {
+        testPlan.addTestCase(unitTestResult.getName())
+            .setDurationInMs(unitTestResult.getDurationMilliseconds())
+            .setStatus(unitTestResult.getStatus());
+        // TODO add message and stacktrace
+      }
     }
   }
 
