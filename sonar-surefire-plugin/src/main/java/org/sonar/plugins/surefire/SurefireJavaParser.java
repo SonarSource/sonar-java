@@ -53,9 +53,11 @@ public class SurefireJavaParser extends AbstractSurefireParser implements BatchE
       MutableTestPlan testPlan = perspectives.as(testFile, MutableTestPlan.class);
       if (testPlan != null) {
         testPlan.addTestCase(unitTestResult.getName())
+            .setName(unitTestResult.getName())
             .setDurationInMs(unitTestResult.getDurationMilliseconds())
-            .setStatus(unitTestResult.getStatus());
-        // TODO add message and stacktrace
+            .setStatus(unitTestResult.getStatus())
+            .setMessage(unitTestResult.getMessage())
+            .setStackTrace(unitTestResult.getStackTrace());
       }
     }
   }
