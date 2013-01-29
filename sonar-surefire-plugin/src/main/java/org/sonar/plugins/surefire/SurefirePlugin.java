@@ -24,25 +24,23 @@ import org.sonar.api.CoreProperties;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.SonarPlugin;
-import org.sonar.api.tests.ProjectTests;
 
 import java.util.List;
 
 @Properties({
-  @Property(
-    key = CoreProperties.SUREFIRE_REPORTS_PATH_PROPERTY,
-    name = "Report path",
-    description = "Path (absolute or relative) to XML report files.",
-    project = true,
-    global = false)
+    @Property(
+        key = CoreProperties.SUREFIRE_REPORTS_PATH_PROPERTY,
+        name = "Report path",
+        description = "Path (absolute or relative) to XML report files.",
+        project = true,
+        global = false)
 })
 public final class SurefirePlugin extends SonarPlugin {
 
   public List<?> getExtensions() {
     return ImmutableList.of(
         SurefireSensor.class,
-        SurefireJavaParser.class,
-        ProjectTests.class
+        SurefireJavaParser.class
     );
   }
 

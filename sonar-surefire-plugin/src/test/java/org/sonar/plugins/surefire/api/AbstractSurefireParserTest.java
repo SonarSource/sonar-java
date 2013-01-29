@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.surefire.api;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.sonar.api.batch.SensorContext;
@@ -32,7 +31,6 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
 import org.sonar.api.test.IsMeasure;
 import org.sonar.api.test.IsResource;
-import org.sonar.api.tests.ProjectTests;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -48,13 +46,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class AbstractSurefireParserTest {
-
-  private ProjectTests projectTests;
-
-  @Before
-  public void before(){
-    projectTests = mock(ProjectTests.class);
-  }
 
   @Test
   public void shouldAggregateReports() throws URISyntaxException {

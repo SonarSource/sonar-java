@@ -20,7 +20,6 @@
 package org.sonar.plugins.surefire;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
@@ -72,7 +71,6 @@ public class SurefireJavaParserTest {
   }
 
   @Test
-  @Ignore
   public void should_register_tests() throws URISyntaxException {
     SensorContext context = mockContext();
 
@@ -80,6 +78,8 @@ public class SurefireJavaParserTest {
     when(testCase.setDurationInMs(anyLong())).thenReturn(testCase);
     when(testCase.setStatus(anyString())).thenReturn(testCase);
     when(testCase.setName(anyString())).thenReturn(testCase);
+    when(testCase.setMessage(anyString())).thenReturn(testCase);
+    when(testCase.setStackTrace(anyString())).thenReturn(testCase);
     MutableTestPlan testPlan = mock(MutableTestPlan.class);
     when(testPlan.addTestCase(anyString())).thenReturn(testCase);
     when(perspectives.as(eq(MutableTestPlan.class),
