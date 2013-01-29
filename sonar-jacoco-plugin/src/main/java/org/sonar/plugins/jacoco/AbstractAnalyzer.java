@@ -59,10 +59,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * @author Evgeny Mandrikov
@@ -210,8 +210,8 @@ public abstract class AbstractAnalyzer {
     });
   }
 
-  private Set<Integer> getLinesCover(CoverageMeasuresBuilder builder) {
-    Set<Integer> linesCover = newHashSet();
+  private List<Integer> getLinesCover(CoverageMeasuresBuilder builder) {
+    List<Integer> linesCover = newArrayList();
     for (Map.Entry<Integer, Integer> hitsByLine : builder.getHitsByLine().entrySet()) {
       if (hitsByLine.getValue() > 0) {
         linesCover.add(hitsByLine.getKey());

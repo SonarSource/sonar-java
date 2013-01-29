@@ -45,7 +45,6 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -163,8 +162,8 @@ public class JaCoCoSensorTest {
 
     sensor.analyse(project, context);
 
-    verify(testCase1).covers(testAbleFile, newHashSet(3, 6));
-    verify(testCase2).covers(testAbleFile, newHashSet(3, 10));
+    verify(testCase1).covers(testAbleFile, newArrayList(3, 6));
+    verify(testCase2).covers(testAbleFile, newArrayList(3, 10));
   }
 
   @Test
