@@ -22,11 +22,11 @@ package org.sonar.plugins.jacoco;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.tests.ProjectTests;
 
 import java.util.Collection;
 
@@ -35,11 +35,11 @@ import java.util.Collection;
  */
 public class JaCoCoItSensor implements Sensor {
   private JacocoConfiguration configuration;
-  private final ProjectTests projectTests;
+  private final ResourcePerspectives perspectives;
 
-  public JaCoCoItSensor(JacocoConfiguration configuration, ProjectTests projectTests) {
+  public JaCoCoItSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives) {
     this.configuration = configuration;
-    this.projectTests = projectTests;
+    this.perspectives = perspectives;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
@@ -47,12 +47,12 @@ public class JaCoCoItSensor implements Sensor {
   }
 
   public void analyse(Project project, SensorContext context) {
-    new ITAnalyzer(projectTests).analyse(project, context);
+    new ITAnalyzer(perspectives).analyse(project, context);
   }
 
   class ITAnalyzer extends AbstractAnalyzer {
-    public ITAnalyzer(ProjectTests projectTests) {
-      super(projectTests);
+    public ITAnalyzer(ResourcePerspectives perspectives) {
+      super(perspectives);
     }
 
     @Override

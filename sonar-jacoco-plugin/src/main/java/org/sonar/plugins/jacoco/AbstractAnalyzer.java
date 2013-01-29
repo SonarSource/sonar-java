@@ -21,6 +21,7 @@ package org.sonar.plugins.jacoco;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
@@ -39,31 +40,39 @@ import org.jacoco.core.data.SessionInfo;
 import org.jacoco.core.data.SessionInfoStore;
 import org.jacoco.core.runtime.WildcardMatcher;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoverageMeasuresBuilder;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.ResourceUtils;
-import org.sonar.api.tests.ProjectTests;
+import org.sonar.api.test.MutableTestCase;
+import org.sonar.api.test.MutableTestPlan;
+import org.sonar.api.test.MutableTestable;
+import org.sonar.api.test.Testable;
 import org.sonar.api.utils.SonarException;
+
+import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
-import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
 
 /**
  * @author Evgeny Mandrikov
  */
 public abstract class AbstractAnalyzer {
 
-  private final ProjectTests projectTests;
+  private final ResourcePerspectives perspectives;
 
-  public AbstractAnalyzer(ProjectTests projectTests) {
-    this.projectTests = projectTests;
+  public AbstractAnalyzer(ResourcePerspectives perspectives) {
+    this.perspectives = perspectives;
   }
 
   private static boolean isExcluded(ISourceFileCoverage coverage, WildcardMatcher excludesMatcher) {
@@ -141,7 +150,7 @@ public abstract class AbstractAnalyzer {
   }
 
   public final void readLinesCoveredByTestsData(File jacocoExecutionData, final File buildOutputDir, final SensorContext context, final WildcardMatcher excludes)
-    throws IOException {
+      throws IOException {
     if (jacocoExecutionData == null || !jacocoExecutionData.exists() || !jacocoExecutionData.isFile()) {
       JaCoCoUtils.LOG.info("No JaCoCo execution data for tests has been dumped: {}", jacocoExecutionData);
     } else {
@@ -166,25 +175,43 @@ public abstract class AbstractAnalyzer {
 
   private void analyzeLinesCoveredByTests(SessionInfo sessionInfo, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes) {
     String id = sessionInfo.getId();
-    if (CharMatcher.anyOf(".").countIn(id) < 2) {
+    if (CharMatcher.anyOf(".").countIn(id) < 2 || id.startsWith("dhcp")) {
       // As we do not have a convention for the id, we use this hack to detect if the id is a test or not
     } else {
-      String test = Iterables.getLast(Splitter.on(".").split(id));
-      String fileTest = StringUtils.removeEnd(id, "." + test);
+      String testName = Iterables.getLast(Splitter.on(".").split(id));
+      String testFileKey = StringUtils.removeEnd(id, "." + testName);
+      Resource testFile = new JavaFile(testFileKey, true);
+
       CoverageBuilder coverageBuilder = analyze(executionDataStore, buildOutputDir);
 
       for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
         JavaFile resource = getResource(coverage, context);
         if (resource != null && !isExcluded(coverage, excludes)) {
           CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
-          projectTests.cover(fileTest, test, resource.getKey(), getLinesCover(builder));
+
+          Testable testAbleFile = perspectives.as(MutableTestable.class, resource);
+          if (testAbleFile != null) {
+            MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
+            if (testPlan != null) {
+              MutableTestCase testCase = findTestCase(testPlan, testName);
+              testCase.covers(testAbleFile, getLinesCover(builder));
+            }
+          }
         }
       }
     }
   }
 
-  private Collection<Integer> getLinesCover(CoverageMeasuresBuilder builder) {
-    Collection<Integer> linesCover = newArrayList();
+  private MutableTestCase findTestCase(MutableTestPlan testPlan, final String test) {
+    return Iterables.find(testPlan.testCases(), new Predicate<MutableTestCase>() {
+      public boolean apply(@Nullable MutableTestCase input) {
+        return input.name().equals(test);
+      }
+    });
+  }
+
+  private Set<Integer> getLinesCover(CoverageMeasuresBuilder builder) {
+    Set<Integer> linesCover = newHashSet();
     for (Map.Entry<Integer, Integer> hitsByLine : builder.getHitsByLine().entrySet()) {
       if (hitsByLine.getValue() > 0) {
         linesCover.add(hitsByLine.getKey());

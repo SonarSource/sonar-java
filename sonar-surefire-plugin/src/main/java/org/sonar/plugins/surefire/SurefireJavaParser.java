@@ -49,8 +49,7 @@ public class SurefireJavaParser extends AbstractSurefireParser implements BatchE
 
   private void registerTests(Resource testFile, UnitTestClassReport report) {
     for (UnitTestResult unitTestResult : report.getResults()) {
-
-      MutableTestPlan testPlan = perspectives.as(testFile, MutableTestPlan.class);
+      MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {
         testPlan.addTestCase(unitTestResult.getName())
             .setName(unitTestResult.getName())

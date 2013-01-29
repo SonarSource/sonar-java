@@ -20,7 +20,6 @@
 package org.sonar.plugins.java;
 
 import org.apache.commons.configuration.BaseConfiguration;
-import org.hibernate.exception.DataException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,10 +45,9 @@ import static org.mockito.Mockito.when;
 
 public class JavaSourceImporterTest {
 
-  private JavaSourceImporter sensor;
-
   @Rule
   public ExpectedException thrown = ExpectedException.none();
+  private JavaSourceImporter sensor;
 
   @Before
   public void setUp() {
@@ -90,7 +88,7 @@ public class JavaSourceImporterTest {
     SensorContext context = mock(SensorContext.class);
     JavaFile javaFile = mock(JavaFile.class);
     InputFile inputFile = InputFileUtils.create(new File("."), file);
-    doThrow(DataException.class).when(context).saveSource(any(JavaFile.class), anyString());
+    doThrow(IllegalArgumentException.class).when(context).saveSource(any(JavaFile.class), anyString());
 
     thrown.expect(SonarException.class);
     thrown.expectMessage("Unable to read and import the source file : '" + file.getAbsolutePath() + "' with the charset : 'UTF-8'.");

@@ -27,12 +27,12 @@ import org.jacoco.core.data.ExecutionDataWriter;
 import org.jacoco.core.data.SessionInfoStore;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
-import org.sonar.api.tests.ProjectTests;
 import org.sonar.api.utils.SonarException;
 
 import java.io.BufferedInputStream;
@@ -48,11 +48,11 @@ public class JaCoCoOverallSensor implements Sensor {
   public static final String JACOCO_OVERALL = "jacoco-overall.exec";
 
   private final JacocoConfiguration configuration;
-  private final ProjectTests projectTests;
+  private final ResourcePerspectives perspectives;
 
-  public JaCoCoOverallSensor(JacocoConfiguration configuration, ProjectTests projectTests) {
+  public JaCoCoOverallSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives) {
     this.configuration = configuration;
-    this.projectTests = projectTests;
+    this.perspectives = perspectives;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
@@ -73,7 +73,7 @@ public class JaCoCoOverallSensor implements Sensor {
 
     mergeReports(reportOverall, reportUTs, reportITs);
 
-    new OverallAnalyzer(reportOverall, projectTests).analyse(project, context);
+    new OverallAnalyzer(reportOverall, perspectives).analyse(project, context);
   }
 
   private void mergeReports(File reportOverall, File... reports) {
@@ -116,8 +116,8 @@ public class JaCoCoOverallSensor implements Sensor {
   class OverallAnalyzer extends AbstractAnalyzer {
     private final File report;
 
-    OverallAnalyzer(File report, ProjectTests projectTests) {
-      super(projectTests);
+    OverallAnalyzer(File report, ResourcePerspectives perspectives) {
+      super(perspectives);
       this.report = report;
     }
 

@@ -23,13 +23,13 @@ import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.test.IsMeasure;
-import org.sonar.api.tests.ProjectTests;
 import org.sonar.test.TestUtils;
 
 import java.io.File;
@@ -50,7 +50,7 @@ public class JaCoCoOverallSensorTest {
   private SensorContext context;
   private ProjectFileSystem pfs;
   private Project project;
-  private ProjectTests projectTests;
+  private ResourcePerspectives perspectives;
   private JaCoCoOverallSensor sensor;
 
   @Before
@@ -59,8 +59,8 @@ public class JaCoCoOverallSensorTest {
     context = mock(SensorContext.class);
     pfs = mock(ProjectFileSystem.class);
     project = mock(Project.class);
-    projectTests = mock(ProjectTests.class);
-    sensor = new JaCoCoOverallSensor(configuration, projectTests);
+    perspectives = mock(ResourcePerspectives.class);
+    sensor = new JaCoCoOverallSensor(configuration, perspectives);
   }
 
   @Test
