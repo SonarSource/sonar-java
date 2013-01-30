@@ -231,7 +231,7 @@ public abstract class AbstractAnalyzer {
         JaCoCoUtils.LOG.info("addCoverage source : "+ resource.getKey() + ", testCase : "+ testFile.getKey()+ ", test : "+ testName + ", lines : "+ linesCovered);
 
         MutableTestCase testCase = findTestCase(testPlan, testName);
-        testCase.covers(testAbleFile, linesCovered);
+        testCase.setCover(testAbleFile, linesCovered);
       }
     }
   }

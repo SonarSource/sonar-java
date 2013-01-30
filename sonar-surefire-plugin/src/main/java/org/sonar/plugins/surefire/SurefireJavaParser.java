@@ -25,6 +25,7 @@ import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.test.MutableTestPlan;
+import org.sonar.api.test.TestPlan;
 import org.sonar.plugins.surefire.api.AbstractSurefireParser;
 import org.sonar.plugins.surefire.data.UnitTestClassReport;
 import org.sonar.plugins.surefire.data.UnitTestResult;
@@ -44,6 +45,7 @@ public class SurefireJavaParser extends AbstractSurefireParser implements BatchE
     for (UnitTestResult unitTestResult : report.getResults()) {
       MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {
+        testPlan.setType(TestPlan.TYPE_UNIT);
         testPlan.addTestCase(unitTestResult.getName())
             .setName(unitTestResult.getName())
             .setDurationInMs(unitTestResult.getDurationMilliseconds())

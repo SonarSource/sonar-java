@@ -161,8 +161,8 @@ public class JaCoCoSensorTest {
 
     sensor.analyse(project, context);
 
-    verify(testCase1).covers(testAbleFile, newArrayList(3, 6));
-    verify(testCase2).covers(testAbleFile, newArrayList(3, 10));
+    verify(testCase1).setCover(testAbleFile, newArrayList(3, 6));
+    verify(testCase2).setCover(testAbleFile, newArrayList(3, 10));
   }
 
   @Test
