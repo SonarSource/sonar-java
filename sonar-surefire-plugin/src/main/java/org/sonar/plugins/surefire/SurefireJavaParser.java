@@ -22,8 +22,6 @@ package org.sonar.plugins.surefire;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.test.MutableTestPlan;
@@ -42,12 +40,7 @@ public class SurefireJavaParser extends AbstractSurefireParser implements BatchE
     this.perspectives = perspectives;
   }
 
-  protected void saveResults(SensorContext context, Resource resource, UnitTestClassReport report) {
-    context.saveMeasure(resource, new Measure(CoreMetrics.TEST_DATA, report.toXml()));
-    registerTests(resource, report);
-  }
-
-  private void registerTests(Resource testFile, UnitTestClassReport report) {
+  protected void saveResults(SensorContext context, Resource testFile, UnitTestClassReport report) {
     for (UnitTestResult unitTestResult : report.getResults()) {
       MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {

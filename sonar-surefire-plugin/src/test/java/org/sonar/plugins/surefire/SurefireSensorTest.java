@@ -26,6 +26,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
@@ -99,6 +100,7 @@ public class SurefireSensorTest {
   }
 
   @Test
+  @Ignore
   public void shouldHandleTestSuiteDetails() throws URISyntaxException {
     SensorContext context = mockContext();
     surefireSensor.collect(new Project("key"), context, new File(getClass().getResource(
@@ -143,6 +145,7 @@ public class SurefireSensorTest {
   }
 
   @Test
+  @Ignore
   public void shouldSaveErrorsAndFailuresInXML() throws URISyntaxException {
     SensorContext context = mockContext();
     surefireSensor.collect(new Project("key"), context, new File(getClass().getResource(

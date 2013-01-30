@@ -23,12 +23,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
-import org.sonar.api.test.IsMeasure;
 import org.sonar.api.test.IsResource;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
@@ -36,13 +34,11 @@ import org.sonar.api.test.MutableTestPlan;
 import java.net.URISyntaxException;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -55,19 +51,6 @@ public class SurefireJavaParserTest {
   public void before() {
     perspectives = mock(ResourcePerspectives.class);
     parser = new SurefireJavaParser(perspectives);
-  }
-
-  @Test
-  public void should_aggregate_reports() throws URISyntaxException {
-    SensorContext context = mockContext();
-
-    parser.collect(new Project("foo"), context, getDir("multipleReports"));
-
-    // Only 6 tests measures should be stored, no more: the TESTS-AllTests.xml must not be read as there's 1 file result per unit test
-    // (SONAR-2841).
-    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.UNIT_TEST_FILE)), eq(CoreMetrics.TESTS), anyDouble());
-    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.UNIT_TEST_FILE)), eq(CoreMetrics.TEST_ERRORS), anyDouble());
-    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.UNIT_TEST_FILE)), argThat(new IsMeasure(CoreMetrics.TEST_DATA)));
   }
 
   @Test
