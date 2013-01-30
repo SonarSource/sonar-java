@@ -162,13 +162,21 @@ public abstract class AbstractAnalyzer {
       });
       reader.setExecutionDataVisitor(new IExecutionDataVisitor() {
         public void visitClassExecution(final ExecutionData data) {
-          ExecutionDataStore executionDataStore = new ExecutionDataStore();
-          executionDataStore.visitClassExecution(data);
-          analyzeLinesCoveredByTests(lastSessionInfo.getLastSessionInfo(), executionDataStore, buildOutputDir, context, excludes);
+          if (resourceExists(data, context)) {
+            ExecutionDataStore executionDataStore = new ExecutionDataStore();
+            executionDataStore.visitClassExecution(data);
+            analyzeLinesCoveredByTests(lastSessionInfo.getLastSessionInfo(), executionDataStore, buildOutputDir, context, excludes);
+          }
         }
       });
       reader.read();
     }
+  }
+
+  private boolean resourceExists(ExecutionData data, SensorContext context){
+    String resourceKey = data.getName().replaceAll("/", ".");
+    JavaFile resource = context.getResource(new JavaFile(resourceKey));
+    return resource != null;
   }
 
   private void analyzeLinesCoveredByTests(SessionInfo sessionInfo, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes) {
@@ -180,8 +188,8 @@ public abstract class AbstractAnalyzer {
       String testFileKey = StringUtils.removeEnd(id, "." + testName);
       Resource testFile = new JavaFile(testFileKey, true);
 
+      // FIXME Doing the analysis for each test takes too much time, we have to find a way to analyse the files only once
       CoverageBuilder coverageBuilder = analyze(executionDataStore, buildOutputDir);
-
       for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
         JavaFile resource = getResource(coverage, context);
         if (resource != null && !isExcluded(coverage, excludes)) {
@@ -219,6 +227,9 @@ public abstract class AbstractAnalyzer {
     if (testAbleFile != null) {
       MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {
+
+        JaCoCoUtils.LOG.info("addCoverage source : "+ resource.getKey() + ", testCase : "+ testFile.getKey()+ ", test : "+ testName + ", lines : "+ linesCovered);
+
         MutableTestCase testCase = findTestCase(testPlan, testName);
         testCase.covers(testAbleFile, linesCovered);
       }
