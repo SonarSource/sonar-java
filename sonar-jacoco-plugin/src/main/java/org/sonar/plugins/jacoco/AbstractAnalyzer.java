@@ -53,8 +53,6 @@ import org.sonar.api.test.MutableTestable;
 import org.sonar.api.test.Testable;
 import org.sonar.api.utils.SonarException;
 
-import javax.annotation.Nullable;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -150,7 +148,7 @@ public abstract class AbstractAnalyzer {
   }
 
   public final void readLinesCoveredByTestsData(File jacocoExecutionData, final File buildOutputDir, final SensorContext context, final WildcardMatcher excludes)
-      throws IOException {
+    throws IOException {
     if (jacocoExecutionData == null || !jacocoExecutionData.exists() || !jacocoExecutionData.isFile()) {
       JaCoCoUtils.LOG.info("No JaCoCo execution data for tests has been dumped: {}", jacocoExecutionData);
     } else {
@@ -204,7 +202,7 @@ public abstract class AbstractAnalyzer {
 
   private MutableTestCase findTestCase(MutableTestPlan testPlan, final String test) {
     return Iterables.find(testPlan.testCases(), new Predicate<MutableTestCase>() {
-      public boolean apply(@Nullable MutableTestCase input) {
+      public boolean apply(MutableTestCase input) {
         return input.name().equals(test);
       }
     });
