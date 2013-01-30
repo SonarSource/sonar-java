@@ -186,14 +186,9 @@ public abstract class AbstractAnalyzer {
         JavaFile resource = getResource(coverage, context);
         if (resource != null && !isExcluded(coverage, excludes)) {
           CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
-
-          Testable testAbleFile = perspectives.as(MutableTestable.class, resource);
-          if (testAbleFile != null) {
-            MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
-            if (testPlan != null) {
-              MutableTestCase testCase = findTestCase(testPlan, testName);
-              testCase.covers(testAbleFile, getLinesCover(builder));
-            }
+          List<Integer> linesCovered = getLinesCover(builder);
+          if (!linesCovered.isEmpty()) {
+            addCoverage(resource, testFile, testName, linesCovered);
           }
         }
       }
@@ -216,6 +211,18 @@ public abstract class AbstractAnalyzer {
       }
     }
     return linesCover;
+  }
+
+
+  private void addCoverage(JavaFile resource, Resource testFile, String testName, List<Integer> linesCovered){
+    Testable testAbleFile = perspectives.as(MutableTestable.class, resource);
+    if (testAbleFile != null) {
+      MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
+      if (testPlan != null) {
+        MutableTestCase testCase = findTestCase(testPlan, testName);
+        testCase.covers(testAbleFile, linesCovered);
+      }
+    }
   }
 
   private CoverageBuilder analyze(ExecutionDataStore executionDataStore, File buildOutputDir) {
