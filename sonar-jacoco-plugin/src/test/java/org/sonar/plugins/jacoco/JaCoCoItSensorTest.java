@@ -45,8 +45,8 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class JaCoCoItSensorTest {
@@ -118,7 +118,7 @@ public class JaCoCoItSensorTest {
 
     sensor.analyse(project, context);
 
-    verify(context).getResource(resource);
+    verify(context, times(2)).getResource(resource);
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.IT_LINES_TO_COVER, 7.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.IT_UNCOVERED_LINES, 3.0)));
     verify(context).saveMeasure(eq(resource),
@@ -127,7 +127,6 @@ public class JaCoCoItSensorTest {
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.IT_UNCOVERED_CONDITIONS, 2.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.IT_CONDITIONS_BY_LINE, "15=2")));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.IT_COVERED_CONDITIONS_BY_LINE, "15=0")));
-    verifyNoMoreInteractions(context);
   }
 
   @Test

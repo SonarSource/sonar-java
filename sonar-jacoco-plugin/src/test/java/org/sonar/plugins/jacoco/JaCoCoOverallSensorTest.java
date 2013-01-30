@@ -40,8 +40,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -99,7 +99,7 @@ public class JaCoCoOverallSensorTest {
 
     sensor.analyse(project, context);
 
-    verify(context).getResource(resource);
+    verify(context, times(2)).getResource(resource);
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_LINES_TO_COVER, 12.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_LINES, 2.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, "3=1;6=1;7=1;10=1;11=1;14=1;15=1;17=1;18=1;20=1;23=0;24=0")));
@@ -107,7 +107,6 @@ public class JaCoCoOverallSensorTest {
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_CONDITIONS, 0.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_CONDITIONS_BY_LINE, "14=2")));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERED_CONDITIONS_BY_LINE, (String) null)));
-    verifyNoMoreInteractions(context);
   }
 
   @Test
