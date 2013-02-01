@@ -173,7 +173,7 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  private boolean resourceExists(ExecutionData data, SensorContext context){
+  private boolean resourceExists(ExecutionData data, SensorContext context) {
     String resourceKey = data.getName().replaceAll("/", ".");
     JavaFile resource = context.getResource(new JavaFile(resourceKey));
     return resource != null;
@@ -182,14 +182,14 @@ public abstract class AbstractAnalyzer {
   private void analyzeLinesCoveredByTests(SessionInfo sessionInfo, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes) {
     String id = sessionInfo.getId();
     if (CharMatcher.anyOf(".").countIn(id) < 2 || id.startsWith("dhcp")) {
+      // FIXME
       // As we do not have a convention for the id, we use this hack to detect if the id is a test or not
     } else {
       String testName = Iterables.getLast(Splitter.on(".").split(id));
       String testFileKey = StringUtils.removeEnd(id, "." + testName);
       Resource testFile = new JavaFile(testFileKey, true);
 
-      // FIXME Doing the analysis for each test takes too much time, we have to find a way to analyse the files only once
-      CoverageBuilder coverageBuilder = analyze(executionDataStore, buildOutputDir);
+      CoverageBuilder coverageBuilder = analyze2(executionDataStore, buildOutputDir);
       for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
         JavaFile resource = getResource(coverage, context);
         if (resource != null && !isExcluded(coverage, excludes)) {
@@ -201,6 +201,24 @@ public abstract class AbstractAnalyzer {
         }
       }
     }
+  }
+
+  private CoverageBuilder analyze2(ExecutionDataStore executionDataStore, File buildOutputDir) {
+    CoverageBuilder coverageBuilder = new CoverageBuilder();
+    Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
+    for (ExecutionData data : executionDataStore.getContents()) {
+      String vmClassName = data.getName();
+      String classFileName = vmClassName.replace('.', '/') + ".class";
+      File classFile = new File(buildOutputDir, classFileName);
+      if (classFile.isFile()) {
+        try {
+          analyzer.analyzeAll(classFile);
+        } catch (Exception e) {
+          JaCoCoUtils.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
+        }
+      }
+    }
+    return coverageBuilder;
   }
 
   private MutableTestCase findTestCase(MutableTestPlan testPlan, final String test) {
@@ -221,14 +239,13 @@ public abstract class AbstractAnalyzer {
     return linesCover;
   }
 
-
-  private void addCoverage(JavaFile resource, Resource testFile, String testName, List<Integer> linesCovered){
+  private void addCoverage(JavaFile resource, Resource testFile, String testName, List<Integer> linesCovered) {
     Testable testAbleFile = perspectives.as(MutableTestable.class, resource);
     if (testAbleFile != null) {
       MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {
 
-        JaCoCoUtils.LOG.info("addCoverage source : "+ resource.getKey() + ", testCase : "+ testFile.getKey()+ ", test : "+ testName + ", lines : "+ linesCovered);
+        JaCoCoUtils.LOG.info("addCoverage source : " + resource.getKey() + ", testCase : " + testFile.getKey() + ", test : " + testName + ", lines : " + linesCovered);
 
         MutableTestCase testCase = findTestCase(testPlan, testName);
         testCase.setCover(testAbleFile, linesCovered);
