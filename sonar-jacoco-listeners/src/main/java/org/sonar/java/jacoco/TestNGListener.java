@@ -23,6 +23,9 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
+/**
+ * TestNG listener that instructs JaCoCo to create one session per test.
+ */
 public class TestNGListener implements ITestListener {
 
   private final JacocoController jacoco;

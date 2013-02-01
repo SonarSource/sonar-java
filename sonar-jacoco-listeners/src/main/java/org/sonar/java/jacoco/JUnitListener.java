@@ -22,6 +22,9 @@ package org.sonar.java.jacoco;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunListener;
 
+/**
+ * JUnit listener that instructs JaCoCo to create one session per test.
+ */
 public class JUnitListener extends RunListener {
 
   private final JacocoController jacoco;

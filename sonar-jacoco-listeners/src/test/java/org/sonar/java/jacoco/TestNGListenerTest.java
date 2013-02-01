@@ -29,15 +29,13 @@ import static org.mockito.Mockito.mock;
 
 public class TestNGListenerTest {
 
-  @SuppressWarnings("unused")
-  private static class Success {
+  public static class Success {
     @org.testng.annotations.Test
     public void test() {
     }
   }
 
-  @SuppressWarnings("unused")
-  private static class Failure {
+  public static class Failure {
     @org.testng.annotations.Test
     public void test() {
       org.testng.Assert.fail();

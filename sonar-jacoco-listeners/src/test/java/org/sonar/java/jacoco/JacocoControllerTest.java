@@ -21,14 +21,23 @@ package org.sonar.java.jacoco;
 
 import org.jacoco.agent.rt.IAgent;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import java.io.IOException;
+
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class JacocoControllerTest {
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
   private IAgent agent;
   private JacocoController jacoco;
@@ -40,7 +49,7 @@ public class JacocoControllerTest {
   }
 
   @Test
-  public void test() {
+  public void test_onStart() throws Exception {
     jacoco.onTestStart("test");
     verify(agent).setSessionId("test");
     verify(agent).reset();
@@ -48,11 +57,18 @@ public class JacocoControllerTest {
   }
 
   @Test
-  public void test2() {
+  public void test_onFinish() throws Exception {
     when(agent.getExecutionData(false)).thenReturn(new byte[] {});
     jacoco.onTestFinish("test");
-    verify(agent).getExecutionData(false);
+    verify(agent).dump(true);
     verifyNoMoreInteractions(agent);
+  }
+
+  @Test
+  public void should_throw_exception_when_dump_failed() throws Exception {
+    doThrow(IOException.class).when(agent).dump(anyBoolean());
+    thrown.expect(RuntimeException.class);
+    jacoco.onTestFinish("test");
   }
 
 }

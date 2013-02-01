@@ -22,18 +22,20 @@ package org.sonar.java.jacoco;
 import org.jacoco.agent.rt.IAgent;
 import org.jacoco.agent.rt.RT;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+class JacocoController {
 
-// TODO Handling for the case when agent was not attached to JVM (ClassNotFoundException, etc)
-public class JacocoController {
+  private static final String ERROR = "Unable to access JaCoCo Agent - make sure that you use JaCoCo and version not lower than 0.6.2.";
 
   private final IAgent agent;
 
   public JacocoController() {
-    this(RT.getAgent());
+    try {
+      this.agent = RT.getAgent();
+    } catch (NoClassDefFoundError e) {
+      throw new IllegalStateException(ERROR, e);
+    } catch (Exception e) {
+      throw new IllegalStateException(ERROR, e);
+    }
   }
 
   JacocoController(IAgent agent) {
@@ -50,22 +52,11 @@ public class JacocoController {
 
   public void onTestFinish(String name) {
     System.out.println("Test " + name + " finished");
-
     try {
-      // TODO location should be configurable
-      dump("target/jacoco.exec", true);
+      agent.dump(true);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private void dump(String destfile, boolean reset) throws Exception {
-    byte[] dump = agent.getExecutionData(false);
-    new File(destfile).getParentFile().mkdirs();
-    // TODO lock file for concurrent access
-    OutputStream output = new BufferedOutputStream(new FileOutputStream(destfile, true));
-    output.write(dump);
-    output.close();
   }
 
 }
