@@ -34,8 +34,6 @@
   </developers>
 
   <properties>
-    <jacoco.version>0.5.10.201208310627</jacoco.version>
-
     <sonar.pluginName>JaCoCo</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.jacoco.JaCoCoPlugin</sonar.pluginClass>
   </properties>
@@ -44,12 +42,10 @@
     <dependency>
       <groupId>org.jacoco</groupId>
       <artifactId>org.jacoco.core</artifactId>
-      <version>${jacoco.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jacoco</groupId>
       <artifactId>org.jacoco.agent</artifactId>
-      <version>${jacoco.version}</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.sonar</groupId>
@@ -117,8 +113,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>400000</maxsize>
-                  <minsize>300000</minsize>
+                  <maxsize>520000</maxsize>
+                  <minsize>500000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>

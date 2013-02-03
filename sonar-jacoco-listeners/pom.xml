@@ -12,15 +12,10 @@
 
   <name>Sonar Java :: JaCoCo Listeners</name>
 
-  <properties>
-    <jacoco.version>0.6.2-SNAPSHOT</jacoco.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.jacoco</groupId>
       <artifactId>org.jacoco.agent</artifactId>
-      <version>${jacoco.version}</version>
       <classifier>runtime</classifier>
       <scope>provided</scope>
     </dependency>
