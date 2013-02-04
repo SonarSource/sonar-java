@@ -21,6 +21,7 @@ package org.sonar.java.ast.lexer;
 
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.impl.Lexer;
+import com.sonar.sslr.impl.channel.BomCharacterChannel;
 import com.sonar.sslr.impl.channel.PunctuatorChannel;
 import com.sonar.sslr.impl.channel.UnknownCharacterChannel;
 import org.sonar.java.ast.api.JavaKeyword;
@@ -62,6 +63,8 @@ public final class JavaLexer {
         .withChannel(new JavaIdentifierAndKeywordChannel(JavaKeyword.values()))
 
         .withChannel(new PunctuatorChannel(JavaPunctuator.values()))
+
+        .withChannel(new BomCharacterChannel())
 
         .withChannel(new UnknownCharacterChannel(true));
 

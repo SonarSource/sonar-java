@@ -27,6 +27,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.lexer.FloatLiteralChannel;
 import org.sonar.java.ast.lexer.IntegerLiteralChannel;
 
+import static org.sonar.sslr.parser.GrammarOperators.commentTrivia;
 import static org.sonar.sslr.parser.GrammarOperators.endOfInput;
 import static org.sonar.sslr.parser.GrammarOperators.firstOf;
 import static org.sonar.sslr.parser.GrammarOperators.next;
@@ -35,6 +36,7 @@ import static org.sonar.sslr.parser.GrammarOperators.oneOrMore;
 import static org.sonar.sslr.parser.GrammarOperators.optional;
 import static org.sonar.sslr.parser.GrammarOperators.regexp;
 import static org.sonar.sslr.parser.GrammarOperators.sequence;
+import static org.sonar.sslr.parser.GrammarOperators.skippedTrivia;
 import static org.sonar.sslr.parser.GrammarOperators.token;
 import static org.sonar.sslr.parser.GrammarOperators.zeroOrMore;
 
@@ -196,10 +198,10 @@ public class JavaGrammarImpl extends JavaGrammar {
    */
   private void literals() {
     spacing.is(
-        whitespace(),
+        skippedTrivia(whitespace()),
         zeroOrMore(
-            token(GenericTokenType.COMMENT, firstOf(inlineComment(), multilineComment())),
-            whitespace())).skip();
+            commentTrivia(firstOf(inlineComment(), multilineComment())),
+            skippedTrivia(whitespace()))).skip();
 
     eof.is(token(GenericTokenType.EOF, endOfInput())).skip();
 
