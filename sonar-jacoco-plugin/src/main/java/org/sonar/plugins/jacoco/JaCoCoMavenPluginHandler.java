@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.jacoco;
 
-import java.io.File;
-
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.maven.MavenPlugin;
 import org.sonar.api.batch.maven.MavenPluginHandler;
@@ -28,9 +26,8 @@ import org.sonar.api.batch.maven.MavenSurefireUtils;
 import org.sonar.api.resources.Project;
 import org.sonar.api.utils.SonarException;
 
-/**
- * @author Evgeny Mandrikov
- */
+import java.io.File;
+
 public class JaCoCoMavenPluginHandler implements MavenPluginHandler {
 
   private static final String ARG_LINE_PARAMETER = "argLine";

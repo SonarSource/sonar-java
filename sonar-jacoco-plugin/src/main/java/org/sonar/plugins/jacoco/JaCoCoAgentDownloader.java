@@ -28,9 +28,6 @@ import org.sonar.api.utils.SonarException;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * @author Evgeny Mandrikov
- */
 public class JaCoCoAgentDownloader implements BatchExtension {
 
   /**

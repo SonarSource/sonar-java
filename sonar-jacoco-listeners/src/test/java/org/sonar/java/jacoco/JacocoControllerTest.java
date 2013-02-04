@@ -51,8 +51,8 @@ public class JacocoControllerTest {
   @Test
   public void test_onStart() throws Exception {
     jacoco.onTestStart("test");
-    verify(agent).setSessionId("test");
     verify(agent).reset();
+    verify(agent).setSessionId("test");
     verifyNoMoreInteractions(agent);
   }
 

@@ -54,7 +54,7 @@ public class TestNGListenerTest {
   @Test
   public void test_success() {
     execute(Success.class);
-    String testName = getClass().getCanonicalName() + "$Success.test";
+    String testName = getClass().getCanonicalName() + "$Success test";
     InOrder orderedExecution = inOrder(jacoco);
     orderedExecution.verify(jacoco).onTestStart(testName);
     orderedExecution.verify(jacoco).onTestFinish(testName);
@@ -63,7 +63,7 @@ public class TestNGListenerTest {
   @Test
   public void test_failure() {
     execute(Failure.class);
-    String testName = getClass().getCanonicalName() + "$Failure.test";
+    String testName = getClass().getCanonicalName() + "$Failure test";
     InOrder orderedExecution = inOrder(jacoco);
     orderedExecution.verify(jacoco).onTestStart(testName);
     orderedExecution.verify(jacoco).onTestFinish(testName);

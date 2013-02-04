@@ -43,7 +43,7 @@ public class TestNGListener implements ITestListener {
   }
 
   private static String getName(ITestResult result) {
-    return result.getTestClass().getName() + "." + result.getMethod().getMethodName();
+    return result.getTestClass().getName() + " " + result.getMethod().getMethodName();
   }
 
   public void onTestSuccess(ITestResult result) {

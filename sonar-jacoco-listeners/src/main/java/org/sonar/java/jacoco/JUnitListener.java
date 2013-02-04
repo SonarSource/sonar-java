@@ -48,7 +48,7 @@ public class JUnitListener extends RunListener {
   }
 
   private static String getName(Description description) {
-    return description.getClassName() + "." + description.getMethodName();
+    return description.getClassName() + " " + description.getMethodName();
   }
 
 }

@@ -22,9 +22,6 @@ package org.sonar.plugins.jacoco;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Evgeny Mandrikov
- */
 public final class JaCoCoUtils {
 
   /**

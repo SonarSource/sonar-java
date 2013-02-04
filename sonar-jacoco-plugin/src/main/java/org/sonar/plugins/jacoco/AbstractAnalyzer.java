@@ -20,9 +20,7 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Predicate;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang.StringUtils;
@@ -34,9 +32,6 @@ import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataReader;
 import org.jacoco.core.data.ExecutionDataStore;
-import org.jacoco.core.data.IExecutionDataVisitor;
-import org.jacoco.core.data.ISessionInfoVisitor;
-import org.jacoco.core.data.SessionInfo;
 import org.jacoco.core.data.SessionInfoStore;
 import org.jacoco.core.runtime.WildcardMatcher;
 import org.sonar.api.batch.SensorContext;
@@ -62,9 +57,6 @@ import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-/**
- * @author Evgeny Mandrikov
- */
 public abstract class AbstractAnalyzer {
 
   private final ResourcePerspectives perspectives;
@@ -148,56 +140,45 @@ public abstract class AbstractAnalyzer {
   }
 
   public final void readLinesCoveredByTestsData(File jacocoExecutionData, final File buildOutputDir, final SensorContext context, final WildcardMatcher excludes)
-    throws IOException {
+      throws IOException {
     if (jacocoExecutionData == null || !jacocoExecutionData.exists() || !jacocoExecutionData.isFile()) {
       JaCoCoUtils.LOG.info("No JaCoCo execution data for tests has been dumped: {}", jacocoExecutionData);
-    } else {
-      JaCoCoUtils.LOG.info("Analysing {}", jacocoExecutionData);
-      final LastSessionInfo lastSessionInfo = new LastSessionInfo();
-      ExecutionDataReader reader = new ExecutionDataReader(new FileInputStream(jacocoExecutionData));
-      reader.setSessionInfoVisitor(new ISessionInfoVisitor() {
-        public void visitSessionInfo(final SessionInfo info) {
-          lastSessionInfo.addSession(info);
-        }
-      });
-      reader.setExecutionDataVisitor(new IExecutionDataVisitor() {
-        public void visitClassExecution(final ExecutionData data) {
-          if (resourceExists(data, context)) {
-            ExecutionDataStore executionDataStore = new ExecutionDataStore();
-            executionDataStore.visitClassExecution(data);
-            analyzeLinesCoveredByTests(lastSessionInfo.getLastSessionInfo(), executionDataStore, buildOutputDir, context, excludes);
-          }
-        }
-      });
-      reader.read();
+      return;
+    }
+    ExecutionDataReader reader = new ExecutionDataReader(new FileInputStream(jacocoExecutionData));
+    ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
+    reader.setSessionInfoVisitor(executionDataVisitor);
+    reader.setExecutionDataVisitor(executionDataVisitor);
+    reader.read();
+
+    for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
+      String sessionId = entry.getKey();
+      ExecutionDataStore data = entry.getValue();
+      analyzeLinesCoveredByTests(sessionId, data, buildOutputDir, context, excludes);
     }
   }
 
-  private boolean resourceExists(ExecutionData data, SensorContext context) {
-    String resourceKey = data.getName().replaceAll("/", ".");
-    JavaFile resource = context.getResource(new JavaFile(resourceKey));
-    return resource != null;
-  }
+  private void analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes) {
+    int i = sessionId.indexOf(' ');
+    if (i < 0) {
+      return;
+    }
+    String testClassName = sessionId.substring(0, i);
+    String testName = sessionId.substring(i + 1);
+    Resource testResource = context.getResource(new JavaFile(testClassName, true));
+    if (testResource == null) {
+      // No such test class
+      return;
+    }
 
-  private void analyzeLinesCoveredByTests(SessionInfo sessionInfo, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes) {
-    String id = sessionInfo.getId();
-    if (CharMatcher.anyOf(".").countIn(id) < 2 || id.startsWith("dhcp")) {
-      // FIXME
-      // As we do not have a convention for the id, we use this hack to detect if the id is a test or not
-    } else {
-      String testName = Iterables.getLast(Splitter.on(".").split(id));
-      String testFileKey = StringUtils.removeEnd(id, "." + testName);
-      Resource testFile = new JavaFile(testFileKey, true);
-
-      CoverageBuilder coverageBuilder = analyze2(executionDataStore, buildOutputDir);
-      for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
-        JavaFile resource = getResource(coverage, context);
-        if (resource != null && !isExcluded(coverage, excludes)) {
-          CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
-          List<Integer> linesCovered = getLinesCover(builder);
-          if (!linesCovered.isEmpty()) {
-            addCoverage(resource, testFile, testName, linesCovered);
-          }
+    CoverageBuilder coverageBuilder = analyze2(executionDataStore, buildOutputDir);
+    for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
+      JavaFile resource = getResource(coverage, context);
+      if (resource != null && !isExcluded(coverage, excludes)) {
+        CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
+        List<Integer> coveredLines = getCoveredLines(builder);
+        if (!coveredLines.isEmpty()) {
+          addCoverage(resource, testResource, testName, coveredLines);
         }
       }
     }
@@ -229,7 +210,7 @@ public abstract class AbstractAnalyzer {
     });
   }
 
-  private List<Integer> getLinesCover(CoverageMeasuresBuilder builder) {
+  private List<Integer> getCoveredLines(CoverageMeasuresBuilder builder) {
     List<Integer> linesCover = newArrayList();
     for (Map.Entry<Integer, Integer> hitsByLine : builder.getHitsByLine().entrySet()) {
       if (hitsByLine.getValue() > 0) {
@@ -239,16 +220,17 @@ public abstract class AbstractAnalyzer {
     return linesCover;
   }
 
-  private void addCoverage(JavaFile resource, Resource testFile, String testName, List<Integer> linesCovered) {
+  private void addCoverage(JavaFile resource, Resource testFile, String testName, List<Integer> coveredLines) {
     Testable testAbleFile = perspectives.as(MutableTestable.class, resource);
     if (testAbleFile != null) {
       MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {
 
-        JaCoCoUtils.LOG.info("addCoverage source : " + resource.getKey() + ", testCase : " + testFile.getKey() + ", test : " + testName + ", lines : " + linesCovered);
+        // TODO remove:
+        JaCoCoUtils.LOG.info("addCoverage source : " + resource.getKey() + ", testCase : " + testFile.getKey() + ", test : " + testName + ", lines : " + coveredLines);
 
         MutableTestCase testCase = findTestCase(testPlan, testName);
-        testCase.setCover(testAbleFile, linesCovered);
+        testCase.setCover(testAbleFile, coveredLines);
       }
     }
   }
@@ -313,17 +295,5 @@ public abstract class AbstractAnalyzer {
   protected abstract String getReportPath(Project project);
 
   protected abstract String getExcludes(Project project);
-
-  private static class LastSessionInfo {
-    private SessionInfo lastSessionInfo;
-
-    public void addSession(SessionInfo info) {
-      lastSessionInfo = info;
-    }
-
-    public SessionInfo getLastSessionInfo() {
-      return lastSessionInfo;
-    }
-  }
 
 }

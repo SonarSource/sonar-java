@@ -22,6 +22,8 @@ package org.sonar.java.jacoco;
 import org.jacoco.agent.rt.IAgent;
 import org.jacoco.agent.rt.RT;
 
+import java.io.IOException;
+
 class JacocoController {
 
   private static final String ERROR = "Unable to access JaCoCo Agent - make sure that you use JaCoCo and version not lower than 0.6.2.";
@@ -43,19 +45,15 @@ class JacocoController {
   }
 
   public void onTestStart(String name) {
-    System.out.println("Test " + name + " started");
-
-    // TODO naming convention for sessions
-    agent.setSessionId(name);
     agent.reset();
+    agent.setSessionId(name);
   }
 
   public void onTestFinish(String name) {
-    System.out.println("Test " + name + " finished");
     try {
       agent.dump(true);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
     }
   }
 

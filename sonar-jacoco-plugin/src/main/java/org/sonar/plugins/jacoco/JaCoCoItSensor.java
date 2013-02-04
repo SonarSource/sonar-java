@@ -30,9 +30,6 @@ import org.sonar.api.resources.Project;
 
 import java.util.Collection;
 
-/**
- * @author Evgeny Mandrikov
- */
 public class JaCoCoItSensor implements Sensor {
   private JacocoConfiguration configuration;
   private final ResourcePerspectives perspectives;
