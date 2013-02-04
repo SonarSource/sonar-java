@@ -51,8 +51,9 @@ import java.util.List;
     key = CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY,
     defaultValue = "" + CoreProperties.DESIGN_SKIP_DESIGN_DEFAULT_VALUE,
     name = "Skip design analysis",
-    project = true,
-    global = true,
+    project = false,
+    global = false,
+    module = false,
     category = CoreProperties.CATEGORY_JAVA,
     type = PropertyType.BOOLEAN)
 })
