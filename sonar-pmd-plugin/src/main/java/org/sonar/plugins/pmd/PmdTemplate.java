@@ -45,7 +45,8 @@ public class PmdTemplate {
       "1.1", "1.3",
       "1.2", "1.3",
       "5", "1.5",
-      "6", "1.6");
+      "6", "1.6",
+      "7", "1.7");
 
   private final PMD pmd;
 

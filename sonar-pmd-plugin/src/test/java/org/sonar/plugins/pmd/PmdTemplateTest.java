@@ -93,6 +93,13 @@ public class PmdTemplateTest {
     verify(pmd).setJavaVersion(SourceType.JAVA_16);
   }
 
+  @Test
+  public void should_set_java7_version() {
+    PmdTemplate.setJavaVersion(pmd, "7");
+
+    verify(pmd).setJavaVersion(SourceType.JAVA_17);
+  }
+
   @Test(expected = SonarException.class)
   public void should_fail_on_invalid_java_version() {
     new PmdTemplate("12.2");
