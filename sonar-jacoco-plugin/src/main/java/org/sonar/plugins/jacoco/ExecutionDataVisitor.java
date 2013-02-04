@@ -33,6 +33,7 @@ public class ExecutionDataVisitor implements ISessionInfoVisitor, IExecutionData
   private final Map<String, ExecutionDataStore> sessions = Maps.newHashMap();
 
   private ExecutionDataStore executionDataStore;
+  private ExecutionDataStore merged = new ExecutionDataStore();
 
   public void visitSessionInfo(SessionInfo info) {
     String sessionId = info.getId();
@@ -45,10 +46,22 @@ public class ExecutionDataVisitor implements ISessionInfoVisitor, IExecutionData
 
   public void visitClassExecution(ExecutionData data) {
     executionDataStore.put(data);
+    merged.put(defensiveCopy(data));
   }
 
   public Map<String, ExecutionDataStore> getSessions() {
     return sessions;
+  }
+
+  public ExecutionDataStore getMerged() {
+    return merged;
+  }
+
+  private static ExecutionData defensiveCopy(ExecutionData data) {
+    boolean[] src = data.getProbes();
+    boolean[] dest = new boolean[src.length];
+    System.arraycopy(src, 0, dest, 0, src.length);
+    return new ExecutionData(data.getId(), data.getName(), dest);
   }
 
 }

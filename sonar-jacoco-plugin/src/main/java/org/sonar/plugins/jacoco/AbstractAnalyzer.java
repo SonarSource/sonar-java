@@ -32,7 +32,6 @@ import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataReader;
 import org.jacoco.core.data.ExecutionDataStore;
-import org.jacoco.core.data.SessionInfoStore;
 import org.jacoco.core.runtime.WildcardMatcher;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
@@ -102,27 +101,30 @@ public abstract class AbstractAnalyzer {
     WildcardMatcher excludes = new WildcardMatcher(Strings.nullToEmpty(getExcludes(project)));
     try {
       readExecutionData(jacocoExecutionData, buildOutputDir, context, excludes);
-      readLinesCoveredByTestsData(jacocoExecutionData, buildOutputDir, context, excludes);
     } catch (IOException e) {
       throw new SonarException(e);
     }
   }
 
   public final void readExecutionData(File jacocoExecutionData, File buildOutputDir, SensorContext context, WildcardMatcher excludes) throws IOException {
-    SessionInfoStore sessionInfoStore = new SessionInfoStore();
-    ExecutionDataStore executionDataStore = new ExecutionDataStore();
+    ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
 
     if (jacocoExecutionData == null || !jacocoExecutionData.exists() || !jacocoExecutionData.isFile()) {
       JaCoCoUtils.LOG.info("Project coverage is set to 0% as no JaCoCo execution data has been dumped: {}", jacocoExecutionData);
     } else {
       JaCoCoUtils.LOG.info("Analysing {}", jacocoExecutionData);
+
       ExecutionDataReader reader = new ExecutionDataReader(new FileInputStream(jacocoExecutionData));
-      reader.setSessionInfoVisitor(sessionInfoStore);
-      reader.setExecutionDataVisitor(executionDataStore);
+      reader.setSessionInfoVisitor(executionDataVisitor);
+      reader.setExecutionDataVisitor(executionDataVisitor);
       reader.read();
     }
 
-    CoverageBuilder coverageBuilder = analyze(executionDataStore, buildOutputDir);
+    for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
+      analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), buildOutputDir, context, excludes);
+    }
+
+    CoverageBuilder coverageBuilder = analyze(executionDataVisitor.getMerged(), buildOutputDir);
     int analyzedResources = 0;
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       JavaFile resource = getResource(coverage, context);
@@ -136,25 +138,6 @@ public abstract class AbstractAnalyzer {
     }
     if (analyzedResources == 0) {
       JaCoCoUtils.LOG.warn("Coverage information was not collected. Perhaps you forget to include debug information into compiled classes?");
-    }
-  }
-
-  public final void readLinesCoveredByTestsData(File jacocoExecutionData, final File buildOutputDir, final SensorContext context, final WildcardMatcher excludes)
-      throws IOException {
-    if (jacocoExecutionData == null || !jacocoExecutionData.exists() || !jacocoExecutionData.isFile()) {
-      JaCoCoUtils.LOG.info("No JaCoCo execution data for tests has been dumped: {}", jacocoExecutionData);
-      return;
-    }
-    ExecutionDataReader reader = new ExecutionDataReader(new FileInputStream(jacocoExecutionData));
-    ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
-    reader.setSessionInfoVisitor(executionDataVisitor);
-    reader.setExecutionDataVisitor(executionDataVisitor);
-    reader.read();
-
-    for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
-      String sessionId = entry.getKey();
-      ExecutionDataStore data = entry.getValue();
-      analyzeLinesCoveredByTests(sessionId, data, buildOutputDir, context, excludes);
     }
   }
 
