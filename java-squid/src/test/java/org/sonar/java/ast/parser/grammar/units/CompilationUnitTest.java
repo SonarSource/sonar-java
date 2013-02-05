@@ -21,22 +21,22 @@ package org.sonar.java.ast.parser.grammar.units;
 
 import com.google.common.base.Joiner;
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CompilationUnitTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.packageDeclaration.mock();
-    g.importDeclaration.mock();
-    g.typeDeclaration.mock();
+    g.rule(JavaGrammar.PACKAGE_DECLARATION).mock();
+    g.rule(JavaGrammar.IMPORT_DECLARATION).mock();
+    g.rule(JavaGrammar.TYPE_DECLARATION).mock();
 
-    assertThat(g.compilationUnit)
+    assertThat(g.rule(JavaGrammar.COMPILATION_UNIT))
         .matches("packageDeclaration importDeclaration importDeclaration typeDeclaration typeDeclaration")
         .matches("packageDeclaration importDeclaration typeDeclaration")
         .matches("packageDeclaration importDeclaration")
@@ -46,7 +46,7 @@ public class CompilationUnitTest {
 
   @Test
   public void realLife() {
-    assertThat(g.compilationUnit)
+    assertThat(g.rule(JavaGrammar.COMPILATION_UNIT))
         .matches(lines(
             "package org.example;",
             "",

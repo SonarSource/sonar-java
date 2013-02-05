@@ -20,75 +20,75 @@
 package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class IntegerLiteralTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
     // Decimal
-    assertThat(g.integerLiteral)
+    assertThat(g.rule(JavaGrammar.INTEGER_LITERAL))
         .matches("0")
         .matches("543");
-    assertThat(g.longLiteral)
+    assertThat(g.rule(JavaGrammar.LONG_LITERAL))
         .matches("543l")
         .matches("543L");
 
     // Hexadecimal
-    assertThat(g.integerLiteral)
+    assertThat(g.rule(JavaGrammar.INTEGER_LITERAL))
         .matches("0xFF");
-    assertThat(g.longLiteral)
+    assertThat(g.rule(JavaGrammar.LONG_LITERAL))
         .matches("0xFFl")
         .matches("0xFFL");
 
-    assertThat(g.integerLiteral)
+    assertThat(g.rule(JavaGrammar.INTEGER_LITERAL))
         .matches("0XFF");
-    assertThat(g.longLiteral)
+    assertThat(g.rule(JavaGrammar.LONG_LITERAL))
         .matches("0XFFl")
         .matches("0XFFL");
 
     // Octal
-    assertThat(g.integerLiteral)
+    assertThat(g.rule(JavaGrammar.INTEGER_LITERAL))
         .matches("077");
-    assertThat(g.longLiteral)
+    assertThat(g.rule(JavaGrammar.LONG_LITERAL))
         .matches("077l")
         .matches("077L");
 
     // Binary (new in Java 7)
-    assertThat(g.integerLiteral)
+    assertThat(g.rule(JavaGrammar.INTEGER_LITERAL))
         .matches("0b1010");
-    assertThat(g.longLiteral)
+    assertThat(g.rule(JavaGrammar.LONG_LITERAL))
         .matches("0b1010l")
         .matches("0b1010L");
 
-    assertThat(g.integerLiteral)
+    assertThat(g.rule(JavaGrammar.INTEGER_LITERAL))
         .matches("0B1010");
-    assertThat(g.longLiteral)
+    assertThat(g.rule(JavaGrammar.LONG_LITERAL))
         .matches("0B1010l")
         .matches("0B1010L");
 
     // Underscore (new in Java 7)
-    assertThat(g.integerLiteral)
+    assertThat(g.rule(JavaGrammar.INTEGER_LITERAL))
         .matches("1_000_000")
         .matches("5_______2");
 
-    assertThat(g.longLiteral)
+    assertThat(g.rule(JavaGrammar.LONG_LITERAL))
         .matches("0x7fff_ffff_ffff_ffffL");
   }
 
   @Test
   public void nok() {
-    assertThat(g.integerLiteral)
+    assertThat(g.rule(JavaGrammar.INTEGER_LITERAL))
         .notMatches("0.1")
         .notMatches("_0")
         .notMatches("_d")
         .notMatches("._list");
-    assertThat(g.longLiteral)
+    assertThat(g.rule(JavaGrammar.LONG_LITERAL))
         .notMatches("0.1")
         .notMatches("_0")
         .notMatches("_d")

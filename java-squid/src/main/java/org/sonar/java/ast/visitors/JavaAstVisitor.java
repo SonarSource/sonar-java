@@ -20,16 +20,16 @@
 package org.sonar.java.ast.visitors;
 
 import com.sonar.sslr.squid.SquidAstVisitor;
-import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourcePackage;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 /**
  * Shortcut for {@code SquidAstVisitor<JavaGrammar>}.
  */
-public abstract class JavaAstVisitor extends SquidAstVisitor<JavaGrammar> {
+public abstract class JavaAstVisitor extends SquidAstVisitor<LexerlessGrammar> {
 
   protected final SourceFile peekSourceFile() {
     SourceCode sourceCode = getContext().peekSourceCode();

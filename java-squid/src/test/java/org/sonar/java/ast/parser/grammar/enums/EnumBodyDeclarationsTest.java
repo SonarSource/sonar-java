@@ -20,20 +20,20 @@
 package org.sonar.java.ast.parser.grammar.enums;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class EnumBodyDeclarationsTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.classBodyDeclaration.mock();
+    g.rule(JavaGrammar.CLASS_BODY_DECLARATION).mock();
 
-    assertThat(g.enumBodyDeclarations)
+    assertThat(g.rule(JavaGrammar.ENUM_BODY_DECLARATIONS))
         .matches(";")
         .matches("; classBodyDeclaration")
         .matches("; classBodyDeclaration classBodyDeclaration");

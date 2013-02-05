@@ -20,33 +20,33 @@
 package org.sonar.java.ast.parser.grammar.expressions;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ExpressionTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   /**
    * Our grammar accepts such constructions, whereas should not.
    */
   @Test
   public void error() {
-    assertThat(g.expression)
+    assertThat(g.rule(JavaGrammar.EXPRESSION))
         .matches("a = b + 1 = c + 2");
   }
 
   @Test
   public void realLife() {
-    assertThat(g.expression)
+    assertThat(g.rule(JavaGrammar.EXPRESSION))
         .matches("b >> 4")
         .matches("b >>= 4")
         .matches("b >>> 4")
         .matches("b >>>= 4");
     // Java 7: diamond
-    assertThat(g.expression)
+    assertThat(g.rule(JavaGrammar.EXPRESSION))
         .matches("new HashMap<>()");
   }
 

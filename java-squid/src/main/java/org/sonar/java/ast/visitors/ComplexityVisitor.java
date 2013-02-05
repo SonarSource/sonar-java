@@ -20,37 +20,36 @@
 package org.sonar.java.ast.visitors;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
 
 public class ComplexityVisitor extends JavaAstVisitor {
 
   @Override
   public void init() {
-    JavaGrammar grammar = getContext().getGrammar();
     subscribeTo(
         // Entry points
-        grammar.methodBody,
+        JavaGrammar.METHOD_BODY,
         // Branching nodes
-        grammar.ifStatement,
-        grammar.forStatement,
-        grammar.whileStatement,
-        grammar.doStatement,
+        JavaGrammar.IF_STATEMENT,
+        JavaGrammar.FOR_STATEMENT,
+        JavaGrammar.WHILE_STATEMENT,
+        JavaGrammar.DO_STATEMENT,
         JavaKeyword.CASE,
-        grammar.returnStatement,
-        grammar.throwStatement,
-        grammar.catchClause,
+        JavaGrammar.RETURN_STATEMENT,
+        JavaGrammar.THROW_STATEMENT,
+        JavaGrammar.CATCH_CLAUSE,
         // Expressions
-        grammar.conditionalExpression,
+        JavaGrammar.CONDITIONAL_EXPRESSION,
         JavaPunctuator.ANDAND,
         JavaPunctuator.OROR);
   }
 
   @Override
   public void visitNode(AstNode astNode) {
-    if (astNode.is(getContext().getGrammar().returnStatement) && isLastReturnStatement(astNode)) {
+    if (astNode.is(JavaGrammar.RETURN_STATEMENT) && isLastReturnStatement(astNode)) {
       return;
     }
     getContext().peekSourceCode().add(JavaMetric.COMPLEXITY, 1);
@@ -58,8 +57,8 @@ public class ComplexityVisitor extends JavaAstVisitor {
 
   private boolean isLastReturnStatement(AstNode astNode) {
     AstNode parent = astNode.getParent().getParent().getParent();
-    AstNode block = astNode.getFirstAncestor(getContext().getGrammar().blockStatements);
-    return block.getParent().getParent().is(getContext().getGrammar().methodBody) && parent == block;
+    AstNode block = astNode.getFirstAncestor(JavaGrammar.BLOCK_STATEMENTS);
+    return block.getParent().getParent().is(JavaGrammar.METHOD_BODY) && parent == block;
   }
 
 }

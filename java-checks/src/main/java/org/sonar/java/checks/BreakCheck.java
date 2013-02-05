@@ -23,6 +23,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.visitors.JavaAstCheck;
 
 @Rule(key = "AvoidBreakOutsideSwitch", priority = Priority.MAJOR)
@@ -35,7 +36,7 @@ public class BreakCheck extends JavaAstCheck {
 
   @Override
   public void visitNode(AstNode node) {
-    if (node.getFirstAncestor(getContext().getGrammar().switchStatement) == null) {
+    if (node.getFirstAncestor(JavaGrammar.SWITCH_STATEMENT) == null) {
       getContext().createLineViolation(this, "The 'break' branching statement prevents refactoring the source code to reduce the complexity.", node);
     }
   }

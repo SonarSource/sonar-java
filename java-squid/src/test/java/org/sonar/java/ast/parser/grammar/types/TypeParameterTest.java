@@ -20,20 +20,20 @@
 package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeParameterTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.bound.mock();
+    g.rule(JavaGrammar.BOUND).mock();
 
-    assertThat(g.typeParameter)
+    assertThat(g.rule(JavaGrammar.TYPE_PARAMETER))
         .matches("identifier")
         .matches("identifier extends bound");
   }

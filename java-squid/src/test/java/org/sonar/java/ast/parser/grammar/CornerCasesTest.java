@@ -20,22 +20,120 @@
 package org.sonar.java.ast.parser.grammar;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CornerCasesTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void test() {
-    assertThat(g.ge).matches(">=");
-    assertThat(g.sr).matches(">>");
-    assertThat(g.srequ).matches(">>=");
-    assertThat(g.bsr).matches(">>>");
-    assertThat(g.bsrequ).matches(">>>=");
+    assertThat(g.rule(JavaGrammar.AND))
+        .matches("&")
+        .notMatches("&&")
+        .notMatches("&=");
+    assertThat(g.rule(JavaGrammar.ANDAND))
+        .matches("&&");
+    assertThat(g.rule(JavaGrammar.ANDEQU))
+        .matches("&=");
+
+    assertThat(g.rule(JavaGrammar.BANG))
+        .matches("!")
+        .notMatches("!=");
+    assertThat(g.rule(JavaGrammar.NOTEQUAL))
+        .matches("!=");
+
+    assertThat(g.rule(JavaGrammar.BSR))
+        .matches(">>>")
+        .notMatches(">>>=");
+    assertThat(g.rule(JavaGrammar.BSREQU))
+        .matches(">>>=");
+
+    assertThat(g.rule(JavaGrammar.DIV))
+        .matches("/")
+        .notMatches("/=");
+    assertThat(g.rule(JavaGrammar.DIVEQU))
+        .matches("/=");
+
+    assertThat(g.rule(JavaGrammar.EQU))
+        .matches("=")
+        .notMatches("==");
+    assertThat(g.rule(JavaGrammar.EQUAL))
+        .matches("==");
+
+    assertThat(g.rule(JavaGrammar.GT))
+        .matches(">")
+        .notMatches(">=")
+        .notMatches(">>");
+    assertThat(g.rule(JavaGrammar.GE))
+        .matches(">=");
+
+    assertThat(g.rule(JavaGrammar.HAT))
+        .matches("^")
+        .notMatches("^=");
+    assertThat(g.rule(JavaGrammar.HATEQU))
+        .matches("^=");
+
+    assertThat(g.rule(JavaGrammar.LT))
+        .matches("<")
+        .notMatches("<=")
+        .notMatches("<<");
+    assertThat(g.rule(JavaGrammar.LE))
+        .matches("<=");
+
+    assertThat(g.rule(JavaGrammar.MINUS))
+        .matches("-")
+        .notMatches("-=")
+        .notMatches("--");
+    assertThat(g.rule(JavaGrammar.MINSEQU))
+        .matches("-=");
+    assertThat(g.rule(JavaGrammar.DEC))
+        .matches("--");
+
+    assertThat(g.rule(JavaGrammar.MOD))
+        .matches("%")
+        .notMatches("%=");
+    assertThat(g.rule(JavaGrammar.MODEQU))
+        .matches("%=");
+
+    assertThat(g.rule(JavaGrammar.OR))
+        .matches("|")
+        .notMatches("|=")
+        .notMatches("||");
+    assertThat(g.rule(JavaGrammar.OREQU))
+        .matches("|=");
+    assertThat(g.rule(JavaGrammar.OROR))
+        .matches("||");
+
+    assertThat(g.rule(JavaGrammar.PLUS))
+        .matches("+")
+        .notMatches("+=")
+        .notMatches("++");
+    assertThat(g.rule(JavaGrammar.PLUSEQU))
+        .matches("+=");
+    assertThat(g.rule(JavaGrammar.INC))
+        .matches("++");
+
+    assertThat(g.rule(JavaGrammar.SL))
+        .matches("<<")
+        .notMatches("<<=");
+    assertThat(g.rule(JavaGrammar.SLEQU))
+        .matches("<<=");
+
+    assertThat(g.rule(JavaGrammar.SR))
+        .matches(">>")
+        .notMatches(">>=");
+    assertThat(g.rule(JavaGrammar.SREQU))
+        .matches(">>=");
+
+    assertThat(g.rule(JavaGrammar.STAR))
+        .matches("*")
+        .notMatches("*=");
+    assertThat(g.rule(JavaGrammar.STAREQU))
+        .matches("*=");
   }
 
 }

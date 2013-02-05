@@ -20,40 +20,18 @@
 package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class LiteralTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
-
-  @Test
-  public void ok() {
-    g.trueKeyword.mock();
-    g.falseKeyword.mock();
-    g.nullKeyword.mock();
-    g.characterLiteral.mock();
-    g.stringLiteral.mock();
-    g.floatLiteral.mock();
-    g.longLiteral.mock();
-    g.integerLiteral.mock();
-
-    assertThat(g.literal)
-        .matches("trueKeyword")
-        .matches("falseKeyword")
-        .matches("nullKeyword")
-        .matches("characterLiteral")
-        .matches("stringLiteral")
-        .matches("floatLiteral")
-        .matches("longLiteral")
-        .matches("integerLiteral");
-  }
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void realLife() {
-    assertThat(g.literal)
+    assertThat(g.rule(JavaGrammar.LITERAL))
         .matches("1.0")
         .matches("1")
         .matches("'a'")

@@ -20,22 +20,22 @@
 package org.sonar.java.ast.parser.grammar.interfaces;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class InterfaceDeclarationTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.typeParameters.mock();
-    g.classTypeList.mock();
-    g.interfaceBody.mock();
+    g.rule(JavaGrammar.TYPE_PARAMETERS).mock();
+    g.rule(JavaGrammar.CLASS_TYPE_LIST).mock();
+    g.rule(JavaGrammar.INTERFACE_BODY).mock();
 
-    assertThat(g.interfaceDeclaration)
+    assertThat(g.rule(JavaGrammar.INTERFACE_DECLARATION))
         .matches("interface identifier typeParameters extends classTypeList interfaceBody")
         .matches("interface identifier typeParameters interfaceBody")
         .matches("interface identifier interfaceBody");
@@ -43,7 +43,7 @@ public class InterfaceDeclarationTest {
 
   @Test
   public void realLife() {
-    assertThat(g.interfaceDeclaration)
+    assertThat(g.rule(JavaGrammar.INTERFACE_DECLARATION))
         .matches("interface HelloWorld { }");
   }
 

@@ -23,45 +23,43 @@ import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.squid.SquidAstVisitor;
-import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.Collections;
 import java.util.List;
 
 public class MethodHelper {
 
-  private final JavaGrammar grammar;
   private final AstNode astNode;
 
-  public MethodHelper(JavaGrammar grammar, AstNode astNode) {
-    this.grammar = grammar;
+  public MethodHelper(AstNode astNode) {
     this.astNode = astNode;
   }
 
-  public static void subscribe(SquidAstVisitor<JavaGrammar> visitor) {
-    JavaGrammar grammar = visitor.getContext().getGrammar();
+  public static void subscribe(SquidAstVisitor<LexerlessGrammar> visitor) {
     visitor.subscribeTo(
-        grammar.methodDeclaratorRest,
-        grammar.voidMethodDeclaratorRest,
-        grammar.constructorDeclaratorRest,
-        grammar.interfaceMethodDeclaratorRest,
-        grammar.voidInterfaceMethodDeclaratorsRest,
-        grammar.annotationMethodRest);
+        JavaGrammar.METHOD_DECLARATOR_REST,
+        JavaGrammar.VOID_METHOD_DECLARATOR_REST,
+        JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
+        JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
+        JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
+        JavaGrammar.ANNOTATION_METHOD_REST);
   }
 
   public boolean isPublic() {
     final AstNode node;
-    if (astNode.is(grammar.methodDeclaratorRest, grammar.voidMethodDeclaratorRest, grammar.constructorDeclaratorRest)) {
-      node = astNode.getFirstAncestor(grammar.classBodyDeclaration);
-    } else if (astNode.is(grammar.interfaceMethodDeclaratorRest, grammar.voidInterfaceMethodDeclaratorsRest)) {
-      node = astNode.getFirstAncestor(grammar.interfaceBodyDeclaration);
-    } else if (astNode.is(grammar.annotationMethodRest)) {
-      node = astNode.getFirstAncestor(grammar.annotationTypeElementDeclaration);
+    if (astNode.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
+      node = astNode.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION);
+    } else if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST, JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST)) {
+      node = astNode.getFirstAncestor(JavaGrammar.INTERFACE_BODY_DECLARATION);
+    } else if (astNode.is(JavaGrammar.ANNOTATION_METHOD_REST)) {
+      node = astNode.getFirstAncestor(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION);
     } else {
       throw new IllegalStateException();
     }
-    for (AstNode modifierNode : node.getChildren(grammar.modifier)) {
+    for (AstNode modifierNode : node.getChildren(JavaGrammar.MODIFIER)) {
       if (modifierNode.getChild(0).is(JavaKeyword.PUBLIC)) {
         return true;
       }
@@ -70,20 +68,20 @@ public class MethodHelper {
   }
 
   public boolean isConstructor() {
-    return astNode.is(grammar.constructorDeclaratorRest);
+    return astNode.is(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST);
   }
 
   public AstNode getReturnType() {
     final AstNode typeNode = getName().getPreviousAstNode();
-    Preconditions.checkState(typeNode.is(JavaKeyword.VOID, grammar.type));
+    Preconditions.checkState(typeNode.is(JavaKeyword.VOID, JavaGrammar.TYPE));
     return typeNode;
   }
 
   public AstNode getName() {
     final AstNode methodNameNode;
-    if (astNode.is(grammar.interfaceMethodDeclaratorRest)) {
+    if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST)) {
       methodNameNode = astNode.getPreviousAstNode();
-    } else if (astNode.is(grammar.annotationMethodRest)) {
+    } else if (astNode.is(JavaGrammar.ANNOTATION_METHOD_REST)) {
       methodNameNode = astNode.getChild(0);
     } else {
       methodNameNode = astNode.getPreviousSibling();
@@ -93,13 +91,13 @@ public class MethodHelper {
   }
 
   public List<AstNode> getParameters() {
-    AstNode node = astNode.getFirstChild(grammar.formalParameters);
+    AstNode node = astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS);
     if (node == null) {
       // in case of annotationMethodRest
       return Collections.emptyList();
     }
     // TODO try to avoid usage of "getDescendants" by refactoring grammar rule "formalParameterDecls"
-    return node.getDescendants(grammar.formalParameterDecls);
+    return node.getDescendants(JavaGrammar.FORMAL_PARAMETER_DECLS);
   }
 
   public boolean hasParameters() {
@@ -107,11 +105,11 @@ public class MethodHelper {
   }
 
   public List<AstNode> getStatements() {
-    AstNode node = astNode.getFirstChild(grammar.methodBody);
+    AstNode node = astNode.getFirstChild(JavaGrammar.METHOD_BODY);
     if (node == null) {
       return Collections.emptyList();
     }
-    return node.getFirstChild(grammar.block).getFirstChild(grammar.blockStatements).getChildren();
+    return node.getFirstChild(JavaGrammar.BLOCK).getFirstChild(JavaGrammar.BLOCK_STATEMENTS).getChildren();
   }
 
 }

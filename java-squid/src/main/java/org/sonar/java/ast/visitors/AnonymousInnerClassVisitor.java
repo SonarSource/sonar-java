@@ -20,13 +20,14 @@
 package org.sonar.java.ast.visitors;
 
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.squid.api.SourceClass;
 
 public class AnonymousInnerClassVisitor extends JavaAstVisitor {
 
   @Override
   public void init() {
-    subscribeTo(getContext().getGrammar().classCreatorRest);
+    subscribeTo(JavaGrammar.CLASS_CREATOR_REST);
   }
 
   @Override
@@ -61,7 +62,7 @@ public class AnonymousInnerClassVisitor extends JavaAstVisitor {
   }
 
   private boolean isInnerClass(AstNode astNode) {
-    return astNode.hasDirectChildren(getContext().getGrammar().classBody);
+    return astNode.hasDirectChildren(JavaGrammar.CLASS_BODY);
   }
 
 }

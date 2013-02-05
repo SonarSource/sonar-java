@@ -20,23 +20,23 @@
 package org.sonar.java.ast.parser.grammar.classes;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ClassDeclarationTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.typeParameters.mock();
-    g.classType.mock();
-    g.classTypeList.mock();
-    g.classBody.mock();
+    g.rule(JavaGrammar.TYPE_PARAMETERS).mock();
+    g.rule(JavaGrammar.CLASS_TYPE).mock();
+    g.rule(JavaGrammar.CLASS_TYPE_LIST).mock();
+    g.rule(JavaGrammar.CLASS_BODY).mock();
 
-    assertThat(g.classDeclaration)
+    assertThat(g.rule(JavaGrammar.CLASS_DECLARATION))
         .matches("class identifier typeParameters extends classType implements classTypeList classBody")
         .matches("class identifier typeParameters extends classType classBody")
         .matches("class identifier typeParameters classBody")
@@ -45,7 +45,7 @@ public class ClassDeclarationTest {
 
   @Test
   public void realLife() {
-    assertThat(g.classDeclaration)
+    assertThat(g.rule(JavaGrammar.CLASS_DECLARATION))
         .matches("class HelloWorld { }");
   }
 

@@ -20,21 +20,21 @@
 package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParameterDeclsRestTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.variableDeclaratorId.mock();
-    g.formalParameterDecls.mock();
+    g.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).mock();
+    g.rule(JavaGrammar.FORMAL_PARAMETER_DECLS).mock();
 
-    assertThat(g.formalParametersDeclsRest)
+    assertThat(g.rule(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST))
         .matches("variableDeclaratorId")
         .matches("variableDeclaratorId , formalParameterDecls")
         .matches("... variableDeclaratorId");

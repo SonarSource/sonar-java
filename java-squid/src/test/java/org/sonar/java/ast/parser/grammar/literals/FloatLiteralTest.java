@@ -20,18 +20,18 @@
 package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FloatLiteralTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    assertThat(g.doubleLiteral)
+    assertThat(g.rule(JavaGrammar.DOUBLE_LITERAL))
         // Decimal
 
         // with dot at the end
@@ -39,19 +39,19 @@ public class FloatLiteralTest {
         .matches("1234.E1")
         .matches("1234.e+1")
         .matches("1234.E-1");
-    assertThat(g.floatLiteral)
+    assertThat(g.rule(JavaGrammar.FLOAT_LITERAL))
         .matches("1234.f");
 
     // with dot between
-    assertThat(g.doubleLiteral)
+    assertThat(g.rule(JavaGrammar.DOUBLE_LITERAL))
         .matches("12.34")
         .matches("12.34E1")
         .matches("12.34e+1")
         .matches("12.34E-1");
-    assertThat(g.floatLiteral)
+    assertThat(g.rule(JavaGrammar.FLOAT_LITERAL))
         .matches("12.34f")
         .matches("12.34E1F");
-    assertThat(g.doubleLiteral)
+    assertThat(g.rule(JavaGrammar.DOUBLE_LITERAL))
         .matches("12.34E+1d")
         .matches("12.34e-1D")
 
@@ -60,26 +60,26 @@ public class FloatLiteralTest {
         .matches(".1234e1")
         .matches(".1234E+1")
         .matches(".1234E-1");
-    assertThat(g.floatLiteral)
+    assertThat(g.rule(JavaGrammar.FLOAT_LITERAL))
         .matches(".1234f")
         .matches(".1234E1F");
-    assertThat(g.doubleLiteral)
+    assertThat(g.rule(JavaGrammar.DOUBLE_LITERAL))
         .matches(".1234e+1d")
         .matches(".1234E-1D")
 
         // without dot
         .matches("1234D")
         .matches("1234d");
-    assertThat(g.floatLiteral)
+    assertThat(g.rule(JavaGrammar.FLOAT_LITERAL))
         .matches("1234F")
         .matches("1234f");
-    assertThat(g.doubleLiteral)
+    assertThat(g.rule(JavaGrammar.DOUBLE_LITERAL))
         .matches("1234e1")
         .matches("1234E+1")
         .matches("1234E-1");
-    assertThat(g.floatLiteral)
+    assertThat(g.rule(JavaGrammar.FLOAT_LITERAL))
         .matches("1234E1f");
-    assertThat(g.doubleLiteral)
+    assertThat(g.rule(JavaGrammar.DOUBLE_LITERAL))
         .matches("1234e+1d")
         .matches("1234E-1D")
 
@@ -95,9 +95,9 @@ public class FloatLiteralTest {
         .matches("0XAF.BCp+1")
         .matches("0xAF.BCP-1");
 
-    assertThat(g.floatLiteral)
+    assertThat(g.rule(JavaGrammar.FLOAT_LITERAL))
         .matches("0xAF.BCp1F");
-    assertThat(g.doubleLiteral)
+    assertThat(g.rule(JavaGrammar.DOUBLE_LITERAL))
         .matches("0XAF.BCP+1d")
         .matches("0XAF.BCp-1D")
 
@@ -106,22 +106,22 @@ public class FloatLiteralTest {
         .matches("0XAFp+1")
         .matches("0xAFp-1");
 
-    assertThat(g.floatLiteral)
+    assertThat(g.rule(JavaGrammar.FLOAT_LITERAL))
         .matches("0XAFp1f");
-    assertThat(g.doubleLiteral)
+    assertThat(g.rule(JavaGrammar.DOUBLE_LITERAL))
         .matches("0xAFp+1d")
         .matches("0XAFp-1D");
   }
 
   @Test
   public void nok() {
-    assertThat(g.doubleLiteral)
+    assertThat(g.rule(JavaGrammar.DOUBLE_LITERAL))
         .notMatches("0xAF.f")
         .notMatches("0xAF.BCf")
         .notMatches("0xAF.")
         .notMatches("0XAF.BC")
         .notMatches("0xAF");
-    assertThat(g.floatLiteral)
+    assertThat(g.rule(JavaGrammar.FLOAT_LITERAL))
         .notMatches("0xAF.f")
         .notMatches("0xAF.BCf")
         .notMatches("0xAF.")

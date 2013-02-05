@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.visitors.JavaAstCheck;
 import org.sonar.squid.api.SourceClass;
 
@@ -38,7 +39,7 @@ public class ClassComplexityCheck extends JavaAstCheck {
 
   @Override
   public void init() {
-    subscribeTo(getContext().getGrammar().classDeclaration);
+    subscribeTo(JavaGrammar.CLASS_DECLARATION);
   }
 
   @Override

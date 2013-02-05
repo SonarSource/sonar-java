@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.squid.api.AnalysisException;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourcePackage;
@@ -59,8 +60,8 @@ public class PackageVisitor extends JavaAstVisitor {
 
   private String getPackageKey(AstNode astNode) {
     String packageKey;
-    if (astNode != null && astNode.getChild(0).is(getContext().getGrammar().packageDeclaration)) {
-      AstNode packageNameNode = astNode.getChild(0).getFirstChild(getContext().getGrammar().qualifiedIdentifier);
+    if (astNode != null && astNode.getChild(0).is(JavaGrammar.PACKAGE_DECLARATION)) {
+      AstNode packageNameNode = astNode.getChild(0).getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
       packageKey = getAstNodeValue(packageNameNode).replace('.', '/');
     } else {
       // Guess package key from directory

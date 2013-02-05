@@ -27,13 +27,25 @@ import com.sonar.sslr.squid.metrics.CounterVisitor;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.AstScanner;
-import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.ast.visitors.*;
+import org.sonar.java.ast.visitors.AccessorVisitor;
+import org.sonar.java.ast.visitors.AnonymousInnerClassVisitor;
+import org.sonar.java.ast.visitors.ClassVisitor;
+import org.sonar.java.ast.visitors.CommentLinesVisitor;
+import org.sonar.java.ast.visitors.ComplexityVisitor;
+import org.sonar.java.ast.visitors.EndAtLineVisitor;
+import org.sonar.java.ast.visitors.FileVisitor;
+import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
+import org.sonar.java.ast.visitors.LinesVisitor;
+import org.sonar.java.ast.visitors.MethodVisitor;
+import org.sonar.java.ast.visitors.PackageVisitor;
+import org.sonar.java.ast.visitors.PublicApiVisitor;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.indexer.QueryByType;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -48,7 +60,7 @@ public final class JavaAstScanner {
   /**
    * Helper method for testing checks without having to deploy them on a Sonar instance.
    */
-  public static SourceFile scanSingleFile(File file, SquidAstVisitor<JavaGrammar>... visitors) {
+  public static SourceFile scanSingleFile(File file, SquidAstVisitor<LexerlessGrammar>... visitors) {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
@@ -62,8 +74,8 @@ public final class JavaAstScanner {
     return (SourceFile) sources.iterator().next();
   }
 
-  public static AstScanner create(JavaConfiguration conf, SquidAstVisitor<JavaGrammar>... visitors) {
-    final Parser<JavaGrammar> parser = JavaParser.create(conf);
+  public static AstScanner create(JavaConfiguration conf, SquidAstVisitor<LexerlessGrammar>... visitors) {
+    final Parser<LexerlessGrammar> parser = JavaParser.create(conf);
 
     AstScanner builder = new AstScanner(parser);
 
@@ -114,36 +126,36 @@ public final class JavaAstScanner {
 
     builder.withSquidAstVisitor(new LinesOfCodeVisitor());
     builder.withSquidAstVisitor(new CommentLinesVisitor());
-    builder.withSquidAstVisitor(CommentsVisitor.<JavaGrammar> builder()
+    builder.withSquidAstVisitor(CommentsVisitor.<LexerlessGrammar> builder()
         .withBlankCommentMetric(JavaMetric.COMMENT_BLANK_LINES)
         .withNoSonar(true)
         .withIgnoreHeaderComment(true)
         .build());
-    builder.withSquidAstVisitor(CounterVisitor.<JavaGrammar> builder()
+    builder.withSquidAstVisitor(CounterVisitor.<LexerlessGrammar> builder()
         .setMetricDef(JavaMetric.STATEMENTS)
         .subscribeTo(
             // This is mostly the same elements as for the grammar rule "statement", but "labeledStatement" and "block" were excluded
-            parser.getGrammar().localVariableDeclarationStatement,
-            parser.getGrammar().assertStatement,
-            parser.getGrammar().ifStatement,
-            parser.getGrammar().forStatement,
-            parser.getGrammar().whileStatement,
-            parser.getGrammar().doStatement,
-            parser.getGrammar().tryStatement,
-            parser.getGrammar().switchStatement,
-            parser.getGrammar().synchronizedStatement,
-            parser.getGrammar().returnStatement,
-            parser.getGrammar().throwStatement,
-            parser.getGrammar().breakStatement,
-            parser.getGrammar().continueStatement,
-            parser.getGrammar().expressionStatement,
-            parser.getGrammar().emptyStatement)
+            JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
+            JavaGrammar.ASSERT_STATEMENT,
+            JavaGrammar.IF_STATEMENT,
+            JavaGrammar.FOR_STATEMENT,
+            JavaGrammar.WHILE_STATEMENT,
+            JavaGrammar.DO_STATEMENT,
+            JavaGrammar.TRY_STATEMENT,
+            JavaGrammar.SWITCH_STATEMENT,
+            JavaGrammar.SYNCHRONIZED_STATEMENT,
+            JavaGrammar.RETURN_STATEMENT,
+            JavaGrammar.THROW_STATEMENT,
+            JavaGrammar.BREAK_STATEMENT,
+            JavaGrammar.CONTINUE_STATEMENT,
+            JavaGrammar.EXPRESSION_STATEMENT,
+            JavaGrammar.EMPTY_STATEMENT)
         .build());
 
     builder.withSquidAstVisitor(new ComplexityVisitor());
 
     /* External visitors (typically Check ones) */
-    for (SquidAstVisitor<JavaGrammar> visitor : visitors) {
+    for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
       builder.withSquidAstVisitor(visitor);
     }
 

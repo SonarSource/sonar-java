@@ -21,7 +21,11 @@ package org.sonar.java.ast;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.*;
+import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.AuditListener;
+import com.sonar.sslr.api.CommentAnalyser;
+import com.sonar.sslr.api.Grammar;
+import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.ast.AstWalker;
 import com.sonar.sslr.impl.events.ExtendedStackTrace;
@@ -29,11 +33,15 @@ import com.sonar.sslr.squid.SquidAstVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.InputFile;
-import org.sonar.java.ast.api.JavaGrammar;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.visitors.VisitorContext;
-import org.sonar.squid.api.*;
+import org.sonar.squid.api.AnalysisException;
+import org.sonar.squid.api.CodeVisitor;
+import org.sonar.squid.api.SourceCodeSearchEngine;
+import org.sonar.squid.api.SourceCodeTreeDecorator;
+import org.sonar.squid.api.SourceProject;
 import org.sonar.squid.indexer.SquidIndex;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
 import java.util.Collection;
@@ -47,13 +55,13 @@ public class AstScanner {
   private static final Logger LOG = LoggerFactory.getLogger(AstScanner.class);
 
   private final SquidIndex index = new SquidIndex();
-  private final List<SquidAstVisitor<JavaGrammar>> visitors = Lists.newArrayList();
+  private final List<SquidAstVisitor<LexerlessGrammar>> visitors = Lists.newArrayList();
   private final List<AuditListener> auditListeners = Lists.newArrayList();
-  private final Parser<JavaGrammar> parser;
-  private final Parser<JavaGrammar> parserDebug;
+  private final Parser<LexerlessGrammar> parser;
+  private final Parser<LexerlessGrammar> parserDebug;
   private CommentAnalyser commentAnalyser;
 
-  public AstScanner(Parser<JavaGrammar> parser) {
+  public AstScanner(Parser<LexerlessGrammar> parser) {
     this.parser = parser;
     this.parserDebug = Parser.builder(parser)
         .setParsingEventListeners()
@@ -67,10 +75,9 @@ public class AstScanner {
     index.index(project);
     project.setSourceCodeIndexer(index);
     VisitorContext context = new VisitorContext(project);
-    context.setGrammar(parser.getGrammar());
     context.setCommentAnalyser(commentAnalyser);
 
-    for (SquidAstVisitor<JavaGrammar> visitor : visitors) {
+    for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
       visitor.setContext(context);
       visitor.init();
     }
@@ -127,7 +134,7 @@ public class AstScanner {
       }
     }
 
-    for (SquidAstVisitor<JavaGrammar> visitor : visitors) {
+    for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
       visitor.destroy();
     }
 
@@ -136,7 +143,7 @@ public class AstScanner {
     decorator.decorateWith(org.sonar.squid.measures.Metric.values());
   }
 
-  public void withSquidAstVisitor(SquidAstVisitor<JavaGrammar> visitor) {
+  public void withSquidAstVisitor(SquidAstVisitor<LexerlessGrammar> visitor) {
     if (visitor instanceof AuditListener) {
       auditListeners.add((AuditListener) visitor);
     }
@@ -153,7 +160,7 @@ public class AstScanner {
 
   public void accept(CodeVisitor visitor) {
     if (visitor instanceof SquidAstVisitor) {
-      withSquidAstVisitor((SquidAstVisitor<JavaGrammar>) visitor);
+      withSquidAstVisitor((SquidAstVisitor<LexerlessGrammar>) visitor);
     }
   }
 

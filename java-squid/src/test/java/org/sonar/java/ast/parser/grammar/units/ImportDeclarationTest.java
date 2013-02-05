@@ -20,31 +20,22 @@
 package org.sonar.java.ast.parser.grammar.units;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ImportDeclarationTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
-
-  @Test
-  public void ok() {
-    g.qualifiedIdentifier.mock();
-
-    assertThat(g.importDeclaration)
-        .matches("import qualifiedIdentifier ;")
-        .matches("import qualifiedIdentifier . * ;")
-        .matches("import static qualifiedIdentifier ;")
-        .matches("import static qualifiedIdentifier . * ;");
-  }
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void realLife() {
-    assertThat(g.importDeclaration)
+    assertThat(g.rule(JavaGrammar.IMPORT_DECLARATION))
         .matches("import org.example.HelloWorld;")
-        .matches("import static org.junit.Assert.assertThat;");
+        .matches("import org.example.*;")
+        .matches("import static org.junit.Assert.assertThat;")
+        .matches("import static org.junit.Assert.*;");
   }
 
 }

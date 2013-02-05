@@ -20,34 +20,22 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ForStatementTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
-
-  @Test
-  public void ok() {
-    g.block.mock();
-    g.forInit.mock();
-    g.forUpdate.mock();
-    g.formalParameter.mock();
-
-    assertThat(g.forStatement)
-        .matches("for ( forInit ; expression ; forUpdate ) block")
-        .matches("for ( ; expression ; forUpdate ) block")
-        .matches("for ( ; ; forUpdate ) block")
-        .matches("for ( ; ; ) block")
-        .matches("for ( formalParameter : expression ) block");
-  }
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void realLife() {
-    assertThat(g.forStatement)
+    assertThat(g.rule(JavaGrammar.FOR_STATEMENT))
         .matches("for (int i = 0; i < 10; i++) {} ")
+        .matches("for (; i < 10; i++) {} ")
+        .matches("for (;; i++) {} ")
+        .matches("for (;;) {} ")
         .matches("for (File file : files) {} ");
   }
 

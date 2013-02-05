@@ -20,20 +20,20 @@
 package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeParametersTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.typeParameter.mock();
+    g.rule(JavaGrammar.TYPE_PARAMETER).mock();
 
-    assertThat(g.typeParameters)
+    assertThat(g.rule(JavaGrammar.TYPE_PARAMETERS))
         .matches("< typeParameter >")
         .matches("< typeParameter , typeParameter >");
   }

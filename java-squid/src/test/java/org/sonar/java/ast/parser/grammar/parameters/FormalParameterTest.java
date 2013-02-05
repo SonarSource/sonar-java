@@ -20,22 +20,22 @@
 package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParameterTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.annotation.mock();
-    g.type.mock();
-    g.variableDeclaratorId.mock();
+    g.rule(JavaGrammar.ANNOTATION).mock();
+    g.rule(JavaGrammar.TYPE).mock();
+    g.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).mock();
 
-    assertThat(g.formalParameter)
+    assertThat(g.rule(JavaGrammar.FORMAL_PARAMETER))
         .matches("type variableDeclaratorId")
         .matches("final type variableDeclaratorId")
         .matches("annotation type variableDeclaratorId")

@@ -23,7 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.events.ParsingEventListener;
 import org.sonar.java.JavaConfiguration;
-import org.sonar.java.ast.api.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
 import java.nio.charset.Charset;
@@ -34,12 +34,12 @@ public final class JavaParser {
   }
 
   @VisibleForTesting
-  public static Parser<JavaGrammar> create(ParsingEventListener... parsingEventListeners) {
+  public static Parser<LexerlessGrammar> create(ParsingEventListener... parsingEventListeners) {
     return create(new JavaConfiguration(Charset.forName("UTF-8")), parsingEventListeners);
   }
 
-  public static Parser<JavaGrammar> create(JavaConfiguration conf, ParsingEventListener... parsingEventListeners) {
-    return new ParserAdapter<JavaGrammar>(conf.getCharset(), new JavaGrammarImpl());
+  public static Parser<LexerlessGrammar> create(JavaConfiguration conf, ParsingEventListener... parsingEventListeners) {
+    return new ParserAdapter<LexerlessGrammar>(conf.getCharset(), JavaGrammar.createGrammar());
   }
 
 }

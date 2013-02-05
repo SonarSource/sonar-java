@@ -20,21 +20,21 @@
 package org.sonar.java.ast.parser.grammar.enums;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 public class EnumConstantTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.annotation.mock();
-    g.arguments.mock();
-    g.classBody.mock();
+    g.rule(JavaGrammar.ANNOTATION).mock();
+    g.rule(JavaGrammar.ARGUMENTS).mock();
+    g.rule(JavaGrammar.CLASS_BODY).mock();
 
-    assertThat(g.enumConstant)
+    assertThat(g.rule(JavaGrammar.ENUM_CONSTANT))
         .matches("identifier")
         .matches("annotation identifier")
         .matches("annotation identifier arguments")

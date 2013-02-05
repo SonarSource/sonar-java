@@ -20,24 +20,24 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class BlockStatementTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.localVariableDeclarationStatement.mock();
-    g.statement.mock();
-    g.modifier.mock();
-    g.classDeclaration.mock();
-    g.enumDeclaration.mock();
+    g.rule(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT).mock();
+    g.rule(JavaGrammar.STATEMENT).mock();
+    g.rule(JavaGrammar.MODIFIER).mock();
+    g.rule(JavaGrammar.CLASS_DECLARATION).mock();
+    g.rule(JavaGrammar.ENUM_DECLARATION).mock();
 
-    assertThat(g.blockStatement)
+    assertThat(g.rule(JavaGrammar.BLOCK_STATEMENT))
         .matches("localVariableDeclarationStatement")
         .matches("modifier classDeclaration")
         .matches("modifier enumDeclaration")

@@ -20,24 +20,24 @@
 package org.sonar.java.ast.parser.grammar.units;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeDeclarationTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.modifier.mock();
-    g.classDeclaration.mock();
-    g.enumDeclaration.mock();
-    g.interfaceDeclaration.mock();
-    g.annotationTypeDeclaration.mock();
+    g.rule(JavaGrammar.MODIFIER).mock();
+    g.rule(JavaGrammar.CLASS_DECLARATION).mock();
+    g.rule(JavaGrammar.ENUM_DECLARATION).mock();
+    g.rule(JavaGrammar.INTERFACE_DECLARATION).mock();
+    g.rule(JavaGrammar.ANNOTATION_TYPE_DECLARATION).mock();
 
-    assertThat(g.typeDeclaration)
+    assertThat(g.rule(JavaGrammar.TYPE_DECLARATION))
         .matches("classDeclaration")
         .matches("enumDeclaration")
         .matches("interfaceDeclaration")
@@ -49,7 +49,7 @@ public class TypeDeclarationTest {
 
   @Test
   public void realLife() {
-    assertThat(g.typeDeclaration)
+    assertThat(g.rule(JavaGrammar.TYPE_DECLARATION))
         .matches("public static final class HelloWorld { }");
   }
 

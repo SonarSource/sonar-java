@@ -20,35 +20,35 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class StatementTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.block.mock();
-    g.assertStatement.mock();
-    g.ifStatement.mock();
-    g.forStatement.mock();
-    g.whileStatement.mock();
-    g.doStatement.mock();
-    g.tryStatement.mock();
-    g.switchStatement.mock();
-    g.synchronizedStatement.mock();
-    g.returnStatement.mock();
-    g.throwStatement.mock();
-    g.breakStatement.mock();
-    g.continueStatement.mock();
-    g.labeledStatement.mock();
-    g.expressionStatement.mock();
-    g.emptyStatement.mock();
+    g.rule(JavaGrammar.BLOCK).mock();
+    g.rule(JavaGrammar.ASSERT_STATEMENT).mock();
+    g.rule(JavaGrammar.IF_STATEMENT).mock();
+    g.rule(JavaGrammar.FOR_STATEMENT).mock();
+    g.rule(JavaGrammar.WHILE_STATEMENT).mock();
+    g.rule(JavaGrammar.DO_STATEMENT).mock();
+    g.rule(JavaGrammar.TRY_STATEMENT).mock();
+    g.rule(JavaGrammar.SWITCH_STATEMENT).mock();
+    g.rule(JavaGrammar.SYNCHRONIZED_STATEMENT).mock();
+    g.rule(JavaGrammar.RETURN_STATEMENT).mock();
+    g.rule(JavaGrammar.THROW_STATEMENT).mock();
+    g.rule(JavaGrammar.BREAK_STATEMENT).mock();
+    g.rule(JavaGrammar.CONTINUE_STATEMENT).mock();
+    g.rule(JavaGrammar.LABELED_STATEMENT).mock();
+    g.rule(JavaGrammar.EXPRESSION_STATEMENT).mock();
+    g.rule(JavaGrammar.EMPTY_STATEMENT).mock();
 
-    assertThat(g.statement)
+    assertThat(g.rule(JavaGrammar.STATEMENT))
         .matches("block")
         .matches("emptyStatement")
         .matches("labeledStatement")

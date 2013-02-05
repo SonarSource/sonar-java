@@ -20,29 +20,20 @@
 package org.sonar.java.ast.parser.grammar.units;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class PackageDeclarationTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
-
-  @Test
-  public void ok() {
-    g.annotation.mock();
-    g.qualifiedIdentifier.mock();
-
-    assertThat(g.packageDeclaration)
-        .matches("package qualifiedIdentifier ;")
-        .matches("annotation annotation package qualifiedIdentifier ;");
-  }
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void realLife() {
-    assertThat(g.packageDeclaration)
-        .matches("package org.example;");
+    assertThat(g.rule(JavaGrammar.PACKAGE_DECLARATION))
+        .matches("package org.example;")
+        .matches("@javax.annotation.ParametersAreNonnullByDefault @Beta package org.example;");
   }
 
 }

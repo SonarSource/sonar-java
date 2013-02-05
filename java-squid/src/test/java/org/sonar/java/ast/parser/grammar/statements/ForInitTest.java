@@ -20,22 +20,22 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ForInitTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.type.mock();
-    g.variableDeclarators.mock();
-    g.statementExpression.mock();
+    g.rule(JavaGrammar.TYPE).mock();
+    g.rule(JavaGrammar.VARIABLE_DECLARATORS).mock();
+    g.rule(JavaGrammar.STATEMENT_EXPRESSION).mock();
 
-    assertThat(g.forInit)
+    assertThat(g.rule(JavaGrammar.FOR_INIT))
         .matches("final type variableDeclarators")
         .matches("statementExpression , statementExpression")
         .matches("statementExpression");

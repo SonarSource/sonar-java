@@ -20,20 +20,20 @@
 package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParametersTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.formalParameterDecls.mock();
+    g.rule(JavaGrammar.FORMAL_PARAMETER_DECLS).mock();
 
-    assertThat(g.formalParameters)
+    assertThat(g.rule(JavaGrammar.FORMAL_PARAMETERS))
         .matches("( )")
         .matches("( formalParameterDecls )");
   }

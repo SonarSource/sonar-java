@@ -19,15 +19,12 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.impl.Parser;
-import com.sonar.sslr.impl.events.ExtendedStackTrace;
-import com.sonar.sslr.impl.events.ExtendedStackTraceStream;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.sonar.java.ast.api.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,9 +35,7 @@ import java.util.Collection;
 @RunWith(value = Parameterized.class)
 public class JavaParserIntegrationTest {
 
-  private final Parser<JavaGrammar> parser = JavaParser.create();
-  private final ExtendedStackTrace extendedStackTrace = new ExtendedStackTrace();
-  private final Parser<JavaGrammar> parserDebug = JavaParser.create(extendedStackTrace);
+  private final Parser<LexerlessGrammar> parser = JavaParser.create();
 
   private File file = null;
 
@@ -59,17 +54,7 @@ public class JavaParserIntegrationTest {
 
   @Test
   public void parse() throws IOException, URISyntaxException {
-    try {
-      parser.parse(file);
-    } catch (RecognitionException ex) {
-      try {
-        parserDebug.parse(file);
-      } catch (RecognitionException ex2) {
-        ExtendedStackTraceStream.print(extendedStackTrace, System.err);
-        throw ex2;
-      }
-      throw new IllegalStateException(ex);
-    }
+    parser.parse(file);
   }
 
   protected static void addParametersForPath(Collection<Object[]> parameters, String path) throws URISyntaxException {

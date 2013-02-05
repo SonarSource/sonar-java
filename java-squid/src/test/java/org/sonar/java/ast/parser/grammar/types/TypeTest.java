@@ -20,21 +20,21 @@
 package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.basicType.mock();
-    g.classType.mock();
+    g.rule(JavaGrammar.BASIC_TYPE).mock();
+    g.rule(JavaGrammar.CLASS_TYPE).mock();
 
-    assertThat(g.type)
+    assertThat(g.rule(JavaGrammar.TYPE))
         .matches("basicType")
         .matches("classType")
         .matches("basicType []")

@@ -20,18 +20,18 @@
 package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class VariableDeclaratorIdTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    assertThat(g.variableDeclaratorId)
+    assertThat(g.rule(JavaGrammar.VARIABLE_DECLARATOR_ID))
         .matches("identifier")
         .matches("identifier []")
         .matches("identifier [] []");

@@ -24,13 +24,13 @@ import org.sonar.check.Cardinality;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "XPath",
   priority = Priority.MAJOR,
   cardinality = Cardinality.MULTIPLE)
-public class XPathCheck extends AbstractXPathCheck<JavaGrammar> {
+public class XPathCheck extends AbstractXPathCheck<LexerlessGrammar> {
 
   private static final String DEFAULT_XPATH_QUERY = "";
   private static final String DEFAULT_MESSAGE = "The XPath expression matches this piece of code";

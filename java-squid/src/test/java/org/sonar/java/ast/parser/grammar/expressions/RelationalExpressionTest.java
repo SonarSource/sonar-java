@@ -20,18 +20,18 @@
 package org.sonar.java.ast.parser.grammar.expressions;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class RelationalExpressionTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void realLife() {
-    assertThat(g.relationalExpression)
+    assertThat(g.rule(JavaGrammar.RELATIONAL_EXPRESSION))
         .matches("i < 10")
         .matches("i <= 10")
         .matches("b > 4")

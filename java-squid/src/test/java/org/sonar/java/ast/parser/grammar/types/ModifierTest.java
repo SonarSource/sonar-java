@@ -20,20 +20,20 @@
 package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ModifierTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.annotation.mock();
+    g.rule(JavaGrammar.ANNOTATION).mock();
 
-    assertThat(g.modifier)
+    assertThat(g.rule(JavaGrammar.MODIFIER))
         .matches("annotation")
         .matches("public")
         .matches("protected")

@@ -27,6 +27,7 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.GenericTokenType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.signature.JvmJavaType;
 import org.sonar.java.signature.MethodSignature;
 import org.sonar.java.signature.MethodSignaturePrinter;
@@ -46,10 +47,10 @@ public class MethodVisitor extends JavaAstVisitor {
 
   @Override
   public void visitNode(AstNode astNode) {
-    String methodName = buildMethodSignature(new MethodHelper(getContext().getGrammar(), astNode));
+    String methodName = buildMethodSignature(new MethodHelper(astNode));
     SourceClass sourceClass = peekSourceClass();
     // TODO hack grammar to get proper start line
-    int startLine = PublicApiVisitor.getDeclaration(getContext().getGrammar(), astNode).getTokenLine();
+    int startLine = PublicApiVisitor.getDeclaration(astNode).getTokenLine();
     SourceMethod sourceMethod = new SourceMethod(sourceClass, methodName, startLine);
     sourceMethod.setMeasure(JavaMetric.METHODS, 1);
     getContext().addSourceCode(sourceMethod);
@@ -80,30 +81,30 @@ public class MethodVisitor extends JavaAstVisitor {
       return new Parameter(JvmJavaType.V, false);
     }
     AstNode returnType = methodHelper.getReturnType();
-    boolean isArray = returnType.hasDirectChildren(getContext().getGrammar().dim);
+    boolean isArray = returnType.hasDirectChildren(JavaGrammar.DIM);
     return new Parameter(extractArgumentAndReturnType(returnType, isArray));
   }
 
   private List<Parameter> extractMethodArgumentTypes(MethodHelper methodHelper) {
     List<Parameter> argumentTypes = Lists.newArrayList();
     for (AstNode astNode : methodHelper.getParameters()) {
-      AstNode type = astNode.getFirstChild(getContext().getGrammar().type);
-      boolean isArray = type.hasDirectChildren(getContext().getGrammar().dim)
-        || astNode.getFirstChild(getContext().getGrammar().formalParametersDeclsRest).getFirstChild(getContext().getGrammar().variableDeclaratorId)
-            .hasDirectChildren(getContext().getGrammar().dim);
+      AstNode type = astNode.getFirstChild(JavaGrammar.TYPE);
+      boolean isArray = type.hasDirectChildren(JavaGrammar.DIM)
+        || astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST).getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID)
+            .hasDirectChildren(JavaGrammar.DIM);
       argumentTypes.add(extractArgumentAndReturnType(type, isArray));
     }
     return argumentTypes;
   }
 
   private Parameter extractArgumentAndReturnType(AstNode astNode, boolean isArray) {
-    Preconditions.checkArgument(astNode.is(JavaKeyword.VOID, getContext().getGrammar().type));
+    Preconditions.checkArgument(astNode.is(JavaKeyword.VOID, JavaGrammar.TYPE));
     if (astNode.is(JavaKeyword.VOID)) {
       return new Parameter(JvmJavaType.V, false);
     }
-    if (astNode.getFirstChild().is(getContext().getGrammar().basicType)) {
+    if (astNode.getFirstChild().is(JavaGrammar.BASIC_TYPE)) {
       return new Parameter(JAVA_TYPE_MAPPING.get(astNode.getFirstChild().getFirstChild().getType()), isArray);
-    } else if (astNode.getFirstChild().is(getContext().getGrammar().classType)) {
+    } else if (astNode.getFirstChild().is(JavaGrammar.CLASS_TYPE)) {
       return new Parameter(extractClassName(astNode.getFirstChild()), isArray);
     } else {
       throw new IllegalStateException();
@@ -111,7 +112,7 @@ public class MethodVisitor extends JavaAstVisitor {
   }
 
   private String extractClassName(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(getContext().getGrammar().classType));
+    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE));
     // TODO Godin: verify
     return Iterables.getLast(astNode.getChildren(GenericTokenType.IDENTIFIER)).getTokenValue();
   }

@@ -20,22 +20,22 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TryStatementTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.block.mock();
-    g.catchClause.mock();
-    g.finally_.mock();
+    g.rule(JavaGrammar.BLOCK).mock();
+    g.rule(JavaGrammar.CATCH_CLAUSE).mock();
+    g.rule(JavaGrammar.FINALLY_).mock();
 
-    assertThat(g.statement)
+    assertThat(g.rule(JavaGrammar.STATEMENT))
         .matches("try block catchClause catchClause finally_")
         .matches("try block catchClause finally_")
         .matches("try block finally_");
@@ -44,10 +44,10 @@ public class TryStatementTest {
   @Test
   public void realLife() {
     // Java 7: multi-catch
-    assertThat(g.statement)
+    assertThat(g.rule(JavaGrammar.STATEMENT))
         .matches("try {} catch (ClassNotFoundException | IllegalAccessException ex) {}");
     // Java 7: try-with-resources
-    assertThat(g.statement)
+    assertThat(g.rule(JavaGrammar.STATEMENT))
         .matches("try (Resource resource = new Resource()) {}")
         .matches("try (Resource resource = new Resource()) {} catch (Expception e) {} finally {}");
   }

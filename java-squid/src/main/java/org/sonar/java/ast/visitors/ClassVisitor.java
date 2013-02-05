@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.GenericTokenType;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourcePackage;
 
@@ -31,10 +32,10 @@ public class ClassVisitor extends JavaAstVisitor {
   @Override
   public void init() {
     subscribeTo(
-        getContext().getGrammar().classDeclaration,
-        getContext().getGrammar().interfaceDeclaration,
-        getContext().getGrammar().enumDeclaration,
-        getContext().getGrammar().annotationTypeDeclaration);
+        JavaGrammar.CLASS_DECLARATION,
+        JavaGrammar.INTERFACE_DECLARATION,
+        JavaGrammar.ENUM_DECLARATION,
+        JavaGrammar.ANNOTATION_TYPE_DECLARATION);
   }
 
   @Override

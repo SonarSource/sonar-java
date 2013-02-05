@@ -24,8 +24,12 @@ import com.sonar.sslr.api.CommentAnalyser;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.SquidAstVisitorContext;
 import org.sonar.api.resources.InputFile;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.squid.api.*;
+import org.sonar.squid.api.CheckMessage;
+import org.sonar.squid.api.CodeCheck;
+import org.sonar.squid.api.SourceCode;
+import org.sonar.squid.api.SourceFile;
+import org.sonar.squid.api.SourceProject;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
 import java.util.Stack;
@@ -33,11 +37,10 @@ import java.util.Stack;
 /**
  * Replacement for {@link com.sonar.sslr.squid.SquidAstVisitorContextImpl<JavaGrammar>}.
  */
-public class VisitorContext extends SquidAstVisitorContext<JavaGrammar> {
+public class VisitorContext extends SquidAstVisitorContext<LexerlessGrammar> {
 
   private final Stack<SourceCode> sourceCodeStack = new Stack<SourceCode>();
   private final SourceProject project;
-  private JavaGrammar grammar;
   private File file;
   private CommentAnalyser commentAnalyser;
 
@@ -47,10 +50,6 @@ public class VisitorContext extends SquidAstVisitorContext<JavaGrammar> {
     }
     this.project = project;
     sourceCodeStack.add(project);
-  }
-
-  public void setGrammar(JavaGrammar grammar) {
-    this.grammar = grammar;
   }
 
   public void setCommentAnalyser(CommentAnalyser commentAnalyser) {
@@ -103,10 +102,13 @@ public class VisitorContext extends SquidAstVisitorContext<JavaGrammar> {
     return project;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * @deprecated
+   */
   @Override
-  public JavaGrammar getGrammar() {
-    return grammar;
+  @Deprecated
+  public LexerlessGrammar getGrammar() {
+    return null;
   }
 
   /** {@inheritDoc} */

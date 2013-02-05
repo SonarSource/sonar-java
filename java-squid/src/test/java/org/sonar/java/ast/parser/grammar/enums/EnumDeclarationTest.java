@@ -20,27 +20,27 @@
 package org.sonar.java.ast.parser.grammar.enums;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class EnumDeclarationTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
-    g.classTypeList.mock();
-    g.enumBody.mock();
+    g.rule(JavaGrammar.CLASS_TYPE_LIST).mock();
+    g.rule(JavaGrammar.ENUM_BODY).mock();
 
-    assertThat(g.enumDeclaration)
+    assertThat(g.rule(JavaGrammar.ENUM_DECLARATION))
         .matches("enum identifier implements classTypeList enumBody");
   }
 
   @Test
   public void realLife() {
-    assertThat(g.enumDeclaration)
+    assertThat(g.rule(JavaGrammar.ENUM_DECLARATION))
         .matches("enum HelloWorld { }");
   }
 

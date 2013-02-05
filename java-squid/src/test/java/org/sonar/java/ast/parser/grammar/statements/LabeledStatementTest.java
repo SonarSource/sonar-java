@@ -20,21 +20,19 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaGrammar;
-import org.sonar.java.ast.parser.JavaGrammarImpl;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class LabeledStatementTest {
 
-  JavaGrammar g = new JavaGrammarImpl();
+  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void okLabel() {
-    g.block.mock();
-
-    assertThat(g.labeledStatement)
-        .matches("identifier : block");
+    assertThat(g.rule(JavaGrammar.LABELED_STATEMENT))
+        .matches("identifier : { }");
   }
 
 }
