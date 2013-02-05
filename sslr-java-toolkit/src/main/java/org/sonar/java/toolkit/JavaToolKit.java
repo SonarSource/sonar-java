@@ -19,16 +19,7 @@
  */
 package org.sonar.java.toolkit;
 
-import com.google.common.collect.ImmutableList;
-import org.sonar.colorizer.KeywordsTokenizer;
-import org.sonar.colorizer.Tokenizer;
-import org.sonar.java.JavaConfiguration;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.sslr.toolkit.Toolkit;
-
-import java.nio.charset.Charset;
-import java.util.List;
 
 public final class JavaToolKit {
 
@@ -36,13 +27,8 @@ public final class JavaToolKit {
   }
 
   public static void main(String[] args) {
-    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SSDK");
-    new Toolkit(JavaParser.create(new JavaConfiguration(Charset.defaultCharset())), getJavaTokenizers(), "SSLR Java Toolkit").run();
-  }
-
-  public static List<Tokenizer> getJavaTokenizers() {
-    // TODO
-    return ImmutableList.of((Tokenizer) new KeywordsTokenizer("<span class=\"k\">", "</span>", JavaKeyword.keywordValues()));
+    Toolkit toolkit = new Toolkit("SSLR :: Java :: Toolkit", new JavaConfigurationModel());
+    toolkit.run();
   }
 
 }
