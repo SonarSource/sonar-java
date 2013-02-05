@@ -42,6 +42,13 @@ public class TestNGListenerTest {
     }
   }
 
+  public static class Skip {
+    @org.testng.annotations.Test
+    public void test() {
+      throw new org.testng.SkipException("Skip me");
+    }
+  }
+
   private JacocoController jacoco;
   private TestNGListener listener;
 
@@ -64,6 +71,15 @@ public class TestNGListenerTest {
   public void test_failure() {
     execute(Failure.class);
     String testName = getClass().getCanonicalName() + "$Failure test";
+    InOrder orderedExecution = inOrder(jacoco);
+    orderedExecution.verify(jacoco).onTestStart(testName);
+    orderedExecution.verify(jacoco).onTestFinish(testName);
+  }
+
+  @Test
+  public void test_skip() {
+    execute(Skip.class);
+    String testName = getClass().getCanonicalName() + "$Skip test";
     InOrder orderedExecution = inOrder(jacoco);
     orderedExecution.verify(jacoco).onTestStart(testName);
     orderedExecution.verify(jacoco).onTestFinish(testName);

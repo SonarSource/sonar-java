@@ -55,9 +55,11 @@ public class TestNGListener implements ITestListener {
   }
 
   public void onTestSkipped(ITestResult result) {
+    jacoco.onTestFinish(getName(result));
   }
 
   public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+    jacoco.onTestFinish(getName(result));
   }
 
   public void onStart(ITestContext context) {
