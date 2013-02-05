@@ -30,6 +30,7 @@ import org.sonar.api.resources.Scopes;
 import org.sonar.api.test.IsResource;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
+import org.sonar.api.test.TestCase;
 
 import java.net.URISyntaxException;
 
@@ -59,8 +60,7 @@ public class SurefireJavaParserTest {
 
     MutableTestCase testCase = mock(MutableTestCase.class);
     when(testCase.setDurationInMs(anyLong())).thenReturn(testCase);
-    when(testCase.setStatus(anyString())).thenReturn(testCase);
-    when(testCase.setName(anyString())).thenReturn(testCase);
+    when(testCase.setStatus(any(TestCase.Status.class))).thenReturn(testCase);
     when(testCase.setMessage(anyString())).thenReturn(testCase);
     when(testCase.setStackTrace(anyString())).thenReturn(testCase);
     MutableTestPlan testPlan = mock(MutableTestPlan.class);
