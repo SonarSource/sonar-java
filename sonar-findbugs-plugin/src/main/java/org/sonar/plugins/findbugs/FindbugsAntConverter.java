@@ -46,7 +46,7 @@ public final class FindbugsAntConverter {
       offset += 2;
     }
     for (String suffix : Java.SUFFIXES) {
-      exclusion = StringUtils.removeEndIgnoreCase(exclusion, "." + suffix);
+      exclusion = StringUtils.removeEndIgnoreCase(exclusion, suffix);
     }
 
     char[] array = exclusion.toCharArray();
