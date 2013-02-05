@@ -60,7 +60,7 @@ public class PackageVisitor extends JavaAstVisitor {
   private String getPackageKey(AstNode astNode) {
     String packageKey;
     if (astNode != null && astNode.getChild(0).is(getContext().getGrammar().packageDeclaration)) {
-      AstNode packageNameNode = astNode.getChild(0).findFirstDirectChild(getContext().getGrammar().qualifiedIdentifier);
+      AstNode packageNameNode = astNode.getChild(0).getFirstChild(getContext().getGrammar().qualifiedIdentifier);
       packageKey = getAstNodeValue(packageNameNode).replace('.', '/');
     } else {
       // Guess package key from directory

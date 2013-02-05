@@ -87,9 +87,10 @@ public class MethodVisitor extends JavaAstVisitor {
   private List<Parameter> extractMethodArgumentTypes(MethodHelper methodHelper) {
     List<Parameter> argumentTypes = Lists.newArrayList();
     for (AstNode astNode : methodHelper.getParameters()) {
-      AstNode type = astNode.findFirstDirectChild(getContext().getGrammar().type);
+      AstNode type = astNode.getFirstChild(getContext().getGrammar().type);
       boolean isArray = type.hasDirectChildren(getContext().getGrammar().dim)
-          || astNode.findFirstChild(getContext().getGrammar().variableDeclaratorId).hasDirectChildren(getContext().getGrammar().dim);
+        || astNode.getFirstChild(getContext().getGrammar().formalParametersDeclsRest).getFirstChild(getContext().getGrammar().variableDeclaratorId)
+            .hasDirectChildren(getContext().getGrammar().dim);
       argumentTypes.add(extractArgumentAndReturnType(type, isArray));
     }
     return argumentTypes;
@@ -112,7 +113,7 @@ public class MethodVisitor extends JavaAstVisitor {
   private String extractClassName(AstNode astNode) {
     Preconditions.checkArgument(astNode.is(getContext().getGrammar().classType));
     // TODO Godin: verify
-    return Iterables.getLast(astNode.findDirectChildren(GenericTokenType.IDENTIFIER)).getTokenValue();
+    return Iterables.getLast(astNode.getChildren(GenericTokenType.IDENTIFIER)).getTokenValue();
   }
 
   private static final Map<JavaKeyword, JvmJavaType> JAVA_TYPE_MAPPING = Maps.newHashMap();

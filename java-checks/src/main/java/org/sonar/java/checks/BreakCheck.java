@@ -35,7 +35,7 @@ public class BreakCheck extends JavaAstCheck {
 
   @Override
   public void visitNode(AstNode node) {
-    if (node.findFirstParent(getContext().getGrammar().switchStatement) == null) {
+    if (node.getFirstAncestor(getContext().getGrammar().switchStatement) == null) {
       getContext().createLineViolation(this, "The 'break' branching statement prevents refactoring the source code to reduce the complexity.", node);
     }
   }

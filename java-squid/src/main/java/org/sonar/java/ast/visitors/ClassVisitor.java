@@ -39,7 +39,7 @@ public class ClassVisitor extends JavaAstVisitor {
 
   @Override
   public void visitNode(AstNode astNode) {
-    String className = astNode.findFirstDirectChild(GenericTokenType.IDENTIFIER).getTokenValue();
+    String className = astNode.getFirstChild(GenericTokenType.IDENTIFIER).getTokenValue();
 
     final SourceClass sourceClass;
     if (getContext().peekSourceCode().isType(SourceClass.class)) {

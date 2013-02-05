@@ -53,15 +53,15 @@ public class MethodHelper {
   public boolean isPublic() {
     final AstNode node;
     if (astNode.is(grammar.methodDeclaratorRest, grammar.voidMethodDeclaratorRest, grammar.constructorDeclaratorRest)) {
-      node = astNode.findFirstParent(grammar.classBodyDeclaration);
+      node = astNode.getFirstAncestor(grammar.classBodyDeclaration);
     } else if (astNode.is(grammar.interfaceMethodDeclaratorRest, grammar.voidInterfaceMethodDeclaratorsRest)) {
-      node = astNode.findFirstParent(grammar.interfaceBodyDeclaration);
+      node = astNode.getFirstAncestor(grammar.interfaceBodyDeclaration);
     } else if (astNode.is(grammar.annotationMethodRest)) {
-      node = astNode.findFirstParent(grammar.annotationTypeElementDeclaration);
+      node = astNode.getFirstAncestor(grammar.annotationTypeElementDeclaration);
     } else {
       throw new IllegalStateException();
     }
-    for (AstNode modifierNode : node.findDirectChildren(grammar.modifier)) {
+    for (AstNode modifierNode : node.getChildren(grammar.modifier)) {
       if (modifierNode.getChild(0).is(JavaKeyword.PUBLIC)) {
         return true;
       }
@@ -74,7 +74,7 @@ public class MethodHelper {
   }
 
   public AstNode getReturnType() {
-    final AstNode typeNode = getName().previousAstNode();
+    final AstNode typeNode = getName().getPreviousAstNode();
     Preconditions.checkState(typeNode.is(JavaKeyword.VOID, grammar.type));
     return typeNode;
   }
@@ -82,23 +82,24 @@ public class MethodHelper {
   public AstNode getName() {
     final AstNode methodNameNode;
     if (astNode.is(grammar.interfaceMethodDeclaratorRest)) {
-      methodNameNode = astNode.previousAstNode();
+      methodNameNode = astNode.getPreviousAstNode();
     } else if (astNode.is(grammar.annotationMethodRest)) {
       methodNameNode = astNode.getChild(0);
     } else {
-      methodNameNode = astNode.previousSibling();
+      methodNameNode = astNode.getPreviousSibling();
     }
     Preconditions.checkState(methodNameNode.is(GenericTokenType.IDENTIFIER));
     return methodNameNode;
   }
 
   public List<AstNode> getParameters() {
-    AstNode node = astNode.findFirstDirectChild(grammar.formalParameters);
+    AstNode node = astNode.getFirstChild(grammar.formalParameters);
     if (node == null) {
       // in case of annotationMethodRest
       return Collections.emptyList();
     }
-    return node.findChildren(grammar.formalParameterDecls);
+    // TODO try to avoid usage of "getDescendants" by refactoring grammar rule "formalParameterDecls"
+    return node.getDescendants(grammar.formalParameterDecls);
   }
 
   public boolean hasParameters() {
@@ -106,11 +107,11 @@ public class MethodHelper {
   }
 
   public List<AstNode> getStatements() {
-    AstNode node = astNode.findFirstDirectChild(grammar.methodBody);
+    AstNode node = astNode.getFirstChild(grammar.methodBody);
     if (node == null) {
       return Collections.emptyList();
     }
-    return node.findFirstChild(grammar.blockStatements).getChildren();
+    return node.getFirstChild(grammar.block).getFirstChild(grammar.blockStatements).getChildren();
   }
 
 }

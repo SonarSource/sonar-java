@@ -58,7 +58,7 @@ public class ComplexityVisitor extends JavaAstVisitor {
 
   private boolean isLastReturnStatement(AstNode astNode) {
     AstNode parent = astNode.getParent().getParent().getParent();
-    AstNode block = astNode.findFirstParent(getContext().getGrammar().blockStatements);
+    AstNode block = astNode.getFirstAncestor(getContext().getGrammar().blockStatements);
     return block.getParent().getParent().is(getContext().getGrammar().methodBody) && parent == block;
   }
 

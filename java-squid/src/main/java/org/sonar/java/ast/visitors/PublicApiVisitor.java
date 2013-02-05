@@ -94,10 +94,10 @@ public class PublicApiVisitor extends JavaAstVisitor {
   private boolean hasAnnotation(AstNode astNode, String expected) {
     AstNode declaration = getDeclaration(astNode);
     for (AstNode modifier : getModifiers(declaration)) {
-      AstNode annotation = modifier.findFirstDirectChild(getContext().getGrammar().annotation);
+      AstNode annotation = modifier.getFirstChild(getContext().getGrammar().annotation);
       if (annotation != null) {
         StringBuilder value = new StringBuilder();
-        for (AstNode identifier : annotation.findFirstDirectChild(getContext().getGrammar().qualifiedIdentifier).getChildren()) {
+        for (AstNode identifier : annotation.getFirstChild(getContext().getGrammar().qualifiedIdentifier).getChildren()) {
           value.append(identifier.getTokenValue());
         }
         if (value.toString().equals(expected)) {
@@ -155,7 +155,7 @@ public class PublicApiVisitor extends JavaAstVisitor {
   }
 
   private List<AstNode> getModifiers(AstNode declaration) {
-    return declaration.findDirectChildren(getContext().getGrammar().modifier);
+    return declaration.getChildren(getContext().getGrammar().modifier);
   }
 
   private AstNode getDeclaration(AstNode astNode) {

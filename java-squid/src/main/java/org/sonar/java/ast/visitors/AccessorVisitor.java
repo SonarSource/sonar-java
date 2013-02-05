@@ -91,11 +91,12 @@ public class AccessorVisitor extends JavaAstVisitor {
 
   private boolean inspectSetterMethodBody(AstNode astNode) {
     if (astNode.is(getContext().getGrammar().expressionStatement)) {
-      AstNode expression = astNode.findFirstChild(getContext().getGrammar().expression);
+      AstNode expression = astNode.getFirstChild(getContext().getGrammar().statementExpression).getFirstChild(getContext().getGrammar().expression);
       AstNode assignmentExpression = expression.getFirstChild();
       if (assignmentExpression.is(getContext().getGrammar().assignmentExpression)) {
         // TODO in previous version we had a more complex check
-        AstNode varToAssign = assignmentExpression.findFirstChild(GenericTokenType.IDENTIFIER);
+        // TODO try to avoid usage of "getFirstDescendant" by refactoring grammar
+        AstNode varToAssign = assignmentExpression.getFirstDescendant(GenericTokenType.IDENTIFIER);
         return findPrivateClassVariable(varToAssign);
       }
     }
@@ -117,7 +118,7 @@ public class AccessorVisitor extends JavaAstVisitor {
 
   private boolean inspectGetterMethodBody(AstNode astNode) {
     if (astNode.is(getContext().getGrammar().returnStatement) && astNode.hasDirectChildren(getContext().getGrammar().expression)) {
-      AstNode expression = astNode.findFirstDirectChild(getContext().getGrammar().expression);
+      AstNode expression = astNode.getFirstChild(getContext().getGrammar().expression);
       if (expression.getNumberOfChildren() == 1 && expression.getFirstChild().is(getContext().getGrammar().primary)) {
         AstNode primary = expression.getFirstChild();
         if (primary.getNumberOfChildren() == 1 && primary.getFirstChild().is(getContext().getGrammar().qualifiedIdentifier)) {
@@ -135,15 +136,16 @@ public class AccessorVisitor extends JavaAstVisitor {
   }
 
   private boolean findPrivateClassVariable(AstNode varReturned) {
-    AstNode classBody = varReturned.findFirstParent(getContext().getGrammar().classBodyDeclaration).getParent();
-    for (AstNode classBodyDeclaration : classBody.findDirectChildren(getContext().getGrammar().classBodyDeclaration)) {
+    AstNode classBody = varReturned.getFirstAncestor(getContext().getGrammar().classBodyDeclaration).getParent();
+    for (AstNode classBodyDeclaration : classBody.getChildren(getContext().getGrammar().classBodyDeclaration)) {
       if (!hasPrivateModifier(classBodyDeclaration)) {
         continue;
       }
 
-      for (AstNode memberDecl : classBodyDeclaration.findDirectChildren(getContext().getGrammar().memberDecl)) {
-        if (memberDecl.getFirstChild().is(getContext().getGrammar().fieldDeclaration)) {
-          for (AstNode variableDeclarator : memberDecl.findChildren(getContext().getGrammar().variableDeclarator)) {
+      for (AstNode memberDecl : classBodyDeclaration.getChildren(getContext().getGrammar().memberDecl)) {
+        AstNode fieldDeclaration = memberDecl.getFirstChild(getContext().getGrammar().fieldDeclaration);
+        if (fieldDeclaration != null) {
+          for (AstNode variableDeclarator : fieldDeclaration.getFirstChild(getContext().getGrammar().variableDeclarators).getChildren(getContext().getGrammar().variableDeclarator)) {
             if (varReturned.getTokenValue().equals(variableDeclarator.getFirstChild().getTokenValue())) {
               return true;
             }
@@ -155,7 +157,7 @@ public class AccessorVisitor extends JavaAstVisitor {
   }
 
   private boolean hasPrivateModifier(AstNode classBodyDeclaration) {
-    for (AstNode modifierNode : classBodyDeclaration.findDirectChildren(getContext().getGrammar().modifier)) {
+    for (AstNode modifierNode : classBodyDeclaration.getChildren(getContext().getGrammar().modifier)) {
       if (modifierNode.getChild(0).is(JavaKeyword.PRIVATE)) {
         return true;
       }
