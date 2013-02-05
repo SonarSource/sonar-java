@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AuditListener;
@@ -120,7 +119,7 @@ public class AstScanner {
             auditListener.processRecognitionException(e);
           }
 
-          for (SquidAstVisitor<? extends Grammar> visitor : Iterables.reverse(visitors)) {
+          for (SquidAstVisitor<? extends Grammar> visitor : Lists.reverse(visitors)) {
             visitor.leaveFile(null);
           }
 
