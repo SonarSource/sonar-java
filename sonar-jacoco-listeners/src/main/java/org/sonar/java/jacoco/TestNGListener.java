@@ -31,7 +31,7 @@ public class TestNGListener implements ITestListener {
   private final JacocoController jacoco;
 
   public TestNGListener() {
-    this(new JacocoController());
+    this(JacocoController.getInstance());
   }
 
   TestNGListener(JacocoController jacoco) {
@@ -63,9 +63,11 @@ public class TestNGListener implements ITestListener {
   }
 
   public void onStart(ITestContext context) {
+    // nop
   }
 
   public void onFinish(ITestContext context) {
+    // nop
   }
 
 }

@@ -30,7 +30,7 @@ public class JUnitListener extends RunListener {
   private final JacocoController jacoco;
 
   public JUnitListener() {
-    this(new JacocoController());
+    this(JacocoController.getInstance());
   }
 
   JUnitListener(JacocoController jacoco) {

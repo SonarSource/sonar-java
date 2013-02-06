@@ -30,13 +30,24 @@ class JacocoController {
 
   private final IAgent agent;
 
-  public JacocoController() {
+  private boolean testStarted;
+
+  private static JacocoController singleton;
+
+  public static synchronized JacocoController getInstance() {
+    if (singleton == null) {
+      singleton = new JacocoController();
+    }
+    return singleton;
+  }
+
+  private JacocoController() {
     try {
       this.agent = RT.getAgent();
     } catch (NoClassDefFoundError e) {
-      throw new IllegalStateException(ERROR, e);
+      throw new Error(ERROR, e);
     } catch (Exception e) {
-      throw new IllegalStateException(ERROR, e);
+      throw new Error(ERROR, e);
     }
   }
 
@@ -44,16 +55,21 @@ class JacocoController {
     this.agent = agent;
   }
 
-  public void onTestStart(String name) {
+  public synchronized void onTestStart(String name) {
+    if (testStarted) {
+      throw new Error("Looks like several tests executed in parallel in the same JVM, thus coverage per test can't be recorded correctly.");
+    }
     agent.reset();
     agent.setSessionId(name);
+    testStarted = true;
   }
 
-  public void onTestFinish(String name) {
+  public synchronized void onTestFinish(String name) {
+    testStarted = false;
     try {
       agent.dump(true);
     } catch (IOException e) {
-      throw new IllegalStateException(e);
+      throw new Error(e);
     }
   }
 
