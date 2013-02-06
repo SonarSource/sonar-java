@@ -63,6 +63,7 @@ public class SurefireJavaParserTest {
     when(testCase.setStatus(any(TestCase.Status.class))).thenReturn(testCase);
     when(testCase.setMessage(anyString())).thenReturn(testCase);
     when(testCase.setStackTrace(anyString())).thenReturn(testCase);
+    when(testCase.setType(anyString())).thenReturn(testCase);
     MutableTestPlan testPlan = mock(MutableTestPlan.class);
     when(testPlan.addTestCase(anyString())).thenReturn(testCase);
     when(perspectives.as(eq(MutableTestPlan.class),
