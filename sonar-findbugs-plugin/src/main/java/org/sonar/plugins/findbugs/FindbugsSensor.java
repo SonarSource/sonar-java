@@ -82,8 +82,10 @@ public class FindbugsSensor implements Sensor {
       JavaFile resource = new JavaFile(getSonarJavaFileKey(className));
       if (context.getResource(resource) != null) {
         Violation violation = Violation.create(rule, resource)
-            .setLineId(start)
             .setMessage(longMessage);
+        if (start > 0) {
+          violation.setLineId(start);
+        }
         context.saveViolation(violation);
       }
     }
