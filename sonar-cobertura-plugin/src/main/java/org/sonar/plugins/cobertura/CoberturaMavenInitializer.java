@@ -20,7 +20,6 @@
 package org.sonar.plugins.cobertura;
 
 import org.apache.commons.configuration.Configuration;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.CoverageExtension;
 import org.sonar.api.batch.Initializer;
 import org.sonar.api.batch.maven.DependsUponMavenPlugin;
@@ -28,6 +27,7 @@ import org.sonar.api.batch.maven.MavenPlugin;
 import org.sonar.api.batch.maven.MavenPluginHandler;
 import org.sonar.api.resources.Project;
 import org.sonar.plugins.cobertura.api.CoberturaUtils;
+import org.sonar.plugins.cobertura.base.CoberturaConstants;
 
 /**
  * Provides {@link CoberturaMavenPluginHandler} and configures correct path to report.
@@ -55,12 +55,12 @@ public class CoberturaMavenInitializer extends Initializer implements CoverageEx
   @Override
   public void execute(Project project) {
     Configuration conf = project.getConfiguration();
-    if (!conf.containsKey(CoreProperties.COBERTURA_REPORT_PATH_PROPERTY)) {
+    if (!conf.containsKey(CoberturaConstants.COBERTURA_REPORT_PATH_PROPERTY)) {
       String report = getReportPathFromPluginConfiguration(project);
       if (report == null) {
         report = getDefaultReportPath(project);
       }
-      conf.setProperty(CoreProperties.COBERTURA_REPORT_PATH_PROPERTY, report);
+      conf.setProperty(CoberturaConstants.COBERTURA_REPORT_PATH_PROPERTY, report);
     }
   }
 

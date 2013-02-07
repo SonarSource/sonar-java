@@ -31,8 +31,8 @@ import java.util.List;
 
 @Properties({
   @Property(
-    key = CoreProperties.FINDBUGS_EFFORT_PROPERTY,
-    defaultValue = CoreProperties.FINDBUGS_EFFORT_DEFAULT_VALUE,
+    key = FindbugsConstants.EFFORT_PROPERTY,
+    defaultValue = FindbugsConstants.EFFORT_DEFAULT_VALUE,
     name = "Effort",
     description = "Effort of the bug finders. Valid values are Min, Default and Max. Setting 'Max' increases precision but also increases " +
       "memory consumption.",
@@ -40,8 +40,8 @@ import java.util.List;
     module = true,
     global = true),
   @Property(
-    key = CoreProperties.FINDBUGS_TIMEOUT_PROPERTY,
-    defaultValue = CoreProperties.FINDBUGS_TIMEOUT_DEFAULT_VALUE + "",
+    key = FindbugsConstants.TIMEOUT_PROPERTY,
+    defaultValue = FindbugsConstants.TIMEOUT_DEFAULT_VALUE + "",
     name = "Timeout",
     description = "Specifies the amount of time, in milliseconds, that FindBugs may run before it is assumed to be hung and is terminated. " +
       "The default is 600,000 milliseconds, which is ten minutes.",
@@ -58,8 +58,8 @@ import java.util.List;
     global = true,
     multiValues = true),
   @Property(
-    key = CoreProperties.FINDBUGS_CONFIDENCE_LEVEL_PROPERTY,
-    defaultValue = CoreProperties.FINDBUGS_CONFIDENCE_LEVEL_DEFAULT_VALUE,
+    key = FindbugsConstants.CONFIDENCE_LEVEL_PROPERTY,
+    defaultValue = FindbugsConstants.CONFIDENCE_LEVEL_DEFAULT_VALUE,
     name = "Confidence Level",
     description = "Specifies the confidence threshold (previously called \"priority\") for reporting issues. If set to \"low\", confidence is not used to filter bugs. " +
       "If set to \"medium\" (the default), low confidence issues are supressed. If set to \"high\", only high confidence bugs are reported. ",

@@ -19,14 +19,19 @@
  */
 package org.sonar.plugins.findbugs;
 
-import org.sonar.api.CoreProperties;
-
 public final class FindbugsConstants {
 
-  public static final String REPOSITORY_KEY = CoreProperties.FINDBUGS_PLUGIN;
   public static final String REPOSITORY_NAME = "Findbugs";
+  public static final String PLUGIN_KEY = "findbugs";
   public static final String PLUGIN_NAME = "Findbugs";
-  public static final String PLUGIN_KEY = CoreProperties.FINDBUGS_PLUGIN;
+  public static final String REPOSITORY_KEY = PLUGIN_KEY;
+
+  public static final String EFFORT_PROPERTY = "sonar.findbugs.effort";
+  public static final String EFFORT_DEFAULT_VALUE = "Default";
+  public static final String CONFIDENCE_LEVEL_PROPERTY = "sonar.findbugs.confidenceLevel";
+  public static final String CONFIDENCE_LEVEL_DEFAULT_VALUE = "medium";
+  public static final String TIMEOUT_PROPERTY = "sonar.findbugs.timeout";
+  public static final long TIMEOUT_DEFAULT_VALUE = 600000L;
 
   /**
    * @since 2.10

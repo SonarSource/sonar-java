@@ -21,7 +21,6 @@ package org.sonar.plugins.cobertura;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
@@ -34,6 +33,7 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
 import org.sonar.api.test.IsMeasure;
 import org.sonar.api.test.IsResource;
+import org.sonar.plugins.cobertura.base.CoberturaConstants;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -69,7 +69,7 @@ public class CoberturaSensorTest {
 
     Project project = mock(Project.class);
     when(project.getFileSystem()).thenReturn(pfs);
-    when(project.getProperty(eq(CoreProperties.COBERTURA_REPORT_PATH_PROPERTY)))
+    when(project.getProperty(eq(CoberturaConstants.COBERTURA_REPORT_PATH_PROPERTY)))
       .thenReturn("notFound.xml")
       .thenReturn(null);
 

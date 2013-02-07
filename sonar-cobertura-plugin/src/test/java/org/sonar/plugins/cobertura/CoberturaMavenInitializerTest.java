@@ -23,10 +23,10 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.test.MavenTestUtils;
+import org.sonar.plugins.cobertura.base.CoberturaConstants;
 
 import java.io.File;
 
@@ -75,10 +75,10 @@ public class CoberturaMavenInitializerTest {
   @Test
   public void doNotSetReportPathIfAlreadyConfigured() {
     Configuration configuration = mock(Configuration.class);
-    when(configuration.containsKey(CoreProperties.COBERTURA_REPORT_PATH_PROPERTY)).thenReturn(true);
+    when(configuration.containsKey(CoberturaConstants.COBERTURA_REPORT_PATH_PROPERTY)).thenReturn(true);
     when(project.getConfiguration()).thenReturn(configuration);
     initializer.execute(project);
-    verify(configuration, never()).setProperty(eq(CoreProperties.COBERTURA_REPORT_PATH_PROPERTY), anyString());
+    verify(configuration, never()).setProperty(eq(CoberturaConstants.COBERTURA_REPORT_PATH_PROPERTY), anyString());
   }
 
   @Test
@@ -88,7 +88,7 @@ public class CoberturaMavenInitializerTest {
     MavenProject pom = MavenTestUtils.loadPom("/org/sonar/plugins/cobertura/CoberturaSensorTest/shouldGetReportPathFromPom/pom.xml");
     when(project.getPom()).thenReturn(pom);
     initializer.execute(project);
-    verify(configuration).setProperty(eq(CoreProperties.COBERTURA_REPORT_PATH_PROPERTY), eq("overridden/dir/coverage.xml"));
+    verify(configuration).setProperty(eq(CoberturaConstants.COBERTURA_REPORT_PATH_PROPERTY), eq("overridden/dir/coverage.xml"));
   }
 
   @Test
@@ -99,6 +99,6 @@ public class CoberturaMavenInitializerTest {
     when(project.getConfiguration()).thenReturn(configuration);
     when(project.getFileSystem()).thenReturn(pfs);
     initializer.execute(project);
-    verify(configuration).setProperty(eq(CoreProperties.COBERTURA_REPORT_PATH_PROPERTY), eq("reportOutputDir/cobertura/coverage.xml"));
+    verify(configuration).setProperty(eq(CoberturaConstants.COBERTURA_REPORT_PATH_PROPERTY), eq("reportOutputDir/cobertura/coverage.xml"));
   }
 }

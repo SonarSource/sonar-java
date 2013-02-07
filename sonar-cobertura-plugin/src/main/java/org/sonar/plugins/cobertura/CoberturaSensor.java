@@ -20,7 +20,6 @@
 package org.sonar.plugins.cobertura;
 
 import org.slf4j.LoggerFactory;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.CoverageExtension;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
@@ -28,6 +27,7 @@ import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.plugins.cobertura.api.AbstractCoberturaParser;
+import org.sonar.plugins.cobertura.base.CoberturaConstants;
 
 import java.io.File;
 
@@ -44,7 +44,7 @@ public class CoberturaSensor implements Sensor, CoverageExtension {
   }
 
   public void analyse(Project project, SensorContext context) {
-    String path = (String) project.getProperty(CoreProperties.COBERTURA_REPORT_PATH_PROPERTY);
+    String path = (String) project.getProperty(CoberturaConstants.COBERTURA_REPORT_PATH_PROPERTY);
     if (path == null) {
       // wasn't configured - skip
       return;

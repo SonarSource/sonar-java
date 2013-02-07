@@ -122,15 +122,15 @@ public class FindbugsConfiguration implements BatchExtension {
   }
 
   public String getEffort() {
-    return StringUtils.lowerCase(settings.getString(CoreProperties.FINDBUGS_EFFORT_PROPERTY));
+    return StringUtils.lowerCase(settings.getString(FindbugsConstants.EFFORT_PROPERTY));
   }
 
   public String getConfidenceLevel() {
-    return StringUtils.lowerCase(settings.getString(CoreProperties.FINDBUGS_CONFIDENCE_LEVEL_PROPERTY));
+    return StringUtils.lowerCase(settings.getString(FindbugsConstants.CONFIDENCE_LEVEL_PROPERTY));
   }
 
   public long getTimeout() {
-    return settings.getLong(CoreProperties.FINDBUGS_TIMEOUT_PROPERTY);
+    return settings.getLong(FindbugsConstants.TIMEOUT_PROPERTY);
   }
 
   public Locale getLocale() {

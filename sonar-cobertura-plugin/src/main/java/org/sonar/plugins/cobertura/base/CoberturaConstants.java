@@ -17,19 +17,14 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.checkstyle;
+package org.sonar.plugins.cobertura.base;
 
-public final class CheckstyleConstants {
+public final class CoberturaConstants {
 
-  public static final String REPOSITORY_NAME = "Checkstyle";
-  public static final String PLUGIN_KEY = "checkstyle";
-  public static final String PLUGIN_NAME = "Checkstyle";
-  public static final String REPOSITORY_KEY = PLUGIN_KEY;
+  public static final String COBERTURA_REPORT_PATH_PROPERTY = "sonar.cobertura.reportPath";
+  public static final String COBERTURA_MAXMEM_PROPERTY = "sonar.cobertura.maxmem";
+  public static final String COBERTURA_MAXMEM_DEFAULT_VALUE = "64m";
 
-  public static final String FILTERS_KEY = "sonar.checkstyle.filters";
-
-  public static final String FILTERS_DEFAULT_VALUE = "<module name=\"SuppressionCommentFilter\"/>";
-
-  private CheckstyleConstants() {
+  private CoberturaConstants() {
   }
 }

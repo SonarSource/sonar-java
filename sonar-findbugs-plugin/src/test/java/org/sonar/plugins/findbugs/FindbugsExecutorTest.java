@@ -102,7 +102,7 @@ public class FindbugsExecutorTest {
     when(conf.saveIncludeConfigXml()).thenReturn(new File("test-resources/findbugs-include.xml"));
     when(conf.getExcludesFilters()).thenReturn(Lists.newArrayList(new File("test-resources/findbugs-exclude.xml"), new File("test-resources/fake-file.xml")));
     when(conf.getEffort()).thenReturn("default");
-    when(conf.getTimeout()).thenReturn(CoreProperties.FINDBUGS_TIMEOUT_DEFAULT_VALUE);
+    when(conf.getTimeout()).thenReturn(FindbugsConstants.TIMEOUT_DEFAULT_VALUE);
     when(conf.getLocale()).thenReturn(Locale.ENGLISH);
     return conf;
   }

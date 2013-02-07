@@ -20,23 +20,23 @@
 package org.sonar.plugins.cobertura;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.SonarPlugin;
+import org.sonar.plugins.cobertura.base.CoberturaConstants;
 
 import java.util.List;
 
 @Properties({
   @Property(
-    key = CoreProperties.COBERTURA_REPORT_PATH_PROPERTY,
+    key = CoberturaConstants.COBERTURA_REPORT_PATH_PROPERTY,
     name = "Report path",
     description = "Path (absolute or relative) to Cobertura xml report file.",
     project = true,
     global = false),
   @Property(
-    key = CoreProperties.COBERTURA_MAXMEM_PROPERTY,
-    defaultValue = CoreProperties.COBERTURA_MAXMEM_DEFAULT_VALUE,
+    key = CoberturaConstants.COBERTURA_MAXMEM_PROPERTY,
+    defaultValue = CoberturaConstants.COBERTURA_MAXMEM_DEFAULT_VALUE,
     name = "Maxmem",
     description = "Maximum memory to pass to JVM of Cobertura processes",
     project = true,

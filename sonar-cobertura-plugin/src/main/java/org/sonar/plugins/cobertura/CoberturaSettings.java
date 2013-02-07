@@ -21,10 +21,10 @@ package org.sonar.plugins.cobertura;
 
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.BatchExtension;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
+import org.sonar.plugins.cobertura.base.CoberturaConstants;
 import org.sonar.plugins.java.api.JavaSettings;
 
 public class CoberturaSettings implements BatchExtension {
@@ -47,7 +47,7 @@ public class CoberturaSettings implements BatchExtension {
     // http://jira.codehaus.org/browse/SONAR-2897: there used to be a typo in the parameter name (was "sonar.cobertura.maxmen")
     return StringUtils.defaultIfEmpty(
       settings.getString("sonar.cobertura.maxmen"),
-      settings.getString(CoreProperties.COBERTURA_MAXMEM_PROPERTY)
+      settings.getString(CoberturaConstants.COBERTURA_MAXMEM_PROPERTY)
     );
   }
 }

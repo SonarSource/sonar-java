@@ -19,11 +19,11 @@
  */
 package org.sonar.plugins.cobertura.api;
 
-import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.maven.MavenPlugin;
 import org.sonar.api.batch.maven.MavenUtils;
 import org.sonar.api.resources.Project;
 import org.sonar.api.utils.Logs;
+import org.sonar.plugins.cobertura.base.CoberturaConstants;
 
 import java.io.File;
 
@@ -57,7 +57,7 @@ public final class CoberturaUtils {
   }
 
   private static File getReportFromProperty(Project project) {
-    String path = (String) project.getProperty(CoreProperties.COBERTURA_REPORT_PATH_PROPERTY);
+    String path = (String) project.getProperty(CoberturaConstants.COBERTURA_REPORT_PATH_PROPERTY);
     if (path != null) {
       return project.getFileSystem().resolvePath(path);
     }

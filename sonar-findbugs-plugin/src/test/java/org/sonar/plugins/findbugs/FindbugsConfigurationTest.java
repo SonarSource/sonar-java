@@ -91,14 +91,14 @@ public class FindbugsConfigurationTest {
   @Test
   public void should_return_effort() {
     assertThat(conf.getEffort()).as("default effort").isEqualTo("default");
-    settings.setProperty(CoreProperties.FINDBUGS_EFFORT_PROPERTY, "Max");
+    settings.setProperty(FindbugsConstants.EFFORT_PROPERTY, "Max");
     assertThat(conf.getEffort()).isEqualTo("max");
   }
 
   @Test
   public void should_return_timeout() {
     assertThat(conf.getTimeout()).as("default timeout").isEqualTo(600000);
-    settings.setProperty(CoreProperties.FINDBUGS_TIMEOUT_PROPERTY, 1);
+    settings.setProperty(FindbugsConstants.TIMEOUT_PROPERTY, 1);
     assertThat(conf.getTimeout()).isEqualTo(1);
   }
 
@@ -118,7 +118,7 @@ public class FindbugsConfigurationTest {
   @Test
   public void should_return_confidence_level() {
     assertThat(conf.getConfidenceLevel()).as("default confidence level").isEqualTo("medium");
-    settings.setProperty(CoreProperties.FINDBUGS_EFFORT_PROPERTY, "HIGH");
+    settings.setProperty(FindbugsConstants.EFFORT_PROPERTY, "HIGH");
     assertThat(conf.getEffort()).isEqualTo("high");
   }
 

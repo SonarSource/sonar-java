@@ -20,16 +20,16 @@
 package org.sonar.plugins.surefire;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.SonarPlugin;
+import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.util.List;
 
 @Properties({
     @Property(
-        key = CoreProperties.SUREFIRE_REPORTS_PATH_PROPERTY,
+        key = SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY,
         name = "Report path",
         description = "Path (absolute or relative) to XML report files.",
         project = true,

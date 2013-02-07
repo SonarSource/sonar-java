@@ -31,6 +31,8 @@ import java.io.File;
  */
 public final class SurefireUtils {
 
+  public static final String SUREFIRE_REPORTS_PATH_PROPERTY = "sonar.surefire.reportsPath";
+
   public static File getReportsDirectory(Project project) {
     File dir = getReportsDirectoryFromProperty(project);
     if (dir == null) {
@@ -43,7 +45,7 @@ public final class SurefireUtils {
   }
 
   private static File getReportsDirectoryFromProperty(Project project) {
-    String path = (String) project.getProperty(CoreProperties.SUREFIRE_REPORTS_PATH_PROPERTY);
+    String path = (String) project.getProperty(SUREFIRE_REPORTS_PATH_PROPERTY);
     if (path != null) {
       return project.getFileSystem().resolvePath(path);
     }
