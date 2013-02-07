@@ -24,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.ActiveRule;
+import org.sonar.api.rules.RulePriority;
 import org.sonar.api.utils.ValidationMessages;
 import org.sonar.plugins.findbugs.xml.FindBugsFilter;
 import org.sonar.plugins.findbugs.xml.Match;
@@ -60,6 +61,16 @@ public class FindbugsProfileImporterTest {
     assertThat(results).hasSize(19);
     assertThat(profile.getActiveRule(FindbugsConstants.REPOSITORY_KEY, "EC_INCOMPATIBLE_ARRAY_COMPARE")).isNotNull();
     assertThat(profile.getActiveRule(FindbugsConstants.REPOSITORY_KEY, "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY")).isNotNull();
+  }
+
+  @Test
+  public void should_import_priorities_and_confidence() {
+    String findbugsConf = TestUtils.getResourceContent("/org/sonar/plugins/findbugs/should_import_priorities_and_confidence.xml");
+    RulesProfile profile = importer.importProfile(new StringReader(findbugsConf), ValidationMessages.create());
+
+    assertThat(profile.getActiveRules()).hasSize(2);
+    assertThat(profile.getActiveRule(FindbugsConstants.REPOSITORY_KEY, "NP_CLOSING_NULL").getSeverity()).isEqualTo(RulePriority.INFO);
+    assertThat(profile.getActiveRule(FindbugsConstants.REPOSITORY_KEY, "RC_REF_COMPARISON_BAD_PRACTICE").getSeverity()).isEqualTo(RulePriority.MAJOR);
   }
 
   @Test

@@ -1,0 +1,10 @@
+<FindBugsFilter>
+  <Match>
+    <Bug pattern="NP_CLOSING_NULL" />
+    <Priority value="3"/>
+  </Match>
+  <Match>
+    <Bug pattern="RC_REF_COMPARISON_BAD_PRACTICE" />
+    <Confidence value="2"/>
+  </Match>
+</FindBugsFilter>

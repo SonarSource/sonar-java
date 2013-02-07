@@ -19,10 +19,7 @@
  */
 package org.sonar.plugins.findbugs;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.List;
-
+import com.thoughtworks.xstream.XStream;
 import org.sonar.api.profiles.ProfileExporter;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
@@ -31,8 +28,11 @@ import org.sonar.api.utils.SonarException;
 import org.sonar.plugins.findbugs.xml.Bug;
 import org.sonar.plugins.findbugs.xml.FindBugsFilter;
 import org.sonar.plugins.findbugs.xml.Match;
+import org.sonar.plugins.findbugs.xml.Priority;
 
-import com.thoughtworks.xstream.XStream;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.List;
 
 public class FindbugsProfileExporter extends ProfileExporter {
 
@@ -54,11 +54,13 @@ public class FindbugsProfileExporter extends ProfileExporter {
   }
 
   protected static FindBugsFilter buildFindbugsFilter(List<ActiveRule> activeRules) {
+    FindbugsLevelUtils level = new FindbugsLevelUtils();
     FindBugsFilter root = new FindBugsFilter();
     for (ActiveRule activeRule : activeRules) {
       if (FindbugsConstants.REPOSITORY_KEY.equals(activeRule.getRepositoryKey())) {
         Match child = new Match();
         child.setBug(new Bug(activeRule.getConfigKey()));
+        child.setPriority(new Priority(level.from(activeRule.getSeverity())));
         root.addMatch(child);
       }
     }
