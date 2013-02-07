@@ -29,6 +29,7 @@ import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourceProject;
 import org.sonar.squid.indexer.QueryByType;
+import org.sonar.squid.measures.Metric;
 
 import java.io.File;
 import java.util.List;
@@ -100,6 +101,12 @@ public class JavaAstScannerTest {
     scanner.scan(inputFiles);
     SourceProject project = (SourceProject) scanner.getIndex().search(new QueryByType(SourceProject.class)).iterator().next();
     assertThat(project.getInt(JavaMetric.PACKAGES)).isEqualTo(1);
+  }
+
+  @Test
+  public void accessors() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Accessors.java"));
+    assertThat(file.getInt(Metric.ACCESSORS)).isEqualTo(3);
   }
 
 }

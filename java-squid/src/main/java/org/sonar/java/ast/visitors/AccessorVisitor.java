@@ -41,7 +41,7 @@ public class AccessorVisitor extends JavaAstVisitor {
   public void visitNode(AstNode astNode) {
     SourceMethod sourceMethod = (SourceMethod) getContext().peekSourceCode();
 
-    if (astNode.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
+    if (astNode.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
       MethodHelper methodHelper = new MethodHelper(astNode);
       if (methodHelper.isPublic() && isAccessor(methodHelper)) {
         sourceMethod.setMeasure(Metric.ACCESSORS, 1);
