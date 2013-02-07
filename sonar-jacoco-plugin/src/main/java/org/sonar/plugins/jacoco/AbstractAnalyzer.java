@@ -20,9 +20,7 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import org.apache.commons.lang.StringUtils;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
@@ -185,14 +183,6 @@ public abstract class AbstractAnalyzer {
     return coverageBuilder;
   }
 
-  private MutableTestCase findTestCase(MutableTestPlan testPlan, final String test) {
-    return Iterables.find(testPlan.testCases(), new Predicate<MutableTestCase>() {
-      public boolean apply(MutableTestCase input) {
-        return input.name().equals(test);
-      }
-    });
-  }
-
   private List<Integer> getCoveredLines(CoverageMeasuresBuilder builder) {
     List<Integer> linesCover = newArrayList();
     for (Map.Entry<Integer, Integer> hitsByLine : builder.getHitsByLine().entrySet()) {
@@ -212,8 +202,9 @@ public abstract class AbstractAnalyzer {
         // TODO remove:
         JaCoCoUtils.LOG.info("addCoverage source : " + resource.getKey() + ", testCase : " + testFile.getKey() + ", test : " + testName + ", lines : " + coveredLines);
 
-        MutableTestCase testCase = findTestCase(testPlan, testName);
-        testCase.setCoverageBlock(testAbleFile, coveredLines);
+        for (MutableTestCase testCase : testPlan.testCasesByName(testName)) {
+          testCase.setCoverageBlock(testAbleFile, coveredLines);
+        }
       }
     }
   }
