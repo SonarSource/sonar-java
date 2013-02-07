@@ -198,10 +198,6 @@ public abstract class AbstractAnalyzer {
     if (testAbleFile != null) {
       MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {
-
-        // TODO remove:
-        JaCoCoUtils.LOG.info("addCoverage source : " + resource.getKey() + ", testCase : " + testFile.getKey() + ", test : " + testName + ", lines : " + coveredLines);
-
         for (MutableTestCase testCase : testPlan.testCasesByName(testName)) {
           testCase.setCoverageBlock(testAbleFile, coveredLines);
         }
