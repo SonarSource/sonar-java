@@ -20,7 +20,15 @@
 package org.sonar.plugins.findbugs;
 
 import com.google.common.collect.Lists;
-import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.PluginException;
+import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.XMLBugReporter;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 import org.apache.commons.io.FileUtils;
@@ -37,11 +45,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @since 2.4
@@ -130,6 +144,8 @@ public class FindbugsExecutor implements BatchExtension {
       profiler.stop();
 
       return xmlBugReporter.getBugCollection();
+    } catch (TimeoutException e) {
+      throw new SonarException("Can not execute Findbugs with a timeout threshold value of " + configuration.getTimeout() + " milliseconds", e);
     } catch (Exception e) {
       throw new SonarException("Can not execute Findbugs", e);
     } finally {
