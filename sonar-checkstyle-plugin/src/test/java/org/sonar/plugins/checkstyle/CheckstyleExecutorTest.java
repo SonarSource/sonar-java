@@ -21,21 +21,21 @@ package org.sonar.plugins.checkstyle;
 
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.hamcrest.BaseMatcher;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Locale;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.internal.matchers.StringContains.containsString;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -53,11 +53,21 @@ public class CheckstyleExecutorTest {
 
     verify(listener, times(1)).auditStarted(any(AuditEvent.class));
     verify(listener, times(1)).auditFinished(any(AuditEvent.class));
-    verify(listener, times(1)).fileStarted(argThat(newFilenameMatcher("Hello.java")));
-    verify(listener, times(1)).fileFinished(argThat(newFilenameMatcher("Hello.java")));
-    verify(listener, times(1)).fileStarted(argThat(newFilenameMatcher("World.java")));
-    verify(listener, times(1)).fileFinished(argThat(newFilenameMatcher("World.java")));
-    verify(listener, atLeast(1)).addError(argThat(newErrorMatcher("Hello.java", "com.puppycrawl.tools.checkstyle.checks.coding.EmptyStatementCheck")));
+
+    InOrder inOrder = Mockito.inOrder(listener);
+    ArgumentCaptor<AuditEvent> captor = ArgumentCaptor.forClass(AuditEvent.class);
+    inOrder.verify(listener).fileStarted(captor.capture());
+    assertThat(captor.getValue().getFileName()).matches(".*Hello.java");
+    inOrder.verify(listener).fileFinished(captor.capture());
+    assertThat(captor.getValue().getFileName()).matches(".*Hello.java");
+    inOrder.verify(listener).fileStarted(captor.capture());
+    assertThat(captor.getValue().getFileName()).matches(".*World.java");
+    inOrder.verify(listener).fileFinished(captor.capture());
+    assertThat(captor.getValue().getFileName()).matches(".*World.java");
+    verify(listener, atLeast(1)).addError(captor.capture());
+    AuditEvent event = captor.getValue();
+    assertThat(event.getFileName()).matches(".*Hello.java");
+    assertThat(event.getSourceName()).matches("com.puppycrawl.tools.checkstyle.checks.coding.EmptyStatementCheck");
   }
 
   @Test
@@ -73,26 +83,6 @@ public class CheckstyleExecutorTest {
     assertThat(FileUtils.readFileToString(report), containsString("<error"));
   }
 
-  private BaseMatcher<AuditEvent> newErrorMatcher(final String filename, final String rule) {
-    return new ArgumentMatcher<AuditEvent>() {
-      @Override
-      public boolean matches(Object o) {
-        AuditEvent event = (AuditEvent) o;
-        return StringUtils.endsWith(event.getFileName(), filename) && StringUtils.equals(event.getSourceName(), rule);
-      }
-    };
-  }
-
-  private BaseMatcher<AuditEvent> newFilenameMatcher(final String filename) {
-    return new ArgumentMatcher<AuditEvent>() {
-      @Override
-      public boolean matches(Object o) {
-        AuditEvent event = (AuditEvent) o;
-        return StringUtils.endsWith(event.getFileName(), filename);
-      }
-    };
-  }
-
   private CheckstyleAuditListener mockListener() {
     return mock(CheckstyleAuditListener.class);
   }
@@ -105,4 +95,5 @@ public class CheckstyleExecutorTest {
     when(conf.getLocale()).thenReturn(Locale.ENGLISH);
     return conf;
   }
+
 }

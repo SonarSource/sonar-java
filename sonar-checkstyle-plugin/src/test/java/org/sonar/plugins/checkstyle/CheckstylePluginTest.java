@@ -19,17 +19,16 @@
  */
 package org.sonar.plugins.checkstyle;
 
-import static org.hamcrest.number.OrderingComparisons.greaterThan;
-import static org.junit.Assert.assertThat;
-
 import org.junit.Test;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class CheckstylePluginTest {
 
   @Test
   public void testGetExtensions() {
     CheckstylePlugin plugin = new CheckstylePlugin();
-    assertThat(plugin.getExtensions().size(), greaterThan(1));
+    assertThat(plugin.getExtensions().size()).isGreaterThan(1);
   }
 
 }

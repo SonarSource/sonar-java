@@ -21,15 +21,13 @@ package org.sonar.plugins.checkstyle;
 
 import org.junit.Test;
 
-import static org.hamcrest.number.OrderingComparisons.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class CheckstyleVersionTest {
 
   @Test
   public void getCheckstyleVersion() {
-    assertThat(CheckstyleVersion.getVersion().length(), greaterThan(1));
+    assertThat(CheckstyleVersion.getVersion().length()).isGreaterThan(1);
   }
-
 
 }

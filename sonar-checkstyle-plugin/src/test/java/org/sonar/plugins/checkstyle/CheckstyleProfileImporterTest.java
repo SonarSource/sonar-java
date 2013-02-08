@@ -36,11 +36,9 @@ import org.sonar.test.TestUtils;
 import java.io.Reader;
 import java.io.StringReader;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
+import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,7 +54,7 @@ public class CheckstyleProfileImporterTest {
 
     /*
      * The mocked rule finder defines 3 rules :
-     * 
+     *
      * - JavadocCheck with 2 paramters format and ignore, default priority is MAJOR
      * - EqualsHashCodeCheck without parameters, default priority is BLOCKER
      * - MissingOverride with 1 parameter javaFiveCompatibility, default priority is MINOR
@@ -69,10 +67,10 @@ public class CheckstyleProfileImporterTest {
     Reader reader = new StringReader(TestUtils.getResourceContent("/org/sonar/plugins/checkstyle/CheckstyleProfileImporterTest/simple.xml"));
     RulesProfile profile = importer.importProfile(reader, messages);
 
-    assertThat(profile.getActiveRules().size(), is(2));
+    assertThat(profile.getActiveRules().size()).isEqualTo(2);
     assertNotNull(profile.getActiveRuleByConfigKey("checkstyle", "Checker/TreeWalker/EqualsHashCode"));
     assertNotNull(profile.getActiveRuleByConfigKey("checkstyle", "Checker/JavadocPackage"));
-    assertThat(messages.hasErrors(), is(false));
+    assertThat(messages.hasErrors()).isFalse();
   }
 
   @Test
@@ -81,10 +79,10 @@ public class CheckstyleProfileImporterTest {
     RulesProfile profile = importer.importProfile(reader, messages);
 
     ActiveRule javadocCheck = profile.getActiveRuleByConfigKey("checkstyle", "Checker/JavadocPackage");
-    assertThat(javadocCheck.getActiveRuleParams().size(), is(2));
-    assertThat(javadocCheck.getParameter("format"), is("abcde"));
-    assertThat(javadocCheck.getParameter("ignore"), is("true"));
-    assertThat(javadocCheck.getParameter("severity"), nullValue()); // checkstyle internal parameter
+    assertThat(javadocCheck.getActiveRuleParams()).hasSize(2);
+    assertThat(javadocCheck.getParameter("format")).isEqualTo("abcde");
+    assertThat(javadocCheck.getParameter("ignore")).isEqualTo("true");
+    assertThat(javadocCheck.getParameter("severity")).isNull(); // checkstyle internal parameter
   }
 
   @Test
@@ -93,8 +91,8 @@ public class CheckstyleProfileImporterTest {
     RulesProfile profile = importer.importProfile(reader, messages);
 
     ActiveRule activeRule = profile.getActiveRuleByConfigKey("checkstyle", "Checker/TreeWalker/MissingOverride");
-    assertThat(activeRule.getSeverity(), is(RulePriority.BLOCKER));
-    assertThat(activeRule.getParameter("javaFiveCompatibility"), is("true"));
+    assertThat(activeRule.getSeverity()).isEqualTo(RulePriority.BLOCKER);
+    assertThat(activeRule.getParameter("javaFiveCompatibility")).isEqualTo("true");
   }
 
   @Test
@@ -103,7 +101,7 @@ public class CheckstyleProfileImporterTest {
     RulesProfile profile = importer.importProfile(reader, messages);
 
     ActiveRule javadocCheck = profile.getActiveRuleByConfigKey("checkstyle", "Checker/JavadocPackage");
-    assertThat(javadocCheck.getSeverity(), is(RulePriority.BLOCKER));
+    assertThat(javadocCheck.getSeverity()).isEqualTo(RulePriority.BLOCKER);
   }
 
   @Test
@@ -112,7 +110,7 @@ public class CheckstyleProfileImporterTest {
     RulesProfile profile = importer.importProfile(reader, messages);
 
     ActiveRule activeRule = profile.getActiveRuleByConfigKey("checkstyle", "Checker/TreeWalker/EqualsHashCode");
-    assertThat(activeRule.getSeverity(), is(RulePriority.BLOCKER)); // reuse the rule default priority
+    assertThat(activeRule.getSeverity()).isEqualTo(RulePriority.BLOCKER); // reuse the rule default priority
   }
 
   @Test
@@ -121,7 +119,7 @@ public class CheckstyleProfileImporterTest {
     RulesProfile profile = importer.importProfile(reader, messages);
 
     assertNull(profile.getActiveRuleByConfigKey("checkstyle", "Checker/JavadocPackage"));
-    assertThat(messages.getWarnings().size(), is(1));
+    assertThat(messages.getWarnings().size()).isEqualTo(1);
   }
 
   @Test
@@ -130,16 +128,16 @@ public class CheckstyleProfileImporterTest {
     RulesProfile profile = importer.importProfile(reader, messages);
 
     assertNotNull(profile.getActiveRuleByConfigKey("checkstyle", "Checker/JavadocPackage"));
-    assertThat(profile.getActiveRuleByConfigKey("checkstyle", "Checker/JavadocPackage").getRule().getKey(),
-        is("com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck_12345"));
-    assertThat(messages.getWarnings().size(), is(0));
+    assertThat(profile.getActiveRuleByConfigKey("checkstyle", "Checker/JavadocPackage").getRule().getKey())
+        .isEqualTo("com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck_12345");
+    assertThat(messages.getWarnings().size()).isEqualTo(0);
   }
 
   @Test
   public void testUnvalidXML() {
     Reader reader = new StringReader("not xml");
     importer.importProfile(reader, messages);
-    assertThat(messages.getErrors().size(), is(1));
+    assertThat(messages.getErrors().size()).isEqualTo(1);
   }
 
   @Test
@@ -149,8 +147,8 @@ public class CheckstyleProfileImporterTest {
 
     assertNull(profile.getActiveRuleByConfigKey("checkstyle", "Checker/SuppressionCommentFilter"));
     assertNull(profile.getActiveRuleByConfigKey("checkstyle", "Checker/TreeWalker/FileContentsHolder"));
-    assertThat(profile.getActiveRules().size(), is(2));
-    assertThat(messages.getWarnings().size(), is(4)); // no warning for FileContentsHolder
+    assertThat(profile.getActiveRules().size()).isEqualTo(2);
+    assertThat(messages.getWarnings().size()).isEqualTo(4); // no warning for FileContentsHolder
   }
 
   private RuleFinder newRuleFinder() {

@@ -19,13 +19,11 @@
  */
 package org.sonar.plugins.checkstyle;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
 import org.junit.Test;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class CheckstyleAuditListenerTest {
   @Test
@@ -33,18 +31,19 @@ public class CheckstyleAuditListenerTest {
     AuditEvent event;
 
     event = new AuditEvent(this, "", new LocalizedMessage(0, "", "", null, "", CheckstyleAuditListenerTest.class, "msg"));
-    assertThat(CheckstyleAuditListener.getLineId(event), nullValue());
-    assertThat(CheckstyleAuditListener.getMessage(event), is("msg"));
-    assertThat(CheckstyleAuditListener.getRuleKey(event), is(CheckstyleAuditListenerTest.class.getName()));
+    assertThat(CheckstyleAuditListener.getLineId(event)).isNull();
+    assertThat(CheckstyleAuditListener.getMessage(event)).isEqualTo("msg");
+    assertThat(CheckstyleAuditListener.getRuleKey(event)).isEqualTo(CheckstyleAuditListenerTest.class.getName());
 
     event = new AuditEvent(this, "", new LocalizedMessage(1, "", "", null, "", CheckstyleAuditListenerTest.class, "msg"));
-    assertThat(CheckstyleAuditListener.getLineId(event), is(1));
-    assertThat(CheckstyleAuditListener.getMessage(event), is("msg"));
-    assertThat(CheckstyleAuditListener.getRuleKey(event), is(CheckstyleAuditListenerTest.class.getName()));
+    assertThat(CheckstyleAuditListener.getLineId(event)).isEqualTo(1);
+    assertThat(CheckstyleAuditListener.getMessage(event)).isEqualTo("msg");
+    assertThat(CheckstyleAuditListener.getRuleKey(event)).isEqualTo(CheckstyleAuditListenerTest.class.getName());
 
     event = new AuditEvent(this);
-    assertThat(CheckstyleAuditListener.getLineId(event), nullValue());
-    assertThat(CheckstyleAuditListener.getMessage(event), nullValue());
-    assertThat(CheckstyleAuditListener.getRuleKey(event), nullValue());
+    assertThat(CheckstyleAuditListener.getLineId(event)).isNull();
+    assertThat(CheckstyleAuditListener.getMessage(event)).isNull();
+    assertThat(CheckstyleAuditListener.getRuleKey(event)).isNull();
   }
+
 }

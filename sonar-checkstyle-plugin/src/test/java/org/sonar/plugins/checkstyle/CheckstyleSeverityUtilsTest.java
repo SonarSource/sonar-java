@@ -22,26 +22,25 @@ package org.sonar.plugins.checkstyle;
 import org.junit.Test;
 import org.sonar.api.rules.RulePriority;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class CheckstyleSeverityUtilsTest {
 
   @Test
   public void testToSeverity() {
-    assertThat(CheckstyleSeverityUtils.toSeverity(RulePriority.BLOCKER), is("error"));
-    assertThat(CheckstyleSeverityUtils.toSeverity(RulePriority.CRITICAL), is("error"));
-    assertThat(CheckstyleSeverityUtils.toSeverity(RulePriority.MAJOR), is("warning"));
-    assertThat(CheckstyleSeverityUtils.toSeverity(RulePriority.MINOR), is("info"));
-    assertThat(CheckstyleSeverityUtils.toSeverity(RulePriority.INFO), is("info"));
+    assertThat(CheckstyleSeverityUtils.toSeverity(RulePriority.BLOCKER)).isEqualTo("error");
+    assertThat(CheckstyleSeverityUtils.toSeverity(RulePriority.CRITICAL)).isEqualTo("error");
+    assertThat(CheckstyleSeverityUtils.toSeverity(RulePriority.MAJOR)).isEqualTo("warning");
+    assertThat(CheckstyleSeverityUtils.toSeverity(RulePriority.MINOR)).isEqualTo("info");
+    assertThat(CheckstyleSeverityUtils.toSeverity(RulePriority.INFO)).isEqualTo("info");
   }
 
   @Test
   public void testFromSeverity() {
-    assertThat(CheckstyleSeverityUtils.fromSeverity("error"), is(RulePriority.BLOCKER));
-    assertThat(CheckstyleSeverityUtils.fromSeverity("warning"), is(RulePriority.MAJOR));
-    assertThat(CheckstyleSeverityUtils.fromSeverity("info"), is(RulePriority.INFO));
-    assertThat(CheckstyleSeverityUtils.fromSeverity(""), nullValue());
+    assertThat(CheckstyleSeverityUtils.fromSeverity("error")).isEqualTo(RulePriority.BLOCKER);
+    assertThat(CheckstyleSeverityUtils.fromSeverity("warning")).isEqualTo(RulePriority.MAJOR);
+    assertThat(CheckstyleSeverityUtils.fromSeverity("info")).isEqualTo(RulePriority.INFO);
+    assertThat(CheckstyleSeverityUtils.fromSeverity("")).isNull();
   }
+
 }

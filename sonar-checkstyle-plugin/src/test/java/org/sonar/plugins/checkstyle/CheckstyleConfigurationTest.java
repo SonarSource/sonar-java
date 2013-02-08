@@ -28,8 +28,8 @@ import org.sonar.api.test.MavenTestUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class CheckstyleConfigurationTest {
 
@@ -41,8 +41,8 @@ public class CheckstyleConfigurationTest {
     CheckstyleConfiguration configuration = new CheckstyleConfiguration(null, exporter, null, project.getFileSystem());
     File xmlFile = configuration.getXMLDefinitionFile();
 
-    assertThat(xmlFile.exists(), is(true));
-    assertThat(FileUtils.readFileToString(xmlFile), is("<conf/>"));
+    assertThat(xmlFile.exists()).isTrue();
+    assertThat(FileUtils.readFileToString(xmlFile)).isEqualTo("<conf/>");
   }
 
   public class FakeExporter extends CheckstyleProfileExporter {
