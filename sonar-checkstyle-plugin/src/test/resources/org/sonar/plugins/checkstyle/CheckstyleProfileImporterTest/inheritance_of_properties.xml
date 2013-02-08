@@ -1,0 +1,7 @@
+<module name="Checker">
+    <property name="severity" value="error" />
+    <property name="javaFiveCompatibility" value="true" />
+    <module name="TreeWalker">
+        <module name="MissingOverride"/>
+    </module>
+</module>

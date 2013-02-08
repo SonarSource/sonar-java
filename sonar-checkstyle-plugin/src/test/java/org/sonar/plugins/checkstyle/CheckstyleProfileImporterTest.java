@@ -55,10 +55,11 @@ public class CheckstyleProfileImporterTest {
     messages = ValidationMessages.create();
 
     /*
-     * The mocked rule finder defines 2 rules :
+     * The mocked rule finder defines 3 rules :
      * 
      * - JavadocCheck with 2 paramters format and ignore, default priority is MAJOR
      * - EqualsHashCodeCheck without parameters, default priority is BLOCKER
+     * - MissingOverride with 1 parameter javaFiveCompatibility, default priority is MINOR
      */
     importer = new CheckstyleProfileImporter(newRuleFinder());
   }
@@ -84,6 +85,16 @@ public class CheckstyleProfileImporterTest {
     assertThat(javadocCheck.getParameter("format"), is("abcde"));
     assertThat(javadocCheck.getParameter("ignore"), is("true"));
     assertThat(javadocCheck.getParameter("severity"), nullValue()); // checkstyle internal parameter
+  }
+
+  @Test
+  public void properties_should_be_inherited() {
+    Reader reader = new StringReader(TestUtils.getResourceContent("/org/sonar/plugins/checkstyle/CheckstyleProfileImporterTest/inheritance_of_properties.xml"));
+    RulesProfile profile = importer.importProfile(reader, messages);
+
+    ActiveRule activeRule = profile.getActiveRuleByConfigKey("checkstyle", "Checker/TreeWalker/MissingOverride");
+    assertThat(activeRule.getSeverity(), is(RulePriority.BLOCKER));
+    assertThat(activeRule.getParameter("javaFiveCompatibility"), is("true"));
   }
 
   @Test
@@ -139,7 +150,7 @@ public class CheckstyleProfileImporterTest {
     assertNull(profile.getActiveRuleByConfigKey("checkstyle", "Checker/SuppressionCommentFilter"));
     assertNull(profile.getActiveRuleByConfigKey("checkstyle", "Checker/TreeWalker/FileContentsHolder"));
     assertThat(profile.getActiveRules().size(), is(2));
-    assertThat(messages.getWarnings().size(), is(1)); // no warning for FileContentsHolder
+    assertThat(messages.getWarnings().size(), is(4)); // no warning for FileContentsHolder
   }
 
   private RuleFinder newRuleFinder() {
@@ -166,6 +177,11 @@ public class CheckstyleProfileImporterTest {
               .setSeverity(RulePriority.MAJOR);
           rule.createParameter("format");
           rule.createParameter("ignore");
+        } else if (StringUtils.equals(query.getConfigKey(), "Checker/TreeWalker/MissingOverride")) {
+          rule = Rule.create(query.getRepositoryKey(), "com.puppycrawl.tools.checkstyle.checks.annotation.MissingOverrideCheck", "Missing Override")
+              .setConfigKey("Checker/TreeWalker/MissingOverride")
+              .setSeverity(RulePriority.MINOR);
+          rule.createParameter("javaFiveCompatibility");
         }
         return rule;
       }

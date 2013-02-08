@@ -19,10 +19,10 @@
  */
 package org.sonar.plugins.checkstyle;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.staxmate.SMInputFactory;
-import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.codehaus.staxmate.in.SMInputCursor;
 import org.sonar.api.profiles.ProfileImporter;
 import org.sonar.api.profiles.RulesProfile;
@@ -37,6 +37,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import java.io.Reader;
+import java.util.List;
 import java.util.Map;
 
 public class CheckstyleProfileImporter extends ProfileImporter {
@@ -46,10 +47,33 @@ public class CheckstyleProfileImporter extends ProfileImporter {
   private static final String MODULE_NODE = "module";
   private final RuleFinder ruleFinder;
 
+  private static class Module {
+    String name;
+    Map<String, String> properties = Maps.newHashMap();
+    List<Module> modules = Lists.newArrayList();
+  }
+
   public CheckstyleProfileImporter(RuleFinder ruleFinder) {
     super(CheckstyleConstants.REPOSITORY_KEY, CheckstyleConstants.PLUGIN_NAME);
     setSupportedLanguages(Java.KEY);
     this.ruleFinder = ruleFinder;
+  }
+
+  private Module loadModule(SMInputCursor parentCursor) throws XMLStreamException {
+    Module result = new Module();
+    result.name = parentCursor.getAttrValue("name");
+    SMInputCursor cursor = parentCursor.childElementCursor();
+    while (cursor.getNext() != null) {
+      String nodeName = cursor.getLocalName();
+      if (MODULE_NODE.equals(nodeName)) {
+        result.modules.add(loadModule(cursor));
+      } else if ("property".equals(nodeName)) {
+        String key = cursor.getAttrValue("name");
+        String value = cursor.getAttrValue("value");
+        result.properties.put(key, value);
+      }
+    }
+    return result;
   }
 
   @Override
@@ -57,21 +81,24 @@ public class CheckstyleProfileImporter extends ProfileImporter {
     SMInputFactory inputFactory = initStax();
     RulesProfile profile = RulesProfile.create();
     try {
-      SMHierarchicCursor rootC = inputFactory.rootElementCursor(reader);
-      // <module name="Checker">
-      rootC.advance();
-      SMInputCursor rootModulesCursor = rootC.childElementCursor(MODULE_NODE);
-      while (rootModulesCursor.getNext() != null) {
-        String configKey = rootModulesCursor.getAttrValue("name");
-        if (StringUtils.equals(TREEWALKER_MODULE, configKey)) {
-          SMInputCursor treewalkerCursor = rootModulesCursor.childElementCursor(MODULE_NODE);
-          while (treewalkerCursor.getNext() != null) {
-            processModule(profile, CHECKER_MODULE + "/" + TREEWALKER_MODULE + "/", treewalkerCursor, messages);
+      Module checkerModule = loadModule(inputFactory.rootElementCursor(reader).advance());
+
+      for (Module rootModule : checkerModule.modules) {
+        Map<String, String> rootModuleProperties = Maps.newHashMap(checkerModule.properties);
+        rootModuleProperties.putAll(rootModule.properties);
+
+        if (StringUtils.equals(TREEWALKER_MODULE, rootModule.name)) {
+          for (Module treewalkerModule : rootModule.modules) {
+            Map<String, String> treewalkerModuleProperties = Maps.newHashMap(rootModuleProperties);
+            treewalkerModuleProperties.putAll(treewalkerModule.properties);
+
+            processModule(profile, CHECKER_MODULE + "/" + TREEWALKER_MODULE + "/", treewalkerModule.name, treewalkerModuleProperties, messages);
           }
         } else {
-          processModule(profile, CHECKER_MODULE + "/", rootModulesCursor, messages);
+          processModule(profile, CHECKER_MODULE + "/", rootModule.name, rootModuleProperties, messages);
         }
       }
+
     } catch (XMLStreamException e) {
       messages.addErrorText("XML is not valid: " + e.getMessage());
     }
@@ -87,13 +114,12 @@ public class CheckstyleProfileImporter extends ProfileImporter {
     return new SMInputFactory(xmlFactory);
   }
 
-  private void processModule(RulesProfile profile, String path, SMInputCursor moduleCursor, ValidationMessages messages) throws XMLStreamException {
-    String moduleName = moduleCursor.getAttrValue("name");
+  private void processModule(RulesProfile profile, String path, String moduleName, Map<String, String> properties, ValidationMessages messages) throws XMLStreamException {
     if (isFilter(moduleName)) {
       messages.addWarningText("Checkstyle filters are not imported: " + moduleName);
 
     } else if (!isIgnored(moduleName)) {
-      processRule(profile, path, moduleName, moduleCursor, messages);
+      processRule(profile, path, moduleName, properties, messages);
     }
   }
 
@@ -108,9 +134,7 @@ public class CheckstyleProfileImporter extends ProfileImporter {
       StringUtils.equals(configKey, "SuppressWithNearbyCommentFilter");
   }
 
-  private void processRule(RulesProfile profile, String path, String moduleName, SMInputCursor moduleCursor, ValidationMessages messages) throws XMLStreamException {
-    Map<String, String> properties = processProps(moduleCursor);
-
+  private void processRule(RulesProfile profile, String path, String moduleName, Map<String, String> properties, ValidationMessages messages) throws XMLStreamException {
     Rule rule;
     String id = properties.get("id");
     String warning;
@@ -133,17 +157,6 @@ public class CheckstyleProfileImporter extends ProfileImporter {
     }
   }
 
-  private Map<String, String> processProps(SMInputCursor moduleCursor) throws XMLStreamException {
-    Map<String, String> props = Maps.newHashMap();
-    SMInputCursor propertyCursor = moduleCursor.childElementCursor("property");
-    while (propertyCursor.getNext() != null) {
-      String key = propertyCursor.getAttrValue("name");
-      String value = propertyCursor.getAttrValue("value");
-      props.put(key, value);
-    }
-    return props;
-  }
-
   private void activateProperties(ActiveRule activeRule, Map<String, String> properties) {
     for (Map.Entry<String, String> property : properties.entrySet()) {
       if (StringUtils.equals("severity", property.getKey())) {
@@ -154,4 +167,5 @@ public class CheckstyleProfileImporter extends ProfileImporter {
       }
     }
   }
+
 }
