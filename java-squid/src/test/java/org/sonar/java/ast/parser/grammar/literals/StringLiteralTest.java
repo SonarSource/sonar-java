@@ -20,6 +20,7 @@
 package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
+import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -31,7 +32,7 @@ public class StringLiteralTest {
 
   @Test
   public void ok() {
-    assertThat(g.rule(JavaGrammar.STRING_LITERAL))
+    assertThat(g.rule(JavaTokenType.LITERAL))
         .as("regular string").matches("\"string\"")
         .as("empty string").matches("\"\"")
         .as("escaped LF").matches("\"\\n\"")
@@ -42,7 +43,7 @@ public class StringLiteralTest {
 
   @Test
   public void nok() {
-    assertThat(g.rule(JavaGrammar.STRING_LITERAL))
+    assertThat(g.rule(JavaTokenType.LITERAL))
         .notMatches("\"");
   }
 

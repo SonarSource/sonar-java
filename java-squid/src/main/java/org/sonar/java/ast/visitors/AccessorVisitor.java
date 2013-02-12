@@ -21,9 +21,9 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.GenericTokenType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.squid.api.SourceMethod;
 import org.sonar.squid.measures.Metric;
@@ -97,7 +97,7 @@ public class AccessorVisitor extends JavaAstVisitor {
       if (assignmentExpression.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
         // TODO in previous version we had a more complex check
         // TODO try to avoid usage of "getFirstDescendant" by refactoring grammar
-        AstNode varToAssign = assignmentExpression.getFirstDescendant(GenericTokenType.IDENTIFIER);
+        AstNode varToAssign = assignmentExpression.getFirstDescendant(JavaTokenType.IDENTIFIER);
         return findPrivateClassVariable(varToAssign);
       }
     }

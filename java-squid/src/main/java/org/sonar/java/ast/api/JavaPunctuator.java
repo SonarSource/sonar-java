@@ -21,16 +21,17 @@ package org.sonar.java.ast.api;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.TokenType;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
-public enum JavaPunctuator implements TokenType {
+public enum JavaPunctuator implements TokenType, GrammarRuleKey {
 
   AT("@"),
   AND("&"),
   ANDAND("&&"),
   ANDEQU("&="),
   BANG("!"),
-  // BSR(">>>"),
-  // BSREQU(">>>="),
+  BSR(">>>"),
+  BSREQU(">>>="),
   COLON(":"),
   COMMA(","),
   DEC("--"),
@@ -40,7 +41,7 @@ public enum JavaPunctuator implements TokenType {
   ELLIPSIS("..."),
   EQU("="),
   EQUAL("=="),
-  // GE(">="),
+  GE(">="),
   GT(">"),
   HAT("^"),
   HATEQU("^="),
@@ -67,11 +68,14 @@ public enum JavaPunctuator implements TokenType {
   SEMI(";"),
   SL("<<"),
   SLEQU("<<="),
-  // SR(">>"),
-  // SREQU(">>="),
+  SR(">>"),
+  SREQU(">>="),
   STAR("*"),
   STAREQU("*="),
-  TILDA("~");
+  TILDA("~"),
+
+  LPOINT("<"),
+  RPOINT(">");
 
   private final String value;
 

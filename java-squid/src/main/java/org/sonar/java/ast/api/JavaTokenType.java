@@ -21,15 +21,19 @@ package org.sonar.java.ast.api;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.TokenType;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
-public enum JavaTokenType implements TokenType {
+public enum JavaTokenType implements TokenType, GrammarRuleKey {
   CHARACTER_LITERAL,
   INTEGER_LITERAL,
   FLOAT_LITERAL,
   LONG_LITERAL,
   DOUBLE_LITERAL,
 
-  SPECIAL;
+  // TODO in fact it's STRING_LITERAL, but we need to keep compatibility of XPath expressions
+  LITERAL,
+
+  IDENTIFIER;
 
   public String getName() {
     return name();

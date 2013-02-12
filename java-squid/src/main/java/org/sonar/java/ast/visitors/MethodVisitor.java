@@ -24,9 +24,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.GenericTokenType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.signature.JvmJavaType;
 import org.sonar.java.signature.MethodSignature;
@@ -114,7 +114,7 @@ public class MethodVisitor extends JavaAstVisitor {
   private String extractClassName(AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE));
     // TODO Godin: verify
-    return Iterables.getLast(astNode.getChildren(GenericTokenType.IDENTIFIER)).getTokenValue();
+    return Iterables.getLast(astNode.getChildren(JavaTokenType.IDENTIFIER)).getTokenValue();
   }
 
   private static final Map<JavaKeyword, JvmJavaType> JAVA_TYPE_MAPPING = Maps.newHashMap();

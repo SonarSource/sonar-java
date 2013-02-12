@@ -21,9 +21,9 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.squid.SquidAstVisitor;
 import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -86,7 +86,7 @@ public class MethodHelper {
     } else {
       methodNameNode = astNode.getPreviousSibling();
     }
-    Preconditions.checkState(methodNameNode.is(GenericTokenType.IDENTIFIER));
+    Preconditions.checkState(methodNameNode.is(JavaTokenType.IDENTIFIER));
     return methodNameNode;
   }
 

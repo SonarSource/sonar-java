@@ -20,6 +20,7 @@
 package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
+import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -31,7 +32,7 @@ public class CharacterLiteralTest {
 
   @Test
   public void ok() {
-    assertThat(g.rule(JavaGrammar.CHARACTER_LITERAL))
+    assertThat(g.rule(JavaTokenType.CHARACTER_LITERAL))
         .as("single character").matches("'a'")
         .as("escaped LF").matches("'\\n'")
         .as("escaped quote").matches("'\\''")

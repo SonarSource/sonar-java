@@ -21,8 +21,9 @@ package org.sonar.java.ast.api;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.TokenType;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
-public enum JavaKeyword implements TokenType {
+public enum JavaKeyword implements TokenType, GrammarRuleKey {
 
   ASSERT("assert"),
   BREAK("break"),

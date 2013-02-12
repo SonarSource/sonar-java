@@ -21,8 +21,8 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.GenericTokenType;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourcePackage;
@@ -40,7 +40,7 @@ public class ClassVisitor extends JavaAstVisitor {
 
   @Override
   public void visitNode(AstNode astNode) {
-    String className = astNode.getFirstChild(GenericTokenType.IDENTIFIER).getTokenValue();
+    String className = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
 
     final SourceClass sourceClass;
     if (getContext().peekSourceCode().isType(SourceClass.class)) {

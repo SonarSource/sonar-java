@@ -31,13 +31,43 @@ public class XPathCheckTest {
   private XPathCheck check = new XPathCheck();
 
   @Test
-  public void test() {
+  public void test_JavaTokenType() {
     check.xpathQuery = "//IDENTIFIER[string-length(@tokenValue) >= 10]";
     check.message = "Avoid identifiers which are too long!";
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/XPath.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(1).withMessage("Avoid identifiers which are too long!")
+        .noMore();
+  }
+
+  @Test
+  public void test_AstNodeType() {
+    check.xpathQuery = "//classDeclaration";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/XPath.java"), check);
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(1)
+        .noMore();
+  }
+
+  @Test
+  public void test_JavaKeyword() {
+    check.xpathQuery = "//PUBLIC";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/XPath.java"), check);
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(1)
+        .noMore();
+  }
+
+  @Test
+  public void test_JavaPunctuator() {
+    check.xpathQuery = "//RWING";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/XPath.java"), check);
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(2)
         .noMore();
   }
 
