@@ -23,8 +23,6 @@ import com.sonar.sslr.api.GenericTokenType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.lexer.FloatLiteralChannel;
-import org.sonar.java.ast.lexer.IntegerLiteralChannel;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -490,6 +488,27 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(ruleKey).is(b.sequence(b.token(JavaTokenType.SPECIAL, value), element, SPACING)).skip();
   }
 
+  private static final String EXP_REGEXP = "(?:[Ee][+-]?+[0-9_]++)";
+  private static final String BINARY_EXP_REGEXP = "(?:[Pp][+-]?+[0-9_]++)";
+  private static final String FLOATING_LITERAL_WITHOUT_SUFFIX_REGEXP = "(?:" +
+    // Decimal
+    "[0-9][0-9_]*+\\.([0-9_]++)?+" + EXP_REGEXP + "?+" +
+    "|" + "\\.[0-9][0-9_]*+" + EXP_REGEXP + "?+" +
+    "|" + "[0-9][0-9_]*+" + EXP_REGEXP +
+    // Hexadecimal
+    "|" + "0[xX][0-9_a-fA-F]++\\.[0-9_a-fA-F]*+" + BINARY_EXP_REGEXP +
+    "|" + "0[xX][0-9_a-fA-F]++" + BINARY_EXP_REGEXP +
+    ")";
+
+  private static final String INTEGER_LITERAL_REGEXP = "(?:" +
+    // Hexadecimal
+    "0[xX][0-9_a-fA-F]++" +
+    // Binary (Java 7)
+    "|" + "0[bB][01_]++" +
+    // Decimal and Octal
+    "|" + "[0-9][0-9_]*+" +
+    ")";
+
   /**
    * 3.10. Literals
    */
@@ -505,11 +524,11 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(CHARACTER_LITERAL).is(b.token(JavaTokenType.CHARACTER_LITERAL, characterLiteral(b)), SPACING).skip();
     b.rule(STRING_LITERAL).is(b.token(GenericTokenType.LITERAL, stringLiteral(b)), SPACING).skip();
 
-    b.rule(FLOAT_LITERAL).is(b.token(JavaTokenType.FLOAT_LITERAL, b.regexp(FloatLiteralChannel.FLOATING_LITERAL_WITHOUT_SUFFIX + "[fF]|[0-9][0-9_]*+[fF]")), SPACING).skip();
-    b.rule(DOUBLE_LITERAL).is(b.token(JavaTokenType.DOUBLE_LITERAL, b.regexp(FloatLiteralChannel.FLOATING_LITERAL_WITHOUT_SUFFIX + "[dD]?+|[0-9][0-9_]*+[dD]")), SPACING).skip();
+    b.rule(FLOAT_LITERAL).is(b.token(JavaTokenType.FLOAT_LITERAL, b.regexp(FLOATING_LITERAL_WITHOUT_SUFFIX_REGEXP + "[fF]|[0-9][0-9_]*+[fF]")), SPACING).skip();
+    b.rule(DOUBLE_LITERAL).is(b.token(JavaTokenType.DOUBLE_LITERAL, b.regexp(FLOATING_LITERAL_WITHOUT_SUFFIX_REGEXP + "[dD]?+|[0-9][0-9_]*+[dD]")), SPACING).skip();
 
-    b.rule(LONG_LITERAL).is(b.token(JavaTokenType.LONG_LITERAL, b.regexp(IntegerLiteralChannel.INTEGER_LITERAL + "[lL]")), SPACING).skip();
-    b.rule(INTEGER_LITERAL).is(b.token(JavaTokenType.INTEGER_LITERAL, b.regexp(IntegerLiteralChannel.INTEGER_LITERAL)), SPACING).skip();
+    b.rule(LONG_LITERAL).is(b.token(JavaTokenType.LONG_LITERAL, b.regexp(INTEGER_LITERAL_REGEXP + "[lL]")), SPACING).skip();
+    b.rule(INTEGER_LITERAL).is(b.token(JavaTokenType.INTEGER_LITERAL, b.regexp(INTEGER_LITERAL_REGEXP)), SPACING).skip();
 
     b.rule(KEYWORD).is(b.firstOf("assert", "break", "case", "catch", "class", "const", "continue", "default", "do", "else",
         "enum", "extends", "finally", "final", "for", "goto", "if", "implements", "import", "interface",
