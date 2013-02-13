@@ -40,6 +40,8 @@ public class JavaCommonRulesEngineProvider extends CommonRulesEngineProvider {
     engine.activateRule("InsufficientCommentDensity");
     engine.activateRule("DuplicatedBlocks");
     engine.activateRule("InsufficientLineCoverage");
+    engine.activateRule("SkippedUnitTests");
+    engine.activateRule("FailedUnitTests");
   }
 
   @Override
