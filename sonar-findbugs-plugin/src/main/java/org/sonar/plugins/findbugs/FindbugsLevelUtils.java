@@ -35,20 +35,4 @@ public class FindbugsLevelUtils {
     }
     throw new IllegalArgumentException("Priority not supported: " + priority);
   }
-
-  public String from(RulePriority priority) {
-    switch (priority) {
-      case BLOCKER:
-      case CRITICAL:
-        return "1";
-      case MAJOR:
-      case MINOR:
-        return "2";
-      case INFO:
-        return "3";
-      default:
-        throw new IllegalArgumentException();
-    }
-  }
-
 }

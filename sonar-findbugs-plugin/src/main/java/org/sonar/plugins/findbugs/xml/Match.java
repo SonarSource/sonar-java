@@ -19,22 +19,16 @@
  */
 package org.sonar.plugins.findbugs.xml;
 
+import java.util.List;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-
-import java.util.List;
 
 @XStreamAlias("Match")
 public class Match {
 
   @XStreamAlias("Bug")
   private Bug bug;
-
-  /**
-   * @since FindBugs 2.0.0
-   */
-  @XStreamAlias("Confidence")
-  private Priority confidence;
 
   @XStreamAlias("Priority")
   private Priority priority;
@@ -82,14 +76,10 @@ public class Match {
   }
 
   public Priority getPriority() {
-    if (confidence != null) {
-      return confidence;
-    }
     return priority;
   }
 
   public void setPriority(Priority priority) {
-    this.confidence = new Priority(priority.getValue());
     this.priority = priority;
   }
 
