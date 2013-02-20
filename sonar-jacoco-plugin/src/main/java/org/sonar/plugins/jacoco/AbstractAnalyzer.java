@@ -118,8 +118,11 @@ public abstract class AbstractAnalyzer {
       reader.read();
     }
 
+    boolean collectedCoveragePerTest = false;
     for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
-      analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), buildOutputDir, context, excludes);
+      if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), buildOutputDir, context, excludes)) {
+        collectedCoveragePerTest = true;
+      }
     }
 
     CoverageBuilder coverageBuilder = analyze(executionDataVisitor.getMerged(), buildOutputDir);
@@ -136,33 +139,39 @@ public abstract class AbstractAnalyzer {
     }
     if (analyzedResources == 0) {
       JaCoCoUtils.LOG.warn("Coverage information was not collected. Perhaps you forget to include debug information into compiled classes?");
+    } else if (collectedCoveragePerTest) {
+      JaCoCoUtils.LOG.info("Information about coverage per test has been collected.");
+    } else {
+      JaCoCoUtils.LOG.info("No information about coverage per test.");
     }
   }
 
-  private void analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes) {
+  private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes) {
     int i = sessionId.indexOf(' ');
     if (i < 0) {
-      return;
+      return false;
     }
     String testClassName = sessionId.substring(0, i);
     String testName = sessionId.substring(i + 1);
     Resource testResource = context.getResource(new JavaFile(testClassName, true));
     if (testResource == null) {
       // No such test class
-      return;
+      return false;
     }
 
+    boolean result = false;
     CoverageBuilder coverageBuilder = analyze2(executionDataStore, buildOutputDir);
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       JavaFile resource = getResource(coverage, context);
       if (resource != null && !isExcluded(coverage, excludes)) {
         CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
         List<Integer> coveredLines = getCoveredLines(builder);
-        if (!coveredLines.isEmpty()) {
-          addCoverage(resource, testResource, testName, coveredLines);
+        if (!coveredLines.isEmpty() && addCoverage(resource, testResource, testName, coveredLines)) {
+          result = true;
         }
       }
     }
+    return result;
   }
 
   private CoverageBuilder analyze2(ExecutionDataStore executionDataStore, File buildOutputDir) {
@@ -193,16 +202,19 @@ public abstract class AbstractAnalyzer {
     return linesCover;
   }
 
-  private void addCoverage(JavaFile resource, Resource testFile, String testName, List<Integer> coveredLines) {
+  private boolean addCoverage(JavaFile resource, Resource testFile, String testName, List<Integer> coveredLines) {
+    boolean result = false;
     Testable testAbleFile = perspectives.as(MutableTestable.class, resource);
     if (testAbleFile != null) {
       MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {
         for (MutableTestCase testCase : testPlan.testCasesByName(testName)) {
           testCase.setCoverageBlock(testAbleFile, coveredLines);
+          result = true;
         }
       }
     }
+    return result;
   }
 
   private CoverageBuilder analyze(ExecutionDataStore executionDataStore, File buildOutputDir) {
