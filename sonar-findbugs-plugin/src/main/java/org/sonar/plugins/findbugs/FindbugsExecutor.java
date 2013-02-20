@@ -123,7 +123,6 @@ public class FindbugsExecutor implements BatchExtension {
       engine.setUserPreferences(userPreferences);
 
       engine.addFilter(configuration.saveIncludeConfigXml().getAbsolutePath(), true);
-      engine.addFilter(configuration.saveExcludeConfigXml().getAbsolutePath(), false);
 
       for (File filterFile : configuration.getExcludesFilters()) {
         if (filterFile.isFile()) {

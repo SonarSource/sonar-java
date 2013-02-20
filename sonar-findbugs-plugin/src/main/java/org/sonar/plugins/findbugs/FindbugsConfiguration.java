@@ -97,18 +97,6 @@ public class FindbugsConfiguration implements BatchExtension {
   }
 
   @VisibleForTesting
-  File saveExcludeConfigXml() throws IOException {
-    FindBugsFilter findBugsFilter = new FindBugsFilter();
-    if (project.getExclusionPatterns() != null) {
-      for (String exclusion : project.getExclusionPatterns()) {
-        ClassFilter classFilter = new ClassFilter(FindbugsAntConverter.antToJavaRegexpConvertor(exclusion));
-        findBugsFilter.addMatch(new Match(classFilter));
-      }
-    }
-    return project.getFileSystem().writeToWorkingDirectory(findBugsFilter.toXml(), "findbugs-exclude.xml");
-  }
-
-  @VisibleForTesting
   List<File> getExcludesFilters() {
     List<File> result = new ArrayList<File>();
     String[] filters = settings.getStringArray(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY);

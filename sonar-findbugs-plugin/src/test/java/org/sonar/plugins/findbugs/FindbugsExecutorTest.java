@@ -98,7 +98,6 @@ public class FindbugsExecutorTest {
     project.addSourceDir(new File("test-resources/src").getCanonicalPath());
     project.setCurrentWorkingDirectory(new File("test-resources"));
     when(conf.getFindbugsProject()).thenReturn(project);
-    when(conf.saveExcludeConfigXml()).thenReturn(new File("test-resources/findbugs-exclude.xml"));
     when(conf.saveIncludeConfigXml()).thenReturn(new File("test-resources/findbugs-include.xml"));
     when(conf.getExcludesFilters()).thenReturn(Lists.newArrayList(new File("test-resources/findbugs-exclude.xml"), new File("test-resources/fake-file.xml")));
     when(conf.getEffort()).thenReturn("default");

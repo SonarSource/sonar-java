@@ -70,25 +70,6 @@ public class FindbugsConfigurationTest {
   }
 
   @Test
-  public void should_save_exclude_config() throws Exception {
-    when(project.getExclusionPatterns()).thenReturn(new String[] {"dir/**/*.java"});
-    conf.saveExcludeConfigXml();
-    File findbugsExcludeFile = new File(findbugsTempDir + "/target/sonar/findbugs-exclude.xml");
-    assertThat(findbugsExcludeFile.exists()).isTrue();
-    String findbugsExclude = FileUtils.readFileToString(findbugsExcludeFile);
-    assertThat(findbugsExclude).contains("Match");
-  }
-
-  @Test
-  public void should_save_empty_exclude_config() throws Exception {
-    conf.saveExcludeConfigXml();
-    File findbugsExcludeFile = new File(findbugsTempDir + "/target/sonar/findbugs-exclude.xml");
-    assertThat(findbugsExcludeFile.exists()).isTrue();
-    String findbugsExclude = FileUtils.readFileToString(findbugsExcludeFile);
-    assertThat(findbugsExclude).doesNotContain("Match");
-  }
-
-  @Test
   public void should_return_effort() {
     assertThat(conf.getEffort()).as("default effort").isEqualTo("default");
     settings.setProperty(FindbugsConstants.EFFORT_PROPERTY, "Max");
