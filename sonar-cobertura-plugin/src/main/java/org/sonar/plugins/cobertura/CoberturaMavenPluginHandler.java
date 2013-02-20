@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.cobertura;
 
-import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.maven.MavenPlugin;
 import org.sonar.api.batch.maven.MavenPluginHandler;
 import org.sonar.api.batch.maven.MavenSurefireUtils;
@@ -55,20 +54,12 @@ public class CoberturaMavenPluginHandler implements MavenPluginHandler {
   }
 
   public void configure(Project project, MavenPlugin coberturaPlugin) {
-    configureCobertura(project, coberturaPlugin);
+    configureCobertura(coberturaPlugin);
     MavenSurefireUtils.configure(project);
   }
 
-  private void configureCobertura(Project project, MavenPlugin coberturaPlugin) {
+  private void configureCobertura(MavenPlugin coberturaPlugin) {
     coberturaPlugin.setParameter("formats/format", "xml");
-    for (String pattern : project.getExclusionPatterns()) {
-      if (pattern.endsWith(".java")) {
-        pattern = StringUtils.substringBeforeLast(pattern, ".") + ".class";
-      } else if (StringUtils.substringAfterLast(pattern, "/").indexOf(".") < 0) {
-        pattern = pattern + ".class";
-      }
-      coberturaPlugin.addParameter("instrumentation/excludes/exclude", pattern);
-    }
     coberturaPlugin.setParameter("maxmem", settings.getMaxMemory());
   }
 }
