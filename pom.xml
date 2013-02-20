@@ -213,4 +213,16 @@
     </dependencies>
   </dependencyManagement>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.sonar</groupId>
+          <artifactId>sonar-packaging-maven-plugin</artifactId>
+          <version>1.5-M2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
 </project>

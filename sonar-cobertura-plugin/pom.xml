@@ -64,6 +64,7 @@
         <configuration>
           <pluginKey>cobertura</pluginKey>
           <pluginName>Cobertura</pluginName>
+          <pluginParent>java</pluginParent>
           <pluginClass>org.sonar.plugins.cobertura.CoberturaPlugin</pluginClass>
           <pluginDescription><![CDATA[Get code coverage with <a href="http://cobertura.sourceforge.net/">Cobertura</a>.]]></pluginDescription>
         </configuration>

@@ -49,6 +49,7 @@
         <configuration>
           <pluginKey>surefire</pluginKey>
           <pluginName>Surefire</pluginName>
+          <pluginParent>java</pluginParent>
           <pluginClass>org.sonar.plugins.surefire.SurefirePlugin</pluginClass>
           <pluginDescription>
             <![CDATA[Get results of unit tests with <a href='http://maven.apache.org/plugins/maven-surefire-plugin/'>Surefire</a>.]]></pluginDescription>

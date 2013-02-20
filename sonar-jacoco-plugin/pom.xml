@@ -36,6 +36,7 @@
   <properties>
     <sonar.pluginName>JaCoCo</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.jacoco.JaCoCoPlugin</sonar.pluginClass>
+    <sonar.pluginParent>java</sonar.pluginParent>
   </properties>
 
   <dependencies>
