@@ -19,28 +19,16 @@
  */
 package org.sonar.plugins.findbugs;
 
-import com.google.common.collect.ImmutableMap;
+import org.junit.Test;
 
-import java.util.Map;
+import static org.fest.assertions.Assertions.assertThat;
 
-public final class FindbugsCategory {
-  private static final Map<String, String> FINDBUGS_TO_SONAR = ImmutableMap.<String, String>builder()
-    .put("BAD_PRACTICE", "Bad practice")
-    .put("CORRECTNESS", "Correctness")
-    .put("MT_CORRECTNESS", "Multithreaded correctness")
-    .put("I18N", "Internationalization")
-    .put("EXPERIMENTAL", "Experimental")
-    .put("MALICIOUS_CODE", "Malicious code")
-    .put("PERFORMANCE", "Performance")
-    .put("SECURITY", "Security")
-    .put("STYLE", "Style")
-    .build();
-
-
-  public static String findbugsToSonar(String findbugsCategKey) {
-    return FINDBUGS_TO_SONAR.get(findbugsCategKey);
+public class FindbugsCategoryTest {
+  @Test
+  public void test_mapping_of_categories() {
+    assertThat(FindbugsCategory.findbugsToSonar("EXPERIMENTAL")).isEqualTo("Experimental");
+    assertThat(FindbugsCategory.findbugsToSonar("UNKNOWN_XXX")).isNull();
   }
 
-  private FindbugsCategory() {
-  }
+
 }
