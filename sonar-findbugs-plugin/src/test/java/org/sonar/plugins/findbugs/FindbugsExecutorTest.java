@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.utils.SonarException;
 
 import java.io.File;
@@ -82,11 +82,10 @@ public class FindbugsExecutorTest {
   @Test(expected = SonarException.class)
   public void shoulFailIfNoCompiledClasses() throws Exception {
     Project project = mock(Project.class);
-    ProjectFileSystem fs = mock(ProjectFileSystem.class);
-    when(project.getFileSystem()).thenReturn(fs);
+    ModuleFileSystem fs = mock(ModuleFileSystem.class);
     Settings settings = new Settings();
     settings.setProperty(CoreProperties.CORE_VIOLATION_LOCALE_PROPERTY, CoreProperties.CORE_VIOLATION_LOCALE_DEFAULT_VALUE);
-    FindbugsConfiguration conf = new FindbugsConfiguration(project, settings, null, null, null);
+    FindbugsConfiguration conf = new FindbugsConfiguration(fs, settings, null, null, null);
 
     new FindbugsExecutor(conf).execute();
   }

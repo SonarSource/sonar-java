@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.findbugs;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,44 +27,42 @@ import org.sonar.api.CoreProperties;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.Project;
-import org.sonar.api.test.SimpleProjectFileSystem;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.api.scan.filesystem.SimpleModuleFileSystem;
 
 import java.io.File;
 import java.util.Locale;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class FindbugsConfigurationTest {
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
-  private Project project;
+  private ModuleFileSystem fs;
   private Settings settings;
-  private File findbugsTempDir;
+  private File baseDir;
   private FindbugsConfiguration conf;
 
   @Before
   public void setUp() {
-    project = mock(Project.class);
+    baseDir = tempFolder.newFolder("findbugs");
+    fs = new SimpleModuleFileSystem(baseDir);
     settings = new Settings(new PropertyDefinitions().addComponent(FindbugsPlugin.class));
-    findbugsTempDir = tempFolder.newFolder("findbugs");
-    when(project.getFileSystem()).thenReturn(new SimpleProjectFileSystem(findbugsTempDir));
-    conf = new FindbugsConfiguration(project, settings, RulesProfile.create(), new FindbugsProfileExporter(), null);
+    conf = new FindbugsConfiguration(fs, settings, RulesProfile.create(), new FindbugsProfileExporter(), null);
   }
 
   @Test
   public void should_return_report_file() throws Exception {
-    assertThat(conf.getTargetXMLReport()).isEqualTo(new File(findbugsTempDir, "target/sonar/findbugs-result.xml"));
+    assertThat(conf.getTargetXMLReport().getCanonicalPath()).isEqualTo(new File(fs.workingDir(), "findbugs-result.xml").getCanonicalPath());
   }
 
   @Test
   public void should_save_include_config() throws Exception {
     conf.saveIncludeConfigXml();
-    File findbugsIncludeFile = new File(findbugsTempDir + "/target/sonar/findbugs-include.xml");
+    File findbugsIncludeFile = new File(fs.workingDir(), "findbugs-include.xml");
     assertThat(findbugsIncludeFile.exists()).isTrue();
   }
 

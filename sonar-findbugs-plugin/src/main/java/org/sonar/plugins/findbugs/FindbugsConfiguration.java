@@ -20,19 +20,20 @@
 package org.sonar.plugins.findbugs;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.Project;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.utils.SonarException;
-import org.sonar.plugins.findbugs.xml.ClassFilter;
-import org.sonar.plugins.findbugs.xml.FindBugsFilter;
-import org.sonar.plugins.findbugs.xml.Match;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,20 +43,21 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * @since 2.4
  */
 public class FindbugsConfiguration implements BatchExtension {
 
-  private final Project project;
+  private final ModuleFileSystem fileSystem;
   private final Settings settings;
   private final RulesProfile profile;
   private final FindbugsProfileExporter exporter;
   private final ProjectClasspath projectClasspath;
 
-  public FindbugsConfiguration(Project project, Settings settings, RulesProfile profile, FindbugsProfileExporter exporter, ProjectClasspath classpath) {
-    this.project = project;
+  public FindbugsConfiguration(ModuleFileSystem fileSystem, Settings settings, RulesProfile profile, FindbugsProfileExporter exporter, ProjectClasspath classpath) {
+    this.fileSystem = fileSystem;
     this.settings = settings;
     this.profile = profile;
     this.exporter = exporter;
@@ -63,29 +65,36 @@ public class FindbugsConfiguration implements BatchExtension {
   }
 
   public File getTargetXMLReport() {
-    return new File(project.getFileSystem().getSonarWorkingDirectory(), "findbugs-result.xml");
+    return new File(fileSystem.workingDir(), "findbugs-result.xml");
   }
 
-  public edu.umd.cs.findbugs.Project getFindbugsProject() {
-    File classesDir = project.getFileSystem().getBuildOutputDir();
-    if (classesDir == null || !classesDir.exists()) {
+  public edu.umd.cs.findbugs.Project getFindbugsProject() throws IOException {
+    edu.umd.cs.findbugs.Project findbugsProject = new edu.umd.cs.findbugs.Project();
+    for (File dir : fileSystem.sourceDirs()) {
+      findbugsProject.addSourceDir(dir.getAbsolutePath());
+    }
+    boolean hasExistingBinaryDir = false;
+    Set<String> binaryDirPaths = Sets.newHashSet();
+    for (File binaryDir : fileSystem.binaryDirs()) {
+      if (binaryDir.exists()) {
+        hasExistingBinaryDir = true;
+        findbugsProject.addFile(binaryDir.getAbsolutePath());
+        binaryDirPaths.add(binaryDir.getCanonicalPath());
+      }
+    }
+    if (!hasExistingBinaryDir) {
       throw new SonarException("Findbugs needs sources to be compiled. "
         + "Please build project before executing sonar and check the location of compiled classes.");
     }
 
-    edu.umd.cs.findbugs.Project findbugsProject = new edu.umd.cs.findbugs.Project();
-    for (File dir : project.getFileSystem().getSourceDirs()) {
-      findbugsProject.addSourceDir(dir.getAbsolutePath());
-    }
-    findbugsProject.addFile(classesDir.getAbsolutePath());
     for (File file : projectClasspath.getElements()) {
-      if (!file.equals(classesDir)) {
+      if (file.isFile() || !binaryDirPaths.contains(file.getCanonicalPath())) {
         findbugsProject.addAuxClasspathEntry(file.getAbsolutePath());
       }
     }
     findbugsProject.addAuxClasspathEntry(annotationsLib.getAbsolutePath());
     findbugsProject.addAuxClasspathEntry(jsr305Lib.getAbsolutePath());
-    findbugsProject.setCurrentWorkingDirectory(project.getFileSystem().getBuildDir());
+    findbugsProject.setCurrentWorkingDirectory(fileSystem.buildDir());
     return findbugsProject;
   }
 
@@ -93,17 +102,20 @@ public class FindbugsConfiguration implements BatchExtension {
   File saveIncludeConfigXml() throws IOException {
     StringWriter conf = new StringWriter();
     exporter.exportProfile(profile, conf);
-    return project.getFileSystem().writeToWorkingDirectory(conf.toString(), "findbugs-include.xml");
+    File file = new File(fileSystem.workingDir(), "findbugs-include.xml");
+    FileUtils.write(file, conf.toString(), CharEncoding.UTF_8);
+    return file;
   }
 
   @VisibleForTesting
   List<File> getExcludesFilters() {
-    List<File> result = new ArrayList<File>();
+    List<File> result = Lists.newArrayList();
+    PathResolver pathResolver = new PathResolver();
     String[] filters = settings.getStringArray(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY);
     for (String excludesFilterPath : filters) {
       excludesFilterPath = StringUtils.trim(excludesFilterPath);
       if (StringUtils.isNotBlank(excludesFilterPath)) {
-        result.add(project.getFileSystem().resolvePath(excludesFilterPath));
+        result.add(pathResolver.relativeFile(fileSystem.baseDir(), excludesFilterPath));
       }
     }
     return result;
