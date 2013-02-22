@@ -19,18 +19,22 @@
  */
 package org.sonar.plugins.findbugs;
 
+import edu.umd.cs.findbugs.Project;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.CoreProperties;
+import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.SimpleModuleFileSystem;
+import org.sonar.api.utils.SonarException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -39,19 +43,24 @@ import static org.mockito.Mockito.mock;
 public class FindbugsConfigurationTest {
 
   @Rule
-  public TemporaryFolder tempFolder = new TemporaryFolder();
+  public TemporaryFolder temp = new TemporaryFolder();
 
-  private ModuleFileSystem fs;
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  private SimpleModuleFileSystem fs;
   private Settings settings;
   private File baseDir;
   private FindbugsConfiguration conf;
+  private ProjectClasspath classpath;
 
   @Before
   public void setUp() {
-    baseDir = tempFolder.newFolder("findbugs");
+    baseDir = temp.newFolder("findbugs");
     fs = new SimpleModuleFileSystem(baseDir);
     settings = new Settings(new PropertyDefinitions().addComponent(FindbugsPlugin.class));
-    conf = new FindbugsConfiguration(fs, settings, RulesProfile.create(), new FindbugsProfileExporter(), null);
+    classpath = mock(ProjectClasspath.class);
+    conf = new FindbugsConfiguration(fs, settings, RulesProfile.create(), new FindbugsProfileExporter(), classpath);
   }
 
   @Test
@@ -100,4 +109,29 @@ public class FindbugsConfigurationTest {
     assertThat(conf.getEffort()).isEqualTo("high");
   }
 
+  @Test
+  public void should_fail_if_no_binary_dirs() throws IOException {
+    thrown.expect(SonarException.class);
+    thrown.expectMessage("Findbugs needs sources to be compiled");
+
+    assertThat(fs.binaryDirs()).isEmpty();
+    conf.getFindbugsProject();
+  }
+
+  /**
+   * @since 1.2
+   */
+  @Test
+  public void should_support_multiple_binary_dirs() throws IOException {
+    File binaryDir1 = temp.newFolder("binary1");
+    File binaryDir2 = temp.newFolder("binary2");
+    fs.addBinaryDir(binaryDir1);
+    fs.addBinaryDir(binaryDir2);
+
+    Project findbugsProject = conf.getFindbugsProject();
+
+    assertThat(findbugsProject.getFileCount()).isEqualTo(2);
+    assertThat(findbugsProject.getFile(0)).isEqualTo(binaryDir1.getAbsolutePath());
+    assertThat(findbugsProject.getFile(1)).isEqualTo(binaryDir2.getAbsolutePath());
+  }
 }

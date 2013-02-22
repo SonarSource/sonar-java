@@ -38,9 +38,7 @@ import org.sonar.api.utils.SonarException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -92,8 +90,11 @@ public class FindbugsConfiguration implements BatchExtension {
         findbugsProject.addAuxClasspathEntry(file.getAbsolutePath());
       }
     }
-    findbugsProject.addAuxClasspathEntry(annotationsLib.getAbsolutePath());
-    findbugsProject.addAuxClasspathEntry(jsr305Lib.getAbsolutePath());
+    if (annotationsLib != null) {
+      // Findbugs dependencies are packaged by Maven. They are not available during execution of unit tests.
+      findbugsProject.addAuxClasspathEntry(annotationsLib.getAbsolutePath());
+      findbugsProject.addAuxClasspathEntry(jsr305Lib.getAbsolutePath());
+    }
     findbugsProject.setCurrentWorkingDirectory(fileSystem.buildDir());
     return findbugsProject;
   }
@@ -157,14 +158,16 @@ public class FindbugsConfiguration implements BatchExtension {
   }
 
   private File copyLib(String name) {
+    InputStream input = null;
     try {
-      InputStream is = getClass().getResourceAsStream(name);
+      input = getClass().getResourceAsStream(name);
       File temp = File.createTempFile("findbugs", ".jar");
-      OutputStream os = FileUtils.openOutputStream(temp);
-      IOUtils.copy(is, os);
+      FileUtils.copyInputStreamToFile(input, temp);
       return temp;
     } catch (IOException e) {
-      throw new SonarException(e);
+      throw new IllegalStateException("Fail to extract Findbugs dependency", e);
+    } finally {
+      IOUtils.closeQuietly(input);
     }
   }
 
