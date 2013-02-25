@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.surefire.api;
 
-import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.maven.MavenPlugin;
 import org.sonar.api.batch.maven.MavenSurefireUtils;
 import org.sonar.api.resources.Project;
