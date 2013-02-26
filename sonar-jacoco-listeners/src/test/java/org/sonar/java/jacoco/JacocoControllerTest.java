@@ -24,13 +24,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -51,8 +52,9 @@ public class JacocoControllerTest {
   @Test
   public void test_onStart() throws Exception {
     jacoco.onTestStart("test");
-    verify(agent).reset();
-    verify(agent).setSessionId("test");
+    InOrder inOrder = Mockito.inOrder(agent);
+    inOrder.verify(agent).setSessionId("");
+    inOrder.verify(agent).dump(true);
     verifyNoMoreInteractions(agent);
   }
 
@@ -60,7 +62,9 @@ public class JacocoControllerTest {
   public void test_onFinish() throws Exception {
     when(agent.getExecutionData(false)).thenReturn(new byte[] {});
     jacoco.onTestFinish("test");
-    verify(agent).dump(true);
+    InOrder inOrder = Mockito.inOrder(agent);
+    inOrder.verify(agent).setSessionId("test");
+    inOrder.verify(agent).dump(true);
     verifyNoMoreInteractions(agent);
   }
 
