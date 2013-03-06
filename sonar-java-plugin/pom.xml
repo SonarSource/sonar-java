@@ -13,6 +13,7 @@
 
   <name>Sonar Java :: Sonar Plugin</name>
   <description>This plugin brings core support to the Java language on Sonar.</description>
+  <url>http://docs.codehaus.org/display/SONAR/Java+Ecosystem</url>
 
   <properties>
     <!-- Configuration for sonar-packaging-maven-plugin -->
