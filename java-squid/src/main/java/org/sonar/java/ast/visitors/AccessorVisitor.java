@@ -167,8 +167,8 @@ public class AccessorVisitor extends JavaAstVisitor {
   }
 
   private boolean hasBooleanReturnType(MethodHelper method) {
-    AstNode node = method.getReturnType();
-    return node.getChildren().size() == 1 && node.getChild(0).getChild(0).is(JavaKeyword.BOOLEAN);
+    AstNode typeNode = method.getReturnType();
+    return typeNode.isNot(JavaKeyword.VOID) && typeNode.getChildren().size() == 1 && typeNode.getChild(0).getChild(0).is(JavaKeyword.BOOLEAN);
   }
 
 }

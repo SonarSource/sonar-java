@@ -19,4 +19,7 @@ public class getAccessors {
     return ready;
   }
 
+  public void isActive() {
+  }
+
 }
