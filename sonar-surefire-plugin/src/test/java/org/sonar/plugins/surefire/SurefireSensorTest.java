@@ -144,7 +144,6 @@ public class SurefireSensorTest {
   }
 
   @Test
-//  @Ignore
   public void shouldSaveErrorsAndFailuresInXML() throws URISyntaxException {
     SensorContext context = mockContext();
     surefireSensor.collect(new Project("key"), context, new File(getClass().getResource(
