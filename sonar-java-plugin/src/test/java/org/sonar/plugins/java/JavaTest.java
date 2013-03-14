@@ -19,16 +19,21 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.ImmutableList;
-import org.sonar.api.SonarPlugin;
-import org.sonar.plugins.java.api.JavaSettings;
+import org.junit.Test;
+import org.sonar.api.resources.Java;
 
-import java.util.List;
+import static org.fest.assertions.Assertions.assertThat;
 
-public final class JavaPlugin extends SonarPlugin {
+public class JavaTest {
 
-  public List<?> getExtensions() {
-    return ImmutableList.of(JavaCommonRulesEngineProvider.class, JavaSettings.class, Java.class);
+  @Test
+  public void test() {
+    org.sonar.api.resources.Java language = new org.sonar.api.resources.Java();
+    assertThat(language.getFileSuffixes()).isEqualTo(new String[] {".java", ".jav"});
+
+    assertThat(org.sonar.api.resources.Java.isJavaFile(new java.io.File("Example.java"))).isTrue();
+    assertThat(org.sonar.api.resources.Java.isJavaFile(new java.io.File("Example.jav"))).isTrue();
+    assertThat(Java.isJavaFile(new java.io.File("Example.notjava"))).isFalse();
   }
 
 }
