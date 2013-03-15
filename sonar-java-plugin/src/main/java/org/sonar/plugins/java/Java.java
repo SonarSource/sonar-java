@@ -23,8 +23,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.resources.AbstractLanguage;
 
-import java.util.Arrays;
-
 /**
  * Java language implementation
  *
@@ -60,7 +58,7 @@ public class Java extends AbstractLanguage {
    * @see org.sonar.api.resources.AbstractLanguage#getFileSuffixes()
    */
   public String[] getFileSuffixes() {
-    return Arrays.copyOf(SUFFIXES, 2);
+    return (String[]) ArrayUtils.clone(SUFFIXES);
   }
 
   public static boolean isJavaFile(java.io.File file) {
