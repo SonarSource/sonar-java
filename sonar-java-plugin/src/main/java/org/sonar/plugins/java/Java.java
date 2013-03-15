@@ -23,14 +23,14 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.resources.AbstractLanguage;
 
+import java.util.Arrays;
+
 /**
  * Java language implementation
  *
  * @since 1.3
  */
 public class Java extends AbstractLanguage {
-
-  public static final org.sonar.api.resources.Java INSTANCE = new org.sonar.api.resources.Java();
 
   /**
    * Java key
@@ -43,14 +43,9 @@ public class Java extends AbstractLanguage {
   public static final String NAME = "Java";
 
   /**
-   * Default package name for classes without package def
-   */
-  public static final String DEFAULT_PACKAGE_NAME = "[default]";
-
-  /**
    * Java files knows suffixes
    */
-  public static final String[] SUFFIXES = {".java", ".jav"};
+  private static final String[] SUFFIXES = {".java", ".jav"};
 
   /**
    * Default constructor
@@ -65,7 +60,7 @@ public class Java extends AbstractLanguage {
    * @see org.sonar.api.resources.AbstractLanguage#getFileSuffixes()
    */
   public String[] getFileSuffixes() {
-    return SUFFIXES;
+    return Arrays.copyOf(SUFFIXES, 2);
   }
 
   public static boolean isJavaFile(java.io.File file) {

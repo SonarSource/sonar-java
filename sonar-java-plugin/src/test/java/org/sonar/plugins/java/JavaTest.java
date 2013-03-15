@@ -20,19 +20,21 @@
 package org.sonar.plugins.java;
 
 import org.junit.Test;
-import org.sonar.api.resources.Java;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaTest {
 
   @Test
-  public void test() {
-    org.sonar.api.resources.Java language = new org.sonar.api.resources.Java();
-    assertThat(language.getFileSuffixes()).isEqualTo(new String[] {".java", ".jav"});
+  public void should_return_java_file_suffixes() {
+    Java language = new Java();
+    assertThat(language.getFileSuffixes()).containsOnly(".java", ".jav");
+  }
 
-    assertThat(org.sonar.api.resources.Java.isJavaFile(new java.io.File("Example.java"))).isTrue();
-    assertThat(org.sonar.api.resources.Java.isJavaFile(new java.io.File("Example.jav"))).isTrue();
+  @Test
+  public void should_check_java_files() {
+    assertThat(Java.isJavaFile(new java.io.File("Example.java"))).isTrue();
+    assertThat(Java.isJavaFile(new java.io.File("Example.jav"))).isTrue();
     assertThat(Java.isJavaFile(new java.io.File("Example.notjava"))).isFalse();
   }
 
