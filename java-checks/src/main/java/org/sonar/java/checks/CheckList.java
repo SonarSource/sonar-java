@@ -45,6 +45,7 @@ public final class CheckList {
         CommentedOutCodeLineCheck.class,
         EmptyFileCheck.class,
         XPathCheck.class,
+        EmptyBlock_S00108_Check.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

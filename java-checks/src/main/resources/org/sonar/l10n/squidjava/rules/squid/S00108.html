@@ -1,0 +1,25 @@
+<p>
+Most of the time a block of code is empty when a piece of code is really missing. So such empty block must be either filled or removed.
+</p>
+
+<p>The following code snippet illustrates this rule:</p>
+<pre>
+void doSomething() {
+  int myVar= 0;
+  for (int i = 0; i< 4; i++)
+  { // Non-Compliant
+  }
+  for (int i = 0; i< 4; i++); // Compliant
+
+  if (myVar == 4)
+  { // Non-Compliant
+  }
+
+  try
+  { // Non-Compliant
+  }
+  catch (Exception e)
+  { // Non-Compliant
+  }
+}
+</pre>
