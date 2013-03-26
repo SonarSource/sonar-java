@@ -909,6 +909,7 @@
     <configKey><![CDATA[rulesets/codesize.xml/ExcessiveParameterList]]></configKey>
     <param key="minimum" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ExcessiveClassLength">
