@@ -32,6 +32,7 @@ public final class CheckList {
 
   public static List<Class> getChecks() {
     return ImmutableList.<Class> of(
+        TabCharacter_S00105_Check.class,
         // AST
         ParsingErrorCheck.class,
         BreakCheck.class,
