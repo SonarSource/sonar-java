@@ -36,7 +36,7 @@ import java.util.List;
 @Rule(
   key = "S00103",
   priority = Priority.MINOR)
-public class LineLength_S00103_Check extends SquidCheck<LexerlessGrammar> implements CharsetAwareVisitor {
+public class TooLongLine_S00103_Check extends SquidCheck<LexerlessGrammar> implements CharsetAwareVisitor {
 
   private static final int DEFAULT_MAXIMUM_LINE_LENHGTH = 80;
 

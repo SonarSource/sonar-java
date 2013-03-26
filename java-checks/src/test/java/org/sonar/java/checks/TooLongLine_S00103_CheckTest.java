@@ -26,9 +26,9 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
-public class LineLength_S00103_CheckTest {
+public class TooLongLine_S00103_CheckTest {
 
-  private LineLength_S00103_Check check = new LineLength_S00103_Check();
+  private TooLongLine_S00103_Check check = new TooLongLine_S00103_Check();
 
   @Test
   public void test() {
