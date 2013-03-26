@@ -45,9 +45,9 @@ class JacocoController {
     try {
       this.agent = RT.getAgent();
     } catch (NoClassDefFoundError e) {
-      throw new Error(ERROR, e);
+      throw new JacocoControllerError(ERROR, e);
     } catch (Exception e) {
-      throw new Error(ERROR, e);
+      throw new JacocoControllerError(ERROR, e);
     }
   }
 
@@ -57,7 +57,7 @@ class JacocoController {
 
   public synchronized void onTestStart(String name) {
     if (testStarted) {
-      throw new Error("Looks like several tests executed in parallel in the same JVM, thus coverage per test can't be recorded correctly.");
+      throw new JacocoControllerError("Looks like several tests executed in parallel in the same JVM, thus coverage per test can't be recorded correctly.");
     }
     // Dump coverage between tests
     dump("");
@@ -75,7 +75,21 @@ class JacocoController {
     try {
       agent.dump(true);
     } catch (IOException e) {
-      throw new Error(e);
+      throw new JacocoControllerError(e);
+    }
+  }
+
+  public static class JacocoControllerError extends Error {
+    public JacocoControllerError(String message) {
+      super(message);
+    }
+
+    public JacocoControllerError(String message, Throwable cause) {
+      super(message, cause);
+    }
+
+    public JacocoControllerError(Throwable cause) {
+      super(cause);
     }
   }
 

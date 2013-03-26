@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import org.sonar.java.jacoco.JacocoController.JacocoControllerError;
 
 import java.io.IOException;
 
@@ -71,14 +72,14 @@ public class JacocoControllerTest {
   @Test
   public void should_throw_exception_when_dump_failed() throws Exception {
     doThrow(IOException.class).when(agent).dump(anyBoolean());
-    thrown.expect(Error.class);
+    thrown.expect(JacocoControllerError.class);
     jacoco.onTestFinish("test");
   }
 
   @Test
   public void should_throw_exception_when_two_tests_started_in_parallel() {
     jacoco.onTestStart("test1");
-    thrown.expect(Error.class);
+    thrown.expect(JacocoControllerError.class);
     thrown.expectMessage("Looks like several tests executed in parallel in the same JVM, thus coverage per test can't be recorded correctly.");
     jacoco.onTestStart("test2");
   }
