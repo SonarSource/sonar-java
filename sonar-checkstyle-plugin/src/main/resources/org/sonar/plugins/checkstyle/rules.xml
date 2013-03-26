@@ -879,6 +879,7 @@
     </param>
     <param key="fileExtensions" type="s{}">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.whitespace.NoWhitespaceAfterCheck">

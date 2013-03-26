@@ -34,6 +34,7 @@ public final class CheckList {
     return ImmutableList.<Class> of(
         TabCharacter_S00105_Check.class,
         TooLongLine_S00103_Check.class,
+        MissingNewLineAtEndOfFile_S00113_Check.class,
         // AST
         ParsingErrorCheck.class,
         BreakCheck.class,
