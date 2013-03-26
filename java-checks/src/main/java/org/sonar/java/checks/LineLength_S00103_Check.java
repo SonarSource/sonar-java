@@ -23,9 +23,9 @@ import com.google.common.io.Files;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.api.utils.SonarException;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -34,10 +34,16 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 @Rule(
-  key = "S00105",
+  key = "S00103",
   priority = Priority.MINOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class TabCharacter_S00105_Check extends SquidCheck<LexerlessGrammar> implements CharsetAwareVisitor {
+public class LineLength_S00103_Check extends SquidCheck<LexerlessGrammar> implements CharsetAwareVisitor {
+
+  private static final int DEFAULT_MAXIMUM_LINE_LENHGTH = 80;
+
+  @RuleProperty(
+    key = "maximumLineLength",
+    defaultValue = "" + DEFAULT_MAXIMUM_LINE_LENHGTH)
+  public int maximumLineLength = DEFAULT_MAXIMUM_LINE_LENHGTH;
 
   private Charset charset;
 
@@ -53,9 +59,10 @@ public class TabCharacter_S00105_Check extends SquidCheck<LexerlessGrammar> impl
     } catch (IOException e) {
       throw new SonarException(e);
     }
-    for (String line : lines) {
-      if (line.contains("\t")) {
-        getContext().createFileViolation(this, "Replace all tab characters in this file by sequences of white-spaces.");
+    for (int i = 0; i < lines.size(); i++) {
+      String line = lines.get(i);
+      if (line.length() > maximumLineLength) {
+        getContext().createLineViolation(this, "Split this {0} characters long line (which is greater than {1} authorized).", i + 1, line.length(), maximumLineLength);
         break;
       }
     }

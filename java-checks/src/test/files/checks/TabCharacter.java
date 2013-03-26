@@ -1,4 +1,4 @@
-public class TabCharacter {
-	public void method() {
+class TabCharacter {
+	void method() {
 	}
 }

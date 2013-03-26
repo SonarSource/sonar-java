@@ -688,6 +688,7 @@
     </param>
     <param key="tabWidth" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.naming.LocalFinalVariableNameCheck">
