@@ -79,6 +79,7 @@
     </param>
     <param key="showMethodsComplexity" type="BOOLEAN">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidStringBufferField">
