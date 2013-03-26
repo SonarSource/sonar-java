@@ -46,6 +46,7 @@ public final class CheckList {
         EmptyFileCheck.class,
         XPathCheck.class,
         EmptyBlock_S00108_Check.class,
+        TooManyLinesOfCodeInFile_S00104_Check.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

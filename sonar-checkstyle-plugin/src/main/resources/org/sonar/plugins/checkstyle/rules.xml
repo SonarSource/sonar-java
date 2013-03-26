@@ -418,6 +418,7 @@
     <configKey><![CDATA[Checker/FileLength]]></configKey>
     <param key="max" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.design.FinalClassCheck">
