@@ -1251,6 +1251,7 @@
     </param>
     <param key="message" type="STRING">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
 </rules>
