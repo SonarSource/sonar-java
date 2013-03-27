@@ -35,7 +35,7 @@ import java.util.List;
     description = "Checkstyle support three error filtering mechanisms : SuppressionCommentFilter, SuppressWithNearbyCommentFilter and SuppressionFilter."
       + "This property allows to configure all those filters with a native XML format."
       + " See <a href='http://checkstyle.sourceforge.net/config.html'>Checkstyle configuration page</a> to get more information on those filters.",
-    project = false,
+    project = true,
     global = true,
     type = PropertyType.TEXT)})
 public final class CheckstylePlugin extends SonarPlugin {
