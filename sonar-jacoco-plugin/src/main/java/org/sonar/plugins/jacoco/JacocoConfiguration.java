@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.jacoco;
 
+import com.google.common.base.Joiner;
 import org.apache.commons.lang.StringUtils;
 import org.jacoco.core.runtime.AgentOptions;
 import org.sonar.api.BatchExtension;
@@ -30,65 +31,65 @@ import org.sonar.api.resources.Project;
 import org.sonar.plugins.java.api.JavaSettings;
 
 @Properties({
-    @Property(
-        key = JacocoConfiguration.REPORT_PATH_PROPERTY,
-        name = "File with execution data",
-        defaultValue = JacocoConfiguration.REPORT_PATH_DEFAULT_VALUE,
-        description = "Path (absolute or relative) to the file with execution data.",
-        global = false,
-        module = true,
-        project = true
-    ),
-    @Property(
-        key = JacocoConfiguration.INCLUDES_PROPERTY,
-        name = "Includes",
-        description = "A list of class names that should be included in execution analysis." +
-            " The list entries are separated by a colon (:) and may use wildcard characters (* and ?)." +
-            " Except for performance optimization or technical corner cases this option is normally not required.",
-        global = true,
-        project = true,
-        module = true
-    ),
-    @Property(
-        key = JacocoConfiguration.EXCLUDES_PROPERTY,
-        name = "Excludes",
-        defaultValue = JacocoConfiguration.EXCLUDES_DEFAULT_VALUE,
-        description = "A list of class names that should be excluded from execution analysis." +
-            " The list entries are separated by a colon (:) and may use wildcard characters (* and ?)." +
-            " Except for performance optimization or technical corner cases this option is normally not required.",
-        global = true,
-        project = true,
-        module = true
-    ),
-    @Property(
-        key = JacocoConfiguration.EXCLCLASSLOADER_PROPERTY,
-        name = "Excluded class loaders",
-        description = "A list of class loader names that should be excluded from execution analysis." +
-            " The list entries are separated by a colon (:) and may use wildcard characters (* and ?)." +
-            " This option might be required in case of special frameworks that conflict with JaCoCo code" +
-            " instrumentation, in particular class loaders that do not have access to the Java runtime classes.",
-        global = true,
-        project = true,
-        module = true
-    ),
-    @Property(
-        key = JacocoConfiguration.IT_REPORT_PATH_PROPERTY,
-        name = "File with execution data for integration tests",
-        defaultValue = JacocoConfiguration.IT_REPORT_PATH_DEFAULT_VALUE,
-        description = "Path (absolute or relative) to the file with execution data.",
-        global = false,
-        module = true,
-        project = true
-    ),
-    @Property(
-        key = JacocoConfiguration.ANT_TARGETS_PROPERTY,
-        name = "Ant targets",
-        defaultValue = JacocoConfiguration.ANT_TARGETS_DEFAULT_VALUE,
-        description = "Comma separated list of Ant targets for execution of tests.",
-        global = true,
-        module = true,
-        project = true
-    )})
+  @Property(
+    key = JacocoConfiguration.REPORT_PATH_PROPERTY,
+    name = "File with execution data",
+    defaultValue = JacocoConfiguration.REPORT_PATH_DEFAULT_VALUE,
+    description = "Path (absolute or relative) to the file with execution data.",
+    global = false,
+    module = true,
+    project = true
+  ),
+  @Property(
+    key = JacocoConfiguration.INCLUDES_PROPERTY,
+    multiValues = true,
+    name = "Includes",
+    description = "A list of class names that should be included in execution analysis (see wildcards)." +
+      " Except for performance optimization or technical corner cases this option is normally not required.",
+    global = true,
+    project = true,
+    module = true
+  ),
+  @Property(
+    key = JacocoConfiguration.EXCLUDES_PROPERTY,
+    multiValues = true,
+    name = "Excludes",
+    defaultValue = JacocoConfiguration.EXCLUDES_DEFAULT_VALUE,
+    description = "A list of class names that should be excluded from execution analysis (see wildcards)." +
+      " Except for performance optimization or technical corner cases this option is normally not required.",
+    global = true,
+    project = true,
+    module = true
+  ),
+  @Property(
+    key = JacocoConfiguration.EXCLCLASSLOADER_PROPERTY,
+    multiValues = true,
+    name = "Excluded class loaders",
+    description = "A list of class loader names that should be excluded from execution analysis (see wildcards)." +
+      " This option might be required in case of special frameworks that conflict with JaCoCo code" +
+      " instrumentation, in particular class loaders that do not have access to the Java runtime classes.",
+    global = true,
+    project = true,
+    module = true
+  ),
+  @Property(
+    key = JacocoConfiguration.IT_REPORT_PATH_PROPERTY,
+    name = "File with execution data for integration tests",
+    defaultValue = JacocoConfiguration.IT_REPORT_PATH_DEFAULT_VALUE,
+    description = "Path (absolute or relative) to the file with execution data.",
+    global = false,
+    module = true,
+    project = true
+  ),
+  @Property(
+    key = JacocoConfiguration.ANT_TARGETS_PROPERTY,
+    name = "Ant targets",
+    defaultValue = JacocoConfiguration.ANT_TARGETS_DEFAULT_VALUE,
+    description = "Comma separated list of Ant targets for execution of tests.",
+    global = true,
+    module = true,
+    project = true
+  )})
 public class JacocoConfiguration implements BatchExtension {
 
   public static final String REPORT_PATH_PROPERTY = "sonar.jacoco.reportPath";
@@ -137,15 +138,15 @@ public class JacocoConfiguration implements BatchExtension {
   public String getJvmArgument() {
     AgentOptions options = new AgentOptions();
     options.setDestfile(getReportPath());
-    String includes = settings.getString(INCLUDES_PROPERTY);
+    String includes = Joiner.on(':').join(settings.getStringArray(INCLUDES_PROPERTY));
     if (StringUtils.isNotBlank(includes)) {
       options.setIncludes(includes);
     }
-    String excludes = settings.getString(EXCLUDES_PROPERTY);
+    String excludes = Joiner.on(':').join(settings.getStringArray(EXCLUDES_PROPERTY));
     if (StringUtils.isNotBlank(excludes)) {
       options.setExcludes(excludes);
     }
-    String exclclassloader = settings.getString(EXCLCLASSLOADER_PROPERTY);
+    String exclclassloader = Joiner.on(':').join(settings.getStringArray(EXCLCLASSLOADER_PROPERTY));
     if (StringUtils.isNotBlank(exclclassloader)) {
       options.setExclClassloader(exclclassloader);
     }
