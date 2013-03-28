@@ -28,20 +28,21 @@ import org.sonar.plugins.surefire.api.SurefireUtils;
 import java.util.List;
 
 @Properties({
-    @Property(
-        key = SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY,
-        name = "Report path",
-        description = "Path (absolute or relative) to XML report files.",
-        project = true,
-        global = false)
+  @Property(
+    key = SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY,
+    deprecatedKey = SurefireUtils.SUREFIRE_REPORTS_PATH_DEPRECATED_PROPERTY,
+    name = "Report path",
+    description = "Path (absolute or relative) to XML report files.",
+    project = true,
+    global = false
+  )
 })
 public final class SurefirePlugin extends SonarPlugin {
 
   public List<?> getExtensions() {
     return ImmutableList.of(
         SurefireSensor.class,
-        SurefireJavaParser.class
-    );
+        SurefireJavaParser.class);
   }
 
 }
