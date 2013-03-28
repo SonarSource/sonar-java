@@ -49,6 +49,7 @@ public final class CheckList {
         EmptyBlock_S00108_Check.class,
         TooManyLinesOfCodeInFile_S00104_Check.class,
         TooManyParameters_S00107_Check.class,
+        RawException_S00112_Check.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

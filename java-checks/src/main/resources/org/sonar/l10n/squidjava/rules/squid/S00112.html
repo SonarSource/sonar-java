@@ -1,0 +1,16 @@
+<p>
+Using such generic exception prevents calling methods from handling differently each kind of error.
+</p>
+
+<p>
+The following code snippet illustrates this rule:
+</p>
+<pre>
+public void foo(String bar) {
+  throw new RuntimeException("My Message"); // Non-Compliant
+}
+
+public void foo(String bar) {
+  throw new MyRuntimeException("My Message"); // Compliant
+}
+</pre>
