@@ -29,7 +29,6 @@ import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.AccessorVisitor;
 import org.sonar.java.ast.visitors.AnonymousInnerClassVisitor;
 import org.sonar.java.ast.visitors.ClassVisitor;
@@ -46,6 +45,7 @@ import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.indexer.QueryByType;
 import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.parser.ParserAdapter;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -75,7 +75,7 @@ public final class JavaAstScanner {
   }
 
   public static AstScanner create(JavaConfiguration conf, SquidAstVisitor<LexerlessGrammar>... visitors) {
-    final Parser<LexerlessGrammar> parser = JavaParser.create(conf);
+    final Parser<LexerlessGrammar> parser = new ParserAdapter<LexerlessGrammar>(conf.getCharset(), JavaGrammar.createGrammar());
 
     AstScanner builder = new AstScanner(parser);
 
