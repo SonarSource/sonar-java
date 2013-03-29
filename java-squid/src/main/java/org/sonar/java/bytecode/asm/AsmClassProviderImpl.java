@@ -31,7 +31,8 @@ import java.util.Map;
 
 public class AsmClassProviderImpl extends AsmClassProvider {
 
-  private static Logger logger = LoggerFactory.getLogger(AsmClassProviderImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AsmClassProviderImpl.class);
+
   private final ClassLoader classLoader;
   private Map<String, AsmClass> asmClassCache = new HashMap<String, AsmClass>();
 
@@ -68,18 +69,20 @@ public class AsmClassProviderImpl extends AsmClassProvider {
   private void decoracteAsmClassFromBytecode(AsmClass asmClass, DETAIL_LEVEL level) {
     InputStream input = null;
     try {
+
       AsmClassVisitor classVisitor = new AsmClassVisitor(this, asmClass, level);
       input = classLoader.getResourceAsStream(asmClass.getInternalName() + ".class");
       ClassReader asmReader = new ClassReader(input);
       asmReader.accept(classVisitor, 0);
-
     } catch (IOException e) {
-      logger.warn("Class '" + asmClass.getInternalName() + "' is not accessible through the ClassLoader.");
+      LOG.warn("Class '" + asmClass.getInternalName() + "' is not accessible through the ClassLoader.");
     } catch (SecurityException e) {
-      logger.warn("Class '" + asmClass.getInternalName()
-          + "' is not accessible through the ClassLoader. One signed jar seems to be corrupted.");
+      LOG.warn("Class '" + asmClass.getInternalName() + "' is not accessible through the ClassLoader. One signed jar seems to be corrupted.");
+    } catch (Exception e) {
+      LOG.error("Unable to process bytecode of class '" + asmClass.getInternalName() + "'", e);
     } finally {
       IOUtils.closeQuietly(input);
     }
   }
+
 }
