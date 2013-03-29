@@ -31,7 +31,8 @@ public class CallToDeprecatedMethodCheckTest {
   public void test() {
     SourceFile file = BytecodeFixture.scan("CallToDeprecatedMethod", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(26).withMessage("Method 'getBytes(...)' is deprecated.")
+        .next().atLine(26).withMessage("Method 'String.getBytes(...)' is deprecated.")
+        .next().atLine(27).withMessage("Constructor 'CallToDeprecatedMethod$DeprecatedConstructor(...)' is deprecated.")
         .noMore();
   }
 

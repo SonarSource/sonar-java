@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
@@ -43,10 +44,22 @@ public class CallToDeprecatedMethodCheck extends BytecodeVisitor {
     if (edge.getTo().isDeprecated() && edge.getTo() instanceof AsmMethod) {
       AsmMethod targetMethod = (AsmMethod) edge.getTo();
       SourceFile sourceFile = getSourceFile(asmClass);
-      CheckMessage message = new CheckMessage(this, "Method '" + targetMethod.getName() + "(...)' is deprecated.");
+      CheckMessage message = new CheckMessage(this, formatMessage(targetMethod));
       message.setLine(edge.getSourceLineNumber());
       sourceFile.log(message);
     }
+  }
+
+  public String formatMessage(AsmMethod asmMethod) {
+    if ("<init>".equals(asmMethod.getName())) {
+      return "Constructor '" + getShortClassName(asmMethod.getParent()) + "(...)' is deprecated.";
+    } else {
+      return "Method '" + getShortClassName(asmMethod.getParent()) + "." + asmMethod.getName() + "(...)' is deprecated.";
+    }
+  }
+
+  public String getShortClassName(AsmClass asmClass) {
+    return StringUtils.substringAfterLast(asmClass.getInternalName(), "/");
   }
 
 }
