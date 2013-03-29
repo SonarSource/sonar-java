@@ -51,7 +51,7 @@ public class CallToDeprecatedMethodCheck extends BytecodeVisitor {
   }
 
   public String formatMessage(AsmMethod asmMethod) {
-    if ("<init>".equals(asmMethod.getName())) {
+    if (asmMethod.isConstructor()) {
       return "Constructor '" + getShortClassName(asmMethod.getParent()) + "(...)' is deprecated.";
     } else {
       return "Method '" + getShortClassName(asmMethod.getParent()) + "." + asmMethod.getName() + "(...)' is deprecated.";
