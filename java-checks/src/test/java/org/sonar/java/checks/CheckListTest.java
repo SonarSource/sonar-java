@@ -27,6 +27,7 @@ import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleParam;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -90,6 +91,14 @@ public class CheckListTest {
             .isEmpty();
       }
     }
+  }
+
+  @Test
+  public void private_constructor() throws Exception {
+    Constructor constructor = CheckList.class.getDeclaredConstructor();
+    assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
   }
 
 }
