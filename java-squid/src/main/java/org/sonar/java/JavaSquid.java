@@ -31,8 +31,16 @@ import org.sonar.graph.DirectedGraphAccessor;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
-import org.sonar.java.bytecode.visitor.*;
-import org.sonar.squid.api.*;
+import org.sonar.java.bytecode.visitor.DITVisitor;
+import org.sonar.java.bytecode.visitor.DependenciesVisitor;
+import org.sonar.java.bytecode.visitor.LCOM4Visitor;
+import org.sonar.java.bytecode.visitor.NOCVisitor;
+import org.sonar.java.bytecode.visitor.RFCVisitor;
+import org.sonar.squid.api.CodeVisitor;
+import org.sonar.squid.api.Query;
+import org.sonar.squid.api.SourceCode;
+import org.sonar.squid.api.SourceCodeEdge;
+import org.sonar.squid.api.SourceCodeSearchEngine;
 import org.sonar.squid.indexer.QueryByType;
 import org.sonar.squid.indexer.SquidIndex;
 
@@ -75,6 +83,9 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
 
     // External visitors (typically Check ones):
     for (CodeVisitor visitor : visitors) {
+      if (visitor instanceof CharsetAwareVisitor) {
+        ((CharsetAwareVisitor) visitor).setCharset(conf.getCharset());
+      }
       astScanner.accept(visitor);
       bytecodeScanner.accept(visitor);
     }
