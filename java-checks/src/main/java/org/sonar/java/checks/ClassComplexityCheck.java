@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.squid.checks.ChecksHelper;
+import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -30,6 +31,7 @@ import org.sonar.java.ast.visitors.JavaAstCheck;
 import org.sonar.squid.api.SourceClass;
 
 @Rule(key = "ClassCyclomaticComplexity", priority = Priority.MAJOR)
+@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ClassComplexityCheck extends JavaAstCheck {
 
   private static final int DEFAULT_MAX = 200;

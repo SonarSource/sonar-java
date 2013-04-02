@@ -134,16 +134,6 @@
     </rule>
     <rule>
       <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck</key>
-      <parameters>
-        <parameter>
-          <key>max</key>
-          <value>10</value>
-        </parameter>
-      </parameters>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
       <key>com.puppycrawl.tools.checkstyle.checks.naming.ClassTypeParameterNameCheck</key>
     </rule>
     <rule>
