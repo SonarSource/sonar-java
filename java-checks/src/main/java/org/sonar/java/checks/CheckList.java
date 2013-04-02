@@ -52,6 +52,7 @@ public final class CheckList {
         RawException_S00112_Check.class,
         BadMethodName_S00100_Check.class,
         BadClassName_S00101_Check.class,
+        BadInterfaceName_S00114_Check.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
