@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
@@ -29,6 +30,7 @@ import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourceMethod;
 
 @Rule(key = "UnusedPrivateMethod", priority = Priority.MAJOR)
+@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
   private AsmClass asmClass;
