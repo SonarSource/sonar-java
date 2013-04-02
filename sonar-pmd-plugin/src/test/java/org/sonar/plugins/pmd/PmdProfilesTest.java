@@ -35,17 +35,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PmdProfilesTest {
+
   ValidationMessages validation = ValidationMessages.create();
-
-  @Test
-  public void should_create_sun_convention_profile() {
-    SunConventionsProfile sunConvention = new SunConventionsProfile(new PmdProfileImporter(ruleFinder()));
-
-    RulesProfile profile = sunConvention.createProfile(validation);
-
-    assertThat(profile.getActiveRulesByRepository(PmdConstants.REPOSITORY_KEY)).isNotEmpty();
-    assertThat(validation.hasErrors()).isFalse();
-  }
 
   @Test
   public void should_create_sonar_way_profile() {
@@ -77,4 +68,5 @@ public class PmdProfilesTest {
     });
     return ruleFinder;
   }
+
 }
