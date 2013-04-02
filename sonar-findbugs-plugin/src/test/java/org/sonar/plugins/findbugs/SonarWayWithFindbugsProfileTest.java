@@ -34,7 +34,7 @@ public class SonarWayWithFindbugsProfileTest {
     ValidationMessages validation = ValidationMessages.create();
     RulesProfile profile = sonarWayWithFindbugs.createProfile(validation);
     assertThat(profile.getActiveRulesByRepository(FindbugsConstants.REPOSITORY_KEY))
-        .hasSize(404);
+        .hasSize(403);
     assertThat(validation.hasErrors()).isFalse();
   }
 

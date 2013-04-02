@@ -686,9 +686,6 @@
     <Bug pattern="UL_UNRELEASED_LOCK"/>
   </Match>
   <Match>
-    <Bug pattern="NM_METHOD_NAMING_CONVENTION"/>
-  </Match>
-  <Match>
     <Bug pattern="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER"/>
   </Match>
   <Match>
