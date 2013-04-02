@@ -1161,6 +1161,7 @@
     <param key="applyToPrivate" type="BOOLEAN">
       <defaultValue>true</defaultValue>
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.whitespace.TypecastParenPadCheck">

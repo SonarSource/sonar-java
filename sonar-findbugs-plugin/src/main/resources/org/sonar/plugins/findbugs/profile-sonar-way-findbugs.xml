@@ -464,9 +464,6 @@
     <Bug pattern="UM_UNNECESSARY_MATH"/>
   </Match>
   <Match>
-    <Bug pattern="NM_CLASS_NAMING_CONVENTION"/>
-  </Match>
-  <Match>
     <Bug pattern="STCAL_STATIC_CALENDAR_INSTANCE"/>
   </Match>
   <Match>

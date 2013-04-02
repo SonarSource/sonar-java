@@ -44,7 +44,6 @@
   <rule ref="rulesets/strings.xml/InefficientStringBuffering" />
   <rule ref="rulesets/sunsecure.xml/ArrayIsStoredDirectly" />
   <rule ref="rulesets/finalizers.xml/FinalizeOverloaded" />
-  <rule ref="rulesets/naming.xml/ClassNamingConventions" />
   <rule ref="rulesets/controversial.xml/DontImportSun" />
   <rule ref="rulesets/imports.xml/DontImportJavaLang" />
   <rule ref="rulesets/design.xml/MissingStaticMethodInNonInstantiatableClass" />

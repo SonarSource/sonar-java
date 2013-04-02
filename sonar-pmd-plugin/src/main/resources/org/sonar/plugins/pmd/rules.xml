@@ -1027,6 +1027,7 @@
   <rule key="ClassNamingConventions">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/naming.xml/ClassNamingConventions]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidDollarSigns">

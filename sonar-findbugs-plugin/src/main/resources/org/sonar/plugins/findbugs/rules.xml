@@ -2218,6 +2218,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Class names should start with an upper case letter]]></name>
     <configKey><![CDATA[NM_CLASS_NAMING_CONVENTION]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="NM_FIELD_NAMING_CONVENTION">
