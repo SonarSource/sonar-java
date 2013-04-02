@@ -31,4 +31,14 @@ public class Example {
     return new RuntimeException(); // OK
   }
 
+  public Exception() {
+    try {
+      throws_exception();
+    } catch (Exception e) {
+      if (e instanceof RuntimeException) {
+        throw (RuntimeException) e; // OK
+      }
+    }
+  }
+
 }

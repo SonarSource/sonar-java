@@ -48,7 +48,7 @@ public class RawException_S00112_Check extends SquidCheck<LexerlessGrammar> {
   @Override
   public void visitNode(AstNode astNode) {
     AstNode primary = astNode.getFirstChild(JavaGrammar.EXPRESSION).getFirstChild(JavaGrammar.PRIMARY);
-    if (primary.getFirstChild().isNot(JavaKeyword.NEW)) {
+    if (primary == null || primary.getFirstChild().isNot(JavaKeyword.NEW)) {
       return;
     }
     AstNode createdName = primary.getFirstDescendant(JavaGrammar.CREATED_NAME);
