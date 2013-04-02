@@ -53,9 +53,12 @@ public class BadMethodName_S00100_Check extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode astNode) {
-    String name = new MethodHelper(astNode).getName().getTokenValue();
-    if (!pattern.matcher(name).matches()) {
-      getContext().createLineViolation(this, "Rename this method name to match the regular expression '" + format + "'.", astNode);
+    MethodHelper method = new MethodHelper(astNode);
+    if (!method.isConstructor()) {
+      String name = method.getName().getTokenValue();
+      if (!pattern.matcher(name).matches()) {
+        getContext().createLineViolation(this, "Rename this method name to match the regular expression '" + format + "'.", astNode);
+      }
     }
   }
 
