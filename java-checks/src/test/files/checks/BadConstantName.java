@@ -5,7 +5,7 @@ class BadConstantName {
   public static int static_field;
   public final int final_field = 0;
 
-  public enum Enum {
+  enum Enum {
     GOOD_CONSTANT,
     bad_constant;
   }

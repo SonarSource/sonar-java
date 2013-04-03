@@ -7,12 +7,12 @@ The following code snippet illustrates this rule:
 </p>
 <pre>
 public class MyClass {
-  public static final FIRST = 1; // Compliant
-  public static final second = 2; // Non-Compliant
+  public static final int first = 1; // Non-Compliant
+  public static final int SECOND = 2; // Compliant
 }
 
 public enum MyEnum {
-  FIRST, // Compliant
-  second; // Non-Compliant
+  first, // Non-Compliant
+  SECOND; // Compliant
 }
 </pre>
