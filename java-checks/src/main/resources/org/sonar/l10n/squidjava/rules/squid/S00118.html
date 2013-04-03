@@ -1,0 +1,17 @@
+<p>
+Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all absctract class names match a provided regular expression.
+</p>
+
+<p>
+The following code snippet illustrates this rule:
+</p>
+<pre>
+abstract class MyClass { // Non-Compliant
+}
+
+class AbstractLikeClass { // Non-Compliant
+}
+
+abstract class AbstractClass { // Compliant
+}
+</pre>

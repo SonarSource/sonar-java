@@ -211,6 +211,7 @@
     <param key="ignoreName" type="BOOLEAN">
       <defaultValue>false</defaultValue>
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.sizes.AnonInnerLengthCheck">

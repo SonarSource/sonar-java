@@ -56,6 +56,7 @@ public final class CheckList {
         BadConstantName_S00115_Check.class,
         BadFieldName_S00116_Check.class,
         BadLocalVariableName_S00117_Check.class,
+        BadAbstractClassName_S00118_Check.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
