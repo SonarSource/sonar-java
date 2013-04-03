@@ -1,0 +1,18 @@
+<p>
+Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all constant names match a provided regular expression.
+</p>
+
+<p>
+The following code snippet illustrates this rule:
+</p>
+<pre>
+public class MyClass {
+  public static final FIRST = 1; // Compliant
+  public static final second = 2; // Non-Compliant
+}
+
+public enum MyEnum {
+  FIRST, // Compliant
+  second; // Non-Compliant
+}
+</pre>
