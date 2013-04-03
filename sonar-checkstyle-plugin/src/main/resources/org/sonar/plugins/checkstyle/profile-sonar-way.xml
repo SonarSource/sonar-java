@@ -118,14 +118,6 @@
     </rule>
     <rule>
       <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.naming.ClassTypeParameterNameCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.naming.MethodTypeParameterNameCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
       <key>com.puppycrawl.tools.checkstyle.checks.TrailingCommentCheck</key>
     </rule>
   </rules>

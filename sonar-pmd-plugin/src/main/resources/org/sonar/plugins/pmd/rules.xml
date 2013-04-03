@@ -13,6 +13,7 @@
   <rule key="GenericsNaming">
     <priority>MAJOR</priority>
     <configKey>rulesets/naming.xml/GenericsNaming</configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidCatchingGenericException">

@@ -1308,6 +1308,7 @@
     <param key="format" type="REGULAR_EXPRESSION">
       <defaultValue>^[A-Z]$</defaultValue>
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.naming.MethodTypeParameterNameCheck">
@@ -1317,6 +1318,7 @@
     <param key="format" type="REGULAR_EXPRESSION">
       <defaultValue>^[A-Z]$</defaultValue>
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
 </rules>

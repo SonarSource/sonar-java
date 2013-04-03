@@ -1,0 +1,18 @@
+<p>
+Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all type parameter names match a provided regular expression.
+</p>
+
+<p>
+The following code snippet illustrates this rule:
+</p>
+<pre>
+class MyClass<TYPE> { // Non-Compliant
+  <TYPE> void addAll(Collection<TYPE> c) { // Non-compliant
+  }
+}
+
+public class MyClass<T> { // Compliant
+  <T> void addAll(Collection<T> c) { // Compliant
+  }
+}
+</pre>
