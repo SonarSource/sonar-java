@@ -34,13 +34,17 @@ public class BadLocalVariableName_S00117_CheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadLocalVariableName.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Rename this local variable name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.")
+        .next().atLine(2).withMessage("Rename this local variable name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.")
+        .next().atLine(3)
+        .next().atLine(6)
+        .next().atLine(9)
+        .next().atLine(10)
         .noMore();
   }
 
   @Test
   public void test2() {
-    check.format = "^[a-zA-Z0-9]*$";
+    check.format = "^[a-zA-Z0-9_]*$";
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadLocalVariableName.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
