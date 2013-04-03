@@ -204,6 +204,7 @@
   <rule key="PackageCase">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/naming.xml/PackageCase]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ByteInstantiation">

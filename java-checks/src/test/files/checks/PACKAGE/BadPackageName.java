@@ -1,0 +1,4 @@
+package PACKAGE;
+
+class BadPackageName {
+}

@@ -933,6 +933,7 @@
     <param key="format" type="REGULAR_EXPRESSION">
       <defaultValue>^[a-z]+(\.[a-zA-Z_][a-zA-Z0-9_]*)*$</defaultValue>
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.ParameterAssignmentCheck">
