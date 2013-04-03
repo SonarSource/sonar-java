@@ -714,6 +714,7 @@
     </param>
     <param key="tokens" type="s[VARIABLE_DEF,PARAMETER_DEF]">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.MagicNumberCheck">
