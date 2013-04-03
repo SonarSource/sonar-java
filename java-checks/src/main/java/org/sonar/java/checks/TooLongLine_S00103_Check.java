@@ -63,7 +63,6 @@ public class TooLongLine_S00103_Check extends SquidCheck<LexerlessGrammar> imple
       String line = lines.get(i);
       if (line.length() > maximumLineLength) {
         getContext().createLineViolation(this, "Split this {0} characters long line (which is greater than {1} authorized).", i + 1, line.length(), maximumLineLength);
-        break;
       }
     }
   }
