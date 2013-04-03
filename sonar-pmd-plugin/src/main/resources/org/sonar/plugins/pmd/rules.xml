@@ -68,6 +68,7 @@
   <rule key="EmptyInitializer">
     <priority>MAJOR</priority>
     <configKey>rulesets/basic.xml/EmptyInitializer</configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="CyclomaticComplexity">
@@ -417,31 +418,37 @@
     <configKey><![CDATA[rulesets/basic.xml/EmptyCatchBlock]]></configKey>
     <param key="allowCommentedBlocks" type="BOOLEAN">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EmptyIfStmt">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/basic.xml/EmptyIfStmt]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EmptyWhileStmt">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/basic.xml/EmptyWhileStmt]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EmptyTryBlock">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/basic.xml/EmptyTryBlock]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EmptyFinallyBlock">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/basic.xml/EmptyFinallyBlock]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EmptySwitchStatements">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/basic.xml/EmptySwitchStatements]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="JumbledIncrementer">
@@ -467,6 +474,7 @@
   <rule key="EmptySynchronizedBlock">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/basic.xml/EmptySynchronizedBlock]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UnnecessaryReturn">
@@ -477,6 +485,7 @@
   <rule key="EmptyStaticInitializer">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/basic.xml/EmptyStaticInitializer]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UnconditionalIfStatement">

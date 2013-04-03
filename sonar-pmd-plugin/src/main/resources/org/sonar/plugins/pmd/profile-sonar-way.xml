@@ -9,7 +9,6 @@
   <rule ref="rulesets/migrating.xml/ReplaceEnumerationWithIterator" />
   <rule ref="rulesets/optimizations.xml/AvoidArrayLoops" />
   <rule ref="rulesets/unusedcode.xml/UnusedFormalParameter" />
-  <rule ref="rulesets/basic.xml/EmptySwitchStatements" />
   <rule ref="rulesets/basic.xml/ClassCastExceptionWithToArray" />
   <rule ref="rulesets/strictexception.xml/AvoidThrowingNullPointerException" />
   <rule ref="rulesets/unusedcode.xml/UnusedPrivateField" />
@@ -24,11 +23,9 @@
   <rule ref="rulesets/coupling.xml/LooseCoupling" />
   <rule ref="rulesets/unusedcode.xml/UnusedLocalVariable" />
   <rule ref="rulesets/strings.xml/UnnecessaryCaseChange" />
-  <rule ref="rulesets/basic.xml/EmptySynchronizedBlock" />
   <rule ref="rulesets/design.xml/SingularField" />
   <rule ref="rulesets/design.xml/CloseResource" />
   <rule ref="rulesets/strictexception.xml/AvoidCatchingThrowable" />
-  <rule ref="rulesets/basic.xml/EmptyWhileStmt" />
   <rule ref="rulesets/basic.xml/CollapsibleIfStatements" />
   <rule ref="rulesets/basic.xml/UselessOperationOnImmutable" />
   <rule ref="rulesets/clone.xml/CloneMethodMustImplementCloneable" />
@@ -36,7 +33,6 @@
   <rule ref="rulesets/controversial.xml/UnusedModifier" />
   <rule ref="rulesets/design.xml/PreserveStackTrace" />
   <rule ref="rulesets/optimizations.xml/UseArraysAsList" />
-  <rule ref="rulesets/basic.xml/EmptyIfStmt" />
   <rule ref="rulesets/design.xml/EqualsNull" />
   <rule ref="rulesets/basic.xml/BrokenNullCheck" />
   <rule ref="rulesets/logging-jakarta-commons.xml/UseCorrectExceptionLogging" />
@@ -66,7 +62,6 @@
     </properties>
   </rule>
   <rule ref="rulesets/design.xml/AvoidInstanceofChecksInCatchClause" />
-  <rule ref="rulesets/basic.xml/EmptyFinallyBlock" />
   <rule ref="rulesets/migrating.xml/IntegerInstantiation" />
   <rule ref="rulesets/naming.xml/AvoidDollarSigns" />
   <rule ref="rulesets/migrating.xml/AvoidAssertAsIdentifier" />
@@ -78,12 +73,10 @@
   <rule ref="rulesets/migrating.xml/ReplaceHashtableWithMap" />
   <rule ref="rulesets/basic.xml/AvoidDecimalLiteralsInBigDecimalConstructor" />
   <rule ref="rulesets/braces.xml/ForLoopsMustUseBraces" />
-  <rule ref="rulesets/basic.xml/EmptyTryBlock" />
   <rule ref="rulesets/strictexception.xml/SignatureDeclareThrowsException" />
   <rule ref="rulesets/finalizers.xml/EmptyFinalizer" />
   <rule ref="rulesets/design.xml/IdempotentOperations" />
   <rule ref="rulesets/strictexception.xml/ExceptionAsFlowControl" />
-  <rule ref="rulesets/basic.xml/EmptyStaticInitializer" />
   <rule ref="rulesets/finalizers.xml/FinalizeDoesNotCallSuperFinalize" />
   <rule ref="rulesets/strings.xml/UseStringBufferLength" />
   <rule ref="rulesets/migrating.xml/AvoidEnumAsIdentifier" />

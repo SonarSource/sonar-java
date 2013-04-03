@@ -34,9 +34,14 @@ public class EmptyBlock_S00108_CheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyBlock.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Either remove or fill this block of code.")
-        .next().atLine(15)
-        .next().atLine(18)
+        .next().atLine(2).withMessage("Either remove or fill this block of code.")
+        .next().atLine(5)
+        .next().atLine(9)
+        .next().atLine(19)
+        .next().atLine(22)
+        .next().atLine(24)
+        .next().atLine(25)
+        .next().atLine(28)
         .noMore();
   }
 

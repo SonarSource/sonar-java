@@ -1,7 +1,12 @@
 class EmptyBlock {
+  static { // NOK
+  }
+
+  { // NOK
+  }
+
   void method() {
-    for (int i = 0; i < 10; i++)
-    { // NOK
+    for (int i = 0; i < 10; i++) { // NOK
     }
     for (int i = 0; i < 10; i++); // OK
 
@@ -11,11 +16,16 @@ class EmptyBlock {
         break;
     }
 
-    try
-    { // NOK
+    switch (1) { // NOK
     }
-    catch (Exception e)
-    { // NOK
+
+    try { // NOK
+    }
+    catch (Exception e) { // NOK
+    } finally { // NOK
+    }
+
+    synchronized (this) { // NOK
     }
   }
 }

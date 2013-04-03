@@ -35,13 +35,21 @@ public class EmptyBlock_S00108_Check extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.BLOCK_STATEMENTS);
+    subscribeTo(
+        JavaGrammar.BLOCK_STATEMENTS,
+        JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS);
   }
 
   @Override
   public void visitNode(AstNode node) {
-    if (!node.hasDirectChildren(JavaGrammar.BLOCK_STATEMENT) && node.getParent().isNot(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)) {
-      getContext().createLineViolation(this, "Either remove or fill this block of code.", node.getParent());
+    if (node.is(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS)) {
+      if (!node.hasChildren()) {
+        getContext().createLineViolation(this, "Either remove or fill this block of code.", node.getParent());
+      }
+    } else {
+      if (!node.hasDirectChildren(JavaGrammar.BLOCK_STATEMENT) && node.getParent().isNot(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)) {
+        getContext().createLineViolation(this, "Either remove or fill this block of code.", node.getParent());
+      }
     }
   }
 
