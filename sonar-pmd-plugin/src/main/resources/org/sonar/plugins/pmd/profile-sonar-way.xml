@@ -61,7 +61,6 @@
   </rule>
   <rule ref="rulesets/design.xml/AvoidInstanceofChecksInCatchClause" />
   <rule ref="rulesets/migrating.xml/IntegerInstantiation" />
-  <rule ref="rulesets/naming.xml/AvoidDollarSigns" />
   <rule ref="rulesets/migrating.xml/AvoidAssertAsIdentifier" />
   <rule ref="rulesets/design.xml/UnnecessaryLocalBeforeReturn" />
   <rule ref="rulesets/finalizers.xml/AvoidCallingFinalize" />

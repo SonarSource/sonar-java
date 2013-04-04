@@ -1046,6 +1046,7 @@
   <rule key="AvoidDollarSigns">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/naming.xml/AvoidDollarSigns]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="MethodWithSameNameAsEnclosingClass">
