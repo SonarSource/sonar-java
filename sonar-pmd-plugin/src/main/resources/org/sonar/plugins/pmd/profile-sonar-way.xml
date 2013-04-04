@@ -16,7 +16,6 @@
   <rule ref="rulesets/strings.xml/UseIndexOfChar" />
   <rule ref="rulesets/basic.xml/BigIntegerInstantiation" />
   <rule ref="rulesets/design.xml/FinalFieldCouldBeStatic" />
-  <rule ref="rulesets/braces.xml/IfStmtsMustUseBraces" />
   <rule ref="rulesets/naming.xml/SuspiciousEqualsMethodName" />
   <rule ref="rulesets/design.xml/InstantiationToGetClass" />
   <rule ref="rulesets/naming.xml/SuspiciousHashcodeMethodName" />
@@ -44,7 +43,6 @@
   <rule ref="rulesets/design.xml/MissingStaticMethodInNonInstantiatableClass" />
   <rule ref="rulesets/strings.xml/StringBufferInstantiationWithChar" />
   <rule ref="rulesets/optimizations.xml/UseArrayListInsteadOfVector" />
-  <rule ref="rulesets/braces.xml/WhileLoopsMustUseBraces" />
   <rule ref="rulesets/strings.xml/StringToString" />
   <rule ref="rulesets/design.xml/SimplifyConditional" />
   <rule ref="rulesets/migrating.xml/ReplaceVectorWithList" />
@@ -72,7 +70,6 @@
   <rule ref="rulesets/clone.xml/CloneThrowsCloneNotSupportedException" />
   <rule ref="rulesets/migrating.xml/ReplaceHashtableWithMap" />
   <rule ref="rulesets/basic.xml/AvoidDecimalLiteralsInBigDecimalConstructor" />
-  <rule ref="rulesets/braces.xml/ForLoopsMustUseBraces" />
   <rule ref="rulesets/strictexception.xml/SignatureDeclareThrowsException" />
   <rule ref="rulesets/finalizers.xml/EmptyFinalizer" />
   <rule ref="rulesets/design.xml/IdempotentOperations" />
@@ -80,7 +77,6 @@
   <rule ref="rulesets/finalizers.xml/FinalizeDoesNotCallSuperFinalize" />
   <rule ref="rulesets/strings.xml/UseStringBufferLength" />
   <rule ref="rulesets/migrating.xml/AvoidEnumAsIdentifier" />
-  <rule ref="rulesets/braces.xml/IfElseStmtsMustUseBraces" />
   <rule ref="rulesets/logging-java.xml/SystemPrintln" />
   <rule ref="rulesets/strings.xml/UselessStringValueOf" />
   <rule ref="rulesets/strings.xml/AvoidDuplicateLiterals" />

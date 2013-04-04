@@ -1136,21 +1136,25 @@
   <rule key="IfStmtsMustUseBraces">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/braces.xml/IfStmtsMustUseBraces]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="WhileLoopsMustUseBraces">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/braces.xml/WhileLoopsMustUseBraces]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="IfElseStmtsMustUseBraces">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/braces.xml/IfElseStmtsMustUseBraces]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ForLoopsMustUseBraces">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/braces.xml/ForLoopsMustUseBraces]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidUsingHardCodedIP">

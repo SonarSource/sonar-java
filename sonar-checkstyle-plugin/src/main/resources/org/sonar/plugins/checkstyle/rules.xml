@@ -859,6 +859,7 @@
     <configKey><![CDATA[Checker/TreeWalker/NeedBraces]]></configKey>
     <param key="tokens" type="s[LITERAL_DO,LITERAL_ELSE,LITERAL_IF,LITERAL_FOR,LITERAL_WHILE]">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.NestedIfDepthCheck">
