@@ -2,7 +2,15 @@ class EmptyBlock {
   static { // NOK
   }
 
+  static { // OK
+    doSomething();
+  }
+
   { // NOK
+  }
+
+  { // OK
+    doSomething();
   }
 
   void method() {
@@ -20,12 +28,26 @@ class EmptyBlock {
     }
 
     try { // NOK
-    }
-    catch (Exception e) { // NOK
+    } catch (Exception e) { // NOK
     } finally { // NOK
+    }
+
+    try { // OK
+      doSomething();
+    } catch (Exception e) { // OK
+      doSomething();
+    } finally { // OK
+      doSomething();
     }
 
     synchronized (this) { // NOK
     }
+
+    synchronized (this) { // OK
+      doSomething();
+    }
+  }
+
+  void anotherMethod() { // OK
   }
 }
