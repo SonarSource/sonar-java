@@ -60,8 +60,11 @@ public class BadLocalVariableName_S00117_Check extends SquidCheck<LexerlessGramm
     if (astNode.is(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
       check(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     } else {
-      for (AstNode variableDeclarator : astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-        check(variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER));
+      AstNode variableDeclarators = astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS);
+      if (variableDeclarators != null) {
+        for (AstNode variableDeclarator : variableDeclarators.getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
+          check(variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER));
+        }
       }
     }
   }

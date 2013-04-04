@@ -3,7 +3,10 @@ class BadLocalVariableName {
     int BAD;
     int good;
 
-    for (int I; I < 10; I++) {
+    for (int I = 0; I < 10; I++) {
+    }
+
+    for (good = 0; good < 10; good++) {
     }
 
     try (Closeable BAD_RESOURCE = open()) {

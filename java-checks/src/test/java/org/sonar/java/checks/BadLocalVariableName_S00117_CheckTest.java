@@ -37,8 +37,8 @@ public class BadLocalVariableName_S00117_CheckTest {
         .next().atLine(2).withMessage("Rename this local variable name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.")
         .next().atLine(3)
         .next().atLine(6)
-        .next().atLine(9)
-        .next().atLine(10)
+        .next().atLine(12)
+        .next().atLine(13)
         .noMore();
   }
 
