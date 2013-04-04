@@ -1301,6 +1301,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[One Statement Per Line]]></name>
     <configKey><![CDATA[Checker/TreeWalker/OneStatementPerLine]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.naming.ClassTypeParameterNameCheck">

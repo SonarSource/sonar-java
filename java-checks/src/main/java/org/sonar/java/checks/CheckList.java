@@ -60,6 +60,7 @@ public final class CheckList {
         BadTypeParameterName_S00119_Check.class,
         BadPackageName_S00120_Check.class,
         MissingCurlyBraces_S00121_Check.class,
+        TooManyStatementsPerLine_S00122_Check.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
