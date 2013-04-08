@@ -28,7 +28,6 @@ import org.mockito.Mockito;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.scan.source.Highlightable;
-import org.sonar.api.scan.source.HighlightableTextType;
 import org.sonar.java.JavaAstScanner;
 
 import java.io.File;
@@ -47,9 +46,9 @@ public class SyntaxHighlighterVisitorTest {
     File file = temp.newFile();
     Files.write(Files.toString(new File("src/test/files/metrics/Lines.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n"), file, Charsets.UTF_8);
     JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
-    Mockito.verify(highlightable).highlightText(0, 16, HighlightableTextType.BLOCK_COMMENT);
-    Mockito.verify(highlightable).highlightText(18, 25, HighlightableTextType.KEYWORD);
-    Mockito.verify(highlightable).highlightText(25, 31, HighlightableTextType.KEYWORD);
+    Mockito.verify(highlightable).highlightText(0, 16, "cppd");
+    Mockito.verify(highlightable).highlightText(18, 25, "k");
+    Mockito.verify(highlightable).highlightText(25, 31, "k");
     Mockito.verifyNoMoreInteractions(highlightable);
   }
 

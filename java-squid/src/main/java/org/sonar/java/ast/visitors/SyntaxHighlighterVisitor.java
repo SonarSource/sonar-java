@@ -32,7 +32,6 @@ import org.sonar.api.batch.SquidUtils;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.scan.source.Highlightable;
-import org.sonar.api.scan.source.HighlightableTextType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.squid.api.SourceFile;
@@ -57,14 +56,14 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
 
     ImmutableMap.Builder<AstNodeType, String> typesBuilder = ImmutableMap.builder();
     for (AstNodeType type : JavaKeyword.values()) {
-      typesBuilder.put(type, HighlightableTextType.KEYWORD);
+      typesBuilder.put(type, "k");
     }
-    typesBuilder.put(JavaTokenType.CHARACTER_LITERAL, HighlightableTextType.LITERAL);
-    typesBuilder.put(JavaTokenType.LITERAL, HighlightableTextType.LITERAL);
-    typesBuilder.put(JavaTokenType.FLOAT_LITERAL, HighlightableTextType.CONSTANT);
-    typesBuilder.put(JavaTokenType.DOUBLE_LITERAL, HighlightableTextType.CONSTANT);
-    typesBuilder.put(JavaTokenType.LONG_LITERAL, HighlightableTextType.CONSTANT);
-    typesBuilder.put(JavaTokenType.INTEGER_LITERAL, HighlightableTextType.CONSTANT);
+    typesBuilder.put(JavaTokenType.CHARACTER_LITERAL, "s");
+    typesBuilder.put(JavaTokenType.LITERAL, "s");
+    typesBuilder.put(JavaTokenType.FLOAT_LITERAL, "c");
+    typesBuilder.put(JavaTokenType.DOUBLE_LITERAL, "c");
+    typesBuilder.put(JavaTokenType.LONG_LITERAL, "c");
+    typesBuilder.put(JavaTokenType.INTEGER_LITERAL, "c");
     types = typesBuilder.build();
   }
 
@@ -107,7 +106,7 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
       if (trivia.isComment()) {
         Token triviaToken = trivia.getToken();
         int offset = getOffset(triviaToken.getLine(), triviaToken.getColumn());
-        highlightable.highlightText(offset, offset + triviaToken.getValue().length(), HighlightableTextType.BLOCK_COMMENT);
+        highlightable.highlightText(offset, offset + triviaToken.getValue().length(), "cppd");
       }
     }
   }
