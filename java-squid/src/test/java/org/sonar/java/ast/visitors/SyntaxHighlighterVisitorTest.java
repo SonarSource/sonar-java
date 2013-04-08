@@ -20,7 +20,10 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.resources.JavaFile;
@@ -32,13 +35,18 @@ import java.io.File;
 
 public class SyntaxHighlighterVisitorTest {
 
+  @Rule
+  public TemporaryFolder temp = new TemporaryFolder();
+
   @Test
-  public void test() {
+  public void test() throws Exception {
     ResourcePerspectives resourcePerspectives = Mockito.mock(ResourcePerspectives.class);
     Highlightable highlightable = Mockito.mock(Highlightable.class);
     Mockito.when(resourcePerspectives.as(Mockito.eq(Highlightable.class), Mockito.any(JavaFile.class))).thenReturn(highlightable);
     SyntaxHighlighterVisitor syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(resourcePerspectives, Charsets.UTF_8);
-    JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Lines.java"), syntaxHighlighterVisitor);
+    File file = temp.newFile();
+    Files.write(Files.toString(new File("src/test/files/metrics/Lines.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n"), file, Charsets.UTF_8);
+    JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
     Mockito.verify(highlightable).highlightText(0, 16, HighlightableTextType.BLOCK_COMMENT);
     Mockito.verify(highlightable).highlightText(18, 25, HighlightableTextType.KEYWORD);
     Mockito.verify(highlightable).highlightText(25, 31, HighlightableTextType.KEYWORD);
