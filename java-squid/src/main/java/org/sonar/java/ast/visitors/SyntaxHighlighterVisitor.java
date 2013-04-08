@@ -106,7 +106,7 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
     for (Trivia trivia : token.getTrivia()) {
       if (trivia.isComment()) {
         Token triviaToken = trivia.getToken();
-        int offset = getOffset(triviaToken.getLine(), triviaToken.getLine());
+        int offset = getOffset(triviaToken.getLine(), triviaToken.getColumn());
         highlightable.highlightText(offset, offset + triviaToken.getValue().length(), HighlightableTextType.BLOCK_COMMENT);
       }
     }
