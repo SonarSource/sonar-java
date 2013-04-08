@@ -22,7 +22,6 @@ package org.sonar.java;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
-import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.api.utils.TimeProfiler;
@@ -30,6 +29,7 @@ import org.sonar.graph.DirectedGraph;
 import org.sonar.graph.DirectedGraphAccessor;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
+import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.DITVisitor;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
@@ -65,10 +65,11 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     this(conf, null, visitors);
   }
 
-  public JavaSquid(JavaConfiguration conf, @Nullable FileLinesContextFactory fileLinesContextFactory, CodeVisitor... visitors) {
+  public JavaSquid(JavaConfiguration conf, @Nullable SonarComponents sonarComponents, CodeVisitor... visitors) {
     astScanner = JavaAstScanner.create(conf);
-    if (fileLinesContextFactory != null) {
-      astScanner.accept(new FileLinesVisitor(fileLinesContextFactory, conf.getCharset()));
+    if (sonarComponents != null) {
+      astScanner.accept(new FileLinesVisitor(sonarComponents.getFileLinesContextFactory(), conf.getCharset()));
+      astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents.getResourcePerspectives(), conf.getCharset()));
     }
 
     // TODO unchecked cast

@@ -20,8 +20,17 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.*;
-import org.sonar.plugins.java.decorators.*;
+import org.sonar.api.CoreProperties;
+import org.sonar.api.Properties;
+import org.sonar.api.Property;
+import org.sonar.api.PropertyType;
+import org.sonar.api.SonarPlugin;
+import org.sonar.java.SonarComponents;
+import org.sonar.plugins.java.decorators.ChidamberKemererDistributionBuilder;
+import org.sonar.plugins.java.decorators.ClassesDecorator;
+import org.sonar.plugins.java.decorators.FileComplexityDistributionDecorator;
+import org.sonar.plugins.java.decorators.FunctionComplexityDistributionBuilder;
+import org.sonar.plugins.java.decorators.FunctionsDecorator;
 
 import java.util.List;
 
@@ -71,6 +80,7 @@ public class JavaSquidPlugin extends SonarPlugin {
         JavaRuleRepository.class,
         JavaSonarWayProfile.class,
         JavaSonarWayWithFindbugsProfile.class,
+        SonarComponents.class,
         JavaSquidSensor.class,
         ChidamberKemererDistributionBuilder.class,
         ClassesDecorator.class,

@@ -17,17 +17,28 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java;
+package org.sonar.java;
 
-import org.junit.Test;
+import org.sonar.api.BatchExtension;
+import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.measures.FileLinesContextFactory;
 
-import static org.fest.assertions.Assertions.assertThat;
+public class SonarComponents implements BatchExtension {
 
-public class JavaSquidPluginTest {
+  private final FileLinesContextFactory fileLinesContextFactory;
+  private final ResourcePerspectives resourcePerspectives;
 
-  @Test
-  public void test() {
-    assertThat(new JavaSquidPlugin().getExtensions().size()).isEqualTo(11);
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives) {
+    this.fileLinesContextFactory = fileLinesContextFactory;
+    this.resourcePerspectives = resourcePerspectives;
+  }
+
+  public FileLinesContextFactory getFileLinesContextFactory() {
+    return fileLinesContextFactory;
+  }
+
+  public ResourcePerspectives getResourcePerspectives() {
+    return resourcePerspectives;
   }
 
 }

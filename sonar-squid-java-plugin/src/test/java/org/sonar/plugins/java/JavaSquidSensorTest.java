@@ -23,9 +23,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.checks.NoSonarFilter;
-import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
+import org.sonar.java.SonarComponents;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -37,7 +37,7 @@ public class JavaSquidSensorTest {
 
   @Before
   public void setUp() {
-    sensor = new JavaSquidSensor(mock(RulesProfile.class), mock(NoSonarFilter.class), mock(ProjectClasspath.class), mock(FileLinesContextFactory.class));
+    sensor = new JavaSquidSensor(mock(RulesProfile.class), mock(NoSonarFilter.class), mock(ProjectClasspath.class), mock(SonarComponents.class));
   }
 
   @Test

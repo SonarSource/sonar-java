@@ -21,16 +21,21 @@ package org.sonar.plugins.java;
 
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.CoreProperties;
-import org.sonar.api.batch.*;
+import org.sonar.api.batch.DependedUpon;
+import org.sonar.api.batch.DependsUpon;
+import org.sonar.api.batch.Phase;
+import org.sonar.api.batch.ProjectClasspath;
+import org.sonar.api.batch.Sensor;
+import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.AnnotationCheckFactory;
 import org.sonar.api.checks.NoSonarFilter;
-import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.api.JavaUtils;
 import org.sonar.java.checks.CheckList;
 import org.sonar.squid.api.CodeVisitor;
@@ -49,13 +54,13 @@ public class JavaSquidSensor implements Sensor {
   private final AnnotationCheckFactory annotationCheckFactory;
   private final NoSonarFilter noSonarFilter;
   private final ProjectClasspath projectClasspath;
-  private final FileLinesContextFactory fileLinesContextFactory;
+  private final SonarComponents sonarComponents;
 
-  public JavaSquidSensor(RulesProfile profile, NoSonarFilter noSonarFilter, ProjectClasspath projectClasspath, FileLinesContextFactory fileLinesContextFactory) {
+  public JavaSquidSensor(RulesProfile profile, NoSonarFilter noSonarFilter, ProjectClasspath projectClasspath, SonarComponents sonarComponents) {
     this.annotationCheckFactory = AnnotationCheckFactory.create(profile, CheckList.REPOSITORY_KEY, CheckList.getChecks());
     this.noSonarFilter = noSonarFilter;
     this.projectClasspath = projectClasspath;
-    this.fileLinesContextFactory = fileLinesContextFactory;
+    this.sonarComponents = sonarComponents;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
@@ -70,7 +75,7 @@ public class JavaSquidSensor implements Sensor {
 
     Collection<CodeVisitor> checks = annotationCheckFactory.getChecks();
 
-    JavaSquid squid = new JavaSquid(createConfiguration(project), fileLinesContextFactory, checks.toArray(new CodeVisitor[checks.size()]));
+    JavaSquid squid = new JavaSquid(createConfiguration(project), sonarComponents, checks.toArray(new CodeVisitor[checks.size()]));
     squid.scan(sourceFiles, getBytecodeFiles(project));
 
     new Bridges(squid).save(context, project, annotationCheckFactory, noSonarFilter);
