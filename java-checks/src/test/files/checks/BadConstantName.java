@@ -10,4 +10,9 @@ class BadConstantName {
     bad_constant;
   }
 
+  interface Interface {
+    int GOOD_CONSTANT = 1;
+    int bad_constant = 2;
+  }
+
 }

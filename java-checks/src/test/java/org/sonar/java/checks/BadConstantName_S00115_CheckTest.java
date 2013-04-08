@@ -36,6 +36,7 @@ public class BadConstantName_S00115_CheckTest {
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(4).withMessage("Rename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.")
         .next().atLine(10)
+        .next().atLine(15)
         .noMore();
   }
 

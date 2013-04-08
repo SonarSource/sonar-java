@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
@@ -49,13 +50,15 @@ public class BadConstantName_S00115_Check extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.FIELD_DECLARATION, JavaGrammar.ENUM_CONSTANT);
+    subscribeTo(JavaGrammar.FIELD_DECLARATION, JavaGrammar.ENUM_CONSTANT, JavaGrammar.CONSTANT_DECLARATORS_REST);
     pattern = Pattern.compile(format, Pattern.DOTALL);
   }
 
   @Override
   public void visitNode(AstNode astNode) {
-    if (astNode.is(JavaGrammar.ENUM_CONSTANT)) {
+    if (astNode.is(JavaGrammar.CONSTANT_DECLARATORS_REST)) {
+      check(astNode.getPreviousAstNode());
+    } else if (astNode.is(JavaGrammar.ENUM_CONSTANT)) {
       check(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     } else {
       if (isConstant(astNode)) {
@@ -67,6 +70,7 @@ public class BadConstantName_S00115_Check extends SquidCheck<LexerlessGrammar> {
   }
 
   private void check(AstNode identifier) {
+    Preconditions.checkArgument(identifier.is(JavaTokenType.IDENTIFIER));
     String name = identifier.getTokenValue();
     if (!pattern.matcher(name).matches()) {
       getContext().createLineViolation(this, "Rename this constant name to match the regular expression '" + format + "'.", identifier);
