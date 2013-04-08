@@ -89,7 +89,7 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
     }
     lineStart.add(0);
     for (int i = 0; i < content.length(); i++) {
-      if (content.charAt(i) == '\n') {
+      if (content.charAt(i) == '\n' || (content.charAt(i) == '\r' && i + 1 < content.length() && content.charAt(i + 1) != '\n')) {
         lineStart.add(i + 1);
       }
     }
