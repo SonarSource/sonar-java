@@ -134,6 +134,7 @@
         </executions>
       </plugin>
       <!-- Running JUnit tests in parallel -->
+      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -143,6 +144,7 @@
           <perCoreThreadCount>true</perCoreThreadCount>
         </configuration>
       </plugin>
+      -->
     </plugins>
   </build>
 
