@@ -20,11 +20,14 @@
 package org.sonar.java.ast.parser;
 
 import com.sonar.sslr.api.GenericTokenType;
+import org.apache.commons.lang.ArrayUtils;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.Arrays;
 
 import static org.sonar.java.ast.api.JavaKeyword.ABSTRACT;
 import static org.sonar.java.ast.api.JavaKeyword.ASSERT;
@@ -402,9 +405,19 @@ public enum JavaGrammar implements GrammarRuleKey {
   }
 
   private static void keywords(LexerlessGrammarBuilder b) {
+    b.rule(LETTER_OR_DIGIT).is(javaIdentifierPart(b));
     for (JavaKeyword tokenType : JavaKeyword.values()) {
       b.rule(tokenType).is(tokenType.getValue(), b.nextNot(LETTER_OR_DIGIT), SPACING);
     }
+    String[] keywords = JavaKeyword.keywordValues();
+    Arrays.sort(keywords);
+    ArrayUtils.reverse(keywords);
+    b.rule(KEYWORD).is(
+        b.firstOf(
+            keywords[0],
+            keywords[1],
+            ArrayUtils.subarray(keywords, 2, keywords.length)),
+        b.nextNot(LETTER_OR_DIGIT));
   }
 
   private static void punctuator(LexerlessGrammarBuilder b, GrammarRuleKey ruleKey, String value) {
@@ -457,11 +470,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(LONG_LITERAL).is(b.regexp(INTEGER_LITERAL_REGEXP + "[lL]"), SPACING);
     b.rule(INTEGER_LITERAL).is(b.regexp(INTEGER_LITERAL_REGEXP), SPACING);
 
-    b.rule(KEYWORD).is(b.firstOf("assert", "break", "case", "catch", "class", "const", "continue", "default", "do", "else",
-        "enum", "extends", "finally", "final", "for", "goto", "if", "implements", "import", "interface",
-        "instanceof", "new", "package", "return", "static", "super", "switch", "synchronized", "this",
-        "throws", "throw", "try", "void", "while"), b.nextNot(LETTER_OR_DIGIT));
-    b.rule(LETTER_OR_DIGIT).is(javaIdentifierPart(b));
     b.rule(IDENTIFIER).is(b.nextNot(KEYWORD), javaIdentifier(b), SPACING);
 
     b.rule(LITERAL).is(b.firstOf(
@@ -764,7 +772,7 @@ public enum JavaGrammar implements GrammarRuleKey {
         TRY_WITH_RESOURCES_STATEMENT));
     b.rule(TRY_WITH_RESOURCES_STATEMENT).is(TRY, RESOURCE_SPECIFICATION, BLOCK, b.zeroOrMore(CATCH_CLAUSE), b.optional(FINALLY_));
     b.rule(RESOURCE_SPECIFICATION).is(LPAR, RESOURCE, b.zeroOrMore(SEMI, RESOURCE), b.optional(SEMI), RPAR);
-    b.rule(RESOURCE).is(b.optional(VARIABLE_MODIFIERS), TYPE, VARIABLE_DECLARATOR_ID, EQU, EXPRESSION);
+    b.rule(RESOURCE).is(b.optional(VARIABLE_MODIFIERS), CLASS_TYPE, VARIABLE_DECLARATOR_ID, EQU, EXPRESSION);
 
     b.rule(CATCH_CLAUSE).is(CATCH, LPAR, CATCH_FORMAL_PARAMETER, RPAR, BLOCK);
     b.rule(CATCH_FORMAL_PARAMETER).is(b.optional(VARIABLE_MODIFIERS), CATCH_TYPE, VARIABLE_DECLARATOR_ID);
