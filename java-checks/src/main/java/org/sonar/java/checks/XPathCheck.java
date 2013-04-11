@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.squid.checks.AbstractXPathCheck;
 import org.sonar.check.Cardinality;
 import org.sonar.check.Priority;
@@ -54,6 +55,13 @@ public class XPathCheck extends AbstractXPathCheck<LexerlessGrammar> {
   @Override
   public String getMessage() {
     return message;
+  }
+
+  @Override
+  public void visitFile(AstNode fileNode) {
+    if (fileNode != null) {
+      super.visitFile(fileNode);
+    }
   }
 
 }

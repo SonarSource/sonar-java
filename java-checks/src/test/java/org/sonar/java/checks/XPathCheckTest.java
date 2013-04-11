@@ -71,4 +71,13 @@ public class XPathCheckTest {
         .noMore();
   }
 
+  @Test
+  public void parseError() {
+    check.xpathQuery = "//IDENTIFIER";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ParsingError.java"), check);
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+        .noMore();
+  }
+
 }
