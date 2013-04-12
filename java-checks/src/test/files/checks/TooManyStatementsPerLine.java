@@ -1,4 +1,6 @@
 class TooManyStatementsPerLine {
+  int a; int b; // OK - not a statement
+
   void method() {
     doSomething(); doSomethingElse(); // NOK
 
@@ -11,5 +13,7 @@ class TooManyStatementsPerLine {
     label: while (condition) { // OK
       break label; // OK
     }
+
+    int a = 0; a++; // NOK
   }
 }

@@ -694,8 +694,8 @@ public enum JavaGrammar implements GrammarRuleKey {
         STATEMENT));
 
     // 14.4. Local Variable Declaration Statements
-    b.rule(LOCAL_VARIABLE_DECLARATION_STATEMENT).is(VARIABLE_MODIFIERS, TYPE, VARIABLE_DECLARATORS, SEMI);
-    b.rule(VARIABLE_MODIFIERS).is(b.zeroOrMore(b.firstOf(
+    b.rule(LOCAL_VARIABLE_DECLARATION_STATEMENT).is(b.optional(VARIABLE_MODIFIERS), TYPE, VARIABLE_DECLARATORS, SEMI);
+    b.rule(VARIABLE_MODIFIERS).is(b.oneOrMore(b.firstOf(
         ANNOTATION,
         FINAL)));
     b.rule(VARIABLE_DECLARATORS).is(VARIABLE_DECLARATOR, b.zeroOrMore(COMMA, VARIABLE_DECLARATOR));

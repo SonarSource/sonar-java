@@ -40,7 +40,7 @@ public class TooManyStatementsPerLine_S00122_Check extends AbstractOneStatementP
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.STATEMENT);
+    subscribeTo(JavaGrammar.STATEMENT, JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT);
   }
 
   @Override
