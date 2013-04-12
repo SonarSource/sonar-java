@@ -6,13 +6,13 @@ Sharing some naming conventions is a key point to make it possible for a team to
 The following code snippet illustrates this rule:
 </p>
 <pre>
-class MyClass<TYPE> { // Non-Compliant
-  <TYPE> void addAll(Collection<TYPE> c) { // Non-compliant
+class MyClass&lt;TYPE&gt; { // Non-Compliant
+  &lt;TYPE&gt; void addAll(Collection&lt;TYPE&gt; c) { // Non-compliant
   }
 }
 
-public class MyClass<T> { // Compliant
-  <T> void addAll(Collection<T> c) { // Compliant
+public class MyClass&lt;T&gt; { // Compliant
+  &lt;T&gt; void addAll(Collection&lt;T&gt; c) { // Compliant
   }
 }
 </pre>
