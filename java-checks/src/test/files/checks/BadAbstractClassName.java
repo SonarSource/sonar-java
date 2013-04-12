@@ -1,11 +1,11 @@
-public abstract class BadAbstractClassName {
-}
-
-abstract class AbstractClassName {
+class ClasName {
 }
 
 class AbstractLikeName {
 }
 
-class ClassName {
+abstract public class BadAbstractClassName {
+}
+
+abstract class AbstractClassName {
 }

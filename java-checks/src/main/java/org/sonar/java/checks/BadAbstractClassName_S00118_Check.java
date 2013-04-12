@@ -66,10 +66,12 @@ public class BadAbstractClassName_S00118_Check extends SquidCheck<LexerlessGramm
   }
 
   private boolean isAbstract(AstNode astNode) {
-    for (AstNode modifier : astNode.getParent().getChildren(JavaGrammar.MODIFIER)) {
+    AstNode modifier = astNode.getPreviousAstNode();
+    while (modifier != null && modifier.is(JavaGrammar.MODIFIER)) {
       if (modifier.getFirstChild().is(JavaKeyword.ABSTRACT)) {
         return true;
       }
+      modifier = modifier.getPreviousAstNode();
     }
     return false;
   }

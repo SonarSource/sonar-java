@@ -34,8 +34,8 @@ public class BadAbstractClassName_S00118_CheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadAbstractClassName.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'.")
-        .next().atLine(7).withMessage("Make this class abstract or rename it, since it matches the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'.")
+        .next().atLine(4).withMessage("Make this class abstract or rename it, since it matches the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'.")
+        .next().atLine(7).withMessage("Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'.")
         .noMore();
   }
 
