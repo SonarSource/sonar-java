@@ -34,6 +34,7 @@ import org.sonar.api.resources.JavaFile;
 import org.sonar.api.scan.source.Highlightable;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
   private final Map<AstNodeType, String> types;
   private final Charset charset;
 
-  private Highlightable highlightable;
+  private Highlightable.HighlightingBuilder highlighting;
   private List<Integer> lineStart;
 
   public SyntaxHighlighterVisitor(ResourcePerspectives perspectives, Charset charset) {
@@ -64,6 +65,7 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
     typesBuilder.put(JavaTokenType.DOUBLE_LITERAL, "c");
     typesBuilder.put(JavaTokenType.LONG_LITERAL, "c");
     typesBuilder.put(JavaTokenType.INTEGER_LITERAL, "c");
+    typesBuilder.put(JavaGrammar.ANNOTATION, "a");
     types = typesBuilder.build();
   }
 
@@ -76,9 +78,14 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
 
   @Override
   public void visitFile(AstNode astNode) {
+    if (astNode == null) {
+      // parse error
+      return;
+    }
+
     SourceFile squidFile = peekSourceFile();
     JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(squidFile.getKey());
-    highlightable = perspectives.as(Highlightable.class, sonarFile);
+    highlighting = perspectives.as(Highlightable.class, sonarFile).newHighlighting();
 
     lineStart = Lists.newArrayList();
     final String content;
@@ -97,7 +104,11 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
 
   @Override
   public void visitNode(AstNode astNode) {
-    highlightable.highlightText(astNode.getFromIndex(), astNode.getToIndex(), types.get(astNode.getType()));
+    if (astNode.is(JavaGrammar.ANNOTATION)) {
+      highlighting.highlight(astNode.getFromIndex(), astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER).getToIndex(), types.get(astNode.getType()));
+    } else {
+      highlighting.highlight(astNode.getFromIndex(), astNode.getToIndex(), types.get(astNode.getType()));
+    }
   }
 
   @Override
@@ -106,7 +117,7 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
       if (trivia.isComment()) {
         Token triviaToken = trivia.getToken();
         int offset = getOffset(triviaToken.getLine(), triviaToken.getColumn());
-        highlightable.highlightText(offset, offset + triviaToken.getValue().length(), "cppd");
+        highlighting.highlight(offset, offset + triviaToken.getValue().length(), "cppd");
       }
     }
   }
@@ -117,6 +128,16 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
    */
   private int getOffset(int line, int column) {
     return lineStart.get(line - 1) + column;
+  }
+
+  @Override
+  public void leaveFile(AstNode astNode) {
+    if (astNode == null) {
+      // parse error
+      return;
+    }
+
+    highlighting.done();
   }
 
 }

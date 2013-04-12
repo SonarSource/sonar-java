@@ -24,6 +24,7 @@ import com.google.common.io.Files;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.resources.JavaFile;
@@ -42,14 +43,24 @@ public class SyntaxHighlighterVisitorTest {
     ResourcePerspectives resourcePerspectives = Mockito.mock(ResourcePerspectives.class);
     Highlightable highlightable = Mockito.mock(Highlightable.class);
     Mockito.when(resourcePerspectives.as(Mockito.eq(Highlightable.class), Mockito.any(JavaFile.class))).thenReturn(highlightable);
+    Highlightable.HighlightingBuilder highlighting = Mockito.mock(Highlightable.HighlightingBuilder.class);
+    Mockito.when(highlightable.newHighlighting()).thenReturn(highlighting);
+
     SyntaxHighlighterVisitor syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(resourcePerspectives, Charsets.UTF_8);
     File file = temp.newFile();
-    Files.write(Files.toString(new File("src/test/files/metrics/Lines.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n"), file, Charsets.UTF_8);
+    Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n"), file, Charsets.UTF_8);
     JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
-    Mockito.verify(highlightable).highlightText(0, 16, "cppd");
-    Mockito.verify(highlightable).highlightText(18, 25, "k");
-    Mockito.verify(highlightable).highlightText(25, 31, "k");
-    Mockito.verifyNoMoreInteractions(highlightable);
+
+    Mockito.verify(highlighting).highlight(0, 16, "cppd");
+    Mockito.verify(highlighting).highlight(18, 36, "cppd");
+    Mockito.verify(highlighting).highlight(37, 54, "a");
+    Mockito.verify(highlighting).highlight(55, 63, "s");
+    Mockito.verify(highlighting).highlight(65, 71, "k");
+    Mockito.verify(highlighting).highlight(84, 88, "k");
+    Mockito.verify(highlighting).highlight(103, 110, "k");
+    Mockito.verify(highlighting).highlight(110, 112, "c");
+    Mockito.verify(highlighting).done();
+    Mockito.verifyNoMoreInteractions(highlighting);
   }
 
 }
