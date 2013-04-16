@@ -11,8 +11,13 @@ class BadConstantName {
   }
 
   interface Interface {
-    int GOOD_CONSTANT = 1;
-    int bad_constant = 2;
+    int GOOD_CONSTANT = 1,
+        bad_constant = 2;
+  }
+
+  @interface AnnotationType {
+    int GOOD_CONSTANT = 1,
+        bad_constant = 2;
   }
 
 }

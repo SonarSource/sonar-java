@@ -79,10 +79,8 @@ public class MethodHelper {
 
   public AstNode getName() {
     final AstNode methodNameNode;
-    if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST)) {
+    if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST, JavaGrammar.ANNOTATION_METHOD_REST)) {
       methodNameNode = astNode.getPreviousAstNode();
-    } else if (astNode.is(JavaGrammar.ANNOTATION_METHOD_REST)) {
-      methodNameNode = astNode.getChild(0);
     } else {
       methodNameNode = astNode.getPreviousSibling();
     }

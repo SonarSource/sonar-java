@@ -50,17 +50,18 @@ public class BadConstantName_S00115_Check extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.FIELD_DECLARATION, JavaGrammar.ENUM_CONSTANT, JavaGrammar.CONSTANT_DECLARATORS_REST);
+    subscribeTo(JavaGrammar.FIELD_DECLARATION, JavaGrammar.ENUM_CONSTANT, JavaGrammar.CONSTANT_DECLARATOR_REST);
     pattern = Pattern.compile(format, Pattern.DOTALL);
   }
 
   @Override
   public void visitNode(AstNode astNode) {
-    if (astNode.is(JavaGrammar.CONSTANT_DECLARATORS_REST)) {
+    if (astNode.is(JavaGrammar.CONSTANT_DECLARATOR_REST)) {
       check(astNode.getPreviousAstNode());
     } else if (astNode.is(JavaGrammar.ENUM_CONSTANT)) {
       check(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     } else {
+      // FIELD_DECLARATION
       if (isConstant(astNode)) {
         for (AstNode variableDeclarator : astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
           check(variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER));
