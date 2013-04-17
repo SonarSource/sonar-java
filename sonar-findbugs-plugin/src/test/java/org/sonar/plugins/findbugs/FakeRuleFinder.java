@@ -57,7 +57,6 @@ public class FakeRuleFinder implements RuleFinder {
     return null;
   }
 
-  @Override
   public Rule findByKey(RuleKey key) {
     return findByKey(key.repository(), key.rule());
   }
