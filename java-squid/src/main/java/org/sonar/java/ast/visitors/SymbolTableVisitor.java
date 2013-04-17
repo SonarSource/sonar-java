@@ -29,7 +29,6 @@ import org.sonar.api.scan.source.SymbolPerspective;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 
-import java.util.Collection;
 import java.util.Map;
 
 public class SymbolTableVisitor extends JavaAstVisitor {
@@ -57,19 +56,18 @@ public class SymbolTableVisitor extends JavaAstVisitor {
       return;
     }
 
-    LOG.info("Created symbol table for " + getContext().getFile());
-
     JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(peekSourceFile().getKey());
     SymbolPerspective symbolPerspective = perspectives.as(SymbolPerspective.class, sonarFile).begin();
-    for (Map.Entry<Symbol, Collection<AstNode>> entry : semanticModel.getUsages().asMap().entrySet()) {
-      AstNode declaration = semanticModel.getAstNode(entry.getKey());
+
+    for (Map.Entry<AstNode, Symbol> entry : semanticModel.getSymbols().entrySet()) {
+      AstNode declaration = entry.getKey();
       org.sonar.api.scan.source.Symbol sonarSymbol = symbolPerspective
-          .newSymbol()
-          .setDeclaration(startOffsetFor(declaration), endOffsetFor(declaration))
-          .build();
+        .newSymbol()
+        .setDeclaration(startOffsetFor(declaration), endOffsetFor(declaration))
+        .build();
 
       SymbolPerspective.ReferencesBuilder referencesBuilder = symbolPerspective.declareReferences(sonarSymbol);
-      for (AstNode usage : entry.getValue()) {
+      for (AstNode usage : semanticModel.getUsages(entry.getValue())) {
         referencesBuilder.addReference(usage.getFromIndex());
       }
     }

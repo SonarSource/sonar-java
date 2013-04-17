@@ -20,9 +20,9 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.sonar.sslr.api.AstNode;
@@ -30,13 +30,15 @@ import com.sonar.sslr.impl.ast.AstWalker;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 public class SemanticModel {
 
   final BiMap<AstNode, Symbol> symbols = HashBiMap.create();
   final Map<AstNode, Symbol> references = Maps.newHashMap();
-  final ArrayListMultimap<Symbol, AstNode> usages = ArrayListMultimap.create();
+  final Multimap<Symbol, AstNode> usages = HashMultimap.create();
 
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final Map<AstNode, Resolve.Env> envs = Maps.newHashMap();
@@ -105,8 +107,12 @@ public class SemanticModel {
     usages.put(symbol, astNode);
   }
 
-  public Multimap<Symbol, AstNode> getUsages() {
-    return usages;
+  public Map<AstNode, Symbol> getSymbols() {
+    return Collections.unmodifiableMap(symbols);
+  }
+
+  public Collection<AstNode> getUsages(Symbol symbol) {
+    return Collections.unmodifiableCollection(usages.get(symbol));
   }
 
 }
