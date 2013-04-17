@@ -222,4 +222,12 @@ public class SymbolTableTest {
     assertThat(result.reference(8, 11)).isSameAs(result.symbol("field"));
   }
 
+  @Test
+  public void ExpressionInAnnotation() {
+    Result result = Result.createFor("references/ExpressionInAnnotation");
+
+    assertThat(result.reference(3, 19)).isSameAs(result.symbol("ExpressionInAnnotation"));
+    assertThat(result.reference(3, 42)).isSameAs(result.symbol("VALUE"));
+  }
+
 }

@@ -168,6 +168,7 @@ public class FirstPass extends JavaAstVisitor {
     env = new Resolve.Env();
     env.packge = symbol;
     env.scope = symbol.members;
+    semanticModel.associateEnv(astNode, env);
 
     enclosingSymbol = env.packge;
     if (astNode.hasDirectChildren(JavaGrammar.PACKAGE_DECLARATION)) {
