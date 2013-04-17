@@ -36,18 +36,20 @@ import java.util.List;
  */
 public class FirstPass extends JavaAstVisitor {
 
-  private final SemanticModel semanticModel;
-
   private final AstNodeType[] scopeAndSymbolAstNodeTypes;
   private final AstNodeType[] scopeAstNodeTypes;
   private final AstNodeType[] symbolAstNodeTypes;
 
-  private Symbol enclosingSymbol;
-
-  private Resolve.Env env;
+  private final SemanticModel semanticModel;
 
   private final List<Symbol> uncompleted = Lists.newArrayList();
   private final SecondPass completer;
+
+  /**
+   * Environment.
+   * {@code env.scope.symbol} - enclosing symbol.
+   */
+  private Resolve.Env env;
 
   public FirstPass(SemanticModel semanticModel, Resolve resolve) {
     this.semanticModel = semanticModel;
@@ -137,12 +139,11 @@ public class FirstPass extends JavaAstVisitor {
     if (astNode.is(scopeAndSymbolAstNodeTypes)) {
       if (astNode.isNot(JavaGrammar.CLASS_CREATOR_REST) || (astNode.is(JavaGrammar.CLASS_CREATOR_REST) && astNode.hasDirectChildren(JavaGrammar.CLASS_BODY))) {
         restoreEnvironment(astNode);
-        enclosingSymbol = enclosingSymbol.owner();
       }
     } else if (astNode.is(scopeAstNodeTypes)) {
       restoreEnvironment(astNode);
     } else if (astNode.is(symbolAstNodeTypes)) {
-      enclosingSymbol = enclosingSymbol.owner();
+      // nop
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
     }
@@ -168,14 +169,13 @@ public class FirstPass extends JavaAstVisitor {
   private void visitCompilationUnit(AstNode astNode) {
     // TODO package and imports
     Symbol.PackageSymbol symbol = new Symbol.PackageSymbol(null, null);
-    symbol.members = new Scope();
+    symbol.members = new Scope(symbol);
 
     env = new Resolve.Env();
     env.packge = symbol;
     env.scope = symbol.members;
     semanticModel.associateEnv(astNode, env);
 
-    enclosingSymbol = env.packge;
     if (astNode.hasDirectChildren(JavaGrammar.PACKAGE_DECLARATION)) {
       // named package
     } else {
@@ -186,9 +186,9 @@ public class FirstPass extends JavaAstVisitor {
   private void visitClassDeclaration(AstNode astNode) {
     AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
     String name = identifierNode.getTokenValue();
-    Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(computeClassFlags(astNode), name, enclosingSymbol);
+    Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(computeClassFlags(astNode), name, env.scope.owner);
     enterSymbol(identifierNode, symbol);
-    symbol.members = new Scope();
+    symbol.members = new Scope(symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
 
@@ -206,11 +206,9 @@ public class FirstPass extends JavaAstVisitor {
   private void visitClassCreatorRest(AstNode astNode) {
     if (astNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
       // Anonymous Class Declaration
-      Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(computeClassFlags(astNode), "", enclosingSymbol);
+      Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(computeClassFlags(astNode), "", env.scope.owner);
 
-      enclosingSymbol = symbol;
-
-      symbol.members = new Scope();
+      symbol.members = new Scope(symbol);
       symbol.completer = completer;
       uncompleted.add(symbol);
 
@@ -252,7 +250,7 @@ public class FirstPass extends JavaAstVisitor {
     if (astNode.is(JavaGrammar.INTERFACE_DECLARATION, JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
       flags |= Flags.INTERFACE;
     }
-    if (enclosingSymbol instanceof Symbol.TypeSymbol && ((env.enclosingClass.flags() & Flags.INTERFACE) != 0)) {
+    if (env.scope.owner instanceof Symbol.TypeSymbol && ((env.enclosingClass.flags() & Flags.INTERFACE) != 0)) {
       // JLS7 6.6.1: All members of interfaces are implicitly public.
       flags |= Flags.PUBLIC;
     }
@@ -263,9 +261,9 @@ public class FirstPass extends JavaAstVisitor {
     MethodHelper methodHelper = new MethodHelper(astNode);
     AstNode identifierNode = methodHelper.getName();
     String name = methodHelper.isConstructor() ? "<init>" : identifierNode.getTokenValue();
-    Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeMethodFlags(astNode), name, enclosingSymbol);
+    Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeMethodFlags(astNode), name, env.scope.owner);
     enterSymbol(identifierNode, symbol);
-    symbol.parameters = new Scope();
+    symbol.parameters = new Scope(symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
 
@@ -347,7 +345,7 @@ public class FirstPass extends JavaAstVisitor {
     Preconditions.checkArgument(identifierNode.is(JavaTokenType.IDENTIFIER));
 
     String name = identifierNode.getTokenValue();
-    Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, enclosingSymbol);
+    Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, env.scope.owner);
     enterSymbol(identifierNode, symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
@@ -379,7 +377,6 @@ public class FirstPass extends JavaAstVisitor {
   private void enterSymbol(AstNode astNode, Symbol symbol) {
     env.scope.enter(symbol);
     semanticModel.associateSymbol(astNode, symbol);
-    enclosingSymbol = symbol;
   }
 
 }

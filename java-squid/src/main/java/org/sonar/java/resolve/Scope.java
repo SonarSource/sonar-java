@@ -28,15 +28,18 @@ import java.util.List;
  */
 public class Scope {
 
+  final Symbol owner;
   final Scope next;
 
   private ArrayListMultimap<String, Symbol> symbols = ArrayListMultimap.create();
 
-  public Scope() {
+  public Scope(Symbol owner) {
+    this.owner = owner;
     this.next = null;
   }
 
   public Scope(Scope next) {
+    this.owner = next.owner;
     this.next = next;
   }
 
