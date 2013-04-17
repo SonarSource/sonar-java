@@ -126,7 +126,8 @@ public class Resolve {
       if (sym == null) {
         sym = findField(env1, env1.enclosingClass(), name, env1.enclosingClass());
       }
-      if (sym.kind < Symbol.ERRONEOUS) { // symbol exists
+      if (sym.kind < Symbol.ERRONEOUS) {
+        // symbol exists
         return sym;
       } else if (sym.kind < bestSoFar.kind) {
         bestSoFar = sym;
@@ -176,7 +177,8 @@ public class Resolve {
         }
       }
       Symbol symbol = findMemberType(env1, env1.enclosingClass(), name, env1.enclosingClass());
-      if (symbol.kind < Symbol.ERRONEOUS) { // symbol exists
+      if (symbol.kind < Symbol.ERRONEOUS) {
+        // symbol exists
         return symbol;
       } else if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
@@ -201,7 +203,8 @@ public class Resolve {
     Symbol symbol;
     if ((kind & Symbol.VAR) != 0) {
       symbol = findVar(env, name);
-      if (symbol.kind < Symbol.ERRONEOUS) { // symbol exists
+      if (symbol.kind < Symbol.ERRONEOUS) {
+        // symbol exists
         return symbol;
       } else if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
@@ -209,7 +212,8 @@ public class Resolve {
     }
     if ((kind & Symbol.TYP) != 0) {
       symbol = findType(env, name);
-      if (symbol.kind < Symbol.ERRONEOUS) { // symbol exists
+      if (symbol.kind < Symbol.ERRONEOUS) {
+        // symbol exists
         return symbol;
       } else if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
@@ -237,7 +241,8 @@ public class Resolve {
     Symbol symbol;
     if ((kind & Symbol.VAR) != 0) {
       symbol = findField(env, site, name, site);
-      if (symbol.kind < Symbol.ERRONEOUS) { // symbol exists
+      if (symbol.kind < Symbol.ERRONEOUS) {
+        // symbol exists
         return symbol;
       } else if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
@@ -245,7 +250,8 @@ public class Resolve {
     }
     if ((kind & Symbol.TYP) != 0) {
       symbol = findMemberType(env, site, name, site);
-      if (symbol.kind < Symbol.ERRONEOUS) { // symbol exists
+      if (symbol.kind < Symbol.ERRONEOUS) {
+        // symbol exists
         return symbol;
       } else if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;

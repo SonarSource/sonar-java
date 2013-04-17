@@ -21,10 +21,10 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.resources.JavaFile;
@@ -32,35 +32,79 @@ import org.sonar.api.scan.source.Highlightable;
 import org.sonar.java.JavaAstScanner;
 
 import java.io.File;
+import java.util.List;
 
 public class SyntaxHighlighterVisitorTest {
 
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
-  @Test
-  public void test() throws Exception {
-    ResourcePerspectives resourcePerspectives = Mockito.mock(ResourcePerspectives.class);
-    Highlightable highlightable = Mockito.mock(Highlightable.class);
-    Mockito.when(resourcePerspectives.as(Mockito.eq(Highlightable.class), Mockito.any(JavaFile.class))).thenReturn(highlightable);
-    Highlightable.HighlightingBuilder highlighting = Mockito.mock(Highlightable.HighlightingBuilder.class);
-    Mockito.when(highlightable.newHighlighting()).thenReturn(highlighting);
+  private final ResourcePerspectives resourcePerspectives = Mockito.mock(ResourcePerspectives.class);
+  private final Highlightable highlightable = Mockito.mock(Highlightable.class);
+  private final Highlightable.HighlightingBuilder highlighting = Mockito.mock(Highlightable.HighlightingBuilder.class);
 
-    SyntaxHighlighterVisitor syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(resourcePerspectives, Charsets.UTF_8);
+  private final SyntaxHighlighterVisitor syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(resourcePerspectives, Charsets.UTF_8);
+
+  private List<String> lines;
+  private String eol;
+
+  @Before
+  public void setUp() {
+    Mockito.when(resourcePerspectives.as(Mockito.eq(Highlightable.class), Mockito.any(JavaFile.class))).thenReturn(highlightable);
+    Mockito.when(highlightable.newHighlighting()).thenReturn(highlighting);
+  }
+
+  @Test
+  public void parse_error() throws Exception {
     File file = temp.newFile();
-    Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n"), file, Charsets.UTF_8);
+    Files.write("ParseError", file, Charsets.UTF_8);
     JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
 
-    Mockito.verify(highlighting).highlight(0, 16, "cppd");
-    Mockito.verify(highlighting).highlight(18, 36, "cppd");
-    Mockito.verify(highlighting).highlight(37, 54, "a");
-    Mockito.verify(highlighting).highlight(55, 63, "s");
-    Mockito.verify(highlighting).highlight(65, 71, "k");
-    Mockito.verify(highlighting).highlight(84, 88, "k");
-    Mockito.verify(highlighting).highlight(103, 110, "k");
-    Mockito.verify(highlighting).highlight(110, 112, "c");
+    Mockito.verifyZeroInteractions(resourcePerspectives);
+  }
+
+  @Test
+  public void test_LF() throws Exception {
+    test("\n");
+  }
+
+  @Test
+  public void test_CR_LF() throws Exception {
+    test("\r\n");
+  }
+
+  @Test
+  public void test_CR() throws Exception {
+    test("\r");
+  }
+
+  private void test(String eol) throws Exception {
+    this.eol = eol;
+    File file = temp.newFile();
+    Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, Charsets.UTF_8);
+
+    JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
+
+    lines = Files.readLines(file, Charsets.UTF_8);
+    Mockito.verify(highlighting).highlight(offset(1, 1), offset(3, 4), "cppd");
+    Mockito.verify(highlighting).highlight(offset(5, 1), offset(7, 4), "cppd");
+    Mockito.verify(highlighting).highlight(offset(8, 1), offset(8, 18), "a");
+    Mockito.verify(highlighting).highlight(offset(8, 19), offset(8, 27), "s");
+    Mockito.verify(highlighting).highlight(offset(9, 1), offset(9, 7), "k");
+    Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 7), "k");
+    Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 12), "k");
+    Mockito.verify(highlighting).highlight(offset(12, 12), offset(12, 14), "c");
     Mockito.verify(highlighting).done();
     Mockito.verifyNoMoreInteractions(highlighting);
+  }
+
+  private int offset(int line, int column) {
+    int result = 0;
+    for (int i = 0; i < line - 1; i++) {
+      result += lines.get(i).length() + eol.length();
+    }
+    result += column - 1;
+    return result;
   }
 
 }

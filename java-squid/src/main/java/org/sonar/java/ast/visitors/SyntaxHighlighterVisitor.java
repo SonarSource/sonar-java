@@ -35,7 +35,6 @@ import org.sonar.api.scan.source.Highlightable;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squid.api.SourceFile;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
