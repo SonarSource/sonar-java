@@ -39,7 +39,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class FindbugsProfileImporterTest {
 
-  private final FindbugsProfileImporter importer = new FindbugsProfileImporter(new FakeRuleFinder());
+  private final FindbugsProfileImporter importer = new FindbugsProfileImporter(FakeRuleFinder.create());
 
   @Test
   public void shouldImportPatterns() {

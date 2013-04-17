@@ -29,7 +29,7 @@ public class SonarWayWithFindbugsProfileTest {
 
   @Test
   public void shouldCreateProfile() {
-    FindbugsProfileImporter importer = new FindbugsProfileImporter(new FakeRuleFinder());
+    FindbugsProfileImporter importer = new FindbugsProfileImporter(FakeRuleFinder.create());
     SonarWayWithFindbugsProfile sonarWayWithFindbugs = new SonarWayWithFindbugsProfile(importer);
     ValidationMessages validation = ValidationMessages.create();
     RulesProfile profile = sonarWayWithFindbugs.createProfile(validation);

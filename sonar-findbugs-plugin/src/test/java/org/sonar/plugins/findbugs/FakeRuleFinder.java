@@ -19,54 +19,50 @@
  */
 package org.sonar.plugins.findbugs;
 
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.sonar.api.platform.ServerFileSystem;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.rules.RuleQuery;
 import org.sonar.api.rules.XMLRuleParser;
 
-import java.util.Collection;
 import java.util.List;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public class FakeRuleFinder implements RuleFinder {
+public class FakeRuleFinder{
 
-  private final List<Rule> findbugsRules;
+  private FakeRuleFinder() {
+  }
 
-  public FakeRuleFinder() {
+  public static RuleFinder create() {
+    RuleFinder ruleFinder = mock(RuleFinder.class);
+
     ServerFileSystem sfs = mock(ServerFileSystem.class);
     FindbugsRuleRepository repo = new FindbugsRuleRepository(sfs, new XMLRuleParser());
-    findbugsRules = repo.createRules();
+    final List<Rule> findbugsRules = repo.createRules();
     for (Rule rule : findbugsRules) {
       rule.setRepositoryKey(FindbugsConstants.REPOSITORY_KEY);
     }
-  }
 
-  public Rule findById(int ruleId) {
-    throw new UnsupportedOperationException();
-  }
-
-  public Rule findByKey(String repositoryKey, String key) {
-    for (Rule rule : findbugsRules) {
-      if (rule.getKey().equals(key)) {
-        return rule;
+    when(ruleFinder.findAll(any(RuleQuery.class))).thenReturn(findbugsRules);
+    when(ruleFinder.findByKey(any(String.class), any(String.class))).thenAnswer(new Answer<Rule>() {
+      @Override
+      public Rule answer(InvocationOnMock invocation) throws Throwable {
+        String key = (String) invocation.getArguments()[1];
+        for (Rule rule : findbugsRules) {
+          if (rule.getKey().equals(key)) {
+            return rule;
+          }
+        }
+        return null;
       }
-    }
-    return null;
-  }
+    });
 
-  public Rule findByKey(RuleKey key) {
-    return findByKey(key.repository(), key.rule());
-  }
-
-  public Rule find(RuleQuery query) {
-    throw new UnsupportedOperationException();
-  }
-
-  public Collection<Rule> findAll(RuleQuery query) {
-    return findbugsRules;
+    return ruleFinder;
   }
 
 }

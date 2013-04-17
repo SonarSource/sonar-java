@@ -133,7 +133,7 @@ public class FindbugsSensorTest extends FindbugsTests {
 
     when(context.getResource(any(Resource.class))).thenReturn(new JavaFile("org.sonar.MyClass"));
 
-    FindbugsSensor analyser = new FindbugsSensor(createRulesProfileWithActiveRules(), new FakeRuleFinder(), executor);
+    FindbugsSensor analyser = new FindbugsSensor(createRulesProfileWithActiveRules(), FakeRuleFinder.create(), executor);
     analyser.analyse(project, context);
 
     verify(executor).execute();
@@ -160,7 +160,7 @@ public class FindbugsSensorTest extends FindbugsTests {
     collection.add(bugInstance);
     when(executor.execute()).thenReturn(collection);
 
-    FindbugsSensor analyser = new FindbugsSensor(createRulesProfileWithActiveRules(), new FakeRuleFinder(), executor);
+    FindbugsSensor analyser = new FindbugsSensor(createRulesProfileWithActiveRules(), FakeRuleFinder.create(), executor);
     analyser.analyse(project, context);
 
     verify(context, never()).saveViolation(any(Violation.class));
