@@ -29,6 +29,7 @@ import org.sonar.graph.DirectedGraph;
 import org.sonar.graph.DirectedGraphAccessor;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
+import org.sonar.java.ast.visitors.SymbolTableVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.DITVisitor;
@@ -70,6 +71,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     if (sonarComponents != null) {
       astScanner.accept(new FileLinesVisitor(sonarComponents.getFileLinesContextFactory(), conf.getCharset()));
       astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents.getResourcePerspectives(), conf.getCharset()));
+      astScanner.accept(new SymbolTableVisitor(sonarComponents.getResourcePerspectives()));
     }
 
     // TODO unchecked cast

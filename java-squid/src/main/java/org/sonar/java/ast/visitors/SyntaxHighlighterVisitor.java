@@ -83,8 +83,7 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
       return;
     }
 
-    SourceFile squidFile = peekSourceFile();
-    JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(squidFile.getKey());
+    JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(peekSourceFile().getKey());
     highlighting = perspectives.as(Highlightable.class, sonarFile).newHighlighting();
 
     lineStart = Lists.newArrayList();
