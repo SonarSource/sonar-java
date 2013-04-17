@@ -22,14 +22,11 @@ package org.sonar.java.resolve;
 import com.google.common.base.Charsets;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
-import com.sonar.sslr.impl.ast.AstWalker;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
 import java.io.File;
-import java.util.Map;
 
 class Result {
 
@@ -50,7 +47,7 @@ class Result {
 
   public Symbol symbol(String name) {
     Symbol result = null;
-    for (Symbol symbol : semanticModel.symbols.values()) {
+    for (Symbol symbol : semanticModel.getSymbols().values()) {
       if (name.equals(symbol.name)) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");
@@ -66,7 +63,7 @@ class Result {
 
   public Symbol symbol(String name, int line) {
     Symbol result = null;
-    for (Symbol symbol : semanticModel.symbols.values()) {
+    for (Symbol symbol :semanticModel.getSymbols().values()) {
       if (name.equals(symbol.name) && semanticModel.getAstNode(symbol).getTokenLine() == line) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");
@@ -83,10 +80,12 @@ class Result {
   public Symbol reference(int line, int column) {
     // In SSLR column starts at 0, but here we want consistency with IDE, so we start from 1:
     column -= 1;
-    for (Map.Entry<AstNode, Symbol> entry : semanticModel.references.entrySet()) {
-      Token token = entry.getKey().getToken();
-      if (token.getLine() == line && token.getColumn() == column) {
-        return entry.getValue();
+    for (Symbol symbol : semanticModel.getSymbols().values()) {
+      for (AstNode usage : semanticModel.getUsages(symbol)) {
+        Token token = usage.getToken();
+        if (token.getLine() == line && token.getColumn() == column) {
+          return symbol;
+        }
       }
     }
     throw new IllegalArgumentException("Reference not found");

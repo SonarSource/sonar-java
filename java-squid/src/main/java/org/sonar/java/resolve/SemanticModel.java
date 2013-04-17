@@ -36,9 +36,8 @@ import java.util.Map;
 
 public class SemanticModel {
 
-  final BiMap<AstNode, Symbol> symbols = HashBiMap.create();
-  final Map<AstNode, Symbol> references = Maps.newHashMap();
-  final Multimap<Symbol, AstNode> usages = HashMultimap.create();
+  private final BiMap<AstNode, Symbol> symbols = HashBiMap.create();
+  private final Multimap<Symbol, AstNode> usages = HashMultimap.create();
 
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final Map<AstNode, Resolve.Env> envs = Maps.newHashMap();
@@ -103,7 +102,6 @@ public class SemanticModel {
   public void associateReference(AstNode astNode, Symbol symbol) {
     Preconditions.checkNotNull(astNode);
     Preconditions.checkNotNull(symbol);
-    references.put(astNode, symbol);
     usages.put(symbol, astNode);
   }
 
