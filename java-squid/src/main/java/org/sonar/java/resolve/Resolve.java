@@ -30,7 +30,7 @@ import com.google.common.annotations.VisibleForTesting;
  * env - is the environment where the symbol was mentioned
  * site - is the type of which symbol is a member
  * name - is the symbol's name
- *
+ * <p/>
  * TODO site should be represented by class Type
  */
 public class Resolve {
@@ -89,8 +89,8 @@ public class Resolve {
     for (Symbol symbol : type.members().lookup(name)) {
       if (symbol.kind == Symbol.VAR) {
         return isAccessible(env, site, symbol)
-            ? symbol
-            : new AccessErrorSymbol(symbol);
+          ? symbol
+          : new AccessErrorSymbol(symbol);
       }
     }
     Symbol symbol;
@@ -144,8 +144,8 @@ public class Resolve {
     for (Symbol symbol : c.members().lookup(name)) {
       if (symbol.kind == Symbol.TYP) {
         return isAccessible(env, site, symbol)
-            ? symbol
-            : new AccessErrorSymbol(symbol);
+          ? symbol
+          : new AccessErrorSymbol(symbol);
       }
     }
     if (c.getSuperclass() != null) {
@@ -292,7 +292,8 @@ public class Resolve {
   /**
    * Is given class a subclass of given base class?
    */
-  private boolean isSubClass(Symbol.TypeSymbol c, Symbol base) {
+  @VisibleForTesting
+  boolean isSubClass(Symbol.TypeSymbol c, Symbol base) {
     // TODO see Javac
     if (c == base) {
       // same class
@@ -305,10 +306,12 @@ public class Resolve {
         }
       }
       // check if superclass implements base
-      return isSubClass(c.getSuperclass(), base);
+      // TODO get rid of null check
+      return c.getSuperclass() != null && isSubClass(c.getSuperclass(), base);
     } else {
       // check if class extends base or its superclass extends base
-      return c.getSuperclass() == base || isSubClass(c.getSuperclass(), base);
+      // TODO get rid of null check
+      return c.getSuperclass() != null && isSubClass(c.getSuperclass(), base);
     }
   }
 
@@ -319,15 +322,19 @@ public class Resolve {
     switch (symbol.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
         return (env.enclosingClass().outermostClass() == symbol.owner().outermostClass())
-            && isInheritedIn(symbol, site);
+          && isInheritedIn(symbol, site);
       case 0:
         return (env.packge() == symbol.packge())
-            && isAccessible(env, site);
+          && isAccessible(env, site)
+          && isInheritedIn(symbol, site)
+            /* TODO && notOverriddenIn(site, symbol) */;
       case Flags.PUBLIC:
-        return isAccessible(env, site);
+        return isAccessible(env, site)
+            /* TODO && notOverriddenIn(site, symbol) */;
       case Flags.PROTECTED:
         return ((env.packge() == symbol.packge()) || isProtectedAccessible(symbol, env.enclosingClass, site))
-            && isAccessible(env, site);
+          && isAccessible(env, site)
+            /* TODO && notOverriddenIn(site, symbol) */;
       default:
         throw new IllegalStateException();
     }

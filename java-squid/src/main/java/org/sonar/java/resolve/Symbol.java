@@ -26,13 +26,13 @@ import java.util.List;
 
 public class Symbol {
 
-  public static int PCK = 1 << 0;
-  public static int TYP = 1 << 1;
-  public static int VAR = 1 << 2;
-  public static int MTH = 1 << 4;
+  public static final int PCK = 1 << 0;
+  public static final int TYP = 1 << 1;
+  public static final int VAR = 1 << 2;
+  public static final int MTH = 1 << 4;
 
-  public static int ERRONEOUS = 1 << 6;
-  public static int ABSENT = ERRONEOUS + 1;
+  public static final int ERRONEOUS = 1 << 6;
+  public static final int ABSENT = ERRONEOUS + 1;
 
   final int kind;
 
@@ -65,7 +65,7 @@ public class Symbol {
     return owner;
   }
 
-  static interface Completer {
+  interface Completer {
     void complete(Symbol symbol);
   }
 
@@ -119,7 +119,7 @@ public class Symbol {
 
     Scope members;
 
-    public PackageSymbol(String name, Symbol owner) {
+    public PackageSymbol(@Nullable String name, @Nullable Symbol owner) {
       super(PCK, 0, name, owner);
     }
 

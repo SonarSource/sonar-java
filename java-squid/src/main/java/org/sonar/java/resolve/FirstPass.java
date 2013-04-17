@@ -53,31 +53,31 @@ public class FirstPass extends JavaAstVisitor {
     this.semanticModel = semanticModel;
     this.completer = new SecondPass(semanticModel, resolve);
     scopeAndSymbolAstNodeTypes = new AstNodeType[]{
-        JavaGrammar.COMPILATION_UNIT,
-        JavaGrammar.CLASS_DECLARATION,
-        JavaGrammar.INTERFACE_DECLARATION,
-        JavaGrammar.ENUM_DECLARATION,
-        JavaGrammar.ANNOTATION_TYPE_DECLARATION,
-        // Method or constructor
-        JavaGrammar.METHOD_DECLARATOR_REST,
-        JavaGrammar.VOID_METHOD_DECLARATOR_REST,
-        JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
-        JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
-        JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-        JavaGrammar.ANNOTATION_METHOD_REST};
+      JavaGrammar.COMPILATION_UNIT,
+      JavaGrammar.CLASS_DECLARATION,
+      JavaGrammar.INTERFACE_DECLARATION,
+      JavaGrammar.ENUM_DECLARATION,
+      JavaGrammar.ANNOTATION_TYPE_DECLARATION,
+      // Method or constructor
+      JavaGrammar.METHOD_DECLARATOR_REST,
+      JavaGrammar.VOID_METHOD_DECLARATOR_REST,
+      JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
+      JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
+      JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
+      JavaGrammar.ANNOTATION_METHOD_REST};
     scopeAstNodeTypes = new AstNodeType[]{
-        JavaGrammar.BLOCK,
-        JavaGrammar.FOR_STATEMENT};
+      JavaGrammar.BLOCK,
+      JavaGrammar.FOR_STATEMENT};
     symbolAstNodeTypes = new AstNodeType[]{
-        JavaGrammar.FIELD_DECLARATION,
-        JavaGrammar.ENUM_CONSTANT,
-        JavaGrammar.CONSTANT_DECLARATOR_REST,
-        JavaGrammar.FORMAL_PARAMETERS_DECLS_REST,
-        JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
-        JavaGrammar.FOR_INIT,
-        JavaGrammar.FORMAL_PARAMETER,
-        JavaGrammar.CATCH_FORMAL_PARAMETER,
-        JavaGrammar.RESOURCE,
+      JavaGrammar.FIELD_DECLARATION,
+      JavaGrammar.ENUM_CONSTANT,
+      JavaGrammar.CONSTANT_DECLARATOR_REST,
+      JavaGrammar.FORMAL_PARAMETERS_DECLS_REST,
+      JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
+      JavaGrammar.FOR_INIT,
+      JavaGrammar.FORMAL_PARAMETER,
+      JavaGrammar.CATCH_FORMAL_PARAMETER,
+      JavaGrammar.RESOURCE,
     };
   }
 
@@ -95,12 +95,12 @@ public class FirstPass extends JavaAstVisitor {
     } else if (astNode.is(JavaGrammar.CLASS_DECLARATION, JavaGrammar.INTERFACE_DECLARATION, JavaGrammar.ENUM_DECLARATION, JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
       visitClassDeclaration(astNode);
     } else if (astNode.is(
-        JavaGrammar.METHOD_DECLARATOR_REST,
-        JavaGrammar.VOID_METHOD_DECLARATOR_REST,
-        JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
-        JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
-        JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-        JavaGrammar.ANNOTATION_METHOD_REST)) {
+      JavaGrammar.METHOD_DECLARATOR_REST,
+      JavaGrammar.VOID_METHOD_DECLARATOR_REST,
+      JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
+      JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
+      JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
+      JavaGrammar.ANNOTATION_METHOD_REST)) {
       visitMethodDeclaration(astNode);
     } else if (astNode.is(JavaGrammar.ENUM_CONSTANT)) {
       visitEnumConstant(astNode);

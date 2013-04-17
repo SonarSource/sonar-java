@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -98,9 +99,66 @@ public class ResolveTest {
   }
 
   @Test
+  public void test_isSubClass() {
+    Symbol.TypeSymbol base = new Symbol.TypeSymbol(0, "class", null);
+
+    // same class
+    Symbol.TypeSymbol c = base;
+    assertThat(resolve.isSubClass(c, base)).isTrue();
+
+    // base not extended by class
+    c = new Symbol.TypeSymbol(0, "class", null);
+
+    // class extends base
+    assertThat(resolve.isSubClass(c, base)).isFalse();
+    c.superclass = base;
+    assertThat(resolve.isSubClass(c, base)).isTrue();
+
+    // class extends superclass
+    c.superclass = new Symbol.TypeSymbol(0, "superclass", null);
+    assertThat(resolve.isSubClass(c, base)).isFalse();
+
+    // class extends superclass, which extends base
+    c.superclass.superclass = base;
+    assertThat(resolve.isSubClass(c, base)).isTrue();
+
+    // base - is an interface
+    base = new Symbol.TypeSymbol(Flags.INTERFACE, "class", null);
+    c = new Symbol.TypeSymbol(0, "class", null);
+
+    // base not implemented by class
+    c.interfaces = ImmutableList.of();
+    assertThat(resolve.isSubClass(c, base)).isFalse();
+
+    // class implements base interface
+    c.interfaces = ImmutableList.of(base);
+    assertThat(resolve.isSubClass(c, base)).isTrue();
+
+    // class implements interface, but not base interface
+    Symbol.TypeSymbol i = new Symbol.TypeSymbol(Flags.INTERFACE, "class", null);
+    i.interfaces = ImmutableList.of();
+    c.interfaces = ImmutableList.of(i);
+    assertThat(resolve.isSubClass(c, base)).isFalse();
+
+    // class implements interface, which implements base
+    i.interfaces = ImmutableList.of(base);
+    assertThat(resolve.isSubClass(c, base)).isTrue();
+
+    // class extends superclass
+    c.interfaces = ImmutableList.of();
+    c.superclass = new Symbol.TypeSymbol(0, "superclass", null);
+    c.superclass.interfaces = ImmutableList.of();
+    assertThat(resolve.isSubClass(c, base)).isFalse();
+
+    // class extends superclass, which implements base
+    c.superclass.interfaces = ImmutableList.of(base);
+    assertThat(resolve.isSubClass(c, base)).isTrue();
+  }
+
+  @Test
   public void test_isInheritedIn() {
     Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("package", null);
-    Symbol.TypeSymbol clazz = new Symbol.TypeSymbol(Flags.PUBLIC, "class", packageSymbol);
+    Symbol.TypeSymbol clazz = new Symbol.TypeSymbol(0, "class", packageSymbol);
 
     // public symbol is always inherited
     Symbol symbol = new Symbol(0, Flags.PUBLIC, "name", null);

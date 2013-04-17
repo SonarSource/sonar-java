@@ -40,8 +40,8 @@ public class ThirdPass extends JavaAstVisitor {
   @Override
   public void init() {
     subscribeTo(
-        JavaGrammar.PRIMARY,
-        JavaGrammar.LABELED_STATEMENT, JavaGrammar.BREAK_STATEMENT, JavaGrammar.CONTINUE_STATEMENT);
+      JavaGrammar.PRIMARY,
+      JavaGrammar.LABELED_STATEMENT, JavaGrammar.BREAK_STATEMENT, JavaGrammar.CONTINUE_STATEMENT);
   }
 
   @Override

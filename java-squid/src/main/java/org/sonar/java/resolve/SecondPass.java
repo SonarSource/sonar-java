@@ -139,7 +139,7 @@ public class SecondPass implements Symbol.Completer {
       // TODO
       return;
     } else {
-       throw new IllegalArgumentException();
+      throw new IllegalArgumentException();
     }
 
     Resolve.Env env = semanticModel.getEnv(symbol);
