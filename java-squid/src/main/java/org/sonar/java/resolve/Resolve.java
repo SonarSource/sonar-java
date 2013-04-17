@@ -294,6 +294,10 @@ public class Resolve {
    */
   @VisibleForTesting
   boolean isSubClass(Symbol.TypeSymbol c, Symbol base) {
+    // TODO get rid of null check
+    if (c == null) {
+      return false;
+    }
     // TODO see Javac
     if (c == base) {
       // same class
@@ -306,38 +310,44 @@ public class Resolve {
         }
       }
       // check if superclass implements base
-      // TODO get rid of null check
-      return c.getSuperclass() != null && isSubClass(c.getSuperclass(), base);
+      return isSubClass(c.getSuperclass(), base);
     } else {
       // check if class extends base or its superclass extends base
-      // TODO get rid of null check
-      return c.getSuperclass() != null && isSubClass(c.getSuperclass(), base);
+      return isSubClass(c.getSuperclass(), base);
     }
   }
 
   /**
    * Is symbol accessible as a member of given class in given environment?
+   * <p/>
+   * Symbol is accessible only if not overridden by another symbol. If overridden, then strictly speaking it is not a member.
    */
   public boolean isAccessible(Env env, Symbol.TypeSymbol site, Symbol symbol) {
     switch (symbol.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
+        // no check of overriding, because private members cannot be overridden
         return (env.enclosingClass().outermostClass() == symbol.owner().outermostClass())
           && isInheritedIn(symbol, site);
       case 0:
         return (env.packge() == symbol.packge())
           && isAccessible(env, site)
           && isInheritedIn(symbol, site)
-            /* TODO && notOverriddenIn(site, symbol) */;
+          && notOverriddenIn(site, symbol);
       case Flags.PUBLIC:
         return isAccessible(env, site)
-            /* TODO && notOverriddenIn(site, symbol) */;
+          && notOverriddenIn(site, symbol);
       case Flags.PROTECTED:
         return ((env.packge() == symbol.packge()) || isProtectedAccessible(symbol, env.enclosingClass, site))
           && isAccessible(env, site)
-            /* TODO && notOverriddenIn(site, symbol) */;
+          && notOverriddenIn(site, symbol);
       default:
         throw new IllegalStateException();
     }
+  }
+
+  private boolean notOverriddenIn(Symbol.TypeSymbol site, Symbol symbol) {
+    // TODO see Javac
+    return true;
   }
 
   /**
