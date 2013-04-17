@@ -19,16 +19,17 @@
  */
 package org.sonar.plugins.findbugs;
 
-import static org.mockito.Mockito.mock;
-
-import java.util.Collection;
-import java.util.List;
-
 import org.sonar.api.platform.ServerFileSystem;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.rules.RuleQuery;
 import org.sonar.api.rules.XMLRuleParser;
+
+import java.util.Collection;
+import java.util.List;
+
+import static org.mockito.Mockito.mock;
 
 public class FakeRuleFinder implements RuleFinder {
 
@@ -56,6 +57,11 @@ public class FakeRuleFinder implements RuleFinder {
     return null;
   }
 
+  @Override
+  public Rule findByKey(RuleKey key) {
+    return findByKey(key.repository(), key.rule());
+  }
+
   public Rule find(RuleQuery query) {
     throw new UnsupportedOperationException();
   }
@@ -63,4 +69,5 @@ public class FakeRuleFinder implements RuleFinder {
   public Collection<Rule> findAll(RuleQuery query) {
     return findbugsRules;
   }
+
 }
