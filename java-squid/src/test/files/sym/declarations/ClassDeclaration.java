@@ -1,6 +1,9 @@
 package declarations;
 
-@SuppressWarnings("UnusedDeclaration")
+/**
+ * JLS7 8.1. Class Declarations
+ */
+@SuppressWarnings("all")
 class ClassDeclaration {
 
   private class Declaration extends Superclass implements FirstInterface, SecondInterface {

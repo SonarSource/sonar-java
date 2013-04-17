@@ -43,19 +43,31 @@ public class SymbolTableTest {
   }
 
   @Test
-  public void ClassDeclarationInsideBlock() {
-    Result result = Result.createFor("declarations/ClassDeclarationInsideBlock");
+  public void AnonymousClassDeclaration() {
+    Result result = Result.createFor("declarations/AnonymousClassDeclaration");
+
+    Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("methodInAnonymousClass").owner();
+    assertThat(typeSymbol.owner()).isSameAs(result.symbol("method"));
+    assertThat(typeSymbol.flags()).isEqualTo(0);
+    assertThat(typeSymbol.name).isEqualTo("");
+    assertThat(typeSymbol.getSuperclass()).isNull(); // FIXME should be java.lang.Object
+    assertThat(typeSymbol.getInterfaces()).isEmpty();
+  }
+
+  @Test
+  public void LocalClassDeclaration() {
+    Result result = Result.createFor("declarations/LocalClassDeclaration");
 
     Symbol.TypeSymbol typeSymbol;
-    // TODO no forward references here
-//    typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 11);
-//    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 6));
-
-    typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 19);
-    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 19 - 2));
+    // TODO no forward references here, for the moment considered as a really rare situation
+//    typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 14);
+//    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 9));
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 22);
-    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 6));
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 22 - 2));
+
+    typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 25);
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 9));
   }
 
   @Test

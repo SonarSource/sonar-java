@@ -1,4 +1,4 @@
-@SuppressWarnings("UnusedDeclaration")
+@SuppressWarnings("all")
 class Accessibility {
 
   private class Example1 {

@@ -1,6 +1,9 @@
 package declarations;
 
-@SuppressWarnings("UnusedDeclaration")
+/**
+ * JLS7 8.9. Enums
+ */
+@SuppressWarnings("all")
 class EnumDeclaration {
 
   private enum Declaration implements FirstInterface, SecondInterface {

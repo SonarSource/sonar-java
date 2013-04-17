@@ -1,4 +1,4 @@
-@SuppressWarnings("UnusedDeclaration")
+@SuppressWarnings("all")
 class CompleteHierarchyOfTypes {
 
   static class Foo extends Bar.Baz { // Bar.Baz cannot be resolved if hierarchy of Bar is incomplete

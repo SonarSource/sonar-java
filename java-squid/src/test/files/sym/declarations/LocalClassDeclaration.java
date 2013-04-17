@@ -1,7 +1,10 @@
 package declarations;
 
-@SuppressWarnings("UnusedDeclaration")
-class ClassDeclarationInsideBlock {
+/**
+ * JLS7 14.3. Local Class Declarations
+ */
+@SuppressWarnings("all")
+class LocalClassDeclaration {
 
   class Superclass {
   }

@@ -1,6 +1,9 @@
 package declarations;
 
-@SuppressWarnings("UnusedDeclaration")
+/**
+ * JLS7 9.6. Annotation Types
+ */
+@SuppressWarnings("all")
 class AnnotationTypeDeclaration {
 
   // JLS7 9.6: Unless explicitly modified, all of the rules that apply to ordinary interface declarations apply to annotation type declarations.

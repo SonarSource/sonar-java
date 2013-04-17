@@ -1,6 +1,9 @@
 package declarations;
 
-@SuppressWarnings("UnusedDeclaration")
+/**
+ * JLS7 9.1. Interface Declarations
+ */
+@SuppressWarnings("all")
 class InterfaceDeclaration {
 
   // JLS7 6.6.1: All members of interfaces are implicitly public.

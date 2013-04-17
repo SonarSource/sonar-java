@@ -1,4 +1,4 @@
-@SuppressWarnings("UnusedDeclaration")
+@SuppressWarnings("all")
 class ScopesAndSymbols {
 
   static interface T0 {

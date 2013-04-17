@@ -1,6 +1,6 @@
 import java.util.Collections;
 
-@SuppressWarnings("UnusedDeclaration")
+@SuppressWarnings("all")
 class TypesOfDeclarations {
 
   interface Interface1 {
@@ -25,7 +25,6 @@ class TypesOfDeclarations {
 
   static class Class2 extends Class1 implements Interface1, Interface2 {
   }
-
 
   private static class Outer {
     private static int a;

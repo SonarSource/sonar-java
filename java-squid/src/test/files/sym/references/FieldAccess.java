@@ -1,6 +1,6 @@
 package references;
 
-@SuppressWarnings("All")
+@SuppressWarnings("all")
 class FieldAccess {
 
   static FirstStaticNestedClass field;

@@ -58,6 +58,7 @@ public class FirstPass extends JavaAstVisitor {
       JavaGrammar.INTERFACE_DECLARATION,
       JavaGrammar.ENUM_DECLARATION,
       JavaGrammar.ANNOTATION_TYPE_DECLARATION,
+      JavaGrammar.CLASS_CREATOR_REST,
       // Method or constructor
       JavaGrammar.METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_METHOD_DECLARATOR_REST,
@@ -94,6 +95,8 @@ public class FirstPass extends JavaAstVisitor {
       visitCompilationUnit(astNode);
     } else if (astNode.is(JavaGrammar.CLASS_DECLARATION, JavaGrammar.INTERFACE_DECLARATION, JavaGrammar.ENUM_DECLARATION, JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
       visitClassDeclaration(astNode);
+    } else if (astNode.is(JavaGrammar.CLASS_CREATOR_REST)) {
+      visitClassCreatorRest(astNode);
     } else if (astNode.is(
       JavaGrammar.METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_METHOD_DECLARATOR_REST,
@@ -132,8 +135,10 @@ public class FirstPass extends JavaAstVisitor {
   @Override
   public void leaveNode(AstNode astNode) {
     if (astNode.is(scopeAndSymbolAstNodeTypes)) {
-      restoreEnvironment(astNode);
-      enclosingSymbol = enclosingSymbol.owner();
+      if (astNode.isNot(JavaGrammar.CLASS_CREATOR_REST) || (astNode.is(JavaGrammar.CLASS_CREATOR_REST) && astNode.hasDirectChildren(JavaGrammar.CLASS_BODY))) {
+        restoreEnvironment(astNode);
+        enclosingSymbol = enclosingSymbol.owner();
+      }
     } else if (astNode.is(scopeAstNodeTypes)) {
       restoreEnvironment(astNode);
     } else if (astNode.is(symbolAstNodeTypes)) {
@@ -196,6 +201,29 @@ public class FirstPass extends JavaAstVisitor {
     classEnv.scope = symbol.members;
     env = classEnv;
     semanticModel.associateEnv(astNode, env);
+  }
+
+  private void visitClassCreatorRest(AstNode astNode) {
+    if (astNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
+      // Anonymous Class Declaration
+      Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(computeClassFlags(astNode), "", enclosingSymbol);
+
+      enclosingSymbol = symbol;
+
+      symbol.members = new Scope();
+      symbol.completer = completer;
+      uncompleted.add(symbol);
+
+      // Save current environment to be able to complete class later
+      semanticModel.saveEnv(symbol, env);
+
+      Resolve.Env classEnv = env.dup();
+      classEnv.outer = env;
+      classEnv.enclosingClass = symbol;
+      classEnv.scope = symbol.members;
+      env = classEnv;
+      semanticModel.associateEnv(astNode.getFirstChild(JavaGrammar.CLASS_BODY), env);
+    }
   }
 
   private int computeModifierFlag(AstNode astNode) {

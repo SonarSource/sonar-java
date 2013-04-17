@@ -1,8 +1,8 @@
 package references;
 
 @SuppressWarnings(ExpressionInAnnotation.VALUE)
-public class ExpressionInAnnotation {
+class ExpressionInAnnotation {
 
-  public static final String VALUE = "All";
+  public static final String VALUE = "all";
 
 }

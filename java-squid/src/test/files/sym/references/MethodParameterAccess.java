@@ -1,6 +1,6 @@
 package references;
 
-@SuppressWarnings("All")
+@SuppressWarnings("all")
 class MethodParameterAccess {
 
   public void method(Param param) {

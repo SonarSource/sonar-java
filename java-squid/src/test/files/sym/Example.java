@@ -1,3 +1,4 @@
+@SuppressWarnings("all")
 class Example {
 
   class Foo {

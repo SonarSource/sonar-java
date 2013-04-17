@@ -56,6 +56,12 @@ public class SecondPass implements Symbol.Completer {
   }
 
   public void complete(Symbol.TypeSymbol symbol) {
+    if ("".equals(symbol.name)) {
+      // Anonymous Class Declaration
+      symbol.interfaces = ImmutableList.of();
+      return;
+    }
+
     AstNode astNode = semanticModel.getAstNode(symbol).getParent();
     Resolve.Env env = semanticModel.getEnv(symbol);
 
