@@ -29,9 +29,19 @@ public class Flags {
   public static final int PROTECTED = 1 << 2;
 
   /**
-   * Interface or AnnotationType.
+   * Interface or annotation type.
    */
   public static final int INTERFACE = 1 << 9;
+
+  /**
+   * Annotation type.
+   */
+  public static final int ANNOTATION = 1 << 13;
+
+  /**
+   * An enumeration type or an enumeration constant.
+   */
+  public static final int ENUM = 1 << 14;
 
   /**
    * Masks.

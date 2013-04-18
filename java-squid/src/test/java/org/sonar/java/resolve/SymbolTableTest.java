@@ -50,7 +50,7 @@ public class SymbolTableTest {
     assertThat(typeSymbol.owner()).isSameAs(result.symbol("method"));
     assertThat(typeSymbol.flags()).isEqualTo(0);
     assertThat(typeSymbol.name).isEqualTo("");
-    assertThat(typeSymbol.getSuperclass()).isNull(); // FIXME should be java.lang.Object
+    assertThat(typeSymbol.getSuperclass()).isNull(); // FIXME should be result.symbol("Superclass")
     assertThat(typeSymbol.getInterfaces()).isEmpty();
   }
 
@@ -98,7 +98,7 @@ public class SymbolTableTest {
     assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.INTERFACE);
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("NestedEnum");
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM);
   }
 
   @Test
@@ -107,17 +107,17 @@ public class SymbolTableTest {
 
     Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration");
     assertThat(typeSymbol.owner()).isSameAs(result.symbol("EnumDeclaration"));
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PRIVATE);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.ENUM);
     assertThat(typeSymbol.getSuperclass()).isNull(); // FIXME should be java.lang.Enum
     assertThat(typeSymbol.getInterfaces()).containsExactly(
         result.symbol("FirstInterface"),
         result.symbol("SecondInterface"));
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
-    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM);
 
     variableSymbol = (Symbol.VariableSymbol) result.symbol("SECOND_CONSTANT");
-    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM);
   }
 
   @Test
@@ -126,7 +126,7 @@ public class SymbolTableTest {
 
     Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration");
     assertThat(typeSymbol.owner()).isSameAs(result.symbol("AnnotationTypeDeclaration"));
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.INTERFACE);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.INTERFACE | Flags.ANNOTATION);
     assertThat(typeSymbol.getSuperclass()).isNull(); // TODO should it be java.lang.Object?
     assertThat(typeSymbol.getInterfaces()).isEmpty(); // FIXME should be java.lang.annotation.Annotation
 
@@ -146,10 +146,10 @@ public class SymbolTableTest {
     assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.INTERFACE);
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("NestedEnum");
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM);
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("NestedAnnotationType");
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.INTERFACE);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.INTERFACE | Flags.ANNOTATION);
   }
 
   @Test

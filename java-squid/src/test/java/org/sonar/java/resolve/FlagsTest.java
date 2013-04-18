@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import org.junit.Test;
+import org.objectweb.asm.Opcodes;
 
 import java.lang.reflect.Constructor;
 
@@ -33,6 +34,19 @@ public class FlagsTest {
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
     constructor.newInstance();
+  }
+
+  /**
+   * Flags can be easily loaded from class-files into symbols.
+   */
+  @Test
+  public void flags_match_asm_opcodes() {
+    assertThat(Flags.PUBLIC).isEqualTo(Opcodes.ACC_PUBLIC);
+    assertThat(Flags.PRIVATE).isEqualTo(Opcodes.ACC_PRIVATE);
+    assertThat(Flags.PROTECTED).isEqualTo(Opcodes.ACC_PROTECTED);
+    assertThat(Flags.INTERFACE).isEqualTo(Opcodes.ACC_INTERFACE);
+    assertThat(Flags.ANNOTATION).isEqualTo(Opcodes.ACC_ANNOTATION);
+    assertThat(Flags.ENUM).isEqualTo(Opcodes.ACC_ENUM);
   }
 
 }

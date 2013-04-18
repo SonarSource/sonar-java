@@ -175,12 +175,6 @@ public class FirstPass extends JavaAstVisitor {
     env.packge = symbol;
     env.scope = symbol.members;
     semanticModel.associateEnv(astNode, env);
-
-    if (astNode.hasDirectChildren(JavaGrammar.PACKAGE_DECLARATION)) {
-      // named package
-    } else {
-      // unnamed package
-    }
   }
 
   private void visitClassDeclaration(AstNode astNode) {
@@ -206,7 +200,7 @@ public class FirstPass extends JavaAstVisitor {
   private void visitClassCreatorRest(AstNode astNode) {
     if (astNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
       // Anonymous Class Declaration
-      Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(computeClassFlags(astNode), "", env.scope.owner);
+      Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(0, "", env.scope.owner);
 
       symbol.members = new Scope(symbol);
       symbol.completer = completer;
@@ -240,15 +234,24 @@ public class FirstPass extends JavaAstVisitor {
     return flag;
   }
 
-  private int computeClassFlags(AstNode astNode) {
+  private int computeFlags(AstNode astNode) {
     int flags = 0;
     AstNode modifierNode = astNode.getPreviousAstNode();
     while (modifierNode != null && modifierNode.is(JavaGrammar.MODIFIER)) {
       flags |= computeModifierFlag(modifierNode);
       modifierNode = modifierNode.getPreviousAstNode();
     }
-    if (astNode.is(JavaGrammar.INTERFACE_DECLARATION, JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
+    return flags;
+  }
+
+  private int computeClassFlags(AstNode astNode) {
+    int flags = computeFlags(astNode);
+    if (astNode.is(JavaGrammar.INTERFACE_DECLARATION)) {
       flags |= Flags.INTERFACE;
+    } else if (astNode.is(JavaGrammar.ENUM_DECLARATION)) {
+      flags |= Flags.ENUM;
+    } else if (astNode.is(JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
+      flags |= Flags.ANNOTATION | Flags.INTERFACE;
     }
     if (env.scope.owner instanceof Symbol.TypeSymbol && ((env.enclosingClass.flags() & Flags.INTERFACE) != 0)) {
       // JLS7 6.6.1: All members of interfaces are implicitly public.
@@ -278,12 +281,7 @@ public class FirstPass extends JavaAstVisitor {
 
   private int computeMethodFlags(AstNode astNode) {
     if (astNode.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
-      AstNode node = astNode.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION);
-      int flags = 0;
-      for (AstNode modifierNode : node.getChildren(JavaGrammar.MODIFIER)) {
-        flags |= computeModifierFlag(modifierNode);
-      }
-      return flags;
+      return computeFlags(astNode.getFirstAncestor(JavaGrammar.MEMBER_DECL));
     } else if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST, JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST)) {
       // JLS7 6.6.1: All members of interfaces are implicitly public.
       return Flags.PUBLIC;
@@ -296,11 +294,11 @@ public class FirstPass extends JavaAstVisitor {
   }
 
   private void visitEnumConstant(AstNode astNode) {
-    declareVariable(Flags.PUBLIC, astNode.getFirstChild(JavaTokenType.IDENTIFIER));
+    declareVariable(Flags.PUBLIC | Flags.ENUM, astNode.getFirstChild(JavaTokenType.IDENTIFIER));
   }
 
   private void visitFieldDeclaration(AstNode astNode) {
-    int flags = computeClassFlags(astNode);
+    int flags = computeFlags(astNode);
     for (AstNode variableDeclaratorNode : astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
       declareVariable(flags, variableDeclaratorNode.getFirstChild(JavaTokenType.IDENTIFIER));
     }

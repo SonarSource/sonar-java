@@ -6,8 +6,11 @@ package declarations;
 @SuppressWarnings("all")
 class AnonymousClassDeclaration {
 
+  class Superclass {
+  }
+
   void method() {
-    new Object() {
+    new Superclass() {
       void methodInAnonymousClass() {
       }
     };
