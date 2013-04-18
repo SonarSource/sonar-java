@@ -267,13 +267,11 @@ public class Resolve {
     // TODO correct implementation will require types of arguments, ...
     Symbol bestSoFar = symbolNotFound;
     for (Symbol symbol : site.enclosingClass().members().lookup(name)) {
-      if (symbol.kind == Symbol.MTH) {
-        if (isAccessible(env, site, symbol)) {
-          if (bestSoFar.kind < Symbol.ERRONEOUS) {
-            return new AmbiguityErrorSymbol();
-          }
-          bestSoFar = symbol;
+      if ((symbol.kind == Symbol.MTH) && isAccessible(env, site, symbol)) {
+        if (bestSoFar.kind < Symbol.ERRONEOUS) {
+          return new AmbiguityErrorSymbol();
         }
+        bestSoFar = symbol;
       }
     }
     return bestSoFar;
