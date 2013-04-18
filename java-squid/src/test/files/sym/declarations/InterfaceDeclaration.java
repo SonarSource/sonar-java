@@ -32,5 +32,4 @@ class InterfaceDeclaration {
   private interface SecondInterface {
   }
 
-
 }
