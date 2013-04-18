@@ -176,9 +176,18 @@ public class Symbol {
 
     TypeSymbol type;
     Scope parameters;
+    List<TypeSymbol> thrown;
 
     public MethodSymbol(int flags, String name, Symbol owner) {
       super(MTH, flags, name, owner);
+    }
+
+    public TypeSymbol getReturnType() {
+      return type;
+    }
+
+    public List<TypeSymbol> getThrownTypes() {
+      return thrown;
     }
 
   }

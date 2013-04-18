@@ -86,20 +86,32 @@ public class SecondPass implements Symbol.Completer {
   }
 
   public void complete(Symbol.MethodSymbol symbol) {
+    AstNode identifierNode = semanticModel.getAstNode(symbol);
+    Resolve.Env env = semanticModel.getEnv(symbol);
+
+    AstNode throwsNode = identifierNode.getNextAstNode().getFirstChild(JavaKeyword.THROWS);
+    ImmutableList.Builder<Symbol.TypeSymbol> thrown = ImmutableList.builder();
+    if (throwsNode != null) {
+     for (AstNode qualifiedIdentifier : throwsNode.getNextAstNode().getChildren(JavaGrammar.QUALIFIED_IDENTIFIER)) {
+       Symbol thrownSymbol = castToTypeIfPossible(resolveType(env, qualifiedIdentifier));
+       if (thrownSymbol != null) {
+        thrown.add((Symbol.TypeSymbol) thrownSymbol);
+       }
+     }
+    }
+    symbol.thrown = thrown.build();
+
     if ("<init>".equals(symbol.name)) {
       // no return type for constructor
       return;
     }
-    AstNode identifierNode = semanticModel.getAstNode(symbol);
     AstNode typeNode = identifierNode.getPreviousAstNode();
-
     Preconditions.checkState(typeNode.is(JavaKeyword.VOID, JavaGrammar.TYPE));
     AstNode classTypeNode = typeNode.getFirstChild(JavaGrammar.CLASS_TYPE);
     if (classTypeNode == null) {
       // TODO JavaGrammar.BASIC_TYPE
       return;
     }
-    Resolve.Env env = semanticModel.getEnv(symbol);
     symbol.type = castToTypeIfPossible(resolveType(env, classTypeNode));
   }
 
@@ -153,7 +165,7 @@ public class SecondPass implements Symbol.Completer {
   }
 
   private Symbol resolveType(Resolve.Env env, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE));
+    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE, JavaGrammar.QUALIFIED_IDENTIFIER));
 
     env = env.dup();
     List<AstNode> identifiers = astNode.getChildren(JavaTokenType.IDENTIFIER);

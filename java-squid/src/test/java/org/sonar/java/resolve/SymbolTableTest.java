@@ -153,6 +153,32 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void MethodDeclaration() {
+    Result result = Result.createFor("declarations/MethodDeclaration");
+
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) result.symbol("declaration");
+    assertThat(methodSymbol.owner()).isSameAs(result.symbol("MethodDeclaration"));
+    assertThat(methodSymbol.flags()).isEqualTo(Flags.PROTECTED);
+    assertThat(methodSymbol.getReturnType()).isSameAs(result.symbol("ReturnType"));
+    assertThat(methodSymbol.getThrownTypes()).containsExactly(
+      result.symbol("FirstExceptionType"),
+      result.symbol("SecondExceptionType"));
+  }
+
+  @Test
+  public void ConstructorDeclaration() {
+    Result result = Result.createFor("declarations/ConstructorDeclaration");
+
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) result.symbol("<init>");
+    assertThat(methodSymbol.owner()).isSameAs(result.symbol("ConstructorDeclaration"));
+    assertThat(methodSymbol.flags()).isEqualTo(0);
+    assertThat(methodSymbol.getReturnType()).isNull(); // TODO should it be result.symbol("ConstructorDeclaration")?
+    assertThat(methodSymbol.getThrownTypes()).containsExactly(
+      result.symbol("FirstExceptionType"),
+      result.symbol("SecondExceptionType"));
+  }
+
+  @Test
   public void CompleteHierarchyOfTypes() {
     Result result = Result.createFor("CompleteHierarchyOfTypes");
 
