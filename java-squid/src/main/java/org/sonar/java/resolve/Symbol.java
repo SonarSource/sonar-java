@@ -32,7 +32,8 @@ public class Symbol {
   public static final int MTH = 1 << 4;
 
   public static final int ERRONEOUS = 1 << 6;
-  public static final int ABSENT = ERRONEOUS + 1;
+  public static final int AMBIGUOUS = ERRONEOUS + 1;
+  public static final int ABSENT = ERRONEOUS + 2;
 
   final int kind;
 

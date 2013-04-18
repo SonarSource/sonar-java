@@ -242,4 +242,11 @@ public class SymbolTableTest {
     assertThat(result.reference(3, 42)).isSameAs(result.symbol("VALUE"));
   }
 
+  @Test
+  public void MethodCall() {
+    Result result = Result.createFor("references/MethodCall");
+
+    assertThat(result.reference(10, 5)).isSameAs(result.symbol("target"));
+  }
+
 }

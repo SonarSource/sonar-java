@@ -79,9 +79,29 @@ public class ThirdPass extends JavaAstVisitor {
   }
 
   private void visitPrimary(AstNode astNode) {
-    if (astNode.hasDirectChildren(JavaGrammar.QUALIFIED_IDENTIFIER) && !astNode.hasDirectChildren(JavaGrammar.IDENTIFIER_SUFFIX)) {
-      resolve(astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
+    AstNode qualifiedIdentifierNode = astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
+    if (qualifiedIdentifierNode != null) {
+      AstNode identifierSuffixNode = astNode.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
+      if (identifierSuffixNode != null) {
+        if (identifierSuffixNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
+          resolveMethodCall(qualifiedIdentifierNode);
+        }
+      } else {
+        resolve(qualifiedIdentifierNode);
+      }
     }
+  }
+
+  private void resolveMethodCall(AstNode astNode) {
+    Preconditions.checkArgument(astNode.is(JavaGrammar.QUALIFIED_IDENTIFIER));
+    if (astNode.getNumberOfChildren() > 1) {
+      // not a simple method call
+      return;
+    }
+    Resolve.Env env = semanticModel.getEnv(astNode).dup();
+    AstNode identifierNode = astNode.getFirstChild();
+    Symbol symbol = resolve.findMethod(env, env.enclosingClass(), identifierNode.getTokenValue());
+    associateReference(identifierNode, symbol);
   }
 
   private Symbol resolve(AstNode astNode) {
@@ -118,6 +138,7 @@ public class ThirdPass extends JavaAstVisitor {
 
   private void associateReference(AstNode astNode, Symbol symbol) {
     if (symbol.kind < Symbol.ERRONEOUS) {
+      // symbol exists
       semanticModel.associateReference(astNode, symbol);
     }
   }

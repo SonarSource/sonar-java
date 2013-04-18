@@ -261,6 +261,25 @@ public class Resolve {
   }
 
   /**
+   * Finds method with given name.
+   */
+  public Symbol findMethod(Env env, Symbol.TypeSymbol site, String name) {
+    // TODO correct implementation will require types of arguments, ...
+    Symbol bestSoFar = symbolNotFound;
+    for (Symbol symbol : site.enclosingClass().members().lookup(name)) {
+      if (symbol.kind == Symbol.MTH) {
+        if (isAccessible(env, site, symbol)) {
+          if (bestSoFar.kind < Symbol.ERRONEOUS) {
+            return new AmbiguityErrorSymbol();
+          }
+          bestSoFar = symbol;
+        }
+      }
+    }
+    return bestSoFar;
+  }
+
+  /**
    * Is class accessible in given environment?
    */
   public boolean isAccessible(Env env, Symbol.TypeSymbol c) {
@@ -391,6 +410,12 @@ public class Resolve {
   public static class SymbolNotFound extends Symbol {
     public SymbolNotFound() {
       super(Symbol.ABSENT, 0, null, null);
+    }
+  }
+
+  public static class AmbiguityErrorSymbol extends Symbol {
+    public AmbiguityErrorSymbol() {
+      super(Symbol.AMBIGUOUS, 0, null, null);
     }
   }
 
