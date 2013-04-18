@@ -124,15 +124,27 @@ public class SymbolTableTest {
     assertThat(variableSymbol.owner()).isSameAs(enumSymbol);
     assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM);
 
+    Symbol.TypeSymbol anonymousSymbol = (Symbol.TypeSymbol) result.symbol("method", 11).owner();
+    assertThat(anonymousSymbol.name).isEqualTo("");
+    assertThat(anonymousSymbol.owner()).isSameAs(enumSymbol);
+    assertThat(anonymousSymbol.flags()).isEqualTo(0); // FIXME should be ENUM
+    assertThat(anonymousSymbol.getSuperclass()).isNull(); // FIXME should be result.symbol("EnumDeclaration")
+    assertThat(anonymousSymbol.getInterfaces()).isEmpty();
+
     variableSymbol = (Symbol.VariableSymbol) result.symbol("SECOND_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(enumSymbol);
     assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM);
 
+    anonymousSymbol = (Symbol.TypeSymbol) result.symbol("method", 16).owner();
+    assertThat(anonymousSymbol.name).isEqualTo("");
+    assertThat(anonymousSymbol.owner()).isSameAs(enumSymbol);
+    assertThat(anonymousSymbol.flags()).isEqualTo(0); // FIXME should be ENUM
+    assertThat(anonymousSymbol.getSuperclass()).isNull(); // FIXME should be result.symbol("EnumDeclaration")
+    assertThat(anonymousSymbol.getInterfaces()).isEmpty();
+
     Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) result.symbol("method", 21);
     assertThat(methodSymbol.owner()).isSameAs(enumSymbol);
     assertThat(methodSymbol.flags()).isEqualTo(0);
-
-    // FIXME Enumeration constant can have CLASS_BODY, for the moment considered as a really rare situation
   }
 
   @Test

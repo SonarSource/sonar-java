@@ -19,6 +19,8 @@
  */
 package org.sonar.java.resolve;
 
+import java.util.EnumSet;
+
 public class Flags {
 
   private Flags() {
@@ -28,10 +30,23 @@ public class Flags {
   public static final int PRIVATE = 1 << 1;
   public static final int PROTECTED = 1 << 2;
 
+  public static final int STATIC = 1 << 3;
+  public static final int FINAL = 1 << 4;
+  public static final int SYNCHRONIZED = 1 << 5;
+  public static final int VOLATILE = 1 << 6;
+  public static final int TRANSIENT = 1 << 7;
+  public static final int NATIVE = 1 << 8;
+
   /**
    * Interface or annotation type.
    */
   public static final int INTERFACE = 1 << 9;
+
+  public static final int ABSTRACT = 1 << 10;
+
+  public static final int STRICTFP = 1 << 11;
+
+  public static final int SYNTHETIC = 1 << 12;
 
   /**
    * Annotation type.
@@ -47,5 +62,40 @@ public class Flags {
    * Masks.
    */
   public static final int ACCESS_FLAGS = PUBLIC | PROTECTED | PRIVATE;
+
+  public static EnumSet<Flag> asFlagSet(int flags) {
+    EnumSet<Flag> result = EnumSet.noneOf(Flag.class);
+    int mask = 1;
+    for (int i = 0; i < 15; i++) {
+      if ((flags & mask) != 0) {
+        result.add(Flag.values()[i]);
+      }
+      mask = mask << 1;
+    }
+    return result;
+  }
+
+  enum Flag {
+    PUBLIC,
+    PRIVATE,
+    PROTECTED,
+    STATIC,
+    FINAL,
+    SYNCHRONIZED,
+    VOLATILE,
+    TRANSIENT,
+    NATIVE,
+    INTERFACE,
+    ABSTRACT,
+    STRICTFP,
+    SYNTHETIC,
+    ANNOTATION,
+    ENUM;
+
+    @Override
+    public String toString() {
+      return name().toLowerCase();
+    }
+  }
 
 }

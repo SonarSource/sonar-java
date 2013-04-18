@@ -61,6 +61,7 @@ public class FirstPass extends JavaAstVisitor {
       JavaGrammar.ENUM_DECLARATION,
       JavaGrammar.ANNOTATION_TYPE_DECLARATION,
       JavaGrammar.CLASS_CREATOR_REST,
+      JavaGrammar.ENUM_CONSTANT,
       // Method or constructor
       JavaGrammar.METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_METHOD_DECLARATOR_REST,
@@ -73,7 +74,6 @@ public class FirstPass extends JavaAstVisitor {
       JavaGrammar.FOR_STATEMENT};
     symbolAstNodeTypes = new AstNodeType[]{
       JavaGrammar.FIELD_DECLARATION,
-      JavaGrammar.ENUM_CONSTANT,
       JavaGrammar.CONSTANT_DECLARATOR_REST,
       JavaGrammar.FORMAL_PARAMETERS_DECLS_REST,
       JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
@@ -137,7 +137,7 @@ public class FirstPass extends JavaAstVisitor {
   @Override
   public void leaveNode(AstNode astNode) {
     if (astNode.is(scopeAndSymbolAstNodeTypes)) {
-      if (astNode.isNot(JavaGrammar.CLASS_CREATOR_REST) || (astNode.is(JavaGrammar.CLASS_CREATOR_REST) && astNode.hasDirectChildren(JavaGrammar.CLASS_BODY))) {
+      if (astNode.isNot(JavaGrammar.CLASS_CREATOR_REST, JavaGrammar.ENUM_CONSTANT) || astNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
         restoreEnvironment(astNode);
       }
     } else if (astNode.is(scopeAstNodeTypes)) {
@@ -295,6 +295,9 @@ public class FirstPass extends JavaAstVisitor {
 
   private void visitEnumConstant(AstNode astNode) {
     declareVariable(Flags.PUBLIC | Flags.ENUM, astNode.getFirstChild(JavaTokenType.IDENTIFIER));
+    if (astNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
+      visitClassCreatorRest(astNode);
+    }
   }
 
   private void visitFieldDeclaration(AstNode astNode) {

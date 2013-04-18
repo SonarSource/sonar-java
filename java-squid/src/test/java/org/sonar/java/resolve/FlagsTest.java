@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.objectweb.asm.Opcodes;
 
 import java.lang.reflect.Constructor;
+import java.util.EnumSet;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -44,9 +45,25 @@ public class FlagsTest {
     assertThat(Flags.PUBLIC).isEqualTo(Opcodes.ACC_PUBLIC);
     assertThat(Flags.PRIVATE).isEqualTo(Opcodes.ACC_PRIVATE);
     assertThat(Flags.PROTECTED).isEqualTo(Opcodes.ACC_PROTECTED);
+    assertThat(Flags.STATIC).isEqualTo(Opcodes.ACC_STATIC);
+    assertThat(Flags.FINAL).isEqualTo(Opcodes.ACC_FINAL);
+    assertThat(Flags.SYNCHRONIZED).isEqualTo(Opcodes.ACC_SYNCHRONIZED);
+    assertThat(Flags.VOLATILE).isEqualTo(Opcodes.ACC_VOLATILE);
+    assertThat(Flags.TRANSIENT).isEqualTo(Opcodes.ACC_TRANSIENT);
+    assertThat(Flags.NATIVE).isEqualTo(Opcodes.ACC_NATIVE);
     assertThat(Flags.INTERFACE).isEqualTo(Opcodes.ACC_INTERFACE);
+    assertThat(Flags.ABSTRACT).isEqualTo(Opcodes.ACC_ABSTRACT);
+    assertThat(Flags.STRICTFP).isEqualTo(Opcodes.ACC_STRICT);
+    assertThat(Flags.SYNTHETIC).isEqualTo(Opcodes.ACC_SYNTHETIC);
     assertThat(Flags.ANNOTATION).isEqualTo(Opcodes.ACC_ANNOTATION);
     assertThat(Flags.ENUM).isEqualTo(Opcodes.ACC_ENUM);
+  }
+
+  @Test
+  public void asFlagSet() {
+    assertThat(Flags.asFlagSet(Flags.PUBLIC)).isEqualTo(EnumSet.of(Flags.Flag.PUBLIC));
+    assertThat(Flags.asFlagSet(Flags.ENUM)).isEqualTo(EnumSet.of(Flags.Flag.ENUM));
+    assertThat(Flags.asFlagSet(Flags.PRIVATE | Flags.ENUM)).isEqualTo(EnumSet.of(Flags.Flag.PRIVATE, Flags.Flag.ENUM));
   }
 
 }
