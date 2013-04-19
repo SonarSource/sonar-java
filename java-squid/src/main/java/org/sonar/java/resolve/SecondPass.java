@@ -92,12 +92,12 @@ public class SecondPass implements Symbol.Completer {
     AstNode throwsNode = identifierNode.getNextAstNode().getFirstChild(JavaKeyword.THROWS);
     ImmutableList.Builder<Symbol.TypeSymbol> thrown = ImmutableList.builder();
     if (throwsNode != null) {
-     for (AstNode qualifiedIdentifier : throwsNode.getNextAstNode().getChildren(JavaGrammar.QUALIFIED_IDENTIFIER)) {
-       Symbol thrownSymbol = castToTypeIfPossible(resolveType(env, qualifiedIdentifier));
-       if (thrownSymbol != null) {
-        thrown.add((Symbol.TypeSymbol) thrownSymbol);
-       }
-     }
+      for (AstNode qualifiedIdentifier : throwsNode.getNextAstNode().getChildren(JavaGrammar.QUALIFIED_IDENTIFIER)) {
+        Symbol thrownSymbol = castToTypeIfPossible(resolveType(env, qualifiedIdentifier));
+        if (thrownSymbol != null) {
+          thrown.add((Symbol.TypeSymbol) thrownSymbol);
+        }
+      }
     }
     symbol.thrown = thrown.build();
 
