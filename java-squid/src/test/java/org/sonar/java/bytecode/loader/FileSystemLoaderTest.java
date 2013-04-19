@@ -46,6 +46,8 @@ public class FileSystemLoaderTest {
     FileSystemLoader loader = new FileSystemLoader(dir);
 
     assertThat(loader.findResource("notfound")).isNull();
+    assertThat(loader.findResource("tags"))
+      .as("existing directories should not be used - only files").isNull();
 
     URL url = loader.findResource("tags/TagName.class");
     assertThat(url).isNotNull();

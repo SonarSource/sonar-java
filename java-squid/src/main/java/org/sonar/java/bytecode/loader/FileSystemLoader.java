@@ -46,7 +46,7 @@ class FileSystemLoader implements Loader {
     File file = new File(baseDir, name);
     if (file.exists() && file.isFile()) {
       try {
-        return file.toURL();
+        return file.toURI().toURL();
       } catch (MalformedURLException e) {
         return null;
       }
