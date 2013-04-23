@@ -19,27 +19,29 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.Sets;
 import org.sonar.java.bytecode.asm.AsmMethod;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public final class SerializableContract {
 
-  private static Set<String> serializableContractMethods = new HashSet<String>();
+  private static final Set<String> SERIALIZABLE_CONTRACT_METHODS = Sets.newHashSet();
+
+  public static final String SERIAL_VERSION_UID_FIELD = "serialVersionUID";
 
   static {
-    serializableContractMethods.add("writeObject");
-    serializableContractMethods.add("readObject");
-    serializableContractMethods.add("writeReplace");
-    serializableContractMethods.add("readResolve");
+    SERIALIZABLE_CONTRACT_METHODS.add("writeObject");
+    SERIALIZABLE_CONTRACT_METHODS.add("readObject");
+    SERIALIZABLE_CONTRACT_METHODS.add("writeReplace");
+    SERIALIZABLE_CONTRACT_METHODS.add("readResolve");
   }
 
   private SerializableContract() {
   }
 
   protected static boolean methodMatch(AsmMethod method) {
-    return serializableContractMethods.contains(method.getName());
+    return SERIALIZABLE_CONTRACT_METHODS.contains(method.getName());
   }
 
 }

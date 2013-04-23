@@ -1,5 +1,7 @@
 class BadConstantName {
 
+  static final long serialVersionUID = 42L;
+
   public static final int GOOD_CONSTANT = 0;
   public static final int bad_constant = 0;
   public static int static_field;

@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.squid.api.SourceFile;
 
-import javax.annotation.CheckForNull;
 import java.io.File;
 
 public class BadConstantName_S00115_CheckTest {
@@ -35,10 +34,10 @@ public class BadConstantName_S00115_CheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadConstantName.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Rename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.")
-        .next().atLine(10)
-        .next().atLine(15)
-        .next().atLine(20)
+        .next().atLine(6).withMessage("Rename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.")
+        .next().atLine(12)
+        .next().atLine(17)
+        .next().atLine(22)
         .noMore();
   }
 

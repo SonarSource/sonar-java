@@ -64,7 +64,10 @@ public class BadConstantName_S00115_Check extends SquidCheck<LexerlessGrammar> {
       // FIELD_DECLARATION
       if (isConstant(astNode)) {
         for (AstNode variableDeclarator : astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-          check(variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER));
+          AstNode identifierNode = variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER);
+          if (!identifierNode.getTokenValue().equals(SerializableContract.SERIAL_VERSION_UID_FIELD)) {
+            check(identifierNode);
+          }
         }
       }
     }

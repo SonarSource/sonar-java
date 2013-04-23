@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.bytecode.asm.AsmMethod;
 
+import java.lang.reflect.Constructor;
+
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,6 +39,14 @@ public class SerializableContractTest {
     assertThat(SerializableContract.methodMatch(method)).isTrue();
     assertThat(SerializableContract.methodMatch(method)).isTrue();
     assertThat(SerializableContract.methodMatch(method)).isFalse();
+  }
+
+  @Test
+  public void private_constructor() throws Exception {
+    Constructor constructor = SerializableContract.class.getDeclaredConstructor();
+    assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
   }
 
 }
