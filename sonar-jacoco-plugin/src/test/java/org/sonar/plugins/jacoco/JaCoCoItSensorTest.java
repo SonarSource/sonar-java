@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.jacoco;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -30,8 +31,9 @@ import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Project.AnalysisType;
-import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
 import org.sonar.test.TestUtils;
 
@@ -40,7 +42,6 @@ import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -55,6 +56,8 @@ public class JaCoCoItSensorTest {
 
   private JacocoConfiguration configuration;
   private ResourcePerspectives perspectives;
+  private ModuleFileSystem fileSystem;
+  private PathResolver pathResolver;
   private JaCoCoItSensor sensor;
 
   @BeforeClass
@@ -69,7 +72,9 @@ public class JaCoCoItSensorTest {
   public void setUp() {
     configuration = mock(JacocoConfiguration.class);
     perspectives = mock(ResourcePerspectives.class);
-    sensor = new JaCoCoItSensor(configuration, perspectives);
+    fileSystem = mock(ModuleFileSystem.class);
+    pathResolver = mock(PathResolver.class);
+    sensor = new JaCoCoItSensor(configuration, perspectives, fileSystem, pathResolver);
   }
 
   @Test
@@ -109,12 +114,10 @@ public class JaCoCoItSensorTest {
   public void testReadExecutionData() {
     JavaFile resource = new JavaFile("org.sonar.plugins.jacoco.tests.Hello");
     SensorContext context = mock(SensorContext.class);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     Project project = mock(Project.class);
     when(context.getResource(any(Resource.class))).thenReturn(resource);
-    when(pfs.getBuildOutputDir()).thenReturn(outputDir);
-    when(pfs.resolvePath(anyString())).thenReturn(jacocoExecutionData);
-    when(project.getFileSystem()).thenReturn(pfs);
+    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
 
     sensor.analyse(project, context);
 
@@ -132,11 +135,9 @@ public class JaCoCoItSensorTest {
   @Test
   public void doNotSaveMeasureOnResourceWhichDoesntExistInTheContext() {
     SensorContext context = mock(SensorContext.class);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     Project project = mock(Project.class);
     when(context.getResource(any(Resource.class))).thenReturn(null);
-    when(pfs.getBuildOutputDir()).thenReturn(outputDir);
-    when(project.getFileSystem()).thenReturn(pfs);
+    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
 
     sensor.analyse(project, context);
 

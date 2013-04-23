@@ -39,6 +39,8 @@ import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.ResourceUtils;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
@@ -57,9 +59,13 @@ import static com.google.common.collect.Lists.newArrayList;
 public abstract class AbstractAnalyzer {
 
   private final ResourcePerspectives perspectives;
+  private final ModuleFileSystem fileSystem;
+  private final PathResolver pathResolver;
 
-  public AbstractAnalyzer(ResourcePerspectives perspectives) {
+  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver) {
     this.perspectives = perspectives;
+    this.fileSystem = fileSystem;
+    this.pathResolver = pathResolver;
   }
 
   private static boolean isExcluded(ISourceFileCoverage coverage, WildcardMatcher excludesMatcher) {
@@ -88,23 +94,31 @@ public abstract class AbstractAnalyzer {
   }
 
   public final void analyse(Project project, SensorContext context) {
-    final File buildOutputDir = project.getFileSystem().getBuildOutputDir();
-    if (!buildOutputDir.exists()) {
-      JaCoCoUtils.LOG.info("Project coverage is set to 0% as build output directory does not exist: {}", buildOutputDir);
+    if (!atLeastOneBinaryDirectoryExists()) {
+      JaCoCoUtils.LOG.info("Project coverage is set to 0% since there is no directories with classes.");
       return;
     }
     String path = getReportPath(project);
-    File jacocoExecutionData = project.getFileSystem().resolvePath(path);
+    File jacocoExecutionData = pathResolver.relativeFile(fileSystem.baseDir(), path);
 
     WildcardMatcher excludes = new WildcardMatcher(Strings.nullToEmpty(getExcludes(project)));
     try {
-      readExecutionData(jacocoExecutionData, buildOutputDir, context, excludes);
+      readExecutionData(jacocoExecutionData, context, excludes);
     } catch (IOException e) {
       throw new SonarException(e);
     }
   }
 
-  public final void readExecutionData(File jacocoExecutionData, File buildOutputDir, SensorContext context, WildcardMatcher excludes) throws IOException {
+  private boolean atLeastOneBinaryDirectoryExists() {
+    for (File binaryDir : fileSystem.binaryDirs()) {
+      if (binaryDir.exists()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public final void readExecutionData(File jacocoExecutionData, SensorContext context, WildcardMatcher excludes) throws IOException {
     ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
 
     if (jacocoExecutionData == null || !jacocoExecutionData.exists() || !jacocoExecutionData.isFile()) {
@@ -120,12 +134,12 @@ public abstract class AbstractAnalyzer {
 
     boolean collectedCoveragePerTest = false;
     for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
-      if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), buildOutputDir, context, excludes)) {
+      if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context, excludes)) {
         collectedCoveragePerTest = true;
       }
     }
 
-    CoverageBuilder coverageBuilder = analyze(executionDataVisitor.getMerged(), buildOutputDir);
+    CoverageBuilder coverageBuilder = analyze(executionDataVisitor.getMerged());
     int analyzedResources = 0;
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       JavaFile resource = getResource(coverage, context);
@@ -146,7 +160,7 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, File buildOutputDir, SensorContext context, WildcardMatcher excludes) {
+  private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, SensorContext context, WildcardMatcher excludes) {
     int i = sessionId.indexOf(' ');
     if (i < 0) {
       return false;
@@ -160,7 +174,7 @@ public abstract class AbstractAnalyzer {
     }
 
     boolean result = false;
-    CoverageBuilder coverageBuilder = analyze2(executionDataStore, buildOutputDir);
+    CoverageBuilder coverageBuilder = analyze2(executionDataStore);
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       JavaFile resource = getResource(coverage, context);
       if (resource != null && !isExcluded(coverage, excludes)) {
@@ -174,18 +188,20 @@ public abstract class AbstractAnalyzer {
     return result;
   }
 
-  private CoverageBuilder analyze2(ExecutionDataStore executionDataStore, File buildOutputDir) {
+  private CoverageBuilder analyze2(ExecutionDataStore executionDataStore) {
     CoverageBuilder coverageBuilder = new CoverageBuilder();
     Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
-    for (ExecutionData data : executionDataStore.getContents()) {
-      String vmClassName = data.getName();
-      String classFileName = vmClassName.replace('.', '/') + ".class";
-      File classFile = new File(buildOutputDir, classFileName);
-      if (classFile.isFile()) {
-        try {
-          analyzer.analyzeAll(classFile);
-        } catch (Exception e) {
-          JaCoCoUtils.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
+    for (File binaryDir : fileSystem.binaryDirs()) {
+      for (ExecutionData data : executionDataStore.getContents()) {
+        String vmClassName = data.getName();
+        String classFileName = vmClassName.replace('.', '/') + ".class";
+        File classFile = new File(binaryDir, classFileName);
+        if (classFile.isFile()) {
+          try {
+            analyzer.analyzeAll(classFile);
+          } catch (Exception e) {
+            JaCoCoUtils.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
+          }
         }
       }
     }
@@ -217,10 +233,12 @@ public abstract class AbstractAnalyzer {
     return result;
   }
 
-  private CoverageBuilder analyze(ExecutionDataStore executionDataStore, File buildOutputDir) {
+  private CoverageBuilder analyze(ExecutionDataStore executionDataStore) {
     CoverageBuilder coverageBuilder = new CoverageBuilder();
     Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
-    analyzeAll(analyzer, buildOutputDir);
+    for (File binaryDir : fileSystem.binaryDirs()) {
+      analyzeAll(analyzer, binaryDir);
+    }
     return coverageBuilder;
   }
 

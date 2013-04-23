@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.jacoco;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +28,9 @@ import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
 import org.sonar.test.TestUtils;
 
@@ -46,9 +48,11 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 public class JaCoCoOverallSensorTest {
+
   private JacocoConfiguration configuration;
   private SensorContext context;
-  private ProjectFileSystem pfs;
+  private ModuleFileSystem fileSystem;
+  private PathResolver pathResolver;
   private Project project;
   private ResourcePerspectives perspectives;
   private JaCoCoOverallSensor sensor;
@@ -57,10 +61,11 @@ public class JaCoCoOverallSensorTest {
   public void before(){
     configuration = mock(JacocoConfiguration.class);
     context = mock(SensorContext.class);
-    pfs = mock(ProjectFileSystem.class);
+    fileSystem = mock(ModuleFileSystem.class);
+    pathResolver = mock(PathResolver.class);
     project = mock(Project.class);
     perspectives = mock(ResourcePerspectives.class);
-    sensor = new JaCoCoOverallSensor(configuration, perspectives);
+    sensor = new JaCoCoOverallSensor(configuration, perspectives, fileSystem, pathResolver);
   }
 
   @Test
@@ -87,15 +92,14 @@ public class JaCoCoOverallSensorTest {
 
     JavaFile resource = new JavaFile("com.sonar.coverages.HelloWorld");
 
-    when(project.getFileSystem()).thenReturn(pfs);
     when(context.getResource(any(Resource.class))).thenReturn(resource);
     when(configuration.getReportPath()).thenReturn("ut.exec");
     when(configuration.getItReportPath()).thenReturn("it.exec");
-    when(pfs.getBuildOutputDir()).thenReturn(outputDir);
-    when(pfs.resolvePath("ut.exec")).thenReturn(new File(outputDir, "ut.exec"));
-    when(pfs.resolvePath("it.exec")).thenReturn(new File(outputDir, "it.exec"));
-    when(pfs.getSonarWorkingDirectory()).thenReturn(new File("target/sonar"));
-    when(pfs.resolvePath(new File("target/sonar/jacoco-overall.exec").getAbsolutePath())).thenReturn(new File("target/sonar/jacoco-overall.exec"));
+    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
+    when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
+    when(pathResolver.relativeFile(any(File.class), eq(new File("target/sonar/jacoco-overall.exec").getAbsolutePath()))).thenReturn(new File("target/sonar/jacoco-overall.exec"));
+    when(fileSystem.workingDir()).thenReturn(new File("target/sonar"));
 
     sensor.analyse(project, context);
 
@@ -113,11 +117,11 @@ public class JaCoCoOverallSensorTest {
   public void should_no_save_measures_when_it_report_is_not_found() throws IOException {
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
 
-    when(project.getFileSystem()).thenReturn(pfs);
     when(configuration.getReportPath()).thenReturn("ut.exec");
     when(configuration.getItReportPath()).thenReturn("it.not.found.exec");
-    when(pfs.resolvePath("ut.exec")).thenReturn(new File(outputDir, "ut.exec"));
-    when(pfs.resolvePath("it.not.found.exec")).thenReturn(new File("it.not.found.exec"));
+
+    when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
+    when(pathResolver.relativeFile(any(File.class), eq("it.not.found.exec"))).thenReturn(new File(outputDir, "it.not.found.exec"));
 
     sensor.analyse(project, context);
 
@@ -128,11 +132,11 @@ public class JaCoCoOverallSensorTest {
   public void should_no_save_measures_when_ut_report_is_not_found() throws IOException {
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
 
-    when(project.getFileSystem()).thenReturn(pfs);
     when(configuration.getReportPath()).thenReturn("ut.not.found.exec");
     when(configuration.getItReportPath()).thenReturn("it.exec");
-    when(pfs.resolvePath("ut.not.found.exec")).thenReturn(new File("ut.not.found.exec"));
-    when(pfs.resolvePath("it.exec")).thenReturn(new File(outputDir, "it.exec"));
+
+    when(pathResolver.relativeFile(any(File.class), eq("ut.not.found.exec"))).thenReturn(new File(outputDir, "ut.not.found.exec"));
+    when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.not.found.exec"));
 
     sensor.analyse(project, context);
 
@@ -143,4 +147,5 @@ public class JaCoCoOverallSensorTest {
   public void testSensorDefinition() {
     assertThat(sensor.toString()).isEqualTo("JaCoCoOverallSensor");
   }
+
 }

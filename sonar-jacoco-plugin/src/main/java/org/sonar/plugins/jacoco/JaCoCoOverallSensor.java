@@ -32,7 +32,8 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.utils.SonarException;
 
 import java.io.BufferedInputStream;
@@ -45,14 +46,19 @@ import java.io.InputStream;
 import java.util.Collection;
 
 public class JaCoCoOverallSensor implements Sensor {
+
   public static final String JACOCO_OVERALL = "jacoco-overall.exec";
 
   private final JacocoConfiguration configuration;
   private final ResourcePerspectives perspectives;
+  private final ModuleFileSystem fileSystem;
+  private final PathResolver pathResolver;
 
-  public JaCoCoOverallSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives) {
+  public JaCoCoOverallSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver) {
     this.configuration = configuration;
     this.perspectives = perspectives;
+    this.fileSystem = fileSystem;
+    this.pathResolver = pathResolver;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
@@ -60,15 +66,13 @@ public class JaCoCoOverallSensor implements Sensor {
   }
 
   public void analyse(Project project, SensorContext context) {
-    ProjectFileSystem fs = project.getFileSystem();
-
-    File reportUTs = fs.resolvePath(configuration.getReportPath());
-    File reportITs = fs.resolvePath(configuration.getItReportPath());
+    File reportUTs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
+    File reportITs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
     if ((!reportUTs.exists()) || (!reportITs.exists())) {
       return;
     }
 
-    File reportOverall = new File(fs.getSonarWorkingDirectory(), JACOCO_OVERALL);
+    File reportOverall = new File(fileSystem.workingDir(), JACOCO_OVERALL);
     reportOverall.getParentFile().mkdirs();
 
     mergeReports(reportOverall, reportUTs, reportITs);
@@ -117,7 +121,7 @@ public class JaCoCoOverallSensor implements Sensor {
     private final File report;
 
     OverallAnalyzer(File report, ResourcePerspectives perspectives) {
-      super(perspectives);
+      super(perspectives, fileSystem, pathResolver);
       this.report = report;
     }
 

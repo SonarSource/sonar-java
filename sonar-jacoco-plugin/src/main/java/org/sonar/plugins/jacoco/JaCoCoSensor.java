@@ -26,6 +26,8 @@ import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.api.scan.filesystem.PathResolver;
 
 import java.util.Collection;
 
@@ -33,10 +35,14 @@ public class JaCoCoSensor implements Sensor {
 
   private JacocoConfiguration configuration;
   private final ResourcePerspectives perspectives;
+  private final ModuleFileSystem fileSystem;
+  private final PathResolver pathResolver;
 
-  public JaCoCoSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives) {
+  public JaCoCoSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver) {
     this.configuration = configuration;
     this.perspectives = perspectives;
+    this.fileSystem = fileSystem;
+    this.pathResolver = pathResolver;
   }
 
   @DependsUpon
@@ -54,7 +60,7 @@ public class JaCoCoSensor implements Sensor {
 
   class UnitTestsAnalyzer extends AbstractAnalyzer {
     public UnitTestsAnalyzer(ResourcePerspectives perspectives) {
-      super(perspectives);
+      super(perspectives, fileSystem, pathResolver);
     }
 
     @Override

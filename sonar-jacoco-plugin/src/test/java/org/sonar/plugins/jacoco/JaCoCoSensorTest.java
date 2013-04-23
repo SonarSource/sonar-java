@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.jacoco;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,10 +29,11 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
 import org.sonar.api.test.IsResource;
 import org.sonar.api.test.MutableTestCase;
@@ -46,7 +48,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -66,7 +67,8 @@ public class JaCoCoSensorTest {
   private JacocoConfiguration configuration;
   private ResourcePerspectives perspectives;
   private SensorContext context;
-  private ProjectFileSystem pfs;
+  private ModuleFileSystem fileSystem;
+  private PathResolver pathResolver;
   private Project project;
   private JaCoCoSensor sensor;
 
@@ -78,12 +80,13 @@ public class JaCoCoSensorTest {
     Files.copy(TestUtils.getResource("Hello.class.toCopy"), new File(jacocoExecutionData.getParentFile(), "Hello.class"));
 
     context = mock(SensorContext.class);
-    pfs = mock(ProjectFileSystem.class);
+    fileSystem = mock(ModuleFileSystem.class);
+    pathResolver = mock(PathResolver.class);
     project = mock(Project.class);
 
     configuration = mock(JacocoConfiguration.class);
     perspectives = mock(ResourcePerspectives.class);
-    sensor = new JaCoCoSensor(configuration, perspectives);
+    sensor = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver);
   }
 
   @Test
@@ -106,9 +109,9 @@ public class JaCoCoSensorTest {
   public void test_read_execution_data() {
     JavaFile resource = new JavaFile("org.sonar.plugins.jacoco.tests.Hello");
     when(context.getResource(any(Resource.class))).thenReturn(resource);
-    when(pfs.getBuildOutputDir()).thenReturn(outputDir);
-    when(pfs.resolvePath(anyString())).thenReturn(jacocoExecutionData);
-    when(project.getFileSystem()).thenReturn(pfs);
+
+    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
 
     sensor.analyse(project, context);
 
@@ -132,9 +135,8 @@ public class JaCoCoSensorTest {
 
     JavaFile resource = new JavaFile("org.example.App");
     when(context.getResource(any(Resource.class))).thenReturn(resource);
-    when(pfs.getBuildOutputDir()).thenReturn(outputDir);
-    when(pfs.resolvePath(anyString())).thenReturn(jacocoExecutionData);
-    when(project.getFileSystem()).thenReturn(pfs);
+    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
 
     MutableTestable testAbleFile = mock(MutableTestable.class);
     when(perspectives.as(eq(MutableTestable.class), any(JavaFile.class))).thenReturn(testAbleFile);
@@ -155,8 +157,7 @@ public class JaCoCoSensorTest {
   @Test
   public void do_not_save_measure_on_resource_which_doesnt_exist_in_the_context() {
     when(context.getResource(any(Resource.class))).thenReturn(null);
-    when(pfs.getBuildOutputDir()).thenReturn(outputDir);
-    when(project.getFileSystem()).thenReturn(pfs);
+    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
 
     sensor.analyse(project, context);
 
@@ -165,8 +166,7 @@ public class JaCoCoSensorTest {
 
   @Test
   public void should_do_nothing_if_output_dir_does_not_exists() {
-    when(pfs.getBuildOutputDir()).thenReturn(new File("nowhere"));
-    when(project.getFileSystem()).thenReturn(pfs);
+    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(new File("nowhere")));
 
     sensor.analyse(project, context);
 
