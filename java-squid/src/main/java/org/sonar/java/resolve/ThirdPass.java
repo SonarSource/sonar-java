@@ -39,43 +39,15 @@ public class ThirdPass extends JavaAstVisitor {
 
   @Override
   public void init() {
-    subscribeTo(
-      JavaGrammar.PRIMARY,
-      // TODO extract from this visitor:
-      JavaGrammar.LABELED_STATEMENT, JavaGrammar.BREAK_STATEMENT, JavaGrammar.CONTINUE_STATEMENT);
+    subscribeTo(JavaGrammar.PRIMARY);
   }
 
   @Override
   public void visitNode(AstNode astNode) {
-    if (astNode.is(JavaGrammar.LABELED_STATEMENT)) {
-      visitLabeledStatement(astNode);
-    } else if (astNode.is(JavaGrammar.BREAK_STATEMENT, JavaGrammar.CONTINUE_STATEMENT)) {
-      visitBreakOrContinueStatement(astNode);
-    } else if (astNode.is(JavaGrammar.PRIMARY)) {
+    if (astNode.is(JavaGrammar.PRIMARY)) {
       visitPrimary(astNode);
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
-    }
-  }
-
-  private void visitLabeledStatement(AstNode astNode) {
-    AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-    // JLS7 6.2: in fact labelled statement is not a symbol
-    semanticModel.associateSymbol(identifierNode, new Symbol(0, 0, identifierNode.getTokenValue(), null));
-  }
-
-  private void visitBreakOrContinueStatement(AstNode astNode) {
-    // idea: associate break and continue with jump target like in IntelliJ IDEA
-    AstNode identifier = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-    if (identifier != null) {
-      String label = identifier.getTokenValue();
-      AstNode labelledStatement = astNode.getFirstAncestor(JavaGrammar.LABELED_STATEMENT);
-      while (labelledStatement != null && !label.equals(labelledStatement.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue())) {
-        labelledStatement = labelledStatement.getFirstAncestor(JavaGrammar.LABELED_STATEMENT);
-      }
-      if (labelledStatement != null) {
-        semanticModel.associateReference(identifier, semanticModel.getSymbol(labelledStatement.getFirstChild(JavaTokenType.IDENTIFIER)));
-      }
     }
   }
 

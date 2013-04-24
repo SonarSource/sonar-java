@@ -46,14 +46,16 @@ public class SemanticModel {
     SemanticModel semanticModel = new SemanticModel();
     Resolve resolve = new Resolve();
     visit(astNode, new FirstPass(semanticModel, resolve));
-    visit(astNode, new ThirdPass(semanticModel, resolve));
+    visit(astNode, new ThirdPass(semanticModel, resolve), new LabelsVisitor(semanticModel));
     return semanticModel;
   }
 
-  private static void visit(AstNode astNode, JavaAstVisitor pass) {
-    pass.init();
+  private static void visit(AstNode astNode, JavaAstVisitor... visitors) {
     AstWalker astWalker = new AstWalker();
-    astWalker.addVisitor(pass);
+    for (JavaAstVisitor visitor : visitors) {
+      visitor.init();
+      astWalker.addVisitor(visitor);
+    }
     astWalker.walkAndVisit(astNode);
   }
 
