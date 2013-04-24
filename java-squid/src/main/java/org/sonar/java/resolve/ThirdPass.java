@@ -27,6 +27,10 @@ import org.sonar.java.ast.visitors.JavaAstVisitor;
 
 import java.util.List;
 
+/**
+ * @deprecated use {@link ExpressionVisitor} instead
+ */
+@Deprecated
 public class ThirdPass extends JavaAstVisitor {
 
   private final SemanticModel semanticModel;
