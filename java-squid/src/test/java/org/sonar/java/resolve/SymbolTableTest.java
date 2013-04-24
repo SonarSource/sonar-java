@@ -32,10 +32,10 @@ public class SymbolTableTest {
     Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration");
     assertThat(typeSymbol.owner()).isSameAs(result.symbol("ClassDeclaration"));
     assertThat(typeSymbol.flags()).isEqualTo(Flags.PRIVATE);
-    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass"));
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass").type);
     assertThat(typeSymbol.getInterfaces()).containsExactly(
-      result.symbol("FirstInterface"),
-      result.symbol("SecondInterface"));
+      result.symbol("FirstInterface").type,
+      result.symbol("SecondInterface").type);
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Superclass");
     assertThat(typeSymbol.getSuperclass()).isNull(); // FIXME should be java.lang.Object
@@ -65,10 +65,10 @@ public class SymbolTableTest {
 //    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 9));
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 22);
-    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 22 - 2));
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 22 - 2).type);
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 25);
-    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 9));
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 9).type);
   }
 
   @Test
@@ -80,8 +80,8 @@ public class SymbolTableTest {
     assertThat(interfaceSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.INTERFACE);
     assertThat(interfaceSymbol.getSuperclass()).isNull(); // TODO should it be java.lang.Object?
     assertThat(interfaceSymbol.getInterfaces()).containsExactly(
-      result.symbol("FirstInterface"),
-      result.symbol("SecondInterface"));
+      result.symbol("FirstInterface").type,
+      result.symbol("SecondInterface").type);
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(interfaceSymbol);
@@ -117,8 +117,8 @@ public class SymbolTableTest {
     assertThat(enumSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.ENUM);
     assertThat(enumSymbol.getSuperclass()).isNull(); // FIXME should be java.lang.Enum
     assertThat(enumSymbol.getInterfaces()).containsExactly(
-      result.symbol("FirstInterface"),
-      result.symbol("SecondInterface"));
+      result.symbol("FirstInterface").type,
+      result.symbol("SecondInterface").type);
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(enumSymbol);
@@ -217,7 +217,7 @@ public class SymbolTableTest {
     Result result = Result.createFor("CompleteHierarchyOfTypes");
 
     Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("Foo");
-    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Baz"));
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Baz").type);
   }
 
   @Test
@@ -226,10 +226,10 @@ public class SymbolTableTest {
 
     Symbol.TypeSymbol typeSymbol;
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Target", 14);
-    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Member", 9));
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Member", 9).type);
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Target", 29);
-    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Member", 20));
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Member", 20).type);
   }
 
   @Test

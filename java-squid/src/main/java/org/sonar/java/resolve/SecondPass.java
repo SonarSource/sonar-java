@@ -58,7 +58,7 @@ public class SecondPass implements Symbol.Completer {
   public void complete(Symbol.TypeSymbol symbol) {
     if ("".equals(symbol.name)) {
       // Anonymous Class Declaration
-      symbol.interfaces = ImmutableList.of();
+      ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
       return;
     }
 
@@ -67,22 +67,22 @@ public class SecondPass implements Symbol.Completer {
 
     AstNode superclassNode = astNode.getFirstChild(JavaGrammar.CLASS_TYPE);
     if (superclassNode != null) {
-      symbol.superclass = castToTypeIfPossible(resolveType(env, superclassNode));
+      ((Type.ClassType) symbol.type).supertype = resolveType(env, superclassNode).type;
     } else {
       // TODO superclass is java.lang.Object or java.lang.Enum
     }
 
-    ImmutableList.Builder<Symbol.TypeSymbol> interfaces = ImmutableList.builder();
+    ImmutableList.Builder<Type> interfaces = ImmutableList.builder();
     if (astNode.hasDirectChildren(JavaGrammar.CLASS_TYPE_LIST)) {
       for (AstNode interfaceNode : astNode.getFirstChild(JavaGrammar.CLASS_TYPE_LIST).getChildren(JavaGrammar.CLASS_TYPE)) {
-        Symbol interfaceSymbol = castToTypeIfPossible(resolveType(env, interfaceNode));
-        if (interfaceSymbol != null) {
-          interfaces.add((Symbol.TypeSymbol) interfaceSymbol);
+        Type interfaceType = castToTypeIfPossible(resolveType(env, interfaceNode));
+        if (interfaceType != null) {
+          interfaces.add(interfaceType);
         }
       }
     }
     // TODO interface of AnnotationType is java.lang.annotation.Annotation
-    symbol.interfaces = interfaces.build();
+    ((Type.ClassType) symbol.type).interfaces = interfaces.build();
   }
 
   public void complete(Symbol.MethodSymbol symbol) {
@@ -93,9 +93,9 @@ public class SecondPass implements Symbol.Completer {
     ImmutableList.Builder<Symbol.TypeSymbol> thrown = ImmutableList.builder();
     if (throwsNode != null) {
       for (AstNode qualifiedIdentifier : throwsNode.getNextAstNode().getChildren(JavaGrammar.QUALIFIED_IDENTIFIER)) {
-        Symbol thrownSymbol = castToTypeIfPossible(resolveType(env, qualifiedIdentifier));
-        if (thrownSymbol != null) {
-          thrown.add((Symbol.TypeSymbol) thrownSymbol);
+        Type thrownType = castToTypeIfPossible(resolveType(env, qualifiedIdentifier));
+        if (thrownType != null) {
+          thrown.add(((Type.ClassType) thrownType).symbol);
         }
       }
     }
@@ -112,7 +112,7 @@ public class SecondPass implements Symbol.Completer {
       // TODO JavaGrammar.BASIC_TYPE
       return;
     }
-    symbol.type = castToTypeIfPossible(resolveType(env, classTypeNode));
+    symbol.type = ((Type.ClassType) castToTypeIfPossible(resolveType(env, classTypeNode))).symbol;
   }
 
   public void complete(Symbol.VariableSymbol symbol) {
@@ -188,8 +188,8 @@ public class SecondPass implements Symbol.Completer {
     return site;
   }
 
-  private Symbol.TypeSymbol castToTypeIfPossible(Symbol symbol) {
-    return symbol instanceof Symbol.TypeSymbol ? (Symbol.TypeSymbol) symbol : null;
+  private Type castToTypeIfPossible(Symbol symbol) {
+    return symbol instanceof Symbol.TypeSymbol ? ((Symbol.TypeSymbol) symbol).type : null;
   }
 
   private void associateReference(AstNode astNode, Symbol symbol) {

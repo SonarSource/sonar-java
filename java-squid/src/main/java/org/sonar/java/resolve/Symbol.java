@@ -19,8 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.ImmutableList;
-
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -44,6 +42,8 @@ public class Symbol {
   private final Symbol owner;
 
   Completer completer;
+
+  Type type;
 
   public Symbol(int kind, int flags, @Nullable String name, @Nullable Symbol owner) {
     this.kind = kind;
@@ -132,21 +132,20 @@ public class Symbol {
   public static class TypeSymbol extends Symbol {
 
     Scope members;
-    TypeSymbol superclass;
-    ImmutableList<TypeSymbol> interfaces;
 
     public TypeSymbol(int flags, String name, Symbol owner) {
       super(TYP, flags, name, owner);
+      this.type = new Type.ClassType(this);
     }
 
-    public TypeSymbol getSuperclass() {
+    public Type getSuperclass() {
       complete();
-      return superclass;
+      return ((Type.ClassType) type).supertype;
     }
 
-    public List<TypeSymbol> getInterfaces() {
+    public List<Type> getInterfaces() {
       complete();
-      return interfaces;
+      return ((Type.ClassType) type).interfaces;
     }
 
     Scope members() {
@@ -161,10 +160,13 @@ public class Symbol {
    */
   public static class VariableSymbol extends Symbol {
 
-    TypeSymbol type;
-
     public VariableSymbol(int flags, String name, Symbol owner) {
       super(VAR, flags, name, owner);
+    }
+
+    public VariableSymbol(int flags, String name, Type type, Symbol owner) {
+      super(VAR, flags, name, owner);
+      this.type = type;
     }
 
   }

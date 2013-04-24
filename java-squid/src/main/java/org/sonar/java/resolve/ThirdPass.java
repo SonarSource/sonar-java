@@ -41,6 +41,7 @@ public class ThirdPass extends JavaAstVisitor {
   public void init() {
     subscribeTo(
       JavaGrammar.PRIMARY,
+      // TODO extract from this visitor:
       JavaGrammar.LABELED_STATEMENT, JavaGrammar.BREAK_STATEMENT, JavaGrammar.CONTINUE_STATEMENT);
   }
 
@@ -118,12 +119,12 @@ public class ThirdPass extends JavaAstVisitor {
       }
       String name = identifierNode.getTokenValue();
       if (site.kind == Symbol.VAR) {
-        Symbol.TypeSymbol type = ((Symbol.VariableSymbol) site).type;
+        Type type = ((Symbol.VariableSymbol) site).type;
         // TODO avoid null
         if (type == null) {
           return null;
         }
-        site = resolve.findIdentInType(env, type, name, Symbol.VAR | Symbol.TYP);
+        site = resolve.findIdentInType(env, type.symbol, name, Symbol.VAR | Symbol.TYP);
       } else if (site.kind == Symbol.TYP) {
         site = resolve.findIdentInType(env, (Symbol.TypeSymbol) site, name, Symbol.VAR | Symbol.TYP);
       } else if (site.kind == Symbol.PCK) {

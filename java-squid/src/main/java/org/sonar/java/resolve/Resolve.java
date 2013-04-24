@@ -84,9 +84,9 @@ public class Resolve {
   /**
    * Finds field with given name.
    */
-  private Symbol findField(Env env, Symbol.TypeSymbol site, String name, Symbol.TypeSymbol type) {
+  private Symbol findField(Env env, Symbol.TypeSymbol site, String name, Symbol.TypeSymbol c) {
     Symbol bestSoFar = symbolNotFound;
-    for (Symbol symbol : type.members().lookup(name)) {
+    for (Symbol symbol : c.members().lookup(name)) {
       if (symbol.kind == Symbol.VAR) {
         return isAccessible(env, site, symbol)
           ? symbol
@@ -94,14 +94,14 @@ public class Resolve {
       }
     }
     Symbol symbol;
-    if (type.getSuperclass() != null) {
-      symbol = findField(env, site, name, type.getSuperclass());
+    if (c.getSuperclass() != null) {
+      symbol = findField(env, site, name, c.getSuperclass().symbol);
       if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
       }
     }
-    for (Symbol.TypeSymbol interfaceType : type.getInterfaces()) {
-      symbol = findField(env, site, name, interfaceType);
+    for (Type interfaceType : c.getInterfaces()) {
+      symbol = findField(env, site, name, interfaceType.symbol);
       if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
       }
@@ -150,13 +150,13 @@ public class Resolve {
       }
     }
     if (c.getSuperclass() != null) {
-      Symbol symbol = findMemberType(env, site, name, c.getSuperclass());
+      Symbol symbol = findMemberType(env, site, name, c.getSuperclass().symbol);
       if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
       }
     }
-    for (Symbol.TypeSymbol interfaceType : c.getInterfaces()) {
-      Symbol symbol = findMemberType(env, site, name, interfaceType);
+    for (Type interfaceType : c.getInterfaces()) {
+      Symbol symbol = findMemberType(env, site, name, interfaceType.symbol);
       if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
       }
@@ -327,16 +327,16 @@ public class Resolve {
       return true;
     } else if ((base.flags() & Flags.INTERFACE) != 0) {
       // check if class implements base
-      for (Symbol.TypeSymbol interfaceSymbol : c.getInterfaces()) {
-        if (isSubClass(interfaceSymbol, base)) {
+      for (Type interfaceType : c.getInterfaces()) {
+        if (isSubClass(interfaceType.symbol, base)) {
           return true;
         }
       }
       // check if superclass implements base
-      return isSubClass(c.getSuperclass(), base);
+      return isSubClass(superclassSymbol(c), base);
     } else {
       // check if class extends base or its superclass extends base
-      return isSubClass(c.getSuperclass(), base);
+      return isSubClass(superclassSymbol(c), base);
     }
   }
 
@@ -389,7 +389,7 @@ public class Resolve {
       case 0:
         // TODO see Javac
         Symbol.PackageSymbol thisPackage = symbol.packge();
-        for (Symbol.TypeSymbol sup = clazz; sup != null && sup != clazz.owner(); sup = sup.getSuperclass()) {
+        for (Symbol.TypeSymbol sup = clazz; sup != null && sup != clazz.owner(); sup = superclassSymbol(sup)) {
           if (sup.packge() != thisPackage) {
             return false;
           }
@@ -427,6 +427,11 @@ public class Resolve {
       super(Symbol.ERRONEOUS, 0, null, null);
       this.symbol = symbol;
     }
+  }
+
+  private static Symbol.TypeSymbol superclassSymbol(Symbol.TypeSymbol c) {
+    Type supertype = c.getSuperclass();
+    return supertype == null ? null : supertype.symbol;
   }
 
 }
