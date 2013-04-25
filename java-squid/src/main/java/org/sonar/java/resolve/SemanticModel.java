@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -45,9 +46,14 @@ public class SemanticModel {
   public static SemanticModel createFor(AstNode astNode) {
     SemanticModel semanticModel = new SemanticModel();
     Resolve resolve = new Resolve();
+    Symbols symbols = new Symbols();
     visit(astNode, new FirstPass(semanticModel, resolve));
-    visit(astNode, new ThirdPass(semanticModel, resolve), new LabelsVisitor(semanticModel));
+    visit(astNode, new ExpressionVisitor(semanticModel, symbols, resolve), new LabelsVisitor(semanticModel));
     return semanticModel;
+  }
+
+  @VisibleForTesting
+  SemanticModel() {
   }
 
   private static void visit(AstNode astNode, JavaAstVisitor... visitors) {
@@ -87,13 +93,13 @@ public class SemanticModel {
    * Associates given AstNode with given Symbol.
    */
   public void associateSymbol(AstNode astNode, Symbol symbol) {
-    Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER));
+    Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
     Preconditions.checkNotNull(symbol);
     symbols.put(astNode, symbol);
   }
 
   public Symbol getSymbol(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER));
+    Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
     return symbols.get(astNode);
   }
 
@@ -102,7 +108,7 @@ public class SemanticModel {
   }
 
   public void associateReference(AstNode astNode, Symbol symbol) {
-    Preconditions.checkNotNull(astNode);
+    Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
     Preconditions.checkNotNull(symbol);
     usages.put(symbol, astNode);
   }

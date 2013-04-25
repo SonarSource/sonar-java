@@ -56,6 +56,14 @@ public class SecondPass implements Symbol.Completer {
   }
 
   public void complete(Symbol.TypeSymbol symbol) {
+    Resolve.Env env = semanticModel.getEnv(symbol);
+
+    if ((symbol.flags() & Flags.INTERFACE) == 0) {
+      // If this is a class, enter symbols for "this" and "super".
+      symbol.members.enter(new Symbol.VariableSymbol(Flags.FINAL, "this", symbol.type, symbol));
+      // TODO super
+    }
+
     if ("".equals(symbol.name)) {
       // Anonymous Class Declaration
       ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
@@ -63,7 +71,6 @@ public class SecondPass implements Symbol.Completer {
     }
 
     AstNode astNode = semanticModel.getAstNode(symbol).getParent();
-    Resolve.Env env = semanticModel.getEnv(symbol);
 
     AstNode superclassNode = astNode.getFirstChild(JavaGrammar.CLASS_TYPE);
     if (superclassNode != null) {
@@ -112,7 +119,10 @@ public class SecondPass implements Symbol.Completer {
       // TODO JavaGrammar.BASIC_TYPE
       return;
     }
-    symbol.type = ((Type.ClassType) castToTypeIfPossible(resolveType(env, classTypeNode))).symbol;
+    Type type = castToTypeIfPossible(resolveType(env, classTypeNode));
+    if (type != null) {
+      symbol.type = ((Type.ClassType) type).symbol;
+    }
   }
 
   public void complete(Symbol.VariableSymbol symbol) {
@@ -193,7 +203,8 @@ public class SecondPass implements Symbol.Completer {
   }
 
   private void associateReference(AstNode astNode, Symbol symbol) {
-    if (symbol.kind < Symbol.ERRONEOUS) {
+    if (symbol.kind < Symbol.ERRONEOUS && semanticModel.getAstNode(symbol) != null) {
+      // symbol exists in current compilation unit
       semanticModel.associateReference(astNode, symbol);
     }
   }

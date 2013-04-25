@@ -7,6 +7,7 @@ class FieldAccess {
 
   private void method() {
     field = null;
+    this.field = null;
     FieldAccess.field = null;
     references.FieldAccess.field = null;
 

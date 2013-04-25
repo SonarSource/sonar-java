@@ -32,6 +32,9 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ExpressionVisitorTest {
 
@@ -44,7 +47,8 @@ public class ExpressionVisitorTest {
   private Symbol.TypeSymbol classSymbol;
   private Type.ClassType classType;
 
-  private Symbol.VariableSymbol variableSymbol;
+  private Symbol variableSymbol;
+  private Symbol methodSymbol;
 
   /**
    * Simulates creation of symbols and types.
@@ -54,16 +58,26 @@ public class ExpressionVisitorTest {
     Symbol.PackageSymbol p = new Symbol.PackageSymbol(null, null);
     p.members = new Scope(p);
 
+    // class MyClass
     classSymbol = new Symbol.TypeSymbol(0, "MyClass", p);
     classType = ((Type.ClassType) classSymbol.type);
-    classType.supertype = symbols.unknownType;
+    classType.supertype = symbols.unknownType; // TODO extend some superclass
     classType.interfaces = ImmutableList.of();
     classSymbol.members = new Scope(classSymbol);
     p.members.enter(classSymbol);
 
-    variableSymbol = new Symbol.VariableSymbol(/* FIXME figure out why it fails with default visibility */Flags.PUBLIC, "var", classSymbol);
+    // int[][] var;
+    variableSymbol = new Symbol.VariableSymbol(0, "var", classSymbol);
     variableSymbol.type = new Type.ArrayType(new Type.ArrayType(symbols.intType, symbols.arrayClass), symbols.arrayClass);
     classSymbol.members.enter(variableSymbol);
+
+    // MyClass var2;
+    classSymbol.members.enter(new Symbol.VariableSymbol(0, "var2", classType, classSymbol));
+
+    // int method()
+    methodSymbol = new Symbol.MethodSymbol(0, "method", classSymbol);
+    methodSymbol.type = symbols.intType;
+    classSymbol.members.enter(methodSymbol);
 
     classSymbol.members.enter(new Symbol.VariableSymbol(0, "this", classType, classSymbol));
     classSymbol.members.enter(new Symbol.VariableSymbol(0, "super", classType.supertype, classSymbol));
@@ -103,6 +117,8 @@ public class ExpressionVisitorTest {
     b.setRootRule(JavaGrammar.PRIMARY);
 
     assertThat(typeOf("this")).isSameAs(classType);
+
+    // constructor call
     assertThat(typeOf("this(arguments)")).isSameAs(symbols.unknownType);
   }
 
@@ -110,9 +126,13 @@ public class ExpressionVisitorTest {
   public void primary_super() {
     b.setRootRule(JavaGrammar.PRIMARY);
 
+    // constructor call
     assertThat(typeOf("super(arguments)")).isSameAs(symbols.unknownType);
+
+    // method call
     assertThat(typeOf("super.method(arguments)")).isSameAs(symbols.unknownType);
 
+    // field access
     assertThat(typeOf("super.field")).isSameAs(classType.supertype);
   }
 
@@ -120,6 +140,7 @@ public class ExpressionVisitorTest {
   public void primary_par_expression() {
     b.setRootRule(JavaGrammar.PRIMARY);
 
+    // (expression)
     assertThat(typeOf("((int) 42L)")).isSameAs(symbols.intType);
   }
 
@@ -134,11 +155,26 @@ public class ExpressionVisitorTest {
   public void primary_qualified_identifier() {
     b.setRootRule(JavaGrammar.PRIMARY);
 
+    // qualified_identifier
     assertThat(typeOf("var")).isSameAs(variableSymbol.type);
-    assertThat(typeOf("var[expression]")).isSameAs(((Type.ArrayType) variableSymbol.type).elementType);
+    assertThat(typeOf("var.length")).isSameAs(symbols.intType);
+    assertThat(typeOf("MyClass.var")).isSameAs(variableSymbol.type);
+
+    // qualified_identifier[expression]
+    assertThat(typeOf("var[42]")).isSameAs(((Type.ArrayType) variableSymbol.type).elementType);
+
+    // qualified_identifier[].class
     assertThat(typeOf("id[].class")).isSameAs(symbols.classType);
-    assertThat(typeOf("id(arguments)")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("id[][].class")).isSameAs(symbols.classType);
+
+    // qualified_identifier(arguments)
+    assertThat(typeOf("method(arguments)")).isSameAs(methodSymbol.type);
+    assertThat(typeOf("var2.method()")).isSameAs(methodSymbol.type);
+    assertThat(typeOf("MyClass.var2.method()")).isSameAs(methodSymbol.type);
+
+    // qualified_identifier.class
     assertThat(typeOf("id.class")).isSameAs(symbols.classType);
+
     // TODO id.<...>...
     assertThat(typeOf("MyClass.this")).isSameAs(classSymbol.type);
     assertThat(typeOf("id.super(arguments)")).isSameAs(symbols.unknownType);
@@ -165,8 +201,16 @@ public class ExpressionVisitorTest {
   public void type_cast() {
     b.setRootRule(JavaGrammar.UNARY_EXPRESSION);
 
+    // (basic_type) expression
     assertThat(typeOf("(byte) 42L")).isSameAs(symbols.byteType);
+    assertThat(typeOf("(char) 42")).isSameAs(symbols.charType);
     assertThat(typeOf("(short) 42L")).isSameAs(symbols.shortType);
+    assertThat(typeOf("(int) 42")).isSameAs(symbols.intType);
+    assertThat(typeOf("(long) 42")).isSameAs(symbols.longType);
+    assertThat(typeOf("(float) 42")).isSameAs(symbols.floatType);
+    assertThat(typeOf("(double) 42")).isSameAs(symbols.doubleType);
+
+    // (class_type) expression
     assertThat(typeOf("(MyClass) 42")).isSameAs(classSymbol.type);
   }
 
@@ -188,10 +232,15 @@ public class ExpressionVisitorTest {
   public void selector() {
     b.setRootRule(JavaGrammar.UNARY_EXPRESSION);
 
-    assertThat(typeOf("this.var")).isSameAs(variableSymbol.type);
+    // method call
     assertThat(typeOf("this.method(arguments)")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("var[42].clone()")).isSameAs(symbols.unknownType);
 
+    // field access
+    assertThat(typeOf("this.var")).isSameAs(variableSymbol.type);
     assertThat(typeOf("var[42].length")).isSameAs(symbols.intType);
+
+    // array access
     assertThat(typeOf("var[42][42]")).isSameAs(((Type.ArrayType) ((Type.ArrayType) variableSymbol.type).elementType).elementType);
   }
 
@@ -199,6 +248,10 @@ public class ExpressionVisitorTest {
   public void multiplicative_expression() {
     b.setRootRule(JavaGrammar.MULTIPLICATIVE_EXPRESSION);
 
+    // double, double = double
+    // float, float = float
+    // long, long = long
+    // int, int = int
     assertThat(typeOf("42 * 42")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 / 42")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 % 42")).isSameAs(symbols.unknownType);
@@ -208,14 +261,41 @@ public class ExpressionVisitorTest {
   public void additive_expression() {
     b.setRootRule(JavaGrammar.ADDITIVE_EXPRESSION);
 
+    // double, double = double
+    // float, float = float
+    // long, long = long
+    // int, int = int
     assertThat(typeOf("42 + 42")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 - 42")).isSameAs(symbols.unknownType);
+
+    // TODO
+    // assertThat(typeOf("'a' + 'b'")).isSameAs(symbols.intType);
+
+    // string, object = string
+    // object, string = string
+    // string, string = string
+    // string, int = string
+    // string, long = string
+    // string, float = string
+    // string, double = string
+    // string, boolean = string
+    // string, bot = string
+    // int, string = string
+    // long, string = string
+    // float, string = string
+    // double, string = string
+    // boolean, string = string
+    // bot, string = string
   }
 
   @Test
   public void shift_expression() {
     b.setRootRule(JavaGrammar.SHIFT_EXPRESSION);
 
+    // long, long = long
+    // int, long = int
+    // long, int = long
+    // int, int = int
     assertThat(typeOf("42 << 42")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 >> 42")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 >>> 42")).isSameAs(symbols.unknownType);
@@ -225,10 +305,15 @@ public class ExpressionVisitorTest {
   public void relational_expression() {
     b.setRootRule(JavaGrammar.RELATIONAL_EXPRESSION);
 
+    // double, double = boolean
+    // float, float = boolean
+    // long, long = boolean
+    // int, int = boolean
     assertThat(typeOf("42 >= 42")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 > 42")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 <= 42")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 < 42")).isSameAs(symbols.unknownType);
+
     assertThat(typeOf("var instanceof Object")).isSameAs(symbols.unknownType);
   }
 
@@ -236,6 +321,12 @@ public class ExpressionVisitorTest {
   public void equality_expression() {
     b.setRootRule(JavaGrammar.EQUALITY_EXPRESSION);
 
+    // object, object = boolean
+    // boolean, boolean = boolean
+    // double, double = boolean
+    // float, float = boolean
+    // long, long = boolean
+    // int, int = boolean
     assertThat(typeOf("42 == 42")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 != 42")).isSameAs(symbols.unknownType);
   }
@@ -244,35 +335,52 @@ public class ExpressionVisitorTest {
   public void and_expression() {
     b.setRootRule(JavaGrammar.AND_EXPRESSION);
 
+    // boolean, boolean = boolean
+    // int, int = int
+    // long, long = long
+    assertThat(typeOf("true & false")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 & 42")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("42L & 42L")).isSameAs(symbols.unknownType);
   }
 
   @Test
   public void exclusive_or_expression() {
     b.setRootRule(JavaGrammar.EXCLUSIVE_OR_EXPRESSION);
 
+    // boolean, boolean = boolean
+    // int, int = int
+    // long, long = long
+    assertThat(typeOf("true ^ false")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 ^ 42")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("42L ^ 42L")).isSameAs(symbols.unknownType);
   }
 
   @Test
   public void inclusive_or_expression() {
     b.setRootRule(JavaGrammar.INCLUSIVE_OR_EXPRESSION);
 
+    // boolean, boolean = boolean
+    // int, int = int
+    // long, long = long
+    assertThat(typeOf("true | false")).isSameAs(symbols.unknownType);
     assertThat(typeOf("42 | 42")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("42L | 42L")).isSameAs(symbols.unknownType);
   }
 
   @Test
   public void conditional_and_expression() {
     b.setRootRule(JavaGrammar.CONDITIONAL_AND_EXPRESSION);
 
-    assertThat(typeOf("42 && 42")).isSameAs(symbols.unknownType);
+    // boolean, boolean = boolean
+    assertThat(typeOf("true && false")).isSameAs(symbols.unknownType);
   }
 
   @Test
   public void conditional_or_expression() {
     b.setRootRule(JavaGrammar.CONDITIONAL_OR_EXPRESSION);
 
-    assertThat(typeOf("42 || 42")).isSameAs(symbols.unknownType);
+    // boolean, boolean = boolean
+    assertThat(typeOf("true || false")).isSameAs(symbols.unknownType);
   }
 
   @Test
@@ -294,7 +402,9 @@ public class ExpressionVisitorTest {
     System.out.println(AstXmlPrinter.print(astNode));
 
     AstWalker astWalker = new AstWalker();
-    ExpressionVisitor visitor = new ExpressionVisitor(symbols, new Resolve(), env);
+    SemanticModel semanticModel = mock(SemanticModel.class);
+    when(semanticModel.getEnv(any(AstNode.class))).thenReturn(env);
+    ExpressionVisitor visitor = new ExpressionVisitor(semanticModel, symbols, new Resolve());
     visitor.init();
     astWalker.addVisitor(visitor);
     astWalker.walkAndVisit(astNode);

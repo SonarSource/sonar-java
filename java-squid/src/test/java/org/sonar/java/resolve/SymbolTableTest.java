@@ -36,11 +36,11 @@ public class SymbolTableTest {
     assertThat(typeSymbol.getInterfaces()).containsExactly(
       result.symbol("FirstInterface").type,
       result.symbol("SecondInterface").type);
+    assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Superclass");
     assertThat(typeSymbol.getSuperclass()).isNull(); // FIXME should be java.lang.Object
     assertThat(typeSymbol.getInterfaces()).isEmpty();
-    ;
   }
 
   @Test
@@ -53,6 +53,7 @@ public class SymbolTableTest {
     assertThat(typeSymbol.name).isEqualTo("");
     assertThat(typeSymbol.getSuperclass()).isNull(); // FIXME should be result.symbol("Superclass")
     assertThat(typeSymbol.getInterfaces()).isEmpty();
+    assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
   }
 
   @Test
@@ -66,6 +67,7 @@ public class SymbolTableTest {
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 22);
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 22 - 2).type);
+    assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 25);
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 9).type);
@@ -82,6 +84,7 @@ public class SymbolTableTest {
     assertThat(interfaceSymbol.getInterfaces()).containsExactly(
       result.symbol("FirstInterface").type,
       result.symbol("SecondInterface").type);
+    assertThat(interfaceSymbol.members.lookup("this")).isEmpty();
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(interfaceSymbol);
@@ -119,6 +122,7 @@ public class SymbolTableTest {
     assertThat(enumSymbol.getInterfaces()).containsExactly(
       result.symbol("FirstInterface").type,
       result.symbol("SecondInterface").type);
+    assertThat(enumSymbol.members.lookup("this")).isNotEmpty();
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(enumSymbol);
@@ -156,6 +160,7 @@ public class SymbolTableTest {
     assertThat(annotationSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.INTERFACE | Flags.ANNOTATION);
     assertThat(annotationSymbol.getSuperclass()).isNull(); // TODO should it be java.lang.Object?
     assertThat(annotationSymbol.getInterfaces()).isEmpty(); // FIXME should be java.lang.annotation.Annotation
+    assertThat(annotationSymbol.members.lookup("this")).isEmpty();
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(annotationSymbol);
@@ -262,24 +267,26 @@ public class SymbolTableTest {
 
     assertThat(result.reference(9, 5)).isSameAs(result.symbol("field"));
 
-    assertThat(result.reference(10, 5)).isSameAs(result.symbol("FieldAccess"));
-    assertThat(result.reference(10, 17)).isSameAs(result.symbol("field"));
+    assertThat(result.reference(10, 10)).isSameAs(result.symbol("field"));
+
+    assertThat(result.reference(11, 5)).isSameAs(result.symbol("FieldAccess"));
+    assertThat(result.reference(11, 17)).isSameAs(result.symbol("field"));
 
     // FIXME
-//    assertThat(result.reference(11, 5)).isSameAs(/*package "references"*/);
-
-    assertThat(result.reference(13, 5)).isSameAs(result.symbol("FirstStaticNestedClass"));
-    assertThat(result.reference(13, 28)).isSameAs(result.symbol("field_in_FirstStaticNestedClass"));
+//    assertThat(result.reference(12, 5)).isSameAs(/*package "references"*/);
 
     assertThat(result.reference(14, 5)).isSameAs(result.symbol("FirstStaticNestedClass"));
-    assertThat(result.reference(14, 28)).isSameAs(result.symbol("SecondStaticNestedClass"));
-    assertThat(result.reference(14, 52)).isSameAs(result.symbol("field_in_SecondStaticNestedClass"));
+    assertThat(result.reference(14, 28)).isSameAs(result.symbol("field_in_FirstStaticNestedClass"));
 
-    assertThat(result.reference(15, 5)).isSameAs(result.symbol("field"));
-    assertThat(result.reference(15, 11)).isSameAs(result.symbol("field_in_FirstStaticNestedClass"));
+    assertThat(result.reference(15, 5)).isSameAs(result.symbol("FirstStaticNestedClass"));
+    assertThat(result.reference(15, 28)).isSameAs(result.symbol("SecondStaticNestedClass"));
+    assertThat(result.reference(15, 52)).isSameAs(result.symbol("field_in_SecondStaticNestedClass"));
 
     assertThat(result.reference(16, 5)).isSameAs(result.symbol("field"));
-    assertThat(result.reference(16, 11)).isSameAs(result.symbol("field_in_Superclass"));
+    assertThat(result.reference(16, 11)).isSameAs(result.symbol("field_in_FirstStaticNestedClass"));
+
+    assertThat(result.reference(17, 5)).isSameAs(result.symbol("field"));
+    assertThat(result.reference(17, 11)).isSameAs(result.symbol("field_in_Superclass"));
   }
 
   @Test

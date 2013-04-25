@@ -389,7 +389,7 @@ public class Resolve {
       case 0:
         // TODO see Javac
         Symbol.PackageSymbol thisPackage = symbol.packge();
-        for (Symbol.TypeSymbol sup = clazz; sup != null && sup != clazz.owner(); sup = superclassSymbol(sup)) {
+        for (Symbol.TypeSymbol sup = clazz; sup != null && sup != symbol.owner(); sup = superclassSymbol(sup)) {
           if (sup.packge() != thisPackage) {
             return false;
           }
