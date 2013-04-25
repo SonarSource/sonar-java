@@ -51,8 +51,8 @@ public class ClassVisitor extends JavaAstVisitor {
 
     sourceClass.setStartAtLine(astNode.getTokenLine());
     sourceClass.setMeasure(JavaMetric.CLASSES, 1);
+    sourceClass.setSuppressWarnings(SuppressWarningsAnnotationUtils.isSuppressAllWarnings(astNode));
     getContext().addSourceCode(sourceClass);
-    // TODO sourceClass.setSuppressWarnings(suppressWarnings)
   }
 
   @Override

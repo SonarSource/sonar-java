@@ -53,6 +53,7 @@ public class MethodVisitor extends JavaAstVisitor {
     int startLine = PublicApiVisitor.getDeclaration(astNode).getTokenLine();
     SourceMethod sourceMethod = new SourceMethod(sourceClass, methodName, startLine);
     sourceMethod.setMeasure(JavaMetric.METHODS, 1);
+    sourceMethod.setSuppressWarnings(SuppressWarningsAnnotationUtils.isSuppressAllWarnings(astNode));
     getContext().addSourceCode(sourceMethod);
   }
 
