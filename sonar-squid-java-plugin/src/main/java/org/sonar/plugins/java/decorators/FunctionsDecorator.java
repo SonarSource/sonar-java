@@ -34,17 +34,20 @@ public final class FunctionsDecorator implements Decorator {
   public void decorate(Resource resource, DecoratorContext context) {
     if (Scopes.isProgramUnit(resource)) {
       int methods = 0, accessors = 0;
+      double complexityInMethods = 0;
       for (DecoratorContext child : context.getChildren()) {
         if (child.getResource() instanceof JavaMethod) {
           if (((JavaMethod) child.getResource()).isAccessor()) {
             accessors++;
           } else {
             methods++;
+            complexityInMethods += child.getMeasure(CoreMetrics.COMPLEXITY).getValue();
           }
         }
       }
       context.saveMeasure(new Measure(CoreMetrics.FUNCTIONS, (double) methods));
       context.saveMeasure(new Measure(CoreMetrics.ACCESSORS, (double) accessors));
+      context.saveMeasure(new Measure(CoreMetrics.COMPLEXITY_IN_FUNCTIONS, complexityInMethods));
     }
   }
 
