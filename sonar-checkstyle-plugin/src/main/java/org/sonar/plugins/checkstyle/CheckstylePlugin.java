@@ -20,36 +20,49 @@
 package org.sonar.plugins.checkstyle;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.Extension;
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
+import org.sonar.api.CoreProperties;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
+import org.sonar.api.config.PropertyDefinition;
+import org.sonar.api.resources.Qualifiers;
 
 import java.util.List;
 
-@Properties({
-  @Property(key = CheckstyleConstants.FILTERS_KEY,
-    defaultValue = CheckstyleConstants.FILTERS_DEFAULT_VALUE,
-    name = "Filters",
-    description = "Checkstyle support three error filtering mechanisms : SuppressionCommentFilter, SuppressWithNearbyCommentFilter and SuppressionFilter."
-      + "This property allows to configure all those filters with a native XML format."
-      + " See <a href='http://checkstyle.sourceforge.net/config.html'>Checkstyle configuration page</a> to get more information on those filters.",
-    project = true,
-    global = true,
-    type = PropertyType.TEXT)})
 public final class CheckstylePlugin extends SonarPlugin {
 
-  public List<Class<? extends Extension>> getExtensions() {
+  private static final String CHECKSTYLE_SUB_CATEGORY_NAME = "Checkstyle";
+
+  public List<?> getExtensions() {
     return ImmutableList.of(
-        CheckstyleSensor.class,
-        CheckstyleConfiguration.class,
-        CheckstyleExecutor.class,
-        CheckstyleAuditListener.class,
-        CheckstyleProfileExporter.class,
-        CheckstyleProfileImporter.class,
-        CheckstyleRuleRepository.class,
-        SonarWayProfile.class,
-        SonarWayWithFindbugsProfile.class);
+      PropertyDefinition.builder(CheckstyleConstants.FILTERS_KEY)
+        .defaultValue(CheckstyleConstants.FILTERS_DEFAULT_VALUE)
+        .category(CoreProperties.CATEGORY_JAVA)
+        .subCategory(CHECKSTYLE_SUB_CATEGORY_NAME)
+        .name("Filters")
+        .description("Checkstyle support three error filtering mechanisms : SuppressionCommentFilter, SuppressWithNearbyCommentFilter and SuppressionFilter."
+          + "This property allows to configure all those filters with a native XML format."
+          + " See <a href='http://checkstyle.sourceforge.net/config.html'>Checkstyle configuration page</a> to get more information on those filters.")
+        .type(PropertyType.TEXT)
+        .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
+        .build(),
+      PropertyDefinition.builder(CheckstyleConfiguration.PROPERTY_GENERATE_XML)
+        .defaultValue("false")
+        .category(CoreProperties.CATEGORY_JAVA)
+        .subCategory(CHECKSTYLE_SUB_CATEGORY_NAME)
+        .name("Generate XML Report")
+        .type(PropertyType.BOOLEAN)
+        .hidden()
+        .build(),
+
+      CheckstyleSensor.class,
+      CheckstyleConfiguration.class,
+      CheckstyleExecutor.class,
+      CheckstyleAuditListener.class,
+      CheckstyleProfileExporter.class,
+      CheckstyleProfileImporter.class,
+      CheckstyleRuleRepository.class,
+      SonarWayProfile.class,
+      SonarWayWithFindbugsProfile.class);
   }
+
 }

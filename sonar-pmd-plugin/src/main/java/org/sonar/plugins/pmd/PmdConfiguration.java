@@ -25,7 +25,6 @@ import net.sourceforge.pmd.renderers.XMLRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
-import org.sonar.api.Property;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.utils.SonarException;
@@ -34,15 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 
-@org.sonar.api.Properties({
-  @Property(
-    key = PmdConfiguration.PROPERTY_GENERATE_XML,
-    defaultValue = "false",
-    name = "Generate XML Report",
-    project = false,
-    global = false
-  )
-})
 public class PmdConfiguration implements BatchExtension {
   private static final Logger LOG = LoggerFactory.getLogger(PmdConfiguration.class);
 
@@ -105,4 +95,5 @@ public class PmdConfiguration implements BatchExtension {
 
     return output.toString();
   }
+
 }

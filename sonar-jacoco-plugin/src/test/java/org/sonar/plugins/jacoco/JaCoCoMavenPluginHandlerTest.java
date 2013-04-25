@@ -47,7 +47,7 @@ public class JaCoCoMavenPluginHandlerTest {
   public void setUp() throws Exception {
     JaCoCoAgentDownloader downloader = mock(JaCoCoAgentDownloader.class);
     when(downloader.getAgentJarFile()).thenReturn(new File("jacocoagent.jar"));
-    Settings settings = new Settings(new PropertyDefinitions(JacocoConfiguration.class));
+    Settings settings = new Settings(new PropertyDefinitions().addComponents(JacocoConfiguration.getPropertyDefinitions()));
     configuration = spy(new JacocoConfiguration(settings, downloader, new JavaSettings(settings)));
 
     handler = new JaCoCoMavenPluginHandler(configuration);

@@ -27,19 +27,23 @@ import java.util.List;
 public class JaCoCoPlugin extends SonarPlugin {
 
   public List<?> getExtensions() {
-    return ImmutableList.of(
-        JacocoConfiguration.class,
-        JaCoCoAgentDownloader.class,
-        // Ant
-        JacocoAntInitializer.class,
-        // Maven
-        JacocoMavenInitializer.class,
-        JaCoCoMavenPluginHandler.class,
-        // Unit tests
-        JaCoCoSensor.class,
-        // Integration tests
-        JaCoCoItSensor.class,
-        JaCoCoOverallSensor.class
+    ImmutableList.Builder<Object> extensions = ImmutableList.builder();
+    extensions.addAll(JacocoConfiguration.getPropertyDefinitions());
+    extensions.add(
+      JacocoConfiguration.class,
+      JaCoCoAgentDownloader.class,
+      // Ant
+      JacocoAntInitializer.class,
+      // Maven
+      JacocoMavenInitializer.class,
+      JaCoCoMavenPluginHandler.class,
+      // Unit tests
+      JaCoCoSensor.class,
+      // Integration tests
+      JaCoCoItSensor.class,
+      JaCoCoOverallSensor.class
     );
+    return extensions.build();
   }
+
 }

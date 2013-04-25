@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.CoreProperties;
-import org.sonar.api.Property;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.InputFileUtils;
@@ -47,14 +46,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-@org.sonar.api.Properties({
-  @Property(
-    key = CheckstyleConfiguration.PROPERTY_GENERATE_XML,
-    defaultValue = "false",
-    name = "Generate XML Report",
-    project = false, global = false
-  )
-})
 public class CheckstyleConfiguration implements BatchExtension {
 
   private static final Logger LOG = LoggerFactory.getLogger(CheckstyleConfiguration.class);
@@ -135,4 +126,5 @@ public class CheckstyleConfiguration implements BatchExtension {
     }
     return charset;
   }
+
 }

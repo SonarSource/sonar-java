@@ -20,63 +20,25 @@
 package org.sonar.plugins.findbugs;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.Extension;
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
-import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
 
 import java.util.List;
 
-@Properties({
-  @Property(
-    key = FindbugsConstants.EFFORT_PROPERTY,
-    defaultValue = FindbugsConstants.EFFORT_DEFAULT_VALUE,
-    name = "Effort",
-    description = "Effort of the bug finders. Valid values are Min, Default and Max. Setting 'Max' increases precision but also increases " +
-      "memory consumption.",
-    project = true,
-    module = true,
-    global = true),
-  @Property(
-    key = FindbugsConstants.TIMEOUT_PROPERTY,
-    defaultValue = FindbugsConstants.TIMEOUT_DEFAULT_VALUE + "",
-    name = "Timeout",
-    description = "Specifies the amount of time, in milliseconds, that FindBugs may run before it is assumed to be hung and is terminated. " +
-      "The default is 600,000 milliseconds, which is ten minutes.",
-    project = true,
-    module = true,
-    global = true,
-    type = PropertyType.INTEGER),
-  @Property(
-    key = FindbugsConstants.EXCLUDES_FILTERS_PROPERTY,
-    name = "Excludes Filters",
-    description = "Paths to findbugs filter-files with exclusions.",
-    project = true,
-    module = true,
-    global = true,
-    multiValues = true),
-  @Property(
-    key = FindbugsConstants.CONFIDENCE_LEVEL_PROPERTY,
-    defaultValue = FindbugsConstants.CONFIDENCE_LEVEL_DEFAULT_VALUE,
-    name = "Confidence Level",
-    description = "Specifies the confidence threshold (previously called \"priority\") for reporting issues. If set to \"low\", confidence is not used to filter bugs. " +
-      "If set to \"medium\" (the default), low confidence issues are supressed. If set to \"high\", only high confidence bugs are reported. ",
-    project = true,
-    module = true,
-    global = true)
-})
 public class FindbugsPlugin extends SonarPlugin {
 
-  public List<Class<? extends Extension>> getExtensions() {
-    return ImmutableList.of(
-        FindbugsSensor.class,
-        FindbugsConfiguration.class,
-        FindbugsExecutor.class,
-        FindbugsRuleRepository.class,
-        FindbugsProfileExporter.class,
-        FindbugsProfileImporter.class,
-        SonarWayWithFindbugsProfile.class,
-        FindbugsMavenInitializer.class);
+  public List<?> getExtensions() {
+    ImmutableList.Builder<Object> extensions = ImmutableList.builder();
+    extensions.addAll(FindbugsConfiguration.getPropertyDefinitions());
+    extensions.add(
+      FindbugsSensor.class,
+      FindbugsConfiguration.class,
+      FindbugsExecutor.class,
+      FindbugsRuleRepository.class,
+      FindbugsProfileExporter.class,
+      FindbugsProfileImporter.class,
+      SonarWayWithFindbugsProfile.class,
+      FindbugsMavenInitializer.class);
+    return extensions.build();
   }
+
 }

@@ -21,10 +21,10 @@ package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.CoreProperties;
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
+import org.sonar.api.config.PropertyDefinition;
+import org.sonar.api.resources.Qualifiers;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.decorators.ChidamberKemererDistributionBuilder;
 import org.sonar.plugins.java.decorators.ClassesDecorator;
@@ -34,38 +34,6 @@ import org.sonar.plugins.java.decorators.FunctionsDecorator;
 
 import java.util.List;
 
-@Properties({
-  @Property(
-    key = JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY,
-    defaultValue = JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE + "",
-    name = "Separate accessors",
-    description = "Flag whether Squid should separate accessors (getters/setters) from methods. " +
-        "In that case, accessors are not counted in metrics such as complexity or API documentation.",
-    project = true,
-    global = true,
-    category = CoreProperties.CATEGORY_JAVA,
-    type = PropertyType.BOOLEAN),
-  @Property(
-    key = JavaSquidPlugin.FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION,
-    defaultValue = JavaSquidPlugin.FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION_DEFAULT_VALUE,
-    name = "List of fields to exclude from LCOM4 computation",
-    description = "Some fields should not be taken into account when computing LCOM4 measure as they " +
-        "unexpectedly and artificially decrease the LCOM4 measure. " +
-        "The best example is a logger used by all methods of a class. " +
-        "All field names to exclude from LCOM4 computation must be separated by a comma.",
-    project = true,
-    global = true,
-    category = CoreProperties.CATEGORY_JAVA),
-  @Property(
-    key = CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY,
-    defaultValue = "" + CoreProperties.DESIGN_SKIP_DESIGN_DEFAULT_VALUE,
-    name = "Skip design analysis",
-    project = false,
-    global = false,
-    module = false,
-    category = CoreProperties.CATEGORY_JAVA,
-    type = PropertyType.BOOLEAN)
-})
 public class JavaSquidPlugin extends SonarPlugin {
 
   public static final String SQUID_ANALYSE_ACCESSORS_PROPERTY = "sonar.squid.analyse.property.accessors";
@@ -76,17 +44,44 @@ public class JavaSquidPlugin extends SonarPlugin {
 
   public List<?> getExtensions() {
     return ImmutableList.of(
-        JavaSourceImporter.class,
-        JavaRuleRepository.class,
-        JavaSonarWayProfile.class,
-        JavaSonarWayWithFindbugsProfile.class,
-        SonarComponents.class,
-        JavaSquidSensor.class,
-        ChidamberKemererDistributionBuilder.class,
-        ClassesDecorator.class,
-        FileComplexityDistributionDecorator.class,
-        FunctionComplexityDistributionBuilder.class,
-        FunctionsDecorator.class);
+      PropertyDefinition.builder(JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY)
+        .defaultValue(JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE + "")
+        .category(CoreProperties.CATEGORY_JAVA)
+        .name("Separate accessors")
+        .description("Flag whether Squid should separate accessors (getters/setters) from methods. " +
+          "In that case, accessors are not counted in metrics such as complexity or API documentation.")
+        .type(PropertyType.BOOLEAN)
+        .onQualifiers(Qualifiers.PROJECT)
+        .build(),
+      PropertyDefinition.builder(JavaSquidPlugin.FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION)
+        .defaultValue(JavaSquidPlugin.FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION_DEFAULT_VALUE)
+        .category(CoreProperties.CATEGORY_JAVA)
+        .name("List of fields to exclude from LCOM4 computation")
+        .description("Some fields should not be taken into account when computing LCOM4 measure as they " +
+          "unexpectedly and artificially decrease the LCOM4 measure. " +
+          "The best example is a logger used by all methods of a class. " +
+          "All field names to exclude from LCOM4 computation must be separated by a comma.")
+        .onQualifiers(Qualifiers.PROJECT)
+        .build(),
+      PropertyDefinition.builder(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)
+        .defaultValue(CoreProperties.DESIGN_SKIP_DESIGN_DEFAULT_VALUE + "")
+        .category(CoreProperties.CATEGORY_JAVA)
+        .name("Skip design analysis")
+        .type(PropertyType.BOOLEAN)
+        .hidden()
+        .build(),
+
+      JavaSourceImporter.class,
+      JavaRuleRepository.class,
+      JavaSonarWayProfile.class,
+      JavaSonarWayWithFindbugsProfile.class,
+      SonarComponents.class,
+      JavaSquidSensor.class,
+      ChidamberKemererDistributionBuilder.class,
+      ClassesDecorator.class,
+      FileComplexityDistributionDecorator.class,
+      FunctionComplexityDistributionBuilder.class,
+      FunctionsDecorator.class);
   }
 
 }

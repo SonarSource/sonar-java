@@ -58,7 +58,7 @@ public class FindbugsConfigurationTest {
   public void setUp() {
     baseDir = temp.newFolder("findbugs");
     fs = new SimpleModuleFileSystem(baseDir);
-    settings = new Settings(new PropertyDefinitions().addComponent(FindbugsPlugin.class));
+    settings = new Settings(new PropertyDefinitions().addComponents(FindbugsConfiguration.getPropertyDefinitions()));
     classpath = mock(ProjectClasspath.class);
     conf = new FindbugsConfiguration(fs, settings, RulesProfile.create(), new FindbugsProfileExporter(), classpath);
   }

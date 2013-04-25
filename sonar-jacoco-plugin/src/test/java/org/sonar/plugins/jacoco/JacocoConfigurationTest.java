@@ -44,7 +44,7 @@ public class JacocoConfigurationTest {
     JaCoCoAgentDownloader downloader = mock(JaCoCoAgentDownloader.class);
     when(downloader.getAgentJarFile()).thenReturn(new File("jacocoagent.jar"));
     javaSettings = mock(JavaSettings.class);
-    settings = new Settings(new PropertyDefinitions(JacocoConfiguration.class));
+    settings = new Settings(new PropertyDefinitions().addComponents(JacocoConfiguration.getPropertyDefinitions()));
     jacocoSettings = new JacocoConfiguration(settings, downloader, javaSettings);
   }
 

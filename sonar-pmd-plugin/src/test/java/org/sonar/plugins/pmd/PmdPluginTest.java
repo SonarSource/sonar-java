@@ -20,19 +20,16 @@
 package org.sonar.plugins.pmd;
 
 import org.junit.Test;
-import org.sonar.api.Extension;
-
-import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class PmdPluginTest {
-  PmdPlugin plugin = new PmdPlugin();
+
+  private PmdPlugin plugin = new PmdPlugin();
 
   @Test
   public void should_contain_both_rule_repositories() {
-    List<Class<? extends Extension>> extensions = plugin.getExtensions();
-
-    assertThat(extensions).contains(PmdRuleRepository.class, PmdUnitTestsRuleRepository.class);
+    assertThat(plugin.getExtensions()).contains(PmdRuleRepository.class, PmdUnitTestsRuleRepository.class);
   }
+
 }

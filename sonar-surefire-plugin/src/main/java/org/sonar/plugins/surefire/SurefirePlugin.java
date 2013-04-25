@@ -20,29 +20,28 @@
 package org.sonar.plugins.surefire;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
+import org.sonar.api.CoreProperties;
 import org.sonar.api.SonarPlugin;
+import org.sonar.api.config.PropertyDefinition;
+import org.sonar.api.resources.Qualifiers;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.util.List;
 
-@Properties({
-  @Property(
-    key = SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY,
-    deprecatedKey = SurefireUtils.SUREFIRE_REPORTS_PATH_DEPRECATED_PROPERTY,
-    name = "Report path",
-    description = "Path (absolute or relative) to XML report files.",
-    project = true,
-    global = false
-  )
-})
 public final class SurefirePlugin extends SonarPlugin {
 
   public List<?> getExtensions() {
     return ImmutableList.of(
-        SurefireSensor.class,
-        SurefireJavaParser.class);
+      PropertyDefinition.builder(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)
+        .deprecatedKey(SurefireUtils.SUREFIRE_REPORTS_PATH_DEPRECATED_PROPERTY)
+        .name("Report path")
+        .description("Path (absolute or relative) to XML report files.")
+        .onlyOnQualifiers(Qualifiers.PROJECT)
+        .category(CoreProperties.CATEGORY_JAVA)
+        .build(),
+
+      SurefireSensor.class,
+      SurefireJavaParser.class);
   }
 
 }

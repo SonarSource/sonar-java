@@ -20,23 +20,31 @@
 package org.sonar.plugins.pmd;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.Extension;
 import org.sonar.api.SonarPlugin;
+import org.sonar.api.config.PropertyDefinition;
 
 import java.util.List;
 
 public class PmdPlugin extends SonarPlugin {
-  public List<Class<? extends Extension>> getExtensions() {
+
+  public List<?> getExtensions() {
     return ImmutableList.of(
-        PmdSensor.class,
-        PmdConfiguration.class,
-        PmdExecutor.class,
-        PmdRuleRepository.class,
-        PmdUnitTestsRuleRepository.class,
-        PmdProfileExporter.class,
-        PmdProfileImporter.class,
-        SonarWayProfile.class,
-        SonarWayWithFindbugsProfile.class,
-        PmdViolationToRuleViolation.class);
+      PropertyDefinition.builder(PmdConfiguration.PROPERTY_GENERATE_XML)
+        .defaultValue("false")
+        .name("Generate XML Report")
+        .hidden()
+        .build(),
+
+      PmdSensor.class,
+      PmdConfiguration.class,
+      PmdExecutor.class,
+      PmdRuleRepository.class,
+      PmdUnitTestsRuleRepository.class,
+      PmdProfileExporter.class,
+      PmdProfileImporter.class,
+      SonarWayProfile.class,
+      SonarWayWithFindbugsProfile.class,
+      PmdViolationToRuleViolation.class);
   }
+
 }
