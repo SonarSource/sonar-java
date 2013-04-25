@@ -258,7 +258,7 @@ public class SymbolTableTest {
 
     assertThat(result.reference(8, 13)).isSameAs(result.symbol("label", 6));
     assertThat(result.reference(13, 13)).isSameAs(result.symbol("label", 11));
-    assertThat(result.reference(18, 16)).isSameAs(result.symbol("label", 16));
+    assertThat(result.reference(20, 18)).isSameAs(result.symbol("label", 16));
   }
 
   @Test

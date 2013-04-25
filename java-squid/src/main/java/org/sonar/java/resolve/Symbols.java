@@ -84,7 +84,7 @@ public class Symbols {
     doubleType = initType("double");
     booleanType = initType("boolean");
 
-    nullType = new Type(null);
+    nullType = initType("<nulltype>");
 
     // predefined types
     objectType = enterClass("java.lang.Object");

@@ -96,28 +96,28 @@ public class ExpressionVisitor extends JavaAstVisitor {
     Resolve.Env env = semanticModel.getEnv(astNode);
     final Type type;
     if (astNode.is(JavaGrammar.EXPRESSION)) {
-      type = visitExpression(env, astNode);
+      type = visitExpression(astNode);
     } else if (astNode.is(JavaGrammar.PRIMARY)) {
       type = visitPrimary(env, astNode);
     } else if (astNode.is(JavaGrammar.UNARY_EXPRESSION)) {
       type = visitUnaryExpression(env, astNode);
     } else if (astNode.is(JavaGrammar.LITERAL)) {
-      type = visitLiteral(env, astNode);
+      type = visitLiteral(astNode);
     } else if (astNode.is(JavaGrammar.TYPE)) {
       type = visitType(env, astNode);
     } else if (astNode.is(binaryOperatorAstNodeTypes)) {
-      type = visitBinaryOperation(env, astNode);
+      type = visitBinaryOperation();
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
     }
     types.put(astNode, type);
   }
 
-  private Type visitExpression(Resolve.Env env, AstNode astNode) {
+  private Type visitExpression(AstNode astNode) {
     return getType(astNode.getFirstChild());
   }
 
-  private Type visitLiteral(Resolve.Env env, AstNode astNode) {
+  private Type visitLiteral(AstNode astNode) {
     astNode = astNode.getFirstChild();
     Type result = typesOfLiterals.get(astNode.getType());
     return Preconditions.checkNotNull(result, "Unexpected AstNodeType: " + astNode.getType());
@@ -271,7 +271,7 @@ public class ExpressionVisitor extends JavaAstVisitor {
       } else {
         // field access
         AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-        Symbol symbol = resolve.findIdentInType(env, type.symbol, identifierNode.getTokenValue(), Symbol.VAR); // NPE
+        Symbol symbol = resolve.findIdentInType(env, type.symbol, identifierNode.getTokenValue(), Symbol.VAR);
         associateReference(identifierNode, symbol);
         result = getTypeOfSymbol(symbol);
       }
@@ -281,7 +281,7 @@ public class ExpressionVisitor extends JavaAstVisitor {
     return result;
   }
 
-  private Type visitBinaryOperation(Resolve.Env env, AstNode astNode) {
+  private Type visitBinaryOperation() {
     return symbols.unknownType;
   }
 

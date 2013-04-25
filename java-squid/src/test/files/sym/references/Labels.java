@@ -15,7 +15,11 @@ class Labels {
 
     label:
     for (int i = 0; i < 2; i++) {
-      continue label;
+      label2:
+      for (int j = 0; j < 2; j++) {
+        continue label;
+      }
+      break;
     }
   }
 
