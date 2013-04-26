@@ -26,6 +26,8 @@ import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
+import java.lang.reflect.Constructor;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 public class SuppressWarningsAnnotationUtilsTest {
@@ -61,6 +63,14 @@ public class SuppressWarningsAnnotationUtilsTest {
 
     astNode = p.parse("public class Foo { public void method() {} }").getFirstDescendant(JavaGrammar.VOID_METHOD_DECLARATOR_REST);
     assertThat(SuppressWarningsAnnotationUtils.isSuppressAllWarnings(astNode)).isFalse();
+  }
+
+  @Test
+  public void private_constructor() throws Exception {
+    Constructor constructor = SuppressWarningsAnnotationUtils.class.getDeclaredConstructor();
+    assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
   }
 
 }

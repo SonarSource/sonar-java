@@ -26,6 +26,9 @@ import org.sonar.java.ast.parser.JavaGrammar;
 
 public class SuppressWarningsAnnotationUtils {
 
+  private SuppressWarningsAnnotationUtils() {
+  }
+
   private static final String SUPPRESS_WARNINGS_ANNOTATION_NAME = "SuppressWarnings";
   private static final String SUPPRESS_WARNINGS_ANNOTATION_FQ_NAME = "java.lang." + SUPPRESS_WARNINGS_ANNOTATION_NAME;
   private static final String VALUE = "\"all\"";

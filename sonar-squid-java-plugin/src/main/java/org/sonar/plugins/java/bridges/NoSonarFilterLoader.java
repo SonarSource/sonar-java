@@ -46,14 +46,9 @@ public class NoSonarFilterLoader extends Bridge {
   }
 
   private static void visitSuppressWarnings(SourceCode sourceCode, Set<Integer> ignoredLines) {
-    if (sourceCode instanceof SourceClass) {
-      if (((SourceClass) sourceCode).isSuppressWarnings()) {
-        visitLines(sourceCode, ignoredLines);
-      }
-    } else if (sourceCode instanceof SourceMethod) {
-      if (((SourceMethod) sourceCode).isSuppressWarnings()) {
-        visitLines(sourceCode, ignoredLines);
-      }
+    if ((sourceCode instanceof SourceClass && ((SourceClass) sourceCode).isSuppressWarnings())
+      || (sourceCode instanceof SourceMethod && ((SourceMethod) sourceCode).isSuppressWarnings())) {
+      visitLines(sourceCode, ignoredLines);
     }
 
     if (sourceCode.hasChildren()) {
