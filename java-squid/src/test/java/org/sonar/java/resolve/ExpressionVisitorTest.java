@@ -23,13 +23,15 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.ast.AstWalker;
-import com.sonar.sslr.impl.ast.AstXmlPrinter;
+import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
+
+import java.util.Arrays;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -76,7 +78,7 @@ public class ExpressionVisitorTest {
 
     // int method()
     methodSymbol = new Symbol.MethodSymbol(0, "method", classSymbol);
-    methodSymbol.type = symbols.intType;
+    methodSymbol.type = new Type.MethodType(ImmutableList.<Type>of(), symbols.intType, ImmutableList.<Type>of(), /* TODO defining class? */ null);
     classSymbol.members.enter(methodSymbol);
 
     classSymbol.members.enter(new Symbol.VariableSymbol(0, "this", classType, classSymbol));
@@ -148,7 +150,13 @@ public class ExpressionVisitorTest {
   public void primary_new() {
     b.setRootRule(JavaGrammar.PRIMARY);
 
-    assertThat(typeOf("new Object()")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("new MyClass()")).isSameAs(classType);
+    assertThat(typeOf("new MyClass() {}")).isSameAs(symbols.unknownType);
+
+    // TODO proper implementation of this test requires definition of equality for types
+    assertThat(typeOf("new MyClass[]{}")).isInstanceOf(Type.ArrayType.class);
+    assertThat(typeOf("new int[]{}")).isInstanceOf(Type.ArrayType.class);
+    assertThat(typeOf("new int[][]{}")).isInstanceOf(Type.ArrayType.class);
   }
 
   @Test
@@ -209,6 +217,7 @@ public class ExpressionVisitorTest {
     assertThat(typeOf("(long) 42")).isSameAs(symbols.longType);
     assertThat(typeOf("(float) 42")).isSameAs(symbols.floatType);
     assertThat(typeOf("(double) 42")).isSameAs(symbols.doubleType);
+    assertThat(typeOf("(boolean) true")).isSameAs(symbols.booleanType);
 
     // (class_type) expression
     assertThat(typeOf("(MyClass) 42")).isSameAs(classSymbol.type);
@@ -218,14 +227,18 @@ public class ExpressionVisitorTest {
   public void prefix_op() {
     b.setRootRule(JavaGrammar.UNARY_EXPRESSION);
 
-    assertThat(typeOf("++42")).isSameAs(symbols.intType);
+    for (String op : Arrays.asList("++", "--", "!", "~", "+", "-")) {
+      assertThat(typeOf(op + INT)).as(op + INT).isSameAs(symbols.intType);
+    }
   }
 
   @Test
   public void postfix_op() {
     b.setRootRule(JavaGrammar.UNARY_EXPRESSION);
 
-    assertThat(typeOf("42++")).isSameAs(symbols.intType);
+    for (String op : Arrays.asList("++", "--")) {
+      assertThat(typeOf(INT + op)).as(INT + op).isSameAs(symbols.intType);
+    }
   }
 
   @Test
@@ -245,148 +258,143 @@ public class ExpressionVisitorTest {
   }
 
   @Test
-  public void multiplicative_expression() {
-    b.setRootRule(JavaGrammar.MULTIPLICATIVE_EXPRESSION);
-
-    // double, double = double
-    // float, float = float
-    // long, long = long
-    // int, int = int
-    assertThat(typeOf("42 * 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 / 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 % 42")).isSameAs(symbols.unknownType);
-  }
-
-  @Test
-  public void additive_expression() {
+  public void multiplicative_and_additive_expression() {
     b.setRootRule(JavaGrammar.ADDITIVE_EXPRESSION);
 
-    // double, double = double
-    // float, float = float
-    // long, long = long
-    // int, int = int
-    assertThat(typeOf("42 + 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 - 42")).isSameAs(symbols.unknownType);
+    for (String op : Arrays.asList("*", "/", "%", "+", "-")) {
+      for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
+        for (String o2 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
+          assertThatTypeOf(o1, op, o2).isSameAs(symbols.intType);
+        }
+      }
+      for (String other : Arrays.asList(CHAR, BYTE, SHORT, INT, LONG)) {
+        assertThatTypeOf(LONG, op, other).isSameAs(symbols.longType);
+        assertThatTypeOf(other, op, LONG).isSameAs(symbols.longType);
+      }
+      for (String other : Arrays.asList(CHAR, BYTE, SHORT, INT, LONG, FLOAT)) {
+        assertThatTypeOf(FLOAT, op, other).isSameAs(symbols.floatType);
+        assertThatTypeOf(other, op, FLOAT).isSameAs(symbols.floatType);
+      }
+      for (String other : Arrays.asList(CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)) {
+        assertThatTypeOf(DOUBLE, op, other).isSameAs(symbols.doubleType);
+        assertThatTypeOf(other, op, DOUBLE).isSameAs(symbols.doubleType);
+      }
+    }
 
     // TODO
-    // assertThat(typeOf("'a' + 'b'")).isSameAs(symbols.intType);
-
     // string, object = string
     // object, string = string
-    // string, string = string
-    // string, int = string
-    // string, long = string
-    // string, float = string
-    // string, double = string
-    // string, boolean = string
-    // string, bot = string
-    // int, string = string
-    // long, string = string
-    // float, string = string
-    // double, string = string
-    // boolean, string = string
-    // bot, string = string
+    for (String other : Arrays.asList(STRING, CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BOOLEAN, NULL)) {
+      assertThatTypeOf(STRING, "+", other).isSameAs(symbols.stringType);
+      assertThatTypeOf(other, "+", STRING).isSameAs(symbols.stringType);
+    }
+    // TODO check that null + null won't produce string - see Javac
   }
 
   @Test
   public void shift_expression() {
     b.setRootRule(JavaGrammar.SHIFT_EXPRESSION);
 
-    // long, long = long
-    // int, long = int
-    // long, int = long
-    // int, int = int
-    assertThat(typeOf("42 << 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 >> 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 >>> 42")).isSameAs(symbols.unknownType);
+    for (String op : Arrays.asList("<<", ">>", ">>>")) {
+      assertThatTypeOf(INT, op, INT).isSameAs(symbols.intType);
+      assertThatTypeOf(INT, op, LONG).isSameAs(symbols.intType);
+      assertThatTypeOf(LONG, op, LONG).isSameAs(symbols.longType);
+      assertThatTypeOf(LONG, op, INT).isSameAs(symbols.longType);
+    }
   }
 
   @Test
   public void relational_expression() {
     b.setRootRule(JavaGrammar.RELATIONAL_EXPRESSION);
 
-    // double, double = boolean
-    // float, float = boolean
-    // long, long = boolean
-    // int, int = boolean
-    assertThat(typeOf("42 >= 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 > 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 <= 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 < 42")).isSameAs(symbols.unknownType);
+    for (String op : Arrays.asList("<", ">", ">=", "<=")) {
+      for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)) {
+        for (String o2 : Arrays.asList(CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)) {
+          assertThatTypeOf(o1, op, o2).isSameAs(symbols.booleanType);
+        }
+      }
+    }
 
-    assertThat(typeOf("var instanceof Object")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("var instanceof Object")).isSameAs(symbols.booleanType);
   }
 
   @Test
   public void equality_expression() {
     b.setRootRule(JavaGrammar.EQUALITY_EXPRESSION);
 
-    // object, object = boolean
-    // boolean, boolean = boolean
-    // double, double = boolean
-    // float, float = boolean
-    // long, long = boolean
-    // int, int = boolean
-    assertThat(typeOf("42 == 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 != 42")).isSameAs(symbols.unknownType);
+    // TODO object, object = boolean
+    for (String op : Arrays.asList("==", "!=")) {
+      for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)) {
+        for (String o2 : Arrays.asList(CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)) {
+          assertThatTypeOf(o1, op, o2).isSameAs(symbols.booleanType);
+        }
+      }
+      assertThatTypeOf(BOOLEAN, op, BOOLEAN).isSameAs(symbols.booleanType);
+    }
   }
 
   @Test
   public void and_expression() {
     b.setRootRule(JavaGrammar.AND_EXPRESSION);
 
-    // boolean, boolean = boolean
-    // int, int = int
-    // long, long = long
-    assertThat(typeOf("true & false")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 & 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42L & 42L")).isSameAs(symbols.unknownType);
+    assertThatTypeOf(BOOLEAN, "&", BOOLEAN).isSameAs(symbols.booleanType);
+    for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
+      for (String o2 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
+        assertThatTypeOf(o1, "&", o2).isSameAs(symbols.intType);
+      }
+    }
+    assertThatTypeOf(LONG, "&", LONG).isSameAs(symbols.longType);
   }
 
   @Test
   public void exclusive_or_expression() {
     b.setRootRule(JavaGrammar.EXCLUSIVE_OR_EXPRESSION);
 
-    // boolean, boolean = boolean
-    // int, int = int
-    // long, long = long
-    assertThat(typeOf("true ^ false")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 ^ 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42L ^ 42L")).isSameAs(symbols.unknownType);
+    assertThatTypeOf(BOOLEAN, "^", BOOLEAN).isSameAs(symbols.booleanType);
+    for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
+      for (String o2 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
+        assertThatTypeOf(o1, "^", o2).isSameAs(symbols.intType);
+      }
+    }
+    assertThatTypeOf(LONG, "^", LONG).isSameAs(symbols.longType);
   }
 
   @Test
   public void inclusive_or_expression() {
     b.setRootRule(JavaGrammar.INCLUSIVE_OR_EXPRESSION);
 
-    // boolean, boolean = boolean
-    // int, int = int
-    // long, long = long
-    assertThat(typeOf("true | false")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42 | 42")).isSameAs(symbols.unknownType);
-    assertThat(typeOf("42L | 42L")).isSameAs(symbols.unknownType);
+    assertThatTypeOf(BOOLEAN, "|", BOOLEAN).isSameAs(symbols.booleanType);
+    for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
+      for (String o2 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
+        assertThatTypeOf(o1, "|", o2).isSameAs(symbols.intType);
+      }
+    }
+    assertThatTypeOf(LONG, "|", LONG).isSameAs(symbols.longType);
   }
 
   @Test
   public void conditional_and_expression() {
     b.setRootRule(JavaGrammar.CONDITIONAL_AND_EXPRESSION);
 
-    // boolean, boolean = boolean
-    assertThat(typeOf("true && false")).isSameAs(symbols.unknownType);
+    assertThatTypeOf(BOOLEAN, "&&", BOOLEAN).isSameAs(symbols.booleanType);
   }
 
   @Test
   public void conditional_or_expression() {
     b.setRootRule(JavaGrammar.CONDITIONAL_OR_EXPRESSION);
 
-    // boolean, boolean = boolean
-    assertThat(typeOf("true || false")).isSameAs(symbols.unknownType);
+    assertThatTypeOf(BOOLEAN, "||", BOOLEAN).isSameAs(symbols.booleanType);
+  }
+
+  private ObjectAssert assertThatTypeOf(String o1, String op, String o2) {
+    return assertThat(typeOf(o1 + op + o2)).as(o1 + op + o2);
   }
 
   @Test
   public void conditional_expression() {
     b.setRootRule(JavaGrammar.CONDITIONAL_EXPRESSION);
 
+    // FIXME implement
     assertThat(typeOf("42 ? 42 : 42")).isSameAs(symbols.unknownType);
   }
 
@@ -394,12 +402,22 @@ public class ExpressionVisitorTest {
   public void assignment_expression() {
     b.setRootRule(JavaGrammar.ASSIGNMENT_EXPRESSION);
 
-    // TODO
+    assertThat(typeOf("var = 1")).isSameAs(variableSymbol.type);
   }
+
+  private static final String CHAR = "(char) 42";
+  private static final String BYTE = "(byte) 42";
+  private static final String SHORT = "(short) 42";
+  private static final String INT = "(int) 42";
+  private static final String LONG = "(long) 42";
+  private static final String FLOAT = "(float) 42";
+  private static final String DOUBLE = "(double) 42";
+  private static final String BOOLEAN = "true";
+  private static final String NULL = "null";
+  private static final String STRING = "\"string\"";
 
   private Type typeOf(String input) {
     AstNode astNode = new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, b.build()).parse(input);
-    System.out.println(AstXmlPrinter.print(astNode));
 
     AstWalker astWalker = new AstWalker();
     SemanticModel semanticModel = mock(SemanticModel.class);

@@ -23,9 +23,26 @@ import java.util.List;
 
 public class Type {
 
+  public static final int BYTE = 1;
+  public static final int CHAR = 2;
+  public static final int SHORT = 3;
+  public static final int INT = 4;
+  public static final int LONG = 5;
+  public static final int FLOAT = 6;
+  public static final int DOUBLE = 7;
+  public static final int BOOLEAN = 8;
+  public static final int VOID = 9;
+  public static final int CLASS = 10;
+  public static final int ARRAY = 11;
+  public static final int METHOD = 12;
+  public static final int BOT = 13;
+
+  int tag;
+
   Symbol.TypeSymbol symbol;
 
-  public Type(Symbol.TypeSymbol symbol) {
+  public Type(int tag, Symbol.TypeSymbol symbol) {
+    this.tag = tag;
     this.symbol = symbol;
   }
 
@@ -42,7 +59,7 @@ public class Type {
     List<Type> interfaces;
 
     public ClassType(Symbol.TypeSymbol symbol) {
-      super(symbol);
+      super(CLASS, symbol);
     }
 
   }
@@ -58,8 +75,23 @@ public class Type {
      * @param arrayClass {@link Symbols#arrayClass}
      */
     public ArrayType(Type elementType, Symbol.TypeSymbol arrayClass) {
-      super(arrayClass);
+      super(ARRAY, arrayClass);
       this.elementType = elementType;
+    }
+
+  }
+
+  public static class MethodType extends Type {
+
+    List<Type> argTypes;
+    Type resultType;
+    List<Type> thrown;
+
+    public MethodType(List<Type> argTypes, Type resultType, List<Type> thrown, Symbol.TypeSymbol symbol) {
+      super(METHOD, symbol);
+      this.argTypes = argTypes;
+      this.resultType = resultType;
+      this.thrown = thrown;
     }
 
   }

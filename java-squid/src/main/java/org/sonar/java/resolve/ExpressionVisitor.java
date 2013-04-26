@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
@@ -34,7 +35,6 @@ import java.util.Map;
 
 /**
  * Computes types of expressions.
- * TODO compute type of binary operators
  * TODO compute type of method calls
  */
 public class ExpressionVisitor extends JavaAstVisitor {
@@ -74,9 +74,7 @@ public class ExpressionVisitor extends JavaAstVisitor {
       JavaGrammar.EXCLUSIVE_OR_EXPRESSION,
       JavaGrammar.INCLUSIVE_OR_EXPRESSION,
       JavaGrammar.CONDITIONAL_AND_EXPRESSION,
-      JavaGrammar.CONDITIONAL_OR_EXPRESSION,
-      JavaGrammar.CONDITIONAL_EXPRESSION,
-      JavaGrammar.ASSIGNMENT_EXPRESSION
+      JavaGrammar.CONDITIONAL_OR_EXPRESSION
     };
   }
 
@@ -89,6 +87,8 @@ public class ExpressionVisitor extends JavaAstVisitor {
       JavaGrammar.LITERAL,
       JavaGrammar.TYPE);
     subscribeTo(binaryOperatorAstNodeTypes);
+    subscribeTo(JavaGrammar.CONDITIONAL_EXPRESSION);
+    subscribeTo(JavaGrammar.ASSIGNMENT_EXPRESSION);
   }
 
   @Override
@@ -106,17 +106,20 @@ public class ExpressionVisitor extends JavaAstVisitor {
     } else if (astNode.is(JavaGrammar.TYPE)) {
       type = visitType(env, astNode);
     } else if (astNode.is(binaryOperatorAstNodeTypes)) {
-      type = visitBinaryOperation();
+      type = visitBinaryOperation(env, astNode);
+    } else if (astNode.is(JavaGrammar.CONDITIONAL_EXPRESSION)) {
+      type = visitConditionalExpression();
+    } else if (astNode.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
+      type = visitAssignmentExpression(astNode);
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
     }
     types.put(astNode, type);
   }
 
-  private Type visitExpression(AstNode astNode) {
-    return getType(astNode.getFirstChild());
-  }
-
+  /**
+   * Computes type of literal.
+   */
   private Type visitLiteral(AstNode astNode) {
     astNode = astNode.getFirstChild();
     Type result = typesOfLiterals.get(astNode.getType());
@@ -136,6 +139,9 @@ public class ExpressionVisitor extends JavaAstVisitor {
     return result;
   }
 
+  /**
+   * Computes type of primary.
+   */
   private Type visitPrimary(Resolve.Env env, AstNode astNode) {
     final Type result;
     AstNode firstChildNode = astNode.getFirstChild();
@@ -168,7 +174,7 @@ public class ExpressionVisitor extends JavaAstVisitor {
       result = getType(firstChildNode.getFirstChild(JavaGrammar.EXPRESSION));
     } else if (firstChildNode.is(JavaKeyword.NEW)) {
       // new...
-      result = symbols.unknownType;
+      result = visitCreator(env, astNode.getFirstChild(JavaGrammar.CREATOR));
     } else if (firstChildNode.is(JavaGrammar.QUALIFIED_IDENTIFIER)) {
       AstNode identifierSuffixNode = astNode.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
       if (identifierSuffixNode == null) {
@@ -185,11 +191,8 @@ public class ExpressionVisitor extends JavaAstVisitor {
             // id[expression]
             Type type = resolveQualifiedIdentifier(env, firstChildNode);
             // TODO get rid of "instanceof"
-            if (type instanceof Type.ArrayType) {
-              result = ((Type.ArrayType) type).elementType;
-            } else {
-              result = symbols.unknownType;
-            }
+            // if not array, then return errorType instead of unknownType
+            result = type instanceof Type.ArrayType ? ((Type.ArrayType) type).elementType : symbols.unknownType;
           }
         } else if (identifierSuffixNode.getFirstChild().is(JavaGrammar.ARGUMENTS)) {
           // id(arguments)
@@ -231,6 +234,35 @@ public class ExpressionVisitor extends JavaAstVisitor {
     return result;
   }
 
+  private Type visitCreator(Resolve.Env env, AstNode astNode) {
+    // TODO handle NON_WILDCARD_TYPE_ARGUMENTS
+    final Type result;
+    if (astNode.hasDirectChildren(JavaGrammar.ARRAY_CREATOR_REST)) {
+      Type type = getType(astNode.getFirstChild(JavaGrammar.CLASS_TYPE, JavaGrammar.BASIC_TYPE));
+      astNode = astNode.getFirstChild(JavaGrammar.ARRAY_CREATOR_REST);
+      int dimensions = astNode.getChildren(JavaPunctuator.LBRK, JavaGrammar.DIM, JavaGrammar.DIM_EXPR).size();
+      for (int i = 0; i < dimensions; i++) {
+        type = new Type.ArrayType(type, symbols.arrayClass);
+      }
+      result = type;
+    } else if (astNode.hasDirectChildren(JavaGrammar.CLASS_CREATOR_REST)) {
+      if (astNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST).hasDirectChildren(JavaGrammar.CLASS_BODY)) {
+        // Anonymous Class
+        // TODO type of anonymous class can be obtained from symbol, which is stored in semanticModel
+        result = symbols.unknownType;
+      } else {
+        astNode = astNode.getFirstChild(JavaGrammar.CREATED_NAME);
+        result = resolveType(env, astNode);
+      }
+    } else {
+      throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
+    }
+    return result;
+  }
+
+  /**
+   * Computes type of unary expression.
+   */
   private Type visitUnaryExpression(Resolve.Env env, AstNode astNode) {
     final Type result;
     AstNode firstChildNode = astNode.getFirstChild();
@@ -259,11 +291,8 @@ public class ExpressionVisitor extends JavaAstVisitor {
     } else if (astNode.getFirstChild().is(JavaGrammar.DIM_EXPR)) {
       // array access
       // TODO get rid of "instanceof"
-      if (type instanceof Type.ArrayType) {
-        result = ((Type.ArrayType) type).elementType;
-      } else {
-        result = symbols.unknownType;
-      }
+      // if not array, then return errorType instead of unknownType
+      result = type instanceof Type.ArrayType ? ((Type.ArrayType) type).elementType : symbols.unknownType;
     } else if (astNode.hasDirectChildren(JavaTokenType.IDENTIFIER)) {
       if (astNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
         // method call
@@ -281,8 +310,53 @@ public class ExpressionVisitor extends JavaAstVisitor {
     return result;
   }
 
-  private Type visitBinaryOperation() {
+  /**
+   * Computes type of a binary operation.
+   */
+  private Type visitBinaryOperation(Resolve.Env env, AstNode astNode) {
+    Type left = getType(astNode.getFirstChild());
+    for (int i = 1; i < astNode.getNumberOfChildren(); i += 2) {
+      AstNode opNode = astNode.getChild(i);
+      if (opNode.is(JavaKeyword.INSTANCEOF)) {
+        left = symbols.booleanType;
+      } else {
+        Type right = getType(astNode.getChild(i + 1));
+        // TODO avoid nulls
+        if (left == null || right == null) {
+          return symbols.unknownType;
+        }
+        Symbol symbol = resolve.findMethod(env, opNode.getTokenValue(), ImmutableList.of(left, right));
+        if (symbol.kind != Symbol.MTH) {
+          // not found
+          return symbols.unknownType;
+        }
+        left = ((Type.MethodType) symbol.type).resultType;
+      }
+    }
+    return left;
+  }
+
+  /**
+   * Computes type of a conditional expression.
+   */
+  private Type visitConditionalExpression() {
     return symbols.unknownType;
+  }
+
+  /**
+   * Computes type of an assignment expression. Which is always a type of lvalue.
+   * For example in case of {@code double d; int i; res = d = i;} type of assignment expression {@code d = i} is double.
+   */
+  private Type visitAssignmentExpression(AstNode astNode) {
+    return getType(astNode.getFirstChild());
+  }
+
+  /**
+   * Computes type of an expression.
+   * In grammar expression defined as an assignment expression, so simply returns its type.
+   */
+  private Type visitExpression(AstNode astNode) {
+    return getType(astNode.getFirstChild());
   }
 
   private Type resolveMethod(Resolve.Env env, AstNode astNode) {
@@ -298,7 +372,8 @@ public class ExpressionVisitor extends JavaAstVisitor {
       return symbols.unknownType;
     }
     final AstNode identifierNode = qualifiedIdentifierNode.getLastChild();
-    Symbol symbol = resolve.findMethod(env, type.symbol, identifierNode.getTokenValue());
+
+    Symbol symbol = resolve.findMethod(env, type.symbol, identifierNode.getTokenValue(), ImmutableList.<Type>of());
     associateReference(identifierNode, symbol);
     return getTypeOfSymbol(symbol);
   }
@@ -342,7 +417,7 @@ public class ExpressionVisitor extends JavaAstVisitor {
    * TODO duplication of {@link org.sonar.java.resolve.SecondPass#resolveType(org.sonar.java.resolve.Resolve.Env, com.sonar.sslr.api.AstNode)}
    */
   private Type resolveType(Resolve.Env env, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE));
+    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE, JavaGrammar.CREATED_NAME));
 
     env = env.dup();
     List<AstNode> identifiers = astNode.getChildren(JavaTokenType.IDENTIFIER);

@@ -180,6 +180,11 @@ public class Symbol {
     Scope parameters;
     List<TypeSymbol> thrown;
 
+    public MethodSymbol(int flags, String name, Type type, Symbol owner) {
+      super(MTH, flags, name, owner);
+      super.type = type;
+    }
+
     public MethodSymbol(int flags, String name, Symbol owner) {
       super(MTH, flags, name, owner);
     }

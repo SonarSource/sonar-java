@@ -21,6 +21,8 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import java.util.List;
+
 /**
  * Routines for name resolution.
  * <p/>
@@ -36,6 +38,8 @@ import com.google.common.annotations.VisibleForTesting;
 public class Resolve {
 
   private final SymbolNotFound symbolNotFound = new SymbolNotFound();
+
+  private final Types types = new Types();
 
   static class Env {
     /**
@@ -261,11 +265,40 @@ public class Resolve {
   }
 
   /**
-   * Finds method with given name.
+   * Finds method matching given name and types of arguments.
    */
-  public Symbol findMethod(Env env, Symbol.TypeSymbol site, String name) {
-    // TODO correct implementation will require types of arguments, ...
+  public Symbol findMethod(Env env, String name, List<Type> argTypes) {
     Symbol bestSoFar = symbolNotFound;
+    Env env1 = env;
+    while (env1.outer() != null) {
+      Symbol sym = findMethod(env1, env1.enclosingClass(), name, argTypes);
+      if (sym.kind < Symbol.ERRONEOUS) {
+        // symbol exists
+        return sym;
+      } else if (sym.kind < bestSoFar.kind) {
+        bestSoFar = sym;
+      }
+      env1 = env1.outer;
+    }
+    // TODO imports
+    return bestSoFar;
+  }
+
+  public Symbol findMethod(Env env, Symbol.TypeSymbol site, String name, List<Type> argTypes) {
+    Symbol bestSoFar = symbolNotFound;
+
+    // TODO search in supertypes
+    for (Symbol symbol : site.members().lookup(name)) {
+      if (symbol.kind == Symbol.MTH) {
+        bestSoFar = selectBest(env, site, argTypes, symbol, bestSoFar);
+      }
+    }
+
+    // best guess: method with unique name
+    // TODO remove, when search will be improved
+    if (bestSoFar.kind < Symbol.ERRONEOUS) {
+      return bestSoFar;
+    }
     for (Symbol symbol : site.enclosingClass().members().lookup(name)) {
       if ((symbol.kind == Symbol.MTH) && isAccessible(env, site, symbol)) {
         if (bestSoFar.kind < Symbol.ERRONEOUS) {
@@ -274,13 +307,84 @@ public class Resolve {
         bestSoFar = symbol;
       }
     }
+
     return bestSoFar;
+  }
+
+  /**
+   * @param symbol candidate
+   * @param bestSoFar previously found best match
+   */
+  private Symbol selectBest(Env env, Symbol.TypeSymbol site, List<Type> argTypes, Symbol symbol, Symbol bestSoFar) {
+    if (!isInheritedIn(symbol, site)) {
+      return bestSoFar;
+    }
+    // TODO get rid of null check
+    if (symbol.type == null) {
+      return bestSoFar;
+    }
+    if (!isArgumentsAcceptable(argTypes, ((Type.MethodType) symbol.type).argTypes)) {
+      return bestSoFar;
+    }
+    // TODO ambiguity, errors, ...
+    if (!isAccessible(env, site, symbol)) {
+      return new AccessErrorSymbol(symbol);
+    }
+    return selectMostSpecific(symbol, bestSoFar);
+  }
+
+  /**
+   * @param argTypes types of arguments
+   * @param formals types of formal parameters of method
+   */
+  private boolean isArgumentsAcceptable(List<Type> argTypes, List<Type> formals) {
+    // TODO varargs
+    if (argTypes.size() != formals.size()) {
+      return false;
+    }
+    for (int i = 0; i < argTypes.size(); i++) {
+      if (!types.isSubtype(argTypes.get(i), formals.get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * JLS7 15.12.2.5. Choosing the Most Specific Method
+   */
+  private Symbol selectMostSpecific(Symbol m1, Symbol m2) {
+    // FIXME get rig of null check
+    if (m2.type == null) {
+      return m1;
+    }
+
+    boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2);
+    boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1);
+    if (m1SignatureMoreSpecific && m2SignatureMoreSpecific) {
+      // TODO handle this case
+      return new AmbiguityErrorSymbol();
+    } else if (m1SignatureMoreSpecific) {
+      return m1;
+    } else if (m2SignatureMoreSpecific) {
+      return m2;
+    } else {
+      return new AmbiguityErrorSymbol();
+    }
+  }
+
+  /**
+   * @return true, if signature of m1 is more specific than signature of m2
+   */
+  private boolean isSignatureMoreSpecific(Symbol m1, Symbol m2) {
+    return isArgumentsAcceptable(((Type.MethodType) m1.type).argTypes, ((Type.MethodType) m2.type).argTypes);
   }
 
   /**
    * Is class accessible in given environment?
    */
-  public boolean isAccessible(Env env, Symbol.TypeSymbol c) {
+  @VisibleForTesting
+  boolean isAccessible(Env env, Symbol.TypeSymbol c) {
     final boolean result;
     switch (c.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
@@ -345,7 +449,7 @@ public class Resolve {
    * <p/>
    * Symbol is accessible only if not overridden by another symbol. If overridden, then strictly speaking it is not a member.
    */
-  public boolean isAccessible(Env env, Symbol.TypeSymbol site, Symbol symbol) {
+  private boolean isAccessible(Env env, Symbol.TypeSymbol site, Symbol symbol) {
     switch (symbol.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
         // no check of overriding, because private members cannot be overridden

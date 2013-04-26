@@ -21,6 +21,8 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.Arrays;
+
 /**
  * Predefined symbols.
  */
@@ -28,6 +30,9 @@ public class Symbols {
 
   final Symbol.PackageSymbol rootPackage;
 
+  /**
+   * Owns all predefined symbols (builtin types, operators).
+   */
   final Symbol.TypeSymbol predefClass;
 
   /**
@@ -75,16 +80,15 @@ public class Symbols {
     unknownSymbol.type = unknownType;
 
     // builtin types
-    byteType = initType("byte");
-    charType = initType("char");
-    shortType = initType("short");
-    intType = initType("int");
-    longType = initType("long");
-    floatType = initType("float");
-    doubleType = initType("double");
-    booleanType = initType("boolean");
-
-    nullType = initType("<nulltype>");
+    byteType = initType(Type.BYTE, "byte");
+    charType = initType(Type.CHAR, "char");
+    shortType = initType(Type.SHORT, "short");
+    intType = initType(Type.INT, "int");
+    longType = initType(Type.LONG, "long");
+    floatType = initType(Type.FLOAT, "float");
+    doubleType = initType(Type.DOUBLE, "double");
+    booleanType = initType(Type.BOOLEAN, "boolean");
+    nullType = initType(Type.BOT, "<nulltype>");
 
     // predefined types
     objectType = enterClass("java.lang.Object");
@@ -101,17 +105,8 @@ public class Symbols {
     arrayClass.members = new Scope(arrayClass);
     arrayClass.members().enter(new Symbol.VariableSymbol(Flags.PUBLIC | Flags.FINAL, "length", intType, arrayClass));
     // TODO arrayClass implements clone() method
-  }
 
-  /**
-   * Registers builtin types as symbols, so that they can be found as an usual identifiers.
-   */
-  private Type initType(String name) {
-    Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(Flags.PUBLIC, name, rootPackage);
-    symbol.members = new Scope(symbol);
-    predefClass.members.enter(symbol);
-    ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
-    return symbol.type;
+    enterOperators();
   }
 
   private Type enterClass(String name) {
@@ -120,6 +115,65 @@ public class Symbols {
     symbol.members = new Scope(symbol);
     ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
     return symbol.type;
+  }
+
+  /**
+   * Registers builtin types as symbols, so that they can be found as an usual identifiers.
+   */
+  private Type initType(int tag, String name) {
+    Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(Flags.PUBLIC, name, rootPackage);
+    symbol.members = new Scope(symbol);
+    predefClass.members.enter(symbol);
+    ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
+    symbol.type.tag = tag;
+    return symbol.type;
+  }
+
+  /**
+   * Registers operators as methods, so that they can be found as an usual methods.
+   */
+  private void enterOperators() {
+    for (String op : new String[]{"+", "-", "*", "/", "%"}) {
+      for (Type type : Arrays.asList(doubleType, floatType, longType, intType)) {
+        enterBinop(op, type, type, type);
+      }
+    }
+    for (String op : new String[]{"&", "|", "^"}) {
+      for (Type type : Arrays.asList(booleanType, longType, intType)) {
+        enterBinop(op, type, type, type);
+      }
+    }
+    for (String op : new String[]{"<<", ">>", ">>>"}) {
+      enterBinop(op, longType, longType, longType);
+      enterBinop(op, intType, longType, intType);
+      enterBinop(op, longType, intType, longType);
+      enterBinop(op, intType, intType, intType);
+    }
+    for (String op : new String[]{"<", ">", ">=", "<="}) {
+      for (Type type : Arrays.asList(doubleType, floatType, longType, intType)) {
+        enterBinop(op, type, type, booleanType);
+      }
+    }
+    for (String op : new String[]{"==", "!="}) {
+      for (Type type : Arrays.asList(objectType, booleanType, doubleType, floatType, longType, intType)) {
+        enterBinop(op, type, type, booleanType);
+      }
+    }
+    enterBinop("&&", booleanType, booleanType, booleanType);
+    enterBinop("||", booleanType, booleanType, booleanType);
+
+    // string concatenation
+    for (Type type : Arrays.asList(nullType, objectType, booleanType, doubleType, floatType, longType, intType)) {
+      enterBinop("+", stringType, type, stringType);
+      enterBinop("+", type, stringType, stringType);
+    }
+    enterBinop("+", stringType, stringType, stringType);
+  }
+
+  private void enterBinop(String name, Type left, Type right, Type result) {
+    Type type = new Type.MethodType(ImmutableList.of(left, right), result, ImmutableList.<Type>of(), null);
+    Symbol symbol = new Symbol.MethodSymbol(Flags.PUBLIC | Flags.STATIC, name, type, predefClass);
+    predefClass.members.enter(symbol);
   }
 
 }
