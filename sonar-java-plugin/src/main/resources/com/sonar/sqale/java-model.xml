@@ -226,6 +226,19 @@
           <txt>h</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00113</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>5.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
     <chc>
       <key>SOFTWARE_RELATED_PORTABILITY</key>
@@ -1474,6 +1487,214 @@
         <prop>
           <key>remediationFactor</key>
           <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00118</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00101</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>checkstyle</rule-repo>
+        <rule-key>com.puppycrawl.tools.checkstyle.checks.naming.ClassTypeParameterNameCheck</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00115</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00116</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00121</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00114</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00103</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>constant_resource</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00117</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00100</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>checkstyle</rule-repo>
+        <rule-key>com.puppycrawl.tools.checkstyle.checks.naming.MethodTypeParameterNameCheck</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>checkstyle</rule-repo>
+        <rule-key>com.puppycrawl.tools.checkstyle.checks.coding.OneStatementPerLineCheck</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>constant_resource</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00122</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>constant_resource</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00120</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00105</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>constant_resource</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>5.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00119</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
           <txt>mn</txt>
         </prop>
       </chc>
@@ -3418,6 +3639,32 @@
           <txt>h</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00104</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>constant_resource</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>3.0</val>
+          <txt>h</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>checkstyle</rule-repo>
+        <rule-key>com.puppycrawl.tools.checkstyle.checks.coding.NestedForDepthCheck</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>30.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
   </chc>
   <chc>
@@ -3867,6 +4114,32 @@
           <txt>linear</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>findbugs</rule-repo>
+        <rule-key>PT_ABSOLUTE_PATH_TRAVERSAL</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>1.0</val>
+          <txt>h</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>findbugs</rule-repo>
+        <rule-key>PT_RELATIVE_PATH_TRAVERSAL</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>1.0</val>
+          <txt>h</txt>
+        </prop>
+      </chc>
     </chc>
   </chc>
   <chc>
@@ -4029,6 +4302,19 @@
         <prop>
           <key>remediationFunction</key>
           <txt>linear</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>CallToFileDeleteOnExitMethod</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>30.0</val>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -6524,6 +6810,19 @@
           <txt>h</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00112</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
     <chc>
       <key>FAULT_TOLERANCE</key>
@@ -8079,6 +8378,32 @@
           <txt>mn</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>findbugs</rule-repo>
+        <rule-key>TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>30.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>findbugs</rule-repo>
+        <rule-key>MS_SHOULD_BE_REFACTORED_TO_BE_FINAL</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>30.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
     <chc>
       <key>LOGIC_RELIABILITY</key>
@@ -9370,6 +9695,45 @@
           <txt>mn</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00108</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>findbugs</rule-repo>
+        <rule-key>NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>findbugs</rule-repo>
+        <rule-key>BC_UNCONFIRMED_CAST_OF_RETURN_VALUE</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
     <chc>
       <key>SYNCHRONIZATION_RELIABILITY</key>
@@ -10067,6 +10431,19 @@
           <txt>h</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>common-java</rule-repo>
+        <rule-key>FailedUnitTests</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>1.0</val>
+          <txt>h</txt>
+        </prop>
+      </chc>
     </chc>
   </chc>
   <chc>
@@ -10311,6 +10688,19 @@
           <key>remediationFactor</key>
           <val>10.0</val>
           <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S00107</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>1.0</val>
+          <txt>h</txt>
         </prop>
       </chc>
     </chc>
