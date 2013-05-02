@@ -2,6 +2,7 @@
  * no violation, because documented
  */
 class UndocumentedApi {
+  public String p; // violation
   private String key;
 
   public UndocumentedApi() { // no violation, because empty constructor

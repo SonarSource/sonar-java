@@ -67,14 +67,14 @@ public class PublicApiVisitor extends JavaAstVisitor {
     }
   }
 
-  private boolean isPublicApi(AstNode astNode) {
+  public static boolean isPublicApi(AstNode astNode) {
     return isPublic(astNode)
         && !isStaticFinalVariable(astNode)
         && !isMethodWithOverrideAnnotation(astNode)
         && !isEmptyDefaultConstructor(astNode);
   }
 
-  private boolean isEmptyDefaultConstructor(AstNode astNode) {
+  private static boolean isEmptyDefaultConstructor(AstNode astNode) {
     if (astNode.is(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
       MethodHelper method = new MethodHelper(astNode);
       return !method.hasParameters() && method.getStatements().isEmpty();
@@ -82,7 +82,7 @@ public class PublicApiVisitor extends JavaAstVisitor {
     return false;
   }
 
-  private boolean isMethodWithOverrideAnnotation(AstNode astNode) {
+  private static boolean isMethodWithOverrideAnnotation(AstNode astNode) {
     if (isMethod(astNode)) {
       return hasAnnotation(astNode, "Override")
           || hasAnnotation(astNode, "java.lang.Override");
@@ -90,7 +90,7 @@ public class PublicApiVisitor extends JavaAstVisitor {
     return false;
   }
 
-  private boolean hasAnnotation(AstNode astNode, String expected) {
+  private static boolean hasAnnotation(AstNode astNode, String expected) {
     AstNode declaration = getDeclaration(astNode);
     for (AstNode modifier : getModifiers(declaration)) {
       AstNode annotation = modifier.getFirstChild(JavaGrammar.ANNOTATION);
@@ -107,7 +107,7 @@ public class PublicApiVisitor extends JavaAstVisitor {
     return false;
   }
 
-  private boolean isMethod(AstNode astNode) {
+  private static boolean isMethod(AstNode astNode) {
     return astNode.is(JavaGrammar.METHOD_DECLARATOR_REST,
         JavaGrammar.VOID_METHOD_DECLARATOR_REST,
         JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
@@ -115,15 +115,14 @@ public class PublicApiVisitor extends JavaAstVisitor {
         JavaGrammar.ANNOTATION_METHOD_REST);
   }
 
-  private boolean isStaticFinalVariable(AstNode astNode) {
+  private static boolean isStaticFinalVariable(AstNode astNode) {
     AstNode declaration = getDeclaration(astNode);
     return astNode.is(JavaGrammar.FIELD_DECLARATION, JavaGrammar.CONSTANT_DECLARATORS_REST)
         && hasModifier(declaration, JavaKeyword.STATIC)
         && hasModifier(declaration, JavaKeyword.FINAL);
   }
 
-  private boolean isDocumentedApi(AstNode astNode) {
-    // TODO verify
+  public static boolean isDocumentedApi(AstNode astNode) {
     AstNode declaration = getDeclaration(astNode);
     for (Trivia trivia : declaration.getToken().getTrivia()) {
       if (trivia.isComment()) {
@@ -136,14 +135,14 @@ public class PublicApiVisitor extends JavaAstVisitor {
     return false;
   }
 
-  private boolean isPublic(AstNode astNode) {
+  private static boolean isPublic(AstNode astNode) {
     AstNode declaration = getDeclaration(astNode);
     return declaration.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)
       || declaration.is(JavaGrammar.INTERFACE_BODY_DECLARATION)
         || hasModifier(declaration, JavaKeyword.PUBLIC);
   }
 
-  private boolean hasModifier(AstNode declaration, AstNodeType astNodeType) {
+  private static boolean hasModifier(AstNode declaration, AstNodeType astNodeType) {
     for (AstNode modifier : getModifiers(declaration)) {
       if (modifier.getFirstChild().is(astNodeType)) {
         return true;
@@ -152,7 +151,7 @@ public class PublicApiVisitor extends JavaAstVisitor {
     return false;
   }
 
-  private List<AstNode> getModifiers(AstNode declaration) {
+  private static List<AstNode> getModifiers(AstNode declaration) {
     return declaration.getChildren(JavaGrammar.MODIFIER);
   }
 

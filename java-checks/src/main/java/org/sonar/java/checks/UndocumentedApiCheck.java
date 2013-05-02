@@ -29,7 +29,6 @@ import org.sonar.java.ast.visitors.JavaAstCheck;
 import org.sonar.java.ast.visitors.PublicApiVisitor;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceMethod;
-import org.sonar.squid.measures.Metric;
 
 @Rule(key = "UndocumentedApi", priority = Priority.MAJOR)
 public class UndocumentedApiCheck extends JavaAstCheck {
@@ -53,7 +52,7 @@ public class UndocumentedApiCheck extends JavaAstCheck {
     if (currentResource instanceof SourceMethod && ((SourceMethod) currentResource).isAccessor()) {
       return;
     }
-    if (currentResource.getInt(Metric.PUBLIC_API) != 0 && currentResource.getInt(Metric.PUBLIC_DOC_API) == 0) {
+    if (PublicApiVisitor.isPublicApi(astNode) && !PublicApiVisitor.isDocumentedApi(astNode)) {
       getContext().createLineViolation(this, "Avoid undocumented API.", astNode);
     }
   }

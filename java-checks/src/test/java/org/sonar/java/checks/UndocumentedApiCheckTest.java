@@ -34,9 +34,10 @@ public class UndocumentedApiCheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(10).withMessage("Avoid undocumented API.")
-        .next().atLine(14)
-        .next().atLine(17)
+        .next().atLine(5).withMessage("Avoid undocumented API.")
+        .next().atLine(11)
+        .next().atLine(15)
+        .next().atLine(18)
         .noMore();
   }
 
