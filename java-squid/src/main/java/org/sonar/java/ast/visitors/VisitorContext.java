@@ -139,7 +139,7 @@ public class VisitorContext extends SquidAstVisitorContext<LexerlessGrammar> {
     log(checkMessage);
   }
 
-  private void log(CheckMessage message) {
+  public void log(CheckMessage message) {
     if (peekSourceCode() instanceof SourceFile) {
       peekSourceCode().log(message);
     } else if (peekSourceCode().getParent(SourceFile.class) != null) {

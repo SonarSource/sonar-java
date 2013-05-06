@@ -127,7 +127,6 @@ public final class JavaAstScanner {
     builder.withSquidAstVisitor(new LinesOfCodeVisitor());
     builder.withSquidAstVisitor(new CommentLinesVisitor());
     builder.withSquidAstVisitor(CommentsVisitor.<LexerlessGrammar> builder()
-        .withBlankCommentMetric(JavaMetric.COMMENT_BLANK_LINES)
         .withNoSonar(true)
         .withIgnoreHeaderComment(true)
         .build());
