@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SquidUtils;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.resources.JavaFile;
-import org.sonar.api.scan.source.SymbolPerspective;
+import org.sonar.api.source.Symbolizable;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 
@@ -57,21 +57,19 @@ public class SymbolTableVisitor extends JavaAstVisitor {
     }
 
     JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(peekSourceFile().getKey());
-    SymbolPerspective symbolPerspective = perspectives.as(SymbolPerspective.class, sonarFile).begin();
+    Symbolizable symbolizable = perspectives.as(Symbolizable.class, sonarFile);
+    Symbolizable.SymbolTableBuilder symbolTableBuilder = symbolizable.newSymbolTableBuilder();
 
     for (Map.Entry<AstNode, Symbol> entry : semanticModel.getSymbols().entrySet()) {
       AstNode declaration = entry.getKey();
-      org.sonar.api.scan.source.Symbol sonarSymbol = symbolPerspective
-        .newSymbol()
-        .setDeclaration(startOffsetFor(declaration), endOffsetFor(declaration))
-        .build();
+      org.sonar.api.source.Symbol symbol = symbolTableBuilder.newSymbol(startOffsetFor(declaration), endOffsetFor(declaration));
 
-      SymbolPerspective.ReferencesBuilder referencesBuilder = symbolPerspective.declareReferences(sonarSymbol);
       for (AstNode usage : semanticModel.getUsages(entry.getValue())) {
-        referencesBuilder.addReference(usage.getFromIndex());
+        symbolTableBuilder.newReference(symbol, startOffsetFor(usage));
       }
     }
-    symbolPerspective.end();
+
+    symbolizable.setSymbolTable(symbolTableBuilder.build());
   }
 
   private static int startOffsetFor(AstNode astNode) {

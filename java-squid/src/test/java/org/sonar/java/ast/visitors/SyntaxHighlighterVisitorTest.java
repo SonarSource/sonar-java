@@ -28,7 +28,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.resources.JavaFile;
-import org.sonar.api.scan.source.Highlightable;
+import org.sonar.api.source.Highlightable;
 import org.sonar.java.JavaAstScanner;
 
 import java.io.File;

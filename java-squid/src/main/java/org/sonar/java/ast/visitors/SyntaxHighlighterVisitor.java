@@ -31,7 +31,7 @@ import com.sonar.sslr.api.Trivia;
 import org.sonar.api.batch.SquidUtils;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.resources.JavaFile;
-import org.sonar.api.scan.source.Highlightable;
+import org.sonar.api.source.Highlightable;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
