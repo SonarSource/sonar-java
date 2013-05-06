@@ -1,25 +1,30 @@
 <p>
-Most of the time a block of code is empty when a piece of code is really missing. So such empty block must be either filled or removed.
+Most of the time a block of code is empty when a piece of code is really missing. So such empty block must be either filled or removed. When a block contains a comment, this block is not considered to be empty.
 </p>
 
 <p>The following code snippet illustrates this rule:</p>
 <pre>
 void doSomething() {
-  int myVar= 0;
-  for (int i = 0; i< 4; i++)
-  { // Non-Compliant
+  int myVar = 0;
+  for (int i = 0; i< 4; i++) // Non-Compliant
+  {
   }
-  for (int i = 0; i< 4; i++); // Compliant
+  for (int i = 0; i< 4; i++); // Compliant as there is no block
 
-  if (myVar == 4)
-  { // Non-Compliant
+  if (myVar == 4) // Compliant as the block contains at least a comment
+  {
+    // nothing to do
+  }
+  else // Compliant
+  {
+    doSomething();
   }
 
-  try
-  { // Non-Compliant
+  try // Non-Compliant
+  {
   }
-  catch (Exception e)
-  { // Non-Compliant
+  catch (Exception e) // Non-Compliant
+  {
   }
 }
 </pre>
