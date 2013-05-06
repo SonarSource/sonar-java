@@ -1,22 +1,33 @@
 class EmptyBlock {
-  static { // NOK
+  static /* NOK */ {
   }
 
-  static { // OK
+  static /* OK */ {
     doSomething();
   }
 
-  { // NOK
+  static /* OK */ {
+    // comment
   }
 
-  { // OK
+  /* NOK */ {
+  }
+
+  /* OK */ {
     doSomething();
+  }
+
+  /* OK */ {
+    // comment
   }
 
   void method() {
-    for (int i = 0; i < 10; i++) { // NOK
+    for (int i = 0; i < 10; i++) /* NOK */ {
     }
     for (int i = 0; i < 10; i++); // OK
+    for (int i = 0; i < 10; i++) /* OK */ {
+      // comment
+    }
 
     switch (1) {
       case 1: // OK
@@ -24,30 +35,42 @@ class EmptyBlock {
         break;
     }
 
-    switch (1) { // NOK
+    switch (1) /* NOK */ {
     }
 
-    try { // NOK
-    } catch (Exception e) { // NOK
-    } finally { // NOK
+    try /* NOK */ {
+    } catch (Exception e) /* NOK */ {
+    } finally /* NOK */ {
     }
 
-    try { // OK
+    try /* OK */ {
       doSomething();
-    } catch (Exception e) { // OK
+    } catch (Exception e) /* OK */ {
       doSomething();
-    } finally { // OK
+    } finally /* OK */ {
       doSomething();
     }
 
-    synchronized (this) { // NOK
+    try /* OK */ {
+      // comment
+    } catch (Exception e) /* OK */ {
+      // comment
+    } finally /* OK */ {
+      // comment
     }
 
-    synchronized (this) { // OK
+    synchronized (this) /* NOK */ {
+    }
+
+    synchronized (this) /* OK */ {
       doSomething();
+    }
+
+    synchronized (this) /* OK */ {
+      // comment
     }
   }
 
-  void anotherMethod() { // OK
+  void anotherMethod() /* OK */ {
   }
 }

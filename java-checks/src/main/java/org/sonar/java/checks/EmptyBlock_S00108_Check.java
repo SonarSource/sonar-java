@@ -24,6 +24,7 @@ import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -36,8 +37,8 @@ public class EmptyBlock_S00108_Check extends SquidCheck<LexerlessGrammar> {
   @Override
   public void init() {
     subscribeTo(
-        JavaGrammar.BLOCK,
-        JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS);
+      JavaGrammar.BLOCK,
+      JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS);
   }
 
   @Override
@@ -47,10 +48,18 @@ public class EmptyBlock_S00108_Check extends SquidCheck<LexerlessGrammar> {
         getContext().createLineViolation(this, "Either remove or fill this block of code.", node.getParent());
       }
     } else {
-      if (node.getParent().isNot(JavaGrammar.METHOD_BODY) && !node.getFirstChild(JavaGrammar.BLOCK_STATEMENTS).hasDirectChildren(JavaGrammar.BLOCK_STATEMENT)) {
+      if (node.getParent().isNot(JavaGrammar.METHOD_BODY) && !hasStatements(node) && !hasCommentInside(node)) {
         getContext().createLineViolation(this, "Either remove or fill this block of code.", node.getParent());
       }
     }
+  }
+
+  private static boolean hasStatements(AstNode node) {
+    return node.getFirstChild(JavaGrammar.BLOCK_STATEMENTS).hasDirectChildren(JavaGrammar.BLOCK_STATEMENT);
+  }
+
+  private static boolean hasCommentInside(AstNode node) {
+    return !node.getFirstChild(JavaPunctuator.RWING).getToken().getTrivia().isEmpty();
   }
 
 }

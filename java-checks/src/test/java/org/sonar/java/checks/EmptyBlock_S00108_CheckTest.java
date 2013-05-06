@@ -35,13 +35,13 @@ public class EmptyBlock_S00108_CheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyBlock.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(2).withMessage("Either remove or fill this block of code.")
-        .next().atLine(9)
-        .next().atLine(17)
-        .next().atLine(27)
-        .next().atLine(30)
-        .next().atLine(31)
-        .next().atLine(32)
+        .next().atLine(13)
+        .next().atLine(25)
+        .next().atLine(38)
+        .next().atLine(41)
+        .next().atLine(42)
         .next().atLine(43)
+        .next().atLine(62)
         .noMore();
   }
 
