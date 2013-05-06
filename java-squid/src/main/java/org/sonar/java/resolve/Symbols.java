@@ -43,6 +43,9 @@ public class Symbols {
 
   final Symbol.TypeSymbol arrayClass;
 
+  final Symbol.TypeSymbol methodClass;
+  final Symbol.TypeSymbol noSymbol;
+
   // builtin types
   final Type byteType;
   final Type charType;
@@ -79,6 +82,11 @@ public class Symbols {
     unknownType.interfaces = ImmutableList.of();
     unknownSymbol.type = unknownType;
 
+    // TODO should have type "noType":
+    noSymbol = new Symbol.TypeSymbol(0, "", rootPackage);
+
+    methodClass = new Symbol.TypeSymbol(Flags.PUBLIC, "", noSymbol);
+
     // builtin types
     byteType = initType(Type.BYTE, "byte");
     charType = initType(Type.CHAR, "char");
@@ -98,7 +106,7 @@ public class Symbols {
     serializableType = enterClass("java.io.Serializable");
 
     // TODO comment me
-    arrayClass = new Symbol.TypeSymbol(Flags.PUBLIC, "Array", null);
+    arrayClass = new Symbol.TypeSymbol(Flags.PUBLIC, "Array", noSymbol);
     Type.ClassType arrayClassType = (Type.ClassType) arrayClass.type;
     arrayClassType.supertype = objectType;
     arrayClassType.interfaces = ImmutableList.of(cloneableType, serializableType);
@@ -171,7 +179,7 @@ public class Symbols {
   }
 
   private void enterBinop(String name, Type left, Type right, Type result) {
-    Type type = new Type.MethodType(ImmutableList.of(left, right), result, ImmutableList.<Type>of(), null);
+    Type type = new Type.MethodType(ImmutableList.of(left, right), result, ImmutableList.<Type>of(), methodClass);
     Symbol symbol = new Symbol.MethodSymbol(Flags.PUBLIC | Flags.STATIC, name, type, predefClass);
     predefClass.members.enter(symbol);
   }
