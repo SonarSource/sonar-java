@@ -23,6 +23,7 @@
       <groupId>org.codehaus.sonar-plugins.java</groupId>
       <artifactId>sonar-java-plugin</artifactId>
       <version>${project.version}</version>
+      <type>sonar-plugin</type>
       <scope>provided</scope>
     </dependency>
 
