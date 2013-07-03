@@ -43,7 +43,6 @@
     <module>sonar-pmd-plugin</module>
     <module>sonar-checkstyle-plugin</module>
     <module>sonar-surefire-plugin</module>
-    <module>sonar-cobertura-plugin</module>
     <module>sonar-jacoco-plugin</module>
     <module>sonar-jacoco-listeners</module>
     <module>sonar-findbugs-plugin</module>
