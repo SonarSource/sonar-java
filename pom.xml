@@ -69,7 +69,7 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>3.6-RC4</sonar.version>
+    <sonar.version>3.6</sonar.version>
     <sslr.version>1.19.1</sslr.version>
     <jacoco.version>0.6.2.201302030002</jacoco.version>
   </properties>
