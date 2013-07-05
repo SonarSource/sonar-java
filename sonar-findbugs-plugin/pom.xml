@@ -120,7 +120,7 @@
         <configuration>
           <pluginName>Findbugs</pluginName>
           <pluginParent>java</pluginParent>
-          <pluginDescription><![CDATA[Analyze Java code with <a href="http://findbugs.sourceforge.net/">Findbugs</a> ${findbugs.version}.]]></pluginDescription>
+          <pluginDescription><![CDATA[Analyze Java code with <a href="http://findbugs.sourceforge.net/">Findbugs</a>.]]></pluginDescription>
           <pluginClass>org.sonar.plugins.findbugs.FindbugsPlugin</pluginClass>
           <useChildFirstClassLoader>true</useChildFirstClassLoader>
         </configuration>
