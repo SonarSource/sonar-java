@@ -12,7 +12,7 @@
   <packaging>sonar-plugin</packaging>
 
   <name>Sonar Java :: Squid Plugin</name>
-  <description>Default Sonar Java rule engine.</description>
+  <description>SonarQube rule engine.</description>
   <!--
   <url></url>
   -->
