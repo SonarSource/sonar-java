@@ -1,0 +1,30 @@
+<p>
+Sharing some coding conventions is a key point to make it possible for a team to efficiently collaborate.
+This rule make it mandatory to place closing curly braces and next <code>else</code>, <code>catch</code> or <code>finally</code> keywords on two different lines.
+</p>
+
+<p>
+The following code snippet illustrates this rule:
+</p>
+
+<pre>
+public void myMethod() {
+  if(something) {
+    executeTask();
+  } else if (somethingElse) {          // Non-Compliant
+    doSomethingElse();
+  }
+  else {                               // Compliant
+     generateError();
+  }
+
+  try {
+    generateOrder();
+  } catch (Exception e) {              // Non-Compliant
+    log(e);
+  }
+  finally {                            // Compliant
+    closeConnection();
+  }
+}
+</pre>

@@ -64,6 +64,7 @@ public final class CheckList {
         LeftCurlyBraceStartLineCheck.class,
         RightCurlyBraceSameLineAsNextBlockCheck.class,
         RightCurlyBraceOnDedicatedLineCheck.class,
+        RightCurlyBraceDifferentLineAsNextBlockCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
