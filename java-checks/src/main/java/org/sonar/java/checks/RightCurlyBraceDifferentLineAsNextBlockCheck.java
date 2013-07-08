@@ -28,7 +28,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
-import java.util.Locale;
 import java.util.Set;
 
 @Rule(
@@ -37,9 +36,9 @@ import java.util.Set;
 public class RightCurlyBraceDifferentLineAsNextBlockCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private static final Set<String> NEXT_BLOCKS = ImmutableSet.of(
-      "ELSE",
-      "CATCH",
-      "FINALLY");
+      "else",
+      "catch",
+      "finally");
 
   private boolean lastTokenIsRightCurlyBrace;
   private int lastTokenLine;
@@ -52,7 +51,7 @@ public class RightCurlyBraceDifferentLineAsNextBlockCheck extends SquidCheck<Lex
 
   @Override
   public void visitToken(Token token) {
-    if (lastTokenIsRightCurlyBrace && lastTokenLine == token.getLine() && NEXT_BLOCKS.contains(token.getValue().toUpperCase(Locale.ENGLISH))) {
+    if (lastTokenIsRightCurlyBrace && lastTokenLine == token.getLine() && NEXT_BLOCKS.contains(token.getValue())) {
       getContext().createLineViolation(this, "Move this '" + token.getValue() + "' keyword to a new dedicated line.", token);
     }
 
