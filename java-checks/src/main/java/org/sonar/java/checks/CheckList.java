@@ -69,6 +69,7 @@ public final class CheckList {
         LeftCurlyBraceEndLineCheck.class,
         UselessParenthesesCheck.class,
         ObjectFinalizeCheck.class,
+        ObjectFinalizeOverridenCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
