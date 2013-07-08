@@ -1195,6 +1195,7 @@
     <priority>MINOR</priority>
     <name><![CDATA[Unnecessary Parentheses]]></name>
     <configKey><![CDATA[Checker/TreeWalker/UnnecessaryParentheses]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.imports.UnusedImportsCheck">

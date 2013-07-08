@@ -173,6 +173,7 @@
   <rule key="UnnecessaryParentheses">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/controversial.xml/UnnecessaryParentheses]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="OverrideBothEqualsAndHashcode">
