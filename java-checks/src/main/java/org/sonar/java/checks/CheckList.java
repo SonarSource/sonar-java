@@ -63,6 +63,7 @@ public final class CheckList {
         TooManyStatementsPerLine_S00122_Check.class,
         LeftCurlyBraceStartLineCheck.class,
         RightCurlyBraceSameLineAsNextBlockCheck.class,
+        RightCurlyBraceOnDedicatedLineCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
