@@ -496,6 +496,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Bad practice - Explicit invocation of finalizer]]></name>
     <configKey><![CDATA[FI_EXPLICIT_INVOCATION]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS">

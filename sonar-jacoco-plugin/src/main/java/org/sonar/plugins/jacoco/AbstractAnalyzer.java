@@ -156,7 +156,7 @@ public abstract class AbstractAnalyzer {
     } else if (collectedCoveragePerTest) {
       JaCoCoUtils.LOG.info("Information about coverage per test has been collected.");
     } else {
-      JaCoCoUtils.LOG.info("No information about coverage per test.");
+      JaCoCoUtils.LOG.info("Code coverage available (coverages relating to each unit test not provided).");
     }
   }
 

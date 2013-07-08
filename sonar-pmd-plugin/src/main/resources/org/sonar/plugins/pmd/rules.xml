@@ -256,6 +256,7 @@
   <rule key="AvoidCallingFinalize">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/finalizers.xml/AvoidCallingFinalize]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="DontNestJsfInJstlIteration">
