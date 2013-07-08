@@ -1043,6 +1043,7 @@
     </param>
     <param key="tokens" type="s[LITERAL_TRY,LITERAL_CATCH,LITERAL_FINALLY,LITERAL_IF,LITERAL_ELSE]">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.SimplifyBooleanExpressionCheck">
