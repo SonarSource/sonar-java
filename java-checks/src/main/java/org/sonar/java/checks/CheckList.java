@@ -70,6 +70,7 @@ public final class CheckList {
         UselessParenthesesCheck.class,
         ObjectFinalizeCheck.class,
         ObjectFinalizeOverridenCheck.class,
+        ObjectFinalizeOverridenCallsSuperFinalizeCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

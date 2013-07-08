@@ -246,6 +246,7 @@
   <rule key="FinalizeDoesNotCallSuperFinalize">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/finalizers.xml/FinalizeDoesNotCallSuperFinalize]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="FinalizeShouldBeProtected">

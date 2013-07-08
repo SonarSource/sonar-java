@@ -1107,6 +1107,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Super Finalize]]></name>
     <configKey><![CDATA[Checker/TreeWalker/SuperFinalize]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.design.ThrowsCountCheck">

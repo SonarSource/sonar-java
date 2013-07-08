@@ -1,0 +1,24 @@
+<p>
+Overriding the <code>Object.finalize()</code> method must be done with caution to dispose some system resources.
+Calling the <code>super.finalize()</code> at the end of this method implementation is highly recommended in case parent implementations must also dispose some system resources.
+</p>
+
+<p>
+The following code snippet illustrates this rule:
+</p>
+
+<pre>
+protected void finalize() {            // Non-Compliant
+  releaseSomeResources();
+}
+
+protected void finalize() {
+  super.finalize();                    // Non-Compliant
+  releaseSomeResources();
+}
+
+protected void finalize() {
+  releaseSomeResources();
+  super.finalize();                    // Compliant
+}
+</pre>
