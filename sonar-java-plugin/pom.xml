@@ -11,7 +11,7 @@
   <artifactId>sonar-java-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
-  <name>Sonar Java :: Sonar Plugin</name>
+  <name>SonarQube Java :: Sonar Plugin</name>
   <description>Enables analysis of Java projects.</description>
   <url>http://docs.codehaus.org/display/SONAR/Java+Ecosystem</url>
 

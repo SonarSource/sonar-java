@@ -10,7 +10,7 @@
 
   <artifactId>java-checks</artifactId>
 
-  <name>Sonar Java :: Checks</name>
+  <name>SonarQube Java :: Checks</name>
 
   <dependencies>
     <dependency>

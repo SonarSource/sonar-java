@@ -10,7 +10,7 @@
 
   <artifactId>sonar-jacoco-listeners</artifactId>
 
-  <name>Sonar Java :: JaCoCo Listeners</name>
+  <name>SonarQube Java :: JaCoCo Listeners</name>
 
   <dependencies>
     <dependency>

@@ -11,7 +11,7 @@
   <artifactId>sonar-pmd-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
-  <name>Sonar Java :: PMD Plugin</name>
+  <name>SonarQube Java :: PMD Plugin</name>
   <description>PMD is a tool that looks for potential problems like possible bugs, dead code, suboptimal code, overcomplicated expressions or duplicate code.</description>
 
   <properties>

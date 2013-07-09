@@ -10,7 +10,7 @@
 
   <artifactId>java-squid</artifactId>
 
-  <name>Sonar Java :: Squid</name>
+  <name>SonarQube Java :: Squid</name>
 
   <dependencies>
     <dependency>

@@ -9,7 +9,7 @@
 
   <artifactId>sslr-java-toolkit</artifactId>
 
-  <name>Sonar Java :: SSLR Toolkit</name>
+  <name>SonarQube Java :: SSLR Toolkit</name>
 
   <dependencies>
     <dependency>

@@ -11,7 +11,7 @@
   <artifactId>sonar-findbugs-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
-  <name>Sonar Java :: Findbugs Plugin</name>
+  <name>SonarQube Java :: Findbugs Plugin</name>
   <description>FindBugs is a program that uses static analysis to look for bugs in Java code. It can detect a variety of common coding mistakes, including thread synchronization problems, misuse of API methods.</description>
 
   <properties>

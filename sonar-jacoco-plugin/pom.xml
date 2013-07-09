@@ -10,7 +10,7 @@
   <artifactId>sonar-jacoco-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
-  <name>Sonar Java :: JaCoCo Plugin</name>
+  <name>SonarQube Java :: JaCoCo Plugin</name>
   <description><![CDATA[Get code coverage with <a href="http://www.jacoco.org/jacoco/">JaCoCo</a>.]]></description>
   <url>http://docs.codehaus.org/display/SONAR/JaCoCo+Plugin</url>
   <inceptionYear>2010</inceptionYear>

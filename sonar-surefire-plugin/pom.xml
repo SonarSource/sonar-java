@@ -11,7 +11,7 @@
   <artifactId>sonar-surefire-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
-  <name>Sonar Java :: Surefire Plugin</name>
+  <name>SonarQube Java :: Surefire Plugin</name>
 
   <dependencies>
     <dependency>

@@ -13,7 +13,7 @@
   <version>1.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Sonar Java</name>
+  <name>SonarQube Java</name>
   <inceptionYear>2012</inceptionYear>
   <organization>
     <name>SonarSource</name>

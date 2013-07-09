@@ -11,7 +11,7 @@
   <artifactId>sonar-checkstyle-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
-  <name>Sonar Java :: Checkstyle Plugin</name>
+  <name>SonarQube Java :: Checkstyle Plugin</name>
   <description>Checkstyle is a code analyser to help programmers write Java code that adheres to a coding standard.</description>
 
   <properties>
