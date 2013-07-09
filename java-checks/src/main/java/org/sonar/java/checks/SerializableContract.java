@@ -35,6 +35,7 @@ public final class SerializableContract {
     SERIALIZABLE_CONTRACT_METHODS.add("readObject");
     SERIALIZABLE_CONTRACT_METHODS.add("writeReplace");
     SERIALIZABLE_CONTRACT_METHODS.add("readResolve");
+    SERIALIZABLE_CONTRACT_METHODS.add("readObjectNoData");
   }
 
   private SerializableContract() {

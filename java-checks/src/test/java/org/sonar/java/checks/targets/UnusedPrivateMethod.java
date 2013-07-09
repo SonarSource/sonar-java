@@ -46,6 +46,10 @@ public class UnusedPrivateMethod {
     return null;
   }
 
+  private void readObjectNoData() throws java.io.ObjectStreamException {
+    // this method should not be considered as dead code, see Serializable contract
+  }
+
   @SuppressWarnings("unused")
   private int unusedPrivateMethod() {
     return 1;
