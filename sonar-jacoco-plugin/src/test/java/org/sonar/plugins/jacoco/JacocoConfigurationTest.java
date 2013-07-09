@@ -104,17 +104,6 @@ public class JacocoConfigurationTest {
     assertThat(jacocoSettings.getJvmArgument()).isEqualTo("-javaagent:jacocoagent.jar=destfile=target/jacoco.exec,excludes=*_javassist_*");
 
     assertThat(jacocoSettings.getItReportPath()).isNull();
-
-    assertThat(jacocoSettings.getAntTargets()).isEqualTo(new String[]{});
-  }
-
-  @Test
-  public void shouldReturnAntTargets() {
-    settings.setProperty(JacocoConfiguration.ANT_TARGETS_PROPERTY, "test");
-    assertThat(jacocoSettings.getAntTargets()).isEqualTo(new String[]{"test"});
-
-    settings.setProperty(JacocoConfiguration.ANT_TARGETS_PROPERTY, "test1,test2");
-    assertThat(jacocoSettings.getAntTargets()).isEqualTo(new String[]{"test1", "test2"});
   }
 
   @Test
@@ -139,8 +128,8 @@ public class JacocoConfigurationTest {
     settings.setProperty(JacocoConfiguration.EXCLCLASSLOADER_PROPERTY, "sun.reflect.DelegatingClassLoader");
 
     assertThat(jacocoSettings.getJvmArgument()).isEqualTo(
-      "-javaagent:jacocoagent.jar=destfile=target/jacoco.exec,includes=org.sonar.*,excludes=org.sonar.api.*,exclclassloader=sun.reflect.DelegatingClassLoader"
-    );
+        "-javaagent:jacocoagent.jar=destfile=target/jacoco.exec,includes=org.sonar.*,excludes=org.sonar.api.*,exclclassloader=sun.reflect.DelegatingClassLoader"
+        );
   }
 
 }
