@@ -1,0 +1,20 @@
+<p>
+Encapsulation if one of the four OOP principles along with Inheritance, abstraction and polymorphism.
+Limiting as much as possible the visibility of class members is one way to enforce this principle.
+</p>
+
+<p>
+The following code snippet illustrates this rule when the authorized visibility is set to <code>private</code>:
+</p>
+
+<pre>
+public class MyClass {
+
+  public static final Logger logger = LogManager.getLogger(MyApp.class);     // Compliant - static final fields are always allowed
+
+  private String status;                                                     // Compliant
+
+  public int level;                                                          // Non-Compliant
+
+}
+</pre>

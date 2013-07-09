@@ -71,6 +71,7 @@ public final class CheckList {
         ObjectFinalizeCheck.class,
         ObjectFinalizeOverridenCheck.class,
         ObjectFinalizeOverridenCallsSuperFinalizeCheck.class,
+        ClassVariableVisibilityCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
