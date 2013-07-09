@@ -19,22 +19,23 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.ImmutableList;
-import org.sonar.api.SonarPlugin;
-import org.sonar.plugins.java.api.JavaSettings;
+import org.sonar.api.profiles.ProfileDefinition;
+import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.utils.ValidationMessages;
 
-import java.util.List;
+public class CommonRulesSonarWayWithFindbugsProfile extends ProfileDefinition {
 
-public final class JavaPlugin extends SonarPlugin {
+  private final CommonRulesSonarWayProfile sonarWay;
+
+  public CommonRulesSonarWayWithFindbugsProfile(CommonRulesSonarWayProfile sonarWay) {
+    this.sonarWay = sonarWay;
+  }
 
   @Override
-  public List<?> getExtensions() {
-    return ImmutableList.of(
-        JavaCommonRulesEngineProvider.class,
-        JavaSettings.class,
-        Java.class,
-        CommonRulesSonarWayProfile.class,
-        CommonRulesSonarWayWithFindbugsProfile.class);
+  public RulesProfile createProfile(ValidationMessages validationMessages) {
+    RulesProfile profile = sonarWay.createProfile(validationMessages);
+    profile.setName(RulesProfile.SONAR_WAY_FINDBUGS_NAME);
+    return profile;
   }
 
 }

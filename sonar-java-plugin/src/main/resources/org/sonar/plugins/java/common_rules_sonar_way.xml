@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile>
+  <name>Sonar way</name>
+  <language>java</language>
+  <rules>
+    <rule>
+      <repositoryKey>common-java</repositoryKey>
+      <key>DuplicatedBlocks</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>common-java</repositoryKey>
+      <key>InsufficientBranchCoverage</key>
+      <priority>MAJOR</priority>
+      <parameters>
+        <parameter>
+          <key>minimumBranchCoverageRatio</key>
+          <value>65.0</value>
+        </parameter>
+      </parameters>
+    </rule>
+  </rules>
+</profile>

@@ -19,22 +19,32 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.ImmutableList;
-import org.sonar.api.SonarPlugin;
-import org.sonar.plugins.java.api.JavaSettings;
+import org.apache.commons.io.IOUtils;
+import org.sonar.api.profiles.ProfileDefinition;
+import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.profiles.XMLProfileParser;
+import org.sonar.api.utils.ValidationMessages;
 
-import java.util.List;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
-public final class JavaPlugin extends SonarPlugin {
+public class CommonRulesSonarWayProfile extends ProfileDefinition {
+
+  private final XMLProfileParser parser;
+
+  public CommonRulesSonarWayProfile(XMLProfileParser parser) {
+    this.parser = parser;
+  }
 
   @Override
-  public List<?> getExtensions() {
-    return ImmutableList.of(
-        JavaCommonRulesEngineProvider.class,
-        JavaSettings.class,
-        Java.class,
-        CommonRulesSonarWayProfile.class,
-        CommonRulesSonarWayWithFindbugsProfile.class);
+  public RulesProfile createProfile(ValidationMessages validationMessages) {
+    InputStream input = getClass().getResourceAsStream("/org/sonar/plugins/java/common_rules_sonar_way.xml");
+    InputStreamReader reader = new InputStreamReader(input);
+    try {
+      return parser.parse(reader, validationMessages);
+    } finally {
+      IOUtils.closeQuietly(reader);
+    }
   }
 
 }
