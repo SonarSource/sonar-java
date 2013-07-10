@@ -73,6 +73,7 @@ public final class CheckList {
         ObjectFinalizeOverridenCallsSuperFinalizeCheck.class,
         ClassVariableVisibilityCheck.class,
         ForLoopCounterChangedCheck.class,
+        LabelsShouldNotBeUsedCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
