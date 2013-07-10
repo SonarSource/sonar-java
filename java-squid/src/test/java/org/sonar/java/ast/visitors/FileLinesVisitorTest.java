@@ -74,17 +74,17 @@ public class FileLinesVisitorTest {
     scanner.scan(inputFiles);
 
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 1, 1);
-    // verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 2, 1);
-    // verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 3, 1);
+    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 2, 1);
+    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 3, 1);
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 4, 0);
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 5, 1);
-    // verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 6, 1);
-    // verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 7, 1);
+    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 6, 1);
+    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 7, 1);
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 8, 0);
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 9, 0);
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 10, 1);
-    // verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 11, 1);
-    // verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 12, 1);
+    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 11, 1);
+    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 12, 1);
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 13, 0);
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 14, 1);
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 15, 1);

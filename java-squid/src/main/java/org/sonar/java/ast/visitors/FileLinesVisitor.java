@@ -21,7 +21,11 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.sonar.sslr.api.*;
+import com.sonar.sslr.api.AstAndTokenVisitor;
+import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.GenericTokenType;
+import com.sonar.sslr.api.Token;
+import com.sonar.sslr.api.Trivia;
 import org.sonar.api.batch.SquidUtils;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
@@ -72,6 +76,7 @@ public class FileLinesVisitor extends JavaAstVisitor implements AstAndTokenVisit
     linesOfComments.clear();
   }
 
+  @Override
   public void visitToken(Token token) {
     if (token.getType().equals(GenericTokenType.EOF)) {
       return;
@@ -81,7 +86,11 @@ public class FileLinesVisitor extends JavaAstVisitor implements AstAndTokenVisit
     List<Trivia> trivias = token.getTrivia();
     for (Trivia trivia : trivias) {
       if (trivia.isComment()) {
-        linesOfComments.add(trivia.getToken().getLine());
+        int baseLine = trivia.getToken().getLine();
+        String[] lines = trivia.getToken().getOriginalValue().split("(\r)?\n|\r", -1);
+        for (int i = 0; i < lines.length; i++) {
+          linesOfComments.add(baseLine + i);
+        }
       }
     }
   }
