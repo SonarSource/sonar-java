@@ -1,5 +1,5 @@
 /*
- * Sonar Java
+ * SonarQube Java
  * Copyright (C) 2012 SonarSource
  * dev@sonar.codehaus.org
  *
@@ -64,7 +64,7 @@ public class PmdProfileImporter extends ProfileImporter {
     for (PmdRule pmdRule : pmdRuleset.getPmdRules()) {
       if (PmdConstants.XPATH_CLASS.equals(pmdRule.getClazz())) {
         messages.addWarningText("PMD XPath rule '" + pmdRule.getName()
-            + "' can't be imported automatically. The rule must be created manually through the Sonar web interface.");
+          + "' can't be imported automatically. The rule must be created manually through the SonarQube web interface.");
         continue;
       }
       if (pmdRule.getRef() == null) {

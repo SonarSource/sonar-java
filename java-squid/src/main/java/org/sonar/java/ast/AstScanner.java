@@ -1,5 +1,5 @@
 /*
- * Sonar Java
+ * SonarQube Java
  * Copyright (C) 2012 SonarSource
  * dev@sonar.codehaus.org
  *
@@ -124,11 +124,11 @@ public class AstScanner {
           }
 
         } catch (Exception e2) {
-          String errorMessage = "Sonar is unable to analyze file : '" + file.getAbsolutePath() + "'";
+          String errorMessage = "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
           throw new AnalysisException(errorMessage, e);
         }
       } catch (Exception e) {
-        String errorMessage = "Sonar is unable to analyze file : '" + file.getAbsolutePath() + "'";
+        String errorMessage = "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
         throw new AnalysisException(errorMessage, e);
       }
     }

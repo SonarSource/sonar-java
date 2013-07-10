@@ -65,7 +65,7 @@
   </ciManagement>
 
   <properties>
-    <license.title>Sonar Java</license.title>
+    <license.title>SonarQube Java</license.title>
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 

@@ -1,5 +1,5 @@
 /*
- * Sonar Java
+ * SonarQube Java
  * Copyright (C) 2012 SonarSource
  * dev@sonar.codehaus.org
  *
@@ -41,7 +41,7 @@ public final class ClassLoaderBuilder {
     List<File> files = Lists.newArrayList();
     for (File file : bytecodeFilesOrDirectories) {
       if (file.isFile() && file.getPath().endsWith(".class")) {
-        LOG.info("Sonar Squid ClassLoader was expecting a JAR file instead of CLASS file : '" + file.getAbsolutePath() + "'");
+        LOG.info("SonarQube Squid ClassLoader was expecting a JAR file instead of CLASS file : '" + file.getAbsolutePath() + "'");
       } else {
         files.add(file);
       }

@@ -1,5 +1,5 @@
 /*
- * Sonar Java
+ * SonarQube Java
  * Copyright (C) 2010 SonarSource
  * dev@sonar.codehaus.org
  *
