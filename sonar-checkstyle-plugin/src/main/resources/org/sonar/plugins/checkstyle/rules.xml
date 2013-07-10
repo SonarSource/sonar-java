@@ -342,6 +342,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Default Comes Last]]></name>
     <configKey><![CDATA[Checker/TreeWalker/DefaultComesLast]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.design.DesignForExtensionCheck">
@@ -806,6 +807,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Missing Switch Default]]></name>
     <configKey><![CDATA[Checker/TreeWalker/MissingSwitchDefault]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.ModifiedControlVariableCheck">

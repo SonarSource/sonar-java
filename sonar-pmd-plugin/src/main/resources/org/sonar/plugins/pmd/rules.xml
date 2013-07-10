@@ -153,11 +153,13 @@
   <rule key="SwitchStmtsShouldHaveDefault">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/design.xml/SwitchStmtsShouldHaveDefault]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="DefaultLabelNotLastInSwitchStmt">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/design.xml/DefaultLabelNotLastInSwitchStmt]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ClassWithOnlyPrivateConstructorsShouldBeFinal">

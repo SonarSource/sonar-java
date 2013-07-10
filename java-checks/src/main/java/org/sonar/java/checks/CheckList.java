@@ -74,6 +74,7 @@ public final class CheckList {
         ClassVariableVisibilityCheck.class,
         ForLoopCounterChangedCheck.class,
         LabelsShouldNotBeUsedCheck.class,
+        SwitchLastCaseIsDefaultCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

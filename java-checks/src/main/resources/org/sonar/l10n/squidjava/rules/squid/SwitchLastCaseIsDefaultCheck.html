@@ -1,0 +1,34 @@
+<p>
+The requirement for a final default clause is defensive programming.
+This clause should either take appropriate action or contain a suitable comment as to why no action is taken.
+</p>
+
+<p>
+The following code snippet illustrates this rule:
+</p>
+
+<pre>
+switch (state) {                       // Non-Compliant - must have a default case
+  case 0:
+  case 1:
+    System.out.println("0 or 1!");
+    break;
+}
+
+switch (state) {
+  default:                             // Non-Compliant - must be last for better readability
+    throw new IllegalStateException();
+  case 0:
+  case 1:
+    System.out.println("0 or 1!");
+    break;
+}
+
+switch (state) {
+  case 0:
+  case 1:
+    System.out.println("0 or 1!");
+    break;
+  default:                             // Compliant
+    throw new IllegalStateException();
+</pre>
