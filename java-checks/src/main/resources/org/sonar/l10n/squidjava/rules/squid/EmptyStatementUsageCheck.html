@@ -1,0 +1,32 @@
+<p>Empty statements, i.e. <code>;</code>, are usually introduced by mistake, for example because:</p>
+
+<ul>
+  <li>It was meant to be replaced by an actual statement, but this was forgotten.</li>
+  <li>There was a typo which lead to the semicolon to be doubled, i.e. <code>;;</code>.</li>
+</ul>
+
+<p>Examples:</p>
+
+<pre>
+void doSomething() {
+  ;                                                       // Non-Compliant - was used as a kind of TODO marker
+}
+</pre>
+
+<pre>
+System.out.println("Hello, world!");;                     // Non-Compliant - double ;
+</pre>
+
+<p>Rarely, they are used on purpose, as the body of a loop:</p>
+
+<pre>
+for (int i = 0; i < 3; System.out.println(i), i++);       // Non-Compliant
+</pre>
+
+<p>It is a bad practice to have side-effects outside of the loop body, and therefore that code should be refactored into:</p>
+
+<pre>
+for (int i = 0; i < 3; i ++) {                            // Compliant
+  System.out.println(i);
+}
+</pre>

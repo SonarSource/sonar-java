@@ -383,6 +383,7 @@
     <priority>MINOR</priority>
     <name><![CDATA[Empty Statement]]></name>
     <configKey><![CDATA[Checker/TreeWalker/EmptyStatement]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.EqualsHashCodeCheck">

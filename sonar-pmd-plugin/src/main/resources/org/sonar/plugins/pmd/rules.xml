@@ -504,6 +504,7 @@
   <rule key="EmptyStatementNotInLoop">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/basic.xml/EmptyStatementNotInLoop]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="BooleanInstantiation">
