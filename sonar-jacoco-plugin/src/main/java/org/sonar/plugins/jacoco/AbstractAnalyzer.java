@@ -123,6 +123,7 @@ public abstract class AbstractAnalyzer {
 
     if (jacocoExecutionData == null || !jacocoExecutionData.exists() || !jacocoExecutionData.isFile()) {
       JaCoCoUtils.LOG.info("Project coverage is set to 0% as no JaCoCo execution data has been dumped: {}", jacocoExecutionData);
+      jacocoExecutionData = null;
     } else {
       JaCoCoUtils.LOG.info("Analysing {}", jacocoExecutionData);
 
@@ -155,8 +156,8 @@ public abstract class AbstractAnalyzer {
       JaCoCoUtils.LOG.warn("Coverage information was not collected. Perhaps you forget to include debug information into compiled classes?");
     } else if (collectedCoveragePerTest) {
       JaCoCoUtils.LOG.info("Information about coverage per test has been collected.");
-    } else {
-      JaCoCoUtils.LOG.info("Code coverage available (coverages relating to each unit test not provided).");
+    } else if (jacocoExecutionData != null) {
+      JaCoCoUtils.LOG.info("No information about coverage per test.");
     }
   }
 
