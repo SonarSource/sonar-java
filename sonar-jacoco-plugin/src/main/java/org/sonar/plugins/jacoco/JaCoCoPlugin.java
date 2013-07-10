@@ -29,6 +29,7 @@ public class JaCoCoPlugin extends SonarPlugin {
   @Override
   public List<?> getExtensions() {
     ImmutableList.Builder<Object> extensions = ImmutableList.builder();
+
     extensions.addAll(JacocoConfiguration.getPropertyDefinitions());
     extensions.add(
         JacocoConfiguration.class,
@@ -40,8 +41,8 @@ public class JaCoCoPlugin extends SonarPlugin {
         JaCoCoSensor.class,
         // Integration tests
         JaCoCoItSensor.class,
-        JaCoCoOverallSensor.class
-        );
+        JaCoCoOverallSensor.class);
+
     return extensions.build();
   }
 

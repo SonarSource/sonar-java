@@ -147,8 +147,7 @@ public class JacocoConfiguration implements BatchExtension {
             .name("File with execution data for integration tests")
             .description("Path (absolute or relative) to the file with execution data.")
             .onlyOnQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
-            .build()
-        );
+            .build());
   }
 
 }
