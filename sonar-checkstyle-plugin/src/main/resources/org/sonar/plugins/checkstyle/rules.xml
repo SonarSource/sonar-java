@@ -585,6 +585,7 @@
     <param key="tokens"
            type="s[ASSIGN,BAND_ASSIGN,BOR_ASSIGN,BSR_ASSIGN,BXOR_ASSIGN,DIV_ASSIGN,MINUS_ASSIGN,MOD_ASSIGN,PLUS_ASSIGN,SL_ASSIGN,SR_ASSIGN,STAR_ASSIGN]">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.design.InterfaceIsTypeCheck">

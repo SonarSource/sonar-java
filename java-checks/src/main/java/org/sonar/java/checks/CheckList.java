@@ -77,6 +77,7 @@ public final class CheckList {
         SwitchLastCaseIsDefaultCheck.class,
         EmptyStatementUsageCheck.class,
         ModifiersOrderCheck.class,
+        AssignmentInSubExpressionCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

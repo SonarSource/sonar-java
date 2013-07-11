@@ -1,0 +1,24 @@
+<p>
+Assignments within sub-expressions are hard to spot and therefore make the code less readable.
+It is also a common mistake to write <code>=</code> when <code>==</code> was meant.
+Ideally, every expression should have no more than one side-effect.
+</p>
+
+<p>The following code:</p>
+
+<pre>
+System.out.println(i = 42);  // Non-Compliant
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+System.out.println(i == 42); // Compliant
+</pre>
+
+<p>or:</p>
+
+<pre>
+i = 42;
+System.out.println(i);       // Compliant
+</pre>
