@@ -533,13 +533,13 @@ public enum JavaGrammar implements GrammarRuleKey {
         PUBLIC,
         PROTECTED,
         PRIVATE,
-        STATIC,
         ABSTRACT,
+        STATIC,
         FINAL,
-        NATIVE,
-        SYNCHRONIZED,
         TRANSIENT,
         VOLATILE,
+        SYNCHRONIZED,
+        NATIVE,
         STRICTFP));
   }
 

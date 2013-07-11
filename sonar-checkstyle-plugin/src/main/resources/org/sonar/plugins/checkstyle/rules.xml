@@ -821,6 +821,7 @@
     <priority>MINOR</priority>
     <name><![CDATA[Modifier Order]]></name>
     <configKey><![CDATA[Checker/TreeWalker/ModifierOrder]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.MultipleStringLiteralsCheck">

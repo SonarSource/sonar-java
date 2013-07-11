@@ -76,6 +76,7 @@ public final class CheckList {
         LabelsShouldNotBeUsedCheck.class,
         SwitchLastCaseIsDefaultCheck.class,
         EmptyStatementUsageCheck.class,
+        ModifiersOrderCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
