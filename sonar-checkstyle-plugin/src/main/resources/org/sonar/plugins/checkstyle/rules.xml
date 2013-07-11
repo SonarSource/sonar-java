@@ -1142,6 +1142,7 @@
     </param>
     <param key="legalComment" type="REGULAR_EXPRESSION">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <!--

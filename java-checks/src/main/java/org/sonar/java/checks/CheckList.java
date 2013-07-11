@@ -79,6 +79,7 @@ public final class CheckList {
         ModifiersOrderCheck.class,
         AssignmentInSubExpressionCheck.class,
         StringEqualityComparisonCheck.class,
+        TrailingCommentCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
