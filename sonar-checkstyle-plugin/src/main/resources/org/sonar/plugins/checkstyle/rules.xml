@@ -1100,6 +1100,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[String Literal Equality]]></name>
     <configKey><![CDATA[Checker/TreeWalker/StringLiteralEquality]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.SuperCloneCheck">

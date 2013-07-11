@@ -78,6 +78,7 @@ public final class CheckList {
         EmptyStatementUsageCheck.class,
         ModifiersOrderCheck.class,
         AssignmentInSubExpressionCheck.class,
+        StringEqualityComparisonCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

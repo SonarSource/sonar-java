@@ -1,0 +1,18 @@
+<p>
+String literals, just like any other <code>Object</code>, should be compared using the <code>equals()</code> method.
+Using <code>==</code> and <code>!=</code> does not work in general.
+</p>
+
+<p>The following code:</p>
+
+<pre>
+if (variable == "foo") { /* ... */ }         // Non-Compliant
+if (variable != "foo") { /* ... */ }         // Non-Compliant
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+if ("foo".equals(variable)) { /* ... */ }    // Compliant
+if (!"foo".equals(variable)) { /* ... */ }   // Compliant
+</pre>

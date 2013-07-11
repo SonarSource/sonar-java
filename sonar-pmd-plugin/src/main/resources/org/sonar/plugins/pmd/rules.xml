@@ -1253,6 +1253,7 @@
   <rule key="UseEqualsToCompareStrings">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/strings.xml/UseEqualsToCompareStrings]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="DoNotExtendJavaLangError">
