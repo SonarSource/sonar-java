@@ -81,6 +81,7 @@ public final class CheckList {
         StringEqualityComparisonCheck.class,
         TrailingCommentCheck.class,
         UnusedImportCheck.class,
+        LowerCaseLongSuffixCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

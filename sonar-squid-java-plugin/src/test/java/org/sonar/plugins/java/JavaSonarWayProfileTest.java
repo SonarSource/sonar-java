@@ -46,7 +46,7 @@ public class JavaSonarWayProfileTest {
 
     assertThat(profile.getLanguage()).isEqualTo(Java.KEY);
     assertThat(profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY))
-        .hasSize(36);
+        .hasSize(37);
     assertThat(profile.getName()).isEqualTo(RulesProfile.SONAR_WAY_NAME);
     assertThat(validation.hasErrors()).isFalse();
   }
@@ -60,7 +60,7 @@ public class JavaSonarWayProfileTest {
 
     assertThat(profile.getLanguage()).isEqualTo(Java.KEY);
     assertThat(profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY))
-        .hasSize(36);
+        .hasSize(37);
     assertThat(profile.getName()).isEqualTo(RulesProfile.SONAR_WAY_FINDBUGS_NAME);
     assertThat(validation.hasErrors()).isFalse();
   }

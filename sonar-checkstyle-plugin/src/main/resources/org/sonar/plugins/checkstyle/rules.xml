@@ -1222,6 +1222,7 @@
     <priority>MINOR</priority>
     <name><![CDATA[Upper Ell]]></name>
     <configKey><![CDATA[Checker/TreeWalker/UpperEll]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.design.VisibilityModifierCheck">
