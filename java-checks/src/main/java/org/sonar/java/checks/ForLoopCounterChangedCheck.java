@@ -41,12 +41,15 @@ import java.util.Set;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
 
+  private Set<String> pendingLoopCounters = Collections.EMPTY_SET;
   private final Set<String> loopCounters = Sets.newHashSet();
 
   @Override
   public void init() {
     subscribeTo(JavaGrammar.FOR_STATEMENT);
     subscribeTo(JavaGrammar.ASSIGNMENT_EXPRESSION);
+    subscribeTo(JavaGrammar.UNARY_EXPRESSION);
+    subscribeTo(JavaGrammar.STATEMENT);
   }
 
   @Override
@@ -57,11 +60,18 @@ public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
   @Override
   public void visitNode(AstNode node) {
     if (node.is(JavaGrammar.FOR_STATEMENT)) {
-      loopCounters.addAll(getLoopCounters(node));
+      pendingLoopCounters = getLoopCounters(node);
+    } else if (node.is(JavaGrammar.STATEMENT) && node.getParent().is(JavaGrammar.FOR_STATEMENT)) {
+      loopCounters.addAll(pendingLoopCounters);
+      pendingLoopCounters = Collections.EMPTY_SET;
     } else if (!loopCounters.isEmpty()) {
-      for (int i = 0; i < node.getNumberOfChildren() - 1; i++) {
-        if (loopCounters.contains(merge(node.getChild(i)))) {
-          getContext().createLineViolation(this, "Refactor the code in order to not assign to this loop counter from within the loop body.", node.getChild(i));
+      if (node.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
+        for (int i = 0; i < node.getNumberOfChildren() - 1; i++) {
+          check(merge(node.getChild(i)), node.getChild(i).getTokenLine());
+        }
+      } else if (node.is(JavaGrammar.UNARY_EXPRESSION)) {
+        for (AstNode child : node.getChildren()) {
+          check(merge(child), child.getTokenLine());
         }
       }
     }
@@ -97,6 +107,12 @@ public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
     }
 
     return result;
+  }
+
+  private void check(String string, int line) {
+    if (loopCounters.contains(string)) {
+      getContext().createLineViolation(this, "Refactor the code in order to not assign to this loop counter from within the loop body.", line);
+    }
   }
 
   private static String merge(AstNode node) {

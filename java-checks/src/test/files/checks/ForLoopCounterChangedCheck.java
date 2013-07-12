@@ -39,5 +39,20 @@ class Foo {
               0;
     }
 
+    g++;                                    // Compliant
+    ++g;                                    // Compliant
+
+    for (int i = 0; 0 < 42; i++) {
+      i++;                                  // Non-Compliant
+      ++i;                                  // Non-Compliant
+      --i;                                  // Non-Compliant
+      i--;                                  // Non-Compliant
+    }
+
+    for (int j = 0; j < 42; j++) {          // Compliant
+      for (int k = 0; j++ < 42; k++) {      // Non-Compliant
+      }
+    }
+
   }
 }
