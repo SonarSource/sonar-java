@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -29,6 +30,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @Rule(
   key = "StringBufferUsageCheck",
   priority = Priority.MAJOR)
+@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class StringBufferUsageCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   @Override
