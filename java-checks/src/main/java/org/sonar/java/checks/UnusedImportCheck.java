@@ -45,7 +45,7 @@ import java.util.Set;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class UnusedImportCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
-  private final Map<String, Integer> LineByImportReference = Maps.newHashMap();
+  private final Map<String, Integer> lineByImportReference = Maps.newHashMap();
   private final Set<String> pendingImports = Sets.newHashSet();
 
   @Override
@@ -58,7 +58,7 @@ public class UnusedImportCheck extends SquidCheck<LexerlessGrammar> implements A
 
   @Override
   public void visitFile(AstNode astNode) {
-    LineByImportReference.clear();
+    lineByImportReference.clear();
     pendingImports.clear();
   }
 
@@ -67,7 +67,7 @@ public class UnusedImportCheck extends SquidCheck<LexerlessGrammar> implements A
     if (node.is(JavaGrammar.IMPORT_DECLARATION)) {
       if (!isStaticImport(node) && !isImportOnDemand(node)) {
         String reference = merge(node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
-        LineByImportReference.put(reference, node.getTokenLine());
+        lineByImportReference.put(reference, node.getTokenLine());
         pendingImports.add(reference);
       }
     } else {
@@ -79,7 +79,7 @@ public class UnusedImportCheck extends SquidCheck<LexerlessGrammar> implements A
   @Override
   public void leaveFile(AstNode node) {
     for (String pendingImport : pendingImports) {
-      getContext().createLineViolation(this, "Remove this unused import '" + pendingImport + "'.", LineByImportReference.get(pendingImport));
+      getContext().createLineViolation(this, "Remove this unused import '" + pendingImport + "'.", lineByImportReference.get(pendingImport));
     }
   }
 
