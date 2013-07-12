@@ -452,6 +452,9 @@ public enum JavaGrammar implements GrammarRuleKey {
    * 3.10. Literals
    */
   private static void literals(LexerlessGrammarBuilder b) {
+    final int FOO = 0;
+    System.out.println(FOO);
+
     b.rule(SPACING).is(
         b.skippedTrivia(whitespace(b)),
         b.zeroOrMore(
