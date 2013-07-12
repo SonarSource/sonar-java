@@ -19,18 +19,16 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.ast.AstSelect;
 import org.sonar.sslr.parser.LexerlessGrammar;
-
-import java.util.List;
 
 @Rule(
   key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck",
@@ -38,9 +36,12 @@ import java.util.List;
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
 public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<LexerlessGrammar> {
 
+  private AstNode lastSuperFinalizeStatement;
+
   @Override
   public void init() {
     subscribeTo(JavaGrammar.MEMBER_DECL);
+    subscribeTo(JavaGrammar.PRIMARY);
   }
 
   @Override
@@ -48,34 +49,75 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<L
     if (node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
       AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
 
-      if ("finalize".equals(identifier.getTokenValue()) && !hasSuperFinalizeAsLastStatement(node)) {
-        getContext().createLineViolation(this, "Add a call to 'super.finalize()' at the end of this Object.finalize() implementation.", identifier);
+      if ("finalize".equals(identifier.getTokenValue())) {
+        lastSuperFinalizeStatement = null;
+      }
+    } else if (isSuperFinalize(node)) {
+      lastSuperFinalizeStatement = node.getFirstAncestor(JavaGrammar.STATEMENT);
+    }
+  }
+
+  private static boolean isSuperFinalize(AstNode node) {
+    return node.is(JavaGrammar.PRIMARY) &&
+      node.hasDirectChildren(JavaKeyword.SUPER) &&
+      isFinalizeCallSuffix(node.getFirstChild(JavaGrammar.SUPER_SUFFIX));
+  }
+
+  private static boolean isFinalizeCallSuffix(AstNode node) {
+    AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
+    return identifier != null &&
+      "finalize".equals(identifier.getTokenOriginalValue()) &&
+      node.hasDirectChildren(JavaGrammar.ARGUMENTS);
+  }
+
+  @Override
+  public void leaveNode(AstNode node) {
+    if (node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
+      AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
+
+      if ("finalize".equals(identifier.getTokenValue())) {
+        AstSelect methodBlockStatement = node.select()
+            .children(JavaGrammar.VOID_METHOD_DECLARATOR_REST)
+            .children(JavaGrammar.METHOD_BODY)
+            .children(JavaGrammar.BLOCK)
+            .children(JavaGrammar.BLOCK_STATEMENTS)
+            .children(JavaGrammar.BLOCK_STATEMENT);
+
+        if (lastSuperFinalizeStatement == null) {
+          getContext().createLineViolation(this, "Add a call to 'super.finalize()' at the end of this Object.finalize() implementation.", identifier);
+        } else if (!lastSuperFinalizeStatement.equals(getLastEffectiveStatement(getLastBlockStatement(methodBlockStatement)))) {
+          getContext().createLineViolation(this, "Move this super.finalize() call to the end of this Object.finalize() implementation.", lastSuperFinalizeStatement);
+        }
       }
     }
   }
 
-  private static boolean hasSuperFinalizeAsLastStatement(AstNode node) {
-    List<AstNode> blockStatements = ImmutableList.copyOf(node.select()
-        .children(JavaGrammar.VOID_METHOD_DECLARATOR_REST)
-        .children(JavaGrammar.METHOD_BODY)
-        .children(JavaGrammar.BLOCK)
-        .children(JavaGrammar.BLOCK_STATEMENTS)
-        .children(JavaGrammar.BLOCK_STATEMENT).iterator());
+  private static AstNode getLastBlockStatement(Iterable<AstNode> blockStatements) {
+    AstNode result = null;
 
-    return !blockStatements.isEmpty() &&
-      isSuperFinalize(blockStatements.get(blockStatements.size() - 1));
+    for (AstNode blockStatement : blockStatements) {
+      AstNode statement = blockStatement.getFirstChild(JavaGrammar.STATEMENT);
+      if (statement != null) {
+        result = statement;
+      }
+    }
+
+    return result;
   }
 
-  private static boolean isSuperFinalize(AstNode node) {
-    List<Token> tokens = node.getTokens();
+  private static AstNode getLastEffectiveStatement(AstNode node) {
+    AstNode tryStatement = node.getFirstChild(JavaGrammar.TRY_STATEMENT);
+    if (tryStatement == null) {
+      return node;
+    }
 
-    return tokens.size() == 6 &&
-      "super".equals(tokens.get(0).getValue()) &&
-      ".".equals(tokens.get(1).getValue()) &&
-      "finalize".equals(tokens.get(2).getValue()) &&
-      "(".equals(tokens.get(3).getValue()) &&
-      ")".equals(tokens.get(4).getValue()) &&
-      ";".equals(tokens.get(5).getValue());
+    AstSelect query = tryStatement.select()
+        .children(JavaGrammar.FINALLY_)
+        .children(JavaGrammar.BLOCK)
+        .children(JavaGrammar.BLOCK_STATEMENTS)
+        .children(JavaGrammar.BLOCK_STATEMENT);
+
+    return getLastBlockStatement(query);
   }
 
 }

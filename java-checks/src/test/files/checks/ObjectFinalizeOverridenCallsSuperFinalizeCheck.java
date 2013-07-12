@@ -6,8 +6,8 @@ class Foo {
   }
 
   @Override
-  protected void finalize() throws Throwable {  // Non-Compliant
-    super.finalize();
+  protected void finalize() throws Throwable {
+    super.finalize();                           // Non-Compliant
     System.out.println("foo");
   }
 
@@ -26,5 +26,40 @@ class Foo {
   }
 
   boolean finalize() {                          // Compliant
+  }
+
+  void finalize() {
+    if (0) {
+      super.finalize();
+    } else {
+      super.finalize();                         // Non-Compliant
+    }
+  }
+
+  void finalize() {
+    try {
+      // ...
+    } finally {
+      super.finalize();                         // Compliant
+    }
+
+    int a;
+  }
+
+  void finalize() {
+    try {
+      // ...
+    } finally {
+      super.finalize();                         // Non-Compliant
+      System.out.println();
+    }
+  }
+
+  void finalize() {
+    try {
+      // ...
+    } catch (Exception e) {
+      super.finalize();                         // Non-Compliant
+    }
   }
 }
