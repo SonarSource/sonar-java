@@ -8,6 +8,7 @@ The following code snippet illustrates this rule:
 </p>
 
 <pre>
-Foo foo = new Foo();
-foo.finalize()         // Non-Compliant
+public void dispose() throws Throwable {
+  this.finalize();                       // Non-Compliant
+}
 </pre>

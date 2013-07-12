@@ -19,44 +19,50 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.AstAndTokenVisitor;
+import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "ObjectFinalizeCheck",
   priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class ObjectFinalizeCheck extends SquidCheck<LexerlessGrammar> {
+public class ObjectFinalizeCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
-  @Override
-  public void init() {
-    subscribeTo(JavaGrammar.PRIMARY);
+  enum State {
+    EXPECT_FINALIZE,
+    EXPECT_LPAREN,
+    EXPECT_RPAREN,
+    EXPECT_SEMI
   }
 
+  private State state = State.EXPECT_FINALIZE;
+
   @Override
-  public void visitNode(AstNode node) {
-    if (hasFinalizeQualifiedIdentifier(node) && hasArgumentsSuffix(node)) {
-      getContext().createLineViolation(this, "Remove usage of Object.finalize() method.", node);
+  public void visitToken(Token token) {
+    switch (state) {
+      case EXPECT_FINALIZE:
+        state = "finalize".equals(token.getOriginalValue()) ? State.EXPECT_LPAREN : State.EXPECT_FINALIZE;
+        break;
+      case EXPECT_LPAREN:
+        state = "(".equals(token.getOriginalValue()) ? State.EXPECT_RPAREN : State.EXPECT_FINALIZE;
+        break;
+      case EXPECT_RPAREN:
+        state = ")".equals(token.getOriginalValue()) ? State.EXPECT_SEMI : State.EXPECT_FINALIZE;
+        break;
+      case EXPECT_SEMI:
+        if (";".equals(token.getOriginalValue())) {
+          getContext().createLineViolation(this, "Remove this call to finalize().", token);
+        }
+        state = State.EXPECT_FINALIZE;
+        break;
+      default:
+        throw new IllegalStateException();
     }
-  }
-
-  private static boolean hasFinalizeQualifiedIdentifier(AstNode node) {
-    AstNode qualifiedIdentifier = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-
-    return qualifiedIdentifier != null &&
-      "finalize".equals(qualifiedIdentifier.getLastToken().getValue());
-  }
-
-  private static boolean hasArgumentsSuffix(AstNode node) {
-    AstNode identifierSuffix = node.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
-
-    return identifierSuffix != null &&
-      identifierSuffix.hasDirectChildren(JavaGrammar.ARGUMENTS);
   }
 
 }

@@ -3,11 +3,12 @@ class Foo {
     Foo foo = new Foo();
     foo.finalize();       // Non-Compliant
     foo.finalize[0];      // Compliant
-    foo.finalize(0);      // Non-Compliant
+    foo.finalize(0);      // Compliant
     foo.toString();       // Compliant
     foo.finalize;         // Compliant
-    super.finalize();     // Compliant
-    this.finalize();      // Compliant
+    super.finalize();     // Non-Compliant
+    this.finalize();      // Non-Compliant
     finalize();           // Non-Compliant
+    finalize() + 0;       // Compliant
   }
 }

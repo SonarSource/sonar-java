@@ -36,8 +36,9 @@ public class ObjectFinalizeCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ObjectFinalizeCheck.java"), new ObjectFinalizeCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Remove usage of Object.finalize() method.")
-        .next().atLine(6)
+        .next().atLine(4).withMessage("Remove this call to finalize().")
+        .next().atLine(9)
+        .next().atLine(10)
         .next().atLine(11);
   }
 
