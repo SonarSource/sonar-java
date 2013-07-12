@@ -24,6 +24,7 @@ import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -36,11 +37,14 @@ public class EmptyStatementUsageCheck extends SquidCheck<LexerlessGrammar> {
   @Override
   public void init() {
     subscribeTo(JavaGrammar.EMPTY_STATEMENT);
+    subscribeTo(JavaGrammar.CLASS_BODY_DECLARATION);
   }
 
   @Override
   public void visitNode(AstNode node) {
-    getContext().createLineViolation(this, "Remove this empty statement.", node);
+    if (node.hasDirectChildren(JavaPunctuator.SEMI)) {
+      getContext().createLineViolation(this, "Remove this empty statement.", node);
+    }
   }
 
 }

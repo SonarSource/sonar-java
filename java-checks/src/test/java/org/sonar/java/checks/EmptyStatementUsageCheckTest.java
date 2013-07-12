@@ -38,7 +38,9 @@ public class EmptyStatementUsageCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("Remove this empty statement.")
         .next().atLine(4)
-        .next().atLine(5);
+        .next().atLine(7)
+        .next().atLine(8)
+        .next().atLine(9);
   }
 
 }
