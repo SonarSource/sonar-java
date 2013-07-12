@@ -47,7 +47,7 @@ public class ClassVariableVisibilityCheckTest {
   public void detected_with_private() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassVariableVisibilityCheck.java"), new ClassVariableVisibilityCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Make this class member private visible.")
+        .next().atLine(3).withMessage("Make this class member private visible and provide accessors if needed.")
         .next().atLine(4)
         .next().atLine(5)
         .next().atLine(7)
@@ -61,7 +61,7 @@ public class ClassVariableVisibilityCheckTest {
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassVariableVisibilityCheck.java"), check);
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Make this class member package visible.")
+        .next().atLine(4).withMessage("Make this class member package visible and provide accessors if needed.")
         .next().atLine(5)
         .next().atLine(7)
         .next().atLine(8);
@@ -74,7 +74,7 @@ public class ClassVariableVisibilityCheckTest {
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassVariableVisibilityCheck.java"), check);
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("Make this class member protected visible.")
+        .next().atLine(5).withMessage("Make this class member protected visible and provide accessors if needed.")
         .next().atLine(7)
         .next().atLine(8);
   }

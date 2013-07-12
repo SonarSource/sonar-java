@@ -59,7 +59,7 @@ public class ClassVariableVisibilityCheck extends SquidCheck<LexerlessGrammar> {
     AstNode classBodyDeclaration = node.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION);
 
     if (!isConstant(classBodyDeclaration) && !hasAllowedVisibility(classBodyDeclaration)) {
-      getContext().createLineViolation(this, "Make this class member " + authorizedVisibility + " visible.", node);
+      getContext().createLineViolation(this, "Make this class member " + authorizedVisibility + " visible and provide accessors if needed.", node);
     }
   }
 
