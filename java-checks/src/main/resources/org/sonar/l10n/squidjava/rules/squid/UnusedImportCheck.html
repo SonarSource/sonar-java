@@ -1,0 +1,14 @@
+<p>
+The imports part of a file should be handled by the Integrated Development Environment (IDE), not manually by the developer.
+Unused imports should not occur if that is the case.
+Leaving them reduces the code's readability as their presence can be confusing.
+</p>
+
+<p>The following code snippet illustrates this rule:</p>
+
+<pre>
+import java.io.File;   // Non-Compliant - should be removed
+
+class EmptyClass {
+}
+</pre>

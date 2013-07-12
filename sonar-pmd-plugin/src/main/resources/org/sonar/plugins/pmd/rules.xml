@@ -186,6 +186,7 @@
   <rule key="UnusedImports">
     <priority>INFO</priority>
     <configKey><![CDATA[rulesets/imports.xml/UnusedImports]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="LocalVariableCouldBeFinal">
