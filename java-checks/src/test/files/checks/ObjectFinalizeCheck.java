@@ -11,4 +11,13 @@ class Foo {
     finalize();           // Non-Compliant
     finalize() + 0;       // Compliant
   }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();     // Compliant
+  }
+
+  public int foo() {
+    return 0;
+  }
 }

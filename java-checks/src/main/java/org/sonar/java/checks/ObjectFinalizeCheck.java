@@ -20,11 +20,14 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstAndTokenVisitor;
+import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
@@ -42,6 +45,32 @@ public class ObjectFinalizeCheck extends SquidCheck<LexerlessGrammar> implements
 
   private State state = State.EXPECT_FINALIZE;
 
+  private boolean isInFinalizeMethod;
+
+  @Override
+  public void init() {
+    subscribeTo(JavaGrammar.MEMBER_DECL);
+  }
+
+  @Override
+  public void visitFile(AstNode node) {
+    isInFinalizeMethod = false;
+  }
+
+  @Override
+  public void visitNode(AstNode node) {
+    if (isFinalizeMethodMember(node)) {
+      isInFinalizeMethod = true;
+    }
+  }
+
+  @Override
+  public void leaveNode(AstNode node) {
+    if (isFinalizeMethodMember(node)) {
+      isInFinalizeMethod = false;
+    }
+  }
+
   @Override
   public void visitToken(Token token) {
     switch (state) {
@@ -55,7 +84,7 @@ public class ObjectFinalizeCheck extends SquidCheck<LexerlessGrammar> implements
         state = ")".equals(token.getOriginalValue()) ? State.EXPECT_SEMI : State.EXPECT_FINALIZE;
         break;
       case EXPECT_SEMI:
-        if (";".equals(token.getOriginalValue())) {
+        if (";".equals(token.getOriginalValue()) && !isInFinalizeMethod) {
           getContext().createLineViolation(this, "Remove this call to finalize().", token);
         }
         state = State.EXPECT_FINALIZE;
@@ -63,6 +92,11 @@ public class ObjectFinalizeCheck extends SquidCheck<LexerlessGrammar> implements
       default:
         throw new IllegalStateException();
     }
+  }
+
+  private static boolean isFinalizeMethodMember(AstNode node) {
+    return node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST) &&
+      "finalize".equals(node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue());
   }
 
 }

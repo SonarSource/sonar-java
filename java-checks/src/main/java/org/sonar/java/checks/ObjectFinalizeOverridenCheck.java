@@ -41,13 +41,14 @@ public class ObjectFinalizeOverridenCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode node) {
-    if (node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
-      AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
-
-      if ("finalize".equals(identifier.getTokenValue())) {
-        getContext().createLineViolation(this, "Do not override the Object.finalize() method.", identifier);
-      }
+    if (isFinalizeMethodMember(node)) {
+      getContext().createLineViolation(this, "Do not override the Object.finalize() method.", node.getFirstChild(JavaTokenType.IDENTIFIER));
     }
+  }
+
+  private static boolean isFinalizeMethodMember(AstNode node) {
+    return node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST) &&
+      "finalize".equals(node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue());
   }
 
 }
