@@ -50,14 +50,14 @@ public class AsmClassProviderImpl extends AsmClassProvider {
       // TODO Godin: I believe that we should throw IllegalArgumentException instead
       throw new IllegalStateException("You can try to load a class whose internalName = 'null'");
     }
-    AsmClass asmClass = getAsmClassFromCacheOrCreateIt(internalName, level);
+    AsmClass asmClass = getAsmClassFromCacheOrCreateIt(internalName);
     if (level.isGreaterThan(asmClass.getDetailLevel())) {
       decoracteAsmClassFromBytecode(asmClass, level);
     }
     return asmClass;
   }
 
-  private AsmClass getAsmClassFromCacheOrCreateIt(String internalName, DETAIL_LEVEL level) {
+  private AsmClass getAsmClassFromCacheOrCreateIt(String internalName) {
     AsmClass asmClass = asmClassCache.get(internalName);
     if (asmClass == null) {
       asmClass = new AsmClass(internalName, DETAIL_LEVEL.NOTHING);
