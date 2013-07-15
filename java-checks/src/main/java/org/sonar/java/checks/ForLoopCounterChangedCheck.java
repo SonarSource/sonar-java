@@ -27,6 +27,7 @@ import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.ast.AstSelect;
@@ -69,7 +70,7 @@ public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
         for (int i = 0; i < node.getNumberOfChildren() - 1; i++) {
           check(merge(node.getChild(i)), node.getChild(i).getTokenLine());
         }
-      } else if (node.is(JavaGrammar.UNARY_EXPRESSION)) {
+      } else if (isIncrementOrDecrementExpression(node)) {
         for (AstNode child : node.getChildren()) {
           check(merge(child), child.getTokenLine());
         }
@@ -82,6 +83,14 @@ public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
     if (node.is(JavaGrammar.FOR_STATEMENT)) {
       loopCounters.removeAll(getLoopCounters(node));
     }
+  }
+
+  private static boolean isIncrementOrDecrementExpression(AstNode node) {
+    return node.is(JavaGrammar.UNARY_EXPRESSION) &&
+      node.select()
+          .children(JavaGrammar.PREFIX_OP, JavaGrammar.POST_FIX_OP)
+          .children(JavaPunctuator.INC, JavaPunctuator.DEC)
+          .isNotEmpty();
   }
 
   private Set<String> getLoopCounters(AstNode node) {
