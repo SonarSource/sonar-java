@@ -19,8 +19,6 @@
  */
 package org.sonar.java.bytecode.asm;
 
-import org.sonar.squid.api.SourceCodeEdgeUsage;
-
 public class AsmEdge {
 
   private final AsmResource from;

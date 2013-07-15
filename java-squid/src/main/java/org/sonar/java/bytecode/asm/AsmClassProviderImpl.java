@@ -34,7 +34,7 @@ public class AsmClassProviderImpl extends AsmClassProvider {
   private static final Logger LOG = LoggerFactory.getLogger(AsmClassProviderImpl.class);
 
   private final ClassLoader classLoader;
-  private Map<String, AsmClass> asmClassCache = new HashMap<String, AsmClass>();
+  private final Map<String, AsmClass> asmClassCache = new HashMap<String, AsmClass>();
 
   public AsmClassProviderImpl() {
     this.classLoader = Thread.currentThread().getContextClassLoader();
@@ -50,14 +50,14 @@ public class AsmClassProviderImpl extends AsmClassProvider {
       // TODO Godin: I believe that we should throw IllegalArgumentException instead
       throw new IllegalStateException("You can try to load a class whose internalName = 'null'");
     }
-    AsmClass asmClass = getAsmClassFromCacheOrCreateIt(internalName);
+    AsmClass asmClass = getAsmClassFromCacheOrCreateIt(internalName, level);
     if (level.isGreaterThan(asmClass.getDetailLevel())) {
       decoracteAsmClassFromBytecode(asmClass, level);
     }
     return asmClass;
   }
 
-  private AsmClass getAsmClassFromCacheOrCreateIt(String internalName) {
+  private AsmClass getAsmClassFromCacheOrCreateIt(String internalName, DETAIL_LEVEL level) {
     AsmClass asmClass = asmClassCache.get(internalName);
     if (asmClass == null) {
       asmClass = new AsmClass(internalName, DETAIL_LEVEL.NOTHING);

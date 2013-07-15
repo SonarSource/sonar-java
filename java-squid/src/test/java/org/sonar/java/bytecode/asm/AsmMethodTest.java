@@ -26,17 +26,30 @@ import org.sonar.java.bytecode.ClassLoaderBuilder;
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class AsmMethodTest {
 
   private static AsmClass javaBean;
-  private AsmClass stringClass = new AsmClass("java/lang/String");
-  private AsmClass numberClass = new AsmClass("java/lang/Number");
+  private final AsmClass stringClass = new AsmClass("java/lang/String");
+  private final AsmClass numberClass = new AsmClass("java/lang/Number");
 
   @BeforeClass
   public static void init() {
     AsmClassProvider asmClassProvider = new AsmClassProviderImpl(ClassLoaderBuilder.create(new File("src/test/files/bytecode/bin/")));
     javaBean = asmClassProvider.getClass("properties/JavaBean");
+  }
+
+  @Test
+  public void add_and_get_throws() {
+    AsmMethod method = new AsmMethod(new AsmClass("java/lang/String"), "toString()Ljava/lang/String;");
+    assertThat(method.getThrows()).isEmpty();
+    AsmClass class1 = mock(AsmClass.class);
+    AsmClass class2 = mock(AsmClass.class);
+    AsmClass class3 = mock(AsmClass.class);
+    method.addThrowsOfClasses(new AsmClass[] {class1, class2});
+    method.addUsesOfClasses(new AsmClass[] {class3});
+    assertThat(method.getThrows()).containsExactly(class1, class2);
   }
 
   @Test

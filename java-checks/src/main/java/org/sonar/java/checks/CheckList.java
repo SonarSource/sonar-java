@@ -90,7 +90,8 @@ public final class CheckList {
         CallToDeprecatedMethodCheck.class,
         CallToFileDeleteOnExitMethodCheck.class,
         UnusedProtectedMethodCheck.class,
-        UnusedPrivateMethodCheck.class);
+        UnusedPrivateMethodCheck.class,
+        RedundantThrowsDeclarationCheck.class);
   }
 
 }

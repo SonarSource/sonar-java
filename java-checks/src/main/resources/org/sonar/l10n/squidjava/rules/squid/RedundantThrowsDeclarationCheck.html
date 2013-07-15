@@ -1,0 +1,29 @@
+<p>
+An exception in a <code>throws</code> declaration in Java is redundant if:
+</p>
+
+<ol>
+  <li>It listed multiple times</li>
+  <li>It is a subclass of another listed exceptions</li>
+  <li>It is a <code>RuntimeException</code>, or one of its descendants</li>
+</ol>
+
+<p>
+The following code:
+</p>
+
+<pre>
+void foo() throws MyException, MyException {}  // Non-Compliant - should be listed once
+void bar() throws Throwable, Exception {}      // Non-Compliant - Exception is a subclass of Throwable
+void baz() throws RuntimeException {}          // Non-Compliant - RuntimeException can always be thrown
+</pre>
+
+<p>
+should be refactored into:
+</p>
+
+<pre>
+void foo() throws MyException {}               // Compliant
+void bar() throws Throwable {}                 // Compliant
+void baz() {}                                  // Compliant
+</pre>

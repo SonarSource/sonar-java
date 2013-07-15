@@ -20,18 +20,21 @@
 package org.sonar.java.bytecode.asm;
 
 import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
-import org.sonar.squid.api.SourceCodeEdgeUsage;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-public final class AsmClass extends AsmResource {
+public class AsmClass extends AsmResource {
 
-  private String internalName;
+  private final String internalName;
   private DETAIL_LEVEL level;
   private AsmClass superClass;
   private Set<AsmClass> children;
-  private Map<String, AsmMethod> methods = new HashMap<String, AsmMethod>();
-  private Map<String, AsmField> fields = new HashMap<String, AsmField>();
+  private final Map<String, AsmMethod> methods = new HashMap<String, AsmMethod>();
+  private final Map<String, AsmField> fields = new HashMap<String, AsmField>();
   private int noc = 0;
 
   public AsmClass(String internalName, DETAIL_LEVEL level) {

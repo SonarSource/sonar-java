@@ -64,6 +64,15 @@ public class AsmClassVisitorTest {
   }
 
   @Test
+  public void testVisitMehtodThrows() {
+    AsmClass fileClass = asmClassProvider.getClass("tags/File");
+    assertThat(fileClass.getMethod("read()V").getThrows()).hasSize(1);
+    assertThat(fileClass.getMethod("read()V").getThrows().get(0).getInternalName()).isEqualTo("tags/TagException");
+    AsmClass stringClass = asmClassProvider.getClass("java/lang/String");
+    assertThat(stringClass.getMethod("toString()Ljava/lang/String;").getThrows()).isEmpty();
+  }
+
+  @Test
   public void testInheritedMethodProperty() {
     AsmClass asmClass = asmClassProvider.getClass("properties/InheritedMethodsProperty");
     assertThat(asmClass.getMethod("equals(Ljava/lang/Object;)Z").isInherited()).isTrue();

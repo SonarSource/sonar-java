@@ -1001,6 +1001,7 @@
       <!-- Note that default value in Checkstyle 5.5 is false -->
       <defaultValue>true</defaultValue>
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.RegexpCheck">

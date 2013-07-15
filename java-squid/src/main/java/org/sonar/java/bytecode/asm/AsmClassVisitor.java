@@ -26,9 +26,9 @@ import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
 
 public class AsmClassVisitor extends EmptyVisitor {
 
-  private AsmClassProvider asmClassProvider;
-  private DETAIL_LEVEL level;
-  private AsmClass asmClass;
+  private final AsmClassProvider asmClassProvider;
+  private final DETAIL_LEVEL level;
+  private final AsmClass asmClass;
 
   public AsmClassVisitor(AsmClassProvider asmClassProvider, AsmClass asmClass, DETAIL_LEVEL level) {
     this.asmClassProvider = asmClassProvider;
@@ -58,6 +58,8 @@ public class AsmClassVisitor extends EmptyVisitor {
         asmClass.addUsesOfClasses(asmClasses);
       }
     }
+
+    asmClass.setDetailLevel(level);
   }
 
   @Override
@@ -82,17 +84,13 @@ public class AsmClassVisitor extends EmptyVisitor {
     String[] internalNames = AsmSignature.extractInternalNames(description, signature);
     AsmClass[] asmClasses = internalNamesToAsmClasses(internalNames, DETAIL_LEVEL.NOTHING);
     method.addUsesOfClasses(asmClasses);
-    AsmClass[] asmExceptionClasses = internalNamesToAsmClasses(exceptions, DETAIL_LEVEL.NOTHING);
+    AsmClass[] asmExceptionClasses = internalNamesToAsmClasses(exceptions, DETAIL_LEVEL.STRUCTURE);
     method.addUsesOfClasses(asmExceptionClasses);
+    method.addThrowsOfClasses(asmExceptionClasses);
     if (level == DETAIL_LEVEL.STRUCTURE_AND_CALLS) {
       return new AsmMethodVisitor(method, asmClassProvider);
     }
     return null;
-  }
-
-  @Override
-  public void visitEnd() {
-    asmClass.setDetailLevel(level);
   }
 
   private AsmClass[] internalNamesToAsmClasses(String[] internalNames, DETAIL_LEVEL level) {
@@ -108,7 +106,7 @@ public class AsmClassVisitor extends EmptyVisitor {
 
   private boolean isInheritedMethodSignature(AsmClass parent, String key) {
     if (parent.getSuperClass() != null
-        && (parent.getSuperClass().getMethod(key) != null || isInheritedMethodSignature(parent.getSuperClass(), key))) {
+      && (parent.getSuperClass().getMethod(key) != null || isInheritedMethodSignature(parent.getSuperClass(), key))) {
       return true;
     }
     for (AsmClass interfaceClass : parent.getInterfaces()) {

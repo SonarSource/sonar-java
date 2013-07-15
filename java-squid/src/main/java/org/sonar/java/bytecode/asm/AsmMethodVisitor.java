@@ -24,12 +24,11 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.EmptyVisitor;
 import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
-import org.sonar.squid.api.SourceCodeEdgeUsage;
 
 public class AsmMethodVisitor extends EmptyVisitor {
 
-  private AsmMethod method;
-  private AsmClassProvider asmClassProvider;
+  private final AsmMethod method;
+  private final AsmClassProvider asmClassProvider;
   private int lineNumber = 0;
   private boolean emptyMethod = true;
 

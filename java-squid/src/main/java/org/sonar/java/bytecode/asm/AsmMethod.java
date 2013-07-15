@@ -19,15 +19,15 @@
  */
 package org.sonar.java.bytecode.asm;
 
-import org.sonar.squid.api.SourceCodeEdgeUsage;
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AsmMethod extends AsmResource {
 
-  private String name;
-  private String key;
+  private final String name;
+  private final String key;
   private boolean inherited = false;
   private boolean empty = false;
   private boolean bodyLoaded = true;
@@ -48,6 +48,24 @@ public class AsmMethod extends AsmResource {
     this.parent = parent;
     this.key = key;
     this.name = key.substring(0, key.indexOf('('));
+  }
+
+  void addThrowsOfClasses(AsmClass[] asmClasses) {
+    for (AsmClass asmClass : asmClasses) {
+      addEdge(new AsmEdge(this, asmClass, SourceCodeEdgeUsage.THROWS));
+    }
+  }
+
+  public List<AsmClass> getThrows() {
+    ImmutableList.Builder<AsmClass> builder = ImmutableList.builder();
+
+    for (AsmEdge edge : getOutgoingEdges()) {
+      if (edge.getUsage() == SourceCodeEdgeUsage.THROWS) {
+        builder.add((AsmClass) edge.getTo());
+      }
+    }
+
+    return builder.build();
   }
 
   public String getName() {
@@ -191,7 +209,7 @@ public class AsmMethod extends AsmResource {
   }
 
   private boolean isMethodNotAccessorOrAccessingDifferentField(AsmMethod method) {
-    return !method.isAccessor() || (accessedField != null && !accessedField.equals(method.getAccessedField()));
+    return !method.isAccessor() || accessedField != null && !accessedField.equals(method.getAccessedField());
   }
 
   private boolean isFieldAccesingDifferentField(AsmField field) {

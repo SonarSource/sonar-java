@@ -19,16 +19,18 @@
  */
 package org.sonar.java.bytecode.asm;
 
-import org.sonar.squid.api.SourceCodeEdgeUsage;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AsmResource {
 
   private int accessFlags;
   AsmClass parent;
   boolean used = false;
-  private List<AsmEdge> outgoingEdges = new ArrayList<AsmEdge>();
+  private final List<AsmEdge> outgoingEdges = new ArrayList<AsmEdge>();
 
   void setAccessFlags(int accessFlags) {
     this.accessFlags = accessFlags;

@@ -19,11 +19,19 @@
  */
 package org.sonar.java.bytecode.visitor;
 
-import org.sonar.java.bytecode.asm.*;
-import org.sonar.squid.api.SourceCodeEdgeUsage;
+import org.sonar.java.bytecode.asm.AsmClass;
+import org.sonar.java.bytecode.asm.AsmEdge;
+import org.sonar.java.bytecode.asm.AsmField;
+import org.sonar.java.bytecode.asm.AsmMethod;
+import org.sonar.java.bytecode.asm.AsmResource;
+import org.sonar.java.bytecode.asm.SourceCodeEdgeUsage;
 import org.sonar.squid.measures.Metric;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class LCOM4Visitor extends BytecodeVisitor {
 
@@ -72,7 +80,7 @@ public class LCOM4Visitor extends BytecodeVisitor {
 
   private boolean isMethodElligibleForLCOM4Computation(AsmMethod asmMethod) {
     return !asmMethod.isAbstract() && !asmMethod.isStatic() && !asmMethod.isConstructor() && !asmMethod.isEmpty()
-        && !asmMethod.isAccessor() && asmMethod.isBodyLoaded();
+      && !asmMethod.isAccessor() && asmMethod.isBodyLoaded();
   }
 
   private void removeIsolatedMethodBlocks() {

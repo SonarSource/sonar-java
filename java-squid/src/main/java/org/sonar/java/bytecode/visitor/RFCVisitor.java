@@ -22,7 +22,7 @@ package org.sonar.java.bytecode.visitor;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmEdge;
 import org.sonar.java.bytecode.asm.AsmMethod;
-import org.sonar.squid.api.SourceCodeEdgeUsage;
+import org.sonar.java.bytecode.asm.SourceCodeEdgeUsage;
 import org.sonar.squid.measures.Metric;
 
 import java.util.HashSet;
@@ -51,7 +51,7 @@ public class RFCVisitor extends BytecodeVisitor {
   @Override
   public void visitEdge(AsmEdge edge) {
     if (edge.getTargetAsmClass() != asmClass && edge.getUsage() == SourceCodeEdgeUsage.CALLS_METHOD
-        && !((AsmMethod) edge.getTo()).isAccessor()) {
+      && !((AsmMethod) edge.getTo()).isAccessor()) {
       distinctCallToExternalMethods.add((AsmMethod) edge.getTo());
     }
   }
