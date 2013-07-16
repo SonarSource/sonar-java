@@ -32,6 +32,10 @@ import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SymbolTableVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
+import org.sonar.java.bytecode.asm.AsmClassProviderImpl;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.java.bytecode.visitor.DITVisitor;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
 import org.sonar.java.bytecode.visitor.LCOM4Visitor;
@@ -89,6 +93,9 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
       if (visitor instanceof CharsetAwareVisitor) {
         ((CharsetAwareVisitor) visitor).setCharset(conf.getCharset());
       }
+      if (visitor instanceof SourceAndBytecodeVisitor) {
+        astScanner.accept(((SourceAndBytecodeVisitor) visitor).getSourceVisitor());
+      }
       astScanner.accept(visitor);
       bytecodeScanner.accept(visitor);
     }
@@ -117,7 +124,20 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
   private void scanBytecode(Collection<File> bytecodeFilesOrDirectories) {
     if (hasBytecode(bytecodeFilesOrDirectories)) {
       TimeProfiler profiler = new TimeProfiler(getClass()).start("Java bytecode scan");
-      bytecodeScanner.scan(bytecodeFilesOrDirectories);
+
+      ClassLoader classLoader = ClassLoaderBuilder.create(bytecodeFilesOrDirectories);
+      AsmClassProviderImpl classProvider = new AsmClassProviderImpl(classLoader);
+
+      for (BytecodeVisitor visitor : bytecodeScanner.getVisitors()) {
+        if (visitor instanceof ClassBytecodeProviderAwareVisitor) {
+          ((ClassBytecodeProviderAwareVisitor) visitor).setClassProvider(classProvider);
+        }
+      }
+
+      bytecodeScanner.scan(bytecodeFilesOrDirectories, classProvider);
+
+      ((SquidClassLoader) classLoader).close();
+
       bytecodeScanned = true;
       profiler.stop();
     } else {
@@ -131,8 +151,8 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     }
     for (File bytecodeFilesOrDirectory : bytecodeFilesOrDirectories) {
       if (bytecodeFilesOrDirectory.exists() &&
-          (bytecodeFilesOrDirectory.isFile() ||
-          !FileUtils.listFiles(bytecodeFilesOrDirectory, new String[] {"class"}, true).isEmpty())) {
+        (bytecodeFilesOrDirectory.isFile() ||
+        !FileUtils.listFiles(bytecodeFilesOrDirectory, new String[] {"class"}, true).isEmpty())) {
         return true;
       }
     }
@@ -151,22 +171,27 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     return graph;
   }
 
+  @Override
   public SourceCodeEdge getEdge(SourceCode from, SourceCode to) {
     return graph.getEdge(from, to);
   }
 
+  @Override
   public boolean hasEdge(SourceCode from, SourceCode to) {
     return graph.hasEdge(from, to);
   }
 
+  @Override
   public Set<SourceCode> getVertices() {
     return graph.getVertices();
   }
 
+  @Override
   public Collection<SourceCodeEdge> getOutgoingEdges(SourceCode from) {
     return graph.getOutgoingEdges(from);
   }
 
+  @Override
   public Collection<SourceCodeEdge> getIncomingEdges(SourceCode to) {
     return graph.getIncomingEdges(to);
   }
@@ -179,10 +204,12 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     return squidIndex.search(queryByType);
   }
 
+  @Override
   public SourceCode search(String key) {
     return squidIndex.search(key);
   }
 
+  @Override
   public Collection<SourceCode> search(Query... query) {
     return squidIndex.search(query);
   }

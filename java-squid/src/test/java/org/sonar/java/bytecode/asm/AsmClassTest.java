@@ -50,4 +50,10 @@ public class AsmClassTest {
     assertThat(new AsmClass("java/lang/String")).isNotEqualTo(new AsmClass("java/lang/Number"));
     assertThat(new AsmClass("java/lang/String").hashCode()).isNotEqualTo(new AsmClass("java/lang/Number").hashCode());
   }
+
+  @Test
+  public void getDisplayName() {
+    assertThat(new AsmClass("java/lang/String").getDisplayName()).isEqualTo("java.lang.String");
+  }
+
 }

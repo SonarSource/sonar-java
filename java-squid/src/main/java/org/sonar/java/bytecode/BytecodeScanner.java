@@ -19,8 +19,11 @@
  */
 package org.sonar.java.bytecode;
 
-import org.sonar.java.bytecode.asm.*;
+import org.sonar.java.bytecode.asm.AsmClass;
+import org.sonar.java.bytecode.asm.AsmClassProvider;
 import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
+import org.sonar.java.bytecode.asm.AsmClassProviderImpl;
+import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.squid.api.CodeScanner;
@@ -37,18 +40,23 @@ import java.util.Collections;
 
 public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
 
-  private SquidIndex indexer;
+  private final SquidIndex indexer;
 
   public BytecodeScanner(SquidIndex indexer) {
     this.indexer = indexer;
   }
 
   public BytecodeScanner scan(Collection<File> bytecodeFilesOrDirectories) {
-    Collection<SourceCode> classes = indexer.search(new QueryByType(SourceClass.class));
     ClassLoader classLoader = ClassLoaderBuilder.create(bytecodeFilesOrDirectories);
-    scan(classes, new AsmClassProviderImpl(classLoader));
+    scan(bytecodeFilesOrDirectories, new AsmClassProviderImpl(classLoader));
     // TODO unchecked cast
     ((SquidClassLoader) classLoader).close();
+    return this;
+  }
+
+  public BytecodeScanner scan(Collection<File> bytecodeFilesOrDirectories, AsmClassProvider classProvider) {
+    Collection<SourceCode> classes = indexer.search(new QueryByType(SourceClass.class));
+    scanClasses(classes, classProvider);
     return this;
   }
 
@@ -56,7 +64,7 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
     return scan(Arrays.asList(bytecodeDirectory));
   }
 
-  protected BytecodeScanner scan(Collection<SourceCode> classes, AsmClassProvider classProvider) {
+  protected BytecodeScanner scanClasses(Collection<SourceCode> classes, AsmClassProvider classProvider) {
     loadByteCodeInformation(classes, classProvider);
     linkVirtualMethods(classes, classProvider);
     notifyBytecodeVisitors(classes, classProvider);

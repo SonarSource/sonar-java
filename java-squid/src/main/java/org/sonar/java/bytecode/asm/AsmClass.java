@@ -58,6 +58,10 @@ public class AsmClass extends AsmResource {
     return internalName;
   }
 
+  public String getDisplayName() {
+    return getInternalName().replace('/', '.');
+  }
+
   void addMethod(AsmMethod asmMethod) {
     methods.put(asmMethod.getKey(), asmMethod);
   }
