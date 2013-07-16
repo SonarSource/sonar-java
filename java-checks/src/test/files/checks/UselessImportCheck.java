@@ -8,12 +8,14 @@ import NonCompliant2;               // Non-Compliant
 import static a.b.c.Foo.d;          // Compliant
 import a.b.c.*;                     // Compliant
 import static a.b.c.Foo.*;          // Compliant
+import a.b.c.MyException;           // Compliant
+import a.b.c.MyException2;          // Compliant
 
 class Foo extends Foo {
   Bar a = new Baz<String>();
 
   @Qux
-  void test() {
+  void test() throws MyException, MyException2 {
   }
 
   // ReferencedFromJavadoc

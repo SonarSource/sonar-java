@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.sonar.sslr.api.AstAndTokenVisitor;
@@ -35,15 +36,17 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 @Rule(
-  key = "UnusedImportCheck",
+  key = "UselessImportCheck",
   priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class UnusedImportCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private final Map<String, Integer> lineByImportReference = Maps.newHashMap();
   private final Set<String> pendingImports = Sets.newHashSet();
@@ -54,6 +57,7 @@ public class UnusedImportCheck extends SquidCheck<LexerlessGrammar> implements A
     subscribeTo(JavaGrammar.CLASS_TYPE);
     subscribeTo(JavaGrammar.CREATED_NAME);
     subscribeTo(JavaGrammar.ANNOTATION);
+    subscribeTo(JavaKeyword.THROWS);
   }
 
   @Override
@@ -71,8 +75,9 @@ public class UnusedImportCheck extends SquidCheck<LexerlessGrammar> implements A
         pendingImports.add(reference);
       }
     } else {
-      String reference = getReference(node);
-      updatePendingImports(reference);
+      for (String reference : getReferences(node)) {
+        updatePendingImports(reference);
+      }
     }
   }
 
@@ -99,11 +104,26 @@ public class UnusedImportCheck extends SquidCheck<LexerlessGrammar> implements A
     return reference.indexOf('.') != -1;
   }
 
-  private static String getReference(AstNode node) {
-    if (node.is(JavaGrammar.ANNOTATION)) {
-      node = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-    }
+  private static Collection<String> getReferences(AstNode node) {
+    if (node.is(JavaKeyword.THROWS)) {
+      ImmutableList.Builder<String> builder = ImmutableList.builder();
 
+      for (AstNode qualifiedIdentifier : node.getNextSibling().getChildren(JavaGrammar.QUALIFIED_IDENTIFIER)) {
+        builder.add(mergeIdentifiers(qualifiedIdentifier));
+      }
+
+      return builder.build();
+    }
+    else {
+      if (node.is(JavaGrammar.ANNOTATION)) {
+        node = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
+      }
+
+      return Collections.singleton(mergeIdentifiers(node));
+    }
+  }
+
+  private static String mergeIdentifiers(AstNode node) {
     StringBuilder sb = new StringBuilder();
     for (AstNode child : node.getChildren(JavaTokenType.IDENTIFIER)) {
       sb.append(child.getTokenOriginalValue());

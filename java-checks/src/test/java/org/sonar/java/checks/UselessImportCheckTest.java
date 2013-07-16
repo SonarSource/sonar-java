@@ -27,14 +27,14 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
-public class UnusedImportCheckTest {
+public class UselessImportCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UnusedImportCheck.java"), new UnusedImportCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UselessImportCheck.java"), new UselessImportCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(6)
         .next().atLine(7);

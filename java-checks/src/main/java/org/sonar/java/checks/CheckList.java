@@ -80,7 +80,7 @@ public final class CheckList {
         AssignmentInSubExpressionCheck.class,
         StringEqualityComparisonCheck.class,
         TrailingCommentCheck.class,
-        UnusedImportCheck.class,
+        UselessImportCheck.class,
         LowerCaseLongSuffixCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
