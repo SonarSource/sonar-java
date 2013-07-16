@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstAndTokenVisitor;
+import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
@@ -33,10 +34,18 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class StringBufferUsageCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
+  private int lastReportedLine;
+
+  @Override
+  public void visitFile(AstNode astNode) {
+    lastReportedLine = -1;
+  }
+
   @Override
   public void visitToken(Token token) {
-    if ("StringBuffer".equals(token.getValue())) {
+    if ("StringBuffer".equals(token.getValue()) && lastReportedLine != token.getLine()) {
       getContext().createLineViolation(this, "Replace this StringBuilder by a StringBuffer.", token);
+      lastReportedLine = token.getLine();
     }
   }
 
