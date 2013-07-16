@@ -37,40 +37,40 @@ public class RedundantThrowsDeclarationCheckTest {
 
         .next()
         .atLine(36)
-        .withMessage("Remove the declaration of thrown exception 'java/lang/RuntimeException' which is a runtime exception.")
+        .withMessage("Remove the declaration of thrown exception 'java.lang.RuntimeException' which is a runtime exception.")
 
         .next()
         .atLine(39)
-        .withMessage("Remove the declaration of thrown exception 'java/lang/IllegalArgumentException' which is a runtime exception.")
+        .withMessage("Remove the declaration of thrown exception 'java.lang.IllegalArgumentException' which is a runtime exception.")
 
         .next()
         .atLine(42)
-        .withMessage("Remove the declaration of thrown exception 'org/sonar/java/checks/targets/RedundantThrowsDeclarationCheck$MyRuntimeException' which is a runtime exception.")
+        .withMessage("Remove the declaration of thrown exception 'org.sonar.java.checks.targets.RedundantThrowsDeclarationCheck$MyRuntimeException' which is a runtime exception.")
 
         .next()
         .atLine(45)
-        .withMessage("Remove the declaration of thrown exception 'org/sonar/java/checks/targets/RedundantThrowsDeclarationCheck$MyException' which is a subclass of another one.")
+        .withMessage("Remove the declaration of thrown exception 'org.sonar.java.checks.targets.RedundantThrowsDeclarationCheck$MyException' which is a subclass of another one.")
 
         .next()
         .atLine(48)
-        .withMessage("Remove the declaration of thrown exception 'java/lang/Error' which is a subclass of another one.")
+        .withMessage("Remove the declaration of thrown exception 'java.lang.Error' which is a subclass of another one.")
 
         .next()
         .atLine(51)
-        .withMessage("Remove the redundant 'org/sonar/java/checks/targets/RedundantThrowsDeclarationCheck$MyException' thrown exception declaration(s).")
+        .withMessage("Remove the redundant 'org.sonar.java.checks.targets.RedundantThrowsDeclarationCheck$MyException' thrown exception declaration(s).")
 
         .next()
         .atLine(54)
-        .withMessage("Remove the declaration of thrown exception 'org/sonar/java/checks/targets/RedundantThrowsDeclarationCheck$MyException' which is a subclass of another one.")
+        .withMessage("Remove the declaration of thrown exception 'org.sonar.java.checks.targets.RedundantThrowsDeclarationCheck$MyException' which is a subclass of another one.")
 
         .next()
         .atLine(57)
-        .withMessage("Remove the declaration of thrown exception 'org/sonar/java/checks/targets/RedundantThrowsDeclarationCheck$MyRuntimeException' which is a runtime exception.")
+        .withMessage("Remove the declaration of thrown exception 'org.sonar.java.checks.targets.RedundantThrowsDeclarationCheck$MyRuntimeException' which is a runtime exception.")
 
         .next()
         .atLine(60)
         .withMessage(
-            "Remove the declaration of thrown exception 'org/sonar/java/checks/targets/RedundantThrowsDeclarationCheck$MyRuntimeException' which is a subclass of another one.");
+            "Remove the declaration of thrown exception 'org.sonar.java.checks.targets.RedundantThrowsDeclarationCheck$MyRuntimeException' which is a subclass of another one.");
   }
 
 }
