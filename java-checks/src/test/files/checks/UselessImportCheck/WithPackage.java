@@ -1,3 +1,5 @@
+package checks.UselessImportCheck;
+
 import a.b.c.Foo;                   // Compliant
 import a.b.c.Bar;                   // Compliant
 import a.b.c.Baz;                   // Compliant
@@ -10,6 +12,13 @@ import a.b.c.*;                     // Compliant
 import static a.b.c.Foo.*;          // Compliant
 import a.b.c.MyException;           // Compliant
 import a.b.c.MyException2;          // Compliant
+import java.lang.String;            // Non-Compliant
+import java.lang.*;                 // Non-Compliant
+import a.b.c.Foo;                   // Non-Compliant
+
+import checks.UselessImportCheck.*;              // Non-Compliant
+import static checks.UselessImportCheck.Foo.*;   // Compliant
+import checks.UselessImportCheck.foo.*;          // Compliant
 
 class Foo extends Foo {
   Bar a = new Baz<String>();
@@ -24,4 +33,5 @@ class Foo extends Foo {
   a.b.c.NonCompliant foo(a.b.c.NonCompliant bar) {
     return new a.b.c.NonCompliant();
   }
+
 }

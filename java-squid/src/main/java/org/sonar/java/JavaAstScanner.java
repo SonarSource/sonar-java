@@ -61,11 +61,18 @@ public final class JavaAstScanner {
    * Helper method for testing checks without having to deploy them on a Sonar instance.
    */
   public static SourceFile scanSingleFile(File file, SquidAstVisitor<LexerlessGrammar>... visitors) {
+    return scanSingleFile(file, file.getParentFile(), visitors);
+  }
+
+  /**
+   * Helper method for testing checks without having to deploy them on a Sonar instance.
+   */
+  public static SourceFile scanSingleFile(File file, File parentFile, SquidAstVisitor<LexerlessGrammar>... visitors) {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
     org.sonar.java.ast.AstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitors);
-    InputFile inputFile = InputFileUtils.create(file.getParentFile(), file);
+    InputFile inputFile = InputFileUtils.create(parentFile, file);
     scanner.scan(Collections.singleton(inputFile));
     Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));
     if (sources.size() != 1) {

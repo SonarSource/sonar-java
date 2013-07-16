@@ -197,6 +197,7 @@
     <priority>MINOR</priority>
     <name><![CDATA[Redundant import]]></name>
     <configKey><![CDATA[Checker/TreeWalker/RedundantImport]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.naming.AbstractClassNameCheck">

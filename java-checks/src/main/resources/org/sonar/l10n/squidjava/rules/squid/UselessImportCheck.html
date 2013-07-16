@@ -1,14 +1,25 @@
 <p>
 The imports part of a file should be handled by the Integrated Development Environment (IDE), not manually by the developer.
-Unused imports should not occur if that is the case.
+Unused and useless imports should not occur if that is the case.
 Leaving them reduces the code's readability as their presence can be confusing.
 </p>
 
 <p>The following code snippet illustrates this rule:</p>
 
 <pre>
-import java.io.File;   // Non-Compliant - should be removed
+package my.company;
 
-class EmptyClass {
+import java.lang.String;        // Non-Compliant - java.lang classes are always implicitly imported
+import my.company.SomeClass;    // Non-Compliant - same package files are always implicitly imported
+import java.io.File;            // Non-Compliant - File is not used
+
+import my.company2.SomeType;
+import my.company2.SomeType;    // Non-Compliant - 'SomeType' is already imported
+
+class ExampleClass {
+
+  public String someString;
+  public SomeType something;
+
 }
 </pre>

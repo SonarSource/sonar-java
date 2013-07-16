@@ -51,8 +51,11 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
   private final Map<String, Integer> lineByImportReference = Maps.newHashMap();
   private final Set<String> pendingImports = Sets.newHashSet();
 
+  private String currentPackage;
+
   @Override
   public void init() {
+    subscribeTo(JavaGrammar.PACKAGE_DECLARATION);
     subscribeTo(JavaGrammar.IMPORT_DECLARATION);
     subscribeTo(JavaGrammar.CLASS_TYPE);
     subscribeTo(JavaGrammar.CREATED_NAME);
@@ -64,15 +67,30 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
   public void visitFile(AstNode astNode) {
     lineByImportReference.clear();
     pendingImports.clear();
+
+    currentPackage = "";
   }
 
   @Override
   public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.IMPORT_DECLARATION)) {
-      if (!isStaticImport(node) && !isImportOnDemand(node)) {
-        String reference = merge(node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
-        lineByImportReference.put(reference, node.getTokenLine());
-        pendingImports.add(reference);
+    if (node.is(JavaGrammar.PACKAGE_DECLARATION)) {
+      currentPackage = mergeIdentifiers(node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
+    } else if (node.is(JavaGrammar.IMPORT_DECLARATION)) {
+      if (!isStaticImport(node)) {
+        String reference = mergeIdentifiers(node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
+
+        if (isJavaLangImport(reference)) {
+          getContext().createLineViolation(this, "Remove this unnecessary import: java.lang classes are always implicitly imported.", node);
+        } else if (isImportFromSamePackage(reference)) {
+          getContext().createLineViolation(this, "Remove this unnecessary import: same package classes are always implicitly imported.", node);
+        } else if (!isImportOnDemand(node)) {
+          if (isDuplicatedImport(reference)) {
+            getContext().createLineViolation(this, "Remove this duplicated import.", node);
+          } else {
+            lineByImportReference.put(reference, node.getTokenLine());
+            pendingImports.add(reference);
+          }
+        }
       }
     } else {
       for (String reference : getReferences(node)) {
@@ -86,6 +104,20 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
     for (String pendingImport : pendingImports) {
       getContext().createLineViolation(this, "Remove this unused import '" + pendingImport + "'.", lineByImportReference.get(pendingImport));
     }
+  }
+
+  private static boolean isJavaLangImport(String reference) {
+    return "java.lang".equals(reference) || reference.startsWith("java.lang.");
+  }
+
+  private boolean isImportFromSamePackage(String reference) {
+    return !currentPackage.isEmpty() &&
+      reference.startsWith(currentPackage) &&
+      reference.lastIndexOf('.') < currentPackage.length();
+  }
+
+  private boolean isDuplicatedImport(String reference) {
+    return pendingImports.contains(reference);
   }
 
   private void updatePendingImports(String reference) {
@@ -140,16 +172,6 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
 
   private static boolean isImportOnDemand(AstNode node) {
     return node.hasDirectChildren(JavaPunctuator.STAR);
-  }
-
-  private static String merge(AstNode node) {
-    StringBuilder sb = new StringBuilder();
-
-    for (Token token : node.getTokens()) {
-      sb.append(token.getOriginalValue());
-    }
-
-    return sb.toString();
   }
 
   @Override

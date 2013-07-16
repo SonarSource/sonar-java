@@ -33,11 +33,28 @@ public class UselessImportCheckTest {
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UselessImportCheck.java"), new UselessImportCheck());
+  public void detected_with_package() {
+    SourceFile file = JavaAstScanner.scanSingleFile(
+        new File("src/test/files/checks/UselessImportCheck/WithPackage.java"),
+        new File("src/test/files/"),
+        new UselessImportCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6)
-        .next().atLine(7);
+        .next().atLine(8).withMessage("Remove this unused import 'a.b.c.NonCompliant'.")
+        .next().atLine(9)
+        .next().atLine(15).withMessage("Remove this unnecessary import: java.lang classes are always implicitly imported.")
+        .next().atLine(16)
+        .next().atLine(17).withMessage("Remove this duplicated import.")
+        .next().atLine(19).withMessage("Remove this unnecessary import: same package classes are always implicitly imported.");
+  }
+
+  @Test
+  public void detected_without_package() {
+    SourceFile file = JavaAstScanner.scanSingleFile(
+        new File("src/test/files/checks/UselessImportCheck/WithoutPackage.java"),
+        new File("src/test/files/"),
+        new UselessImportCheck());
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(2);
   }
 
 }

@@ -980,16 +980,19 @@
   <rule key="DuplicateImports">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/imports.xml/DuplicateImports]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="DontImportJavaLang">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/imports.xml/DontImportJavaLang]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ImportFromSamePackage">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/imports.xml/ImportFromSamePackage]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="CloneThrowsCloneNotSupportedException">
