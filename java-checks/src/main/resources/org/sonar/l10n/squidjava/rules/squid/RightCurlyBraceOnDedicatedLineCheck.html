@@ -17,7 +17,13 @@ public void myMethod() {
 
   try {
     generateOrder();
+  } finally {                         // Compliant
+    closeConnection();
   }                                   // Compliant
-  finally { closeConnection();}       // Non-Compliant
+
+  try {
+    generateOrder();
+  } finally {                         // Compliant
+    closeConnection(); }              // Non-Compliant
 }
 </pre>

@@ -40,19 +40,14 @@ public class RightCurlyBraceOnDedicatedLineCheck extends SquidCheck<LexerlessGra
 
   @Override
   public void visitNode(AstNode node) {
-    if (!isExcluded(node) && (hasSomeCodeBefore(node) || hasSomeCodeAfter(node))) {
-      getContext().createLineViolation(this, "Move this closing curly brace to a dedicated line.", node);
+    if (!isExcluded(node) && hasSomeCodeBefore(node)) {
+      getContext().createLineViolation(this, "Move this closing curly brace to the next line.", node);
     }
   }
 
   private static boolean hasSomeCodeBefore(AstNode node) {
     Token previousToken = getPreviousToken(node);
     return previousToken != null && previousToken.getLine() == node.getTokenLine();
-  }
-
-  private static boolean hasSomeCodeAfter(AstNode node) {
-    Token nextToken = getNextToken(node);
-    return nextToken != null && nextToken.getLine() == node.getTokenLine();
   }
 
   private static boolean isExcluded(AstNode node) {
@@ -71,22 +66,6 @@ public class RightCurlyBraceOnDedicatedLineCheck extends SquidCheck<LexerlessGra
 
       while (result.getLastChild() != null) {
         result = result.getLastChild();
-      }
-    }
-
-    return result == null ? null : result.getToken();
-  }
-
-  private static Token getNextToken(AstNode node) {
-    AstNode result = node.getNextAstNode();
-
-    while (result != null && !result.hasToken()) {
-      while (result != null && !result.hasToken()) {
-        result = result.getNextAstNode();
-      }
-
-      while (result.getFirstChild() != null) {
-        result = result.getFirstChild();
       }
     }
 

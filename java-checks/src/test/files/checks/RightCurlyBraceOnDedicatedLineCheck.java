@@ -8,7 +8,7 @@ class Foo {
 
     if (0) {
     ; } else if (0) {                   // Non-Compliant - just once
-    } else {                            // Non-Compliant
+    } else {                            // Compliant
     }                                   // Compliant
 
     try {
@@ -18,8 +18,7 @@ class Foo {
   }
 }
 
-@Properties({
-}) // Compliant
+@Properties({}) // Compliant
 class Exceptions {
   int[] numbers = new int[] { 0, 1 };   // Compliant
 }
