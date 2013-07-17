@@ -93,10 +93,14 @@ public class PmdExecutor implements BatchExtension {
     }
 
     Charset encoding = projectFileSystem.getSourceCharset();
-
+    
+    rulesets.start(ruleContext);
+    
     for (InputFile file : files) {
       pmdFactory.process(file, encoding, rulesets, ruleContext);
     }
+    
+    rulesets.end(ruleContext);
   }
 
   private RuleSets createRulesets(String repositoryKey) {
