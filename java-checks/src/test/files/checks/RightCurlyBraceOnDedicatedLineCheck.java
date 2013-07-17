@@ -23,3 +23,11 @@ class Foo {
 class Exceptions {
   int[] numbers = new int[] { 0, 1 };   // Compliant
 }
+
+class Foo {
+  {
+    switch(x) {
+      default:
+    }
+  }
+}
