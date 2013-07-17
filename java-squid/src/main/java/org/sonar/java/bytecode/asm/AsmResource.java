@@ -66,6 +66,10 @@ public class AsmResource {
     outgoingEdges.add(edge);
   }
 
+  public void clearOutogingEdges() {
+    outgoingEdges.clear();
+  }
+
   public Collection<AsmEdge> getOutgoingEdges() {
     return outgoingEdges;
   }

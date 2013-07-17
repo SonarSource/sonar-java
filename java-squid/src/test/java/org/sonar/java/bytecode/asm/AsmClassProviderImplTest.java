@@ -24,6 +24,7 @@ import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
 
 import java.io.File;
+import java.util.Collection;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -79,6 +80,26 @@ public class AsmClassProviderImplTest {
     assertThat(integerClassWithHigherDetailLevel.getDetailLevel()).isEqualTo(DETAIL_LEVEL.STRUCTURE_AND_CALLS);
     assertThat(integerClassWithHigherDetailLevel).isSameAs(integerClass);
     assertThat(integerClass.getSuperClass().getInternalName()).isEqualTo("java/lang/Number");
+  }
+
+  @Test
+  public void should_not_duplicate_usages_and_throws_after_reload_with_higher_detail_level() {
+    AsmClass integerClass = asmClassProviderImpl.getClass("java/lang/Integer", DETAIL_LEVEL.STRUCTURE);
+    AsmMethod parseIntMethod = getParseIntMethod(integerClass.getMethods());
+    assertThat(parseIntMethod.getThrows()).hasSize(1);
+
+    integerClass = asmClassProviderImpl.getClass("java/lang/Integer", DETAIL_LEVEL.STRUCTURE_AND_CALLS);
+    parseIntMethod = getParseIntMethod(integerClass.getMethods());
+    assertThat(parseIntMethod.getThrows()).hasSize(1);
+  }
+
+  private static AsmMethod getParseIntMethod(Collection<AsmMethod> methods) {
+    for (AsmMethod method : methods) {
+      if ("parseInt(Ljava/lang/String;)I".equals(method.getKey())) {
+        return method;
+      }
+    }
+    throw new IllegalArgumentException();
   }
 
   @Test

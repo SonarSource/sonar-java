@@ -81,12 +81,16 @@ public class AsmClassVisitor extends EmptyVisitor {
     method.setSignature(signature);
     method.setBodyLoaded(true);
     method.setAccessFlags(access);
+
+    method.clearOutogingEdges();
+
     String[] internalNames = AsmSignature.extractInternalNames(description, signature);
     AsmClass[] asmClasses = internalNamesToAsmClasses(internalNames, DETAIL_LEVEL.NOTHING);
     method.addUsesOfClasses(asmClasses);
     AsmClass[] asmExceptionClasses = internalNamesToAsmClasses(exceptions, DETAIL_LEVEL.STRUCTURE);
     method.addUsesOfClasses(asmExceptionClasses);
     method.addThrowsOfClasses(asmExceptionClasses);
+
     if (level == DETAIL_LEVEL.STRUCTURE_AND_CALLS) {
       return new AsmMethodVisitor(method, asmClassProvider);
     }
