@@ -19,36 +19,61 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "RightCurlyBraceOnDedicatedLineCheck",
   priority = Priority.MAJOR)
-public class RightCurlyBraceOnDedicatedLineCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
-
-  private boolean lastTokenIsRightCurlyBrace;
-  private int lastTokenLine;
+public class RightCurlyBraceOnDedicatedLineCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
-  public void visitFile(AstNode astNode) {
-    lastTokenIsRightCurlyBrace = false;
-    lastTokenLine = -1;
+  public void init() {
+    subscribeTo(JavaPunctuator.RWING);
   }
 
   @Override
-  public void visitToken(Token token) {
-    if (lastTokenLine == token.getLine() && (lastTokenIsRightCurlyBrace || "}".equals(token.getValue()))) {
-      getContext().createLineViolation(this, "Move this closing curly brace to the next line.", token);
+  public void visitNode(AstNode node) {
+    if (!isExcluded(node) && (hasSomeCodeBefore(node) || hasSomeCodeAfter(node))) {
+      getContext().createLineViolation(this, "Move this closing curly brace to a dedicated line.", node);
     }
+  }
 
-    lastTokenIsRightCurlyBrace = "}".equals(token.getValue());
-    lastTokenLine = token.getLine();
+  private static boolean hasSomeCodeBefore(AstNode node) {
+    return getPreviousAstNode(node).getLastToken().getLine() == node.getTokenLine();
+  }
+
+  private static boolean hasSomeCodeAfter(AstNode node) {
+    AstNode nextNode = getNextAstNode(node);
+
+    return nextNode != null && nextNode.getTokenLine() == node.getTokenLine();
+  }
+
+  private static boolean isExcluded(AstNode node) {
+    return node.getParent().is(
+        JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER,
+        JavaGrammar.ARRAY_INITIALIZER);
+  }
+
+  private static AstNode getPreviousAstNode(AstNode node) {
+    AstNode result = node.getPreviousAstNode();
+    while (result != null && !result.hasToken()) {
+      result = result.getPreviousAstNode();
+    }
+    return result;
+  }
+
+  private static AstNode getNextAstNode(AstNode node) {
+    AstNode result = node.getNextAstNode();
+    while (result != null && !result.hasToken()) {
+      result = result.getNextAstNode();
+    }
+    return result;
   }
 
 }

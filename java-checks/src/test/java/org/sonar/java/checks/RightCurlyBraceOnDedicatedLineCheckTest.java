@@ -36,8 +36,10 @@ public class RightCurlyBraceOnDedicatedLineCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RightCurlyBraceOnDedicatedLineCheck.java"), new RightCurlyBraceOnDedicatedLineCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Move this closing curly brace to the next line.")
-        .next().atLine(12);
+        .next().atLine(4).withMessage("Move this closing curly brace to a dedicated line.")
+        .next().atLine(10)
+        .next().atLine(11)
+        .next().atLine(17);
   }
 
 }
