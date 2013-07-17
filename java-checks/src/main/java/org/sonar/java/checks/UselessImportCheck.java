@@ -50,6 +50,7 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
 
   private final Map<String, Integer> lineByImportReference = Maps.newHashMap();
   private final Set<String> pendingImports = Sets.newHashSet();
+  private final Set<String> pendingReferences = Sets.newHashSet();
 
   private String currentPackage;
 
@@ -61,10 +62,12 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
     subscribeTo(JavaGrammar.CREATED_NAME);
     subscribeTo(JavaGrammar.ANNOTATION);
     subscribeTo(JavaKeyword.THROWS);
+    subscribeTo(JavaGrammar.QUALIFIED_IDENTIFIER);
   }
 
   @Override
   public void visitFile(AstNode astNode) {
+    pendingReferences.clear();
     lineByImportReference.clear();
     pendingImports.clear();
 
@@ -79,12 +82,14 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
       if (!isStaticImport(node)) {
         String reference = mergeIdentifiers(node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
 
-        if (isJavaLangImport(reference)) {
+        if ("java.lang".equals(reference)) {
           getContext().createLineViolation(this, "Remove this unnecessary import: java.lang classes are always implicitly imported.", node);
         } else if (isImportFromSamePackage(reference)) {
           getContext().createLineViolation(this, "Remove this unnecessary import: same package classes are always implicitly imported.", node);
         } else if (!isImportOnDemand(node)) {
-          if (isDuplicatedImport(reference)) {
+          if (isJavaLangImport(reference)) {
+            getContext().createLineViolation(this, "Remove this unnecessary import: java.lang classes are always implicitly imported.", node);
+          } else if (isDuplicatedImport(reference)) {
             getContext().createLineViolation(this, "Remove this duplicated import.", node);
           } else {
             lineByImportReference.put(reference, node.getTokenLine());
@@ -92,22 +97,24 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
           }
         }
       }
-    } else {
-      for (String reference : getReferences(node)) {
-        updatePendingImports(reference);
-      }
+    } else if (!node.getParent().is(JavaGrammar.IMPORT_DECLARATION)) {
+      pendingReferences.addAll(getReferences(node));
     }
   }
 
   @Override
   public void leaveFile(AstNode node) {
+    for (String reference : pendingReferences) {
+      updatePendingImports(reference);
+    }
+
     for (String pendingImport : pendingImports) {
       getContext().createLineViolation(this, "Remove this unused import '" + pendingImport + "'.", lineByImportReference.get(pendingImport));
     }
   }
 
   private static boolean isJavaLangImport(String reference) {
-    return "java.lang".equals(reference) || reference.startsWith("java.lang.");
+    return reference.startsWith("java.lang.") && reference.indexOf('.', "java.lang.".length()) == -1;
   }
 
   private boolean isImportFromSamePackage(String reference) {
@@ -126,6 +133,14 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
       while (it.hasNext()) {
         String pendingImport = it.next();
         if (pendingImport.endsWith(reference)) {
+          it.remove();
+        }
+      }
+    } else {
+      Iterator<String> it = pendingImports.iterator();
+      while (it.hasNext()) {
+        String pendingImport = it.next();
+        if (pendingImport.endsWith(extractFirstClassName(reference))) {
           it.remove();
         }
       }
@@ -188,13 +203,18 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
     while (it.hasNext()) {
       String pendingImport = it.next();
 
-      if (comment.contains(extractClassName(pendingImport))) {
+      if (comment.contains(extractLastClassName(pendingImport))) {
         it.remove();
       }
     }
   }
 
-  private static String extractClassName(String reference) {
+  private static String extractFirstClassName(String reference) {
+    int firstIndexOfDot = reference.indexOf('.');
+    return firstIndexOfDot == -1 ? reference : reference.substring(0, firstIndexOfDot);
+  }
+
+  private static String extractLastClassName(String reference) {
     int lastIndexOfDot = reference.lastIndexOf('.');
     return lastIndexOfDot == -1 ? reference : reference.substring(lastIndexOfDot + 1);
   }

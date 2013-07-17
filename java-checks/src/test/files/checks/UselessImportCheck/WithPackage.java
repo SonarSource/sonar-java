@@ -1,5 +1,5 @@
+@ParametersAreNonnullByDefault
 package checks.UselessImportCheck;
-
 import a.b.c.Foo;                   // Compliant
 import a.b.c.Bar;                   // Compliant
 import a.b.c.Baz;                   // Compliant
@@ -20,6 +20,18 @@ import checks.UselessImportCheck.*;              // Non-Compliant
 import static checks.UselessImportCheck.Foo.*;   // Compliant
 import checks.UselessImportCheck.foo.*;          // Compliant
 
+import pkg.NonCompliant1;           // Non-Compliant
+
+import pkg.CompliantClass1;         // Compliant
+import pkg.CompliantClass2;         // Compliant
+import pkg.CompliantClass3;         // Compliant
+
+import java.lang.reflect.Array;     // Compliant
+
+import javax.annotation.ParametersAreNonnullByDefault; // Compliant
+
+import java.lang.annotation.*;      // Compliant
+
 class Foo extends Foo {
   Bar a = new Baz<String>();
 
@@ -31,6 +43,14 @@ class Foo extends Foo {
 
   @a.b.c.NonCompliant
   a.b.c.NonCompliant foo(a.b.c.NonCompliant bar) {
+    List<CompliantClass1> ok;
+    Class ok = CompliantClass2.class;
+    CompliantClass3.staticMethod("OK");
+
+    pkg.NonCompliant1 ok;
+
+    Array ok;
+
     return new a.b.c.NonCompliant();
   }
 
