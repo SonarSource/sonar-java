@@ -60,3 +60,16 @@ class Foo {
 
   }
 }
+
+class MyGenerics {
+  private T foo;
+
+  private <T> MyGenerics() {
+    T foo;                                  // Compliant
+  }
+
+  public <T> T setFoo(T foo) {              // Compliant
+    this.foo = foo;
+  }
+}
+

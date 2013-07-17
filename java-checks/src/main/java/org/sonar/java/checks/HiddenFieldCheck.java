@@ -103,7 +103,7 @@ public class HiddenFieldCheck extends BytecodeVisitor implements SourceAndByteco
       }
 
       private boolean isConstructor(AstNode node) {
-        AstNode memberDecl = node.getFirstChild(JavaGrammar.MEMBER_DECL);
+        AstNode memberDecl = getActualMemberDecl(node);
 
         return node.is(JavaGrammar.CLASS_BODY_DECLARATION) &&
           memberDecl != null &&
@@ -111,11 +111,21 @@ public class HiddenFieldCheck extends BytecodeVisitor implements SourceAndByteco
       }
 
       private boolean isSetter(AstNode node) {
-        AstNode memberDecl = node.getFirstChild(JavaGrammar.MEMBER_DECL);
+        AstNode memberDecl = getActualMemberDecl(node);
 
         return node.is(JavaGrammar.CLASS_BODY_DECLARATION) &&
           memberDecl != null &&
           memberDecl.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue().startsWith("set");
+      }
+
+      private AstNode getActualMemberDecl(AstNode node) {
+        AstNode memberDecl = node.getFirstChild(JavaGrammar.MEMBER_DECL);
+        if (memberDecl == null) {
+          return null;
+        }
+
+        AstNode genericMethodOrConstructor = memberDecl.getFirstChild(JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
+        return genericMethodOrConstructor == null ? memberDecl : genericMethodOrConstructor;
       }
 
     };
