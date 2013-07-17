@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -45,13 +46,13 @@ public class RightCurlyBraceOnDedicatedLineCheck extends SquidCheck<LexerlessGra
   }
 
   private static boolean hasSomeCodeBefore(AstNode node) {
-    return getPreviousAstNode(node).getLastToken().getLine() == node.getTokenLine();
+    Token previousToken = getPreviousToken(node);
+    return previousToken != null && previousToken.getLine() == node.getTokenLine();
   }
 
   private static boolean hasSomeCodeAfter(AstNode node) {
-    AstNode nextNode = getNextAstNode(node);
-
-    return nextNode != null && nextNode.getTokenLine() == node.getTokenLine();
+    Token nextToken = getNextToken(node);
+    return nextToken != null && nextToken.getLine() == node.getTokenLine();
   }
 
   private static boolean isExcluded(AstNode node) {
@@ -60,20 +61,36 @@ public class RightCurlyBraceOnDedicatedLineCheck extends SquidCheck<LexerlessGra
         JavaGrammar.ARRAY_INITIALIZER);
   }
 
-  private static AstNode getPreviousAstNode(AstNode node) {
+  private static Token getPreviousToken(AstNode node) {
     AstNode result = node.getPreviousAstNode();
+
     while (result != null && !result.hasToken()) {
-      result = result.getPreviousAstNode();
+      while (result != null && !result.hasToken()) {
+        result = result.getPreviousAstNode();
+      }
+
+      while (result.getLastChild() != null) {
+        result = result.getLastChild();
+      }
     }
-    return result;
+
+    return result == null ? null : result.getToken();
   }
 
-  private static AstNode getNextAstNode(AstNode node) {
+  private static Token getNextToken(AstNode node) {
     AstNode result = node.getNextAstNode();
+
     while (result != null && !result.hasToken()) {
-      result = result.getNextAstNode();
+      while (result != null && !result.hasToken()) {
+        result = result.getNextAstNode();
+      }
+
+      while (result.getFirstChild() != null) {
+        result = result.getFirstChild();
+      }
     }
-    return result;
+
+    return result == null ? null : result.getToken();
   }
 
 }
