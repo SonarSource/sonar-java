@@ -18,6 +18,13 @@ class Foo
 class Foo
 {              // Compliant
   void foo()
-  {            // Non-Compliant
+  {            // Compliant
   }
+}
+
+@Properties({ // Compliant
+})
+class Exceptions
+{
+  int[] numbers = new int[] { 0, 1 }; // Compliant
 }

@@ -19,33 +19,35 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "LeftCurlyBraceStartLineCheck",
   priority = Priority.MAJOR)
-public class LeftCurlyBraceStartLineCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
-
-  private int lastTokenLine;
+public class LeftCurlyBraceStartLineCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
-  public void visitFile(AstNode astNode) {
-    lastTokenLine = -1;
+  public void init() {
+    subscribeTo(JavaPunctuator.LWING);
   }
 
   @Override
-  public void visitToken(Token token) {
-    if ("{".equals(token.getValue()) && lastTokenLine == token.getLine()) {
-      getContext().createLineViolation(this, "Move this left curly brace to the beginning of next line of code.", token);
+  public void visitNode(AstNode node) {
+    if (!isExcluded(node) && node.getPreviousAstNode().getLastToken().getLine() == node.getTokenLine()) {
+      getContext().createLineViolation(this, "Move this left curly brace to the beginning of next line of code.", node);
     }
+  }
 
-    lastTokenLine = token.getLine();
+  private static boolean isExcluded(AstNode node) {
+    return node.getParent().is(
+        JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER,
+        JavaGrammar.ARRAY_INITIALIZER);
   }
 
 }
