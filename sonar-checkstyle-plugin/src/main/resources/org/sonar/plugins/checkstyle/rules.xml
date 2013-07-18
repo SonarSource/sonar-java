@@ -578,6 +578,7 @@
     <param key="tabWidth" type="INTEGER">
       <defaultValue>8</defaultValue>
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.InnerAssignmentCheck">
