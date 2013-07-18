@@ -45,7 +45,7 @@ public class PmdProfilesTest {
     RulesProfile profile = sonarWay.createProfile(validation);
 
     assertThat(profile.getActiveRulesByRepository(PmdConstants.REPOSITORY_KEY).size())
-        .isEqualTo(70);
+        .isEqualTo(67);
     assertThat(validation.hasErrors()).isFalse();
   }
 
@@ -56,13 +56,14 @@ public class PmdProfilesTest {
     RulesProfile profile = sonarWayWithFindbugs.createProfile(validation);
 
     assertThat(profile.getActiveRulesByRepository(PmdConstants.REPOSITORY_KEY).size())
-        .isEqualTo(70);
+        .isEqualTo(67);
     assertThat(validation.hasErrors()).isFalse();
   }
 
   static RuleFinder ruleFinder() {
     RuleFinder ruleFinder = mock(RuleFinder.class);
     when(ruleFinder.find(any(RuleQuery.class))).then(new Answer<Rule>() {
+      @Override
       public Rule answer(InvocationOnMock invocation) {
         RuleQuery query = (RuleQuery) invocation.getArguments()[0];
         return Rule.create(query.getRepositoryKey(), "", "");

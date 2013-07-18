@@ -43,13 +43,14 @@ public class SonarWayProfileTest {
     ValidationMessages validation = ValidationMessages.create();
     RulesProfile profile = sonarWay.createProfile(validation);
     assertThat(profile.getActiveRulesByRepository(CheckstyleConstants.REPOSITORY_KEY).size())
-        .isEqualTo(24);
+        .isEqualTo(13);
     assertThat(validation.hasErrors()).isFalse();
   }
 
   private RuleFinder newRuleFinder() {
     RuleFinder ruleFinder = mock(RuleFinder.class);
     when(ruleFinder.findByKey(anyString(), anyString())).thenAnswer(new Answer<Rule>() {
+      @Override
       public Rule answer(InvocationOnMock iom) throws Throwable {
         return Rule.create((String) iom.getArguments()[0], (String) iom.getArguments()[1], (String) iom.getArguments()[1]);
       }

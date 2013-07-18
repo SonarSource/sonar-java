@@ -20,35 +20,11 @@
     </rule>
     <rule>
       <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.modifier.ModifierOrderCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
       <key>com.puppycrawl.tools.checkstyle.checks.design.FinalClassCheck</key>
     </rule>
     <rule>
       <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.coding.EmptyStatementCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.coding.InnerAssignmentCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.imports.UnusedImportsCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.coding.StringLiteralEqualityCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
       <key>com.puppycrawl.tools.checkstyle.checks.modifier.RedundantModifierCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.coding.RedundantThrowsCheck</key>
     </rule>
     <rule>
       <repositoryKey>checkstyle</repositoryKey>
@@ -60,45 +36,11 @@
     </rule>
     <rule>
       <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.coding.DefaultComesLastCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
       <key>com.puppycrawl.tools.checkstyle.checks.coding.EqualsHashCodeCheck</key>
     </rule>
     <rule>
       <repositoryKey>checkstyle</repositoryKey>
       <key>com.puppycrawl.tools.checkstyle.checks.coding.SimplifyBooleanReturnCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck</key>
-      <parameters>
-        <parameter>
-          <key>tokens</key>
-          <value>VARIABLE_DEF</value>
-        </parameter>
-        <parameter>
-          <key>ignoreConstructorParameter</key>
-          <value>true</value>
-        </parameter>
-        <parameter>
-          <key>ignoreSetter</key>
-          <value>true</value>
-        </parameter>
-        <parameter>
-          <key>ignoreAbstractMethods</key>
-          <value>true</value>
-        </parameter>
-      </parameters>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.naming.LocalFinalVariableNameCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.design.VisibilityModifierCheck</key>
     </rule>
     <rule>
       <repositoryKey>checkstyle</repositoryKey>
@@ -111,10 +53,6 @@
     <rule>
       <repositoryKey>checkstyle</repositoryKey>
       <key>com.puppycrawl.tools.checkstyle.checks.metrics.BooleanExpressionComplexityCheck</key>
-    </rule>
-    <rule>
-      <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.TrailingCommentCheck</key>
     </rule>
   </rules>
 </profile>

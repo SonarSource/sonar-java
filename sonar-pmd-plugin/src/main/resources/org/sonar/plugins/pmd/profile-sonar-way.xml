@@ -39,7 +39,6 @@
   <rule ref="rulesets/sunsecure.xml/ArrayIsStoredDirectly" />
   <rule ref="rulesets/finalizers.xml/FinalizeOverloaded" />
   <rule ref="rulesets/controversial.xml/DontImportSun" />
-  <rule ref="rulesets/imports.xml/DontImportJavaLang" />
   <rule ref="rulesets/design.xml/MissingStaticMethodInNonInstantiatableClass" />
   <rule ref="rulesets/strings.xml/StringBufferInstantiationWithChar" />
   <rule ref="rulesets/optimizations.xml/UseArrayListInsteadOfVector" />
@@ -63,7 +62,6 @@
   <rule ref="rulesets/migrating.xml/IntegerInstantiation" />
   <rule ref="rulesets/migrating.xml/AvoidAssertAsIdentifier" />
   <rule ref="rulesets/design.xml/UnnecessaryLocalBeforeReturn" />
-  <rule ref="rulesets/finalizers.xml/AvoidCallingFinalize" />
   <rule ref="rulesets/basic.xml/BooleanInstantiation" />
   <rule ref="rulesets/basic.xml/UnconditionalIfStatement" />
   <rule ref="rulesets/clone.xml/CloneThrowsCloneNotSupportedException" />
@@ -73,7 +71,6 @@
   <rule ref="rulesets/finalizers.xml/EmptyFinalizer" />
   <rule ref="rulesets/design.xml/IdempotentOperations" />
   <rule ref="rulesets/strictexception.xml/ExceptionAsFlowControl" />
-  <rule ref="rulesets/finalizers.xml/FinalizeDoesNotCallSuperFinalize" />
   <rule ref="rulesets/strings.xml/UseStringBufferLength" />
   <rule ref="rulesets/migrating.xml/AvoidEnumAsIdentifier" />
   <rule ref="rulesets/logging-java.xml/SystemPrintln" />
