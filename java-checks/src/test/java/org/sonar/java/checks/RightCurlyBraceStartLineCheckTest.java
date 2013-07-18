@@ -27,14 +27,14 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
-public class RightCurlyBraceOnDedicatedLineCheckTest {
+public class RightCurlyBraceStartLineCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RightCurlyBraceOnDedicatedLineCheck.java"), new RightCurlyBraceOnDedicatedLineCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RightCurlyBraceStartLineCheck.java"), new RightCurlyBraceStartLineCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(4).withMessage("Move this closing curly brace to the next line.")
         .next().atLine(10)

@@ -63,7 +63,7 @@ public final class CheckList {
         TooManyStatementsPerLine_S00122_Check.class,
         LeftCurlyBraceStartLineCheck.class,
         RightCurlyBraceSameLineAsNextBlockCheck.class,
-        RightCurlyBraceOnDedicatedLineCheck.class,
+        RightCurlyBraceStartLineCheck.class,
         RightCurlyBraceDifferentLineAsNextBlockCheck.class,
         StringBufferUsageCheck.class,
         LeftCurlyBraceEndLineCheck.class,

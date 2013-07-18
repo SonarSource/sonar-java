@@ -29,9 +29,9 @@ import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
-  key = "RightCurlyBraceOnDedicatedLineCheck",
+  key = "RightCurlyBraceStartLineCheck",
   priority = Priority.MAJOR)
-public class RightCurlyBraceOnDedicatedLineCheck extends SquidCheck<LexerlessGrammar> {
+public class RightCurlyBraceStartLineCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
