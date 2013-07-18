@@ -83,6 +83,7 @@ public final class CheckList {
         UselessImportCheck.class,
         LowerCaseLongSuffixCheck.class,
         MissingDeprecatedCheck.class,
+        IndentationCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
@@ -96,5 +97,4 @@ public final class CheckList {
         // AST + Bytecode visitor
         HiddenFieldCheck.class);
   }
-
 }
