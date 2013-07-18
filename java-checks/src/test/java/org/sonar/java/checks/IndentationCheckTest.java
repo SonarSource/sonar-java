@@ -43,11 +43,11 @@ public class IndentationCheckTest {
         .next().atLine(16)
         .next().atLine(21)
         .next().atLine(24).withMessage("Make this line start at column 9.")
-        .next().atLine(33)
-        .next().atLine(46)
-        .next().atLine(52)
-        .next().atLine(65)
-        .next().atLine(77);
+        .next().atLine(35)
+        .next().atLine(48)
+        .next().atLine(54)
+        .next().atLine(67)
+        .next().atLine(79);
   }
 
   @Test

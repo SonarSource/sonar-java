@@ -56,6 +56,7 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
 
   private int expectedLevel;
   private boolean isBlockAlreadyReported;
+  private int lastCheckedLine;
 
   @Override
   public void init() {
@@ -67,6 +68,7 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
   public void visitFile(AstNode node) {
     expectedLevel = 0;
     isBlockAlreadyReported = false;
+    lastCheckedLine = 0;
   }
 
   @Override
@@ -74,9 +76,12 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
     if (node.is(BLOCK_TYPES)) {
       expectedLevel += indentationLevel;
       isBlockAlreadyReported = false;
-    } else if (!isBlockAlreadyReported && node.getToken().getColumn() != expectedLevel) {
-      getContext().createLineViolation(this, "Make this line start at column " + (expectedLevel + 1) + ".", node);
-      isBlockAlreadyReported = true;
+    } else {
+      if (!isBlockAlreadyReported && lastCheckedLine != node.getTokenLine() && node.getToken().getColumn() != expectedLevel) {
+        getContext().createLineViolation(this, "Make this line start at column " + (expectedLevel + 1) + ".", node);
+        isBlockAlreadyReported = true;
+      }
+      lastCheckedLine = node.getTokenLine();
     }
   }
 

@@ -23,8 +23,10 @@ if (0) {                          // Compliant - already reported
         System.out.println();     // Compliant
     System.out.println();         // Non-Compliant
   }
+
+      ; System.out.println();     // Compliant
 }
-  }
+}
 
   class Foo {
 
