@@ -48,7 +48,8 @@ public class HiddenFieldCheckTest {
         .next().atLine(87)
         .next().atLine(88)
         .next().atLine(108)
-        .next().atLine(109);
+        .next().atLine(109)
+        .next().atLine(140);
   }
 
 }

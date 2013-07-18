@@ -128,3 +128,19 @@ enum MyEnum {
     System.out.println(a);
   }
 }
+
+final class DataUtils {
+
+  public int foo;
+
+  public interface Sortable {
+
+    int size();
+
+    void swap(int foo, int j); // Non-Compliant
+
+    boolean isLess(int i, int j);
+
+  }
+
+}

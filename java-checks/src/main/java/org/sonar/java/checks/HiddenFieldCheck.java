@@ -98,7 +98,10 @@ public class HiddenFieldCheck extends BytecodeVisitor implements SourceAndByteco
       }
 
       private boolean isInConstructorOrSetter(AstNode node) {
-        AstNode ancestor = getFirstAncestor(node, JavaGrammar.CLASS_INIT_DECLARATION, JavaGrammar.CLASS_BODY_DECLARATION);
+        AstNode ancestor = getFirstAncestor(node,
+            JavaGrammar.CLASS_INIT_DECLARATION, JavaGrammar.CLASS_BODY_DECLARATION,
+            JavaGrammar.INTERFACE_BODY_DECLARATION);
+
         return ancestor != null && (isConstructor(ancestor) || isSetter(ancestor));
       }
 
@@ -112,7 +115,9 @@ public class HiddenFieldCheck extends BytecodeVisitor implements SourceAndByteco
 
       private boolean isSetter(AstNode node) {
         AstNode memberDecl = getActualMemberDecl(node);
-
+        if (memberDecl != null) {
+          System.out.println("member decl = " + memberDecl + ", identifier = " + memberDecl.getFirstChild(JavaTokenType.IDENTIFIER));
+        }
         return node.is(JavaGrammar.CLASS_BODY_DECLARATION) &&
           memberDecl != null &&
           memberDecl.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue().startsWith("set");
