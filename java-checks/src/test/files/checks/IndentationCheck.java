@@ -77,4 +77,11 @@ class Foo {
 }
 
  class Foo {                      // Non-Compliant
+  public void foo() {
+    switch (0) {
+      case 0:
+        System.out.println();
+        break;
+    }
+  }
 }
