@@ -82,6 +82,7 @@ public final class CheckList {
         TrailingCommentCheck.class,
         UselessImportCheck.class,
         LowerCaseLongSuffixCheck.class,
+        MissingDeprecatedCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
