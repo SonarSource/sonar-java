@@ -46,7 +46,7 @@ public class AsmClass extends AsmResource {
     this.internalName = internalName;
   }
 
-  void setDetailLevel(DETAIL_LEVEL level) {
+  final void setDetailLevel(DETAIL_LEVEL level) {
     this.level = level;
   }
 

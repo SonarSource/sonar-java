@@ -75,13 +75,13 @@ public class ObjectFinalizeCheck extends SquidCheck<LexerlessGrammar> implements
   public void visitToken(Token token) {
     switch (state) {
       case EXPECT_FINALIZE:
-        state = "finalize".equals(token.getOriginalValue()) ? State.EXPECT_LPAREN : State.EXPECT_FINALIZE;
+        transitionIfMatch(token, "finalize", State.EXPECT_LPAREN);
         break;
       case EXPECT_LPAREN:
-        state = "(".equals(token.getOriginalValue()) ? State.EXPECT_RPAREN : State.EXPECT_FINALIZE;
+        transitionIfMatch(token, "(", State.EXPECT_RPAREN);
         break;
       case EXPECT_RPAREN:
-        state = ")".equals(token.getOriginalValue()) ? State.EXPECT_SEMI : State.EXPECT_FINALIZE;
+        transitionIfMatch(token, ")", State.EXPECT_SEMI);
         break;
       case EXPECT_SEMI:
         if (";".equals(token.getOriginalValue()) && !isInFinalizeMethod) {
@@ -92,6 +92,10 @@ public class ObjectFinalizeCheck extends SquidCheck<LexerlessGrammar> implements
       default:
         throw new IllegalStateException();
     }
+  }
+
+  private void transitionIfMatch(Token token, String expected, State target) {
+    state = expected.equals(token.getOriginalValue()) ? target : State.EXPECT_FINALIZE;
   }
 
   private static boolean isFinalizeMethodMember(AstNode node) {
