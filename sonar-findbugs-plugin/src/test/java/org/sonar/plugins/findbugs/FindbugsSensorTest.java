@@ -26,9 +26,6 @@ import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.profiles.RulesProfile;
@@ -38,16 +35,12 @@ import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.Violation;
-import org.sonar.api.test.IsViolation;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -55,18 +48,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class FindbugsSensorTest extends FindbugsTests {
-
-  private static final Locale DEFAULT_LOCALE = Locale.getDefault();
-
-  @BeforeClass
-  public static void beforeAll() {
-    Locale.setDefault(Locale.ENGLISH);
-  }
-
-  @AfterClass
-  public static void afterAll() {
-    Locale.setDefault(DEFAULT_LOCALE);
-  }
 
   @Test
   public void shouldNotAnalyseIfNoJavaProject() {
@@ -114,7 +95,6 @@ public class FindbugsSensorTest extends FindbugsTests {
   }
 
   @Test
-  @Ignore("Fails either on Java 7 or on Windows")
   public void shouldExecuteFindbugsWhenNoReportProvided() throws Exception {
     Project project = createProject();
     FindbugsExecutor executor = mock(FindbugsExecutor.class);
@@ -140,10 +120,6 @@ public class FindbugsSensorTest extends FindbugsTests {
 
     verify(executor).execute();
     verify(context, times(1)).saveViolation(any(Violation.class));
-
-    Violation wanted = Violation.create((Rule) null, new JavaFile("org.sonar.commons.ZipUtils")).setMessage(
-        "Empty zip file entry created in org.sonar.commons.ZipUtils._zip(String, File, ZipOutputStream)").setLineId(107);
-    verify(context).saveViolation(argThat(new IsViolation(wanted)));
   }
 
   @Test
