@@ -55,85 +55,85 @@ public class HiddenFieldCheck extends BytecodeVisitor implements SourceAndByteco
 
   private final Map<String, Multimap<String, Integer>> localVariableOccurencesByClassName = Maps.newHashMap();
   private AsmClassProvider classProvider;
+  private final SourceVisitor sourceVisitor = new SourceVisitor();
+
+  private class SourceVisitor extends SquidAstVisitor<LexerlessGrammar> {
+
+    @Override
+    public void init() {
+      subscribeTo(
+          JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
+          JavaGrammar.VARIABLE_DECLARATOR_ID,
+          JavaGrammar.FOR_INIT);
+    }
+
+    @Override
+    public void visitFile(AstNode node) {
+      localVariableOccurencesByClassName.clear();
+    }
+
+    @Override
+    public void visitNode(AstNode astNode) {
+      if (astNode.is(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
+        saveLocalVariableOccurrence(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
+      } else {
+        AstNode variableDeclarators = astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS);
+        if (variableDeclarators != null) {
+          for (AstNode variableDeclarator : variableDeclarators.getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
+            saveLocalVariableOccurrence(variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER));
+          }
+        }
+      }
+    }
+
+    private void saveLocalVariableOccurrence(AstNode identifier) {
+      if (!isInConstructorOrSetter(identifier)) {
+        String className = getClassName(identifier);
+        if (!localVariableOccurencesByClassName.containsKey(className)) {
+          localVariableOccurencesByClassName.put(className, HashMultimap.<String, Integer> create());
+        }
+        localVariableOccurencesByClassName.get(className).put(identifier.getTokenOriginalValue(), identifier.getTokenLine());
+      }
+    }
+
+    private boolean isInConstructorOrSetter(AstNode node) {
+      AstNode ancestor = getFirstAncestor(node,
+          JavaGrammar.CLASS_INIT_DECLARATION, JavaGrammar.CLASS_BODY_DECLARATION,
+          JavaGrammar.INTERFACE_BODY_DECLARATION);
+
+      return ancestor != null && (isConstructor(ancestor) || isSetter(ancestor));
+    }
+
+    private boolean isConstructor(AstNode node) {
+      AstNode memberDecl = getActualMemberDecl(node);
+
+      return node.is(JavaGrammar.CLASS_BODY_DECLARATION) &&
+        memberDecl != null &&
+        memberDecl.hasDirectChildren(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST);
+    }
+
+    private boolean isSetter(AstNode node) {
+      AstNode memberDecl = getActualMemberDecl(node);
+      return node.is(JavaGrammar.CLASS_BODY_DECLARATION) &&
+        memberDecl != null &&
+        memberDecl.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue().startsWith("set");
+    }
+
+    private AstNode getActualMemberDecl(AstNode node) {
+      AstNode memberDecl = node.getFirstChild(JavaGrammar.MEMBER_DECL);
+      if (memberDecl == null) {
+        return null;
+      }
+
+      AstNode genericMethodOrConstructor = memberDecl.getFirstChild(JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
+      return genericMethodOrConstructor == null ? memberDecl : genericMethodOrConstructor;
+    }
+
+  }
 
   @Override
-  public SquidAstVisitor getSourceVisitor() {
-    return new SquidAstVisitor<LexerlessGrammar>() {
-
-      @Override
-      public void init() {
-        subscribeTo(
-            JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
-            JavaGrammar.VARIABLE_DECLARATOR_ID,
-            JavaGrammar.FOR_INIT);
-      }
-
-      @Override
-      public void visitFile(AstNode node) {
-        localVariableOccurencesByClassName.clear();
-      }
-
-      @Override
-      public void visitNode(AstNode astNode) {
-        if (astNode.is(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
-          saveLocalVariableOccurrence(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
-        } else {
-          AstNode variableDeclarators = astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS);
-          if (variableDeclarators != null) {
-            for (AstNode variableDeclarator : variableDeclarators.getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-              saveLocalVariableOccurrence(variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER));
-            }
-          }
-        }
-      }
-
-      private void saveLocalVariableOccurrence(AstNode identifier) {
-        if (!isInConstructorOrSetter(identifier)) {
-          String className = getClassName(identifier);
-          if (!localVariableOccurencesByClassName.containsKey(className)) {
-            localVariableOccurencesByClassName.put(className, HashMultimap.<String, Integer> create());
-          }
-          localVariableOccurencesByClassName.get(className).put(identifier.getTokenOriginalValue(), identifier.getTokenLine());
-        }
-      }
-
-      private boolean isInConstructorOrSetter(AstNode node) {
-        AstNode ancestor = getFirstAncestor(node,
-            JavaGrammar.CLASS_INIT_DECLARATION, JavaGrammar.CLASS_BODY_DECLARATION,
-            JavaGrammar.INTERFACE_BODY_DECLARATION);
-
-        return ancestor != null && (isConstructor(ancestor) || isSetter(ancestor));
-      }
-
-      private boolean isConstructor(AstNode node) {
-        AstNode memberDecl = getActualMemberDecl(node);
-
-        return node.is(JavaGrammar.CLASS_BODY_DECLARATION) &&
-          memberDecl != null &&
-          memberDecl.hasDirectChildren(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST);
-      }
-
-      private boolean isSetter(AstNode node) {
-        AstNode memberDecl = getActualMemberDecl(node);
-        if (memberDecl != null) {
-          System.out.println("member decl = " + memberDecl + ", identifier = " + memberDecl.getFirstChild(JavaTokenType.IDENTIFIER));
-        }
-        return node.is(JavaGrammar.CLASS_BODY_DECLARATION) &&
-          memberDecl != null &&
-          memberDecl.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue().startsWith("set");
-      }
-
-      private AstNode getActualMemberDecl(AstNode node) {
-        AstNode memberDecl = node.getFirstChild(JavaGrammar.MEMBER_DECL);
-        if (memberDecl == null) {
-          return null;
-        }
-
-        AstNode genericMethodOrConstructor = memberDecl.getFirstChild(JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
-        return genericMethodOrConstructor == null ? memberDecl : genericMethodOrConstructor;
-      }
-
-    };
+  public SquidAstVisitor<LexerlessGrammar> getSourceVisitor() {
+    return sourceVisitor;
   }
 
   @Override

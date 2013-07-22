@@ -66,7 +66,7 @@ public class RightCurlyBraceStartLineCheck extends SquidCheck<LexerlessGrammar> 
         result = result.getPreviousAstNode();
       }
 
-      while (result.getLastChild() != null) {
+      while (result != null && result.getLastChild() != null) {
         result = result.getLastChild();
       }
     }

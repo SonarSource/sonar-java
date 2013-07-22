@@ -22,10 +22,7 @@ package org.sonar.java.checks;
 import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
 import org.sonar.squid.api.SourceFile;
-
-import java.io.File;
 
 public class HiddenFieldCheckTest {
 
@@ -36,7 +33,6 @@ public class HiddenFieldCheckTest {
   public void test() {
     HiddenFieldCheck check = new HiddenFieldCheck();
 
-    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ForLoopCounterChangedCheck.java"), check.getSourceVisitor());
     SourceFile file = BytecodeFixture.scan("HiddenFieldCheck", check);
     checkMessagesVerifier
         .verify(file.getCheckMessages())
