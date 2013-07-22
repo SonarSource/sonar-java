@@ -19,9 +19,6 @@
  */
 package org.sonar.plugins.findbugs;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Sensor;
@@ -33,6 +30,8 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.rules.Violation;
+
+import java.util.Collection;
 
 public class FindbugsSensor implements Sensor {
 
@@ -59,15 +58,9 @@ public class FindbugsSensor implements Sensor {
       LOG.warn("Reusing existing Findbugs configuration not supported any more.");
     }
 
-    BugCollection collection = executor.execute();
+    Collection<ReportedBug> collection = executor.execute();
 
-    for (BugInstance bugInstance : collection) {
-      SourceLineAnnotation sourceLine = bugInstance.getPrimarySourceLineAnnotation();
-      if (sourceLine == null) {
-        LOG.warn("No source line for " + bugInstance.getType());
-        continue;
-      }
-
+    for (ReportedBug bugInstance : collection) {
       Rule rule = ruleFinder.findByKey(FindbugsConstants.REPOSITORY_KEY, bugInstance.getType());
       if (rule == null) {
         // ignore violations from report, if rule not activated in Sonar
@@ -75,9 +68,9 @@ public class FindbugsSensor implements Sensor {
         continue;
       }
 
-      String longMessage = bugInstance.getMessageWithoutPrefix();
-      String className = bugInstance.getPrimarySourceLineAnnotation().getClassName();
-      int start = bugInstance.getPrimarySourceLineAnnotation().getStartLine();
+      String longMessage = bugInstance.getMessage();
+      String className = bugInstance.getClassName();
+      int start = bugInstance.getStartLine();
 
       JavaFile resource = new JavaFile(getSonarJavaFileKey(className));
       if (context.getResource(resource) != null) {
