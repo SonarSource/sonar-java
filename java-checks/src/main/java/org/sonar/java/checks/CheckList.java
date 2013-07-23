@@ -88,6 +88,7 @@ public final class CheckList {
         DeprecatedTagPresenceCheck.class,
         FixmeTagPresenceCheck.class,
         TodoTagPresenceCheck.class,
+        UtilityClassWithPublicConstructorCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
