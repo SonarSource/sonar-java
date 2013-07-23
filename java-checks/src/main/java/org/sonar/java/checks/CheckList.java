@@ -87,6 +87,7 @@ public final class CheckList {
         HiddenFieldCheck.class,
         DeprecatedTagPresenceCheck.class,
         FixmeTagPresenceCheck.class,
+        TodoTagPresenceCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
