@@ -20,11 +20,9 @@
 package org.sonar.plugins.findbugs;
 
 import com.google.common.collect.Lists;
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
@@ -38,6 +36,8 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.Violation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -100,7 +100,6 @@ public class FindbugsSensorTest extends FindbugsTests {
     FindbugsExecutor executor = mock(FindbugsExecutor.class);
     SensorContext context = mock(SensorContext.class);
 
-    BugCollection collection = new SortedBugCollection();
     BugInstance bugInstance = new BugInstance("AM_CREATES_EMPTY_ZIP_FILE_ENTRY", 2);
     String className = "org.sonar.commons.ZipUtils";
     String sourceFile = "org/sonar/commons/ZipUtils.java";
@@ -110,7 +109,7 @@ public class FindbugsSensorTest extends FindbugsTests {
     MethodAnnotation methodAnnotation = new MethodAnnotation(className, "_zip", "(Ljava/lang/String;Ljava/io/File;Ljava/util/zip/ZipOutputStream;)V", true);
     methodAnnotation.setSourceLines(new SourceLineAnnotation(className, sourceFile, startLine, 0, 0, 0));
     bugInstance.add(methodAnnotation);
-    collection.add(bugInstance);
+    Collection<ReportedBug> collection = Arrays.asList(new ReportedBug(bugInstance));
     when(executor.execute()).thenReturn(collection);
 
     when(context.getResource(any(Resource.class))).thenReturn(new JavaFile("org.sonar.MyClass"));
@@ -129,13 +128,12 @@ public class FindbugsSensorTest extends FindbugsTests {
     SensorContext context = mock(SensorContext.class);
     when(context.getResource(any(Resource.class))).thenReturn(new JavaFile("org.sonar.MyClass"));
 
-    BugCollection collection = new SortedBugCollection();
     BugInstance bugInstance = new BugInstance("UNKNOWN", 2);
     String className = "org.sonar.commons.ZipUtils";
     String sourceFile = "org/sonar/commons/ZipUtils.java";
     ClassAnnotation classAnnotation = new ClassAnnotation(className, sourceFile);
     bugInstance.add(classAnnotation);
-    collection.add(bugInstance);
+    Collection<ReportedBug> collection = Arrays.asList(new ReportedBug(bugInstance));
     when(executor.execute()).thenReturn(collection);
 
     FindbugsSensor analyser = new FindbugsSensor(createRulesProfileWithActiveRules(), FakeRuleFinder.create(), executor);

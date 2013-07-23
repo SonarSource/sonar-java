@@ -21,6 +21,7 @@ package org.sonar.plugins.findbugs;
 
 import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
@@ -45,6 +46,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -82,7 +84,7 @@ public class FindbugsExecutor implements BatchExtension {
     this.configuration = configuration;
   }
 
-  public BugCollection execute() {
+  public Collection<ReportedBug> execute() {
     TimeProfiler profiler = new TimeProfiler().start("Execute Findbugs " + FindbugsVersion.getVersion());
     // We keep a handle on the current security manager because FB plays with it and we need to restore it before shutting down the executor
     // service
@@ -142,7 +144,7 @@ public class FindbugsExecutor implements BatchExtension {
 
       profiler.stop();
 
-      return xmlBugReporter.getBugCollection();
+      return toReportedBugs(xmlBugReporter.getBugCollection());
     } catch (TimeoutException e) {
       throw new SonarException("Can not execute Findbugs with a timeout threshold value of " + configuration.getTimeout() + " milliseconds", e);
     } catch (Exception e) {
@@ -156,6 +158,22 @@ public class FindbugsExecutor implements BatchExtension {
       Thread.currentThread().setContextClassLoader(initialClassLoader);
       Locale.setDefault(initialLocale);
     }
+  }
+
+  private Collection<ReportedBug> toReportedBugs(BugCollection bugCollection) {
+    // We need to retrieve information such as the message before we shut everything down as we will lose any custom
+    // bug messages
+    final Collection<ReportedBug> bugs = new ArrayList<ReportedBug>();
+
+    for (final BugInstance bugInstance : bugCollection) {
+      if (bugInstance.getPrimarySourceLineAnnotation() == null) {
+        LOG.warn("No source line for " + bugInstance.getType());
+        continue;
+      }
+
+      bugs.add(new ReportedBug(bugInstance));
+    }
+    return bugs;
   }
 
   private Integer determinePriorityThreshold() {
