@@ -48,15 +48,10 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
 
   public BytecodeScanner scan(Collection<File> bytecodeFilesOrDirectories) {
     ClassLoader classLoader = ClassLoaderBuilder.create(bytecodeFilesOrDirectories);
-    scan(bytecodeFilesOrDirectories, new AsmClassProviderImpl(classLoader));
+    Collection<SourceCode> classes = indexer.search(new QueryByType(SourceClass.class));
+    scanClasses(classes, new AsmClassProviderImpl(classLoader));
     // TODO unchecked cast
     ((SquidClassLoader) classLoader).close();
-    return this;
-  }
-
-  public BytecodeScanner scan(Collection<File> bytecodeFilesOrDirectories, AsmClassProvider classProvider) {
-    Collection<SourceCode> classes = indexer.search(new QueryByType(SourceClass.class));
-    scanClasses(classes, classProvider);
     return this;
   }
 

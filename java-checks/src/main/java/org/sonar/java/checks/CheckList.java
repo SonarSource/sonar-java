@@ -84,6 +84,7 @@ public final class CheckList {
         LowerCaseLongSuffixCheck.class,
         MissingDeprecatedCheck.class,
         IndentationCheck.class,
+        HiddenFieldCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
@@ -93,8 +94,7 @@ public final class CheckList {
         CallToFileDeleteOnExitMethodCheck.class,
         UnusedProtectedMethodCheck.class,
         UnusedPrivateMethodCheck.class,
-        RedundantThrowsDeclarationCheck.class,
-        // AST + Bytecode visitor
-        HiddenFieldCheck.class);
+        RedundantThrowsDeclarationCheck.class);
   }
+
 }

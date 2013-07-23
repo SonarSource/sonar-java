@@ -36,12 +36,11 @@ public class HiddenFieldCheckTest {
     SourceFile file = BytecodeFixture.scan("HiddenFieldCheck", check);
     checkMessagesVerifier
         .verify(file.getCheckMessages())
-        .next().atLine(28)
-        .next().atLine(50).withMessage("Rename this variable/parameter which hides a field of 'org.sonar.java.checks.targets.HiddenFieldCheck'.")
-        .next().atLine(51).withMessage("Rename this variable/parameter which hides a field of 'org.sonar.java.checks.targets.MyBaseClass'.")
-        .next().atLine(63)
-        .next().atLine(80).withMessage("Rename this variable/parameter which hides a field of 'org.sonar.java.checks.targets.HiddenFieldCheck$MyInnerClass'.")
-        .next().atLine(87)
+        .next().atLine(28).withMessage("Rename this variable/parameter which hides the field declared at line 24.")
+        .next().atLine(50).withMessage("Rename this variable/parameter which hides the field declared at line 24.")
+        .next().atLine(63).withMessage("Rename this variable/parameter which hides the field declared at line 25.")
+        .next().atLine(80).withMessage("Rename this variable/parameter which hides the field declared at line 76.")
+        .next().atLine(87).withMessage("Rename this variable/parameter which hides the field declared at line 24.")
         .next().atLine(88)
         .next().atLine(108)
         .next().atLine(109)

@@ -2,9 +2,12 @@
 Shadowing fields with a local variable is a bad practice reducing code readability: It makes it confusing to know whether the field or the variable is referenced.
 </p>
 
-<p>
-Note that this rule allows constructor and setter parameters to be named identically to fields.
-</p>
+<p>Notes:</p>
+
+<ol>
+  <li>This rule allows constructor and setter parameters to be named identically to fields.</li>
+  <li>This rule does not verify inherited fields.</li>
+</ol>
 
 <p>
 The following code illustrates this rule:

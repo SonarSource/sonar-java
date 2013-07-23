@@ -48,7 +48,7 @@ public class HiddenFieldCheck extends MyBaseClass {
   }
 
   public void method1(int foo) { // Non-Compliant
-    int base1 = 0; // Non-Compliant
+    int base1 = 0; // Compliant
     int base2 = 0; // Compliant
     int unrelated = 0; // Compliant
     System.out.println(base1 + base2 + unrelated);
@@ -143,4 +143,15 @@ final class DataUtils {
 
   }
 
+}
+
+class Foo {
+
+  int i;
+
+  {
+    for (i = 0; i < 42; i++) {
+    }
+
+  }
 }
