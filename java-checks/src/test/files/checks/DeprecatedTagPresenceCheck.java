@@ -20,9 +20,9 @@ class Foo {
   /**
    * @deprecated
    */
-  @Ignore
+  @Ignore              // Non-Compliant
   @Deprecated
-  public void foo4() { // Compliant
+  public void foo4() {
   }
 
   @Deprecated          // Non-Compliant
@@ -49,7 +49,7 @@ class Foo {
   @java.lang.Deprecated // Compliant - no one does this
   public void foo9() {
 
-    @Deprecated        // Compliant - cannot have javadoc
+    @Deprecated        // Non-Compliant
     int local1 = 0;
 
   }

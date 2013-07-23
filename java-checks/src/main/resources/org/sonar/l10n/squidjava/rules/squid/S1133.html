@@ -1,0 +1,25 @@
+<p>
+This rule is meant to be used as a way to track code which is marked as being deprecated.
+Deprecated code should eventually be removed.
+</p>
+
+<p>
+The following code illustrates this rule:
+</p>
+
+<pre>
+class Foo {
+  /**
+    * @deprecated
+    */
+  public void foo() {    // Non-Compliant
+  }
+
+  @Deprecated            // Non-Compliant
+  public void bar() {
+  }
+
+  public void baz() {    // Compliant
+  }
+}
+</pre>
