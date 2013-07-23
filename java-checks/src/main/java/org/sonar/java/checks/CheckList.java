@@ -86,6 +86,7 @@ public final class CheckList {
         IndentationCheck.class,
         HiddenFieldCheck.class,
         DeprecatedTagPresenceCheck.class,
+        FixmeTagPresenceCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

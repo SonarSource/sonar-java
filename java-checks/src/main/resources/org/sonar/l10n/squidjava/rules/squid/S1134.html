@@ -1,0 +1,13 @@
+<p>
+<code>FIXME</code> tags are commonly used to mark places where a bug is suspected, but which the developer wants to deal with later.
+Sometimes the developer will not have the time or will simply forget to get back to that tag.
+This rule is meant to track those tags, and ensure that they do not go unnoticed.
+</p>
+
+<p>The following code illustrates this rule:</p>
+
+<pre>
+int divide(int numerator, int denominator) {
+  return numerator / denominator;              // FIXME denominator = 0, Non-Compliant
+}
+</pre>
