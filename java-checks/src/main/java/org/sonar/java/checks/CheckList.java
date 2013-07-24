@@ -89,6 +89,7 @@ public final class CheckList {
         FixmeTagPresenceCheck.class,
         TodoTagPresenceCheck.class,
         UtilityClassWithPublicConstructorCheck.class,
+        StringLiteralInsideEqualsCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

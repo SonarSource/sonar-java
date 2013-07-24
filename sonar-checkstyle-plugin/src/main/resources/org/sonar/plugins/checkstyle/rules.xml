@@ -74,6 +74,7 @@
     <param key="ignoreEqualsIgnoreCase" type="BOOLEAN">
       <defaultValue>false</defaultValue>
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.NoCloneCheck">
