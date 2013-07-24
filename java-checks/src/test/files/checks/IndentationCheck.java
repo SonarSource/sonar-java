@@ -61,10 +61,10 @@ class Foo {
 
   void foo() {
     new MyInterface() {
-      public void foo() {         // Compliant
+      public void foo() {         // Compliant - not checked
       }
 
-     public void foo() {          // Non-Compliant
+     public void foo() {          // Compliant - not checked
      }
     };
   }
