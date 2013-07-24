@@ -90,9 +90,10 @@ public class HiddenFieldCheck extends JavaAstCheck {
 
   private void checkLocalVariable(AstNode node) {
     for (Map<String, Integer> classFields : Lists.reverse(fields)) {
-      Integer hiddenFieldLine = classFields.get(node.getTokenOriginalValue());
+      String identifier = node.getTokenOriginalValue();
+      Integer hiddenFieldLine = classFields.get(identifier);
       if (hiddenFieldLine != null) {
-        getContext().createLineViolation(this, "Rename this variable/parameter which hides the field declared at line " + hiddenFieldLine + ".", node);
+        getContext().createLineViolation(this, "Rename \"" + identifier + "\" which hides the field declared at line " + hiddenFieldLine + ".", node);
         return;
       }
     }
