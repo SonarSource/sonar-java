@@ -28,16 +28,21 @@ import java.io.File;
 
 public class RawException_S00112_CheckTest {
 
-  private RawException_S00112_Check check = new RawException_S00112_Check();
+  private final RawException_S00112_Check check = new RawException_S00112_Check();
 
   @Test
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RawException.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Define and throw a dedicated exception instead of using a generic one.")
+        .next().atLine(3).withMessage("Define and throw a dedicated exception instead of using a generic one.")
+        .next().atLine(4)
         .next().atLine(8)
+        .next().atLine(11)
         .next().atLine(12)
         .next().atLine(16)
+        .next().atLine(45)
+        .next().atLine(46)
+        .next().atLine(48)
         .noMore();
   }
 

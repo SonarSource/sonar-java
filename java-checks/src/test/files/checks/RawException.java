@@ -1,6 +1,6 @@
 public class Example {
 
-  public void throws_Throwable() throws Throwable {
+  public void throws_Throwable() throws Throwable { // Non-Compliant
     throw new Throwable(); // NOK
   }
 
@@ -8,7 +8,7 @@ public class Example {
     throw new Error(); // NOK
   }
 
-  public void throws_Exception() throws Exception {
+  public void throws_Exception() throws Exception { // Non-Compliant
     throw new Exception(); // NOK
   }
 
@@ -20,7 +20,7 @@ public class Example {
     throw new MyException(); // OK
   }
 
-  class MyException extends RuntimeException {
+  class MyException extends RuntimeException { // Compliant
   }
 
   public void throws_value() {
@@ -41,4 +41,10 @@ public class Example {
     }
   }
 
+  public Example() throws
+     Error,                   // Non-Compliant
+     Exception {              // Non-Compliant
+     throw new
+         Throwable();         // Non-Compliant
+     }
 }
