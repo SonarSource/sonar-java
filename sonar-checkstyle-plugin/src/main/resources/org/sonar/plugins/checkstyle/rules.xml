@@ -275,6 +275,7 @@
     </param>
     <param key="tokens" type="s[LAND,BAND,LOR,BOR,BXOR]">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.metrics.ClassDataAbstractionCouplingCheck">

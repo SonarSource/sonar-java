@@ -92,6 +92,7 @@ public final class CheckList {
         StringLiteralInsideEqualsCheck.class,
         ReturnOfBooleanExpressionsCheck.class,
         BooleanEqualityComparisonCheck.class,
+        ExpressionComplexityCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
