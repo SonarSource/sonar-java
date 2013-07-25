@@ -9,5 +9,6 @@ class Foo {
     "foo".equals[0];            // Compliant
     int a = foo.equals;         // Compliant
     "foo".equalsIgnoreCase(""); // Non-Compliant
+    StringUtils.equals("", ""); // Compliant
   }
 }

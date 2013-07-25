@@ -24,6 +24,7 @@ import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -71,7 +72,7 @@ public class StringLiteralInsideEqualsCheck extends SquidCheck<LexerlessGrammar>
 
   private static String getStringLiteralArgument(AstNode node) {
     AstNode arguments = getArgumentsNode(node);
-    if (arguments == null) {
+    if (arguments == null || arguments.hasDirectChildren(JavaPunctuator.COMMA)) {
       return null;
     }
 
