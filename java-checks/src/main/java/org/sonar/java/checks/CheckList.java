@@ -91,6 +91,7 @@ public final class CheckList {
         UtilityClassWithPublicConstructorCheck.class,
         StringLiteralInsideEqualsCheck.class,
         ReturnOfBooleanExpressionsCheck.class,
+        BooleanEqualityComparisonCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

@@ -1,0 +1,17 @@
+<p>
+Boolean expressions should not be compared against boolean literals, as their value can be directly used.
+</p>
+
+<p>The following code:</p>
+
+<pre>
+if (booleanVariable == true) { /* ... */ }         // Non-Compliant
+if (booleanVariable != true) { /* ... */ }         // Non-Compliant
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+if (booleanVariable) { /* ... */ }                 // Compliant
+if (!booleanVariable) { /* ... */ }                // Compliant
+</pre>
