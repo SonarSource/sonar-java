@@ -143,6 +143,7 @@
   <rule key="SimplifyBooleanReturns">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/design.xml/SimplifyBooleanReturns]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SimplifyBooleanExpressions">

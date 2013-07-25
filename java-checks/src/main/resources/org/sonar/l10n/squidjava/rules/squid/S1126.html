@@ -1,0 +1,35 @@
+<p>
+Return of boolean literal statements wrapped into if-then-else ones should be simplified.
+</p>
+
+<p>For example, the following code:</p>
+
+<pre>
+if (someBooleanMethod()) {    // Non-Compliant
+  return true;
+} else {
+  return false;
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+return someBooleanMethod();   // Compliant
+</pre>
+
+<p>and, the following code:</p>
+
+<pre>
+if (someBooleanMethod()) {    // Non-Compliant
+  return false;
+} else {
+  return true;
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+return !someBooleanMethod();  // Compliant
+</pre>

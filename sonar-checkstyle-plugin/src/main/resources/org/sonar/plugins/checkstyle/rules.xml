@@ -1070,6 +1070,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Simplify Boolean Return]]></name>
     <configKey><![CDATA[Checker/TreeWalker/SimplifyBooleanReturn]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.naming.StaticVariableNameCheck">
