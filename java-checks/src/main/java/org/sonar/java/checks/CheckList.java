@@ -94,6 +94,7 @@ public final class CheckList {
         BooleanEqualityComparisonCheck.class,
         ExpressionComplexityCheck.class,
         NestedTryCatchFinallyCheck.class,
+        SystemExitCalledCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

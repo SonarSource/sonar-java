@@ -322,6 +322,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Bad practice - Method invokes System.exit(...)]]></name>
     <configKey><![CDATA[DM_EXIT]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="DM_RUN_FINALIZERS_ON_EXIT">
