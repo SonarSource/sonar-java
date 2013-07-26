@@ -41,7 +41,7 @@ public class AssignmentInSubExpressionCheck extends SquidCheck<LexerlessGrammar>
   @Override
   public void visitNode(AstNode node) {
     if (!isExpressionStatement(node)) {
-      getContext().createLineViolation(this, "Extract this assignment out of this expression.", node);
+      getContext().createLineViolation(this, "Extract the assignment out of this expression.", node);
     }
   }
 

@@ -36,7 +36,7 @@ public class AssignmentInSubExpressionCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AssignmentInSubExpressionCheck.java"), new AssignmentInSubExpressionCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("Extract this assignment out of this expression.")
+        .next().atLine(6).withMessage("Extract the assignment out of this expression.")
         .next().atLine(7);
   }
 
