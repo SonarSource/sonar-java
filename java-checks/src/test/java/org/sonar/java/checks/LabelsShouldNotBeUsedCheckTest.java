@@ -36,7 +36,7 @@ public class LabelsShouldNotBeUsedCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/LabelsShouldNotBeUsedCheck.java"), new LabelsShouldNotBeUsedCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(9).withMessage("Remove this label.");
+        .next().atLine(9).withMessage("Refactor the code to remove this label and the need for it.");
   }
 
 }

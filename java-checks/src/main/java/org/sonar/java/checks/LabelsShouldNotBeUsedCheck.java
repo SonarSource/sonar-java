@@ -40,7 +40,7 @@ public class LabelsShouldNotBeUsedCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode node) {
-    getContext().createLineViolation(this, "Remove this label.", node);
+    getContext().createLineViolation(this, "Refactor the code to remove this label and the need for it.", node);
   }
 
 }
