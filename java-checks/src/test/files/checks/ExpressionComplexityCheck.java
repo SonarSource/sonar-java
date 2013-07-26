@@ -11,4 +11,28 @@ class A {
     if ((true ? 0 : 1) || false || true && false && true || false) {  // Non-Compliant
     }
   }
+
+  void g() {
+    new Foo() {                                                       // Compliant
+      int a = true && true;
+      int b = true && true;
+      int c = true && true;
+      int d = true && true;
+      int e = true && true;
+    };
+  }
+
+  void g() {
+    boolean foo = true && true && true &&                             // Non-Compliant
+      new Foo() {                                                     // Compliant
+        int a = true && true && true && false && false;               // Non-Compliant
+        int a = true && true && true;                                 // Compliant
+      }.someThing() &&
+      true;
+  }
+
+  int[] foo = new int[] {                                             // Compliant
+    true && true && true && true,                                     // Compliant
+    true && true && true && true && true                              // Non-Compliant
+  };
 }

@@ -27,7 +27,10 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.Stack;
 
 @Rule(
   key = "S1067",
@@ -35,48 +38,101 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ExpressionComplexityCheck extends SquidCheck<LexerlessGrammar> {
 
+  private static final GrammarRuleKey[] OPERATORS = new GrammarRuleKey[] {
+    JavaGrammar.CONDITIONAL_EXPRESSION,
+    JavaGrammar.CONDITIONAL_OR_EXPRESSION,
+    JavaGrammar.CONDITIONAL_AND_EXPRESSION
+  };
+
+  private static final GrammarRuleKey[] EXCLUSIONS = new GrammarRuleKey[] {
+    JavaGrammar.CLASS_BODY,
+    JavaGrammar.ARRAY_INITIALIZER
+  };
+
   private static final int DEFAULT_MAX = 3;
 
   @RuleProperty(defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private int nestingLevel;
-  private int operatorCounter;
+  private final Stack<Integer> expressionNestingLevel = new Stack<Integer>();
+  private final Stack<Integer> operatorCounter = new Stack<Integer>();
 
   @Override
   public void init() {
     subscribeTo(JavaGrammar.EXPRESSION);
-    subscribeTo(JavaGrammar.CONDITIONAL_EXPRESSION, JavaGrammar.CONDITIONAL_OR_EXPRESSION, JavaGrammar.CONDITIONAL_AND_EXPRESSION);
+    subscribeTo(OPERATORS);
+    subscribeTo(EXCLUSIONS);
   }
 
   @Override
   public void visitFile(AstNode node) {
-    nestingLevel = 0;
+    expressionNestingLevel.clear();
+    operatorCounter.clear();
+
+    pushExclusionLevel();
   }
 
   @Override
   public void visitNode(AstNode node) {
     if (node.is(JavaGrammar.EXPRESSION)) {
-      nestingLevel++;
-      if (nestingLevel == 1) {
-        operatorCounter = 0;
+      int level = getExpressionNestingLevel();
+      level++;
+      setExpressionNestingLevel(level);
+
+      if (level == 1) {
+        setOperatorCounter(0);
       }
+    } else if (node.is(EXCLUSIONS)) {
+      pushExclusionLevel();
     } else {
-      operatorCounter += node.getChildren(JavaPunctuator.QUERY, JavaPunctuator.OROR, JavaPunctuator.ANDAND).size();
+      setOperatorCounter(getOperatorCounter() + node.getChildren(JavaPunctuator.QUERY, JavaPunctuator.OROR, JavaPunctuator.ANDAND).size());
     }
   }
 
   @Override
   public void leaveNode(AstNode node) {
     if (node.is(JavaGrammar.EXPRESSION)) {
-      nestingLevel--;
-      if (nestingLevel == 0 && operatorCounter > max) {
+      int level = getExpressionNestingLevel();
+      level--;
+      setExpressionNestingLevel(level);
+
+      if (level == 0 && getOperatorCounter() > max) {
         getContext().createLineViolation(
             this,
-            "Reduce the number of conditional operators (" + operatorCounter + ") used in the expression (maximum allowed " + max + ").",
+            "Reduce the number of conditional operators (" + getOperatorCounter() + ") used in the expression (maximum allowed " + max + ").",
             node);
       }
+    } else if (node.is(EXCLUSIONS)) {
+      popExclusionLevel();
     }
+  }
+
+  private void pushExclusionLevel() {
+    expressionNestingLevel.push(0);
+    operatorCounter.push(0);
+  }
+
+  private void popExclusionLevel() {
+    expressionNestingLevel.pop();
+    operatorCounter.pop();
+  }
+
+  private int getExpressionNestingLevel() {
+    return expressionNestingLevel.peek();
+  }
+
+  private void setExpressionNestingLevel(int level) {
+    expressionNestingLevel.pop();
+    expressionNestingLevel.push(level);
+  }
+
+  private int getOperatorCounter() {
+    return operatorCounter.peek();
+  }
+
+  private void setOperatorCounter(int count) {
+    operatorCounter.pop();
+    operatorCounter.push(count);
   }
 
 }

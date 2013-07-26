@@ -39,7 +39,10 @@ public class ExpressionComplexityCheckTest {
         .next().atLine(3).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).")
         .next().atLine(5).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).")
         .next().atLine(6).withMessage("Reduce the number of conditional operators (5) used in the expression (maximum allowed 3).")
-        .next().atLine(11).withMessage("Reduce the number of conditional operators (6) used in the expression (maximum allowed 3).");
+        .next().atLine(11).withMessage("Reduce the number of conditional operators (6) used in the expression (maximum allowed 3).")
+        .next().atLine(26).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).")
+        .next().atLine(28).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).")
+        .next().atLine(36);
   }
 
   @Test
