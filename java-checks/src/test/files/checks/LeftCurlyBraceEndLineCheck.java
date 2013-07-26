@@ -12,6 +12,15 @@ class Foo {
       executeAnotherTask();
     }
   }
+
+  {                                     // Compliant
+    System.out.println("static intializer");
+  }
+
+  public void foo() {
+    {                                   // Compliant
+    }
+  }
 }
 
 @Properties(
