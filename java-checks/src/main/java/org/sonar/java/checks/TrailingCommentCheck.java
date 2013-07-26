@@ -56,18 +56,21 @@ public class TrailingCommentCheck extends SquidCheck<LexerlessGrammar> implement
 
   @Override
   public void visitToken(Token token) {
-    for (Trivia trivia : token.getTrivia()) {
-      if (trivia.isComment() && trivia.getToken().getLine() == previousTokenLine) {
-        String comment = trivia.getToken().getValue();
+    if (token.getLine() != previousTokenLine) {
+      for (Trivia trivia : token.getTrivia()) {
+        if (trivia.isComment() && trivia.getToken().getLine() == previousTokenLine) {
+          String comment = trivia.getToken().getValue();
 
-        comment = comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
-        comment = comment.trim();
+          comment = comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
+          comment = comment.trim();
 
-        if (!pattern.matcher(comment).matches()) {
-          getContext().createLineViolation(this, "Move this trailing comment on the previous empty line.", previousTokenLine);
+          if (!pattern.matcher(comment).matches()) {
+            getContext().createLineViolation(this, "Move this trailing comment on the previous empty line.", previousTokenLine);
+          }
         }
       }
     }
+
     previousTokenLine = token.getLine();
   }
 
