@@ -1,0 +1,38 @@
+<p>
+If statements with conditions that are always either true or false are not required, and make the code less readable.
+</p>
+
+<p>The following code:</p>
+
+<pre>
+public void myMethod() {
+  if (true) {                   // Non-Compliant
+    doSomething();
+  }
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+public void myMethod() {
+  doSomething();                // Compliant
+}
+</pre>
+
+<p>and the following code:</p>
+
+<pre>
+public void myMethod() {
+  if (false) {                  // Non-Compliant
+    doSomething();
+  }
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+public void myMethod() {        // Compliant
+}
+</pre>

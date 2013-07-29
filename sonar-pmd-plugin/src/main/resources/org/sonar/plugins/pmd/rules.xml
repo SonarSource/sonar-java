@@ -504,6 +504,7 @@
   <rule key="UnconditionalIfStatement">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/basic.xml/UnconditionalIfStatement]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EmptyStatementNotInLoop">
