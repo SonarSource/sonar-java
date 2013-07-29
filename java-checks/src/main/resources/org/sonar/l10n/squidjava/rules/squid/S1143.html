@@ -1,0 +1,28 @@
+<p>
+Returning from a <code>finally</code> block suppresses the propagation of any unhandled <code>Throwable</code> which was thrown in the <code>try</code> or <code>catch</code> block.
+</p>
+
+<p>
+The following code snippet illustrates this rule.
+The developer expects to get "ERROR" in the console whereas "OK" is displayed.
+</p>
+
+<pre>
+public static void main(String[] args) {
+  try {
+    doSomethingWhichThrowsException();
+    System.out.println("OK");
+  } catch (RuntimeException e) {
+    System.out.println("ERROR");
+  }
+}
+
+public static void doSomethingWhichThrowsException() {
+  try {
+    throw new RuntimeException();
+  } finally {
+    /* ... */
+    return;                                        // Non-Compliant - prevents the RuntimeException from being propagated
+  }
+}
+</pre>

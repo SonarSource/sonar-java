@@ -95,6 +95,7 @@ public final class CheckList {
         ExpressionComplexityCheck.class,
         NestedTryCatchFinallyCheck.class,
         SystemExitCalledCheck.class,
+        ReturnInFinallyCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
