@@ -2202,6 +2202,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Switch statement found where default case is missing]]></name>
     <configKey><![CDATA[SF_SWITCH_NO_DEFAULT]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH">
