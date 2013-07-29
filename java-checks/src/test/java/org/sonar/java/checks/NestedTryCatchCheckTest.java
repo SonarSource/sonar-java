@@ -27,17 +27,16 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
-public class NestedTryCatchFinallyCheckTest {
+public class NestedTryCatchCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedTryCatchFinallyCheck.java"), new NestedTryCatchFinallyCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedTryCatchCheck.java"), new NestedTryCatchCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("Extract this nested try block into a separate method.")
-        .next().atLine(40)
+        .next().atLine(40).withMessage("Extract this nested try block into a separate method.")
         .next().atLine(44)
         .next().atLine(46);
   }

@@ -31,7 +31,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   key = "S1141",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class NestedTryCatchFinallyCheck extends SquidCheck<LexerlessGrammar> {
+public class NestedTryCatchCheck extends SquidCheck<LexerlessGrammar> {
 
   private int nestingLevel;
 
@@ -47,7 +47,7 @@ public class NestedTryCatchFinallyCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode node) {
-    if (isTryBlock(node)) {
+    if (isTryCatchBlock(node)) {
       nestingLevel++;
 
       if (nestingLevel > 1) {
@@ -58,13 +58,14 @@ public class NestedTryCatchFinallyCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void leaveNode(AstNode node) {
-    if (isTryBlock(node)) {
+    if (isTryCatchBlock(node)) {
       nestingLevel--;
     }
   }
 
-  private static boolean isTryBlock(AstNode node) {
-    return node.getParent().is(JavaGrammar.TRY_STATEMENT);
+  private static boolean isTryCatchBlock(AstNode node) {
+    return node.getParent().is(JavaGrammar.TRY_STATEMENT) &&
+      node.getParent().hasDirectChildren(JavaGrammar.CATCH_CLAUSE);
   }
 
 }

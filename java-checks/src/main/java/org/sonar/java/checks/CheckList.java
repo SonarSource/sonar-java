@@ -93,7 +93,7 @@ public final class CheckList {
         ReturnOfBooleanExpressionsCheck.class,
         BooleanEqualityComparisonCheck.class,
         ExpressionComplexityCheck.class,
-        NestedTryCatchFinallyCheck.class,
+        NestedTryCatchCheck.class,
         SystemExitCalledCheck.class,
         ReturnInFinallyCheck.class,
         // Bytecode

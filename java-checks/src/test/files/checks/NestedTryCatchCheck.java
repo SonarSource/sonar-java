@@ -5,16 +5,16 @@ class A {
     }
 
     try {
-      try {             // Non-Compliant
+      try {             // Compliant
       } finally {
       }
-    } finally {
+    } catch (Exception e) {
     }
 
     try {
-    } finally {
+    } catch (Exception e) {
       try {             // Compliant
-      } finally {
+      } catch (Exception e) {
       }
     }
 
@@ -28,27 +28,27 @@ class A {
     try {
     } catch (Exception e) {
       try {             // Compliant
-      } finally {
+      } catch (Exception e) {
       }
     } finally {
       try {             // Compliant
-      } finally {
+      } catch (Exception e) {
       }
     }
 
     try {
       try {             // Non-Compliant
-      } finally {
+      } catch (Exception e) {
       }
 
       try {             // Non-Compliant
       } catch (Exception e) {
         try {           // Non-Compliant
 
-        } finally {
+        } catch (Exception e) {
         }
       }
-    } finally {
+    } catch (Exception e) {
     }
 
     try (Resource r = new Resource()) {    // Compliant
@@ -57,6 +57,13 @@ class A {
         } finally {
         }
       }
+    }
+
+    try {
+      try {                                // Compliant
+      } catch (Exception e) {
+      }
+    } finally {
     }
   }
 }
