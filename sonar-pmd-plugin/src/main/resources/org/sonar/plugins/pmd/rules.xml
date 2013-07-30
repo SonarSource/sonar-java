@@ -304,6 +304,7 @@
   <rule key="OnlyOneReturn">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/controversial.xml/OnlyOneReturn]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UnusedModifier">

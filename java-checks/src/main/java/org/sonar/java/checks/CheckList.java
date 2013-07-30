@@ -98,6 +98,7 @@ public final class CheckList {
         ReturnInFinallyCheck.class,
         IfConditionAlwaysTrueOrFalseCheck.class,
         CaseInsensitiveComparisonCheck.class,
+        MethodWithExcessiveReturnsCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
