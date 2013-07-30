@@ -881,6 +881,7 @@
   <rule key="UnnecessaryCaseChange">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/strings.xml/UnnecessaryCaseChange]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UseStringBufferLength">

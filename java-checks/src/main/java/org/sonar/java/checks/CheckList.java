@@ -97,6 +97,7 @@ public final class CheckList {
         SystemExitCalledCheck.class,
         ReturnInFinallyCheck.class,
         IfConditionAlwaysTrueOrFalseCheck.class,
+        CaseInsensitiveComparisonCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
