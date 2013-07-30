@@ -783,6 +783,7 @@
   <rule key="UseCollectionIsEmpty">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/design.xml/UseCollectionIsEmpty]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="MethodReturnsInternalArray">

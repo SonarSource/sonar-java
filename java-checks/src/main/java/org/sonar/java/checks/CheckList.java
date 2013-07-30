@@ -99,6 +99,7 @@ public final class CheckList {
         IfConditionAlwaysTrueOrFalseCheck.class,
         CaseInsensitiveComparisonCheck.class,
         MethodWithExcessiveReturnsCheck.class,
+        CollectionIsEmptyCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

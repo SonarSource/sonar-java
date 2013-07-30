@@ -1,0 +1,19 @@
+<p>
+Using <code>Collection.size()</code> to test for emptiness works, but using <code>Collection.isEmpty()</code> makes the code more readable.
+</p>
+
+<p>The following code:</p>
+
+<pre>
+if (myCollection.size() == 0) {  // Non-Compliant
+  /* ... */
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+if (myCollection.isEmpty()) {    // Compliant
+  /* ... */
+}
+</pre>
