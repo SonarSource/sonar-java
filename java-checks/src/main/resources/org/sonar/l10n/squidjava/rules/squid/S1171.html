@@ -1,0 +1,28 @@
+<p>
+Non-static initializers is a rarely used Java feature which can be confusing to most developers.
+When possible, they should be refactored into standard constructors or field initializers.
+</p>
+
+<p>The following code:</p>
+
+<pre>
+public class MyClass {
+
+  private final Date date;
+
+  {                                      // Non-Compliant
+    date = new Date();
+  }
+
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+public class MyClass {
+
+  private final Date date = new Date();  // Compliant
+
+}
+</pre>

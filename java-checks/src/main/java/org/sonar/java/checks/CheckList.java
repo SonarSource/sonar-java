@@ -101,6 +101,7 @@ public final class CheckList {
         MethodWithExcessiveReturnsCheck.class,
         CollectionIsEmptyCheck.class,
         SynchronizedClassUsageCheck.class,
+        NonStaticClassInitializerCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
