@@ -109,7 +109,8 @@ public final class CheckList {
         CallToFileDeleteOnExitMethodCheck.class,
         UnusedProtectedMethodCheck.class,
         UnusedPrivateMethodCheck.class,
-        RedundantThrowsDeclarationCheck.class);
+        RedundantThrowsDeclarationCheck.class,
+        ThrowsCheckedExceptionCheck.class);
   }
 
 }

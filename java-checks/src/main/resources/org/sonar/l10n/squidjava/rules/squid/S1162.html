@@ -1,0 +1,21 @@
+<p>
+Even if checked exceptions were thought to be a great feature when they were introduced in Java, their usage progressively became controversial.
+</p>
+
+<p>
+In theory, the purpose of checked exceptions is to ensure that errors will be dealt with, either by propagating them or by handling them.
+In practice, checked exceptions negatively impact the readability of source code by spreading this error handling/propagation logic everywhere.
+</p>
+
+<p>
+This rule verifies that no method throws a checked exception.
+As a reminder, any <code>Exception</code> which is not a <code>RuntimeException</code> is a checked one.
+</p>
+
+<p>The following code snippet illustrates this rule:</p>
+
+<pre>
+public void myMethod1() throws IOException { /* ... */}               // Non-Compliant
+
+public void myMethod2() throws IllegalArgumentException { /* ... */ } // Compliant - IllegalArgumentException is unchecked
+</pre>
