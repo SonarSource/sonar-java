@@ -112,7 +112,8 @@ public final class CheckList {
         UnusedProtectedMethodCheck.class,
         UnusedPrivateMethodCheck.class,
         RedundantThrowsDeclarationCheck.class,
-        ThrowsCheckedExceptionCheck.class);
+        ThrowsCheckedExceptionCheck.class,
+        ThrowsSeveralCheckedExceptionCheck.class);
   }
 
 }

@@ -1,0 +1,24 @@
+<p>
+Using checked exceptions forces method callers to deal with errors, either by propagating them or by handling them.
+This makes those exceptions fully part of the API of the method.
+</p>
+
+<p>
+To keep the complexity for callers reasonable, methods should not throw more than one kind of checked exception.
+</p>
+
+<p>The following code:</p>
+
+<pre>
+public void delete() throws IOException, SQLException {      // Non-Compliant
+  /* ... */
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+public void delete() throws SomeApplicationLevelException {  // Compliant
+  /* ... */
+}
+</pre>
