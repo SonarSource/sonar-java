@@ -19,11 +19,6 @@
  */
 package org.sonar.plugins.surefire.data;
 
-import java.text.ParseException;
-import java.util.Locale;
-
-import javax.xml.stream.XMLStreamException;
-
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.staxmate.in.ElementFilter;
 import org.codehaus.staxmate.in.SMEvent;
@@ -32,18 +27,24 @@ import org.codehaus.staxmate.in.SMInputCursor;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.api.utils.StaxParser.XmlStreamHandler;
 
+import javax.xml.stream.XMLStreamException;
+
+import java.text.ParseException;
+import java.util.Locale;
+
 public class SurefireStaxHandler implements XmlStreamHandler {
 
-  private UnitTestIndex index;
+  private final UnitTestIndex index;
 
   public SurefireStaxHandler(UnitTestIndex index) {
     this.index = index;
   }
 
+  @Override
   public void stream(SMHierarchicCursor rootCursor) throws XMLStreamException {
     SMInputCursor testSuite = rootCursor.constructDescendantCursor(new ElementFilter("testsuite"));
     SMEvent testSuiteEvent;
-    while ((testSuiteEvent = testSuite.getNext()) != null) {
+    for (testSuiteEvent = testSuite.getNext(); testSuiteEvent != null; testSuiteEvent = testSuite.getNext()) {
       if (testSuiteEvent.compareTo(SMEvent.START_ELEMENT) == 0) {
         String testSuiteClassName = testSuite.getAttrValue("name");
         if (StringUtils.contains(testSuiteClassName, "$")) {
@@ -52,7 +53,7 @@ public class SurefireStaxHandler implements XmlStreamHandler {
         }
         SMInputCursor testCase = testSuite.childCursor(new ElementFilter("testcase"));
         SMEvent event;
-        while ((event = testCase.getNext()) != null) {
+        for (event = testCase.getNext(); event != null; event = testCase.getNext()) {
           if (event.compareTo(SMEvent.START_ELEMENT) == 0) {
             String testClassName = getClassname(testCase, testSuiteClassName);
             UnitTestClassReport classReport = index.index(testClassName);
