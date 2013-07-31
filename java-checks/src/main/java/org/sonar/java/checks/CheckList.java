@@ -100,6 +100,7 @@ public final class CheckList {
         CaseInsensitiveComparisonCheck.class,
         MethodWithExcessiveReturnsCheck.class,
         CollectionIsEmptyCheck.class,
+        SynchronizedClassUsageCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

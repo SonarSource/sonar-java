@@ -394,6 +394,7 @@
   <rule key="UseArrayListInsteadOfVector">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/optimizations.xml/UseArrayListInsteadOfVector]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SimplifyStartsWith">
@@ -1107,11 +1108,13 @@
   <rule key="ReplaceVectorWithList">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/migrating.xml/ReplaceVectorWithList]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ReplaceHashtableWithMap">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/migrating.xml/ReplaceHashtableWithMap]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ReplaceEnumerationWithIterator">

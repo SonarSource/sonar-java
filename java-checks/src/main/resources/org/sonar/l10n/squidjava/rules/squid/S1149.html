@@ -1,0 +1,23 @@
+<p>
+Early classes of the Java Collections Framework, such as <code>Vector</code> and <code>Hashtable</code>, were synchronized to make them thread-safe.
+Unfortunately, synchronization has a big negative impact on performance, even when using these collections from a single thread.
+</p>
+
+<p>It is better to use their new unsynchronized replacements:</p>
+
+<ul>
+  <li><code>ArrayList</code> or <code>LinkedList</code> instead of <code>Vector</code></li>
+  <li><code>HashMap</code> instead of <code>Hashtable</code></li>
+</ul>
+
+<p>The following code:</p>
+
+<pre>
+Vector cats = new Vector();       // Non-Compliant
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+ArrayList cats = new ArrayList(); // Compliant
+</pre>
