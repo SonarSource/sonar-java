@@ -110,8 +110,7 @@ public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
       }
 
       result = builder.build();
-    }
-    else {
+    } else {
       result = Collections.EMPTY_SET;
     }
 

@@ -160,8 +160,7 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
       }
 
       return builder.build();
-    }
-    else {
+    } else {
       if (node.is(JavaGrammar.ANNOTATION)) {
         node = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
       }
