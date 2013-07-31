@@ -71,14 +71,14 @@ public class FindbugsExecutor implements BatchExtension {
   /** Map of priority level names to their numeric values. */
   private static Map<String, Integer> priorityNameToValueMap = new HashMap<String, Integer>();
   static {
-    priorityNameToValueMap.put("high", (Priorities.HIGH_PRIORITY));
-    priorityNameToValueMap.put("medium", (Priorities.NORMAL_PRIORITY));
-    priorityNameToValueMap.put("low", (Priorities.LOW_PRIORITY));
-    priorityNameToValueMap.put("experimental", (Priorities.EXP_PRIORITY));
+    priorityNameToValueMap.put("high", Priorities.HIGH_PRIORITY);
+    priorityNameToValueMap.put("medium", Priorities.NORMAL_PRIORITY);
+    priorityNameToValueMap.put("low", Priorities.LOW_PRIORITY);
+    priorityNameToValueMap.put("experimental", Priorities.EXP_PRIORITY);
   }
   private static final Integer DEFAULT_PRIORITY = Priorities.NORMAL_PRIORITY;
 
-  private FindbugsConfiguration configuration;
+  private final FindbugsConfiguration configuration;
 
   public FindbugsExecutor(FindbugsConfiguration configuration) {
     this.configuration = configuration;
@@ -186,12 +186,13 @@ public class FindbugsExecutor implements BatchExtension {
 
   private static class FindbugsTask implements Callable<Object> {
 
-    private FindBugs2 engine;
+    private final FindBugs2 engine;
 
     public FindbugsTask(FindBugs2 engine) {
       this.engine = engine;
     }
 
+    @Override
     public Object call() throws Exception {
       try {
         engine.execute();
