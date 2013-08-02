@@ -104,6 +104,7 @@ public final class CheckList {
         NonStaticClassInitializerCheck.class,
         ReturnEmptyArrayyNotNullCheck.class,
         ConstantsShouldBeStaticFinalCheck.class,
+        EmptyStringConcatenationCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

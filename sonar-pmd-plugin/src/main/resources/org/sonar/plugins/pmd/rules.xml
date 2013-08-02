@@ -1283,6 +1283,7 @@
   <rule key="AddEmptyString">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/optimizations.xml/AddEmptyString]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="BooleanGetMethodName">
