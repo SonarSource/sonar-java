@@ -1,0 +1,20 @@
+<p>
+Making a constant just <code>final</code> as opposed to <code>static final</code> leads to duplicating its value for every instance of the class,
+uselessly increasing the amount of memory required to execute the application.
+</p>
+
+<p>The following code:</p>
+
+<pre>
+public class Myclass {
+  public final THRESHOLD = 3;           // Non-Compliant
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+public class Myclass {
+  public static final THRESHOLD = 3;    // Compliant
+}
+</pre>

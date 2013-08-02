@@ -620,6 +620,7 @@
   <rule key="FinalFieldCouldBeStatic">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/design.xml/FinalFieldCouldBeStatic]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="CloseResource">

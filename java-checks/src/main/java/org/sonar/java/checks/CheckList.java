@@ -103,6 +103,7 @@ public final class CheckList {
         SynchronizedClassUsageCheck.class,
         NonStaticClassInitializerCheck.class,
         ReturnEmptyArrayyNotNullCheck.class,
+        ConstantsShouldBeStaticFinalCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
