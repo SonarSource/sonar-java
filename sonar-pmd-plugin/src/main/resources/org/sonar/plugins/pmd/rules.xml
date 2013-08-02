@@ -104,6 +104,7 @@
   <rule key="ReturnEmptyArrayRatherThanNull">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/design.xml/ReturnEmptyArrayRatherThanNull]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="TooFewBranchesForASwitchStatement">
