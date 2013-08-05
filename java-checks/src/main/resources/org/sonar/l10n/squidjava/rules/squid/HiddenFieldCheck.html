@@ -1,13 +1,6 @@
 <p>
-Shadowing fields with a local variable is a bad practice reducing code readability: It makes it confusing to know whether the field or the variable is referenced.
+Shadowing fields with a local variable is a bad practice reducing code readability: It makes it confusing to know whether the field or the variable is and should be accessed.
 </p>
-
-<p>Notes:</p>
-
-<ol>
-  <li>This rule allows constructor and setter parameters to be named identically to fields.</li>
-  <li>This rule does not verify inherited fields.</li>
-</ol>
 
 <p>
 The following code illustrates this rule:
@@ -17,11 +10,7 @@ The following code illustrates this rule:
 class Foo {
   public int myField;
 
-  public Foo(int myField) {                   // Compliant - shadowing is allowed in constructors
-    this.myField = myField;
-  }
-
-  public void setMyField(int myField) {       // Compliant - shadowing is allowd in setters
+  public Foo(int myField) {                   // Compliant - method parameters are not checked
     this.myField = myField;
   }
 

@@ -42,7 +42,6 @@ public class HiddenFieldCheck extends JavaAstCheck {
 
   private static final AstNodeType[] LOCAL_VARIABLE_TYPES = new AstNodeType[] {
     JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
-    JavaGrammar.VARIABLE_DECLARATOR_ID,
     JavaGrammar.FOR_INIT
   };
 
@@ -63,7 +62,7 @@ public class HiddenFieldCheck extends JavaAstCheck {
   public void visitNode(AstNode node) {
     if (node.is(JavaGrammar.CLASS_BODY)) {
       fields.push(getFields(node));
-    } else if (!isInConstructorOrSetter(node)) {
+    } else {
       checkLocalVariables(node);
     }
   }
@@ -76,14 +75,10 @@ public class HiddenFieldCheck extends JavaAstCheck {
   }
 
   private void checkLocalVariables(AstNode node) {
-    if (node.is(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
-      checkLocalVariable(node.getFirstChild(JavaTokenType.IDENTIFIER));
-    } else {
-      AstNode variableDeclarators = node.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS);
-      if (variableDeclarators != null) {
-        for (AstNode variableDeclarator : variableDeclarators.getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-          checkLocalVariable(variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER));
-        }
+    AstNode variableDeclarators = node.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS);
+    if (variableDeclarators != null) {
+      for (AstNode variableDeclarator : variableDeclarators.getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
+        checkLocalVariable(variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER));
       }
     }
   }
@@ -115,51 +110,6 @@ public class HiddenFieldCheck extends JavaAstCheck {
     }
 
     return builder.build();
-  }
-
-  private static boolean isInConstructorOrSetter(AstNode node) {
-    AstNode ancestor = getFirstAncestor(node,
-        JavaGrammar.CLASS_INIT_DECLARATION, JavaGrammar.CLASS_BODY_DECLARATION,
-        JavaGrammar.INTERFACE_BODY_DECLARATION);
-
-    return ancestor != null && (isConstructor(ancestor) || isSetter(ancestor));
-  }
-
-  private static boolean isConstructor(AstNode node) {
-    AstNode memberDecl = getActualMemberDecl(node);
-
-    return node.is(JavaGrammar.CLASS_BODY_DECLARATION) &&
-      memberDecl != null &&
-      memberDecl.hasDirectChildren(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST);
-  }
-
-  private static boolean isSetter(AstNode node) {
-    AstNode memberDecl = getActualMemberDecl(node);
-    return node.is(JavaGrammar.CLASS_BODY_DECLARATION) &&
-      memberDecl != null &&
-      memberDecl.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue().startsWith("set");
-  }
-
-  private static AstNode getActualMemberDecl(AstNode node) {
-    AstNode memberDecl = node.getFirstChild(JavaGrammar.MEMBER_DECL);
-    if (memberDecl == null) {
-      return null;
-    }
-
-    AstNode genericMethodOrConstructor = memberDecl.getFirstChild(JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
-    return genericMethodOrConstructor == null ? memberDecl : genericMethodOrConstructor;
-  }
-
-  private static AstNode getFirstAncestor(AstNode node, AstNodeType... types) {
-    for (AstNode ancestor = node.getParent(); ancestor != null; ancestor = ancestor.getParent()) {
-      for (AstNodeType type : types) {
-        if (ancestor.getType() == type) {
-          return ancestor;
-        }
-      }
-    }
-
-    return null;
   }
 
 }

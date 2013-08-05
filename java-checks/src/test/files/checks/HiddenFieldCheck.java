@@ -1,24 +1,3 @@
-/*
- * SonarQube Java
- * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
- */
-package org.sonar.java.checks.targets;
-
 public class HiddenFieldCheck extends MyBaseClass {
 
   private int foo;
@@ -47,7 +26,7 @@ public class HiddenFieldCheck extends MyBaseClass {
     return foo;
   }
 
-  public void method1(int foo) { // Non-Compliant
+  public void method1(int foo) { // Compliant - parameter
     int base1 = 0; // Compliant
     int base2 = 0; // Compliant
     int unrelated = 0; // Compliant
@@ -137,7 +116,7 @@ final class DataUtils {
 
     int size();
 
-    void swap(int foo, int j); // Non-Compliant
+    void swap(int foo, int j); // Compliant - parameter
 
     boolean isLess(int i, int j);
 

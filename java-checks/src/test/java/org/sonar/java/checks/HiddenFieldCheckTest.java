@@ -22,7 +22,10 @@ package org.sonar.java.checks;
 import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.sonar.java.JavaAstScanner;
 import org.sonar.squid.api.SourceFile;
+
+import java.io.File;
 
 public class HiddenFieldCheckTest {
 
@@ -31,20 +34,17 @@ public class HiddenFieldCheckTest {
 
   @Test
   public void test() {
-    HiddenFieldCheck check = new HiddenFieldCheck();
+    new HiddenFieldCheck();
 
-    SourceFile file = BytecodeFixture.scan("HiddenFieldCheck", check);
-    checkMessagesVerifier
-        .verify(file.getCheckMessages())
-        .next().atLine(28).withMessage("Rename \"foo\" which hides the field declared at line 24.")
-        .next().atLine(50).withMessage("Rename \"foo\" which hides the field declared at line 24.")
-        .next().atLine(63).withMessage("Rename \"bar\" which hides the field declared at line 25.")
-        .next().atLine(80).withMessage("Rename \"bar\" which hides the field declared at line 76.")
-        .next().atLine(87).withMessage("Rename \"foo\" which hides the field declared at line 24.")
-        .next().atLine(88)
-        .next().atLine(108)
-        .next().atLine(109)
-        .next().atLine(140);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/HiddenFieldCheck.java"), new HiddenFieldCheck());
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(7).withMessage("Rename \"foo\" which hides the field declared at line 3.")
+        .next().atLine(42).withMessage("Rename \"bar\" which hides the field declared at line 4.")
+        .next().atLine(59).withMessage("Rename \"bar\" which hides the field declared at line 55.")
+        .next().atLine(66).withMessage("Rename \"foo\" which hides the field declared at line 3.")
+        .next().atLine(67)
+        .next().atLine(87)
+        .next().atLine(88);
   }
 
 }
