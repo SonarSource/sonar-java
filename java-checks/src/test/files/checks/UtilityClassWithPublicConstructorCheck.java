@@ -48,3 +48,10 @@ class Foo7 {
   }
 
 }
+
+class Foo8 extends Bar { // Compliant
+
+  public static void f() {
+  }
+
+}

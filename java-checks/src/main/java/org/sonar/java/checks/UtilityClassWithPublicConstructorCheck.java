@@ -45,7 +45,7 @@ public class UtilityClassWithPublicConstructorCheck extends SquidCheck<Lexerless
 
   @Override
   public void visitNode(AstNode node) {
-    if (hasStaticMethods(node) && !hasInstanceMethods(node)) {
+    if (!extendsAnotherClass(node) && hasStaticMethods(node) && !hasInstanceMethods(node)) {
       boolean hasImplicitPublicConstructor = true;
 
       for (AstNode explicitConstructor : getExplicitConstructors(node)) {
@@ -60,6 +60,10 @@ public class UtilityClassWithPublicConstructorCheck extends SquidCheck<Lexerless
         getContext().createLineViolation(this, "Add a private constructor to hide the implicit public one.", node);
       }
     }
+  }
+
+  private static boolean extendsAnotherClass(AstNode node) {
+    return node.getParent().hasDirectChildren(JavaKeyword.EXTENDS);
   }
 
   private static boolean hasStaticMethods(AstNode node) {
