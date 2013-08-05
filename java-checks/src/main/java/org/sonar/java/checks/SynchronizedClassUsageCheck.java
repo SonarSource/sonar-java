@@ -26,6 +26,7 @@ import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
@@ -35,19 +36,36 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private int lastReportedLine;
+  private boolean inImport;
+
+  @Override
+  public void init() {
+    subscribeTo(JavaGrammar.IMPORT_DECLARATION);
+  }
 
   @Override
   public void visitFile(AstNode astNode) {
     lastReportedLine = -1;
+    inImport = false;
+  }
+
+  @Override
+  public void visitNode(AstNode node) {
+    inImport = true;
   }
 
   @Override
   public void visitToken(Token token) {
     String className = token.getOriginalValue();
-    if (isSynchronizedClass(className) && lastReportedLine != token.getLine()) {
+    if (!inImport && isSynchronizedClass(className) && lastReportedLine != token.getLine()) {
       getContext().createLineViolation(this, "Replace the synchronized class '" + className + "' by an unsynchronized one.", token);
       lastReportedLine = token.getLine();
     }
+  }
+
+  @Override
+  public void leaveNode(AstNode node) {
+    inImport = false;
   }
 
   private static boolean isSynchronizedClass(String className) {

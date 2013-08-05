@@ -36,11 +36,12 @@ public class SynchronizedClassUsageCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SynchronizedClassUsageCheck.java"), new SynchronizedClassUsageCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Replace the synchronized class 'Vector' by an unsynchronized one.")
-        .next().atLine(3)
-        .next().atLine(4).withMessage("Replace the synchronized class 'Hashtable' by an unsynchronized one.")
-        .next().atLine(5)
-        .next().atLine(6);
+        .next().atLine(5).withMessage("Replace the synchronized class 'Vector' by an unsynchronized one.")
+        .next().atLine(6)
+        .next().atLine(7).withMessage("Replace the synchronized class 'Hashtable' by an unsynchronized one.")
+        .next().atLine(8)
+        .next().atLine(9)
+        .next().atLine(12);
   }
 
 }
