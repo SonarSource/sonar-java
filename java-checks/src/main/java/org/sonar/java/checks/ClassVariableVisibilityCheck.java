@@ -19,13 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -36,45 +35,18 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ClassVariableVisibilityCheck extends SquidCheck<LexerlessGrammar> {
 
-  private static final String DEFAULT_AUTHORIZED_VISIBILITY = "private";
-
-  @RuleProperty(
-    key = "authorizedVisibility",
-    defaultValue = "" + DEFAULT_AUTHORIZED_VISIBILITY)
-  public String authorizedVisibility = DEFAULT_AUTHORIZED_VISIBILITY;
-
   @Override
   public void init() {
     subscribeTo(JavaGrammar.FIELD_DECLARATION);
-
-    Preconditions.checkArgument(
-        "private".equals(authorizedVisibility) ||
-          "package".equals(authorizedVisibility) ||
-          "protected".equals(authorizedVisibility),
-        "Unexpected authorized visibility '" + authorizedVisibility + "', expected one of: 'private', 'package' or 'protected'.");
   }
 
   @Override
   public void visitNode(AstNode node) {
     AstNode classBodyDeclaration = node.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION);
 
-    if (!isConstant(classBodyDeclaration) && !hasAllowedVisibility(classBodyDeclaration)) {
-      getContext().createLineViolation(this, "Make this class member " + authorizedVisibility + " visible and provide accessors if needed.", node);
+    if (isPublic(classBodyDeclaration) && !isConstant(classBodyDeclaration) && !isAnnotated(classBodyDeclaration)) {
+      getContext().createLineViolation(this, "Make this class variable field non-public and provide accessors if needed.", node);
     }
-  }
-
-  private boolean hasAllowedVisibility(AstNode node) {
-    boolean result;
-
-    if ("private".equals(authorizedVisibility)) {
-      result = isPrivate(node);
-    } else if ("package".equals(authorizedVisibility)) {
-      result = isPrivate(node) || isPackage(node);
-    } else {
-      result = isPrivate(node) || isPackage(node) || isProtected(node);
-    }
-
-    return result;
   }
 
   private static boolean isConstant(AstNode node) {
@@ -82,29 +54,19 @@ public class ClassVariableVisibilityCheck extends SquidCheck<LexerlessGrammar> {
       hasModifier(node, JavaKeyword.FINAL);
   }
 
-  private static boolean isPrivate(AstNode node) {
-    return hasModifier(node, JavaKeyword.PRIVATE);
-  }
-
-  private static boolean isProtected(AstNode node) {
-    return hasModifier(node, JavaKeyword.PROTECTED);
-  }
-
   private static boolean isPublic(AstNode node) {
     return hasModifier(node, JavaKeyword.PUBLIC);
   }
 
-  private static boolean isPackage(AstNode node) {
-    return !isProtected(node) &&
-      !isPublic(node) &&
-      !isPrivate(node);
-  }
-
-  private static boolean hasModifier(AstNode node, JavaKeyword modifier) {
+  private static boolean hasModifier(AstNode node, AstNodeType modifier) {
     return node.select()
         .children(JavaGrammar.MODIFIER)
         .children(modifier)
         .isNotEmpty();
+  }
+
+  private static boolean isAnnotated(AstNode node) {
+    return hasModifier(node, JavaGrammar.ANNOTATION);
   }
 
 }

@@ -1,20 +1,40 @@
 <p>
-Encapsulation if one of the four OOP principles along with Inheritance, abstraction and polymorphism.
-Limiting as much as possible the visibility of class members is one way to enforce this principle.
+Public class variable fields do not respect the encapsulation principle and has two main disadvantages:
 </p>
 
-<p>
-The following code snippet illustrates this rule when the authorized visibility is set to <code>private</code>:
-</p>
+<ul>
+  <li>Additional behavior such as validation cannot be added.</li>
+  <li>The internal representation is exposed, and cannot be changed afterwards.</li>
+</ul>
+
+<p>The following code:</p>
 
 <pre>
 public class MyClass {
 
-  public static final Logger logger = LogManager.getLogger(MyApp.class);     // Compliant - static final fields are always allowed
+  public static final int SOME_CONSTANT = 0;     // Compliant - constants are not checked
 
-  private String status;                                                     // Compliant
+  public String firstName;                       // Non-Compliant
 
-  public int level;                                                          // Non-Compliant
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+public class MyClass {
+
+  public static final int SOME_CONSTANT = 0;     // Compliant - constants are not checked
+
+  private String firstName;                      // Compliant
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
 }
 </pre>

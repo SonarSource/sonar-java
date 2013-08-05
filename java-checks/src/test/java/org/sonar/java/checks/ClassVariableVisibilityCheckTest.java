@@ -28,8 +28,6 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 public class ClassVariableVisibilityCheckTest {
 
   @Rule
@@ -40,53 +38,11 @@ public class ClassVariableVisibilityCheckTest {
 
   @Test
   public void detected() {
-    assertThat(new ClassVariableVisibilityCheck().authorizedVisibility).isEqualTo("private");
-  }
-
-  @Test
-  public void detected_with_private() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassVariableVisibilityCheck.java"), new ClassVariableVisibilityCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Make this class member private visible and provide accessors if needed.")
-        .next().atLine(4)
-        .next().atLine(5)
-        .next().atLine(7)
-        .next().atLine(8);
-  }
-
-  @Test
-  public void detected_with_package() {
-    ClassVariableVisibilityCheck check = new ClassVariableVisibilityCheck();
-    check.authorizedVisibility = "package";
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassVariableVisibilityCheck.java"), check);
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Make this class member package visible and provide accessors if needed.")
-        .next().atLine(5)
-        .next().atLine(7)
-        .next().atLine(8);
-  }
-
-  @Test
-  public void detected_with_protected() {
-    ClassVariableVisibilityCheck check = new ClassVariableVisibilityCheck();
-    check.authorizedVisibility = "protected";
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassVariableVisibilityCheck.java"), check);
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("Make this class member protected visible and provide accessors if needed.")
-        .next().atLine(7)
-        .next().atLine(8);
-  }
-
-  @Test
-  public void should_fail_with_bad_authorized_visibility() {
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("Unexpected authorized visibility 'public', expected one of: 'private', 'package' or 'protected'.");
-
-    ClassVariableVisibilityCheck check = new ClassVariableVisibilityCheck();
-    check.authorizedVisibility = "public";
-    check.init();
+        .next().atLine(7).withMessage("Make this class variable field non-public and provide accessors if needed.")
+        .next().atLine(9)
+        .next().atLine(10);
   }
 
 }

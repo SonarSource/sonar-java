@@ -1,14 +1,20 @@
+import com.google.common.annotations.VisibleForTesting;
+
 class Foo {
   private int foo1;
   int foo2;
   protected int foo3;
-  public int foo4;
+  public int foo4; // Non-Compliant
 
-  public static int foo5;
-  public final int foo6;
+  public static int foo5; // Non-Compliant
+  public final int foo6; // Non-Compliant
 
   private static final int bar1;
   static final int bar2;
   protected static final int bar3;
-  public static final int bar4;
+  public static final int bar4; // Compliant
+  public final static int bar5; // Compliant
+
+  @VisibleForTesting
+  public int foo; // Compliant
 }
