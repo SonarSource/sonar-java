@@ -20,19 +20,15 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-
-import org.sonar.java.ast.parser.JavaGrammar;
-
 import com.sonar.sslr.squid.checks.SquidCheck;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1156",
   priority = Priority.MAJOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class EmptyStringConcatenationCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
@@ -42,7 +38,7 @@ public class EmptyStringConcatenationCheck extends SquidCheck<LexerlessGrammar> 
 
   @Override
   public void visitNode(AstNode node) {
-    for (AstNode primary: node.getChildren(JavaGrammar.PRIMARY)) {
+    for (AstNode primary : node.getChildren(JavaGrammar.PRIMARY)) {
       if (isEmptyString(primary)) {
         getContext().createLineViolation(this, "Replace this empty String concatenation by a method such as String.valueOf() or Object.toString().", primary);
       }
@@ -51,7 +47,7 @@ public class EmptyStringConcatenationCheck extends SquidCheck<LexerlessGrammar> 
 
   private static boolean isEmptyString(AstNode node) {
     return node.getToken().equals(node.getLastToken()) &&
-        "\"\"".equals(node.getTokenOriginalValue());
+      "\"\"".equals(node.getTokenOriginalValue());
   }
 
 }
