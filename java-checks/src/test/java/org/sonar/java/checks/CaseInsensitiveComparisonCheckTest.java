@@ -38,7 +38,16 @@ public class CaseInsensitiveComparisonCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("Replace this equals() and toUpperCase()/toLowerCase() by equalsIgnoreCase().")
         .next().atLine(4)
-        .next().atLine(5);
+        .next().atLine(5)
+        .next().atLine(6)
+        .next().atLine(7)
+        .next().atLine(8)
+        .next().atLine(10)
+        .next().atLine(10)
+        .next().atLine(12)
+        .next().atLine(13)
+        .next().atLine(24)
+        .next().atLine(25);
   }
 
 }

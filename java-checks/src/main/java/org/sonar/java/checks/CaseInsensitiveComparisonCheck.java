@@ -19,108 +19,127 @@
  */
 package org.sonar.java.checks;
 
+import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
+
+import javax.annotation.Nullable;
 
 @Rule(
   key = "S1157",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class CaseInsensitiveComparisonCheck extends SquidCheck<LexerlessGrammar> {
+public class CaseInsensitiveComparisonCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+
+  private enum State {
+    EXPECTING_DOT_1,
+    EXPECTING_TOLOWERCASE_OR_TOUPPERCASE,
+    EXPECTING_LPAR_1,
+    EXPECTING_RPAR_1,
+    EXPECTING_DOT_2,
+    EXPECTING_EQUALS,
+    EXPECTING_LPAR_2
+  }
+
+  private State state;
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.UNARY_EXPRESSION);
-    subscribeTo(JavaGrammar.PRIMARY);
+    subscribeTo(JavaGrammar.ARGUMENTS);
+  }
+
+  @Override
+  public void visitFile(@Nullable AstNode node) {
+    state = State.EXPECTING_DOT_1;
+  }
+
+  @Override
+  public void visitToken(Token token) {
+    String value = token.getOriginalValue();
+
+    switch (state) {
+      case EXPECTING_DOT_1:
+        state = transitionIfMatch(value, ".", State.EXPECTING_TOLOWERCASE_OR_TOUPPERCASE);
+        break;
+      case EXPECTING_TOLOWERCASE_OR_TOUPPERCASE:
+        state = transitionIfMatch(value, "toLowerCase", State.EXPECTING_LPAR_1);
+        if (state != State.EXPECTING_LPAR_1) {
+          state = transitionIfMatch(value, "toUpperCase", State.EXPECTING_LPAR_1);
+        }
+        break;
+      case EXPECTING_LPAR_1:
+        state = transitionIfMatch(value, "(", State.EXPECTING_RPAR_1);
+        break;
+      case EXPECTING_RPAR_1:
+        state = transitionIfMatch(value, ")", State.EXPECTING_DOT_2);
+        break;
+      case EXPECTING_DOT_2:
+        state = transitionIfMatch(value, ".", State.EXPECTING_EQUALS);
+        break;
+      case EXPECTING_EQUALS:
+        state = transitionIfMatch(value, "equals", State.EXPECTING_LPAR_2);
+        if (state != State.EXPECTING_LPAR_2) {
+          state = transitionIfMatch(value, "toLowerCase", State.EXPECTING_LPAR_1);
+          if (state != State.EXPECTING_LPAR_1) {
+            state = transitionIfMatch(value, "toUpperCase", State.EXPECTING_LPAR_1);
+          }
+        }
+        break;
+      case EXPECTING_LPAR_2:
+        if ("(".equals(value)) {
+          createIssue(token.getLine());
+        }
+
+        state = State.EXPECTING_DOT_1;
+        break;
+      default:
+        throw new IllegalStateException("Illegal state " + state);
+    }
+  }
+
+  private static State transitionIfMatch(String actual, String expected, State ifEqual) {
+    return actual.equals(expected) ? ifEqual : State.EXPECTING_DOT_1;
   }
 
   @Override
   public void visitNode(AstNode node) {
-    if (isIllegalComparison(node)) {
-      getContext().createLineViolation(this, "Replace this equals() and toUpperCase()/toLowerCase() by equalsIgnoreCase().", node);
+    if (isPreviousTokenEquals(node) &&
+      hasOneExpression(node) &&
+      endsWithToUpperCaseOrToLowerCaseCall(node.getFirstChild(JavaGrammar.EXPRESSION))) {
+      createIssue(node.getTokenLine());
     }
   }
 
-  private static boolean isIllegalComparison(AstNode node) {
-    return isToUpperCaseOrToLowerCaseFollowedByEquals(node) ||
-      isEqualsFollowedByToUpperCaseOrToLowerCase(node);
+  private static boolean isPreviousTokenEquals(AstNode node) {
+    return "equals".equals(node.getPreviousAstNode().getLastToken().getOriginalValue());
   }
 
-  private static boolean isToUpperCaseOrToLowerCaseFollowedByEquals(AstNode node) {
-    return node.is(JavaGrammar.UNARY_EXPRESSION) &&
-      isCallToToUpperCaseOrToLowerCase(node.getFirstChild(JavaGrammar.PRIMARY)) &&
-      isSelectorCallToEquals(node);
+  private static boolean hasOneExpression(AstNode node) {
+    return node.hasDirectChildren(JavaGrammar.EXPRESSION) &&
+      !node.hasDirectChildren(JavaPunctuator.COMMA);
   }
 
-  private static boolean isEqualsFollowedByToUpperCaseOrToLowerCase(AstNode node) {
-    return node.is(JavaGrammar.PRIMARY) &&
-      isPrimaryCallToEquals(node);
-  }
+  private static boolean endsWithToUpperCaseOrToLowerCaseCall(AstNode node) {
+    StringBuilder sb = new StringBuilder();
 
-  private static boolean isCallToToUpperCaseOrToLowerCase(AstNode node) {
-    return node != null &&
-      hasArgumentsSuffix(node) &&
-      hasToUpperCaseOrToLowerCaseQualifiedIdentifier(node);
-  }
-
-  private static boolean hasArgumentsSuffix(AstNode node) {
-    AstNode identifierSuffix = node.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
-    return identifierSuffix != null &&
-      identifierSuffix.hasDirectChildren(JavaGrammar.ARGUMENTS);
-  }
-
-  private static boolean hasToUpperCaseOrToLowerCaseQualifiedIdentifier(AstNode node) {
-    AstNode qualifiedIdentifier = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-    if (qualifiedIdentifier == null) {
-      return false;
+    for (Token token : node.getTokens()) {
+      sb.append(token.getOriginalValue());
     }
 
-    String lastIdentifierValue = qualifiedIdentifier.getLastChild().getTokenOriginalValue();
-    return "toUpperCase".equals(lastIdentifierValue) ||
-      "toLowerCase".equals(lastIdentifierValue);
+    String s = sb.toString();
+
+    return s.endsWith(".toLowerCase()") || s.endsWith(".toUpperCase()");
   }
 
-  private static boolean isSelectorCallToEquals(AstNode node) {
-    AstNode selector = node.getFirstChild(JavaGrammar.SELECTOR);
-    if (selector == null) {
-      return false;
-    }
-
-    AstNode identifier = selector.getFirstChild(JavaTokenType.IDENTIFIER);
-    return "equals".equals(identifier.getTokenOriginalValue()) &&
-      selector.hasDirectChildren(JavaGrammar.ARGUMENTS) &&
-      !selector.getFirstChild(JavaGrammar.ARGUMENTS).hasDirectChildren(JavaPunctuator.COMMA);
-  }
-
-  private static boolean isPrimaryCallToEquals(AstNode node) {
-    AstNode qualifiedIdentifier = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-    if (qualifiedIdentifier == null) {
-      return false;
-    }
-
-    String lastIdentifierValue = qualifiedIdentifier.getLastChild().getTokenOriginalValue();
-    if (!"equals".equals(lastIdentifierValue)) {
-      return false;
-    }
-
-    AstNode identifierSuffix = node.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
-    if (identifierSuffix == null) {
-      return false;
-    }
-
-    AstNode arguments = identifierSuffix.getFirstChild(JavaGrammar.ARGUMENTS);
-
-    return arguments != null &&
-      !arguments.hasDirectChildren(JavaPunctuator.COMMA) &&
-      arguments.getFirstChild(JavaGrammar.EXPRESSION).hasDirectChildren(JavaGrammar.PRIMARY) &&
-      isCallToToUpperCaseOrToLowerCase(arguments.getFirstChild(JavaGrammar.EXPRESSION).getFirstChild(JavaGrammar.PRIMARY));
+  private void createIssue(int line) {
+    getContext().createLineViolation(this, "Replace this equals() and toUpperCase()/toLowerCase() by equalsIgnoreCase().", line);
   }
 
 }
