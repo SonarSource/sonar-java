@@ -26,6 +26,7 @@ import com.sonar.sslr.api.AstNodeType;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.visitors.JavaAstCheck;
@@ -62,9 +63,23 @@ public class HiddenFieldCheck extends JavaAstCheck {
   public void visitNode(AstNode node) {
     if (node.is(JavaGrammar.CLASS_BODY)) {
       fields.push(getFields(node));
-    } else {
+    } else if (!isInStaticBlock(node)) {
       checkLocalVariables(node);
     }
+  }
+
+  private static boolean isInStaticBlock(AstNode node) {
+    AstSelect query = node.select()
+        .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION, JavaGrammar.CLASS_INIT_DECLARATION)
+        .children(JavaGrammar.MODIFIER, JavaKeyword.STATIC);
+
+    for (AstNode modifierOrStatic : query) {
+      if (modifierOrStatic.is(JavaKeyword.STATIC) || modifierOrStatic.hasDirectChildren(JavaKeyword.STATIC)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @Override

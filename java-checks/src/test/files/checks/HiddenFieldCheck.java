@@ -133,4 +133,12 @@ class Foo {
     }
 
   }
+
+  static {
+    int i = 0; // Compliant
+  }
+
+  static void foo() {
+    int i = 0; // Compliant
+  }
 }
