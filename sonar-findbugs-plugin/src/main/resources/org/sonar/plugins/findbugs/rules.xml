@@ -1314,6 +1314,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Dodgy - Consider returning a zero length array rather than null]]></name>
     <configKey><![CDATA[PZLA_PREFER_ZERO_LENGTH_ARRAYS]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UCF_USELESS_CONTROL_FLOW">
