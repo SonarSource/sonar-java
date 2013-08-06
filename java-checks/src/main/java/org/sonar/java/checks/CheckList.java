@@ -106,6 +106,7 @@ public final class CheckList {
         ConstantsShouldBeStaticFinalCheck.class,
         EmptyStringConcatenationCheck.class,
         ThrowsFromFinallyCheck.class,
+        SystemOutOrErrUsageCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

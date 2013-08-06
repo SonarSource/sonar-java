@@ -1,0 +1,21 @@
+<p>Two important requirements must be fulfilled when logging messages:</p>
+
+<ol>
+  <li>The user must be able to easily retrieve the logs.</li>
+  <li>The format of all messages must be uniform to enable users to easily browse them.</li>
+</ol>
+
+<p>
+If a program directly writes to the standard output, there is absolutely no way to comply with these requirements.
+That's why defining and using a dedicated logger is highly recommended.
+</p>
+
+<p>
+The following code snippet illustrates this rule:
+</p>
+
+<pre>
+System.out.println("My Message");  // Non-Compliant
+
+logger.log("My Message");          // Compliant
+</pre>

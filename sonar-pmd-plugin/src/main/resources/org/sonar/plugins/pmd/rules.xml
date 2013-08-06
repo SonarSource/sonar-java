@@ -1154,6 +1154,7 @@
   <rule key="SystemPrintln">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/logging-java.xml/SystemPrintln]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidPrintStackTrace">
