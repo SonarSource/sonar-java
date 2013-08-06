@@ -102,7 +102,7 @@ public class AsmResource {
     return AsmAccessFlags.isProtected(accessFlags);
   }
 
-  boolean isFinal() {
+  public boolean isFinal() {
     return AsmAccessFlags.isFinal(accessFlags);
   }
 

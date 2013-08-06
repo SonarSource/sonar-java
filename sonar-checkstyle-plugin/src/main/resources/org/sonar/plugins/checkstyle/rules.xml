@@ -858,6 +858,7 @@
     <configKey><![CDATA[Checker/TreeWalker/MutableException]]></configKey>
     <param key="format" type="REGULAR_EXPRESSION">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.metrics.NPathComplexityCheck">
