@@ -38,17 +38,47 @@ import javax.annotation.Nullable;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class CaseInsensitiveComparisonCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
-  private enum State {
+  private static enum State {
     EXPECTING_DOT_1,
     EXPECTING_TOLOWERCASE_OR_TOUPPERCASE,
     EXPECTING_LPAR_1,
     EXPECTING_RPAR_1,
     EXPECTING_DOT_2,
     EXPECTING_EQUALS,
-    EXPECTING_LPAR_2
+    EXPECTING_LPAR_2,
+    FOUND_ISSUE
   }
 
-  private State state;
+  private static enum Symbol {
+    OTHER,
+    DOT,
+    TOLOWERCASE_OR_TOUPPERCASE,
+    LPAR,
+    RPAR,
+    EQUALS
+  }
+
+  private static State[][] TRANSITIONS = new State[State.values().length][Symbol.values().length];
+  static {
+    for (int i = 0; i < TRANSITIONS.length; i++) {
+      for (int j = 0; j < TRANSITIONS[i].length; j++) {
+        TRANSITIONS[i][j] = State.EXPECTING_DOT_1;
+      }
+    }
+
+    TRANSITIONS[State.EXPECTING_DOT_1.ordinal()][Symbol.DOT.ordinal()] = State.EXPECTING_TOLOWERCASE_OR_TOUPPERCASE;
+    TRANSITIONS[State.EXPECTING_TOLOWERCASE_OR_TOUPPERCASE.ordinal()][Symbol.TOLOWERCASE_OR_TOUPPERCASE.ordinal()] = State.EXPECTING_LPAR_1;
+    TRANSITIONS[State.EXPECTING_LPAR_1.ordinal()][Symbol.LPAR.ordinal()] = State.EXPECTING_RPAR_1;
+    TRANSITIONS[State.EXPECTING_RPAR_1.ordinal()][Symbol.RPAR.ordinal()] = State.EXPECTING_DOT_2;
+    TRANSITIONS[State.EXPECTING_DOT_2.ordinal()][Symbol.DOT.ordinal()] = State.EXPECTING_EQUALS;
+
+    TRANSITIONS[State.EXPECTING_EQUALS.ordinal()][Symbol.EQUALS.ordinal()] = State.EXPECTING_LPAR_2;
+    TRANSITIONS[State.EXPECTING_EQUALS.ordinal()][Symbol.TOLOWERCASE_OR_TOUPPERCASE.ordinal()] = State.EXPECTING_LPAR_1;
+
+    TRANSITIONS[State.EXPECTING_LPAR_2.ordinal()][Symbol.LPAR.ordinal()] = State.FOUND_ISSUE;
+  }
+
+  private State currentState;
 
   @Override
   public void init() {
@@ -57,55 +87,37 @@ public class CaseInsensitiveComparisonCheck extends SquidCheck<LexerlessGrammar>
 
   @Override
   public void visitFile(@Nullable AstNode node) {
-    state = State.EXPECTING_DOT_1;
+    currentState = State.EXPECTING_DOT_1;
   }
 
   @Override
   public void visitToken(Token token) {
-    String value = token.getOriginalValue();
+    currentState = TRANSITIONS[currentState.ordinal()][getSymbol(token.getOriginalValue()).ordinal()];
 
-    switch (state) {
-      case EXPECTING_DOT_1:
-        state = transitionIfMatch(value, ".", State.EXPECTING_TOLOWERCASE_OR_TOUPPERCASE);
-        break;
-      case EXPECTING_TOLOWERCASE_OR_TOUPPERCASE:
-        state = transitionIfMatch(value, "toLowerCase", State.EXPECTING_LPAR_1);
-        if (state != State.EXPECTING_LPAR_1) {
-          state = transitionIfMatch(value, "toUpperCase", State.EXPECTING_LPAR_1);
-        }
-        break;
-      case EXPECTING_LPAR_1:
-        state = transitionIfMatch(value, "(", State.EXPECTING_RPAR_1);
-        break;
-      case EXPECTING_RPAR_1:
-        state = transitionIfMatch(value, ")", State.EXPECTING_DOT_2);
-        break;
-      case EXPECTING_DOT_2:
-        state = transitionIfMatch(value, ".", State.EXPECTING_EQUALS);
-        break;
-      case EXPECTING_EQUALS:
-        state = transitionIfMatch(value, "equals", State.EXPECTING_LPAR_2);
-        if (state != State.EXPECTING_LPAR_2) {
-          state = transitionIfMatch(value, "toLowerCase", State.EXPECTING_LPAR_1);
-          if (state != State.EXPECTING_LPAR_1) {
-            state = transitionIfMatch(value, "toUpperCase", State.EXPECTING_LPAR_1);
-          }
-        }
-        break;
-      case EXPECTING_LPAR_2:
-        if ("(".equals(value)) {
-          createIssue(token.getLine());
-        }
-
-        state = State.EXPECTING_DOT_1;
-        break;
-      default:
-        throw new IllegalStateException("Illegal state " + state);
+    if (currentState == State.FOUND_ISSUE) {
+      createIssue(token.getLine());
+      currentState = State.EXPECTING_DOT_1;
     }
   }
 
-  private static State transitionIfMatch(String actual, String expected, State ifEqual) {
-    return actual.equals(expected) ? ifEqual : State.EXPECTING_DOT_1;
+  private static Symbol getSymbol(String value) {
+    Symbol result = Symbol.OTHER;
+
+    if (value.length() == 1) {
+      if (".".equals(value)) {
+        result = Symbol.DOT;
+      } else if ("(".equals(value)) {
+        result = Symbol.LPAR;
+      } else if (")".equals(value)) {
+        result = Symbol.RPAR;
+      }
+    } else if ("toLowerCase".equals(value) || "toUpperCase".equals(value)) {
+      result = Symbol.TOLOWERCASE_OR_TOUPPERCASE;
+    } else if ("equals".equals(value)) {
+      result = Symbol.EQUALS;
+    }
+
+    return result;
   }
 
   @Override
@@ -139,7 +151,7 @@ public class CaseInsensitiveComparisonCheck extends SquidCheck<LexerlessGrammar>
   }
 
   private void createIssue(int line) {
-    getContext().createLineViolation(this, "Replace this equals() and toUpperCase()/toLowerCase() by equalsIgnoreCase().", line);
+    getContext().createLineViolation(this, "Replace this toUpperCase()/toLowerCase() and equals() calls by a single equalsIgnoreCase() one.", line);
   }
 
 }

@@ -36,7 +36,7 @@ public class CaseInsensitiveComparisonCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CaseInsensitiveComparisonCheck.java"), new CaseInsensitiveComparisonCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Replace this equals() and toUpperCase()/toLowerCase() by equalsIgnoreCase().")
+        .next().atLine(3).withMessage("Replace this toUpperCase()/toLowerCase() and equals() calls by a single equalsIgnoreCase() one.")
         .next().atLine(4)
         .next().atLine(5)
         .next().atLine(6)
