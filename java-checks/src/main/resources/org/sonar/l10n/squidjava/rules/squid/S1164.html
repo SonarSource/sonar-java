@@ -1,0 +1,11 @@
+<p>Catching an exception only to immediately rethrow it without doing anything else is useless and misleading.</p>
+
+<p>The following code snippet illustrates this rule:</p>
+
+<pre>
+try {
+  /* ... */
+} catch (Exception e) {
+  throw e;               // Non-Compliant
+}
+</pre>

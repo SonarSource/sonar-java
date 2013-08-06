@@ -108,6 +108,7 @@ public final class CheckList {
         ThrowsFromFinallyCheck.class,
         SystemOutOrErrUsageCheck.class,
         NamesTooShortCheck.class,
+        CatchWhichOnlyRethrowsCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
