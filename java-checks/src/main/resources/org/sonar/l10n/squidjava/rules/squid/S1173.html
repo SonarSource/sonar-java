@@ -1,0 +1,24 @@
+<p>
+Names should be self-descriptive and this can't be the case when they are made of less than 3 characters.
+</p>
+
+<p>The following code snippet illustrates this rule:</p>
+
+<pre>
+public class A {                            // Non-Compliant
+
+  public int convert(String a) {            // Non-Compliant
+    for (int i = 0; i < 42 ; i++) {         // Compliant - exception
+      /* ... */
+    }
+  }
+
+  public void a(int value) {                // Non-Compliant
+    try {
+      /* ... */
+    } catch (Exception e) {                 // Compliant - exception
+      /* ... */
+    }
+  }
+}
+</pre>

@@ -1028,6 +1028,7 @@
   <rule key="ShortVariable">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/naming.xml/ShortVariable]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="LongVariable">
@@ -1040,6 +1041,7 @@
   <rule key="ShortMethodName">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/naming.xml/ShortMethodName]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="VariableNamingConventions">
