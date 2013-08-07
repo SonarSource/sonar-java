@@ -1,0 +1,19 @@
+<p>Merging collapsible <code>if</code> statements increases the code's readability.</p>
+
+<p>The following code:</p>
+
+<pre>
+if (condition1) {
+  if (condition2) {             // Non-Compliant
+    /* ... */
+  }
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+if (condition1 && condition2) { // Compliant
+  /* ... */
+}
+</pre>

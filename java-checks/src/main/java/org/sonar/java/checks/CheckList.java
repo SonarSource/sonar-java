@@ -110,6 +110,7 @@ public final class CheckList {
         NamesTooShortCheck.class,
         CatchWhichOnlyRethrowsCheck.class,
         ExceptionsShouldBeImmutableCheck.class,
+        CollapsibleIfCandidateCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

@@ -530,6 +530,7 @@
   <rule key="CollapsibleIfStatements">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/basic.xml/CollapsibleIfStatements]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UselessOverridingMethod">
