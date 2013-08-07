@@ -45,7 +45,9 @@ public class ExceptionsShouldBeImmutableCheck extends SquidCheck<LexerlessGramma
     if (isException(node)) {
       for (AstNode field : getFields(node)) {
         if (!isFinal(field)) {
-          getContext().createLineViolation(this, "Make this field final.", field);
+          for (AstNode variableDeclarator : field.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
+            getContext().createLineViolation(this, "Make this '" + variableDeclarator.getTokenOriginalValue() + "' field final.", field);
+          }
         }
       }
     }
