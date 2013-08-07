@@ -39,15 +39,6 @@ public class CloneMethodCallsSuperCloneCheckTest {
         .next().atLine(3).withMessage("Call super.clone() to get the cloned instance to be returned.")
         .next().atLine(46)
         .next().atLine(53);
-
-    class Foo {
-      @Override
-      protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-      }
-    }
-
-    System.out.println(new Foo().clone());
   }
 
 }
