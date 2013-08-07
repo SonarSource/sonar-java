@@ -112,6 +112,7 @@ public final class CheckList {
         ExceptionsShouldBeImmutableCheck.class,
         CollapsibleIfCandidateCheck.class,
         NestedIfStatementsCheck.class,
+        CatchOfThrowableOrErrorCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

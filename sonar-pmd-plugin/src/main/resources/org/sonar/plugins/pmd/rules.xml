@@ -806,6 +806,7 @@
   <rule key="AvoidCatchingThrowable">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/strictexception.xml/AvoidCatchingThrowable]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SignatureDeclareThrowsException">
