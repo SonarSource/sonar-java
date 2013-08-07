@@ -13,6 +13,8 @@ class A {
    f11,                                                 // Compliant
    f12 = foo(),                                         // Compliant
    f13 = BAR;                                           // Non-Compliant
+
+  private final int[] foo = new int[42];                // Compliant
 }
 
 interface B {

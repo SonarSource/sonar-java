@@ -70,7 +70,7 @@ public class ConstantsShouldBeStaticFinalCheck extends SquidCheck<LexerlessGramm
   private static boolean hasConstantInitializer(AstNode node) {
     AstNode variableInitializer = node.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER);
     return variableInitializer != null &&
-      !variableInitializer.hasDescendant(JavaPunctuator.LPAR);
+      !variableInitializer.hasDescendant(JavaPunctuator.LPAR, JavaPunctuator.LBRK);
   }
 
 }
