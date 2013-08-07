@@ -54,6 +54,9 @@ public class ThrowsSeveralCheckedExceptionCheck {
   public void foo10() throws IOException, IOException, SQLException { // Non-Compliant
   }
 
+  void foo11() throws IOException, IOException, SQLException { // Compliant
+  }
+
   public class MyException extends Exception {
   }
 

@@ -46,26 +46,28 @@ public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
 
   @Override
   public void visitMethod(AsmMethod asmMethod) {
-    List<AsmClass> thrownClasses = asmMethod.getThrows();
-    if (thrownClasses.size() > 1) {
-      List<String> thrownCheckedExceptions = Lists.newArrayList();
+    if (asmMethod.isPublic()) {
+      List<AsmClass> thrownClasses = asmMethod.getThrows();
+      if (thrownClasses.size() > 1) {
+        List<String> thrownCheckedExceptions = Lists.newArrayList();
 
-      for (AsmClass thrownClass : thrownClasses) {
-        if (!isSubClassOfRuntimeException(thrownClass)) {
-          thrownCheckedExceptions.add(thrownClass.getDisplayName());
+        for (AsmClass thrownClass : thrownClasses) {
+          if (!isSubClassOfRuntimeException(thrownClass)) {
+            thrownCheckedExceptions.add(thrownClass.getDisplayName());
+          }
         }
-      }
 
-      if (thrownCheckedExceptions.size() > 1) {
-        CheckMessage message = new CheckMessage(
-            this,
-            "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
-        SourceMethod sourceMethod = getSourceMethod(asmMethod);
-        if (sourceMethod != null) {
-          message.setLine(sourceMethod.getStartAtLine());
+        if (thrownCheckedExceptions.size() > 1) {
+          CheckMessage message = new CheckMessage(
+              this,
+              "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
+          SourceMethod sourceMethod = getSourceMethod(asmMethod);
+          if (sourceMethod != null) {
+            message.setLine(sourceMethod.getStartAtLine());
+          }
+          SourceFile file = getSourceFile(asmClass);
+          file.log(message);
         }
-        SourceFile file = getSourceFile(asmClass);
-        file.log(message);
       }
     }
   }

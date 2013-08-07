@@ -90,7 +90,7 @@ public class AsmResource {
     return AsmAccessFlags.isStatic(accessFlags);
   }
 
-  boolean isPublic() {
+  public boolean isPublic() {
     return AsmAccessFlags.isPublic(accessFlags);
   }
 
