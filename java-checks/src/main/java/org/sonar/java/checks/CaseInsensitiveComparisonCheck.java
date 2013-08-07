@@ -151,7 +151,7 @@ public class CaseInsensitiveComparisonCheck extends SquidCheck<LexerlessGrammar>
   }
 
   private void createIssue(int line) {
-    getContext().createLineViolation(this, "Replace this toUpperCase()/toLowerCase() and equals() calls by a single equalsIgnoreCase() one.", line);
+    getContext().createLineViolation(this, "Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.", line);
   }
 
 }
