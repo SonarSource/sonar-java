@@ -30,8 +30,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S134",
-  priority = Priority.MAJOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  priority = Priority.MINOR)
+@BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class NestedIfStatementsCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final int DEFAULT_MAX = 3;
