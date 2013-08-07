@@ -595,6 +595,7 @@
     <configKey><![CDATA[rulesets/design.xml/AvoidDeeplyNestedIfStmts]]></configKey>
     <param key="problemDepth" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidReassigningParameters">

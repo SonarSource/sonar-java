@@ -1,0 +1,27 @@
+<p>
+Nested <code>if</code> statements is a key ingredient for making what's known as 'Spaghetti code'.
+Such code is hard to read, refactor and therefore maintain.
+</p>
+
+<p>The following code snippet illustrates this rule with the default threshold of 3:</p>
+
+<pre>
+public void process() {
+  if (condition1) {            // Compliant - depth = 1
+    /* ... */
+    if (condition2) {          // Compliant - dpeth = 2
+      /* ... */
+      if (condition3) {        // Compliant - depth = 3, not exceeding the limit
+        /* ... */
+        if (condition4) {      // Non-Compliant - depth = 4
+          if (condition5) {    // Compliant - depth = 5, only if at depth max + 1 are reported
+            /* ... */
+          }
+
+          return;
+        }
+      }
+    }
+  }
+}
+</pre>

@@ -884,6 +884,7 @@
     <configKey><![CDATA[Checker/TreeWalker/NestedIfDepth]]></configKey>
     <param key="max" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.NestedTryDepthCheck">
