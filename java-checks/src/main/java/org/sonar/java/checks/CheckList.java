@@ -113,6 +113,7 @@ public final class CheckList {
         CollapsibleIfCandidateCheck.class,
         NestedIfStatementsCheck.class,
         CatchOfThrowableOrErrorCheck.class,
+        ImplementsEnumerationCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
