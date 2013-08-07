@@ -114,6 +114,7 @@ public final class CheckList {
         NestedIfStatementsCheck.class,
         CatchOfThrowableOrErrorCheck.class,
         ImplementsEnumerationCheck.class,
+        CloneMethodCallsSuperCloneCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

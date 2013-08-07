@@ -233,6 +233,7 @@
   <rule key="ProperCloneImplementation">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/clone.xml/ProperCloneImplementation]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EmptyFinalizer">
@@ -1015,6 +1016,7 @@
   <rule key="CloneThrowsCloneNotSupportedException">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/clone.xml/CloneThrowsCloneNotSupportedException]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UseCorrectExceptionLogging">

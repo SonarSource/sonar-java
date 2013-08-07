@@ -1,0 +1,65 @@
+<p>The usual convention for <code>Object.clone()</code> according to Oracle's Javadoc is that:</p>
+<ol>
+  <li><code>x.clone() != x</code></li>
+  <li><code>x.clone().getClass() == x.getClass()</code></li>
+  <li><code>x.clone().equals\(x\)</code></li>
+</ol>
+
+<p>Having the returned object being obtained by calling <code>super.clone()</code> helps to satisfy those invariants:</p>
+<ol>
+  <li><code>super.clone()</code> returns a new object instance</li>
+  <li><code>super.clone()</code> returns an object of the same type as the one <code>clone()</code> was called on</li>
+  <li><code>Object.clone()</code> performs a shallow copy of the object's state</li>
+</ol>
+
+<p>For example, the following code:</p>
+
+<pre>
+class BaseClass implements Cloneable {
+  @Override
+  public Object clone() throws CloneNotSupportedException {    // Non-Compliant - should return the super.clone() instance
+    return new BaseClass();
+  }
+}
+
+class DerivedClass extends BaseClass implements Cloneable {
+  /* Does not override clone() */
+
+  public void sayHello() {
+    System.out.println("Hello, world!");
+  }
+}
+
+class Application {
+  public static void main(String[] args) throws Exception {
+    DerivedClass instance = new DerivedClass();
+    ((DerivedClass) instance.clone()).sayHello();              // Throws a ClassCastException because invariant #2 is violated
+  }
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+class BaseClass implements Cloneable {
+  @Override
+  public Object clone() throws CloneNotSupportedException {    // Compliant
+    return super.clone();
+  }
+}
+
+class DerivedClass extends BaseClass implements Cloneable {
+  /* Does not override clone() */
+
+  public void sayHello() {
+    System.out.println("Hello, world!");
+  }
+}
+
+class Application {
+  public static void main(String[] args) throws Exception {
+    DerivedClass instance = new DerivedClass();
+    ((DerivedClass) instance.clone()).sayHello();              // Displays "Hello, world!" as expected. Invariant #2 is satisfied
+  }
+}
+</pre>

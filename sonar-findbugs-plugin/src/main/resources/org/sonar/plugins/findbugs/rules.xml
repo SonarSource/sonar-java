@@ -250,6 +250,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Bad practice - clone method does not call super.clone()]]></name>
     <configKey><![CDATA[CN_IDIOM_NO_SUPER_CALL]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER">
