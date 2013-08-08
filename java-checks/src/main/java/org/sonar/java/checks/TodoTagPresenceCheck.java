@@ -35,12 +35,19 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @BelongsToProfile(title = "Sonar way", priority = Priority.INFO)
 public class TodoTagPresenceCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
+  private static final String PATTERN = "TODO";
+
   @Override
   public void visitToken(Token token) {
     for (Trivia trivia : token.getTrivia()) {
       String comment = trivia.getToken().getOriginalValue();
-      if (StringUtils.containsIgnoreCase(comment, "TODO")) {
-        getContext().createLineViolation(this, "Complete the task associated to this TODO comment.", trivia.getToken());
+      if (StringUtils.containsIgnoreCase(comment, PATTERN)) {
+        String[] lines = comment.split("\r\n?|\n");
+        for (int i = 0; i < lines.length; i++) {
+          if (StringUtils.containsIgnoreCase(lines[i], PATTERN)) {
+            getContext().createLineViolation(this, "Complete the task associated to this TODO comment.", trivia.getToken().getLine() + i);
+          }
+        }
       }
     }
   }

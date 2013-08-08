@@ -37,8 +37,9 @@ public class TodoTagPresenceCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TodoTagPresenceCheck.java"), new TodoTagPresenceCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("Complete the task associated to this TODO comment.")
-        .next().atLine(5)
-        .next().atLine(10);
+        .next().atLine(7)
+        .next().atLine(8)
+        .next().atLine(11);
   }
 
 }
