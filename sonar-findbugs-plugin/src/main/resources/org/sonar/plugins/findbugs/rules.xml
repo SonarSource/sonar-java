@@ -2198,6 +2198,7 @@
     <priority>CRITICAL</priority>
     <name><![CDATA[Switch statement found where one case falls through to the next case]]></name>
     <configKey><![CDATA[SF_SWITCH_FALLTHROUGH]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SF_SWITCH_NO_DEFAULT">

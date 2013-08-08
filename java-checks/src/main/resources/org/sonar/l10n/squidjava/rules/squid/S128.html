@@ -1,0 +1,25 @@
+<p>
+When the execution is not explicitly ended at the end of a switch case, it continues to execute the statements of the following case.
+While this is sometimes intentional, it often is a mistake which leads to unexpected behavior.
+</p>
+
+<p>This rule doesn't apply to empty cases. Indeed those empty cases allow you to specify the same behavior for a group of cases.</p>
+
+<p>The following code snippet illustrates this rule:</p>
+
+<pre>
+switch (myVariable) {
+  case 0:                                // Compliant
+  case 1:                                // Compliant
+    doSomething();
+    break;
+  case 2:                                // Compliant
+    return;
+  case 3:                                // Compliant
+    throw new IllegalStateException();
+  case 4:                                // Non-Compliant - both 'doSomething()' and 'doSomethingElse()' will be executed
+    doSomething();
+  default:                               // Non-Compliant
+    doSomethingElse();
+}
+</pre>

@@ -115,6 +115,7 @@ public final class CheckList {
         ImplementsEnumerationCheck.class,
         CloneMethodCallsSuperCloneCheck.class,
         SwitchCaseTooBigCheck.class,
+        SwitchCaseWithoutBreakCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

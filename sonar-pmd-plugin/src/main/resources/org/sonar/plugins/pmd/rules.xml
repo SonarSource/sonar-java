@@ -716,6 +716,7 @@
   <rule key="MissingBreakInSwitch">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/design.xml/MissingBreakInSwitch]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UseNotifyAllInsteadOfNotify">
