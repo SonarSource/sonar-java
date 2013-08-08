@@ -45,7 +45,7 @@ public class UtilityClassWithPublicConstructorCheck extends SquidCheck<Lexerless
 
   @Override
   public void visitNode(AstNode node) {
-    if (!extendsAnotherClass(node) && hasStaticMethods(node) && !hasInstanceMethods(node)) {
+    if (!extendsAnotherClass(node) && hasStaticMembers(node) && !hasInstanceMembers(node)) {
       boolean hasImplicitPublicConstructor = true;
 
       for (AstNode explicitConstructor : getExplicitConstructors(node)) {
@@ -66,27 +66,14 @@ public class UtilityClassWithPublicConstructorCheck extends SquidCheck<Lexerless
     return node.getParent().hasDirectChildren(JavaKeyword.EXTENDS);
   }
 
-  private static boolean hasStaticMethods(AstNode node) {
-    AstSelect query = node.select()
-        .children(JavaGrammar.CLASS_BODY_DECLARATION)
-        .children(JavaGrammar.MEMBER_DECL)
-        .children(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
-
-    for (AstNode methodOrGeneric : query) {
-      if (isMethod(methodOrGeneric) && isStaticMethod(methodOrGeneric)) {
+  private static boolean hasStaticMembers(AstNode node) {
+    for (AstNode member : node.getChildren(JavaGrammar.CLASS_BODY_DECLARATION)) {
+      if (hasStaticModifier(member)) {
         return true;
       }
     }
 
     return false;
-  }
-
-  private static boolean isMethod(AstNode node) {
-    return node.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST) || node.hasDirectChildren(JavaGrammar.METHOD_DECLARATOR_REST);
-  }
-
-  private static boolean isStaticMethod(AstNode node) {
-    return hasStaticModifier(node.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION));
   }
 
   private static boolean hasStaticModifier(AstNode node) {
@@ -98,19 +85,26 @@ public class UtilityClassWithPublicConstructorCheck extends SquidCheck<Lexerless
     return false;
   }
 
-  private static boolean hasInstanceMethods(AstNode node) {
-    AstSelect query = node.select()
-        .children(JavaGrammar.CLASS_BODY_DECLARATION)
-        .children(JavaGrammar.MEMBER_DECL)
-        .children(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
-
-    for (AstNode methodOrGeneric : query) {
-      if (isMethod(methodOrGeneric) && !hasStaticModifier(methodOrGeneric.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION))) {
+  private static boolean hasInstanceMembers(AstNode node) {
+    for (AstNode member : node.getChildren(JavaGrammar.CLASS_BODY_DECLARATION)) {
+      if (!isExcludedInstanceMember(member) && !hasStaticModifier(member)) {
         return true;
       }
     }
 
     return false;
+  }
+
+  private static boolean isExcludedInstanceMember(AstNode node) {
+    AstNode memberDecl = node.getFirstChild(JavaGrammar.MEMBER_DECL);
+    if (memberDecl == null) {
+      return true;
+    }
+
+    AstNode constructorOrGeneric = memberDecl.getFirstChild(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST, JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
+
+    return constructorOrGeneric != null &&
+      isConstructor(constructorOrGeneric);
   }
 
   private static List<AstNode> getExplicitConstructors(AstNode node) {

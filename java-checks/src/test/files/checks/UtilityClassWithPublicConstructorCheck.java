@@ -55,3 +55,29 @@ class Foo8 extends Bar { // Compliant
   }
 
 }
+
+class Foo9 { // Compliant
+
+  public int foo;
+
+  public static void foo() {
+  }
+
+}
+
+class Foo10 { // Non-Compliant
+
+  public static int foo;
+
+  ;
+
+}
+
+class Foo11 {
+
+  protected Foo11() { // Compliant
+  }
+
+  public static int a;
+
+}

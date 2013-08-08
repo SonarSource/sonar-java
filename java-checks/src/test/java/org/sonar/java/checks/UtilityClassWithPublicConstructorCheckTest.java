@@ -38,7 +38,8 @@ public class UtilityClassWithPublicConstructorCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(9).withMessage("Add a private constructor to hide the implicit public one.")
         .next().atLine(23).withMessage("Hide this public constructor.")
-        .next().atLine(44);
+        .next().atLine(44)
+        .next().atLine(68);
   }
 
 }
