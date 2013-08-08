@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableMap;
 import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
@@ -29,11 +30,19 @@ import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
+import java.util.Map;
+
 @Rule(
   key = "S1149",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+
+  private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String> builder()
+      .put("Vector", "ArrayList or LinkedList")
+      .put("Hashtable", "HashMap")
+      .put("StringBuffer", "StringBuilder")
+      .build();
 
   private int lastReportedLine;
   private boolean inImport;
@@ -58,7 +67,7 @@ public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> im
   public void visitToken(Token token) {
     String className = token.getOriginalValue();
     if (!inImport && isSynchronizedClass(className) && lastReportedLine != token.getLine()) {
-      getContext().createLineViolation(this, "Replace the synchronized class '" + className + "' by an unsynchronized one.", token);
+      getContext().createLineViolation(this, "Replace the synchronized class '" + className + "' by an unsynchronized one such as " + REPLACEMENTS.get(className) + ".", token);
       lastReportedLine = token.getLine();
     }
   }
@@ -70,7 +79,8 @@ public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> im
 
   private static boolean isSynchronizedClass(String className) {
     return "Vector".equals(className) ||
-      "Hashtable".equals(className);
+      "Hashtable".equals(className) ||
+      "StringBuffer".equals(className);
   }
 
 }

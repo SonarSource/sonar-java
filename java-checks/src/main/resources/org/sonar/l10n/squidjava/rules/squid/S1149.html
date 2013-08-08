@@ -1,5 +1,5 @@
 <p>
-Early classes of the Java Collections Framework, such as <code>Vector</code> and <code>Hashtable</code>, were synchronized to make them thread-safe.
+Early classes of the Java API, such as <code>Vector</code>, <code>Hashtable</code> and <code>StringBuffer</code>, were synchronized to make them thread-safe.
 Unfortunately, synchronization has a big negative impact on performance, even when using these collections from a single thread.
 </p>
 
@@ -8,6 +8,7 @@ Unfortunately, synchronization has a big negative impact on performance, even wh
 <ul>
   <li><code>ArrayList</code> or <code>LinkedList</code> instead of <code>Vector</code></li>
   <li><code>HashMap</code> instead of <code>Hashtable</code></li>
+  <li><code>StringBuilder</code> instead of <code>StringBuffer</code></li>
 </ul>
 
 <p>The following code:</p>

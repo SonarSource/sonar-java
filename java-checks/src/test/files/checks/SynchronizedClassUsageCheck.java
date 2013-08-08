@@ -10,4 +10,5 @@ class A {
   HashMap a = new HashMap();     // Compliant
   ArrayList a = new ArrayList(); // Compliant
   Vector<Integer> a;             // Non-Compliant
+  StringBuffer a = new StringBuffer(); // Non-Compliant
 }
