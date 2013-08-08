@@ -36,7 +36,7 @@ public class StringBufferUsageCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringBufferUsageCheck.java"), new StringBufferUsageCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Replace this StringBuilder by a StringBuffer.")
+        .next().atLine(2).withMessage("Replace this StringBuffer by a StringBuilder.")
         .next().atLine(6);
   }
 

@@ -44,7 +44,7 @@ public class StringBufferUsageCheck extends SquidCheck<LexerlessGrammar> impleme
   @Override
   public void visitToken(Token token) {
     if ("StringBuffer".equals(token.getValue()) && lastReportedLine != token.getLine()) {
-      getContext().createLineViolation(this, "Replace this StringBuilder by a StringBuffer.", token);
+      getContext().createLineViolation(this, "Replace this StringBuffer by a StringBuilder.", token);
       lastReportedLine = token.getLine();
     }
   }
