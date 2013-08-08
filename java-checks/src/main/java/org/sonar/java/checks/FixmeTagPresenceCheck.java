@@ -35,12 +35,19 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class FixmeTagPresenceCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
+  private static final String PATTERN = "FIXME";
+
   @Override
   public void visitToken(Token token) {
     for (Trivia trivia : token.getTrivia()) {
       String comment = trivia.getToken().getOriginalValue();
-      if (StringUtils.containsIgnoreCase(comment, "FIXME")) {
-        getContext().createLineViolation(this, "Take the required action to fix the issue indicated by this comment.", trivia.getToken());
+      if (StringUtils.containsIgnoreCase(comment, PATTERN)) {
+        String[] lines = comment.split("\r\n?|\n");
+        for (int i = 0; i < lines.length; i++) {
+          if (StringUtils.containsIgnoreCase(lines[i], PATTERN)) {
+            getContext().createLineViolation(this, "Take the required action to fix the issue indicated by this comment.", trivia.getToken().getLine() + i);
+          }
+        }
       }
     }
   }
