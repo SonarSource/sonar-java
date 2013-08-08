@@ -65,7 +65,6 @@ public final class CheckList {
         RightCurlyBraceSameLineAsNextBlockCheck.class,
         RightCurlyBraceStartLineCheck.class,
         RightCurlyBraceDifferentLineAsNextBlockCheck.class,
-        StringBufferUsageCheck.class,
         LeftCurlyBraceEndLineCheck.class,
         UselessParenthesesCheck.class,
         ObjectFinalizeCheck.class,
