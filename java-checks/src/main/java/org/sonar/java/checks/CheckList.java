@@ -116,6 +116,7 @@ public final class CheckList {
         CloneMethodCallsSuperCloneCheck.class,
         SwitchCaseTooBigCheck.class,
         SwitchCaseWithoutBreakCheck.class,
+        CatchUsesExceptionWithContextCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
