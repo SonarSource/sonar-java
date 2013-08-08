@@ -36,7 +36,7 @@ public class SwitchCaseWithoutBreakCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseWithoutBreakCheck.java"), new SwitchCaseWithoutBreakCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("End this switch case with an unconditional break/return or throw statement.")
+        .next().atLine(5).withMessage("End this switch case with an unconditional break, return or throw statement.")
         .next().atLine(13)
         .next().atLine(15);
   }

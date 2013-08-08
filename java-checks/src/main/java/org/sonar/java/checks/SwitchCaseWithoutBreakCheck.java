@@ -42,7 +42,7 @@ public class SwitchCaseWithoutBreakCheck extends SquidCheck<LexerlessGrammar> {
   public void visitNode(AstNode node) {
     AstNode lastBlockStatement = getLastStatement(node);
     if (lastBlockStatement != null && !isBreakReturnOrThrow(lastBlockStatement)) {
-      getContext().createLineViolation(this, "End this switch case with an unconditional break/return or throw statement.", node);
+      getContext().createLineViolation(this, "End this switch case with an unconditional break, return or throw statement.", node);
     }
   }
 
