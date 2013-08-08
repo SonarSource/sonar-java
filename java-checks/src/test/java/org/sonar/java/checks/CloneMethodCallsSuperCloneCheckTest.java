@@ -36,7 +36,7 @@ public class CloneMethodCallsSuperCloneCheckTest {
   public void detected() throws Exception {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CloneMethodCallsSuperCloneCheck.java"), new CloneMethodCallsSuperCloneCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Call super.clone() to get the cloned instance to be returned.")
+        .next().atLine(3).withMessage("Use super.clone() to create and seed the cloned instance to be returned.")
         .next().atLine(46)
         .next().atLine(53);
   }

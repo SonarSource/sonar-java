@@ -54,7 +54,7 @@ public class CloneMethodCallsSuperCloneCheck extends SquidCheck<LexerlessGrammar
   @Override
   public void leaveNode(AstNode node) {
     if (isCloneMethod(node) && !foundSuperClone) {
-      getContext().createLineViolation(this, "Call super.clone() to get the cloned instance to be returned.", node);
+      getContext().createLineViolation(this, "Use super.clone() to create and seed the cloned instance to be returned.", node);
     }
   }
 

@@ -1,12 +1,12 @@
 <p>The usual convention for <code>Object.clone()</code> according to Oracle's Javadoc is that:</p>
-<ol>
+<ul>
   <li><code>x.clone() != x</code></li>
   <li><code>x.clone().getClass() == x.getClass()</code></li>
   <li><code>x.clone().equals\(x\)</code></li>
 </ol>
 
-<p>Having the returned object being obtained by calling <code>super.clone()</code> helps to satisfy those invariants:</p>
-<ol>
+<p>Obtaining the object that will be returned by calling <code>super.clone()</code> helps to satisfy those invariants:</p>
+<ul>
   <li><code>super.clone()</code> returns a new object instance</li>
   <li><code>super.clone()</code> returns an object of the same type as the one <code>clone()</code> was called on</li>
   <li><code>Object.clone()</code> performs a shallow copy of the object's state</li>
