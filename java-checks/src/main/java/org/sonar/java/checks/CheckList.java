@@ -115,6 +115,7 @@ public final class CheckList {
         CatchOfThrowableOrErrorCheck.class,
         ImplementsEnumerationCheck.class,
         CloneMethodCallsSuperCloneCheck.class,
+        SwitchCaseTooBigCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

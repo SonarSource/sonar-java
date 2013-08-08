@@ -609,6 +609,7 @@
     <configKey><![CDATA[rulesets/design.xml/SwitchDensity]]></configKey>
     <param key="minimum" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ConstructorCallsOverridableMethod">

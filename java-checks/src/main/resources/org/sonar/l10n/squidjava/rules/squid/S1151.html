@@ -1,0 +1,21 @@
+<p>Switch cases should remain small to keep the overall switch compact and readable.</p>
+
+<p>The following code snippet illustrates this rule with the default threshold of 5:</p>
+
+<pre>
+switch (myVariable) {
+  case 0:                     // Compliant - 5 lines
+    System.out.println("1");
+    System.out.println("2");
+    System.out.println("3");
+    System.out.println("4");
+    break; // 5
+  default:                    // Non-Compliant - 6 lines
+    System.out.println("1");
+    System.out.println("2");
+    System.out.println("3");
+    System.out.println("4");
+    System.out.println("5");
+    break; // 6
+}
+</pre>
