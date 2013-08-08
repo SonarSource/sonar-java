@@ -41,7 +41,9 @@ public class NestedIfStatementsCheckTest {
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedIfStatementsCheck.java"), check);
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(19).withMessage("Refactor this code to not nest more than 3 if statements.");
+        .next().atLine(19).withMessage("Refactor this code to not nest more than 3 if statements.")
+        .next().atLine(40)
+        .next().atLine(46);
   }
 
   @Test

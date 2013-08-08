@@ -25,6 +25,7 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -53,16 +54,30 @@ public class NestedIfStatementsCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode node) {
-    nestingLevel++;
+    if (!isElseIf(node)) {
+      nestingLevel++;
 
-    if (nestingLevel == max + 1) {
-      getContext().createLineViolation(this, "Refactor this code to not nest more than " + max + " if statements.", node);
+      if (nestingLevel == max + 1) {
+        getContext().createLineViolation(this, "Refactor this code to not nest more than " + max + " if statements.", node);
+      }
     }
   }
 
   @Override
   public void leaveNode(AstNode node) {
-    nestingLevel--;
+    if (!isElseIf(node)) {
+      nestingLevel--;
+    }
+  }
+
+  private static boolean isElseIf(AstNode node) {
+    AstNode grandParent = node.getParent().getParent();
+    if (!grandParent.is(JavaGrammar.IF_STATEMENT)) {
+      return false;
+    }
+
+    return grandParent.hasDirectChildren(JavaKeyword.ELSE) &&
+      grandParent.getLastChild().equals(node.getParent());
   }
 
 }
