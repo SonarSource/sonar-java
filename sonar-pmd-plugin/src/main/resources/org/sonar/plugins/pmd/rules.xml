@@ -1095,6 +1095,7 @@
   <rule key="SuspiciousConstantFieldName">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/naming.xml/SuspiciousConstantFieldName]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SuspiciousEqualsMethodName">
