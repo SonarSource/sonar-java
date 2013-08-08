@@ -20,14 +20,23 @@ class A {
       System.out.println();
       System.out.println();
       System.out.println();
+      System.out.println();
       System.out.println(); }
       default: // Non-Compliant - 6
-        System.out.println();
         System.out.println();
         /* foo */
 
         System.out.println(
         );
+        /* tata */
+      case 0:
+      case 1: // Non-Compliant - 6
+        // foo1
+        // foo2
+        // foo3
+        // foo4
+        // foo5
+        break; // 6
     }
   }
 }

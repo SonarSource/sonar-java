@@ -54,8 +54,7 @@ public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static int getNumberOfLines(AstNode node) {
-    AstNode blockStatements = node.getFirstChild(JavaGrammar.BLOCK_STATEMENTS);
-    return blockStatements.getLastChild().getLastToken().getLine() - blockStatements.getTokenLine() + 1;
+    return node.getNextAstNode().getTokenLine() - node.getTokenLine() - 1;
   }
 
 }

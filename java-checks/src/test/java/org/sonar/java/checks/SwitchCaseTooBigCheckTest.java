@@ -38,7 +38,8 @@ public class SwitchCaseTooBigCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(10).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
         .next().atLine(17).withMessage("Reduce this switch case number of lines from 7 to at most 5, for example by extracting code into methods.")
-        .next().atLine(24).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.");
+        .next().atLine(25).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
+        .next().atLine(33);
   }
 
   @Test
