@@ -40,7 +40,7 @@ public class ClassVariableVisibilityCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassVariableVisibilityCheck.java"), new ClassVariableVisibilityCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(7).withMessage("Make this class variable field non-public and provide accessors if needed.")
+        .next().atLine(7).withMessage("Make this class field a static final constant or non-public and provide accessors if needed.")
         .next().atLine(9)
         .next().atLine(10);
   }

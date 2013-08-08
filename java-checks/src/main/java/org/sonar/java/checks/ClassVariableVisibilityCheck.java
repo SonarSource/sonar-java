@@ -45,7 +45,7 @@ public class ClassVariableVisibilityCheck extends SquidCheck<LexerlessGrammar> {
     AstNode classBodyDeclaration = node.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION);
 
     if (isPublic(classBodyDeclaration) && !isConstant(classBodyDeclaration) && !isAnnotated(classBodyDeclaration)) {
-      getContext().createLineViolation(this, "Make this class variable field non-public and provide accessors if needed.", node);
+      getContext().createLineViolation(this, "Make this class field a static final constant or non-public and provide accessors if needed.", node);
     }
   }
 
