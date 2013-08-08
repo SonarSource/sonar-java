@@ -71,13 +71,7 @@ public class NestedIfStatementsCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isElseIf(AstNode node) {
-    AstNode grandParent = node.getParent().getParent();
-    if (!grandParent.is(JavaGrammar.IF_STATEMENT)) {
-      return false;
-    }
-
-    return grandParent.hasDirectChildren(JavaKeyword.ELSE) &&
-      grandParent.getLastChild().equals(node.getParent());
+    return node.getParent().getPreviousAstNode().is(JavaKeyword.ELSE);
   }
 
 }
