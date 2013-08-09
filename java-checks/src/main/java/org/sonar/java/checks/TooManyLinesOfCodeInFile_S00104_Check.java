@@ -19,19 +19,19 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.ChecksHelper;
+import com.sonar.sslr.api.AstAndTokenVisitor;
+import com.sonar.sslr.api.GenericTokenType;
+import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S00104",
   priority = Priority.MAJOR)
-public class TooManyLinesOfCodeInFile_S00104_Check extends SquidCheck<LexerlessGrammar> {
+public class TooManyLinesOfCodeInFile_S00104_Check extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private static final int DEFAULT_MAXIMUM = 1000;
 
@@ -41,10 +41,13 @@ public class TooManyLinesOfCodeInFile_S00104_Check extends SquidCheck<LexerlessG
   public int maximum = DEFAULT_MAXIMUM;
 
   @Override
-  public void leaveFile(AstNode astNode) {
-    int linesOfCode = ChecksHelper.getRecursiveMeasureInt(getContext().peekSourceCode(), JavaMetric.LINES_OF_CODE);
-    if (linesOfCode > maximum) {
-      getContext().createFileViolation(this, "This file has {0} lines of code, which is greater than {1} authorized. Split it into smaller files.", linesOfCode, maximum);
+  public void visitToken(Token token) {
+    if (token.getType() == GenericTokenType.EOF) {
+      int lines = token.getLine();
+
+      if (lines > maximum) {
+        getContext().createFileViolation(this, "This file has {0} lines, which is greater than {1} authorized. Split it into smaller files.", lines, maximum);
+      }
     }
   }
 

@@ -26,16 +26,23 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class TooManyLinesOfCodeInFile_S00104_CheckTest {
 
-  private TooManyLinesOfCodeInFile_S00104_Check check = new TooManyLinesOfCodeInFile_S00104_Check();
+  private final TooManyLinesOfCodeInFile_S00104_Check check = new TooManyLinesOfCodeInFile_S00104_Check();
+
+  @Test
+  public void testDefault() {
+    assertThat(check.maximum).isEqualTo(1000);
+  }
 
   @Test
   public void test() {
     check.maximum = 1;
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyLinesOfCode.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().withMessage("This file has 2 lines of code, which is greater than 1 authorized. Split it into smaller files.")
+        .next().withMessage("This file has 11 lines, which is greater than 1 authorized. Split it into smaller files.")
         .noMore();
   }
 
