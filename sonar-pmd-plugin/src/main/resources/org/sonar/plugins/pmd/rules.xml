@@ -24,6 +24,7 @@
   <rule key="AvoidLosingExceptionInformation">
     <priority>MAJOR</priority>
     <configKey>rulesets/strictexception.xml/AvoidLosingExceptionInformation</configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidLiteralsInIfCondition">
@@ -788,6 +789,7 @@
   <rule key="PreserveStackTrace">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/design.xml/PreserveStackTrace]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UseCollectionIsEmpty">
@@ -1024,6 +1026,7 @@
   <rule key="UseCorrectExceptionLogging">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/logging-jakarta-commons.xml/UseCorrectExceptionLogging]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ProperLogger">

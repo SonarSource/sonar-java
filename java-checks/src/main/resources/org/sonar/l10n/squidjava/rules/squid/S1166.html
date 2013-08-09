@@ -1,26 +1,28 @@
-In try-catch block when an error is logged or a new exception is throw, there are at least two mandatory pieces of information that must be provided:
+<p>When handling a caught exception, two mandatory informations should be either logged, or present in a rethrown exception:</p>
 
-* Some contextual information to make it easy in production environment to quickly know what was the context when the error occurred and so potentially to easily reproduce and fix the bug in a non-production environment.
-* The stack of exceptions to know exactly where the unexpected conditions happened
+<ul>
+  <li>Some context to ease the reproduction of the issue.</li>
+  <li>The original's exception, for its message and stack trace.</li>
+</ul>
 
-The following code snippet illustrates this rule:
+<p>The following code snippet illustrates this rule:</p>
 
-{code}
-try {...} catch(Exception e) { log.info("Here is the context"); }   //Non-Compliant, the error stack-trace is missing
-try {...} catch(Exception e) { log.error(myContext, e);  }            //Compliant
-try {...} catch(Exception e) {
-  String message = "...."
-  throw new BusinessException(message, e);                          //Compliant
+<pre>
+try { /* ... */ } catch (Exception e) { LOGGER.info("context"); }         // Non-Compliant - exception is lost
+try { /* ... */ } catch (Exception e) { LOGGER.info(e); }                 // Non-Compliant - context is required
+try { /* ... */ } catch (Exception e) { LOGGER.info(e.getMessage()); }    // Non-Compliant - exception is lost (only message is preserved )
+
+try { /* ... */ } catch (Exception e) { LOGGER.info("context", e); }      // Compliant
+
+try {
+  /* ... */
+} catch (Exception e) {                                                   // Non-Compliant - exception is lost
+  throw new RuntimeException("context");
 }
-try {...} catch(Exception e) { logger.error(e); }                           //Non-Compliant, the context is missing
-try {...} catch(Exception e) { logger.warning(e.getMessage()); } //Non-Compliant, the stack-trace is missing
-try {...} catch(Exception e) {
-  String message = "....";
-  throw new BusinessException(message);                          //Non-Compliant, the original exception is missing
+
+try {
+  /* ... */
+} catch (Exception e) {                                                   // Compliant
+  throw new RuntimeException("context", e);
 }
-try {...} catch(Exception e) {
-  String message = "....";
-  log.debug(message);                                                             //Compliant as in the next statement the original exception is preserved
-  throw new BusinessException(message, e);                          //Compliant, the original exception is preserved
-}
-{code}
+</pre>

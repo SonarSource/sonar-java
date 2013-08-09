@@ -34,4 +34,18 @@ class A {
   private void g() {
     System.out.println();
   }
+
+  private void h() {
+    try {
+      /* ... */
+    } catch (Exception e) {                                                   // Non-Compliant - exception is lost
+      throw new RuntimeException("context");
+    }
+
+    try {
+      /* ... */
+    } catch (Exception e) {                                                   // Compliant
+      throw new RuntimeException("context", e);
+    }
+  }
 }
