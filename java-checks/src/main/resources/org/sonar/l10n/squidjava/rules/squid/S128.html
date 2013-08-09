@@ -17,7 +17,9 @@ switch (myVariable) {
     return;
   case 3:                                // Compliant
     throw new IllegalStateException();
-  case 4:                                // Non-Compliant - both 'doSomething()' and 'doSomethingElse()' will be executed
+  case 4:                                // Compliant
+    continue;
+  case 5:                                // Non-Compliant - both 'doSomething()' and 'doSomethingElse()' will be executed
     doSomething();
   default:                               // Non-Compliant
     doSomethingElse();

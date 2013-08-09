@@ -16,6 +16,8 @@ class A {
         System.out.println();
       case 6: // Non-Compliant
         int a = 0;
+      case 7: // Compliant
+        continue;
     }
   }
 }

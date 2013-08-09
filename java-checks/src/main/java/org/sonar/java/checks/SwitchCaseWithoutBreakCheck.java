@@ -41,8 +41,8 @@ public class SwitchCaseWithoutBreakCheck extends SquidCheck<LexerlessGrammar> {
   @Override
   public void visitNode(AstNode node) {
     AstNode lastBlockStatement = getLastStatement(node);
-    if (lastBlockStatement != null && !isBreakReturnOrThrow(lastBlockStatement)) {
-      getContext().createLineViolation(this, "End this switch case with an unconditional break, return or throw statement.", node);
+    if (lastBlockStatement != null && !isBreakContinueReturnOrThrow(lastBlockStatement)) {
+      getContext().createLineViolation(this, "End this switch case with an unconditional break, continue, return or throw statement.", node);
     }
   }
 
@@ -50,13 +50,13 @@ public class SwitchCaseWithoutBreakCheck extends SquidCheck<LexerlessGrammar> {
     return node.getFirstChild(JavaGrammar.BLOCK_STATEMENTS).getLastChild();
   }
 
-  private static boolean isBreakReturnOrThrow(AstNode blockStatement) {
+  private static boolean isBreakContinueReturnOrThrow(AstNode blockStatement) {
     AstNode statement = blockStatement.getFirstChild(JavaGrammar.STATEMENT);
     if (statement == null) {
       return false;
     }
 
-    return statement.hasDirectChildren(JavaGrammar.BREAK_STATEMENT, JavaGrammar.RETURN_STATEMENT, JavaGrammar.THROW_STATEMENT);
+    return statement.hasDirectChildren(JavaGrammar.BREAK_STATEMENT, JavaGrammar.CONTINUE_STATEMENT, JavaGrammar.RETURN_STATEMENT, JavaGrammar.THROW_STATEMENT);
   }
 
 }
