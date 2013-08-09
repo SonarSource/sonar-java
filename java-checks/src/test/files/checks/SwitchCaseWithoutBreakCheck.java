@@ -14,6 +14,8 @@ class A {
         System.out.println();
       default: // Non-Compliant
         System.out.println();
+      case 6: // Non-Compliant
+        int a = 0;
     }
   }
 }

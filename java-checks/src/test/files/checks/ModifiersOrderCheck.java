@@ -4,4 +4,6 @@ class Foo {
 
   static public void main(String[] args) {  // Non-Compliant
   }
+
+  public int a;
 }

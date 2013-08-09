@@ -70,9 +70,7 @@ public class ModifiersOrderCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isFirstModifer(AstNode node) {
-    AstNode previousSibling = node.getPreviousSibling();
-    return previousSibling == null ||
-      !previousSibling.is(JavaGrammar.MODIFIER);
+    return node.getPreviousSibling() == null;
   }
 
   private static List<AstNode> getModifiers(AstNode node) {

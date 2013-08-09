@@ -38,7 +38,8 @@ public class SwitchCaseWithoutBreakCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(5).withMessage("End this switch case with an unconditional break, return or throw statement.")
         .next().atLine(13)
-        .next().atLine(15);
+        .next().atLine(15)
+        .next().atLine(17);
   }
 
 }
