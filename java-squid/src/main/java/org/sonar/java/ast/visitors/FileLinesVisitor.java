@@ -19,6 +19,7 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.sonar.sslr.api.AstAndTokenVisitor;
@@ -64,7 +65,7 @@ public class FileLinesVisitor extends JavaAstVisitor implements AstAndTokenVisit
     try {
       fileLength = Files.readLines(getContext().getFile(), charset).size();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
     for (int line = 1; line <= fileLength; line++) {
       fileLinesContext.setIntValue(CoreMetrics.NCLOC_DATA_KEY, line, linesOfCode.contains(line) ? 1 : 0);
