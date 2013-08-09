@@ -118,6 +118,7 @@ public final class CheckList {
         SwitchCaseWithoutBreakCheck.class,
         CatchUsesExceptionWithContextCheck.class,
         MethodTooBigCheck.class,
+        EnumAsIdentifierCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
