@@ -117,6 +117,7 @@ public final class CheckList {
         SwitchCaseTooBigCheck.class,
         SwitchCaseWithoutBreakCheck.class,
         CatchUsesExceptionWithContextCheck.class,
+        MethodTooBigCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

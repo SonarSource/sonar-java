@@ -983,6 +983,7 @@
     <configKey><![CDATA[rulesets/codesize.xml/NcssMethodCount]]></configKey>
     <param key="minimum" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="NcssTypeCount">
@@ -997,6 +998,7 @@
     <configKey><![CDATA[rulesets/codesize.xml/NcssConstructorCount]]></configKey>
     <param key="minimum" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="DuplicateImports">
