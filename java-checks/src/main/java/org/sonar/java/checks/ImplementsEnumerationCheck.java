@@ -42,10 +42,8 @@ public class ImplementsEnumerationCheck extends SquidCheck<LexerlessGrammar> {
   @Override
   public void visitNode(AstNode node) {
     for (AstNode classType : node.getChildren(JavaGrammar.CLASS_TYPE)) {
-      if (hasSingleIdentifier(classType)) {
-        if ("Enumeration".equals(classType.getTokenOriginalValue())) {
-          getContext().createLineViolation(this, "Implement Iterator rather than Enumeration.", classType);
-        }
+      if (hasSingleIdentifier(classType) && "Enumeration".equals(classType.getTokenOriginalValue())) {
+        getContext().createLineViolation(this, "Implement Iterator rather than Enumeration.", classType);
       }
     }
   }

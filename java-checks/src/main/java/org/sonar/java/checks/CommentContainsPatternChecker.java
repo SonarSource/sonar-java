@@ -19,28 +19,35 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.Token;
+import com.sonar.sslr.api.Trivia;
 import com.sonar.sslr.squid.checks.SquidCheck;
-import org.sonar.check.BelongsToProfile;
-import org.sonar.check.Priority;
-import org.sonar.check.Rule;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.apache.commons.lang.StringUtils;
 
-@Rule(
-  key = "S1134",
-  priority = Priority.MAJOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class FixmeTagPresenceCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class CommentContainsPatternChecker {
 
-  private static final String PATTERN = "FIXME";
-  private static final String MESSAGE = "Take the required action to fix the issue indicated by this comment.";
+  private final SquidCheck<?> check;
+  private final String pattern;
+  private final String message;
 
-  private final CommentContainsPatternChecker checker = new CommentContainsPatternChecker(this, PATTERN, MESSAGE);
+  public CommentContainsPatternChecker(SquidCheck<?> check, String pattern, String message) {
+    this.check = check;
+    this.pattern = pattern;
+    this.message = message;
+  }
 
-  @Override
   public void visitToken(Token token) {
-    checker.visitToken(token);
+    for (Trivia trivia : token.getTrivia()) {
+      String comment = trivia.getToken().getOriginalValue();
+      if (StringUtils.containsIgnoreCase(comment, pattern)) {
+        String[] lines = comment.split("\r\n?|\n");
+        for (int i = 0; i < lines.length; i++) {
+          if (StringUtils.containsIgnoreCase(lines[i], pattern)) {
+            check.getContext().createLineViolation(check, message, trivia.getToken().getLine() + i);
+          }
+        }
+      }
+    }
   }
 
 }

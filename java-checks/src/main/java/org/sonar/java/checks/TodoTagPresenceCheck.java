@@ -21,9 +21,7 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
 import com.sonar.sslr.squid.checks.SquidCheck;
-import org.apache.commons.lang.StringUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -36,20 +34,13 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 public class TodoTagPresenceCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private static final String PATTERN = "TODO";
+  private static final String MESSAGE = "Complete the task associated to this TODO comment.";
+
+  private final CommentContainsPatternChecker checker = new CommentContainsPatternChecker(this, PATTERN, MESSAGE);
 
   @Override
   public void visitToken(Token token) {
-    for (Trivia trivia : token.getTrivia()) {
-      String comment = trivia.getToken().getOriginalValue();
-      if (StringUtils.containsIgnoreCase(comment, PATTERN)) {
-        String[] lines = comment.split("\r\n?|\n");
-        for (int i = 0; i < lines.length; i++) {
-          if (StringUtils.containsIgnoreCase(lines[i], PATTERN)) {
-            getContext().createLineViolation(this, "Complete the task associated to this TODO comment.", trivia.getToken().getLine() + i);
-          }
-        }
-      }
-    }
+    checker.visitToken(token);
   }
 
 }

@@ -20,6 +20,7 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaMetric;
@@ -63,7 +64,7 @@ public class LinesVisitor extends JavaAstVisitor {
       String[] lines = content.split("(\r)?\n|\r", -1);
       getContext().peekSourceCode().setMeasure(JavaMetric.LINES, lines.length);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
