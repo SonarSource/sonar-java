@@ -27,16 +27,14 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SwitchLabelTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
     g.rule(JavaGrammar.CONSTANT_EXPRESSION).mock();
-    g.rule(JavaGrammar.ENUM_CONSTANT_NAME).mock();
 
     assertThat(g.rule(JavaGrammar.SWITCH_LABEL))
         .matches("case constantExpression :")
-        .matches("case enumConstantName :")
         .matches("default :");
   }
 

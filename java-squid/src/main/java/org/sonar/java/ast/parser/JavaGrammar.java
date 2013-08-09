@@ -259,7 +259,6 @@ public enum JavaGrammar implements GrammarRuleKey {
   SWITCH_LABEL,
 
   CONSTANT_EXPRESSION,
-  ENUM_CONSTANT_NAME,
 
   BASIC_TYPE,
   REFERENCE_TYPE,
@@ -740,9 +739,7 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(SWITCH_BLOCK_STATEMENT_GROUP).is(SWITCH_LABEL, BLOCK_STATEMENTS);
     b.rule(SWITCH_LABEL).is(b.firstOf(
         b.sequence(CASE, CONSTANT_EXPRESSION, COLON),
-        b.sequence(CASE, ENUM_CONSTANT_NAME, COLON),
         b.sequence(DEFAULT, COLON)));
-    b.rule(ENUM_CONSTANT_NAME).is(IDENTIFIER);
 
     // 14.12. The while Statement
     b.rule(WHILE_STATEMENT).is(WHILE, PAR_EXPRESSION, STATEMENT);
