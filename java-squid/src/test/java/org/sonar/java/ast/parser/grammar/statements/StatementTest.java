@@ -67,11 +67,4 @@ public class StatementTest {
         .matches("tryStatement");
   }
 
-  @Test
-  public void reallife() {
-    assertThat(g.rule(JavaGrammar.STATEMENT))
-        .matches("assert false;")
-        .matches("assert();");
-  }
-
 }

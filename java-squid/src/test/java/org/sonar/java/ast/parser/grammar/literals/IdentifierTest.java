@@ -36,10 +36,11 @@ public class IdentifierTest {
         .matches("foo")
         .matches("bar")
         .matches("enum")
-        .matches("assert")
 
         .notMatches("public")
-        .notMatches("final");
+        .notMatches("final")
+
+        .notMatches("assert");
   }
 
 }

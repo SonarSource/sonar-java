@@ -471,7 +471,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(IDENTIFIER).is(
         b.firstOf(
             b.next(ENUM),
-            b.next(ASSERT),
             b.nextNot(KEYWORD)),
         javaIdentifier(b),
         SPACING);
