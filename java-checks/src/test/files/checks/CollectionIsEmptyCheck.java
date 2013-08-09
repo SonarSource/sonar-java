@@ -34,5 +34,8 @@ class A {
     myCollection.isEmpty();
     !myCollection.isEmpty();
     myCollection.size() == 1;
+
+    1 + 1 == 0; // Compliant
+    foo.size[0] == 0; // Compliant
   }
 }

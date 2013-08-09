@@ -46,5 +46,7 @@ public class Example {
      Exception {              // Non-Compliant
      throw new
          Throwable();         // Non-Compliant
+
+     throw new int[0];        // Compliant
      }
 }

@@ -51,6 +51,8 @@ class Foo extends Foo {
 
     Array ok;
 
+    tottttt a;
+
     return new a.b.c.NonCompliant();
   }
 

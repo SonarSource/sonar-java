@@ -131,8 +131,7 @@ public class CollectionIsEmptyCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isSizeQualifiedIdentifier(AstNode node) {
-    return node != null &&
-      "size".equals(node.getLastChild().getTokenOriginalValue());
+    return "size".equals(node.getLastChild().getTokenOriginalValue());
   }
 
 }
