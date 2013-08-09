@@ -469,7 +469,12 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(LONG_LITERAL).is(b.regexp(INTEGER_LITERAL_REGEXP + "[lL]"), SPACING);
     b.rule(INTEGER_LITERAL).is(b.regexp(INTEGER_LITERAL_REGEXP), SPACING);
 
-    b.rule(IDENTIFIER).is(b.nextNot(KEYWORD), javaIdentifier(b), SPACING);
+    b.rule(IDENTIFIER).is(
+        b.firstOf(
+            b.next(ENUM),
+            b.nextNot(KEYWORD)),
+        javaIdentifier(b),
+        SPACING);
 
     b.rule(LITERAL).is(b.firstOf(
         TRUE,

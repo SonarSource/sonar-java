@@ -20,7 +20,6 @@
 package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -28,7 +27,7 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class KeywordTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammar g = JavaGrammar.createGrammar();
 
   /**
    * JLS7 3.9
@@ -52,7 +51,6 @@ public class KeywordTest {
         .matches("do")
         .matches("double")
         .matches("else")
-        // TODO what about "enum" as identifier in Java 1.4?
         .matches("enum")
         .matches("extends")
         .matches("final")
