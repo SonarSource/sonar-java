@@ -43,7 +43,7 @@ public class SonarWayProfileTest {
     ValidationMessages validation = ValidationMessages.create();
     RulesProfile profile = sonarWay.createProfile(validation);
     assertThat(profile.getActiveRulesByRepository(CheckstyleConstants.REPOSITORY_KEY).size())
-        .isEqualTo(13);
+        .isEqualTo(12);
     assertThat(validation.hasErrors()).isFalse();
   }
 
