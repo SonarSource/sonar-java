@@ -27,7 +27,7 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class StatementTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammar g = JavaGrammar.createGrammar();
 
   @Test
   public void ok() {
@@ -65,6 +65,13 @@ public class StatementTest {
         .matches("throwStatement")
         .matches("synchronizedStatement")
         .matches("tryStatement");
+  }
+
+  @Test
+  public void reallife() {
+    assertThat(g.rule(JavaGrammar.STATEMENT))
+        .matches("assert false;")
+        .matches("assert();");
   }
 
 }
