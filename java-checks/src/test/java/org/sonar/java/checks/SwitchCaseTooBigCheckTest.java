@@ -36,11 +36,11 @@ public class SwitchCaseTooBigCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), new SwitchCaseTooBigCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
-        .next().atLine(13).withMessage("Reduce this switch case number of lines from 7 to at most 5, for example by extracting code into methods.")
-        .next().atLine(19).withMessage("Reduce this switch case number of lines from 8 to at most 5, for example by extracting code into methods.")
-        .next().atLine(27)
-        .next().atLine(39);
+        .next().atLine(9).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
+        .next().atLine(15).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
+        .next().atLine(21).withMessage("Reduce this switch case number of lines from 7 to at most 5, for example by extracting code into methods.")
+        .next().atLine(29)
+        .next().atLine(43);
   }
 
   @Test
@@ -50,8 +50,26 @@ public class SwitchCaseTooBigCheckTest {
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), check);
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(13).withMessage("Reduce this switch case number of lines from 7 to at most 6, for example by extracting code into methods.")
-        .next().atLine(19);
+        .next().atLine(21).withMessage("Reduce this switch case number of lines from 7 to at most 6, for example by extracting code into methods.");
+  }
+
+  @Test
+  public void limit() {
+    SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
+    check.max = 0;
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), check);
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(4)
+        .next().atLine(9)
+        .next().atLine(15)
+        .next().atLine(21)
+        .next().atLine(28)
+        .next().atLine(29)
+        .next().atLine(38)
+        .next().atLine(43)
+        .next().atLine(52)
+        .next().atLine(52);
   }
 
 }
