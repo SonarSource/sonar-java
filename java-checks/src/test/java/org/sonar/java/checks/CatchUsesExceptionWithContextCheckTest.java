@@ -36,7 +36,7 @@ public class CatchUsesExceptionWithContextCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchUsesExceptionWithContextCheck.java"), new CatchUsesExceptionWithContextCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("")
+        .next().atLine(4).withMessage("Either log or rethrow this exception along with some contextual information.")
         .next().atLine(5)
         .next().atLine(7)
         .next().atLine(11)

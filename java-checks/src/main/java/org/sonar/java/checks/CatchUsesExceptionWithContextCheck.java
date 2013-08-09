@@ -83,7 +83,7 @@ public class CatchUsesExceptionWithContextCheck extends SquidCheck<LexerlessGram
       boolean foundCorrectUsage = foundCorrectUsages.pop();
 
       if (!foundCorrectUsage) {
-        getContext().createLineViolation(this, "", node);
+        getContext().createLineViolation(this, "Either log or rethrow this exception along with some contextual information.", node);
       }
     }
   }
