@@ -20,36 +20,19 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
-import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.ast.AstSelect;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "MissingDeprecatedCheck",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class MissingDeprecatedCheck extends SquidCheck<LexerlessGrammar> {
-
-  @Override
-  public void init() {
-    subscribeTo(
-        JavaGrammar.TYPE_DECLARATION,
-        JavaGrammar.CLASS_BODY_DECLARATION,
-        JavaGrammar.INTERFACE_BODY_DECLARATION,
-        JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION,
-        JavaGrammar.BLOCK_STATEMENT);
-  }
+public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
   @Override
   public void visitNode(AstNode node) {
-    boolean hasDeprecatedAnnotation = hasDeprecatedAnnotation(node);
+    boolean hasDeprecatedAnnotation = hasDeprecatedAnnotationExcludingLocalVariables(node);
     boolean hasJavadocDeprecatedTag = hasJavadocDeprecatedTag(node);
 
     if (hasDeprecatedAnnotation && !hasJavadocDeprecatedTag) {
@@ -57,41 +40,6 @@ public class MissingDeprecatedCheck extends SquidCheck<LexerlessGrammar> {
     } else if (hasJavadocDeprecatedTag && !hasDeprecatedAnnotation) {
       getContext().createLineViolation(this, "Add the missing @Deprecated annotation.", node);
     }
-  }
-
-  private static boolean isDeprecated(AstNode node) {
-    AstNode qualifiedIdentifier = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-    return qualifiedIdentifier.getNumberOfChildren() == 1 &&
-      "Deprecated".equals(qualifiedIdentifier.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue());
-  }
-
-  private static boolean hasJavadocDeprecatedTag(AstNode node) {
-    Token token = node.getToken();
-    for (Trivia trivia : token.getTrivia()) {
-      String comment = trivia.getToken().getOriginalValue();
-      if (hasJavadocDeprecatedTag(comment)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private static boolean hasJavadocDeprecatedTag(String comment) {
-    return comment.startsWith("/**") && comment.contains("@deprecated");
-  }
-
-  private static boolean hasDeprecatedAnnotation(AstNode node) {
-    AstSelect annotations = node.select()
-        .children(JavaGrammar.MODIFIER)
-        .children(JavaGrammar.ANNOTATION);
-
-    for (AstNode annotation : annotations) {
-      if (isDeprecated(annotation)) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
 }
