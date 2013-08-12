@@ -37,8 +37,8 @@ public class CatchWhichOnlyRethrowsCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchWhichOnlyRethrowsCheck.java"), new CatchWhichOnlyRethrowsCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(7).withMessage("Remove this useless catch block.")
-        .next().atLine(40)
-        .next().atLine(43);
+        .next().atLine(43)
+        .next().atLine(48);
   }
 
 }

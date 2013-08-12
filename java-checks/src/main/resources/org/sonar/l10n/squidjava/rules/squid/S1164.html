@@ -5,7 +5,15 @@
 <pre>
 try {
   /* ... */
+} catch (Exception e) {                   // Non-Compliant
+  throw e;
+}
+
+try {
+  /* ... */
+} catch (RuntimeException e) {            // Compliant - propagation is allowed
+  throw e;
 } catch (Exception e) {
-  throw e;               // Non-Compliant
+  throw new BusinessException("...", e);
 }
 </pre>

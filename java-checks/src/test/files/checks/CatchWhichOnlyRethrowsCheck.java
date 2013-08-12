@@ -37,11 +37,17 @@ class A {
     }
 
     try {
-    } catch (RuntimeException e) { // Non-Compliant
+    } catch (RuntimeException e) { // Compliant - is propagation
       throw e;
     } catch (Exception e) { // Compliant
     } catch (Throwable e) { // Non-Compliant
       throw e;
+    }
+
+    try {
+    } catch (Exception e) { // Non-Compliant
+      throw e;
+    } finally {
     }
 
   }

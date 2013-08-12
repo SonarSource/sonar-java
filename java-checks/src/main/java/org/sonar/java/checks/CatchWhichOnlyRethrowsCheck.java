@@ -42,13 +42,23 @@ public class CatchWhichOnlyRethrowsCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode node) {
+    if (isLastCatch(node) && isCatchAndRethrow(node)) {
+      getContext().createLineViolation(this, "Remove this useless catch block.", node);
+    }
+  }
+
+  private static boolean isLastCatch(AstNode node) {
+    AstNode nextSibling = node.getNextSibling();
+    return nextSibling == null ||
+      !nextSibling.is(JavaGrammar.CATCH_CLAUSE);
+  }
+
+  private static boolean isCatchAndRethrow(AstNode node) {
     List<AstNode> blockStatements = node.getFirstChild(JavaGrammar.BLOCK)
         .getFirstChild(JavaGrammar.BLOCK_STATEMENTS)
         .getChildren(JavaGrammar.BLOCK_STATEMENT);
 
-    if (blockStatements.size() == 1 && isRethrowStatement(node, blockStatements.get(0))) {
-      getContext().createLineViolation(this, "Remove this useless catch block.", node);
-    }
+    return blockStatements.size() == 1 && isRethrowStatement(node, blockStatements.get(0));
   }
 
   private static boolean isRethrowStatement(AstNode catchClause, AstNode blockStatement) {
