@@ -37,7 +37,6 @@ public final class CheckList {
         MissingNewLineAtEndOfFile_S00113_Check.class,
         // AST
         ParsingErrorCheck.class,
-        BreakCheck.class,
         MethodComplexityCheck.class,
         ClassComplexityCheck.class,
         UndocumentedApiCheck.class,
