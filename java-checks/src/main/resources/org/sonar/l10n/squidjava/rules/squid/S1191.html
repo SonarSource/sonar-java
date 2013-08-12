@@ -1,0 +1,11 @@
+<p>
+Classes in <code>com.sun.*</code> packages are considered implementation details, and are not part of the Java API.
+They can cause problems when moving to new versions of Java because there is no backwards compatibility guarantee.
+Such classes are almost always wrapped by Java API classes that should be used instead.
+</p>
+
+<p>The following code snippet illustrates this rule:</p>
+
+<pre>
+import com.sun.jna.Native;  // Non-Compliant
+</pre>

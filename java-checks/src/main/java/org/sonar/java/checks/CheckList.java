@@ -120,6 +120,7 @@ public final class CheckList {
         MethodTooBigCheck.class,
         EnumAsIdentifierCheck.class,
         AnonymousClassesTooBigCheck.class,
+        ComSunPackagesUsedCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

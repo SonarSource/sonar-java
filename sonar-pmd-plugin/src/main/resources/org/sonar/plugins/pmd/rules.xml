@@ -330,6 +330,7 @@
   <rule key="DontImportSun">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/controversial.xml/DontImportSun]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SuspiciousOctalEscape">
