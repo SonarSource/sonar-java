@@ -38,7 +38,6 @@ public final class CheckList {
         // AST
         ParsingErrorCheck.class,
         BreakCheck.class,
-        ContinueCheck.class,
         MethodComplexityCheck.class,
         ClassComplexityCheck.class,
         UndocumentedApiCheck.class,
