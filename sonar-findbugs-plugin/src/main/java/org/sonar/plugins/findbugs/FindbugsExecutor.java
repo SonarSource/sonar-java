@@ -193,7 +193,7 @@ public class FindbugsExecutor implements BatchExtension {
     }
 
     @Override
-    public Object call() throws Exception {
+    public Object call() throws InterruptedException, IOException {
       try {
         engine.execute();
       } finally {

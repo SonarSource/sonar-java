@@ -25,29 +25,37 @@ public class Types {
    * JLS7 4.10. Subtyping
    */
   public boolean isSubtype(Type t, Type s) {
+    boolean result;
+
     if (t == s) {
-      return true;
+      result = true;
+    } else {
+      switch (t.tag) {
+        case Type.BYTE:
+        case Type.CHAR:
+          result = t.tag == s.tag || t.tag + /* skip char for byte and short for char */2 <= s.tag && s.tag <= Type.DOUBLE;
+          break;
+        case Type.SHORT:
+        case Type.INT:
+        case Type.LONG:
+        case Type.FLOAT:
+        case Type.DOUBLE:
+          result = t.tag <= s.tag && s.tag <= Type.DOUBLE;
+          break;
+        case Type.BOOLEAN:
+        case Type.VOID:
+          result = t.tag == s.tag;
+        case Type.BOT:
+          result = s.tag == Type.BOT || s.tag == Type.CLASS || s.tag == Type.ARRAY;
+          break;
+        default:
+          // TODO error recovery, but should be rewritten to not happen at all
+          result = false;
+          break;
+      }
     }
-    switch (t.tag) {
-      case Type.BYTE:
-      case Type.CHAR:
-        return (t.tag == s.tag)
-          || ((t.tag + /* skip char for byte and short for char */ 2 <= s.tag) && (s.tag <= Type.DOUBLE));
-      case Type.SHORT:
-      case Type.INT:
-      case Type.LONG:
-      case Type.FLOAT:
-      case Type.DOUBLE:
-        return (t.tag <= s.tag) && (s.tag <= Type.DOUBLE);
-      case Type.BOOLEAN:
-      case Type.VOID:
-        return t.tag == s.tag;
-      case Type.BOT:
-        return s.tag == Type.BOT || s.tag == Type.CLASS || s.tag == Type.ARRAY;
-      default:
-        // TODO error recovery, but should be rewritten to not happen at all
-        return false;
-    }
+
+    return result;
   }
 
 }

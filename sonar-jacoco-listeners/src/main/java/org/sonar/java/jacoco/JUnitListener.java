@@ -38,12 +38,12 @@ public class JUnitListener extends RunListener {
   }
 
   @Override
-  public void testStarted(Description description) throws Exception {
+  public void testStarted(Description description) {
     jacoco.onTestStart(getName(description));
   }
 
   @Override
-  public void testFinished(Description description) throws Exception {
+  public void testFinished(Description description) {
     jacoco.onTestFinish(getName(description));
   }
 

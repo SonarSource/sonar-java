@@ -23,10 +23,7 @@ public enum JvmJavaType {
 
   V("VOID"), L("OBJECT"), T("GENERIC"), S("SHORT"), I("INT"), C("CHAR"), Z("BOOLEAN"), B("BYTE"), J("LONG"), F("FLOAT"), D("DOUBLE");
 
-  public final String description;
-
   private JvmJavaType(String description) {
-    this.description = description;
   }
 
 }
