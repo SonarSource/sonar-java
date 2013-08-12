@@ -119,6 +119,7 @@ public final class CheckList {
         EnumAsIdentifierCheck.class,
         AnonymousClassesTooBigCheck.class,
         ComSunPackagesUsedCheck.class,
+        SeveralBreakOrContinuePerLoopCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
