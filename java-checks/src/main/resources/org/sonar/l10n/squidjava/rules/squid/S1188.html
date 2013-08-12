@@ -1,0 +1,16 @@
+<p>
+While waiting for support of closure in Java, anonymous classes is the most convenient way to inject a behavior without having to create a dedicated class.
+But those anonymous inner classes should be used only if the behavior can be accomplished in a few lines.
+With more complex code, a named class is called for.
+</p>
+
+<p>The following code snippet illustrates this rule with a threshold of 5:</p>
+
+<pre>
+button.addActionListener(new ActionListener() {   // Non-Compliant - 6 lines till closing '}'
+  public void actionPerformed(ActionEvent e) {
+    doSomething1();
+    doSomething2();
+  }
+});
+</pre>
