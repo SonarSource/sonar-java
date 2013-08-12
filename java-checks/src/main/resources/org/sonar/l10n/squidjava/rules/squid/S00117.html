@@ -1,15 +1,22 @@
 <p>
-Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all local variable names match a provided regular expression.
+Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all local variable and method parameter names match a provided regular expression.
 </p>
 
 <p>
 The following code snippet illustrates this rule when the regular expression value is "^[a-z][a-zA-Z0-9]*$":
 </p>
+
 <pre>
 public class MyClass {
   public void method() {
-    int FIRST; // Non-Compliant
-    int second; // Compliant
+    int FIRST;                      // Non-Compliant
+    int second;                     // Compliant
+  }
+
+  public void method2(int VALUE) {  // Non-Compliant
+  }
+
+  public void method3(int value) {  // Compliant
   }
 }
 </pre>
