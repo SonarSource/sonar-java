@@ -44,7 +44,8 @@ public class NamesTooShortCheckTest {
         .next().atLine(37)
         .next().atLine(38)
         .next().atLine(43).withMessage("Rename 'a' to a meaningful name of at least 3 characters.")
-        .next().atLine(43).withMessage("Rename 'b' to a meaningful name of at least 3 characters.");
+        .next().atLine(43).withMessage("Rename 'b' to a meaningful name of at least 3 characters.")
+        .next().atLine(54);
   }
 
 }

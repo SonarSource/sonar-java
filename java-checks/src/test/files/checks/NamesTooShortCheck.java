@@ -47,4 +47,10 @@ class Aaaa {
 
     }
   }
+
+  private void is( // Compliant - exception
+      int is, // Compliant
+      int of, // Compliant
+      int sb) { // Non-Compliant
+  }
 }

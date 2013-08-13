@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableSet;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
@@ -30,11 +31,25 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
 
+import java.util.Set;
+
 @Rule(
   key = "S1173",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class NamesTooShortCheck extends SquidCheck<LexerlessGrammar> {
+
+  private static final Set<String> TWO_LETTER_WORDS = ImmutableSet.of(
+      "is",
+      "as",
+      "on",
+      "to",
+      "do",
+      "go",
+      "in",
+      "or",
+      "up",
+      "of");
 
   private boolean isExcluded;
 
@@ -64,7 +79,7 @@ public class NamesTooShortCheck extends SquidCheck<LexerlessGrammar> {
     } else if (node.hasDirectChildren(JavaTokenType.IDENTIFIER)) {
       String value = node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue();
 
-      if (value.length() < 3 && !isExcluded) {
+      if (value.length() < 3 && !isEnglishTwoLetterWord(value) && !isExcluded) {
         getContext().createLineViolation(this, "Rename '" + value + "' to a meaningful name of at least 3 characters.", node);
       }
     }
@@ -75,6 +90,10 @@ public class NamesTooShortCheck extends SquidCheck<LexerlessGrammar> {
     if (node.is(JavaGrammar.FOR_INIT, JavaGrammar.CATCH_FORMAL_PARAMETER)) {
       isExcluded = false;
     }
+  }
+
+  private static boolean isEnglishTwoLetterWord(String value) {
+    return TWO_LETTER_WORDS.contains(value);
   }
 
 }
