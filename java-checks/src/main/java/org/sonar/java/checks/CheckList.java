@@ -120,6 +120,7 @@ public final class CheckList {
         AnonymousClassesTooBigCheck.class,
         ComSunPackagesUsedCheck.class,
         SeveralBreakOrContinuePerLoopCheck.class,
+        EmptyMethodsCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

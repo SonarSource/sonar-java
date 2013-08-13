@@ -768,6 +768,7 @@
   <rule key="UncommentedEmptyMethod">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/design.xml/UncommentedEmptyMethod]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UncommentedEmptyConstructor">
