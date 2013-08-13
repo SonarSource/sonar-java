@@ -8,18 +8,18 @@ class Foo { // Compliant
   }
 
   void foo() { // Compliant
-    int a; // Non-Compliant
+    int a; // Compliant
     int index; // Compliant
 
     for (int i = 0; i < 42; i++) { // Compliant - exception
-      int b; // Non-Compliant
+      int b; // Compliant
     }
 
     System.out.println(a + b); // Compliant
     fo(); // Compliant
   }
 
-  int a; // Non-Compliant
+  int a; // Compliant
 
 }
 

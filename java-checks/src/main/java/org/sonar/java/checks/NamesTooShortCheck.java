@@ -49,7 +49,6 @@ public class NamesTooShortCheck extends SquidCheck<LexerlessGrammar> {
     subscribeTo(JavaGrammar.INTERFACE_METHOD_OR_FIELD_DECL);
     subscribeTo(JavaGrammar.INTERFACE_MEMBER_DECL);
     subscribeTo(JavaGrammar.MEMBER_DECL);
-    subscribeTo(JavaGrammar.VARIABLE_DECLARATOR);
     subscribeTo(JavaGrammar.VARIABLE_DECLARATOR_ID);
   }
 
