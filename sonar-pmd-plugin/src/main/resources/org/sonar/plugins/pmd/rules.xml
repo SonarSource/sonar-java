@@ -1069,6 +1069,7 @@
     </param>
     <param key="memberSuffix" type="STRING">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="MethodNamingConventions">
