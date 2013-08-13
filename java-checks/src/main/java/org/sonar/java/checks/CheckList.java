@@ -121,6 +121,7 @@ public final class CheckList {
         ComSunPackagesUsedCheck.class,
         SeveralBreakOrContinuePerLoopCheck.class,
         EmptyMethodsCheck.class,
+        MethodOnlyCallsSuperCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
