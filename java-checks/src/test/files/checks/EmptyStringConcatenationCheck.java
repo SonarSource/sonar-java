@@ -7,3 +7,10 @@ class A {
   String f = "foo" + "bar" + "" + "baz"; // Non-Compliant
   String g = "foo" + bar.baz();          // Compliant
 }
+
+class A {
+  private static final int DEFAULT_FOO = 0;
+
+  @RuleProperty(defValue = "" + DEFAULT_FOO) // Compliant
+  private int foo = DEFAULT_FOO;
+}

@@ -31,17 +31,36 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   priority = Priority.MAJOR)
 public class EmptyStringConcatenationCheck extends SquidCheck<LexerlessGrammar> {
 
+  private static boolean inAnnotation;
+
   @Override
   public void init() {
+    subscribeTo(JavaGrammar.ANNOTATION);
     subscribeTo(JavaGrammar.ADDITIVE_EXPRESSION);
   }
 
   @Override
+  public void visitFile(AstNode node) {
+    inAnnotation = false;
+  }
+
+  @Override
   public void visitNode(AstNode node) {
-    for (AstNode primary : node.getChildren(JavaGrammar.PRIMARY)) {
-      if (isEmptyString(primary)) {
-        getContext().createLineViolation(this, "Replace this empty String concatenation by a method such as String.valueOf() or Object.toString().", primary);
+    if (node.is(JavaGrammar.ANNOTATION)) {
+      inAnnotation = true;
+    } else if (!inAnnotation) {
+      for (AstNode primary : node.getChildren(JavaGrammar.PRIMARY)) {
+        if (isEmptyString(primary)) {
+          getContext().createLineViolation(this, "Replace this empty String concatenation by a method such as String.valueOf() or Object.toString().", primary);
+        }
       }
+    }
+  }
+
+  @Override
+  public void leaveNode(AstNode node) {
+    if (node.is(JavaGrammar.ANNOTATION)) {
+      inAnnotation = false;
     }
   }
 
