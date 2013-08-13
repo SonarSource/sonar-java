@@ -55,6 +55,7 @@ public class NamesTooShortCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitFile(@Nullable AstNode node) {
+    System.out.println("foo");
     isExcluded = false;
   }
 
