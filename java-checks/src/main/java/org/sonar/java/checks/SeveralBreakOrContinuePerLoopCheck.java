@@ -60,10 +60,8 @@ public class SeveralBreakOrContinuePerLoopCheck extends SquidCheck<LexerlessGram
       enterSwitch();
     } else if (node.is(LOOP_NODES)) {
       enterLoop(node.getTokenLine());
-    } else if (isInsideLoopOrSwitch()) {
-      if (!node.is(JavaGrammar.BREAK_STATEMENT) || isInLoop()) {
-        incrementLoopBreakAndContinueCounter();
-      }
+    } else if (isInsideLoopOrSwitch() && !node.is(JavaGrammar.BREAK_STATEMENT) || isInLoop()) {
+      incrementLoopBreakAndContinueCounter();
     }
   }
 

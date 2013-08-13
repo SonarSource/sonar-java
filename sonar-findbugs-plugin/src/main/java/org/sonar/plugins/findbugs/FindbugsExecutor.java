@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.findbugs;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -193,13 +194,17 @@ public class FindbugsExecutor implements BatchExtension {
     }
 
     @Override
-    public Object call() throws InterruptedException, IOException {
+    public Object call() {
       try {
         engine.execute();
+        return null;
+      } catch (InterruptedException e) {
+        throw Throwables.propagate(e);
+      } catch (IOException e) {
+        throw Throwables.propagate(e);
       } finally {
         engine.dispose();
       }
-      return null;
     }
   }
 
