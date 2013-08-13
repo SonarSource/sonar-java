@@ -45,6 +45,7 @@ public class Types {
         case Type.BOOLEAN:
         case Type.VOID:
           result = t.tag == s.tag;
+          break;
         case Type.BOT:
           result = s.tag == Type.BOT || s.tag == Type.CLASS || s.tag == Type.ARRAY;
           break;

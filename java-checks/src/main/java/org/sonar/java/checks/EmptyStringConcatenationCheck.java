@@ -31,7 +31,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   priority = Priority.MAJOR)
 public class EmptyStringConcatenationCheck extends SquidCheck<LexerlessGrammar> {
 
-  private static boolean inAnnotation;
+  private boolean inAnnotation;
 
   @Override
   public void init() {
