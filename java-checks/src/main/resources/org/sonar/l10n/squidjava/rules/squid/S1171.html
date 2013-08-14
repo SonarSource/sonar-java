@@ -1,28 +1,28 @@
 <p>
-Non-static initializers is a rarely used Java feature which can be confusing to most developers.
+Non-static initializers are rarely used, and can be confusing for most developers.
 When possible, they should be refactored into standard constructors or field initializers.
 </p>
 
 <p>The following code:</p>
 
 <pre>
-public class MyClass {
+class MyClass {
+  private static final Map<String, String> MY_MAP = new HashMap<String, String>() {
 
-  private final Date date;
+    // Non-Compliant - HashMap should be extended only to add behavior, not for initialization
+    {
+      put("a", "b");
+    }
 
-  {                                      // Non-Compliant
-    date = new Date();
-  }
-
+  };
 }
 </pre>
 
-<p>should be refactored into:</p>
+<p>could be refactored using Guava into:</p>
 
 <pre>
-public class MyClass {
-
-  private final Date date = new Date();  // Compliant
-
+class MyClass {
+  // Compliant
+  private static final Map<String, String> MY_MAP = ImmutableMap.of("a", "b");
 }
 </pre>
