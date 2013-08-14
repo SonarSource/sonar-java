@@ -261,6 +261,7 @@
   <rule key="FinalizeShouldBeProtected">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/finalizers.xml/FinalizeShouldBeProtected]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidCallingFinalize">

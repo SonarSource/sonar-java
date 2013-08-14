@@ -1,0 +1,16 @@
+<p>
+The contract of the <code>Object.finalize()</code> method is clear: only the Garbage Collector is supposed to call this method.
+Making this method public is misleading, because it implies that any caller can use it.
+</p>
+
+<p>The following code snippet illustrates this rule:</p>
+
+<pre>
+public class MyClass {
+
+  @Override
+  public void finalize() {    // Non-Compliant
+    /* ... */
+  }
+}
+</pre>
