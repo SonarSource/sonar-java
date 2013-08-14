@@ -80,8 +80,11 @@ class Foo {
   public void foo() {
     switch (0) {
       case 0:
-        System.out.println();
+        System.out.println(); System.out.println(); // Compliant
         break;
     }
-  }
+
+    System.out.println( // Compliant
+        ); Sysout.out.println(); // Compliant
+  };
 }

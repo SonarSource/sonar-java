@@ -83,7 +83,6 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
         getContext().createLineViolation(this, "Make this line start at column " + (expectedLevel + 1) + ".", node);
         isBlockAlreadyReported = true;
       }
-      lastCheckedLine = node.getTokenLine();
     }
   }
 
@@ -93,6 +92,7 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
       expectedLevel -= indentationLevel;
       isBlockAlreadyReported = false;
     }
+    lastCheckedLine = node.getLastToken().getLine();
   }
 
   private static boolean isInAnnonymousClass(AstNode node) {
