@@ -61,4 +61,42 @@ class A {
     super();
   }
 
+  @SomeCrazyAnnotation // Compliant
+  private void f() {
+    super.f();
+  }
+
+  @Override
+  public void f() { // Non-Compliant
+    super.f();
+  }
+
+  @Override
+  @SomeCrazyAnnotation
+  private void f() { // Compliant
+    super.f();
+  }
+
+  @SomeCrazyAnnotation
+  @Override
+  private void f() { // Compliant
+    super.f();
+  }
+
+  @SomeCrazyAnnotation
+  private <T> void f() { // Compliant
+    super.f();
+  }
+
+  @foo.Deprecated
+  private <T> void f() { // Compliant
+    super.f();
+  }
+
+  @Override
+  @Override
+  private <T> void f() { // Non-Compliant
+    super.f();
+  }
+
 }

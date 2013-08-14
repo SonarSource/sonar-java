@@ -29,6 +29,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.sslr.ast.AstSelect;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.List;
@@ -52,8 +53,8 @@ public class MethodOnlyCallsSuperCheck extends SquidCheck<LexerlessGrammar> {
       String methodName = getMethodName(node);
       List<String> parameters = getParameters(node);
 
-      if (isUselessSuperCall(singleBlockStatement, methodName, parameters)) {
-        getContext().createLineViolation(this, "", node);
+      if (isUselessSuperCall(singleBlockStatement, methodName, parameters) && !hasAnnotationDifferentFromOverride(node)) {
+        getContext().createLineViolation(this, "Remove this method to simply inherit it.", node);
       }
     }
   }
@@ -92,7 +93,7 @@ public class MethodOnlyCallsSuperCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static String getMethodName(AstNode node) {
-    return node.getParent().getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue(); // TODO
+    return node.getParent().getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue();
   }
 
   private static List<String> getParameters(AstNode node) {
@@ -116,6 +117,27 @@ public class MethodOnlyCallsSuperCheck extends SquidCheck<LexerlessGrammar> {
 
     return actual.equals(expected) ||
       actual.equals("return" + expected);
+  }
+
+  private static boolean hasAnnotationDifferentFromOverride(AstNode node) {
+    AstSelect query = node.select()
+        .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
+        .children(JavaGrammar.MODIFIER)
+        .children(JavaGrammar.ANNOTATION)
+        .children(JavaGrammar.QUALIFIED_IDENTIFIER);
+
+    for (AstNode qualifiedIdentifier : query) {
+      if (!isOverride(qualifiedIdentifier)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static boolean isOverride(AstNode node) {
+    return node.getToken().equals(node.getLastToken()) &&
+      "Override".equals(node.getTokenOriginalValue());
   }
 
 }

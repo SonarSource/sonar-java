@@ -541,6 +541,7 @@
     <configKey><![CDATA[rulesets/basic.xml/UselessOverridingMethod]]></configKey>
     <param key="ignoreAnnotations" type="BOOLEAN">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ClassCastExceptionWithToArray">

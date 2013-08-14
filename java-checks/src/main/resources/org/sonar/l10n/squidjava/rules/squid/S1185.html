@@ -3,21 +3,23 @@
 <p>The following code snippet illustrates this rule:</p>
 
 <pre>
-public void doSomething() {              // Non-Compliant
+public void doSomething() {                     // Non-Compliant
   super.doSomething();
 }
 
-public boolean isLegal(Action action) {  // Non-Compliant
-  return super.isLegal(action)
+@Override
+public boolean isLegal(Action action) {         // Non-Compliant
+  return super.isLegal(action);
 }
 
-public boolean do(Action action) {       // Compliant
-  doSomething(action);
-  return super.isLegal(action)
+@Override
+public boolean isLegal(Action action) {         // Compliant - not simply forwarding the call
+  return super.isLegal(new Action(/* ... */));
 }
 
 @Id
-public int getId() {                     // Compliant as there is an annotation (other than @Override, @Deprecated, and @SuppressWarnings)
-  return super.getId()
+@Override
+public int getId() {                            // Compliant - there is annotation different from @Override
+  return super.getId();
 }
 </pre>
