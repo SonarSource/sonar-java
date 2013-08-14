@@ -86,5 +86,16 @@ class Foo {
 
     System.out.println( // Compliant
         ); Sysout.out.println(); // Compliant
+
+    switch (foo) { // Compliant
+    }
+
+    switch (foo) { // Compliant
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+        break;
+    }
   };
 }
