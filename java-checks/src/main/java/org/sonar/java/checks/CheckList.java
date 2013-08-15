@@ -101,7 +101,6 @@ public final class CheckList {
         NonStaticClassInitializerCheck.class,
         ReturnEmptyArrayyNotNullCheck.class,
         ConstantsShouldBeStaticFinalCheck.class,
-        EmptyStringConcatenationCheck.class,
         ThrowsFromFinallyCheck.class,
         SystemOutOrErrUsageCheck.class,
         NamesTooShortCheck.class,
