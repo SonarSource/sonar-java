@@ -1,8 +1,63 @@
-<p>Check that each public class, interface, method and constructor
-	has a Javadoc comment. The following public methods/constructors are
-	not concerned by this rule :</p>
+<p>
+Try to imagine using the standard Java API (Collections, JDBC, IO, ...) without Javadoc.
+It would be a nightmare, because Javadoc is the only way to understand of the contract of the API.
+Documenting API with Javadoc increases the productivity of the developers consuming it.
+</p>
+
+<p>The following Javadoc elements are required:</p>
 <ul>
-	<li>Getter / Setter</li>
-	<li>Method with @Override annotation</li>
-	<li>Empty constructor</li>
+  <li>Parameters, using <code>@param parameterName</code>.</li>
+  <li>Method return values, using <code>@return</code>.</li>
+  <li>Generic types, using <code>@param &lt;T&gt;</code>.</li>
 </ul>
+
+<p>The following public methods and constructors are not taken into account by this rule:</p>
+<ul>
+  <li>Getters and setters.</li>
+  <li>Methods with @Override annotation.</li>
+  <li>Empty constructors.</li>
+</ul>
+
+<p>The following code snippet illustrates this rule:</p>p>
+
+<pre>
+/**
+  * This is a Javadoc comment
+  */
+public class MyClass&lt;T&gt; implements Runnable {    // Non-Compliant - missing '@param &lt;T&gt;'
+
+  private int status;                            // Compliant - not public
+
+  /**
+    * This is a Javadoc comment
+    */
+  public String message;                         // Compliant - well documented
+
+  public MyClass() {                             // Non-Compliant - missing documentation
+    this.status = 0;
+  }
+
+  public void setStatus(int status) {            // Compliant - setter
+    this.status = status;
+  }
+
+  @Override
+  public void run() {                            // Compliant - has @Override annotation
+  }
+
+  protected void doSomething() {                 // Compliant - not public
+  }
+
+  /**
+    * @param value ...
+    */
+  public void doSomething(int value) {           // Compliant
+  }
+
+  /**
+    */
+  public int doSomething(int value) {            // Non-Compliant - missing '@param value' and '@return'
+    return value;
+  }
+}
+</pre>

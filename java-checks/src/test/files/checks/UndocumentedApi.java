@@ -1,21 +1,21 @@
 /**
- * no violation, because documented
+ * some documentation
  */
-class UndocumentedApi {
-  public String p; // violation
-  private String key;
+class UndocumentedApi { // Compliant - documented
+  public String p; // Non-Compliant
+  private String key; // Compliant - private
 
-  public UndocumentedApi() { // no violation, because empty constructor
+  public UndocumentedApi() { // Compliant - empty constructor
   }
 
-  public UndocumentedApi(String key) { // violation
+  public UndocumentedApi(String key) { // Non-Compliant
     this.key = key;
   }
 
-  public void run() { // violation
+  public void run() { // Non-Compliant
   }
 
-  public interface InnerUndocumentedInterface { // violation
+  public interface InnerUndocumentedInterface { // Non-Compliant
   }
 
   /**
@@ -24,17 +24,40 @@ class UndocumentedApi {
   public void run2() {
   }
 
-  public void setKey(String key) { // no violation, because setter
+  public void setKey(String key) { // Compliant - setter
     this.key = key;
   }
 
-  public String getKey() { // no violation, because getter
+  public String getKey() { // Compliant - getter
     return key;
   }
 
   @Override
-  public String toString() { // no violation, because method with override annotation
+  public String toString() { // Compliant - method with override annotation
     return key;
+  }
+
+  public static final int FOO = 0; // Non-Compliant
+  private static final int BAR = 0; // Compliant - private
+  int a = 0; // Compliant
+
+}
+
+public enum Foo { // Non-Compliant
+}
+
+public interface A { // Non-Compliant
+}
+
+public @interface Foo { // Non-Compliant
+}
+
+public class A { // Non-Compliant
+
+  public int a; // Non-Compliant
+
+  public A() { // Non-Compliant
+    System.out.println();
   }
 
 }

@@ -28,16 +28,23 @@ import java.io.File;
 
 public class UndocumentedApiCheckTest {
 
-  private UndocumentedApiCheck check = new UndocumentedApiCheck();
+  private final UndocumentedApiCheck check = new UndocumentedApiCheck();
 
   @Test
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("Avoid undocumented API.")
+        .next().atLine(5)
         .next().atLine(11)
         .next().atLine(15)
         .next().atLine(18)
+        .next().atLine(40)
+        .next().atLine(46).withMessage("Document this public enum.")
+        .next().atLine(49).withMessage("Document this public interface.")
+        .next().atLine(52).withMessage("Document this public annotation.")
+        .next().atLine(55).withMessage("Document this public class.")
+        .next().atLine(57).withMessage("Document this public field.")
+        .next().atLine(59).withMessage("Document this public constructor.")
         .noMore();
   }
 

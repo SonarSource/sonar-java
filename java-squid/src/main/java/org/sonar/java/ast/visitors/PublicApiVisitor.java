@@ -69,9 +69,30 @@ public class PublicApiVisitor extends JavaAstVisitor {
 
   public static boolean isPublicApi(AstNode astNode) {
     return isPublic(astNode)
-        && !isStaticFinalVariable(astNode)
-        && !isMethodWithOverrideAnnotation(astNode)
-        && !isEmptyDefaultConstructor(astNode);
+      && !isMethodWithOverrideAnnotation(astNode)
+      && !isEmptyDefaultConstructor(astNode);
+  }
+
+  public static String getType(AstNode node) {
+    String type;
+
+    if (node.is(JavaGrammar.CLASS_DECLARATION)) {
+      type = "class";
+    } else if (node.is(JavaGrammar.INTERFACE_DECLARATION)) {
+      type = "interface";
+    } else if (node.is(JavaGrammar.ENUM_DECLARATION)) {
+      type = "enum";
+    } else if (node.is(JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
+      type = "annotation";
+    } else if (node.is(JavaGrammar.FIELD_DECLARATION)) {
+      type = "field";
+    } else if (node.is(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
+      type = "constructor";
+    } else {
+      type = "method";
+    }
+
+    return type;
   }
 
   private static boolean isEmptyDefaultConstructor(AstNode astNode) {
@@ -85,7 +106,7 @@ public class PublicApiVisitor extends JavaAstVisitor {
   private static boolean isMethodWithOverrideAnnotation(AstNode astNode) {
     if (isMethod(astNode)) {
       return hasAnnotation(astNode, "Override")
-          || hasAnnotation(astNode, "java.lang.Override");
+        || hasAnnotation(astNode, "java.lang.Override");
     }
     return false;
   }
@@ -115,13 +136,6 @@ public class PublicApiVisitor extends JavaAstVisitor {
         JavaGrammar.ANNOTATION_METHOD_REST);
   }
 
-  private static boolean isStaticFinalVariable(AstNode astNode) {
-    AstNode declaration = getDeclaration(astNode);
-    return astNode.is(JavaGrammar.FIELD_DECLARATION, JavaGrammar.CONSTANT_DECLARATORS_REST)
-        && hasModifier(declaration, JavaKeyword.STATIC)
-        && hasModifier(declaration, JavaKeyword.FINAL);
-  }
-
   public static boolean isDocumentedApi(AstNode astNode) {
     AstNode declaration = getDeclaration(astNode);
     for (Trivia trivia : declaration.getToken().getTrivia()) {
@@ -139,7 +153,7 @@ public class PublicApiVisitor extends JavaAstVisitor {
     AstNode declaration = getDeclaration(astNode);
     return declaration.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)
       || declaration.is(JavaGrammar.INTERFACE_BODY_DECLARATION)
-        || hasModifier(declaration, JavaKeyword.PUBLIC);
+      || hasModifier(declaration, JavaKeyword.PUBLIC);
   }
 
   private static boolean hasModifier(AstNode declaration, AstNodeType astNodeType) {

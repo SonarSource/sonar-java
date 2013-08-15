@@ -34,7 +34,7 @@ import org.sonar.squid.api.SourceMethod;
 public class UndocumentedApiCheck extends JavaAstCheck {
 
   @RuleProperty
-  private String forClasses = "";
+  private final String forClasses = "";
 
   private WildcardPattern[] patterns;
 
@@ -53,7 +53,7 @@ public class UndocumentedApiCheck extends JavaAstCheck {
       return;
     }
     if (PublicApiVisitor.isPublicApi(astNode) && !PublicApiVisitor.isDocumentedApi(astNode)) {
-      getContext().createLineViolation(this, "Avoid undocumented API.", astNode);
+      getContext().createLineViolation(this, "Document this public " + PublicApiVisitor.getType(astNode) + ".", astNode);
     }
   }
 

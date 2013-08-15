@@ -632,6 +632,7 @@
       <!-- Note that default value in Checkstyle 5.5 is false -->
       <defaultValue>true</defaultValue>
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck">
@@ -670,6 +671,7 @@
     </param>
     <param key="tokens" type="s[INTERFACE_DEF,CLASS_DEF]">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck">
@@ -680,6 +682,7 @@
     </param>
     <param key="excludeScope" type="s[nothing,public,protected,package,private,anoninner]">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.blocks.LeftCurlyCheck">
