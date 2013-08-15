@@ -122,6 +122,7 @@ public final class CheckList {
         EmptyMethodsCheck.class,
         MethodOnlyCallsSuperCheck.class,
         ObjectFinalizeOverridenNotPublicCheck.class,
+        ObjectFinalizeOverloadedCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
