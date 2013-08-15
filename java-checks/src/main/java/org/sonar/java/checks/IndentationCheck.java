@@ -82,11 +82,9 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
     if (node.is(BLOCK_TYPES)) {
       expectedLevel += indentationLevel;
       isBlockAlreadyReported = false;
-    } else if (!isInAnnonymousClass(node)) {
-      if (!isBlockAlreadyReported && lastCheckedLine != node.getTokenLine() && node.getToken().getColumn() != expectedLevel) {
-        getContext().createLineViolation(this, "Make this line start at column " + (expectedLevel + 1) + ".", node);
-        isBlockAlreadyReported = true;
-      }
+    } else if (node.getToken().getColumn() != expectedLevel && !isExcluded(node)) {
+      getContext().createLineViolation(this, "Make this line start at column " + (expectedLevel + 1) + ".", node);
+      isBlockAlreadyReported = true;
     }
   }
 
@@ -99,6 +97,14 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
 
     Token lastToken = getLastToken(node);
     lastCheckedLine = lastToken.getLine();
+  }
+
+  private boolean isExcluded(AstNode node) {
+    return isBlockAlreadyReported || !isLineFirstStatement(node) || isInAnnonymousClass(node);
+  }
+
+  private boolean isLineFirstStatement(AstNode node) {
+    return lastCheckedLine != node.getTokenLine();
   }
 
   private static boolean isInAnnonymousClass(AstNode node) {
