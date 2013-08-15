@@ -6,5 +6,6 @@ class A {
     com.sun.imageio.plugins.bmp a = new com.sun.imageio.plugins.bmp(); // Non-Compliant
     new com.sun.imageio.plugins.bmp(); // Non-Compliant
     java.util.List a; // Compliant
+    sun.Foo a; // Non-Compliant
   }
 }

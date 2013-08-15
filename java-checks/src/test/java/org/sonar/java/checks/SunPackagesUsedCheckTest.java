@@ -27,18 +27,19 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
-public class ComSunPackagesUsedCheckTest {
+public class SunPackagesUsedCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ComSunPackagesUsedCheck.java"), new ComSunPackagesUsedCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SunPackagesUsedCheck.java"), new SunPackagesUsedCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(1).withMessage("Replace this usage of Sun classes by ones from the Java API.")
         .next().atLine(6)
-        .next().atLine(7);
+        .next().atLine(7)
+        .next().atLine(9);
   }
 
 }

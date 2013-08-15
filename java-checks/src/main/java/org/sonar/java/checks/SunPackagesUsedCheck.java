@@ -32,7 +32,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   key = "S1191",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ComSunPackagesUsedCheck extends SquidCheck<LexerlessGrammar> {
+public class SunPackagesUsedCheck extends SquidCheck<LexerlessGrammar> {
 
   private int lastReportedLine;
 
@@ -50,10 +50,15 @@ public class ComSunPackagesUsedCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode node) {
-    if (lastReportedLine != node.getTokenLine() && merge(node).startsWith("com.sun.")) {
+    if (lastReportedLine != node.getTokenLine() && isSunClass(node)) {
       getContext().createLineViolation(this, "Replace this usage of Sun classes by ones from the Java API.", node);
       lastReportedLine = node.getTokenLine();
     }
+  }
+
+  private static boolean isSunClass(AstNode node) {
+    String reference = merge(node);
+    return reference.startsWith("com.sun.") || reference.startsWith("sun.");
   }
 
   private static String merge(AstNode node) {

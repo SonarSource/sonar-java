@@ -117,7 +117,7 @@ public final class CheckList {
         MethodTooBigCheck.class,
         EnumAsIdentifierCheck.class,
         AnonymousClassesTooBigCheck.class,
-        ComSunPackagesUsedCheck.class,
+        SunPackagesUsedCheck.class,
         SeveralBreakOrContinuePerLoopCheck.class,
         EmptyMethodsCheck.class,
         MethodOnlyCallsSuperCheck.class,
