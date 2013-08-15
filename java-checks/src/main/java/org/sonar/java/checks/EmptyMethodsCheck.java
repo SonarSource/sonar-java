@@ -43,7 +43,10 @@ public class EmptyMethodsCheck extends SquidCheck<LexerlessGrammar> {
   @Override
   public void visitNode(AstNode node) {
     if (hasEmptyMethodBody(node)) {
-      getContext().createLineViolation(this, "", node);
+      getContext().createLineViolation(
+          this,
+          "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException, or complete the implementation.",
+          node);
     }
   }
 
