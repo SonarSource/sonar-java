@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.apache.commons.lang.StringUtils;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -33,8 +32,12 @@ import org.sonar.squid.api.SourceMethod;
 @Rule(key = "UndocumentedApi", priority = Priority.MAJOR)
 public class UndocumentedApiCheck extends JavaAstCheck {
 
-  @RuleProperty
-  private final String forClasses = "";
+  private static final String DEFAULT_FOR_CLASSES = "**";
+
+  @RuleProperty(
+    key = "forClasses",
+    defaultValue = DEFAULT_FOR_CLASSES)
+  public String forClasses = DEFAULT_FOR_CLASSES;
 
   private WildcardPattern[] patterns;
 
@@ -59,7 +62,7 @@ public class UndocumentedApiCheck extends JavaAstCheck {
 
   private WildcardPattern[] getPatterns() {
     if (patterns == null) {
-      patterns = PatternUtils.createPatterns(StringUtils.defaultIfEmpty(forClasses, "**"));
+      patterns = PatternUtils.createPatterns(forClasses);
     }
     return patterns;
   }

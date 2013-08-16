@@ -26,12 +26,15 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
-public class UndocumentedApiCheckTest {
+import static org.fest.assertions.Assertions.assertThat;
 
-  private final UndocumentedApiCheck check = new UndocumentedApiCheck();
+public class UndocumentedApiCheckTest {
 
   @Test
   public void test() {
+    UndocumentedApiCheck check = new UndocumentedApiCheck();
+    assertThat(check.forClasses).isEqualTo("**");
+
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(5)
@@ -45,6 +48,16 @@ public class UndocumentedApiCheckTest {
         .next().atLine(55).withMessage("Document this public class.")
         .next().atLine(57).withMessage("Document this public field.")
         .next().atLine(59).withMessage("Document this public constructor.")
+        .noMore();
+  }
+
+  @Test
+  public void custom() {
+    UndocumentedApiCheck check = new UndocumentedApiCheck();
+    check.forClasses = "";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), check);
+    CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
   }
 
