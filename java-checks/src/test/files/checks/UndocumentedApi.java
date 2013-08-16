@@ -37,7 +37,7 @@ class UndocumentedApi { // Compliant - documented
     return key;
   }
 
-  public static final int FOO = 0; // Non-Compliant
+  public static final int FOO = 0; // Compliant - static constant
   private static final int BAR = 0; // Compliant - private
   int a = 0; // Compliant
 

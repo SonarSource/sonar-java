@@ -16,6 +16,7 @@ Documenting API with Javadoc increases the productivity of the developers consum
   <li>Getters and setters.</li>
   <li>Methods with @Override annotation.</li>
   <li>Empty constructors.</li>
+  <li>Static constants.</li>
 </ul>
 
 <p>The following code snippet illustrates this rule:</p>
@@ -26,6 +27,7 @@ Documenting API with Javadoc increases the productivity of the developers consum
   */
 public class MyClass&lt;T&gt; implements Runnable {    // Non-Compliant - missing '@param &lt;T&gt;'
 
+  public static final DEFAULT_STATUS = 0;        // Compliant - static constant
   private int status;                            // Compliant - not public
 
   /**
@@ -34,7 +36,7 @@ public class MyClass&lt;T&gt; implements Runnable {    // Non-Compliant - missin
   public String message;                         // Compliant - well documented
 
   public MyClass() {                             // Non-Compliant - missing documentation
-    this.status = 0;
+    this.status = DEFAULT_STATUS;
   }
 
   public void setStatus(int status) {            // Compliant - setter

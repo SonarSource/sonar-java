@@ -45,7 +45,6 @@ public class UndocumentedApiCheckTest {
         .next().atLine(11)
         .next().atLine(15)
         .next().atLine(18)
-        .next().atLine(40)
         .next().atLine(46).withMessage("Document this public enum.")
         .next().atLine(49).withMessage("Document this public interface.")
         .next().atLine(52).withMessage("Document this public annotation.")

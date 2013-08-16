@@ -69,6 +69,7 @@ public class PublicApiVisitor extends JavaAstVisitor {
 
   public static boolean isPublicApi(AstNode astNode) {
     return isPublic(astNode)
+      && !isStaticFinalVariable(astNode)
       && !isMethodWithOverrideAnnotation(astNode)
       && !isEmptyDefaultConstructor(astNode);
   }
@@ -134,6 +135,13 @@ public class PublicApiVisitor extends JavaAstVisitor {
         JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
         JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
         JavaGrammar.ANNOTATION_METHOD_REST);
+  }
+
+  private static boolean isStaticFinalVariable(AstNode astNode) {
+    AstNode declaration = getDeclaration(astNode);
+    return astNode.is(JavaGrammar.FIELD_DECLARATION, JavaGrammar.CONSTANT_DECLARATORS_REST)
+      && hasModifier(declaration, JavaKeyword.STATIC)
+      && hasModifier(declaration, JavaKeyword.FINAL);
   }
 
   public static boolean isDocumentedApi(AstNode astNode) {
