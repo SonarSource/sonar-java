@@ -10,7 +10,7 @@
 <pre>
 try { /* ... */ } catch (Exception e) { LOGGER.info("context"); }         // Non-Compliant - exception is lost
 try { /* ... */ } catch (Exception e) { LOGGER.info(e); }                 // Non-Compliant - context is required
-try { /* ... */ } catch (Exception e) { LOGGER.info(e.getMessage()); }    // Non-Compliant - exception is lost (only message is preserved )
+try { /* ... */ } catch (Exception e) { LOGGER.info(e.getMessage()); }    // Non-Compliant - exception is lost (only message is preserved)
 
 try { /* ... */ } catch (Exception e) { LOGGER.info("context", e); }      // Compliant
 
