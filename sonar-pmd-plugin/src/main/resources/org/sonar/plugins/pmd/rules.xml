@@ -828,6 +828,7 @@
   <rule key="ExceptionAsFlowControl">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/strictexception.xml/ExceptionAsFlowControl]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidCatchingNPE">
