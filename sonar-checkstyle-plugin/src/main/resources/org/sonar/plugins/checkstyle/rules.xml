@@ -420,6 +420,7 @@
     </param>
     <param key="reliefPattern" type="REGULAR_EXPRESSION">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.sizes.FileLengthCheck">
