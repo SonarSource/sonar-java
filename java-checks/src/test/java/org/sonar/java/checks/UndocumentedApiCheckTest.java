@@ -19,7 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
+import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.squid.api.SourceFile;
@@ -30,13 +31,16 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class UndocumentedApiCheckTest {
 
+  @Rule
+  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+
   @Test
   public void test() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     assertThat(check.forClasses).isEqualTo("**");
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), check);
-    CheckMessagesVerifier.verify(file.getCheckMessages())
+    checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(5)
         .next().atLine(11)
         .next().atLine(15)
@@ -48,7 +52,13 @@ public class UndocumentedApiCheckTest {
         .next().atLine(55).withMessage("Document this public class.")
         .next().atLine(57).withMessage("Document this public field.")
         .next().atLine(59).withMessage("Document this public constructor.")
-        .noMore();
+        .next().atLine(68).withMessage("Document this '<T>' parameter.")
+        .next().atLine(77)
+        .next().atLine(101).withMessage("Document this 'value' parameter.")
+        .next().atLine(107).withMessage("Document this method return value.")
+        .next().atLine(121).withMessage("Document this method return value.")
+        .next().atLine(130).withMessage("Document this 'a' parameter.")
+        .next().atLine(139).withMessage("Document this 'a' parameter.");
   }
 
   @Test
@@ -57,8 +67,7 @@ public class UndocumentedApiCheckTest {
     check.forClasses = "";
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), check);
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+    checkMessagesVerifier.verify(file.getCheckMessages());
   }
 
 }

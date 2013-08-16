@@ -137,16 +137,20 @@ public class PublicApiVisitor extends JavaAstVisitor {
   }
 
   public static boolean isDocumentedApi(AstNode astNode) {
+    return getApiJavadoc(astNode) != null;
+  }
+
+  public static String getApiJavadoc(AstNode astNode) {
     AstNode declaration = getDeclaration(astNode);
     for (Trivia trivia : declaration.getToken().getTrivia()) {
       if (trivia.isComment()) {
         String value = trivia.getToken().getOriginalValue();
         if (value.startsWith("/**")) {
-          return true;
+          return value;
         }
       }
     }
-    return false;
+    return null;
   }
 
   private static boolean isPublic(AstNode astNode) {

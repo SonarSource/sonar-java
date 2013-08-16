@@ -61,3 +61,89 @@ public class A { // Non-Compliant
   }
 
 }
+
+/**
+ * This is a Javadoc comment
+ */
+public class MyClass<T> implements Runnable {    // Non-Compliant - missing '@param <T>'
+
+ private int status;                            // Compliant - not public
+
+ /**
+   * This is a Javadoc comment
+   */
+ public String message;                         // Compliant - well documented
+
+ public MyClass() {                             // Non-Compliant - missing documentation
+   this.status = 0;
+ }
+
+ public void setStatus(int status) {            // Compliant - setter
+   this.status = status;
+ }
+
+ @Override
+ public void run() {                            // Compliant - has @Override annotation
+ }
+
+ protected void doSomething() {                 // Compliant - not public
+ }
+
+ /**
+   * @param value ...
+   */
+ public void doSomething(int value) {           // Compliant
+ }
+
+ /**
+  * @return foo
+   */
+ public int doSomething(int value) {            // Non-Compliant - missing '@param value'
+   return value;
+ }
+
+ /**
+   */
+ public int doSomething() {                     // Non-Compliant - missing '@return'
+   return value;
+ }
+}
+
+/**
+ */
+interface Foo {
+  /**
+   */
+  void foo(); // Compliant
+
+  /**
+   */
+  int foo(); // Non-Compliant
+
+  /**
+   * @return
+   */
+  int foo(); // Compliant
+
+  /**
+   */
+  void foo(int a); // Non-Compliant
+}
+
+/**
+ *
+ */
+class Foo {
+  /**
+   */
+  public Foo(int a) { // Non-Compliant
+    System.out.println(a);
+  }
+
+  /**
+   * @param a
+   */
+  public Foo(int a) { // Compliant
+    System.out.println(a);
+  }
+}

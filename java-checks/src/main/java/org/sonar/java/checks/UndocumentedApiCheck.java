@@ -19,15 +19,19 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.visitors.JavaAstCheck;
 import org.sonar.java.ast.visitors.PublicApiVisitor;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceMethod;
+
+import java.util.List;
 
 @Rule(key = "UndocumentedApi", priority = Priority.MAJOR)
 public class UndocumentedApiCheck extends JavaAstCheck {
@@ -47,7 +51,7 @@ public class UndocumentedApiCheck extends JavaAstCheck {
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
+  public void visitNode(AstNode node) {
     SourceCode currentResource = getContext().peekSourceCode();
     if (!WildcardPattern.match(getPatterns(), peekSourceClass().getKey())) {
       return;
@@ -55,8 +59,22 @@ public class UndocumentedApiCheck extends JavaAstCheck {
     if (currentResource instanceof SourceMethod && ((SourceMethod) currentResource).isAccessor()) {
       return;
     }
-    if (PublicApiVisitor.isPublicApi(astNode) && !PublicApiVisitor.isDocumentedApi(astNode)) {
-      getContext().createLineViolation(this, "Document this public " + PublicApiVisitor.getType(astNode) + ".", astNode);
+    if (PublicApiVisitor.isPublicApi(node)) {
+      String javadoc = PublicApiVisitor.getApiJavadoc(node);
+
+      if (javadoc == null) {
+        getContext().createLineViolation(this, "Document this public " + PublicApiVisitor.getType(node) + ".", node);
+      } else {
+        for (String parameter : getParameters(node)) {
+          if (!hasParamJavadoc(javadoc, parameter)) {
+            getContext().createLineViolation(this, "Document this '" + parameter + "' parameter.", node);
+          }
+        }
+
+        if (hasNonVoidReturnType(node) && !hasReturnJavadoc(javadoc)) {
+          getContext().createLineViolation(this, "Document this method return value.", node);
+        }
+      }
     }
   }
 
@@ -65,6 +83,38 @@ public class UndocumentedApiCheck extends JavaAstCheck {
       patterns = PatternUtils.createPatterns(forClasses);
     }
     return patterns;
+  }
+
+  private static List<String> getParameters(AstNode node) {
+    ImmutableList.Builder<String> builder = ImmutableList.builder();
+
+    AstNode formalParameters = node.getFirstChild(JavaGrammar.FORMAL_PARAMETERS);
+    if (formalParameters != null) {
+      for (AstNode parameter : formalParameters.getDescendants(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
+        builder.add(parameter.getTokenOriginalValue());
+      }
+    }
+
+    AstNode typeParameters = node.getFirstChild(JavaGrammar.TYPE_PARAMETERS);
+    if (typeParameters != null) {
+      for (AstNode parameter : typeParameters.getChildren(JavaGrammar.TYPE_PARAMETER)) {
+        builder.add("<" + parameter.getTokenOriginalValue() + ">");
+      }
+    }
+
+    return builder.build();
+  }
+
+  private static boolean hasParamJavadoc(String comment, String parameter) {
+    return comment.matches("(?s).*@param\\s++" + parameter + ".*");
+  }
+
+  private static boolean hasNonVoidReturnType(AstNode node) {
+    return node.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST);
+  }
+
+  private static boolean hasReturnJavadoc(String comment) {
+    return comment.contains("@return");
   }
 
 }
