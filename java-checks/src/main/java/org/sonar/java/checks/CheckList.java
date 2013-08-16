@@ -124,6 +124,7 @@ public final class CheckList {
         ObjectFinalizeOverridenNotPublicCheck.class,
         ObjectFinalizeOverloadedCheck.class,
         ConcatenationWithStringValueOfCheck.class,
+        PrintStackTraceCalledWithoutArgumentCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

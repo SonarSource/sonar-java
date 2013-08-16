@@ -1186,6 +1186,7 @@
   <rule key="AvoidPrintStackTrace">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/logging-java.xml/AvoidPrintStackTrace]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="IfStmtsMustUseBraces">
