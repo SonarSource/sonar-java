@@ -123,6 +123,7 @@ public final class CheckList {
         MethodOnlyCallsSuperCheck.class,
         ObjectFinalizeOverridenNotPublicCheck.class,
         ObjectFinalizeOverloadedCheck.class,
+        ConcatenationWithStringValueOfCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

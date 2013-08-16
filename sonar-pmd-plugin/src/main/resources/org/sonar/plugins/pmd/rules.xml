@@ -941,6 +941,7 @@
   <rule key="UselessStringValueOf">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/strings.xml/UselessStringValueOf]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="StringBufferInstantiationWithChar">
