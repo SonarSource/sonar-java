@@ -884,6 +884,7 @@
     </param>
     <param key="exceptionfile" type="STRING">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="StringInstantiation">

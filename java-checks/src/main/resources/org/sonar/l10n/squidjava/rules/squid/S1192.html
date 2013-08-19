@@ -1,0 +1,31 @@
+<p>
+Duplicated string literals are error-prone to refactor, as one must pay attention to update all occurrences.
+Constants can be referenced from many places, but there value is updated in a single place.
+</p>
+
+<p>The following code:</p>
+
+<pre>
+public void run() {
+  prepare("action1");                              // Non-Compliant - "action1" is duplicated 3 times
+  execute("action1");
+  release("action1");
+}
+
+@SuppressWarning("all")                            // Compliant - annotations are excluded
+private void method1(} { /* ... */ }
+@SuppressWarning("all")
+private void method2(} { /* ... */ }
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+private static final String ACTION_1 = "action1";  // Compliant
+
+public void run() {
+  prepare(ACTION_1);                               // Compliant
+  execute(ACTION_1);
+  release(ACTION_1);
+}
+</pre>

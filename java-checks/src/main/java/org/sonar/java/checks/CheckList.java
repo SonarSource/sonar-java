@@ -128,6 +128,7 @@ public final class CheckList {
         ArrayTypeBracketsAfterTypeCheck.class,
         ErrorClassExtendedCheck.class,
         InstanceofUsedOnExceptionCheck.class,
+        StringLiteralDuplicatedCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
