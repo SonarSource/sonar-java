@@ -1,0 +1,21 @@
+<p>
+According to the Java Language Specification:
+</p>
+
+<pre>
+For compatibility with older versions of the Java SE platform,
+the declaration of a method that returns an array is allowed to place (some or all of) the empty bracket pairs that form the declaration of the array type after the formal parameter list.
+This obsolescent syntax should not be used in new code.
+</pre>
+
+<p>The following code snippet illustrates this rule:</p>
+
+<pre>
+public int getVector()[] { /* ... */ }    // Non-Compliant
+
+public int[] getVector() { /* ... */ }    // Compliant
+
+public int[] getMatrix()[] { /* ... */ }  // Non-Compliant
+
+public int[][] getMatrix() { /* ... */ }  // Compliant
+</pre>
