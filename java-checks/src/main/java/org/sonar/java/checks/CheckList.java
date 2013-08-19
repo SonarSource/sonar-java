@@ -127,6 +127,7 @@ public final class CheckList {
         PrintStackTraceCalledWithoutArgumentCheck.class,
         ArrayTypeBracketsAfterTypeCheck.class,
         ErrorClassExtendedCheck.class,
+        InstanceofUsedOnExceptionCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

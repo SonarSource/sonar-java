@@ -732,6 +732,7 @@
   <rule key="AvoidInstanceofChecksInCatchClause">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/design.xml/AvoidInstanceofChecksInCatchClause]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AbstractClassWithoutAbstractMethod">
