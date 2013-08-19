@@ -1,0 +1,16 @@
+<p>
+<code>java.lang.Error</code> and its subclasses represent abnormal conditions which should never happen.
+In general, only the Java Virtual Machine can throw such errors, for example <code>OutOfMemoryError</code>.
+</p>
+
+<p>The following code snippet:</p>
+
+<pre>
+public class MyException extends Error { /* ... */ }       // Non-Compliant
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+public class MyException extends Exception { /* ... */ }   // Compliant
+</pre>
