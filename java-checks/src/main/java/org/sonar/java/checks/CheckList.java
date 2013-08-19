@@ -129,6 +129,7 @@ public final class CheckList {
         ErrorClassExtendedCheck.class,
         InstanceofUsedOnExceptionCheck.class,
         StringLiteralDuplicatedCheck.class,
+        ToStringUsingBoxingCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

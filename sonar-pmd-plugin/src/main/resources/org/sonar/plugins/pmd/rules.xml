@@ -485,6 +485,7 @@
   <rule key="UnnecessaryConversionTemporary">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/basic.xml/UnnecessaryConversionTemporary]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ReturnFromFinallyBlock">

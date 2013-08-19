@@ -1,0 +1,16 @@
+<p>
+Creating temporary primitive wrapper objects only for <code>String</code> conversion is inefficient.
+Instead, the static <code>toString()</code> method of those primitive wrapper classes should be used.
+</p>
+
+<p>For example, the following code:</p>
+
+<pre>
+new Integer(myInteger).toString();  // Non-Compliant
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+Integer(myInteger).toString();      // Compliant
+</pre>
