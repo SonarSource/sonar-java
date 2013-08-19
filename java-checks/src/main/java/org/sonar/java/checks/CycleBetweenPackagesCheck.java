@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.rules.ActiveRule;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
@@ -34,7 +33,6 @@ import javax.annotation.CheckForNull;
  * @since 3.2
  */
 @Rule(key = "CycleBetweenPackages", priority = Priority.MAJOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class CycleBetweenPackagesCheck extends BytecodeVisitor {
 
   /**
