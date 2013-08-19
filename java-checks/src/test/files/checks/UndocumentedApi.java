@@ -1,7 +1,7 @@
 /**
  * some documentation
  */
-class UndocumentedApi { // Compliant - documented
+public class UndocumentedApi { // Compliant - documented
   public String p; // Non-Compliant
   private String key; // Compliant - private
 
@@ -146,4 +146,10 @@ class Foo {
   public Foo(int a) { // Compliant
     System.out.println(a);
   }
+}
+
+private class Foo { // Compliant - non pubic
+}
+
+class Foo { // Compliant - non public
 }
