@@ -36,9 +36,9 @@ public class ExceptionsShouldBeImmutableCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ExceptionsShouldBeImmutableCheck.java"), new ExceptionsShouldBeImmutableCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Make this 'foo' field final.")
-        .next().atLine(5).withMessage("Make this 'a' field final.")
-        .next().atLine(5).withMessage("Make this 'b' field final.")
+        .next().atLine(2).withMessage("Make this \"foo\" field final.")
+        .next().atLine(5).withMessage("Make this \"a\" field final.")
+        .next().atLine(5).withMessage("Make this \"b\" field final.")
         .next().atLine(13);
   }
 

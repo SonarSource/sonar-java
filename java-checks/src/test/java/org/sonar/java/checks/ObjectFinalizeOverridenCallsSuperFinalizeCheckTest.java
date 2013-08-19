@@ -39,7 +39,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheckTest {
         new ObjectFinalizeOverridenCallsSuperFinalizeCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(10).withMessage("Move this super.finalize() call to the end of this Object.finalize() implementation.")
-        .next().atLine(15).withMessage("Add a call to 'super.finalize()' at the end of this Object.finalize() implementation.")
+        .next().atLine(15).withMessage("Add a call to super.finalize() at the end of this Object.finalize() implementation.")
         .next().atLine(19)
         .next().atLine(35)
         .next().atLine(53)

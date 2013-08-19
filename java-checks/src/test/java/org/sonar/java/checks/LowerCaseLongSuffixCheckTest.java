@@ -36,7 +36,7 @@ public class LowerCaseLongSuffixCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/LowerCaseLongSuffixCheck.java"), new LowerCaseLongSuffixCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Replace this lower case 'l' long suffix by an upper case 'L'.");
+        .next().atLine(2).withMessage("Replace this lower case \"l\" long suffix by an upper case \"L\".");
   }
 
 }

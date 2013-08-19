@@ -36,7 +36,7 @@ public class EnumAsIdentifierCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EnumAsIdentifierCheck.java"), new EnumAsIdentifierCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Use a different name than 'enum'.")
+        .next().atLine(3).withMessage("Use a different name than \"enum\".")
         .next().atLine(7);
   }
 

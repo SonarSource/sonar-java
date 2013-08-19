@@ -44,7 +44,7 @@ public class StringEqualityComparisonCheck extends SquidCheck<LexerlessGrammar> 
     if (hasStringLiteralOperand(node)) {
       getContext().createLineViolation(
           this,
-          "Replace '==' and '!=' by 'equals()' and '!equals()' respectively to compare these strings.",
+          "Replace \"==\" and \"!=\" by \"equals()\" and \"!equals()\" respectively to compare these strings.",
           node);
     }
   }

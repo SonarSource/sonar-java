@@ -39,9 +39,9 @@ import java.util.Map;
 public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String> builder()
-      .put("Vector", "ArrayList or LinkedList")
-      .put("Hashtable", "HashMap")
-      .put("StringBuffer", "StringBuilder")
+      .put("Vector", "\"ArrayList\" or \"LinkedList\"")
+      .put("Hashtable", "\"HashMap\"")
+      .put("StringBuffer", "\"StringBuilder\"")
       .build();
 
   private int lastReportedLine;
@@ -67,7 +67,7 @@ public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> im
   public void visitToken(Token token) {
     String className = token.getOriginalValue();
     if (!inImport && isSynchronizedClass(className) && lastReportedLine != token.getLine()) {
-      getContext().createLineViolation(this, "Replace the synchronized class '" + className + "' by an unsynchronized one such as " + REPLACEMENTS.get(className) + ".", token);
+      getContext().createLineViolation(this, "Replace the synchronized class \"" + className + "\" by an unsynchronized one such as " + REPLACEMENTS.get(className) + ".", token);
       lastReportedLine = token.getLine();
     }
   }

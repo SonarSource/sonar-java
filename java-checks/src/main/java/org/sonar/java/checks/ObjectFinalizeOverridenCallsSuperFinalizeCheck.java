@@ -84,7 +84,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<L
             .children(JavaGrammar.BLOCK_STATEMENT);
 
         if (lastSuperFinalizeStatement == null) {
-          getContext().createLineViolation(this, "Add a call to 'super.finalize()' at the end of this Object.finalize() implementation.", identifier);
+          getContext().createLineViolation(this, "Add a call to super.finalize() at the end of this Object.finalize() implementation.", identifier);
         } else if (!lastSuperFinalizeStatement.equals(getLastEffectiveStatement(getLastBlockStatement(methodBlockStatement)))) {
           getContext().createLineViolation(this, "Move this super.finalize() call to the end of this Object.finalize() implementation.", lastSuperFinalizeStatement);
         }

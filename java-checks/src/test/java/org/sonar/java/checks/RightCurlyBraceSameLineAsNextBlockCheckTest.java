@@ -36,9 +36,9 @@ public class RightCurlyBraceSameLineAsNextBlockCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RightCurlyBraceSameLineAsNextBlockCheck.java"), new RightCurlyBraceSameLineAsNextBlockCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("Move this 'else' on the same line that the previous closing curly brace.")
-        .next().atLine(15).withMessage("Move this 'catch' on the same line that the previous closing curly brace.")
-        .next().atLine(20).withMessage("Move this 'finally' on the same line that the previous closing curly brace.");
+        .next().atLine(8).withMessage("Move this \"else\" on the same line that the previous closing curly brace.")
+        .next().atLine(15).withMessage("Move this \"catch\" on the same line that the previous closing curly brace.")
+        .next().atLine(20).withMessage("Move this \"finally\" on the same line that the previous closing curly brace.");
   }
 
 }

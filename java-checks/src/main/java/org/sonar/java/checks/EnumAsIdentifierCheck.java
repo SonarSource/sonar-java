@@ -41,7 +41,7 @@ public class EnumAsIdentifierCheck extends SquidCheck<LexerlessGrammar> {
   @Override
   public void visitNode(AstNode node) {
     if ("enum".equals(node.getTokenOriginalValue())) {
-      getContext().createLineViolation(this, "Use a different name than 'enum'.", node);
+      getContext().createLineViolation(this, "Use a different name than \"enum\".", node);
     }
   }
 

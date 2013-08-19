@@ -41,7 +41,7 @@ public class LowerCaseLongSuffixCheck extends SquidCheck<LexerlessGrammar> {
   @Override
   public void visitNode(AstNode node) {
     if (node.getTokenOriginalValue().endsWith("l")) {
-      getContext().createLineViolation(this, "Replace this lower case 'l' long suffix by an upper case 'L'.", node);
+      getContext().createLineViolation(this, "Replace this lower case \"l\" long suffix by an upper case \"L\".", node);
     }
   }
 

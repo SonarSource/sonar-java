@@ -38,8 +38,8 @@ public class RightCurlyBraceDifferentLineAsNextBlockCheckTest {
         new File("src/test/files/checks/RightCurlyBraceDifferentLineAsNextBlockCheck.java"),
         new RightCurlyBraceDifferentLineAsNextBlockCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("Move this 'else' keyword to a new dedicated line.")
-        .next().atLine(14).withMessage("Move this 'catch' keyword to a new dedicated line.");
+        .next().atLine(5).withMessage("Move this \"else\" keyword to a new dedicated line.")
+        .next().atLine(14).withMessage("Move this \"catch\" keyword to a new dedicated line.");
   }
 
 }

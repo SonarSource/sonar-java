@@ -80,7 +80,7 @@ public class NamesTooShortCheck extends SquidCheck<LexerlessGrammar> {
       String value = node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue();
 
       if (value.length() < 3 && !isEnglishTwoLetterWord(value) && !isExcluded) {
-        getContext().createLineViolation(this, "Rename '" + value + "' to a meaningful name of at least 3 characters.", node);
+        getContext().createLineViolation(this, "Rename \"" + value + "\" to a meaningful name of at least 3 characters.", node);
       }
     }
   }

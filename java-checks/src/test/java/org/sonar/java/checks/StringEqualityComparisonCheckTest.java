@@ -36,7 +36,7 @@ public class StringEqualityComparisonCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringEqualityComparisonCheck.java"), new StringEqualityComparisonCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Replace '==' and '!=' by 'equals()' and '!equals()' respectively to compare these strings.")
+        .next().atLine(3).withMessage("Replace \"==\" and \"!=\" by \"equals()\" and \"!equals()\" respectively to compare these strings.")
         .next().atLine(4)
         .next().atLine(5)
         .next().atLine(6)

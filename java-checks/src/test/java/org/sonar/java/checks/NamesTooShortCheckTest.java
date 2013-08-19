@@ -36,15 +36,15 @@ public class NamesTooShortCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NamesTooShortCheck.java"), new NamesTooShortCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("Rename 'A' to a meaningful name of at least 3 characters.")
-        .next().atLine(7).withMessage("Rename 'fo' to a meaningful name of at least 3 characters.")
+        .next().atLine(1).withMessage("Rename \"A\" to a meaningful name of at least 3 characters.")
+        .next().atLine(7).withMessage("Rename \"fo\" to a meaningful name of at least 3 characters.")
         .next().atLine(26)
         .next().atLine(27)
         .next().atLine(30)
         .next().atLine(37)
         .next().atLine(38)
-        .next().atLine(43).withMessage("Rename 'a' to a meaningful name of at least 3 characters.")
-        .next().atLine(43).withMessage("Rename 'b' to a meaningful name of at least 3 characters.")
+        .next().atLine(43).withMessage("Rename \"a\" to a meaningful name of at least 3 characters.")
+        .next().atLine(43).withMessage("Rename \"b\" to a meaningful name of at least 3 characters.")
         .next().atLine(54);
   }
 

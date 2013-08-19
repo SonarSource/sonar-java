@@ -54,7 +54,7 @@ public class RightCurlyBraceSameLineAsNextBlockCheck extends SquidCheck<Lexerles
   @Override
   public void visitToken(Token token) {
     if (lastTokenIsRightCurlyBrace && lastTokenLine != token.getLine() && NEXT_BLOCKS.contains(token.getValue())) {
-      getContext().createLineViolation(this, "Move this '" + token.getValue() + "' on the same line that the previous closing curly brace.", token);
+      getContext().createLineViolation(this, "Move this \"" + token.getValue() + "\" on the same line that the previous closing curly brace.", token);
     }
 
     lastTokenIsRightCurlyBrace = "}".equals(token.getValue());

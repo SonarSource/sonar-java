@@ -67,7 +67,7 @@ public class UndocumentedApiCheck extends JavaAstCheck {
       } else {
         for (String parameter : getParameters(node)) {
           if (!hasParamJavadoc(javadoc, parameter)) {
-            getContext().createLineViolation(this, "Document this '" + parameter + "' parameter.", node);
+            getContext().createLineViolation(this, "Document this \"" + parameter + "\" parameter.", node);
           }
         }
 
