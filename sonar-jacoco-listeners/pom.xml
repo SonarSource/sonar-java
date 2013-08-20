@@ -45,6 +45,13 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <testNGArtifactName>none:none</testNGArtifactName>
+          <properties>
+            <!-- To prevent failure of tests with profile "coverage-per-test": -->
+            <property>
+              <name>listener</name>
+              <value>org.sonar.java.jacoco.FakeListener</value>
+            </property>
+          </properties>
         </configuration>
       </plugin>
     </plugins>
