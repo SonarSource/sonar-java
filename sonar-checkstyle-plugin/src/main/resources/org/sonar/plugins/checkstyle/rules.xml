@@ -1154,6 +1154,7 @@
     <cardinality>MULTIPLE</cardinality>
     <param key="format" type="REGULAR_EXPRESSION">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.TrailingCommentCheck">
