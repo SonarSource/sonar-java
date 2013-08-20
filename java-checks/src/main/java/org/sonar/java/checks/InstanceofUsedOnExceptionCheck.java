@@ -33,8 +33,8 @@ import java.util.Set;
 
 @Rule(
   key = "S1193",
-  priority = Priority.CRITICAL)
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+  priority = Priority.MAJOR)
+@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class InstanceofUsedOnExceptionCheck extends SquidCheck<LexerlessGrammar> {
 
   private final Set<String> caughtVariables = Sets.newHashSet();
