@@ -47,7 +47,7 @@ public class ErrorClassExtendedCheck extends SquidCheck<LexerlessGrammar> {
     AstNode extendedClass = node.getFirstChild(JavaGrammar.CLASS_TYPE);
 
     if (extendedClass != null && isErrorClass(extendedClass)) {
-      getContext().createLineViolation(this, "Extend \"java.lang.Exception\" or one of its subclass.", node);
+      getContext().createLineViolation(this, "Extend \"java.lang.Exception\" or one of its subclasses.", node);
     }
   }
 

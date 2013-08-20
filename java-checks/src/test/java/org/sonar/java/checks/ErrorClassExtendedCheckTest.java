@@ -36,7 +36,7 @@ public class ErrorClassExtendedCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ErrorClassExtendedCheck.java"), new ErrorClassExtendedCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("Extend \"java.lang.Exception\" or one of its subclass.")
+        .next().atLine(1).withMessage("Extend \"java.lang.Exception\" or one of its subclasses.")
         .next().atLine(4);
   }
 
