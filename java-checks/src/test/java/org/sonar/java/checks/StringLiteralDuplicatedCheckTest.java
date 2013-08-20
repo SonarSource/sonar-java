@@ -36,8 +36,8 @@ public class StringLiteralDuplicatedCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringLiteralDuplicatedCheck.java"), new StringLiteralDuplicatedCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("Define a constant instead of duplicating this literal \"b\" 2 times.")
-        .next().atLine(10).withMessage("Define a constant instead of duplicating this literal \"c\" 3 times.");
+        .next().atLine(8).withMessage("Define a constant instead of duplicating this literal \"bbbbb\" 2 times.")
+        .next().atLine(10).withMessage("Define a constant instead of duplicating this literal \"ccccc\" 3 times.");
   }
 
 }

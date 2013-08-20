@@ -37,6 +37,8 @@ import java.util.Map;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class StringLiteralDuplicatedCheck extends SquidCheck<LexerlessGrammar> {
 
+  private static final Integer MINIMAL_LITERAL_LENGTH = 7;
+
   private final Map<String, Integer> firstOccurrence = Maps.newHashMap();
   private final Map<String, Integer> literalsOccurrences = Maps.newHashMap();
 
@@ -85,12 +87,14 @@ public class StringLiteralDuplicatedCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private void visitOccurence(String literal, int line) {
-    if (!firstOccurrence.containsKey(literal)) {
-      firstOccurrence.put(literal, line);
-      literalsOccurrences.put(literal, 1);
-    } else {
-      int occurences = literalsOccurrences.get(literal);
-      literalsOccurrences.put(literal, occurences + 1);
+    if (literal.length() >= MINIMAL_LITERAL_LENGTH) {
+      if (!firstOccurrence.containsKey(literal)) {
+        firstOccurrence.put(literal, line);
+        literalsOccurrences.put(literal, 1);
+      } else {
+        int occurences = literalsOccurrences.get(literal);
+        literalsOccurrences.put(literal, occurences + 1);
+      }
     }
   }
 

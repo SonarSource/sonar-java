@@ -1,14 +1,16 @@
 class A {
-  @SupressWarnings("all") // Compliant
-  @SupressWarnings("all")
-  @SupressWarnings("all")
-  @SupressWarnings("a")
+  @SupressWarnings("allall") // Compliant
+  @SupressWarnings("allall")
+  @SupressWarnings("allall")
+  @SupressWarnings("aaaaa")
   public void f() {
-    System.out.println("a"); // Compliant
-    System.out.println("b"); // Non-Compliant
-    System.out.println("b");
-    System.out.println("c"); // Non-Compliant
-    System.out.println("c");
-    System.out.println("c");
+    System.out.println("aaaaa"); // Compliant
+    System.out.println("bbbbb"); // Non-Compliant
+    System.out.println("bbbbb");
+    System.out.println("ccccc"); // Non-Compliant
+    System.out.println("ccccc");
+    System.out.println("ccccc");
+    System.out.println("dddd"); // Compliant - too short
+    System.out.println("dddd");
   }
 }

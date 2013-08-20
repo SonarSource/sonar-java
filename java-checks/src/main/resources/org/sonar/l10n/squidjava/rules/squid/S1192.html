@@ -16,6 +16,11 @@ public void run() {
 private void method1(} { /* ... */ }
 @SuppressWarning("all")
 private void method2(} { /* ... */ }
+
+public String method3(String a) {
+  System.out.println("'" + a + "'");               // Compliant - literal "'" has less than 5 characters and is excluded
+  return "";                                       // Compliant - literal "" has less than 5 characters and is excluded
+}
 </pre>
 
 <p>should be refactored into:</p>
