@@ -103,7 +103,6 @@ public final class CheckList {
         ConstantsShouldBeStaticFinalCheck.class,
         ThrowsFromFinallyCheck.class,
         SystemOutOrErrUsageCheck.class,
-        NamesTooShortCheck.class,
         CatchWhichOnlyRethrowsCheck.class,
         ExceptionsShouldBeImmutableCheck.class,
         CollapsibleIfCandidateCheck.class,
