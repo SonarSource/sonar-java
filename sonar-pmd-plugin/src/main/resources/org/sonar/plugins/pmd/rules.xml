@@ -245,6 +245,7 @@
   <rule key="FinalizeOnlyCallsSuperFinalize">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/finalizers.xml/FinalizeOnlyCallsSuperFinalize]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="FinalizeOverloaded">
