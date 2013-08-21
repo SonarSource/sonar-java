@@ -354,6 +354,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Performance - Explicit garbage collection; extremely dubious except in benchmarking code]]></name>
     <configKey><![CDATA[DM_GC]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="DM_BOOLEAN_CTOR">

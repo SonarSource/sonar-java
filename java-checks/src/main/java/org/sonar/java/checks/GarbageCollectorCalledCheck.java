@@ -28,32 +28,27 @@ import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
-  key = "S1147",
+  key = "S1215",
   priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class SystemExitCalledCheck extends SquidCheck<LexerlessGrammar> {
+public class GarbageCollectorCalledCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
     subscribeTo(JavaGrammar.PRIMARY);
+    subscribeTo(JavaGrammar.UNARY_EXPRESSION);
   }
 
   @Override
   public void visitNode(AstNode node) {
-    if (isMethodCall(node) && hasSystemExitQualifiedIdentifier(node)) {
-      getContext().createLineViolation(this, "Remove this System.exit() call or ensure it is really required.", node);
+    if (isGarbageCollectorCall(node)) {
+      getContext().createLineViolation(this, "Don't try to be smarter than the JVM, remove this call to run the garbage collector.", node);
     }
   }
 
-  private static boolean isMethodCall(AstNode node) {
-    AstNode suffix = node.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
-    return suffix != null &&
-      suffix.hasDirectChildren(JavaGrammar.ARGUMENTS);
-  }
-
-  private static boolean hasSystemExitQualifiedIdentifier(AstNode node) {
-    AstNode qualifiedIdentifier = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-    return AstNodeTokensMatcher.matches(qualifiedIdentifier, "System.exit");
+  private static boolean isGarbageCollectorCall(AstNode node) {
+    return AstNodeTokensMatcher.matches(node, "System.gc()") ||
+      AstNodeTokensMatcher.matches(node, "Runtime.getRuntime().gc()");
   }
 
 }

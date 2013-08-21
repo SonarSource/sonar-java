@@ -124,6 +124,7 @@
   <rule key="DoNotCallGarbageCollectionExplicitly">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/controversial.xml/DoNotCallGarbageCollectionExplicitly]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidMultipleUnaryOperators">

@@ -7,14 +7,18 @@ Calls to System.gc(), Runtime.getRuntime().gc(), and System.runFinalization() ar
   // Explicit gc call !
     System.gc();
   }
-	public void doSomething()
-	{
-		// Explicit gc call !
-		Runtime.getRuntime().gc();
-	}
+  public void doSomething()
+  {
+    // Explicit gc call !
+    Runtime.getRuntime().gc();
+  }
 
   public explicitGCcall() { // Explicit gc call ! System.gc(); }
 
   public void doSomething() { // Explicit gc call ! Runtime.getRuntime().gc(); }
 }
 </pre>
+
+<p>
+This rule is deprecated, use {rule:squid:S1215} instead.
+</p>
