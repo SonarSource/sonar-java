@@ -785,6 +785,7 @@
     </param>
     <param key="tokens" type="s[METHOD_DEF,CTOR_DEF]">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.naming.MethodNameCheck">

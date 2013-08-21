@@ -961,6 +961,7 @@
     <configKey><![CDATA[rulesets/codesize.xml/ExcessiveMethodLength]]></configKey>
     <param key="minimum" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ExcessiveParameterList">
