@@ -492,6 +492,7 @@
     <configKey><![CDATA[Checker/TreeWalker/IllegalImport]]></configKey>
     <param key="illegalPkgs" type="s{}">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.IllegalInstantiationCheck">
