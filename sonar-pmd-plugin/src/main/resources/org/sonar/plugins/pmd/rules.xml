@@ -597,6 +597,7 @@
   <rule key="UseSingleton">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/design.xml/UseSingleton]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidDeeplyNestedIfStmts">
