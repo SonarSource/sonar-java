@@ -871,6 +871,7 @@
   <rule key="CloneMethodMustImplementCloneable">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/clone.xml/CloneMethodMustImplementCloneable]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidDuplicateLiterals">
