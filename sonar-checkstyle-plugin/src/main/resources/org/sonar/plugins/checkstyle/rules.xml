@@ -829,6 +829,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Modified Control Variable]]></name>
     <configKey><![CDATA[Checker/TreeWalker/ModifiedControlVariable]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.modifier.ModifierOrderCheck">

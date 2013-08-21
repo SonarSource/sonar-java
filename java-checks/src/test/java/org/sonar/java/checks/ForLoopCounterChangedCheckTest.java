@@ -49,7 +49,8 @@ public class ForLoopCounterChangedCheckTest {
         .next().atLine(47)
         .next().atLine(48)
         .next().atLine(49)
-        .next().atLine(53);
+        .next().atLine(53)
+        .next().atLine(62);
   }
 
 }
