@@ -133,6 +133,7 @@ public final class CheckList {
         ArrayDesignatorOnVariableCheck.class,
         DefaultPackageCheck.class,
         MethodNamedHashcodeCheck.class,
+        NestedBlocksCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

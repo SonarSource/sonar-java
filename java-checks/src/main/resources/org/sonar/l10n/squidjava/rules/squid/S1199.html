@@ -1,0 +1,43 @@
+<p>
+Nested code blocks can be used to create a new scope and restrict the visibility of the variables defined within.
+Using this feature in a method typically indicates that it takes on too many responsibilities, and should be refactored into smaller ones.
+</p>
+
+<p>The following code:</p>
+
+<pre>
+public void evaluate(int operator) {
+  switch (operator) {
+    /* ... */
+    case ADD: {                                // Non-Compliant - nested code block '{' ... '}'
+        int a = stack.pop();
+        int b = stack.pop();
+        int result = a + b;
+        stack.push(result);
+        break;
+      }
+    /* ... */
+  }
+}
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+public void evaluate(int operator) {
+  switch (operator) {
+    /* ... */
+    case ADD:                                  // Compliant
+      evaluateAdd();
+      break;
+    /* ... */
+  }
+}
+
+private void evaluateAdd() {
+  int a = stack.pop();
+  int b = stack.pop();
+  int result = a + b;
+  stack.push(result);
+}
+</pre>

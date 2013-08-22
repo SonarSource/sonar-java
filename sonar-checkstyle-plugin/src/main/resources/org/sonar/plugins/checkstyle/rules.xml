@@ -253,6 +253,7 @@
     <configKey><![CDATA[Checker/TreeWalker/AvoidNestedBlocks]]></configKey>
     <param key="allowInSwitchCase" type="BOOLEAN">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck">
