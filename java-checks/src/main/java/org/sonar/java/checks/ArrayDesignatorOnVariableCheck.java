@@ -28,21 +28,22 @@ import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
-  key = "S1195",
+  key = "S1197",
   priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class ArrayTypeBracketsAfterTypeCheck extends SquidCheck<LexerlessGrammar> {
+public class ArrayDesignatorOnVariableCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.METHOD_DECLARATOR_REST);
-    subscribeTo(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST);
+    subscribeTo(JavaGrammar.CONSTANT_DECLARATOR_REST);
+    subscribeTo(JavaGrammar.VARIABLE_DECLARATOR_ID);
+    subscribeTo(JavaGrammar.VARIABLE_DECLARATOR);
   }
 
   @Override
   public void visitNode(AstNode node) {
     if (node.hasDirectChildren(JavaGrammar.DIM)) {
-      getContext().createLineViolation(this, "Move the array brackets \"[]\" to the end of the return type.", node);
+      getContext().createLineViolation(this, "Move the array designator from the variable to the type.", node);
     }
   }
 

@@ -238,6 +238,7 @@
     <configKey><![CDATA[Checker/TreeWalker/ArrayTypeStyle]]></configKey>
     <param key="javaStyle" type="BOOLEAN">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.AvoidInlineConditionalsCheck">

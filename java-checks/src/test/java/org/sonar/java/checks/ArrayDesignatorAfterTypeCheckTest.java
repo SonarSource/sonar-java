@@ -27,16 +27,16 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
-public class ArrayTypeBracketsAfterTypeCheckTest {
+public class ArrayDesignatorAfterTypeCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ArrayTypeBracketsAfterTypeCheck.java"), new ArrayTypeBracketsAfterTypeCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ArrayDesignatorAfterTypeCheck.java"), new ArrayDesignatorAfterTypeCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Move the array brackets \"[]\" to the end of the return type.")
+        .next().atLine(2).withMessage("Move the array designators \"[]\" to the end of the return type.")
         .next().atLine(6)
         .next().atLine(10)
         .next().atLine(14);

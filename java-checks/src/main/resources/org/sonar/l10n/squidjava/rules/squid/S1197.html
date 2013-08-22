@@ -1,0 +1,12 @@
+<p>
+Array designators should always be located on the type for better code readability.
+Otherwise, developers must look both at the type and the variable name to know whether or not a variable is an array.
+</p>
+
+<p>The following code snippet illustrates this rule:</p>
+
+<pre>
+int matrix[][];   // Non-Compliant
+int[] matrix[];   // Non-Compliant
+int[][] matrix;   // Compliant
+</pre>
