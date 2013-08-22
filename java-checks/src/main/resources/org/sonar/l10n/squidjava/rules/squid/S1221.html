@@ -1,0 +1,21 @@
+<p>Naming a method <code>hashcode()</code> is either:</p>
+
+<ul>
+  <li>A bug. Overriding <code>Object.hashCode()</code> was meant and the application does not behave as expected.</li>
+  <li>Done on purpose. The name however will confuse every other developer, who will think it is a bug.</li>
+</ul>
+
+<p>In both cases, the method should be renamed.</p>
+
+<p>The following code:</p>
+
+<pre>
+public int hashcode() { /* ... */ }    // Non-Compliant
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+@Override
+public int hashCode() { /* ... */ }    // Compliant
+</pre>

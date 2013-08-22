@@ -1113,6 +1113,7 @@
   <rule key="SuspiciousHashcodeMethodName">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/naming.xml/SuspiciousHashcodeMethodName]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SuspiciousConstantFieldName">

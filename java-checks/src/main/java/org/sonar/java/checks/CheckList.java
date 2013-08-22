@@ -132,6 +132,7 @@ public final class CheckList {
         GarbageCollectorCalledCheck.class,
         ArrayDesignatorOnVariableCheck.class,
         DefaultPackageCheck.class,
+        MethodNamedHashcodeCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

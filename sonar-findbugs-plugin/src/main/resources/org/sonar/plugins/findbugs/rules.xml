@@ -2256,6 +2256,7 @@
     <priority>CRITICAL</priority>
     <name><![CDATA[Class defines hashcode(); should it be hashCode()?]]></name>
     <configKey><![CDATA[NM_LCASE_HASHCODE]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="NM_LCASE_TOSTRING">
