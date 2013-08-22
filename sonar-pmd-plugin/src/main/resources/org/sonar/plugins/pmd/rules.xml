@@ -758,6 +758,7 @@
   <rule key="PositionLiteralsFirstInComparisons">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/design.xml/PositionLiteralsFirstInComparisons]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UnnecessaryLocalBeforeReturn">
