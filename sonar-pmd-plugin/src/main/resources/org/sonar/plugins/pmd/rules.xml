@@ -209,6 +209,7 @@
   <rule key="NoPackage">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/naming.xml/NoPackage]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="PackageCase">

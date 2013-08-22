@@ -131,6 +131,7 @@ public final class CheckList {
         ToStringUsingBoxingCheck.class,
         GarbageCollectorCalledCheck.class,
         ArrayDesignatorOnVariableCheck.class,
+        DefaultPackageCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,

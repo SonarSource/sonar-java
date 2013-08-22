@@ -1,0 +1,21 @@
+<p>According to the Java Language Specification:</p>
+
+<blockquote>
+Unnamed packages are provided by the Java platform principally for convenience when developing small or temporary applications or when just beginning development.
+</blockquote>
+
+<p>To enforce this best practice, classes located in default package can no longer be access from named ones since Java 1.4.</p>
+
+<p>The following piece of code:</p>
+
+<pre>
+public class MyClass { /* ... */ }
+</pre>
+
+<p>should be refactored into:</p>
+
+<pre>
+package org.example;
+
+public class MyClass{ /* ... */ }
+</pre>

@@ -953,6 +953,7 @@
     <name><![CDATA[Package Declaration]]></name>
     <configKey><![CDATA[Checker/TreeWalker/PackageDeclaration]]></configKey>
     <param key="ignoreDirectoryName" type="BOOLEAN"/>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.naming.PackageNameCheck">
