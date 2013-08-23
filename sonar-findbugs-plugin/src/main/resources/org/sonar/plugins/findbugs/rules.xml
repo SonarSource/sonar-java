@@ -512,12 +512,14 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Correctness - Covariant equals() method defined for enum]]></name>
     <configKey><![CDATA[EQ_DONT_DEFINE_EQUALS_FOR_ENUM]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EQ_SELF_USE_OBJECT">
     <priority>MAJOR</priority>
     <name><![CDATA[Correctness - Covariant equals() method defined, Object.equals(Object) inherited]]></name>
     <configKey><![CDATA[EQ_SELF_USE_OBJECT]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EQ_OTHER_USE_OBJECT">
@@ -530,6 +532,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Correctness - equals() method defined that doesn't override equals(Object)]]></name>
     <configKey><![CDATA[EQ_OTHER_NO_OBJECT]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <!-- warning : http://sourceforge.net/tracker/?func=detail&aid=2786054&group_id=96405&atid=614693 -->
@@ -542,6 +545,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Bad practice - Covariant equals() method defined]]></name>
     <configKey><![CDATA[EQ_SELF_NO_OBJECT]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC">
@@ -656,6 +660,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Bad practice - Abstract class defines covariant equals() method]]></name>
     <configKey><![CDATA[EQ_ABSTRACT_SELF]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ES_COMPARING_STRINGS_WITH_EQ">

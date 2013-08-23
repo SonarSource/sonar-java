@@ -1126,6 +1126,7 @@
   <rule key="SuspiciousEqualsMethodName">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/naming.xml/SuspiciousEqualsMethodName]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidFieldNameMatchingTypeName">

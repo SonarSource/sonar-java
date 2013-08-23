@@ -324,6 +324,7 @@
     <priority>CRITICAL</priority>
     <name><![CDATA[Covariant Equals]]></name>
     <configKey><![CDATA[Checker/TreeWalker/CovariantEquals]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck">
