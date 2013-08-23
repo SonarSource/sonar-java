@@ -606,6 +606,7 @@
     <configKey><![CDATA[Checker/TreeWalker/InterfaceIsType]]></configKey>
     <param key="allowMarkerInterfaces" type="BOOLEAN">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck">

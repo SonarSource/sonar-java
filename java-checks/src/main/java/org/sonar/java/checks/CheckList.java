@@ -134,6 +134,7 @@ public final class CheckList {
         DefaultPackageCheck.class,
         MethodNamedHashcodeCheck.class,
         NestedBlocksCheck.class,
+        InterfaceAsConstantContainerCheck.class,
         // Bytecode
         CycleBetweenPackagesCheck.class,
         DITCheck.class,
