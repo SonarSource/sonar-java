@@ -36,7 +36,7 @@ public class InterfaceAsConstantContainerCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/InterfaceAsConstantContainerCheck.java"), new InterfaceAsConstantContainerCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Move these constants into an enum.")
+        .next().atLine(4).withMessage("Move these constants either into an enum or to the implementing class.")
         .next().atLine(8);
   }
 

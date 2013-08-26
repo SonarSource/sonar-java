@@ -41,7 +41,7 @@ public class InterfaceAsConstantContainerCheck extends SquidCheck<LexerlessGramm
   @Override
   public void visitNode(AstNode node) {
     if (isCollectionOfConstants(node)) {
-      getContext().createLineViolation(this, "Move these constants into an enum.", node);
+      getContext().createLineViolation(this, "Move these constants either into an enum or to the implementing class.", node);
     }
   }
 
