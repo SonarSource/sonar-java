@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.api.utils.WildcardPattern;
@@ -65,10 +66,9 @@ public class UndocumentedApiCheck extends JavaAstCheck {
       if (javadoc == null) {
         getContext().createLineViolation(this, "Document this public " + PublicApiVisitor.getType(node) + ".", node);
       } else {
-        for (String parameter : getParameters(node)) {
-          if (!hasParamJavadoc(javadoc, parameter)) {
-            getContext().createLineViolation(this, "Document this \"" + parameter + "\" parameter.", node);
-          }
+        List<String> undocumentedParameters = getUndocumentedParameters(javadoc, getParameters(node));
+        if (!undocumentedParameters.isEmpty()) {
+          getContext().createLineViolation(this, "Document the parameter(s): " + Joiner.on(", ").join(undocumentedParameters), node);
         }
 
         if (hasNonVoidReturnType(node) && !hasReturnJavadoc(javadoc)) {
@@ -83,6 +83,18 @@ public class UndocumentedApiCheck extends JavaAstCheck {
       patterns = PatternUtils.createPatterns(forClasses);
     }
     return patterns;
+  }
+
+  private static List<String> getUndocumentedParameters(String javadoc, List<String> parameters) {
+    ImmutableList.Builder<String> builder = ImmutableList.builder();
+
+    for (String parameter : parameters) {
+      if (!hasParamJavadoc(javadoc, parameter)) {
+        builder.add(parameter);
+      }
+    }
+
+    return builder.build();
   }
 
   private static List<String> getParameters(AstNode node) {

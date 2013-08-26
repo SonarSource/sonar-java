@@ -153,3 +153,18 @@ private class Foo { // Compliant - non pubic
 
 class Foo { // Compliant - non public
 }
+
+/**
+ */
+public class Foo { // Compliant
+  /**
+   */
+  public int foo(int a, int b, int c) { // Non-Compliant - single issue for parameters, + one for return value
+    return 0;
+  }
+
+
+  public int foo(int a, int b, int c) { // Non-Compliant - single issue for complete method
+    return 0;
+  }
+}

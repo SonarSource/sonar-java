@@ -51,13 +51,16 @@ public class UndocumentedApiCheckTest {
         .next().atLine(55).withMessage("Document this public class.")
         .next().atLine(57).withMessage("Document this public field.")
         .next().atLine(59).withMessage("Document this public constructor.")
-        .next().atLine(68).withMessage("Document this \"<T>\" parameter.")
+        .next().atLine(68).withMessage("Document the parameter(s): <T>")
         .next().atLine(77)
-        .next().atLine(101).withMessage("Document this \"value\" parameter.")
+        .next().atLine(101).withMessage("Document the parameter(s): value")
         .next().atLine(107).withMessage("Document this method return value.")
         .next().atLine(121).withMessage("Document this method return value.")
-        .next().atLine(130).withMessage("Document this \"a\" parameter.")
-        .next().atLine(139).withMessage("Document this \"a\" parameter.");
+        .next().atLine(130).withMessage("Document the parameter(s): a")
+        .next().atLine(139).withMessage("Document the parameter(s): a")
+        .next().atLine(162).withMessage("Document the parameter(s): a, b, c")
+        .next().atLine(162).withMessage("Document this method return value.")
+        .next().atLine(167).withMessage("Document this public method.");
   }
 
   @Test
