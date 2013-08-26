@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
@@ -89,7 +90,42 @@ public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isExcluded(AstNode node) {
-    return node.hasAncestor(JavaGrammar.IMPORT_DECLARATION);
+    return node.hasAncestor(JavaGrammar.IMPORT_DECLARATION) ||
+      isInOverridenMethodSignature(node);
+  }
+
+  private static boolean isInOverridenMethodSignature(AstNode node) {
+    return isInMethodSignature(node) && isOverridenInClass(node);
+  }
+
+  private static boolean isInMethodSignature(AstNode node) {
+    return node.is(JavaGrammar.CLASS_TYPE) &&
+      node.getParent().is(JavaGrammar.TYPE) &&
+      node.getParent().getParent().is(JavaGrammar.MEMBER_DECL, JavaGrammar.FORMAL_PARAMETER_DECLS);
+  }
+
+  private static boolean isOverridenInClass(AstNode node) {
+    AstNode enclosingClassOrInterface = getFirstAncestor(node, JavaGrammar.MEMBER_DECL, JavaGrammar.INTERFACE_MEMBER_DECL);
+    if (!enclosingClassOrInterface.is(JavaGrammar.MEMBER_DECL)) {
+      return false;
+    }
+
+    for (AstNode modifier : enclosingClassOrInterface.getParent().getChildren(JavaGrammar.MODIFIER)) {
+      if (AstNodeTokensMatcher.matches(modifier, "@Override")) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static AstNode getFirstAncestor(AstNode node, AstNodeType t1, AstNodeType t2) {
+    AstNode result = node.getParent();
+    while (result != null && !result.is(t1, t2)) {
+      result = result.getParent();
+    }
+
+    return result;
   }
 
 }

@@ -46,7 +46,15 @@ public class SynchronizedClassUsageCheckTest {
         .next().atLine(16)
         .next().atLine(17)
         .next().atLine(18)
-        .next().atLine(19);
+        .next().atLine(19)
+        .next().atLine(22)
+        .next().atLine(24)
+        .next().atLine(27)
+        .next().atLine(32)
+        .next().atLine(34)
+        .next().atLine(40)
+        .next().atLine(46)
+        .next().atLine(48);
   }
 
 }

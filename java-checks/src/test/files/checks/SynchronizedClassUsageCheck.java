@@ -18,4 +18,36 @@ class A {
     java.util.Vector<Integer> result = null; // Non-Compliant
     List result = new java.util.Vector<Integer>(); // Non-Compliant
   }
+
+  public Vector a; // Non-Compliant
+
+  public Vector f() { // Non-Compliant
+  }
+
+  public void f(Vector a) { // Non-Compliant
+  }
+
+  @Override
+  public Vector f(Vector a) { // Compliant
+    Vector a; // Non-Compliant
+
+    try (Vector a = null) { // Non-Compliant
+    }
+  }
+}
+
+interface A {
+  void f(Vector a); // Non-Compliant
+}
+
+enum A {
+  ;
+
+  Vector a; // Non-Compliant
+
+  Vector a() { // Non-Compliant
+  }
+
+  @Override a(Vector a) { // Compliant
+  }
 }
