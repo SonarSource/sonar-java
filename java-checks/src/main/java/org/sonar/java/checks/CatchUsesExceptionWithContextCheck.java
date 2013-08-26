@@ -48,7 +48,7 @@ public class CatchUsesExceptionWithContextCheck extends SquidCheck<LexerlessGram
 
   @Override
   public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.CATCH_CLAUSE) && !isPropagation(node)) {
+    if (node.is(JavaGrammar.CATCH_CLAUSE) && !isExcluded(node)) {
       exceptionVariables.push(getCaughtVariable(node));
       foundCorrectUsages.push(false);
     } else if (isWithinCatch() && isArgumentsWithSeveralExpressions(node)) {
@@ -63,7 +63,7 @@ public class CatchUsesExceptionWithContextCheck extends SquidCheck<LexerlessGram
 
   @Override
   public void leaveNode(AstNode node) {
-    if (node.is(JavaGrammar.CATCH_CLAUSE) && !isPropagation(node)) {
+    if (node.is(JavaGrammar.CATCH_CLAUSE) && !isExcluded(node)) {
       exceptionVariables.pop();
       boolean foundCorrectUsage = foundCorrectUsages.pop();
 
@@ -89,8 +89,60 @@ public class CatchUsesExceptionWithContextCheck extends SquidCheck<LexerlessGram
     return node.getToken().equals(node.getLastToken());
   }
 
-  private static boolean isPropagation(AstNode node) {
-    return !isLastCatch(node) && isCatchAndRethrow(node);
+  private static boolean isExcluded(AstNode node) {
+    List<AstNode> blockStatements = node.getFirstChild(JavaGrammar.BLOCK)
+      .getFirstChild(JavaGrammar.BLOCK_STATEMENTS)
+      .getChildren(JavaGrammar.BLOCK_STATEMENT);
+
+    if (blockStatements.size() != 1) {
+      return false;
+    }
+
+    AstNode blockStatement = blockStatements.get(0);
+    AstNode throwStatement = getThrowStatement(blockStatement);
+    if (throwStatement == null) {
+      return false;
+    }
+
+    String caughtVariable = getCaughtVariable(node);
+
+    return isPropagation(node, caughtVariable, throwStatement) || isCheckedToUncheckedConversion(caughtVariable, blockStatement);
+  }
+
+  private static AstNode getThrowStatement(AstNode blockStatement) {
+    AstNode statement = blockStatement.getFirstChild(JavaGrammar.STATEMENT);
+    if (statement == null) {
+      return null;
+    }
+
+    AstNode throwStatement = statement.getFirstChild(JavaGrammar.THROW_STATEMENT);
+    if (throwStatement == null) {
+      return null;
+    }
+
+    return throwStatement;
+  }
+
+  private static String getCaughtVariable(AstNode catchClause) {
+    return catchClause.getFirstChild(JavaGrammar.CATCH_FORMAL_PARAMETER)
+      .getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID)
+      .getTokenOriginalValue();
+  }
+
+  private static boolean isPropagation(AstNode catchClause, String caughtVariable, AstNode throwStatement) {
+    return !isLastCatch(catchClause) && isRethrowStatement(caughtVariable, throwStatement);
+  }
+
+  private static boolean isCheckedToUncheckedConversion(String caughtVariable, AstNode throwStatement) {
+    for (AstNode arguments : throwStatement.getDescendants(JavaGrammar.ARGUMENTS)) {
+      for (AstNode expression : arguments.getChildren(JavaGrammar.EXPRESSION)) {
+        if (AstNodeTokensMatcher.matches(expression, caughtVariable)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   private static boolean isLastCatch(AstNode node) {
@@ -99,35 +151,11 @@ public class CatchUsesExceptionWithContextCheck extends SquidCheck<LexerlessGram
       !nextSibling.is(JavaGrammar.CATCH_CLAUSE);
   }
 
-  private static boolean isCatchAndRethrow(AstNode node) {
-    List<AstNode> blockStatements = node.getFirstChild(JavaGrammar.BLOCK)
-        .getFirstChild(JavaGrammar.BLOCK_STATEMENTS)
-        .getChildren(JavaGrammar.BLOCK_STATEMENT);
-
-    return blockStatements.size() == 1 && isRethrowStatement(node, blockStatements.get(0));
+  private static boolean isRethrowStatement(String caughtVariable, AstNode throwStatement) {
+    return caughtVariable.equals(getThrownVariable(throwStatement));
   }
 
-  private static boolean isRethrowStatement(AstNode catchClause, AstNode blockStatement) {
-    return getCaughtVariable(catchClause).equals(getThrownVariable(blockStatement));
-  }
-
-  private static String getCaughtVariable(AstNode catchClause) {
-    return catchClause.getFirstChild(JavaGrammar.CATCH_FORMAL_PARAMETER)
-        .getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID)
-        .getTokenOriginalValue();
-  }
-
-  private static String getThrownVariable(AstNode blockStatement) {
-    AstNode statement = blockStatement.getFirstChild(JavaGrammar.STATEMENT);
-    if (statement == null) {
-      return "";
-    }
-
-    AstNode throwStatement = statement.getFirstChild(JavaGrammar.THROW_STATEMENT);
-    if (throwStatement == null) {
-      return "";
-    }
-
+  private static String getThrownVariable(AstNode throwStatement) {
     AstNode expression = throwStatement.getFirstChild(JavaGrammar.EXPRESSION);
 
     return expression.getToken().equals(expression.getLastToken()) ? expression.getTokenOriginalValue() : "";

@@ -38,7 +38,7 @@ class A {
   private void h() {
     try {
       /* ... */
-    } catch (NumberFormatException e) {                                       // Non-Compliant - not classified as propagation
+    } catch (NumberFormatException e) {                                       // Compliant
       throw Throwables.propagate(e);
     } catch (RuntimeException e) {                                            // Compliant - propagation
       throw e;
@@ -62,6 +62,20 @@ class A {
     } catch (Exception e) {                                                   // Non-Compliant
       int a;
     } catch (Throwable e) {                                                   // Non-Compliant
+    }
+
+    try {
+    } catch (IOException e) {                                                 // Compliant - checked to unchecked
+      throw Throwables.propagate(e);
+    }
+
+    try {
+    } catch (IOException e) {                                                 // Compliant
+      throw new RuntimeException(e);
+    } catch (NumberFormatException e) {                                       // Non-Compliant
+      throw new RuntimeException(e.getMessage());
+    } catch (Exception e) {                                                   // Compliant
+      throw Throwables.propagate(e);
     }
   }
 }

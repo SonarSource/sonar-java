@@ -36,18 +36,18 @@ public class CatchUsesExceptionWithContextCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchUsesExceptionWithContextCheck.java"), new CatchUsesExceptionWithContextCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Either log or rethrow this exception along with some contextual information.")
-        .next().atLine(5)
-        .next().atLine(7)
-        .next().atLine(11)
-        .next().atLine(18)
-        .next().atLine(20)
-        .next().atLine(22)
-        .next().atLine(41)
-        .next().atLine(45)
-        .next().atLine(56)
-        .next().atLine(62)
-        .next().atLine(64);
+      .next().atLine(4).withMessage("Either log or rethrow this exception along with some contextual information.")
+      .next().atLine(5)
+      .next().atLine(7)
+      .next().atLine(11)
+      .next().atLine(18)
+      .next().atLine(20)
+      .next().atLine(22)
+      .next().atLine(45)
+      .next().atLine(56)
+      .next().atLine(62)
+      .next().atLine(64)
+      .next().atLine(75);
   }
 
 }
