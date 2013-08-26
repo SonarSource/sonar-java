@@ -20,23 +20,24 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
-import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
+import java.util.List;
 import java.util.Map;
 
 @Rule(
   key = "S1149",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String> builder()
       .put("Vector", "\"ArrayList\" or \"LinkedList\"")
@@ -45,42 +46,50 @@ public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> im
       .build();
 
   private int lastReportedLine;
-  private boolean inImport;
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.IMPORT_DECLARATION);
+    subscribeTo(JavaGrammar.CLASS_TYPE);
+    subscribeTo(JavaGrammar.CREATED_NAME);
+    subscribeTo(JavaGrammar.QUALIFIED_IDENTIFIER);
   }
 
   @Override
   public void visitFile(AstNode astNode) {
     lastReportedLine = -1;
-    inImport = false;
   }
 
   @Override
   public void visitNode(AstNode node) {
-    inImport = true;
-  }
+    String className = getClassName(node);
 
-  @Override
-  public void visitToken(Token token) {
-    String className = token.getOriginalValue();
-    if (!inImport && isSynchronizedClass(className) && lastReportedLine != token.getLine()) {
-      getContext().createLineViolation(this, "Replace the synchronized class \"" + className + "\" by an unsynchronized one such as " + REPLACEMENTS.get(className) + ".", token);
-      lastReportedLine = token.getLine();
+    if (lastReportedLine != node.getTokenLine() && isSynchronizedClass(className) && !isExcluded(node)) {
+      getContext().createLineViolation(this, "Replace the synchronized class \"" + className + "\" by an unsynchronized one such as " + REPLACEMENTS.get(className) + ".", node);
+      lastReportedLine = node.getTokenLine();
     }
   }
 
-  @Override
-  public void leaveNode(AstNode node) {
-    inImport = false;
+  private static String getClassName(AstNode node) {
+    String className;
+
+    if (!node.hasDirectChildren(JavaPunctuator.DOT)) {
+      className = node.getTokenOriginalValue();
+    } else {
+      List<AstNode> identifiers = node.getChildren(JavaTokenType.IDENTIFIER);
+      className = identifiers.get(identifiers.size() - 1).getTokenOriginalValue();
+    }
+
+    return className;
   }
 
   private static boolean isSynchronizedClass(String className) {
     return "Vector".equals(className) ||
       "Hashtable".equals(className) ||
       "StringBuffer".equals(className);
+  }
+
+  private static boolean isExcluded(AstNode node) {
+    return node.hasAncestor(JavaGrammar.IMPORT_DECLARATION);
   }
 
 }

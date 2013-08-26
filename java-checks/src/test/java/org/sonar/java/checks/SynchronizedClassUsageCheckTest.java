@@ -42,7 +42,11 @@ public class SynchronizedClassUsageCheckTest {
         .next().atLine(8)
         .next().atLine(9)
         .next().atLine(12)
-        .next().atLine(13).withMessage("Replace the synchronized class \"StringBuffer\" by an unsynchronized one such as \"StringBuilder\".");
+        .next().atLine(13).withMessage("Replace the synchronized class \"StringBuffer\" by an unsynchronized one such as \"StringBuilder\".")
+        .next().atLine(16)
+        .next().atLine(17)
+        .next().atLine(18)
+        .next().atLine(19);
   }
 
 }

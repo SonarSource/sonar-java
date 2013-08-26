@@ -11,4 +11,11 @@ class A {
   ArrayList a = new ArrayList(); // Compliant
   Vector<Integer> a;             // Non-Compliant
   StringBuffer a = new StringBuffer(); // Non-Compliant
+
+  private void f() {
+    System.out.println(Vector.class); // Non-Compliant
+    System.out.println(new java.util.Vector()); // Non-Compliant
+    java.util.Vector<Integer> result = null; // Non-Compliant
+    List result = new java.util.Vector<Integer>(); // Non-Compliant
+  }
 }
