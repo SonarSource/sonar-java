@@ -24,6 +24,7 @@ import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -42,11 +43,11 @@ public class EmptyMethodsCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode node) {
-    if (hasEmptyMethodBody(node)) {
+    if (hasEmptyMethodBody(node) && !isInAbstractClass(node)) {
       getContext().createLineViolation(
-          this,
-          "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException, make it abstract or complete the implementation.",
-          node);
+        this,
+        "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.",
+        node);
     }
   }
 
@@ -72,6 +73,18 @@ public class EmptyMethodsCheck extends SquidCheck<LexerlessGrammar> {
 
   private static boolean hasComments(AstNode node) {
     return node.getToken().hasTrivia();
+  }
+
+  private static boolean isInAbstractClass(AstNode node) {
+    AstNode modifier = node.getFirstAncestor(JavaGrammar.CLASS_DECLARATION).getPreviousAstNode();
+    while (modifier != null && modifier.is(JavaGrammar.MODIFIER)) {
+      if (modifier.hasDirectChildren(JavaKeyword.ABSTRACT)) {
+        return true;
+      }
+      modifier = modifier.getPreviousAstNode();
+    }
+
+    return false;
   }
 
 }

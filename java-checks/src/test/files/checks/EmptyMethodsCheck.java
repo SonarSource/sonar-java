@@ -42,3 +42,20 @@ class A {
   private abstract void f();
 
 }
+
+abstract class A {
+  // Compliant
+  private void f() {
+    abstract class B {
+      // Compliant
+      private void g() {
+      }
+    }
+
+    static class C {
+      // Non-Compliant
+      private void g() {
+      }
+    }
+  }
+}

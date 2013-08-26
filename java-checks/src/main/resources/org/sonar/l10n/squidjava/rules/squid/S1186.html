@@ -3,7 +3,6 @@
 <ul>
   <li>It is an unintentional omission, and should be fixed.</li>
   <li>It is not yet, or never will be, supported. In this case an <code>UnsupportedOperationException</code> should be thrown.</li>
-  <li>The method belongs to an abstract class and the implementation is not known. In this case, the method should be abstract too.</li>
   <li>The method is an intentionally-blank override. In this case a nested comment should explain the reason for the blank override.</li>
 </ul>
 
@@ -33,10 +32,4 @@ or:
 public void doSomethingElse() {
   throw new UnsupportedOperationException();
 }
-</pre>
-
-or:
-
-<pre>
-public abstract void doSomething();
 </pre>

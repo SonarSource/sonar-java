@@ -36,10 +36,11 @@ public class EmptyMethodsCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyMethodsCheck.java"), new EmptyMethodsCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(15)
-        .withMessage("Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException, make it abstract or complete the implementation.")
-        .next().atLine(29)
-        .next().atLine(33);
+      .next().atLine(15)
+      .withMessage("Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.")
+      .next().atLine(29)
+      .next().atLine(33)
+      .next().atLine(57);
   }
 
 }
