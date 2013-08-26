@@ -77,5 +77,10 @@ class A {
     } catch (Exception e) {                                                   // Compliant
       throw Throwables.propagate(e);
     }
+
+    try {
+    } catch (Exception e) {                                                   // Non-Compliant - not propagation
+      throw e;
+    }
   }
 }

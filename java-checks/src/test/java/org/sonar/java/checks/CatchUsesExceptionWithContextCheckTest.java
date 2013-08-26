@@ -47,7 +47,8 @@ public class CatchUsesExceptionWithContextCheckTest {
       .next().atLine(56)
       .next().atLine(62)
       .next().atLine(64)
-      .next().atLine(75);
+      .next().atLine(75)
+      .next().atLine(82);
   }
 
 }
