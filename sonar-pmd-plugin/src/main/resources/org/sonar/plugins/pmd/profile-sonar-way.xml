@@ -5,8 +5,6 @@
   <rule ref="rulesets/strings.xml/StringInstantiation" />
   <rule ref="rulesets/design.xml/ConstructorCallsOverridableMethod" />
   <rule ref="rulesets/strictexception.xml/AvoidCatchingNPE" />
-  <rule ref="rulesets/strictexception.xml/AvoidRethrowingException" />
-  <rule ref="rulesets/migrating.xml/ReplaceEnumerationWithIterator" />
   <rule ref="rulesets/optimizations.xml/AvoidArrayLoops" />
   <rule ref="rulesets/unusedcode.xml/UnusedFormalParameter" />
   <rule ref="rulesets/basic.xml/ClassCastExceptionWithToArray" />
@@ -15,66 +13,35 @@
   <rule ref="rulesets/design.xml/CompareObjectsWithEquals" />
   <rule ref="rulesets/strings.xml/UseIndexOfChar" />
   <rule ref="rulesets/basic.xml/BigIntegerInstantiation" />
-  <rule ref="rulesets/design.xml/FinalFieldCouldBeStatic" />
-  <rule ref="rulesets/naming.xml/SuspiciousEqualsMethodName" />
   <rule ref="rulesets/design.xml/InstantiationToGetClass" />
-  <rule ref="rulesets/naming.xml/SuspiciousHashcodeMethodName" />
   <rule ref="rulesets/coupling.xml/LooseCoupling" />
   <rule ref="rulesets/unusedcode.xml/UnusedLocalVariable" />
-  <rule ref="rulesets/strings.xml/UnnecessaryCaseChange" />
   <rule ref="rulesets/design.xml/SingularField" />
   <rule ref="rulesets/design.xml/CloseResource" />
-  <rule ref="rulesets/strictexception.xml/AvoidCatchingThrowable" />
-  <rule ref="rulesets/basic.xml/CollapsibleIfStatements" />
   <rule ref="rulesets/basic.xml/UselessOperationOnImmutable" />
-  <rule ref="rulesets/clone.xml/CloneMethodMustImplementCloneable" />
-  <rule ref="rulesets/basic.xml/UselessOverridingMethod" />
   <rule ref="rulesets/controversial.xml/UnusedModifier" />
-  <rule ref="rulesets/design.xml/PreserveStackTrace" />
   <rule ref="rulesets/optimizations.xml/UseArraysAsList" />
   <rule ref="rulesets/design.xml/EqualsNull" />
   <rule ref="rulesets/basic.xml/BrokenNullCheck" />
-  <rule ref="rulesets/logging-jakarta-commons.xml/UseCorrectExceptionLogging" />
   <rule ref="rulesets/strings.xml/InefficientStringBuffering" />
   <rule ref="rulesets/sunsecure.xml/ArrayIsStoredDirectly" />
-  <rule ref="rulesets/finalizers.xml/FinalizeOverloaded" />
-  <rule ref="rulesets/controversial.xml/DontImportSun" />
   <rule ref="rulesets/design.xml/MissingStaticMethodInNonInstantiatableClass" />
   <rule ref="rulesets/strings.xml/StringBufferInstantiationWithChar" />
-  <rule ref="rulesets/optimizations.xml/UseArrayListInsteadOfVector" />
   <rule ref="rulesets/strings.xml/StringToString" />
   <rule ref="rulesets/design.xml/SimplifyConditional" />
-  <rule ref="rulesets/migrating.xml/ReplaceVectorWithList" />
-  <rule ref="rulesets/codesize.xml/NcssMethodCount">
-    <properties>
-      <property value="50" name="minimum"/>
-    </properties>
-  </rule>
-  <rule ref="rulesets/logging-java.xml/AvoidPrintStackTrace" />
   <rule ref="rulesets/naming.xml/MethodWithSameNameAsEnclosingClass" />
-  <rule ref="rulesets/naming.xml/SuspiciousConstantFieldName" />
   <rule ref="rulesets/codesize.xml/NcssTypeCount">
     <properties>
       <property value="800" name="minimum"/>
     </properties>
   </rule>
-  <rule ref="rulesets/design.xml/AvoidInstanceofChecksInCatchClause" />
   <rule ref="rulesets/migrating.xml/IntegerInstantiation" />
   <rule ref="rulesets/migrating.xml/AvoidAssertAsIdentifier" />
   <rule ref="rulesets/design.xml/UnnecessaryLocalBeforeReturn" />
   <rule ref="rulesets/basic.xml/BooleanInstantiation" />
-  <rule ref="rulesets/basic.xml/UnconditionalIfStatement" />
-  <rule ref="rulesets/clone.xml/CloneThrowsCloneNotSupportedException" />
-  <rule ref="rulesets/migrating.xml/ReplaceHashtableWithMap" />
   <rule ref="rulesets/basic.xml/AvoidDecimalLiteralsInBigDecimalConstructor" />
-  <rule ref="rulesets/strictexception.xml/SignatureDeclareThrowsException" />
   <rule ref="rulesets/finalizers.xml/EmptyFinalizer" />
   <rule ref="rulesets/design.xml/IdempotentOperations" />
-  <rule ref="rulesets/strictexception.xml/ExceptionAsFlowControl" />
   <rule ref="rulesets/strings.xml/UseStringBufferLength" />
-  <rule ref="rulesets/migrating.xml/AvoidEnumAsIdentifier" />
-  <rule ref="rulesets/logging-java.xml/SystemPrintln" />
-  <rule ref="rulesets/strings.xml/UselessStringValueOf" />
-  <rule ref="rulesets/strings.xml/AvoidDuplicateLiterals" />
   <rule ref="rulesets/basic.xml/OverrideBothEqualsAndHashcode" />
 </ruleset>
