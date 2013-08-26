@@ -59,9 +59,6 @@
     <Bug pattern="RC_REF_COMPARISON_BAD_PRACTICE"/>
   </Match>
   <Match>
-    <Bug pattern="NM_LCASE_HASHCODE"/>
-  </Match>
-  <Match>
     <Bug pattern="VO_VOLATILE_REFERENCE_TO_ARRAY"/>
   </Match>
   <Match>
@@ -155,9 +152,6 @@
     <Bug pattern="TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK"/>
   </Match>
   <Match>
-    <Bug pattern="DM_GC"/>
-  </Match>
-  <Match>
     <Bug pattern="DMI_RANDOM_USED_ONLY_ONCE"/>
   </Match>
   <Match>
@@ -236,9 +230,6 @@
     <Bug pattern="FI_MISSING_SUPER_CALL"/>
   </Match>
   <Match>
-    <Bug pattern="EQ_OTHER_NO_OBJECT"/>
-  </Match>
-  <Match>
     <Bug pattern="IJU_SETUP_NO_SUPER"/>
   </Match>
   <Match>
@@ -275,9 +266,6 @@
     <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
   </Match>
   <Match>
-    <Bug pattern="EQ_ABSTRACT_SELF"/>
-  </Match>
-  <Match>
     <Bug pattern="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION"/>
   </Match>
   <Match>
@@ -291,9 +279,6 @@
   </Match>
   <Match>
     <Bug pattern="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS"/>
-  </Match>
-  <Match>
-    <Bug pattern="EQ_SELF_USE_OBJECT"/>
   </Match>
   <Match>
     <Bug pattern="NM_CLASS_NOT_EXCEPTION"/>
@@ -314,9 +299,6 @@
     <Bug pattern="EC_ARRAY_AND_NONARRAY"/>
   </Match>
   <Match>
-    <Bug pattern="FI_EXPLICIT_INVOCATION"/>
-  </Match>
-  <Match>
     <Bug pattern="SS_SHOULD_BE_STATIC"/>
   </Match>
   <Match>
@@ -327,9 +309,6 @@
   </Match>
   <Match>
     <Bug pattern="MS_SHOULD_BE_FINAL"/>
-  </Match>
-  <Match>
-    <Bug pattern="EQ_DONT_DEFINE_EQUALS_FOR_ENUM"/>
   </Match>
   <Match>
     <Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
@@ -348,9 +327,6 @@
   </Match>
   <Match>
     <Bug pattern="INT_VACUOUS_BIT_OPERATION"/>
-  </Match>
-  <Match>
-    <Bug pattern="SF_SWITCH_NO_DEFAULT"/>
   </Match>
   <Match>
     <Bug pattern="IL_INFINITE_LOOP"/>
@@ -581,9 +557,6 @@
     <Bug pattern="MF_CLASS_MASKS_FIELD"/>
   </Match>
   <Match>
-    <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
-  </Match>
-  <Match>
     <Bug pattern="PS_PUBLIC_SEMAPHORES"/>
   </Match>
   <Match>
@@ -734,9 +707,6 @@
     <Bug pattern="WS_WRITEOBJECT_SYNC"/>
   </Match>
   <Match>
-    <Bug pattern="CN_IDIOM_NO_SUPER_CALL"/>
-  </Match>
-  <Match>
     <Bug pattern="DLS_DEAD_STORE_OF_CLASS_LITERAL"/>
   </Match>
   <Match>
@@ -848,9 +818,6 @@
     <Bug pattern="CO_ABSTRACT_SELF"/>
   </Match>
   <Match>
-    <Bug pattern="DM_EXIT"/>
-  </Match>
-  <Match>
     <Bug pattern="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED"/>
   </Match>
   <Match>
@@ -891,9 +858,6 @@
   </Match>
   <Match>
     <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
-  </Match>
-  <Match>
-    <Bug pattern="EQ_SELF_NO_OBJECT"/>
   </Match>
   <Match>
     <Bug pattern="NP_TOSTRING_COULD_RETURN_NULL"/>
@@ -1092,9 +1056,6 @@
   </Match>
   <Match>
     <Bug pattern="BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR"/>
-  </Match>
-  <Match>
-    <Bug pattern="SF_SWITCH_FALLTHROUGH"/>
   </Match>
   <Match>
     <Bug pattern="NP_IMMEDIATE_DEREFERENCE_OF_READLINE"/>
