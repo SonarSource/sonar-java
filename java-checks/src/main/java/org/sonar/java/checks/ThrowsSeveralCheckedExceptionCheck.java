@@ -46,7 +46,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
 
   @Override
   public void visitMethod(AsmMethod asmMethod) {
-    if (asmMethod.isPublic()) {
+    if (asmMethod.isPublic() && !isOverriden(asmMethod)) {
       List<AsmClass> thrownClasses = asmMethod.getThrows();
       if (thrownClasses.size() > 1) {
         List<String> thrownCheckedExceptions = Lists.newArrayList();
@@ -70,6 +70,11 @@ public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
         }
       }
     }
+  }
+
+  private static boolean isOverriden(AsmMethod method) {
+    AsmClass superClass = method.getParent().getSuperClass();
+    return superClass.getMethod(method.getKey()) != null;
   }
 
   private static boolean isSubClassOfRuntimeException(AsmClass thrownClass) {

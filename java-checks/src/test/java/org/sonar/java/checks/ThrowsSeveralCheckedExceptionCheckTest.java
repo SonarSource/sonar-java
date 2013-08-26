@@ -42,7 +42,10 @@ public class ThrowsSeveralCheckedExceptionCheckTest {
 
         .next()
         .atLine(54)
-        .withMessage("Refactor this method to throw at most one checked exception instead of: java.io.IOException, java.io.IOException, java.sql.SQLException");
+        .withMessage("Refactor this method to throw at most one checked exception instead of: java.io.IOException, java.io.IOException, java.sql.SQLException")
+
+        .next()
+        .atLine(74);
   }
 
 }

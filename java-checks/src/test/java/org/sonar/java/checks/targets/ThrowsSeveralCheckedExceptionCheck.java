@@ -22,7 +22,7 @@ package org.sonar.java.checks.targets;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class ThrowsSeveralCheckedExceptionCheck {
+public class ThrowsSeveralCheckedExceptionCheck extends Base {
 
   public void foo1() { // Compliant
   }
@@ -61,6 +61,17 @@ public class ThrowsSeveralCheckedExceptionCheck {
   }
 
   public class MyRuntimeException extends RuntimeException {
+  }
+
+  @Override
+  public void overridenMethod() throws IOException, SQLException { // Compliant - overriden methods
+  }
+
+}
+
+class Base {
+
+  public void overridenMethod() throws IOException, SQLException {
   }
 
 }
