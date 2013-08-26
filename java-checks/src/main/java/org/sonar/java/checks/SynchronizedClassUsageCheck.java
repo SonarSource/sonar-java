@@ -41,10 +41,10 @@ import java.util.Map;
 public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String> builder()
-      .put("Vector", "\"ArrayList\" or \"LinkedList\"")
-      .put("Hashtable", "\"HashMap\"")
-      .put("StringBuffer", "\"StringBuilder\"")
-      .build();
+    .put("Vector", "\"ArrayList\" or \"LinkedList\"")
+    .put("Hashtable", "\"HashMap\"")
+    .put("StringBuffer", "\"StringBuilder\"")
+    .build();
 
   private int lastReportedLine;
 
@@ -84,9 +84,7 @@ public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isSynchronizedClass(String className) {
-    return "Vector".equals(className) ||
-      "Hashtable".equals(className) ||
-      "StringBuffer".equals(className);
+    return REPLACEMENTS.containsKey(className);
   }
 
   private static boolean isExcluded(AstNode node) {
