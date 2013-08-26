@@ -22,14 +22,15 @@ package org.sonar.java.checks;
 import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
+import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.visitors.JavaAstCheck;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static com.sonar.sslr.api.GenericTokenType.EOF;
 
 @Rule(key = "EmptyFile", priority = Priority.MAJOR)
-public final class EmptyFileCheck extends JavaAstCheck implements AstAndTokenVisitor {
+public final class EmptyFileCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private boolean empty;
 
@@ -38,6 +39,7 @@ public final class EmptyFileCheck extends JavaAstCheck implements AstAndTokenVis
     empty = true;
   }
 
+  @Override
   public void visitToken(Token token) {
     if (token.getType() != EOF) {
       empty = false;

@@ -21,22 +21,25 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AuditListener;
 import com.sonar.sslr.api.RecognitionException;
+import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.visitors.JavaAstCheck;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 @Rule(key = "ParsingError", priority = Priority.MAJOR)
-public class ParsingErrorCheck extends JavaAstCheck implements AuditListener {
+public class ParsingErrorCheck extends SquidCheck<LexerlessGrammar> implements AuditListener {
 
+  @Override
   public void processException(Exception e) {
     StringWriter exception = new StringWriter();
     e.printStackTrace(new PrintWriter(exception));
     getContext().createFileViolation(this, exception.toString());
   }
 
+  @Override
   public void processRecognitionException(RecognitionException e) {
     getContext().createLineViolation(this, e.getMessage(), e.getLine());
   }

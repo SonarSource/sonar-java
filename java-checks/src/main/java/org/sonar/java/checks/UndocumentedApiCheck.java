@@ -22,20 +22,22 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.visitors.JavaAstCheck;
 import org.sonar.java.ast.visitors.PublicApiVisitor;
+import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceMethod;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.List;
 
 @Rule(key = "UndocumentedApi", priority = Priority.MAJOR)
-public class UndocumentedApiCheck extends JavaAstCheck {
+public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final String DEFAULT_FOR_CLASSES = "**";
 
@@ -127,6 +129,14 @@ public class UndocumentedApiCheck extends JavaAstCheck {
 
   private static boolean hasReturnJavadoc(String comment) {
     return comment.contains("@return");
+  }
+
+  private final SourceClass peekSourceClass() {
+    SourceCode sourceCode = getContext().peekSourceCode();
+    if (sourceCode.isType(SourceClass.class)) {
+      return (SourceClass) sourceCode;
+    }
+    return sourceCode.getParent(SourceClass.class);
   }
 
 }

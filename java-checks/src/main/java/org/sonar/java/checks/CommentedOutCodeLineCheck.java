@@ -24,19 +24,20 @@ import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
+import com.sonar.sslr.squid.checks.SquidCheck;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.visitors.JavaAstCheck;
 import org.sonar.squid.recognizer.CodeRecognizer;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "CommentedOutCodeLine", priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class CommentedOutCodeLineCheck extends JavaAstCheck implements AstAndTokenVisitor {
+public class CommentedOutCodeLineCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private static final double THRESHOLD = 0.9;
 
@@ -56,6 +57,7 @@ public class CommentedOutCodeLineCheck extends JavaAstCheck implements AstAndTok
   /**
    * Creates candidates for commented-out code - all comment blocks.
    */
+  @Override
   public void visitToken(Token token) {
     for (Trivia trivia : token.getTrivia()) {
       if (trivia.isComment()) {

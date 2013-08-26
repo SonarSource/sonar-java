@@ -23,14 +23,15 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
+import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.visitors.JavaAstCheck;
 import org.sonar.sslr.ast.AstSelect;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.Map;
 import java.util.Stack;
@@ -39,7 +40,7 @@ import java.util.Stack;
   key = "HiddenFieldCheck",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class HiddenFieldCheck extends JavaAstCheck {
+public class HiddenFieldCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final AstNodeType[] LOCAL_VARIABLE_TYPES = new AstNodeType[] {
     JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
@@ -70,8 +71,8 @@ public class HiddenFieldCheck extends JavaAstCheck {
 
   private static boolean isInStaticBlock(AstNode node) {
     AstSelect query = node.select()
-        .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION, JavaGrammar.CLASS_INIT_DECLARATION)
-        .children(JavaGrammar.MODIFIER, JavaKeyword.STATIC);
+      .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION, JavaGrammar.CLASS_INIT_DECLARATION)
+      .children(JavaGrammar.MODIFIER, JavaKeyword.STATIC);
 
     for (AstNode modifierOrStatic : query) {
       if (modifierOrStatic.is(JavaKeyword.STATIC) || modifierOrStatic.hasDirectChildren(JavaKeyword.STATIC)) {
@@ -111,12 +112,12 @@ public class HiddenFieldCheck extends JavaAstCheck {
 
   private static Map<String, Integer> getFields(AstNode node) {
     AstSelect fieldIdentifiers = node.select()
-        .children(JavaGrammar.CLASS_BODY_DECLARATION)
-        .children(JavaGrammar.MEMBER_DECL)
-        .children(JavaGrammar.FIELD_DECLARATION)
-        .children(JavaGrammar.VARIABLE_DECLARATORS)
-        .children(JavaGrammar.VARIABLE_DECLARATOR)
-        .children(JavaTokenType.IDENTIFIER);
+      .children(JavaGrammar.CLASS_BODY_DECLARATION)
+      .children(JavaGrammar.MEMBER_DECL)
+      .children(JavaGrammar.FIELD_DECLARATION)
+      .children(JavaGrammar.VARIABLE_DECLARATORS)
+      .children(JavaGrammar.VARIABLE_DECLARATOR)
+      .children(JavaTokenType.IDENTIFIER);
 
     ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
 

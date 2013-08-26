@@ -23,37 +23,39 @@ import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Trivia;
+import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.measures.Metric;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.List;
 
-public class PublicApiVisitor extends JavaAstVisitor {
+public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
     subscribe(this);
   }
 
-  public static void subscribe(JavaAstVisitor visitor) {
+  public static void subscribe(SquidCheck<LexerlessGrammar> visitor) {
     visitor.subscribeTo(
-        JavaGrammar.CLASS_DECLARATION,
-        JavaGrammar.INTERFACE_DECLARATION,
-        JavaGrammar.ENUM_DECLARATION,
-        JavaGrammar.ANNOTATION_TYPE_DECLARATION,
+      JavaGrammar.CLASS_DECLARATION,
+      JavaGrammar.INTERFACE_DECLARATION,
+      JavaGrammar.ENUM_DECLARATION,
+      JavaGrammar.ANNOTATION_TYPE_DECLARATION,
 
-        JavaGrammar.FIELD_DECLARATION,
-        // TODO seems that it was missed in previous implementation: grammar.constantDeclaratorsRest
+      JavaGrammar.FIELD_DECLARATION,
+      // TODO seems that it was missed in previous implementation: grammar.constantDeclaratorsRest
 
-        // Same as in MethodVisitor
-        JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
-        JavaGrammar.METHOD_DECLARATOR_REST,
-        JavaGrammar.VOID_METHOD_DECLARATOR_REST,
-        JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
-        JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-        JavaGrammar.ANNOTATION_METHOD_REST);
+      // Same as in MethodVisitor
+      JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
+      JavaGrammar.METHOD_DECLARATOR_REST,
+      JavaGrammar.VOID_METHOD_DECLARATOR_REST,
+      JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
+      JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
+      JavaGrammar.ANNOTATION_METHOD_REST);
   }
 
   @Override
@@ -131,10 +133,10 @@ public class PublicApiVisitor extends JavaAstVisitor {
 
   private static boolean isMethod(AstNode astNode) {
     return astNode.is(JavaGrammar.METHOD_DECLARATOR_REST,
-        JavaGrammar.VOID_METHOD_DECLARATOR_REST,
-        JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
-        JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-        JavaGrammar.ANNOTATION_METHOD_REST);
+      JavaGrammar.VOID_METHOD_DECLARATOR_REST,
+      JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
+      JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
+      JavaGrammar.ANNOTATION_METHOD_REST);
   }
 
   private static boolean isStaticFinalVariable(AstNode astNode) {

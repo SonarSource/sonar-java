@@ -21,18 +21,19 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.squid.checks.ChecksHelper;
+import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.java.ast.visitors.JavaAstCheck;
 import org.sonar.java.ast.visitors.MethodHelper;
 import org.sonar.squid.api.SourceMethod;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(key = "MethodCyclomaticComplexity", priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class MethodComplexityCheck extends JavaAstCheck {
+public class MethodComplexityCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final int DEFAULT_MAX = 10;
 
@@ -50,10 +51,10 @@ public class MethodComplexityCheck extends JavaAstCheck {
     int complexity = ChecksHelper.getRecursiveMeasureInt(sourceMethod, JavaMetric.COMPLEXITY);
     if (complexity > max) {
       getContext().createLineViolation(this,
-          "The Cyclomatic Complexity of this method is {0,number,integer} which is greater than {1,number,integer} authorized.",
-          node,
-          complexity,
-          max);
+        "The Cyclomatic Complexity of this method is {0,number,integer} which is greater than {1,number,integer} authorized.",
+        node,
+        complexity,
+        max);
     }
   }
 

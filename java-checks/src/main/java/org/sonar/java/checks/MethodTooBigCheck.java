@@ -20,17 +20,18 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.visitors.JavaAstCheck;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S138",
   priority = Priority.MAJOR)
-public class MethodTooBigCheck extends JavaAstCheck {
+public class MethodTooBigCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final int DEFAULT_MAX = 100;
 
