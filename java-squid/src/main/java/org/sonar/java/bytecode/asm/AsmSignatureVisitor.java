@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class AsmSignatureVisitor implements SignatureVisitor {
 
-  private Set<String> internalNames = new HashSet<String>();
+  private final Set<String> internalNames = new HashSet<String>();
 
   public Set<String> getInternalNames() {
     return internalNames;
@@ -35,6 +35,7 @@ public class AsmSignatureVisitor implements SignatureVisitor {
   /**
    * {@inheritDoc}
    */
+  @Override
   public void visitClassType(String name) {
     internalNames.add(name);
   }
@@ -42,6 +43,7 @@ public class AsmSignatureVisitor implements SignatureVisitor {
   /**
    * {@inheritDoc}
    */
+  @Override
   public SignatureVisitor visitArrayType() {
     return this;
   }
@@ -49,16 +51,20 @@ public class AsmSignatureVisitor implements SignatureVisitor {
   /**
    * {@inheritDoc}
    */
+  @Override
   public void visitBaseType(char descriptor) {
+    // No operation
   }
 
   /**
    * {@inheritDoc}
    */
+  @Override
   public SignatureVisitor visitClassBound() {
     return this;
   }
 
+  @Override
   public SignatureVisitor visitExceptionType() {
     return this;
   }
@@ -66,18 +72,23 @@ public class AsmSignatureVisitor implements SignatureVisitor {
   /**
    * {@inheritDoc}
    */
+  @Override
   public void visitFormalTypeParameter(String name) {
+    // No operation
   }
 
   /**
    * {@inheritDoc}
    */
+  @Override
   public void visitInnerClassType(String name) {
+    // No operation
   }
 
   /**
    * {@inheritDoc}
    */
+  @Override
   public SignatureVisitor visitInterface() {
     return this;
   }
@@ -85,6 +96,7 @@ public class AsmSignatureVisitor implements SignatureVisitor {
   /**
    * {@inheritDoc}
    */
+  @Override
   public SignatureVisitor visitInterfaceBound() {
     return this;
   }
@@ -92,6 +104,7 @@ public class AsmSignatureVisitor implements SignatureVisitor {
   /**
    * {@inheritDoc}
    */
+  @Override
   public SignatureVisitor visitParameterType() {
     return this;
   }
@@ -99,6 +112,7 @@ public class AsmSignatureVisitor implements SignatureVisitor {
   /**
    * {@inheritDoc}
    */
+  @Override
   public SignatureVisitor visitReturnType() {
     return this;
   }
@@ -106,6 +120,7 @@ public class AsmSignatureVisitor implements SignatureVisitor {
   /**
    * {@inheritDoc}
    */
+  @Override
   public SignatureVisitor visitSuperclass() {
     return this;
   }
@@ -113,12 +128,15 @@ public class AsmSignatureVisitor implements SignatureVisitor {
   /**
    * {@inheritDoc}
    */
+  @Override
   public void visitTypeArgument() {
+    // No operation
   }
 
   /**
    * {@inheritDoc}
    */
+  @Override
   public SignatureVisitor visitTypeArgument(char wildcard) {
     return this;
   }
@@ -126,12 +144,17 @@ public class AsmSignatureVisitor implements SignatureVisitor {
   /**
    * {@inheritDoc}
    */
+  @Override
   public void visitTypeVariable(String name) {
+    // No operation
   }
 
   /**
    * {@inheritDoc}
    */
+  @Override
   public void visitEnd() {
+    // No operation
   }
+
 }
