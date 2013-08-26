@@ -28,6 +28,7 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
+import java.util.List;
 import java.util.Stack;
 
 @Rule(
@@ -47,7 +48,7 @@ public class CatchUsesExceptionWithContextCheck extends SquidCheck<LexerlessGram
 
   @Override
   public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.CATCH_CLAUSE)) {
+    if (node.is(JavaGrammar.CATCH_CLAUSE) && !isPropagation(node)) {
       exceptionVariables.push(getCaughtVariable(node));
       foundCorrectUsages.push(false);
     } else if (isWithinCatch() && isArgumentsWithSeveralExpressions(node)) {
@@ -56,6 +57,18 @@ public class CatchUsesExceptionWithContextCheck extends SquidCheck<LexerlessGram
           foundCorrectUsages.pop();
           foundCorrectUsages.push(true);
         }
+      }
+    }
+  }
+
+  @Override
+  public void leaveNode(AstNode node) {
+    if (node.is(JavaGrammar.CATCH_CLAUSE) && !isPropagation(node)) {
+      exceptionVariables.pop();
+      boolean foundCorrectUsage = foundCorrectUsages.pop();
+
+      if (!foundCorrectUsage) {
+        getContext().createLineViolation(this, "Either log or rethrow this exception along with some contextual information.", node);
       }
     }
   }
@@ -76,22 +89,48 @@ public class CatchUsesExceptionWithContextCheck extends SquidCheck<LexerlessGram
     return node.getToken().equals(node.getLastToken());
   }
 
-  @Override
-  public void leaveNode(AstNode node) {
-    if (node.is(JavaGrammar.CATCH_CLAUSE)) {
-      exceptionVariables.pop();
-      boolean foundCorrectUsage = foundCorrectUsages.pop();
+  private static boolean isPropagation(AstNode node) {
+    return !isLastCatch(node) && isCatchAndRethrow(node);
+  }
 
-      if (!foundCorrectUsage) {
-        getContext().createLineViolation(this, "Either log or rethrow this exception along with some contextual information.", node);
-      }
-    }
+  private static boolean isLastCatch(AstNode node) {
+    AstNode nextSibling = node.getNextSibling();
+    return nextSibling == null ||
+      !nextSibling.is(JavaGrammar.CATCH_CLAUSE);
+  }
+
+  private static boolean isCatchAndRethrow(AstNode node) {
+    List<AstNode> blockStatements = node.getFirstChild(JavaGrammar.BLOCK)
+        .getFirstChild(JavaGrammar.BLOCK_STATEMENTS)
+        .getChildren(JavaGrammar.BLOCK_STATEMENT);
+
+    return blockStatements.size() == 1 && isRethrowStatement(node, blockStatements.get(0));
+  }
+
+  private static boolean isRethrowStatement(AstNode catchClause, AstNode blockStatement) {
+    return getCaughtVariable(catchClause).equals(getThrownVariable(blockStatement));
   }
 
   private static String getCaughtVariable(AstNode catchClause) {
     return catchClause.getFirstChild(JavaGrammar.CATCH_FORMAL_PARAMETER)
         .getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID)
         .getTokenOriginalValue();
+  }
+
+  private static String getThrownVariable(AstNode blockStatement) {
+    AstNode statement = blockStatement.getFirstChild(JavaGrammar.STATEMENT);
+    if (statement == null) {
+      return "";
+    }
+
+    AstNode throwStatement = statement.getFirstChild(JavaGrammar.THROW_STATEMENT);
+    if (throwStatement == null) {
+      return "";
+    }
+
+    AstNode expression = throwStatement.getFirstChild(JavaGrammar.EXPRESSION);
+
+    return expression.getToken().equals(expression.getLastToken()) ? expression.getTokenOriginalValue() : "";
   }
 
 }

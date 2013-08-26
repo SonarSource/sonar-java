@@ -38,6 +38,10 @@ class A {
   private void h() {
     try {
       /* ... */
+    } catch (NumberFormatException e) {                                       // Non-Compliant - not classified as propagation
+      throw Throwables.propagate(e);
+    } catch (RuntimeException e) {                                            // Compliant - propagation
+      throw e;
     } catch (Exception e) {                                                   // Non-Compliant - exception is lost
       throw new RuntimeException("context");
     }
@@ -46,6 +50,18 @@ class A {
       /* ... */
     } catch (Exception e) {                                                   // Compliant
       throw new RuntimeException("context", e);
+    }
+
+    try {
+    } catch (Exception e) {                                                   // Non-Compliant
+      throw e;
+    } finally {
+    }
+
+    try {
+    } catch (Exception e) {                                                   // Non-Compliant
+      int a;
+    } catch (Throwable e) {                                                   // Non-Compliant
     }
   }
 }
