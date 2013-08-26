@@ -55,14 +55,7 @@ public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode node) {
-    SourceCode currentResource = getContext().peekSourceCode();
-    if (!WildcardPattern.match(getPatterns(), peekSourceClass().getKey())) {
-      return;
-    }
-    if (currentResource instanceof SourceMethod && ((SourceMethod) currentResource).isAccessor()) {
-      return;
-    }
-    if (PublicApiVisitor.isPublicApi(node)) {
+    if (!isExcluded(node)) {
       String javadoc = PublicApiVisitor.getApiJavadoc(node);
 
       if (javadoc == null) {
@@ -78,6 +71,25 @@ public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
         }
       }
     }
+  }
+
+  private boolean isExcluded(AstNode node) {
+    return !isMatchingPattern() ||
+      isAccessor() ||
+      !isPublicApi(node);
+  }
+
+  private boolean isMatchingPattern() {
+    return WildcardPattern.match(getPatterns(), peekSourceClass().getKey());
+  }
+
+  private boolean isAccessor() {
+    SourceCode currentResource = getContext().peekSourceCode();
+    return currentResource instanceof SourceMethod && ((SourceMethod) currentResource).isAccessor();
+  }
+
+  private boolean isPublicApi(AstNode node) {
+    return PublicApiVisitor.isPublicApi(node);
   }
 
   private WildcardPattern[] getPatterns() {
