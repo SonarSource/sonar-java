@@ -46,3 +46,15 @@ try {
   LOGGER.error("...", e);
 }
 </pre>
+
+<p>
+Conversion of checked exceptions into unchecked exceptions to ease propagation of checked exceptions is also allowed by this rule.
+</p>
+
+<pre>
+try {
+  /* ... */
+} catch (IOException e) {            // Compliant - propagation of checked exception by encapsulating it into an unchecked exception
+  throw new MyRuntimeException(e);
+}
+</pre>
