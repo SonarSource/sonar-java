@@ -59,8 +59,8 @@ public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
 
         if (thrownCheckedExceptions.size() > 1) {
           CheckMessage message = new CheckMessage(
-              this,
-              "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
+            this,
+            "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
           SourceMethod sourceMethod = getSourceMethod(asmMethod);
           if (sourceMethod != null) {
             message.setLine(sourceMethod.getStartAtLine());
@@ -74,7 +74,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
 
   private static boolean isOverriden(AsmMethod method) {
     AsmClass superClass = method.getParent().getSuperClass();
-    return superClass.getMethod(method.getKey()) != null;
+    return superClass != null && superClass.getMethod(method.getKey()) != null;
   }
 
   private static boolean isSubClassOfRuntimeException(AsmClass thrownClass) {
