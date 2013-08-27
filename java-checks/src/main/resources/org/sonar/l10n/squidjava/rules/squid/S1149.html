@@ -22,3 +22,10 @@ Vector cats = new Vector();       // Non-Compliant
 <pre>
 ArrayList cats = new ArrayList(); // Compliant
 </pre>
+
+<p>Use of those synchronized classes is allowed in method signatures when overriding an existing method.</p>
+
+<pre>
+@Override
+public Vector getCats() {...}   //Compliant
+</pre>
