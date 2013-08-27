@@ -75,3 +75,7 @@ class Base {
   }
 
 }
+
+interface I {
+  public void foo();
+}
