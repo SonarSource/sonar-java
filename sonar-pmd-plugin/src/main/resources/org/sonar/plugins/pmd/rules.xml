@@ -1260,7 +1260,6 @@
   <rule key="EmptyMethodInAbstractClassShouldBeAbstract">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/design.xml/EmptyMethodInAbstractClassShouldBeAbstract]]></configKey>
-    <status>DEPRECATED</status>
   </rule>
 
   <rule key="TooManyStaticImports">

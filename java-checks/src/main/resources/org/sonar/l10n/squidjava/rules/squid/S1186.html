@@ -1,4 +1,4 @@
-<p>There are four reasons for a method not to have a method body:</p>
+<p>There are three reasons for a method not to have a method body:</p>
 
 <ul>
   <li>It is an unintentional omission, and should be fixed.</li>
@@ -33,3 +33,5 @@ public void doSomethingElse() {
   throw new UnsupportedOperationException();
 }
 </pre>
+
+<p>Empty methods not having any nested comments are tolerated in Abstract classes as those empty methods are usual when implementing the visitor pattern.</p>
