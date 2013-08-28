@@ -35,3 +35,12 @@ public enum Status {             // Compliant
   CLOSES;
 }
 </pre>
+
+<p>or into:</p>
+
+<pre>
+public final class Status {             // Compliant
+   public static final int OPEN = 1;
+   public static final int CLOSED = 2;
+}
+</pre>
