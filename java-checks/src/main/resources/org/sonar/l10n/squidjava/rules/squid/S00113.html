@@ -1,3 +1,14 @@
 <p>
-Some tools require that every source file ends with a new line. This rule simply generates a violation if it is missing.
+Some tools such as Git work better when files end with an empty line.
+This rule simply generates a violation if it is missing.
 </p>
+
+<p>For example, a Git diff look like:</p>
+
+<pre>
++class Test {
++}
+\ No newline at end of file
+</pre>
+
+<p>if the empty line is missing at the end of the file.</p>
