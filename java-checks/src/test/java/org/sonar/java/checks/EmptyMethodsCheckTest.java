@@ -40,7 +40,9 @@ public class EmptyMethodsCheckTest {
       .withMessage("Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.")
       .next().atLine(29)
       .next().atLine(33)
-      .next().atLine(57);
+      .next().atLine(57)
+      .next().atLine(67)
+      .next().atLine(80);
   }
 
 }

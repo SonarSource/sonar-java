@@ -59,3 +59,25 @@ abstract class A {
     }
   }
 }
+
+enum A {
+  ;
+
+  // Non-Compliant
+  public void f() {
+  }
+
+  public void f() {
+    // Compliant
+  }
+}
+
+class A {
+  enum B {
+    ;
+
+    // Non-Compliant
+    public void f() {
+    }
+  }
+}
