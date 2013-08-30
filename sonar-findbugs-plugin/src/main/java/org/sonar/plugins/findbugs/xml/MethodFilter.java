@@ -34,7 +34,6 @@ public class MethodFilter {
   @XStreamAsAttribute
   private String returns;
 
-
   public MethodFilter() {
   }
 
@@ -65,4 +64,5 @@ public class MethodFilter {
   public void setReturns(String returns) {
     this.returns = returns;
   }
+
 }

@@ -31,7 +31,6 @@ public class FieldFilter {
   @XStreamAsAttribute
   private String type;
 
-
   public FieldFilter() {
   }
 
@@ -54,4 +53,5 @@ public class FieldFilter {
   public void setType(String type) {
     this.type = type;
   }
+
 }

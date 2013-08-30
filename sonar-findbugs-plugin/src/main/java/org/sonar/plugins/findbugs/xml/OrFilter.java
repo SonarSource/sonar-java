@@ -25,7 +25,6 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XStreamAlias("Or")
 public class OrFilter {
 
@@ -46,7 +45,6 @@ public class OrFilter {
 
   @XStreamImplicit(itemFieldName = "Local")
   private List<LocalFilter> locals;
-
 
   public OrFilter() {
     bugs = new ArrayList<Bug>();
@@ -104,4 +102,5 @@ public class OrFilter {
   public void setLocals(List<LocalFilter> locals) {
     this.locals = locals;
   }
+
 }

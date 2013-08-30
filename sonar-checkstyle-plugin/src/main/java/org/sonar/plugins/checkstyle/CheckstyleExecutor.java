@@ -19,10 +19,6 @@
  */
 package org.sonar.plugins.checkstyle;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.util.Locale;
-
 import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.PackageNamesLoader;
 import com.puppycrawl.tools.checkstyle.XMLLogger;
@@ -35,12 +31,16 @@ import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.utils.SonarException;
 import org.sonar.api.utils.TimeProfiler;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.util.Locale;
+
 public class CheckstyleExecutor implements BatchExtension {
   private static final Logger LOG = LoggerFactory.getLogger(CheckstyleExecutor.class);
 
-  private CheckstyleConfiguration configuration;
-  private ClassLoader projectClassloader;
-  private CheckstyleAuditListener listener;
+  private final CheckstyleConfiguration configuration;
+  private final ClassLoader projectClassloader;
+  private final CheckstyleAuditListener listener;
 
   public CheckstyleExecutor(CheckstyleConfiguration configuration, CheckstyleAuditListener listener, ProjectClasspath classpath) {
     this.configuration = configuration;
