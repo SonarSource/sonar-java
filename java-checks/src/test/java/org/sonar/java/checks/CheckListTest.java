@@ -20,11 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
+import com.sonar.sslr.squid.SquidAstVisitor;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.api.rules.AnnotationRuleParser;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleParam;
+import org.sonar.java.JavaAstScanner;
+import org.sonar.squid.api.CodeVisitor;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -62,8 +65,8 @@ public class CheckListTest {
     for (Class cls : checks) {
       String testName = '/' + cls.getName().replace('.', '/') + "Test.class";
       assertThat(getClass().getResource(testName))
-          .overridingErrorMessage("No test for " + cls.getSimpleName())
-          .isNotNull();
+        .overridingErrorMessage("No test for " + cls.getSimpleName())
+        .isNotNull();
     }
 
     ResourceBundle resourceBundle = ResourceBundle.getBundle("org.sonar.l10n.squidjava", Locale.ENGLISH);
@@ -76,19 +79,19 @@ public class CheckListTest {
 
       resourceBundle.getString("rule." + CheckList.REPOSITORY_KEY + "." + rule.getKey() + ".name");
       assertThat(getClass().getResource("/org/sonar/l10n/squidjava/rules/" + CheckList.REPOSITORY_KEY + "/" + rule.getKey() + ".html"))
-          .overridingErrorMessage("No description for " + rule.getKey())
-          .isNotNull();
+        .overridingErrorMessage("No description for " + rule.getKey())
+        .isNotNull();
 
       assertThat(rule.getDescription())
-          .overridingErrorMessage("Description of " + rule.getKey() + " should be in separate file")
-          .isNull();
+        .overridingErrorMessage("Description of " + rule.getKey() + " should be in separate file")
+        .isNull();
 
       for (RuleParam param : rule.getParams()) {
         resourceBundle.getString("rule." + CheckList.REPOSITORY_KEY + "." + rule.getKey() + ".param." + param.getKey());
 
         assertThat(param.getDescription())
-            .overridingErrorMessage("Description for param " + param.getKey() + " of " + rule.getKey() + " should be in separate file")
-            .isEmpty();
+          .overridingErrorMessage("Description for param " + param.getKey() + " of " + rule.getKey() + " should be in separate file")
+          .isEmpty();
       }
     }
   }
@@ -99,6 +102,21 @@ public class CheckListTest {
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
     constructor.newInstance();
+  }
+
+  /**
+   * Ensures that all checks are able to deal with unparsable files
+   */
+  @Test
+  public void should_not_fail_on_invalid_file() throws Exception {
+    List<Class> checks = CheckList.getChecks();
+
+    for (Class check : checks) {
+      CodeVisitor visitor = (CodeVisitor) check.newInstance();
+      if (visitor instanceof SquidAstVisitor) {
+        JavaAstScanner.scanSingleFile(new File("src/test/files/CheckListParseErrorTest.java"), (SquidAstVisitor) visitor);
+      }
+    }
   }
 
 }

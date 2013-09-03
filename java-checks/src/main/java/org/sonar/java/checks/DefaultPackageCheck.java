@@ -35,7 +35,7 @@ public class DefaultPackageCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitFile(AstNode node) {
-    if (!node.hasDirectChildren(JavaGrammar.PACKAGE_DECLARATION)) {
+    if (node != null && !node.hasDirectChildren(JavaGrammar.PACKAGE_DECLARATION)) {
       getContext().createFileViolation(this, "Move this file to a named package.");
     }
   }
