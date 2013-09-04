@@ -16,7 +16,7 @@
     <name>Portability</name>
     <chc>
       <key>COMPILER_RELATED_PORTABILITY</key>
-      <name>Compiler</name>
+      <name>Compiler related portability</name>
       <chc>
         <rule-repo>pmd</rule-repo>
         <rule-key>AvoidAssertAsIdentifier</rule-key>
@@ -111,7 +111,7 @@
     </chc>
     <chc>
       <key>HARDWARE_RELATED_PORTABILITY</key>
-      <name>Hardware</name>
+      <name>Hardware related portability</name>
       <chc>
         <rule-repo>pmd</rule-repo>
         <rule-key>AvoidUsingHardCodedIP</rule-key>
@@ -167,7 +167,7 @@
     </chc>
     <chc>
       <key>LANGUAGE_RELATED_PORTABILITY</key>
-      <name>Language</name>
+      <name>Language related portability</name>
       <chc>
         <rule-repo>pmd</rule-repo>
         <rule-key>SimpleDateFormatNeedsLocale</rule-key>
@@ -210,7 +210,7 @@
     </chc>
     <chc>
       <key>OS_RELATED_PORTABILITY</key>
-      <name>OS</name>
+      <name>OS related portability</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.whitespace.FileTabCharacterCheck</rule-key>
@@ -279,7 +279,7 @@
     </chc>
     <chc>
       <key>SOFTWARE_RELATED_PORTABILITY</key>
-      <name>Software</name>
+      <name>Software related portability</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.NewlineAtEndOfFileCheck</rule-key>
@@ -413,7 +413,7 @@
     </chc>
     <chc>
       <key>TIME_ZONE_RELATED_PORTABILITY</key>
-      <name>Time zone</name>
+      <name>Time zone related portability</name>
     </chc>
   </chc>
   <chc>
@@ -5470,7 +5470,7 @@
     <name>Changeability</name>
     <chc>
       <key>ARCHITECTURE_CHANGEABILITY</key>
-      <name>Architecture</name>
+      <name>Architecture related changeability</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.design.VisibilityModifierCheck</rule-key>
@@ -5825,7 +5825,7 @@
     </chc>
     <chc>
       <key>DATA_CHANGEABILITY</key>
-      <name>Data</name>
+      <name>Data related changeability</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.coding.MagicNumberCheck</rule-key>
@@ -5881,7 +5881,7 @@
     </chc>
     <chc>
       <key>LOGIC_CHANGEABILITY</key>
-      <name>Logic</name>
+      <name>Logic related changeability</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.blocks.NeedBracesCheck</rule-key>
@@ -6110,7 +6110,7 @@
     <name>Reliability</name>
     <chc>
       <key>ARCHITECTURE_RELIABILITY</key>
-      <name>Architecture</name>
+      <name>Architecture related reliability</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck</rule-key>
@@ -6816,7 +6816,7 @@
     </chc>
     <chc>
       <key>DATA_RELIABILITY</key>
-      <name>Data</name>
+      <name>Data related reliability</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck</rule-key>
@@ -7751,7 +7751,7 @@
     </chc>
     <chc>
       <key>INSTRUCTION_RELIABILITY</key>
-      <name>Instruction</name>
+      <name>Instruction related reliability</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.whitespace.TypecastParenPadCheck</rule-key>
@@ -9354,7 +9354,7 @@
     </chc>
     <chc>
       <key>LOGIC_RELIABILITY</key>
-      <name>Logic</name>
+      <name>Logic related reliability</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.blocks.EmptyBlockCheck</rule-key>
@@ -10723,7 +10723,7 @@
     </chc>
     <chc>
       <key>SYNCHRONIZATION_RELIABILITY</key>
-      <name>Synchronization</name>
+      <name>Synchronization related reliability</name>
       <chc>
         <rule-repo>pmd</rule-repo>
         <rule-key>UseNotifyAllInsteadOfNotify</rule-key>
@@ -11437,11 +11437,11 @@
     <name>Testability</name>
     <chc>
       <key>INTEGRATION_TESTABILITY</key>
-      <name>Integration level</name>
+      <name>Integration level testability</name>
     </chc>
     <chc>
       <key>UNIT_TESTABILITY</key>
-      <name>Unit level</name>
+      <name>Unit level testability</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.sizes.ParameterNumberCheck</rule-key>
