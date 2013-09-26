@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class JavaRuleRepository extends RuleRepository {
 
-  private static final String REPOSITORY_NAME = "Sonar";
+  private static final String REPOSITORY_NAME = "SonarQube";
 
   private final AnnotationRuleParser annotationRuleParser;
 

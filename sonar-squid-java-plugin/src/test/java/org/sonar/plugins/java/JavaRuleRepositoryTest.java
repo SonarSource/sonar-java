@@ -31,7 +31,7 @@ public class JavaRuleRepositoryTest {
   public void test() {
     RuleRepository ruleRepository = new JavaRuleRepository(new AnnotationRuleParser());
     assertThat(ruleRepository.getKey()).isEqualTo("squid");
-    assertThat(ruleRepository.getName()).isEqualTo("Sonar");
+    assertThat(ruleRepository.getName()).isEqualTo("SonarQube");
   }
 
 }
