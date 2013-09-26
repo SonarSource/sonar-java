@@ -32,6 +32,7 @@ import com.sonar.sslr.squid.SquidAstVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.InputFile;
+import org.sonar.java.ProgressReport;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.squid.api.AnalysisException;
@@ -63,10 +64,10 @@ public class AstScanner {
   public AstScanner(Parser<LexerlessGrammar> parser) {
     this.parser = parser;
     this.parserDebug = Parser.builder(parser)
-        .setParsingEventListeners()
-        .setExtendedStackTrace(new ExtendedStackTrace())
-        .setRecognictionExceptionListener(this.auditListeners.toArray(new AuditListener[this.auditListeners.size()]))
-        .build();
+      .setParsingEventListeners()
+      .setExtendedStackTrace(new ExtendedStackTrace())
+      .setRecognictionExceptionListener(this.auditListeners.toArray(new AuditListener[this.auditListeners.size()]))
+      .build();
   }
 
   public void scan(Collection<InputFile> files) {
@@ -83,8 +84,15 @@ public class AstScanner {
 
     AstWalker astWalker = new AstWalker(visitors);
 
+    ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer");
+    progressReport.start(files.size() + " source files to be analyzed");
+    int count = 0;
     for (InputFile inputFile : files) {
       File file = inputFile.getFile();
+
+      progressReport.message(count + "/" + files.size() + " files analyzed, current is " + file.getAbsolutePath());
+      count++;
+
       context.setFile(file);
       context.setInputFile(inputFile);
 
@@ -132,6 +140,7 @@ public class AstScanner {
         throw new AnalysisException(errorMessage, e);
       }
     }
+    progressReport.stop(files.size() + "/" + files.size() + " source files analyzed");
 
     for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
       visitor.destroy();
