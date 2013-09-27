@@ -1,11 +1,12 @@
 <p>
-Calling <code>System.exit(int status)</code> leads to the shut down of the entire Java virtual machine.
+Calling <code>System.exit(int status)</code> or <code>Rutime.getRuntime().exit(int status)</code> leads to the shut down of the entire Java virtual machine.
 It should be used with care, when stopping the whole Java process is meant.
 For instance, it should not be called from applications running in a J2EE container.
 </p>
 
-<p>The following code illustrates this rule:</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
-System.exit(0);   // Non-Compliant
+System.exit(0);
+Runtime.getRuntime().exit(0);
 </pre>
