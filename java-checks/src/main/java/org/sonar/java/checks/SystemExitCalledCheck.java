@@ -24,6 +24,7 @@ import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -40,8 +41,8 @@ public class SystemExitCalledCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode node) {
-    if (isMethodCall(node) && hasSystemExitQualifiedIdentifier(node)) {
-      getContext().createLineViolation(this, "Remove this System.exit() call or ensure it is really required.", node);
+    if (isMethodCall(node) && isCallToExitMethod(node)) {
+      getContext().createLineViolation(this, "Remove this exit() call or ensure it is really required.", node);
     }
   }
 
@@ -51,9 +52,18 @@ public class SystemExitCalledCheck extends SquidCheck<LexerlessGrammar> {
       suffix.hasDirectChildren(JavaGrammar.ARGUMENTS);
   }
 
-  private static boolean hasSystemExitQualifiedIdentifier(AstNode node) {
+  private static boolean isCallToExitMethod(AstNode node) {
     AstNode qualifiedIdentifier = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-    return AstNodeTokensMatcher.matches(qualifiedIdentifier, "System.exit");
+    return AstNodeTokensMatcher.matches(qualifiedIdentifier, "System.exit") ||
+      AstNodeTokensMatcher.matches(qualifiedIdentifier, "Runtime.getRuntime") &&
+      hasExitCallSuffix(node.getParent());
+  }
+
+  private static boolean hasExitCallSuffix(AstNode node) {
+    AstNode selector = node.getFirstChild(JavaGrammar.SELECTOR);
+    return selector != null &&
+      selector.hasDirectChildren(JavaGrammar.ARGUMENTS) &&
+      "exit".equals(selector.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue());
   }
 
 }

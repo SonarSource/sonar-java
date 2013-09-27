@@ -5,5 +5,9 @@ class A {
     System.gc();             // Compliant
     System.exit[0];          // Compliant
     exit();                  // Compliant
+    Runtime.getRuntime().exit(); // Non-Compliant
+    Runtime.getRuntime().foo; // Compliant
+    Runtime.getRuntime().foo(); // Compliant
+    Runtime.getRuntime()++; // Compliant
   }
 }
