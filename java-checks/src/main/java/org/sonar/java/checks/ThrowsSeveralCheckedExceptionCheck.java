@@ -73,8 +73,22 @@ public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
   }
 
   private static boolean isOverriden(AsmMethod method) {
+    return isOverridenFromClass(method) ||
+      isOverridenFromInterface(method);
+  }
+
+  private static boolean isOverridenFromClass(AsmMethod method) {
     AsmClass superClass = method.getParent().getSuperClass();
     return superClass != null && superClass.getMethod(method.getKey()) != null;
+  }
+
+  private static boolean isOverridenFromInterface(AsmMethod method) {
+    for (AsmClass implementedInterface : method.getParent().getImplementedInterfaces()) {
+      if (implementedInterface.getMethod(method.getKey()) != null) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean isSubClassOfRuntimeException(AsmClass thrownClass) {

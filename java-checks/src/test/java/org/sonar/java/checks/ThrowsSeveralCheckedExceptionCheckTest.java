@@ -33,19 +33,22 @@ public class ThrowsSeveralCheckedExceptionCheckTest {
   public void test() {
     SourceFile file = BytecodeFixture.scan("ThrowsSeveralCheckedExceptionCheck", new ThrowsSeveralCheckedExceptionCheck());
     checkMessagesVerifier
-        .verify(file.getCheckMessages())
+      .verify(file.getCheckMessages())
 
-        .next()
-        .atLine(51)
-        .withMessage(
-            "Refactor this method to throw at most one checked exception instead of: java.io.IOException, org.sonar.java.checks.targets.ThrowsSeveralCheckedExceptionCheck$MyException")
+      .next()
+      .atLine(51)
+      .withMessage(
+        "Refactor this method to throw at most one checked exception instead of: java.io.IOException, org.sonar.java.checks.targets.ThrowsSeveralCheckedExceptionCheck$MyException")
 
-        .next()
-        .atLine(54)
-        .withMessage("Refactor this method to throw at most one checked exception instead of: java.io.IOException, java.io.IOException, java.sql.SQLException")
+      .next()
+      .atLine(54)
+      .withMessage("Refactor this method to throw at most one checked exception instead of: java.io.IOException, java.io.IOException, java.sql.SQLException")
 
-        .next()
-        .atLine(74);
+      .next()
+      .atLine(74)
+
+      .next()
+      .atLine(94);
   }
 
 }

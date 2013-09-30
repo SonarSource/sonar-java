@@ -71,11 +71,25 @@ public class ThrowsSeveralCheckedExceptionCheck extends Base {
 
 class Base {
 
-  public void overridenMethod() throws IOException, SQLException {
+  public void overridenMethod() throws IOException, SQLException { // Non-Compliant
+  }
+
+}
+
+class Implements implements I {
+
+  @Override
+  public void foo() { // Compliant
+  }
+
+  @Override
+  public void bar() throws IOException, SQLException { // Compliant - overriden
   }
 
 }
 
 interface I {
   public void foo();
+
+  public void bar() throws IOException, SQLException; // Non-Compliant
 }
