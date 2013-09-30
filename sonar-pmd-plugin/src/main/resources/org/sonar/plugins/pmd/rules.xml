@@ -356,6 +356,7 @@
   <rule key="DefaultPackage">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/controversial.xml/DefaultPackage]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="BooleanInversion">
