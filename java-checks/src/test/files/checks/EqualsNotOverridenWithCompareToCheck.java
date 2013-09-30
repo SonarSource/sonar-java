@@ -66,3 +66,24 @@ class Foo implements Comparable<Foo> {
   }
 
 }
+
+class Foo implements Comparable<Foo> {
+
+  ;
+
+}
+
+enum Foo implements Comparable<Foo> {
+  ;
+
+  @Override
+  public int compareTo(Foo o) {           // Non-Compliant
+    return 0;
+  }
+
+  @Override
+  public int foo(Object o) {
+    return 0;
+  }
+
+}

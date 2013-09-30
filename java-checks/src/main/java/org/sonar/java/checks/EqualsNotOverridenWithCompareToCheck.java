@@ -37,7 +37,7 @@ public class EqualsNotOverridenWithCompareToCheck extends SquidCheck<LexerlessGr
   @Override
   public void init() {
     subscribeTo(JavaGrammar.CLASS_BODY);
-    subscribeTo(JavaGrammar.ENUM_DECLARATION);
+    subscribeTo(JavaGrammar.ENUM_BODY_DECLARATIONS);
   }
 
   @Override
@@ -46,7 +46,6 @@ public class EqualsNotOverridenWithCompareToCheck extends SquidCheck<LexerlessGr
     boolean hasEquals = false;
 
     for (MethodHelper method : MethodHelper.getMethods(node)) {
-      System.out.println("handling: " + method);
       if (method.getParameters().size() == 1) {
         if ("compareTo".equals(method.getName().getTokenOriginalValue())) {
           compareToMethod = method;

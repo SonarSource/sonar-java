@@ -113,24 +113,26 @@ public class MethodHelper {
   }
 
   public static List<MethodHelper> getMethods(AstNode classOrEnumNode) {
-    Preconditions.checkArgument(classOrEnumNode.is(JavaGrammar.CLASS_BODY, JavaGrammar.ENUM_BODY));
+    Preconditions.checkArgument(classOrEnumNode.is(JavaGrammar.CLASS_BODY, JavaGrammar.ENUM_BODY_DECLARATIONS));
 
     ImmutableList.Builder<MethodHelper> builder = ImmutableList.builder();
 
     for (AstNode classBodyDeclaration : classOrEnumNode.getChildren(JavaGrammar.CLASS_BODY_DECLARATION)) {
       AstNode memberDecl = classBodyDeclaration.getFirstChild(JavaGrammar.MEMBER_DECL);
-      AstNode actualMember = getFirstDescendant(memberDecl,
-        JavaGrammar.METHOD_DECLARATOR_REST,
-        JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
-        JavaGrammar.FIELD_DECLARATION,
-        JavaGrammar.VOID_METHOD_DECLARATOR_REST,
-        JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
-        JavaGrammar.INTERFACE_DECLARATION,
-        JavaGrammar.CLASS_DECLARATION,
-        JavaGrammar.ENUM_DECLARATION,
-        JavaGrammar.ANNOTATION_TYPE_DECLARATION);
-      if (actualMember.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
-        builder.add(new MethodHelper(actualMember));
+      if (memberDecl != null) {
+        AstNode actualMember = getFirstDescendant(memberDecl,
+          JavaGrammar.METHOD_DECLARATOR_REST,
+          JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
+          JavaGrammar.FIELD_DECLARATION,
+          JavaGrammar.VOID_METHOD_DECLARATOR_REST,
+          JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
+          JavaGrammar.INTERFACE_DECLARATION,
+          JavaGrammar.CLASS_DECLARATION,
+          JavaGrammar.ENUM_DECLARATION,
+          JavaGrammar.ANNOTATION_TYPE_DECLARATION);
+        if (actualMember.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
+          builder.add(new MethodHelper(actualMember));
+        }
       }
     }
 

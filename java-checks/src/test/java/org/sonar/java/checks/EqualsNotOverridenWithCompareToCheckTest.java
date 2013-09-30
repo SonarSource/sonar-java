@@ -38,7 +38,8 @@ public class EqualsNotOverridenWithCompareToCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(18).withMessage("Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method")
       .next().atLine(45)
-      .next().atLine(59);
+      .next().atLine(59)
+      .next().atLine(80);
   }
 
 }
