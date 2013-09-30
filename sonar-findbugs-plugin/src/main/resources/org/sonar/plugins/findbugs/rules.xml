@@ -630,6 +630,7 @@
     <priority>CRITICAL</priority>
     <name><![CDATA[Bad practice - Class defines compareTo(...) and uses Object.equals()]]></name>
     <configKey><![CDATA[EQ_COMPARETO_USE_OBJECT_EQUALS]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="HE_HASHCODE_NO_EQUALS">

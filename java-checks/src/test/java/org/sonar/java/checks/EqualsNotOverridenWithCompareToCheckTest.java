@@ -17,25 +17,28 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.findbugs;
+package org.sonar.java.checks;
 
+import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
+import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.utils.ValidationMessages;
+import org.sonar.java.JavaAstScanner;
+import org.sonar.squid.api.SourceFile;
 
-import static org.fest.assertions.Assertions.assertThat;
+import java.io.File;
 
-public class SonarWayWithFindbugsProfileTest {
+public class EqualsNotOverridenWithCompareToCheckTest {
+
+  @Rule
+  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
-  public void shouldCreateProfile() {
-    FindbugsProfileImporter importer = new FindbugsProfileImporter(FakeRuleFinder.create());
-    SonarWayWithFindbugsProfile sonarWayWithFindbugs = new SonarWayWithFindbugsProfile(importer);
-    ValidationMessages validation = ValidationMessages.create();
-    RulesProfile profile = sonarWayWithFindbugs.createProfile(validation);
-    assertThat(profile.getActiveRulesByRepository(FindbugsConstants.REPOSITORY_KEY))
-      .hasSize(389);
-    assertThat(validation.hasErrors()).isFalse();
+  public void detected() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EqualsNotOverridenWithCompareToCheck.java"), new EqualsNotOverridenWithCompareToCheck());
+    checkMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(18).withMessage("Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method")
+      .next().atLine(45)
+      .next().atLine(59);
   }
 
 }

@@ -20,7 +20,9 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.squid.SquidAstVisitor;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
@@ -40,12 +42,12 @@ public class MethodHelper {
 
   public static void subscribe(SquidAstVisitor<LexerlessGrammar> visitor) {
     visitor.subscribeTo(
-        JavaGrammar.METHOD_DECLARATOR_REST,
-        JavaGrammar.VOID_METHOD_DECLARATOR_REST,
-        JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
-        JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
-        JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-        JavaGrammar.ANNOTATION_METHOD_REST);
+      JavaGrammar.METHOD_DECLARATOR_REST,
+      JavaGrammar.VOID_METHOD_DECLARATOR_REST,
+      JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
+      JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
+      JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
+      JavaGrammar.ANNOTATION_METHOD_REST);
   }
 
   public boolean isPublic() {
@@ -108,6 +110,47 @@ public class MethodHelper {
       return Collections.emptyList();
     }
     return node.getFirstChild(JavaGrammar.BLOCK).getFirstChild(JavaGrammar.BLOCK_STATEMENTS).getChildren();
+  }
+
+  public static List<MethodHelper> getMethods(AstNode classOrEnumNode) {
+    Preconditions.checkArgument(classOrEnumNode.is(JavaGrammar.CLASS_BODY, JavaGrammar.ENUM_BODY));
+
+    ImmutableList.Builder<MethodHelper> builder = ImmutableList.builder();
+
+    for (AstNode classBodyDeclaration : classOrEnumNode.getChildren(JavaGrammar.CLASS_BODY_DECLARATION)) {
+      AstNode memberDecl = classBodyDeclaration.getFirstChild(JavaGrammar.MEMBER_DECL);
+      AstNode actualMember = getFirstDescendant(memberDecl,
+        JavaGrammar.METHOD_DECLARATOR_REST,
+        JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
+        JavaGrammar.FIELD_DECLARATION,
+        JavaGrammar.VOID_METHOD_DECLARATOR_REST,
+        JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
+        JavaGrammar.INTERFACE_DECLARATION,
+        JavaGrammar.CLASS_DECLARATION,
+        JavaGrammar.ENUM_DECLARATION,
+        JavaGrammar.ANNOTATION_TYPE_DECLARATION);
+      if (actualMember.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
+        builder.add(new MethodHelper(actualMember));
+      }
+    }
+
+    return builder.build();
+  }
+
+  /**
+   * SSLR-345
+   */
+  private static AstNode getFirstDescendant(AstNode node, AstNodeType... nodeTypes) {
+    for (AstNode child : node.getChildren()) {
+      if (child.is(nodeTypes)) {
+        return child;
+      }
+      AstNode result = getFirstDescendant(child, nodeTypes);
+      if (result != null) {
+        return result;
+      }
+    }
+    return null;
   }
 
 }
