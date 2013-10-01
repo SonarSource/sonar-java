@@ -21,123 +21,65 @@ package org.sonar.java;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-import org.mockito.verification.VerificationMode;
+import org.junit.rules.Timeout;
+import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class ProgressReportTest {
 
-  private static final long PERIOD = 500;
+  @Rule
+  public final Timeout timeout = new Timeout(5000);
 
-  private Appender mockAppender;
+  private static final long PERIOD = 100;
 
-  @Before
-  public void setup() {
-    mockAppender = mock(Appender.class);
-    when(mockAppender.getName()).thenReturn("MOCK");
+  @Test
+  public void test() throws Exception {
+    Appender mockAppender = mock(Appender.class);
     Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     rootLogger.addAppender(mockAppender);
     rootLogger.setLevel(Level.ALL);
-  }
 
-  @Test
-  public void should_log_start_messag() {
-    new ProgressReport("").start("foo start");
-    verifyLog("foo start", Level.INFO, Mockito.only());
-  }
+    ProgressReport report = new ProgressReport(ProgressReport.class.getName(), PERIOD);
+    report.start("foo start");
+    report.message("progress");
+    Thread.sleep(PERIOD * 2);
+    report.stop("foo stop");
 
-  @Test
-  public void should_log_stop_message() {
-    new ProgressReport("").stop("foo stop");
-    verifyLog("foo stop", Level.INFO, Mockito.only());
-  }
+    ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
+    verify(mockAppender, atLeast(2)).doAppend(captor.capture());
 
-  @Test
-  public void should_default_period_equal_10_seconds() {
-    assertThat(new ProgressReport("").period).isEqualTo(10000L);
-  }
-
-  @Test
-  public void should_not_log_progress_message_before_10_seconds() {
-    ProgressReport report = new ProgressReport("");
-    report.start("");
-    report.message("foo progress");
-    verifyLog("foo progress", Level.INFO, Mockito.never());
-  }
-
-  @Test
-  public void should_log_progress_message_once() throws Exception {
-    ProgressReport report = new ProgressReport("");
-    report.period = PERIOD / 2;
-    report.start("");
-
-    report.message("foo progress");
-    Thread.sleep(PERIOD);
-    verifyLog("foo progress", Level.INFO, Mockito.atLeastOnce());
-
-    report.stop("");
-  }
-
-  @Test
-  public void should_log_progress_message_twice() throws Exception {
-    ProgressReport report = new ProgressReport("");
-    report.period = PERIOD / 2;
-    report.start("");
-
-    report.message("foo progress 1");
-    Thread.sleep(PERIOD);
-    verifyLog("foo progress 1", Level.INFO, Mockito.atLeastOnce());
-
-    report.message("foo progress 2");
-    Thread.sleep(PERIOD);
-    verifyLog("foo progress 2", Level.INFO, Mockito.atLeastOnce());
-
-    report.stop("");
+    List<ILoggingEvent> events = captor.getAllValues();
+    assertThat(events.size()).isGreaterThanOrEqualTo(3);
+    ILoggingEvent event = events.get(0);
+    assertThat(event.getFormattedMessage()).isEqualTo("foo start");
+    assertThat(event.getLevel()).isEqualTo(Level.INFO);
+    for (int i = 1; i < events.size() - 1; i++) {
+      event = events.get(i);
+      assertThat(event.getFormattedMessage()).isEqualTo("progress");
+      assertThat(event.getLevel()).isEqualTo(Level.INFO);
+    }
+    event = events.get(events.size() - 1);
+    assertThat(event.getFormattedMessage()).isEqualTo("foo stop");
+    assertThat(event.getLevel()).isEqualTo(Level.INFO);
   }
 
   @Test
   public void should_stop_upon_interruption_immediatly() throws Exception {
-    ProgressReport report = new ProgressReport("");
+    ProgressReport report = new ProgressReport(ProgressReport.class.getName());
     report.start("");
-    report.thread.interrupt();
-    while (report.thread.isAlive()) {
-      // wait till thread dies
-    }
-  }
-
-  @Test
-  public void should_stop_upon_interruption_when_sleeping() throws Exception {
-    ProgressReport report = new ProgressReport("");
-    report.start("");
-    Thread.sleep(PERIOD);
-    report.thread.interrupt();
-    while (report.thread.isAlive()) {
-      // wait till thread dies
-    }
-  }
-
-  protected void verifyLog(final String expectedFormattedMessage, final Level expectedLevel, VerificationMode mode) {
-    verify(mockAppender, mode).doAppend(Matchers.argThat(new ArgumentMatcher() {
-
-      @Override
-      public boolean matches(final Object argument) {
-        LoggingEvent event = (LoggingEvent) argument;
-        return expectedFormattedMessage.equals(event.getFormattedMessage()) &&
-          expectedLevel.equals(event.getLevel());
-      }
-
-    }));
+    report.stop("");
+    report.thread.join();
   }
 
 }

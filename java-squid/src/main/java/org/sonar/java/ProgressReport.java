@@ -29,8 +29,7 @@ public class ProgressReport implements Runnable {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProgressReport.class);
 
-  @VisibleForTesting
-  long period = TimeUnit.SECONDS.toMillis(10);
+  private final long period;
 
   @VisibleForTesting
   final Thread thread;
@@ -38,6 +37,11 @@ public class ProgressReport implements Runnable {
   private String message;
 
   public ProgressReport(String threadName) {
+    this(threadName, TimeUnit.SECONDS.toMillis(10));
+  }
+
+  public ProgressReport(String threadName, long period) {
+    this.period = period;
     thread = new Thread(this);
     thread.setName(threadName);
   }
