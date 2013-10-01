@@ -46,6 +46,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Replacement for {@link com.sonar.sslr.squid.AstScanner<JavaGrammar>}.
@@ -84,7 +85,7 @@ public class AstScanner {
 
     AstWalker astWalker = new AstWalker(visitors);
 
-    ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer");
+    ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
     progressReport.start(files.size() + " source files to be analyzed");
     int count = 0;
     for (InputFile inputFile : files) {

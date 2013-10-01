@@ -55,6 +55,7 @@ public class ProgressReportTest {
     report.message("progress");
     Thread.sleep(PERIOD * 2);
     report.stop("foo stop");
+    Thread.sleep(PERIOD * 2);
 
     ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
     verify(mockAppender, atLeast(2)).doAppend(captor.capture());
@@ -72,14 +73,6 @@ public class ProgressReportTest {
     event = events.get(events.size() - 1);
     assertThat(event.getFormattedMessage()).isEqualTo("foo stop");
     assertThat(event.getLevel()).isEqualTo(Level.INFO);
-  }
-
-  @Test
-  public void should_stop_upon_interruption_immediatly() throws Exception {
-    ProgressReport report = new ProgressReport(ProgressReport.class.getName());
-    report.start("");
-    report.stop("");
-    report.thread.join();
   }
 
 }

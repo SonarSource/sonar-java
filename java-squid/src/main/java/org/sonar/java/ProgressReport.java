@@ -19,26 +19,16 @@
  */
 package org.sonar.java;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.TimeUnit;
 
 public class ProgressReport implements Runnable {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProgressReport.class);
 
   private final long period;
-
-  @VisibleForTesting
-  final Thread thread;
-
+  private final Thread thread;
   private String message;
-
-  public ProgressReport(String threadName) {
-    this(threadName, TimeUnit.SECONDS.toMillis(10));
-  }
 
   public ProgressReport(String threadName, long period) {
     this.period = period;
@@ -51,10 +41,10 @@ public class ProgressReport implements Runnable {
     while (!Thread.interrupted()) {
       try {
         Thread.sleep(period);
+        LOG.info(message);
       } catch (InterruptedException e) {
-        return;
+        thread.interrupt();
       }
-      LOG.info(message);
     }
   }
 
