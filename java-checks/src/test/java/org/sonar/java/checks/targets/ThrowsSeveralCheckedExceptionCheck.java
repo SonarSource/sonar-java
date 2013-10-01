@@ -86,10 +86,17 @@ class Implements implements I {
   public void bar() throws IOException, SQLException { // Compliant - overriden
   }
 
+  public void baz() {
+  }
+
+  public void qux() throws IOException, SQLException { // Non-Compliant
+  }
+
 }
 
 interface I {
   public void foo();
 
   public void bar() throws IOException, SQLException; // Non-Compliant
+
 }

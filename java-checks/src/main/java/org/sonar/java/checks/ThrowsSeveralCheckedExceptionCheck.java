@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -31,6 +31,7 @@ import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourceMethod;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1160", priority = Priority.MAJOR)
@@ -47,34 +48,49 @@ public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
   @Override
   public void visitMethod(AsmMethod asmMethod) {
     if (asmMethod.isPublic() && !isOverriden(asmMethod)) {
-      List<AsmClass> thrownClasses = asmMethod.getThrows();
-      if (thrownClasses.size() > 1) {
-        List<String> thrownCheckedExceptions = Lists.newArrayList();
+      List<String> thrownCheckedExceptions = getThrownCheckedExceptions(asmMethod);
 
-        for (AsmClass thrownClass : thrownClasses) {
-          if (!isSubClassOfRuntimeException(thrownClass)) {
-            thrownCheckedExceptions.add(thrownClass.getDisplayName());
-          }
+      if (thrownCheckedExceptions.size() > 1) {
+        CheckMessage message = new CheckMessage(
+          this,
+          "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
+
+        SourceMethod sourceMethod = getSourceMethod(asmMethod);
+        if (sourceMethod != null) {
+          message.setLine(sourceMethod.getStartAtLine());
         }
+        SourceFile file = getSourceFile(asmClass);
+        file.log(message);
+      }
+    }
+  }
 
-        if (thrownCheckedExceptions.size() > 1) {
-          CheckMessage message = new CheckMessage(
-            this,
-            "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
-          SourceMethod sourceMethod = getSourceMethod(asmMethod);
-          if (sourceMethod != null) {
-            message.setLine(sourceMethod.getStartAtLine());
-          }
-          SourceFile file = getSourceFile(asmClass);
-          file.log(message);
+  private List<String> getThrownCheckedExceptions(AsmMethod asmMethod) {
+    List<AsmClass> thrownClasses = asmMethod.getThrows();
+
+    if (thrownClasses.size() > 1) {
+      ImmutableList.Builder<String> builder = ImmutableList.builder();
+
+      for (AsmClass thrownClass : thrownClasses) {
+        if (!isSubClassOfRuntimeException(thrownClass)) {
+          builder.add(thrownClass.getDisplayName());
         }
       }
+
+      return builder.build();
+    } else {
+      return Collections.EMPTY_LIST;
     }
   }
 
   private static boolean isOverriden(AsmMethod method) {
     return isOverridenFromClass(method) ||
       isOverridenFromInterface(method);
+  }
+
+  private static boolean isOverridenFromClass(AsmMethod method) {
+    AsmClass superClass = method.getParent().getSuperClass();
+    return superClass != null && superClass.getMethod(method.getKey()) != null;
   }
 
   private static boolean isOverridenFromInterface(AsmMethod method) {
@@ -84,11 +100,6 @@ public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
       }
     }
     return false;
-  }
-
-  private static boolean isOverridenFromClass(AsmMethod method) {
-    AsmClass superClass = method.getParent().getSuperClass();
-    return superClass != null && superClass.getMethod(method.getKey()) != null;
   }
 
   private static boolean isSubClassOfRuntimeException(AsmClass thrownClass) {

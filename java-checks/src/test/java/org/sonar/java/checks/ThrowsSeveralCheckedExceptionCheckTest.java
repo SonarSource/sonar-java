@@ -48,7 +48,10 @@ public class ThrowsSeveralCheckedExceptionCheckTest {
       .atLine(74)
 
       .next()
-      .atLine(94);
+      .atLine(92)
+
+      .next()
+      .atLine(100);
   }
 
 }
