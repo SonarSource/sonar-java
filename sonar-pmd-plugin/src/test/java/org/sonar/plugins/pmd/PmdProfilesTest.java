@@ -45,7 +45,7 @@ public class PmdProfilesTest {
     RulesProfile profile = sonarWay.createProfile(validation);
 
     assertThat(profile.getActiveRulesByRepository(PmdConstants.REPOSITORY_KEY).size())
-        .isEqualTo(39);
+      .isEqualTo(38);
     assertThat(validation.hasErrors()).isFalse();
   }
 
@@ -56,7 +56,7 @@ public class PmdProfilesTest {
     RulesProfile profile = sonarWayWithFindbugs.createProfile(validation);
 
     assertThat(profile.getActiveRulesByRepository(PmdConstants.REPOSITORY_KEY).size())
-        .isEqualTo(39);
+      .isEqualTo(38);
     assertThat(validation.hasErrors()).isFalse();
   }
 

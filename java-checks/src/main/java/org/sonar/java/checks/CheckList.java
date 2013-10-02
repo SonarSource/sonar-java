@@ -136,6 +136,7 @@ public final class CheckList {
       InterfaceAsConstantContainerCheck.class,
       MethodNamedEqualsCheck.class,
       EqualsNotOverridenWithCompareToCheck.class,
+      EqualsOverridenWithHashCodeCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,

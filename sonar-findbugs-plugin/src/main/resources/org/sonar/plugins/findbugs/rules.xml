@@ -624,6 +624,7 @@
     <priority>CRITICAL</priority>
     <name><![CDATA[Bad practice - Class defines hashCode() and uses Object.equals()]]></name>
     <configKey><![CDATA[HE_HASHCODE_USE_OBJECT_EQUALS]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EQ_COMPARETO_USE_OBJECT_EQUALS">
@@ -637,12 +638,14 @@
     <priority>CRITICAL</priority>
     <name><![CDATA[Bad practice - Class defines hashCode() but not equals()]]></name>
     <configKey><![CDATA[HE_HASHCODE_NO_EQUALS]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="HE_EQUALS_USE_HASHCODE">
     <priority>CRITICAL</priority>
     <name><![CDATA[Bad practice - Class defines equals() and uses Object.hashCode()]]></name>
     <configKey><![CDATA[HE_EQUALS_USE_HASHCODE]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="HE_INHERITS_EQUALS_USE_HASHCODE">
@@ -655,6 +658,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Bad practice - Class defines equals() but not hashCode()]]></name>
     <configKey><![CDATA[HE_EQUALS_NO_HASHCODE]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="EQ_ABSTRACT_SELF">

@@ -397,6 +397,7 @@
     <priority>CRITICAL</priority>
     <name><![CDATA[Equals Hash Code]]></name>
     <configKey><![CDATA[Checker/TreeWalker/EqualsHashCode]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.sizes.ExecutableStatementCountCheck">

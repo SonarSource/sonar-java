@@ -187,6 +187,7 @@
   <rule key="OverrideBothEqualsAndHashcode">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/basic.xml/OverrideBothEqualsAndHashcode]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UnusedImports">

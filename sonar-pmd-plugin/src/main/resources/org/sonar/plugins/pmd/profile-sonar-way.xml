@@ -43,5 +43,4 @@
   <rule ref="rulesets/finalizers.xml/EmptyFinalizer" />
   <rule ref="rulesets/design.xml/IdempotentOperations" />
   <rule ref="rulesets/strings.xml/UseStringBufferLength" />
-  <rule ref="rulesets/basic.xml/OverrideBothEqualsAndHashcode" />
 </ruleset>

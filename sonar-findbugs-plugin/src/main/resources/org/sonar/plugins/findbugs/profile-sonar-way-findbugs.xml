@@ -89,9 +89,6 @@
     <Bug pattern="IM_MULTIPLYING_RESULT_OF_IREM"/>
   </Match>
   <Match>
-    <Bug pattern="HE_HASHCODE_USE_OBJECT_EQUALS"/>
-  </Match>
-  <Match>
     <Bug pattern="IL_CONTAINER_ADDED_TO_ITSELF"/>
   </Match>
   <Match>
@@ -383,9 +380,6 @@
     <Bug pattern="VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY"/>
   </Match>
   <Match>
-    <Bug pattern="HE_HASHCODE_NO_EQUALS"/>
-  </Match>
-  <Match>
     <Bug pattern="SI_INSTANCE_BEFORE_FINALS_ASSIGNED"/>
   </Match>
   <Match>
@@ -459,9 +453,6 @@
   </Match>
   <Match>
     <Bug pattern="NP_CLONE_COULD_RETURN_NULL"/>
-  </Match>
-  <Match>
-    <Bug pattern="HE_EQUALS_NO_HASHCODE"/>
   </Match>
   <Match>
     <Bug pattern="IS_FIELD_NOT_GUARDED"/>
@@ -903,9 +894,6 @@
   </Match>
   <Match>
     <Bug pattern="LI_LAZY_INIT_STATIC"/>
-  </Match>
-  <Match>
-    <Bug pattern="HE_EQUALS_USE_HASHCODE"/>
   </Match>
   <Match>
     <Bug pattern="RV_ABSOLUTE_VALUE_OF_RANDOM_INT"/>
