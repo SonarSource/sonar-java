@@ -1,0 +1,32 @@
+<p>Even if it is legal, mixing case and non-case labels in the body of a switch statement is very confusing, and could mislead developers discovering this piece of code.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+switch (variable) {
+  case 0:
+    /* ... */
+  myLabel:           // Noncompliant
+    result = 0;
+    break;
+  case 1:
+    /* ... */
+  default:
+    /* ... */
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+
+<pre>
+switch (variable) {
+  case 0:
+    /* ... */
+    result = 0;
+    break;
+  case 1:
+    /* ... */
+  default:
+    /* ... */
+}
+</pre>

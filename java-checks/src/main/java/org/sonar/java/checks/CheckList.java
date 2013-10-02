@@ -137,6 +137,7 @@ public final class CheckList {
       MethodNamedEqualsCheck.class,
       EqualsNotOverridenWithCompareToCheck.class,
       EqualsOverridenWithHashCodeCheck.class,
+      SwitchWithLabelsCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
