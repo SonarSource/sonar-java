@@ -25,7 +25,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.Timeout;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
@@ -41,9 +40,6 @@ public class ProgressReportTest {
 
   @Rule
   public final Timeout timeout = new Timeout(2000);
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void test() throws Exception {
