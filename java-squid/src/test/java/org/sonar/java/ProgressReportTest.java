@@ -40,9 +40,7 @@ import static org.mockito.Mockito.verify;
 public class ProgressReportTest {
 
   @Rule
-  public final Timeout timeout = new Timeout(5000);
-
-  private static final long PERIOD = 100;
+  public final Timeout timeout = new Timeout(2000);
 
   @Test
   public void test() throws Exception {
@@ -51,15 +49,14 @@ public class ProgressReportTest {
     rootLogger.addAppender(mockAppender);
     rootLogger.setLevel(Level.ALL);
 
-    ProgressReport report = new ProgressReport(ProgressReport.class.getName(), PERIOD);
+    ProgressReport report = new ProgressReport(ProgressReport.class.getName(), 500);
     report.start("foo start");
     report.message("progress");
-    Thread.sleep(PERIOD * 2);
+    Thread.sleep(700);
     report.stop("foo stop");
-    Thread.sleep(PERIOD * 2);
 
     ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
-    verify(mockAppender, atLeast(2)).doAppend(captor.capture());
+    verify(mockAppender, atLeast(3)).doAppend(captor.capture());
 
     List<ILoggingEvent> events = captor.getAllValues();
     assertThat(events.size()).isGreaterThanOrEqualTo(3);
@@ -76,6 +73,7 @@ public class ProgressReportTest {
     List<String> messages = messagesBuilder.build();
 
     assertThat(messages).containsOnly("progress", "foo stop");
+    assertThat(messages).contains("progress");
     assertThat(messages).contains("foo stop");
   }
 
