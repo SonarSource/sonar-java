@@ -23,6 +23,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
+import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -65,14 +66,17 @@ public class ProgressReportTest {
     ILoggingEvent event = events.get(0);
     assertThat(event.getFormattedMessage()).isEqualTo("foo start");
     assertThat(event.getLevel()).isEqualTo(Level.INFO);
-    for (int i = 1; i < events.size() - 1; i++) {
+
+    ImmutableList.Builder<String> messagesBuilder = ImmutableList.builder();
+    for (int i = 1; i < events.size(); i++) {
       event = events.get(i);
-      assertThat(event.getFormattedMessage()).isEqualTo("progress");
+      messagesBuilder.add(event.getFormattedMessage());
       assertThat(event.getLevel()).isEqualTo(Level.INFO);
     }
-    event = events.get(events.size() - 1);
-    assertThat(event.getFormattedMessage()).isEqualTo("foo stop");
-    assertThat(event.getLevel()).isEqualTo(Level.INFO);
+    List<String> messages = messagesBuilder.build();
+
+    assertThat(messages).containsOnly("progress", "foo stop");
+    assertThat(messages).contains("foo stop");
   }
 
 }
