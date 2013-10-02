@@ -26,10 +26,10 @@ public class ProgressReport implements Runnable {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProgressReport.class);
 
-  private boolean shouldStop = false;
   private final long period;
   private String message = "";
   private final Thread thread;
+  private String stopMessage = "";
 
   public ProgressReport(String threadName, long period) {
     this.period = period;
@@ -39,18 +39,18 @@ public class ProgressReport implements Runnable {
 
   @Override
   public void run() {
-    while (!shouldStop) {
+    while (!Thread.interrupted()) {
       try {
         Thread.sleep(period);
         LOG.info(message);
       } catch (InterruptedException e) {
-        // no operation
+        thread.interrupt();
       }
     }
-    System.out.println("done");
+    LOG.info(stopMessage);
   }
 
-  public synchronized void start(String startMessage) {
+  public void start(String startMessage) {
     LOG.info(startMessage);
     thread.start();
   }
@@ -59,9 +59,8 @@ public class ProgressReport implements Runnable {
     this.message = message;
   }
 
-  public synchronized void stop(String stopMessage) {
-    shouldStop = true;
-    LOG.info(stopMessage);
+  public void stop(String stopMessage) {
+    this.stopMessage = stopMessage;
     thread.interrupt();
   }
 
