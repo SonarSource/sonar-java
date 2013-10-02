@@ -23,9 +23,9 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
-import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.Timeout;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
@@ -42,6 +42,9 @@ public class ProgressReportTest {
   @Rule
   public final Timeout timeout = new Timeout(2000);
 
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
   @Test
   public void test() throws Exception {
     Appender mockAppender = mock(Appender.class);
@@ -50,8 +53,8 @@ public class ProgressReportTest {
     rootLogger.setLevel(Level.ALL);
 
     ProgressReport report = new ProgressReport(ProgressReport.class.getName(), 500);
-    report.start("foo start");
     report.message("progress");
+    report.start("foo start");
     Thread.sleep(700);
     report.stop("foo stop");
 
@@ -64,17 +67,15 @@ public class ProgressReportTest {
     assertThat(event.getFormattedMessage()).isEqualTo("foo start");
     assertThat(event.getLevel()).isEqualTo(Level.INFO);
 
-    ImmutableList.Builder<String> messagesBuilder = ImmutableList.builder();
-    for (int i = 1; i < events.size(); i++) {
+    for (int i = 1; i < events.size() - 1; i++) {
       event = events.get(i);
-      messagesBuilder.add(event.getFormattedMessage());
+      assertThat(event.getFormattedMessage()).isEqualTo("progress");
       assertThat(event.getLevel()).isEqualTo(Level.INFO);
     }
-    List<String> messages = messagesBuilder.build();
 
-    assertThat(messages).containsOnly("progress", "foo stop");
-    assertThat(messages).contains("progress");
-    assertThat(messages).contains("foo stop");
+    event = events.get(events.size() - 1);
+    assertThat(event.getFormattedMessage()).isEqualTo("foo stop");
+    assertThat(event.getLevel()).isEqualTo(Level.INFO);
   }
 
 }
