@@ -168,3 +168,35 @@ public class Foo { // Compliant
     return 0;
   }
 }
+
+/**
+ */
+public class Foo {
+  /**
+   * @param <T> ...
+   * @param value ...
+   * @return ...
+   */
+  public <T> T foo(T value) { // Compliant
+  }
+  
+  /**
+   * @param <T> ...
+   * @param value ...
+   */
+  public <T> T foo(T value) { // Non-Compliant - missing '@return'
+  }
+  
+  /**
+   * @param <T> ...
+   * @param value ...
+   */
+  public <T> void foo(T value) { // Compliant
+  }
+  
+  /**
+   * @param value ...
+   */
+  public <T> void foo(T value) { // Non-Compliant - missing '@param <T>'
+  }
+}
