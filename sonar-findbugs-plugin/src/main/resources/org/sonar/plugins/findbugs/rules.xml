@@ -2521,4 +2521,10 @@
     <configKey><![CDATA[TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS]]></configKey>
   </rule>
 
+  <rule key="TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED">
+    <priority>MAJOR</priority>
+    <name><![CDATA[Value without a type qualifier used where a value is required to have that qualifier]]></name>
+    <configKey><![CDATA[TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED]]></configKey>
+  </rule>
+
 </rules>

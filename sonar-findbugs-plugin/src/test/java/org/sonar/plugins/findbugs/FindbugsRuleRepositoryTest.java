@@ -32,7 +32,7 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class FindbugsRuleRepositoryTest {
-  FindbugsRuleRepository repository;
+  private FindbugsRuleRepository repository;
 
   @Before
   public void setUpRuleRepository() {
@@ -43,7 +43,7 @@ public class FindbugsRuleRepositoryTest {
   public void testLoadRepositoryFromXml() {
     List<Rule> rules = repository.createRules();
 
-    assertThat(rules.size()).isGreaterThan(300);
+    assertThat(rules.size()).isEqualTo(418);
     for (Rule rule : rules) {
       assertThat(rule.getKey()).isNotNull();
       assertThat(rule.getConfigKey()).isNotNull();
