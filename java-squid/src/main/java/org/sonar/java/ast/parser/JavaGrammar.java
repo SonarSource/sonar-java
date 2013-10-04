@@ -862,7 +862,8 @@ public enum JavaGrammar implements GrammarRuleKey {
         DIM_EXPR));
     b.rule(SUPER_SUFFIX).is(b.firstOf(
         ARGUMENTS,
-        b.sequence(DOT, IDENTIFIER, b.optional(ARGUMENTS))));
+        b.sequence(DOT, IDENTIFIER, b.optional(ARGUMENTS)),
+        b.sequence(DOT, NON_WILDCARD_TYPE_ARGUMENTS, IDENTIFIER, ARGUMENTS)));
     b.rule(BASIC_TYPE).is(b.firstOf(
         BYTE,
         SHORT,

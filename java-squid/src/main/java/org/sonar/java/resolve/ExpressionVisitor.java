@@ -160,6 +160,7 @@ public class ExpressionVisitor extends JavaAstVisitor {
       if (superSuffixNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
         // super(arguments)
         // super.method(arguments)
+        // super.<T>method(arguments)
         result = symbols.unknownType;
       } else {
         // super.field

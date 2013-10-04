@@ -25,39 +25,17 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
-public class ExpressionTest {
+public class SuperSuffixTest {
 
   private LexerlessGrammar g = JavaGrammar.createGrammar();
 
-  /**
-   * Our grammar accepts such constructions, whereas should not.
-   */
-  @Test
-  public void error() {
-    assertThat(g.rule(JavaGrammar.EXPRESSION))
-        .matches("a = b + 1 = c + 2");
-  }
-
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.EXPRESSION))
-        .matches("b >> 4")
-        .matches("b >>= 4")
-        .matches("b >>> 4")
-        .matches("b >>>= 4")
-
-        // method call
-        .matches("SomeClass.<T>method(arguments)")
-        .matches("this.<T>method(arguments)")
-        .matches("super.<T>method(arguments)")
-
-        // constructor call
-        .matches("<T>this(arguments)")
-        .matches("<T>super(arguments)");
-
-    // Java 7: diamond
-    assertThat(g.rule(JavaGrammar.EXPRESSION))
-        .matches("new HashMap<>()");
+    assertThat(g.rule(JavaGrammar.SUPER_SUFFIX))
+      .matches("(arguments)")
+      .matches(".field")
+      .matches(".method(arguments)")
+      .matches(".<T>method(arguments)");
   }
 
 }
