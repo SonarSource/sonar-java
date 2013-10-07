@@ -19,54 +19,66 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.bytecode.asm.AsmClass;
+import org.sonar.java.bytecode.asm.AsmEdge;
+import org.sonar.java.bytecode.asm.AsmMethod;
+import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.squid.api.CheckMessage;
+import org.sonar.squid.api.SourceFile;
 
 @Rule(
   key = "S1217",
   priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class ThreadRunCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class ThreadRunCheck extends BytecodeVisitor {
 
-  enum State {
-    EXPECT_RUN,
-    EXPECT_LPAREN,
-    EXPECT_RPAREN,
-    EXPECT_SEMI
-  }
+  private static final String THREAD_CLASS = "java/lang/Thread";
+  private static final String RUNNABLE_CLASS = "java/lang/Runnable";
 
-  private State state = State.EXPECT_RUN;
+  private AsmClass asmClass;
 
   @Override
-  public void visitToken(Token token) {
-    switch (state) {
-      case EXPECT_RUN:
-        transitionIfMatch(token, "run", State.EXPECT_LPAREN);
-        break;
-      case EXPECT_LPAREN:
-        transitionIfMatch(token, "(", State.EXPECT_RPAREN);
-        break;
-      case EXPECT_RPAREN:
-        transitionIfMatch(token, ")", State.EXPECT_SEMI);
-        break;
-      case EXPECT_SEMI:
-        if (";".equals(token.getOriginalValue())) {
-          getContext().createLineViolation(this, "Call the method Thread.start() to execute the content of the run() method in a dedicated thread.", token);
-        }
-        state = State.EXPECT_RUN;
-        break;
-      default:
-        throw new IllegalStateException();
+  public void visitClass(AsmClass asmClass) {
+    this.asmClass = asmClass;
+  }
+
+  @Override
+  public void visitEdge(AsmEdge edge) {
+    if (isCallToRun(edge) && isThreadOrRunnable(edge.getTargetAsmClass())) {
+      edge.getTo();
+      SourceFile sourceFile = getSourceFile(asmClass);
+      CheckMessage message = new CheckMessage(this, "Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
+      message.setLine(edge.getSourceLineNumber());
+      sourceFile.log(message);
     }
   }
 
-  private void transitionIfMatch(Token token, String expected, State target) {
-    state = expected.equals(token.getOriginalValue()) ? target : State.EXPECT_RUN;
+  private static boolean isCallToRun(AsmEdge edge) {
+    return edge.getTo() instanceof AsmMethod &&
+      "run()V".equals(((AsmMethod) edge.getTo()).getKey());
+  }
+
+  private static boolean isThreadOrRunnable(AsmClass asmClass) {
+    AsmClass currentClass = asmClass;
+    while (currentClass != null) {
+      if (THREAD_CLASS.equals(currentClass.getInternalName()) ||
+        RUNNABLE_CLASS.equals(currentClass.getInternalName())) {
+        return true;
+      }
+
+      for (AsmClass implementedInterface : currentClass.getImplementedInterfaces()) {
+        if (RUNNABLE_CLASS.equals(implementedInterface.getInternalName())) {
+          return true;
+        }
+      }
+
+      currentClass = currentClass.getSuperClass();
+    }
+
+    return false;
   }
 
 }

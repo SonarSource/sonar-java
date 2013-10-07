@@ -138,7 +138,6 @@ public final class CheckList {
       EqualsNotOverridenWithCompareToCheck.class,
       EqualsOverridenWithHashCodeCheck.class,
       SwitchWithLabelsCheck.class,
-      ThreadRunCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
@@ -149,7 +148,8 @@ public final class CheckList {
       UnusedProtectedMethodCheck.class,
       UnusedPrivateMethodCheck.class,
       RedundantThrowsDeclarationCheck.class,
-      ThrowsSeveralCheckedExceptionCheck.class);
+      ThrowsSeveralCheckedExceptionCheck.class,
+      ThreadRunCheck.class);
   }
 
 }

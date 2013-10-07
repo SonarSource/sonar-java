@@ -22,10 +22,7 @@ package org.sonar.java.checks;
 import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
 import org.sonar.squid.api.SourceFile;
-
-import java.io.File;
 
 public class ThreadRunCheckTest {
 
@@ -34,9 +31,14 @@ public class ThreadRunCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThreadRunCheck.java"), new ThreadRunCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
+    SourceFile file = BytecodeFixture.scan("ThreadRunCheck", new ThreadRunCheck());
+    checkMessagesVerifier
+      .verify(file.getCheckMessages())
+      .next().atLine(29).withMessage("Call the method Thread.start() to execute the content of the run() method in a dedicated thread.")
+      .next().atLine(39)
+      .next().atLine(42)
+      .next().atLine(45)
+      .next().atLine(53);
   }
 
 }
