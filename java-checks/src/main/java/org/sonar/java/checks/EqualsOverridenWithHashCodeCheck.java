@@ -28,11 +28,16 @@ import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.visitors.MethodHelper;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
+import java.text.MessageFormat;
+
 @Rule(
   key = "S1206",
   priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class EqualsOverridenWithHashCodeCheck extends SquidCheck<LexerlessGrammar> {
+
+  private static final String HASHCODE = "hashCode";
+  private static final String EQUALS = "equals";
 
   @Override
   public void init() {
@@ -46,9 +51,9 @@ public class EqualsOverridenWithHashCodeCheck extends SquidCheck<LexerlessGramma
     boolean hasEquals = false;
 
     for (MethodHelper method : MethodHelper.getMethods(node)) {
-      if (method.getParameters().size() == 0 && "hashCode".equals(method.getName().getTokenOriginalValue())) {
+      if (method.getParameters().size() == 0 && HASHCODE.equals(method.getName().getTokenOriginalValue())) {
         hasHashCode = true;
-      } else if (method.getParameters().size() == 1 && "equals".equals(method.getName().getTokenOriginalValue())) {
+      } else if (method.getParameters().size() == 1 && EQUALS.equals(method.getName().getTokenOriginalValue())) {
         hasEquals = true;
       }
     }
@@ -56,12 +61,17 @@ public class EqualsOverridenWithHashCodeCheck extends SquidCheck<LexerlessGramma
     if (hasHashCode ^ hasEquals) {
       getContext().createLineViolation(
         this,
-        "This {0} overrides \"{1}()\" and should therefore also override \"{2}()\".",
-        node.is(JavaGrammar.CLASS_BODY) ? node : node.getParent(),
-        node.is(JavaGrammar.CLASS_BODY) ? "class" : "enum",
-        hasHashCode ? "hashCode" : "equals",
-        hasHashCode ? "equals" : "hashCode");
+        getMessage(node.is(JavaGrammar.CLASS_BODY), hasHashCode),
+        node.is(JavaGrammar.CLASS_BODY) ? node : node.getParent());
     }
+  }
+
+  private static String getMessage(boolean isClass, boolean hasHashCode) {
+    return MessageFormat.format(
+      "This {0} overrides \"{1}()\" and should therefore also override \"{2}()\".",
+      isClass ? "class" : "enum",
+      hasHashCode ? HASHCODE : EQUALS,
+      hasHashCode ? EQUALS : HASHCODE);
   }
 
 }
