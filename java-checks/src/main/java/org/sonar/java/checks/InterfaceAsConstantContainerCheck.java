@@ -56,6 +56,11 @@ public class InterfaceAsConstantContainerCheck extends SquidCheck<LexerlessGramm
   }
 
   private static boolean isConstant(AstNode declaration) {
+    AstNode memberDecl = declaration.getFirstChild(JavaGrammar.INTERFACE_MEMBER_DECL);
+    if (memberDecl == null) {
+      return false;
+    }
+
     AstNode methodOrFieldDecl = declaration.getFirstChild(JavaGrammar.INTERFACE_MEMBER_DECL).getFirstChild(JavaGrammar.INTERFACE_METHOD_OR_FIELD_DECL);
 
     return methodOrFieldDecl != null &&

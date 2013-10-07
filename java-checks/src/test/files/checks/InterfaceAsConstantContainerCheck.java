@@ -47,3 +47,7 @@ interface A { // Compliant
     int a = 0;
   }
 }
+
+interface A {
+  ;
+}
