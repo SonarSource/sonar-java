@@ -17,25 +17,26 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.findbugs;
+package org.sonar.java.checks;
 
+import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
+import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.utils.ValidationMessages;
+import org.sonar.java.JavaAstScanner;
+import org.sonar.squid.api.SourceFile;
 
-import static org.fest.assertions.Assertions.assertThat;
+import java.io.File;
 
-public class SonarWayWithFindbugsProfileTest {
+public class ThreadRunCheckTest {
+
+  @Rule
+  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
-  public void shouldCreateProfile() {
-    FindbugsProfileImporter importer = new FindbugsProfileImporter(FakeRuleFinder.create());
-    SonarWayWithFindbugsProfile sonarWayWithFindbugs = new SonarWayWithFindbugsProfile(importer);
-    ValidationMessages validation = ValidationMessages.create();
-    RulesProfile profile = sonarWayWithFindbugs.createProfile(validation);
-    assertThat(profile.getActiveRulesByRepository(FindbugsConstants.REPOSITORY_KEY))
-      .hasSize(384);
-    assertThat(validation.hasErrors()).isFalse();
+  public void detected() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThreadRunCheck.java"), new ThreadRunCheck());
+    checkMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(6).withMessage("Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
   }
 
 }

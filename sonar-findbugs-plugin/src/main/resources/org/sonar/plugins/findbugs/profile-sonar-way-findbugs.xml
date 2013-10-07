@@ -365,9 +365,6 @@
     <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
   </Match>
   <Match>
-    <Bug pattern="RU_INVOKE_RUN"/>
-  </Match>
-  <Match>
     <Bug pattern="SQL_BAD_RESULTSET_ACCESS"/>
   </Match>
   <Match>

@@ -738,6 +738,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Multithreaded correctness - Invokes run on a thread (did you mean to start it instead?)]]></name>
     <configKey><![CDATA[RU_INVOKE_RUN]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SP_SPIN_ON_FIELD">

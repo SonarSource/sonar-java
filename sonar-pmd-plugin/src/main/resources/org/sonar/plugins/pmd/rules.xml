@@ -3,6 +3,7 @@
   <rule key="DontCallThreadRun">
     <priority>MAJOR</priority>
     <configKey>rulesets/basic.xml/DontCallThreadRun</configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="GuardDebugLogging">
