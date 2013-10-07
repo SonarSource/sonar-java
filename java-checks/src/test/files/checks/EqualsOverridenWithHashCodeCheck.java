@@ -34,3 +34,11 @@ enum A {
   public boolean equals(Object o) { // Noncompliant
   }
 }
+
+class A {
+  public boolean equals(Object o) {
+  }
+
+  public boolean equals(A o) { // Noncompliant
+  }
+}

@@ -38,7 +38,8 @@ public class EqualsOverridenWithHashCodeCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(5).withMessage("This class overrides \"equals()\" and should therefore also override \"hashCode()\".")
       .next().atLine(10).withMessage("This class overrides \"hashCode()\" and should therefore also override \"equals()\".")
-      .next().atLine(34).withMessage("This enum overrides \"equals()\" and should therefore also override \"hashCode()\".");
+      .next().atLine(34).withMessage("This enum overrides \"equals()\" and should therefore also override \"hashCode()\".")
+      .next().atLine(42);
   }
 
 }
