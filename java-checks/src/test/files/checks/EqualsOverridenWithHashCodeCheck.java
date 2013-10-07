@@ -1,13 +1,13 @@
 class A {
 }
 
-class A { // Noncompliant
-  public boolean equals(Object o) {
+class A {
+  public boolean equals(Object o) { // Noncompliant
   }
 }
 
-class A { // Noncompliant
-  public int hashCode() {
+class A {
+  public int hashCode() { // Noncompliant
   }
 }
 
@@ -28,9 +28,9 @@ class A {
   }
 }
 
-enum A { // Noncompliant
+enum A {
   ;
 
-  public boolean equals(Object o) {
+  public boolean equals(Object o) { // Noncompliant
   }
 }

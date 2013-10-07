@@ -47,22 +47,25 @@ public class EqualsOverridenWithHashCodeCheck extends SquidCheck<LexerlessGramma
 
   @Override
   public void visitNode(AstNode node) {
-    boolean hasHashCode = false;
-    boolean hasEquals = false;
+    int numberOfMethods = 0;
+    int hashCodeLine = 0;
+    int equalsLine = 0;
 
     for (MethodHelper method : MethodHelper.getMethods(node)) {
       if (method.getParameters().size() == 0 && HASHCODE.equals(method.getName().getTokenOriginalValue())) {
-        hasHashCode = true;
+        hashCodeLine = method.getName().getTokenLine();
+        numberOfMethods++;
       } else if (method.getParameters().size() == 1 && EQUALS.equals(method.getName().getTokenOriginalValue())) {
-        hasEquals = true;
+        equalsLine = method.getName().getTokenLine();
+        numberOfMethods++;
       }
     }
 
-    if (hasHashCode ^ hasEquals) {
+    if (numberOfMethods == 1) {
       getContext().createLineViolation(
         this,
-        getMessage(node.is(JavaGrammar.CLASS_BODY), hasHashCode),
-        node.is(JavaGrammar.CLASS_BODY) ? node : node.getParent());
+        getMessage(node.is(JavaGrammar.CLASS_BODY), hashCodeLine != 0),
+        hashCodeLine != 0 ? hashCodeLine : equalsLine);
     }
   }
 
