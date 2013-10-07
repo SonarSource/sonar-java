@@ -1,35 +1,49 @@
 interface A {
 }
 
-interface A {
-  int a = 0; // Non-Compliant
+interface A { // Noncompliant
+  int a = 0;
 }
 
-interface A {
-  int a = 0; // Non-Compliant
-  int b = 0; // Non-Compliant
-}
-
-interface A {
-  void f();
-}
-
-interface A {
-  int a = 0; // Non-Compliant
-  void f();
+interface A { // Noncompliant
+  int a = 0;
+  int b = 0;
 }
 
 interface A {
   void f();
-  int a = 0; // Non-Compliant
 }
 
-interface A {
-  int a = 0; // Non-Compliant
+interface A { // Noncompliant
+  int a = 0;
+  void f();
+}
+
+interface A { // Noncompliant
+  void f();
+  int a = 0;
+}
+
+interface A { // Noncompliant
+  int a = 0;
   int f();
 }
 
+interface A { // Noncompliant
+  int f();
+  int a = 0;
+}
+
 interface A {
   int f();
-  int a = 0; // Non-Compliant
+  void g();
+}
+
+interface A { // Compliant
+  int f();
+
+  interface B { // Noncompliant
+    void f();
+    int a = 0;
+  }
 }

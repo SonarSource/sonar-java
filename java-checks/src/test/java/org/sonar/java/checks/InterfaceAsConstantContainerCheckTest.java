@@ -36,13 +36,13 @@ public class InterfaceAsConstantContainerCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/InterfaceAsConstantContainerCheck.java"), new InterfaceAsConstantContainerCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(5).withMessage("Move this constant to a class or enum.")
-      .next().atLine(9)
-      .next().atLine(10)
-      .next().atLine(18)
-      .next().atLine(24)
-      .next().atLine(28)
-      .next().atLine(34);
+      .next().atLine(4).withMessage("Move constants to a class or enum.")
+      .next().atLine(8)
+      .next().atLine(17)
+      .next().atLine(22)
+      .next().atLine(27)
+      .next().atLine(32)
+      .next().atLine(45);
   }
 
 }

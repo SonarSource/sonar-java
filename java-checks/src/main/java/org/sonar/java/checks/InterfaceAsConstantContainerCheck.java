@@ -35,18 +35,31 @@ public class InterfaceAsConstantContainerCheck extends SquidCheck<LexerlessGramm
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.INTERFACE_METHOD_OR_FIELD_REST);
+    subscribeTo(JavaGrammar.INTERFACE_BODY);
   }
 
   @Override
   public void visitNode(AstNode node) {
-    if (isConstant(node)) {
-      getContext().createLineViolation(this, "Move this constant to a class or enum.", node);
+    if (hasConstant(node)) {
+      getContext().createLineViolation(this, "Move constants to a class or enum.", node);
     }
   }
 
-  private static boolean isConstant(AstNode node) {
-    return node.hasDirectChildren(JavaGrammar.CONSTANT_DECLARATORS_REST);
+  private static boolean hasConstant(AstNode node) {
+    for (AstNode declaration : node.getChildren(JavaGrammar.INTERFACE_BODY_DECLARATION)) {
+      if (isConstant(declaration)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static boolean isConstant(AstNode declaration) {
+    AstNode methodOrFieldDecl = declaration.getFirstChild(JavaGrammar.INTERFACE_MEMBER_DECL).getFirstChild(JavaGrammar.INTERFACE_METHOD_OR_FIELD_DECL);
+
+    return methodOrFieldDecl != null &&
+      methodOrFieldDecl.getFirstChild(JavaGrammar.INTERFACE_METHOD_OR_FIELD_REST).hasDirectChildren(JavaGrammar.CONSTANT_DECLARATORS_REST);
   }
 
 }
