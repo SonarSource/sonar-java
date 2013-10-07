@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.pmd.xml;
 
+import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,11 +42,12 @@ public class PmdRule {
     this(ref, null);
   }
 
-  public PmdRule(String ref, String priority) {
+  public PmdRule(String ref, @Nullable String priority) {
     this.ref = ref;
     this.priority = priority;
   }
 
+  @Nullable
   public String getRef() {
     return ref;
   }
@@ -70,6 +73,7 @@ public class PmdRule {
     return o.compareTo(ref);
   }
 
+  @Nullable
   public String getPriority() {
     return priority;
   }
@@ -109,7 +113,7 @@ public class PmdRule {
     return clazz;
   }
 
-  public void setRef(String ref) {
+  public void setRef(@Nullable String ref) {
     this.ref = ref;
   }
 
@@ -121,4 +125,5 @@ public class PmdRule {
   public boolean hasProperties() {
     return properties != null && !properties.isEmpty();
   }
+
 }
