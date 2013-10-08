@@ -102,6 +102,7 @@ class JarLoader implements Loader {
       return new URLConnection(u) {
         @Override
         public void connect() throws IOException {
+          // nop
         }
 
         @Override
