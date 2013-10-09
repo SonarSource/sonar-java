@@ -19,27 +19,32 @@
  */
 package org.sonar.plugins.surefire.api;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import org.junit.Test;
+import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 import org.sonar.api.test.MavenTestUtils;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SurefireUtilsTest {
 
   @Test
   public void shouldGetReportsFromProperty() {
+    Settings settings = mock(Settings.class);
+    when(settings.getString("sonar.surefire.reportsPath")).thenReturn("target/surefire");
+
     Project project = MavenTestUtils.loadProjectFromPom(getClass(), "shouldGetReportsFromProperty/pom.xml");
-    assertThat(SurefireUtils.getReportsDirectory(project).exists(), is(true));
-    assertThat(SurefireUtils.getReportsDirectory(project).isDirectory(), is(true));
+    assertThat(SurefireUtils.getReportsDirectory(settings, project).exists()).isTrue();
+    assertThat(SurefireUtils.getReportsDirectory(settings, project).isDirectory()).isTrue();
   }
 
   @Test
   public void shouldGetReportsFromPluginConfiguration() {
     Project project = MavenTestUtils.loadProjectFromPom(getClass(), "shouldGetReportsFromPluginConfiguration/pom.xml");
-    assertThat(SurefireUtils.getReportsDirectory(project).exists(), is(true));
-    assertThat(SurefireUtils.getReportsDirectory(project).isDirectory(), is(true));
+    assertThat(SurefireUtils.getReportsDirectory(mock(Settings.class), project).exists()).isTrue();
+    assertThat(SurefireUtils.getReportsDirectory(mock(Settings.class), project).isDirectory()).isTrue();
   }
 
 }

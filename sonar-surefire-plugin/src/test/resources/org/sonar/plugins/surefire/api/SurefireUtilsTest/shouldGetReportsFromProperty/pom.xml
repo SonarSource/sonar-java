@@ -5,8 +5,4 @@
   <artifactId>fake.artifactId</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-
-  <properties>
-    <sonar.surefire.reportsPath>target/surefire</sonar.surefire.reportsPath>
-  </properties>
 </project>

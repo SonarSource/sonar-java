@@ -22,6 +22,7 @@ package org.sonar.plugins.surefire.api;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.maven.MavenPlugin;
 import org.sonar.api.batch.maven.MavenSurefireUtils;
+import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 
 import java.io.File;
@@ -34,8 +35,8 @@ public final class SurefireUtils {
   public static final String SUREFIRE_REPORTS_PATH_PROPERTY = "sonar.junit.reportsPath";
   public static final String SUREFIRE_REPORTS_PATH_DEPRECATED_PROPERTY = "sonar.surefire.reportsPath";
 
-  public static File getReportsDirectory(Project project) {
-    File dir = getReportsDirectoryFromProperty(project);
+  public static File getReportsDirectory(Settings settings, Project project) {
+    File dir = getReportsDirectoryFromProperty(settings, project);
     if (dir == null) {
       dir = getReportsDirectoryFromPluginConfiguration(project);
     }
@@ -45,10 +46,10 @@ public final class SurefireUtils {
     return dir;
   }
 
-  private static File getReportsDirectoryFromProperty(Project project) {
-    String path = (String) project.getProperty(SUREFIRE_REPORTS_PATH_PROPERTY);
+  private static File getReportsDirectoryFromProperty(Settings settings, Project project) {
+    String path = settings.getString(SUREFIRE_REPORTS_PATH_PROPERTY);
     if (StringUtils.isBlank(path)) {
-      path = (String) project.getProperty(SUREFIRE_REPORTS_PATH_DEPRECATED_PROPERTY);
+      path = settings.getString(SUREFIRE_REPORTS_PATH_DEPRECATED_PROPERTY);
     }
     if (path != null) {
       return project.getFileSystem().resolvePath(path);

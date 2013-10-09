@@ -26,6 +26,7 @@ import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
 import org.sonar.plugins.surefire.api.SurefireUtils;
@@ -38,9 +39,11 @@ public class SurefireSensor implements Sensor {
   private static Logger logger = LoggerFactory.getLogger(SurefireSensor.class);
 
   private final SurefireJavaParser surefireJavaParser;
+  private final Settings settings;
 
-  public SurefireSensor(SurefireJavaParser surefireJavaParser) {
+  public SurefireSensor(SurefireJavaParser surefireJavaParser, Settings settings) {
     this.surefireJavaParser = surefireJavaParser;
+    this.settings = settings;
   }
 
   @DependsUpon
@@ -48,12 +51,14 @@ public class SurefireSensor implements Sensor {
     return CoverageExtension.class;
   }
 
+  @Override
   public boolean shouldExecuteOnProject(Project project) {
     return project.getAnalysisType().isDynamic(true) && Java.KEY.equals(project.getLanguageKey());
   }
 
+  @Override
   public void analyse(Project project, SensorContext context) {
-    File dir = SurefireUtils.getReportsDirectory(project);
+    File dir = SurefireUtils.getReportsDirectory(settings, project);
     collect(project, context, dir);
   }
 
@@ -66,4 +71,5 @@ public class SurefireSensor implements Sensor {
   public String toString() {
     return getClass().getSimpleName();
   }
+
 }
