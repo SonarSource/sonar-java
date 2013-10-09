@@ -91,7 +91,7 @@ public class EmptyMethodsCheck extends SquidCheck<LexerlessGrammar> {
   private static AstNode getFirstAncestor(AstNode node, AstNodeType t1, AstNodeType t2, AstNodeType t3) {
     AstNode result = node.getParent();
 
-    while (result != null && !result.is(t1, t2, t3)) {
+    while (!result.is(t1, t2, t3)) {
       result = result.getParent();
     }
 
