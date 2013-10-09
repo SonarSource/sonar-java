@@ -27,17 +27,23 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
-public class SwitchWithLabelsCheckTest {
+public class SwitchAtLeastThreeCasesCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchAtLeastThreeCasesCheck.java"), new SwitchAtLeastThreeCasesCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyMethodsCheck.java"), new EmptyMethodsCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Replace this \"switch\" statement by \"if\" statements to increase readability.")
-      .next().atLine(22);
+      .next().atLine(15)
+      .withMessage("Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.")
+      .next().atLine(29)
+      .next().atLine(33)
+      .next().atLine(57)
+      .next().atLine(67)
+      .next().atLine(80)
+      .next().atLine(89);
   }
 
 }

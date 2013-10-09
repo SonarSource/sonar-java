@@ -115,6 +115,7 @@
     <configKey><![CDATA[rulesets/design.xml/TooFewBranchesForASwitchStatement]]></configKey>
     <param key="minimumNumberCaseForASwitch" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AbstractClassWithoutAnyMethod">
