@@ -62,7 +62,9 @@ public abstract class AbstractSurefireParser {
   }
 
   private File[] getReports(File dir) {
-    if (dir == null || !dir.isDirectory() || !dir.exists()) {
+    if (dir == null) {
+      return new File[0];
+    } else if (!dir.isDirectory() || !dir.exists()) {
       LOGGER.warn("Reports path not found: " + dir.getAbsolutePath());
       return new File[0];
     }
