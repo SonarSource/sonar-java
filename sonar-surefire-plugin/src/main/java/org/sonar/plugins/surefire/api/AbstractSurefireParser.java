@@ -20,6 +20,8 @@
 package org.sonar.plugins.surefire.api;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
@@ -44,6 +46,8 @@ import java.util.Map;
  */
 public abstract class AbstractSurefireParser {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSurefireParser.class);
+
   public void collect(Project project, SensorContext context, File reportsDir) {
     File[] xmlFiles = getReports(reportsDir);
 
@@ -59,6 +63,7 @@ public abstract class AbstractSurefireParser {
 
   private File[] getReports(File dir) {
     if (dir == null || !dir.isDirectory() || !dir.exists()) {
+      LOGGER.warn("Reports path not found: " + dir.getAbsolutePath());
       return new File[0];
     }
     File[] unitTestResultFiles = findXMLFilesStartingWith(dir, "TEST-");
@@ -71,6 +76,7 @@ public abstract class AbstractSurefireParser {
 
   private File[] findXMLFilesStartingWith(File dir, final String fileNameStart) {
     return dir.listFiles(new FilenameFilter() {
+      @Override
       public boolean accept(File dir, String name) {
         return name.startsWith(fileNameStart) && name.endsWith(".xml");
       }

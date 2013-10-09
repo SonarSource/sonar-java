@@ -36,7 +36,7 @@ import java.io.File;
 @DependedUpon("surefire-java")
 public class SurefireSensor implements Sensor {
 
-  private static Logger logger = LoggerFactory.getLogger(SurefireSensor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SurefireSensor.class);
 
   private final SurefireJavaParser surefireJavaParser;
   private final Settings settings;
@@ -63,7 +63,7 @@ public class SurefireSensor implements Sensor {
   }
 
   protected void collect(Project project, SensorContext context, File reportsDir) {
-    logger.info("parsing {}", reportsDir);
+    LOGGER.info("parsing {}", reportsDir);
     surefireJavaParser.collect(project, context, reportsDir);
   }
 
