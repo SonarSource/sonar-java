@@ -29,11 +29,12 @@ import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
 import org.sonar.api.test.IsResource;
-import org.sonar.api.test.MavenTestUtils;
+import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -80,8 +81,17 @@ public class SurefireSensorTest {
 
   @Test
   public void shouldNotFailIfReportsNotFound() {
-    Project project = MavenTestUtils.loadProjectFromPom(getClass(), "shouldNotFailIfReportsNotFound/pom.xml");
-    surefireSensor.collect(project, mock(SensorContext.class), new File("unknown"));
+    Settings settings = mock(Settings.class);
+    when(settings.getString(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)).thenReturn("unknown");
+
+    ProjectFileSystem projectFileSystem = mock(ProjectFileSystem.class);
+    when(projectFileSystem.resolvePath("unknown")).thenReturn(new File("src/test/resources/unknown"));
+
+    Project project = mock(Project.class);
+    when(project.getFileSystem()).thenReturn(projectFileSystem);
+
+    SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings);
+    surefireSensor.analyse(project, mockContext());
   }
 
   private SensorContext mockContext() {
