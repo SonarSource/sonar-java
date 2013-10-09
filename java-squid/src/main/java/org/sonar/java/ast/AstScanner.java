@@ -102,23 +102,9 @@ public class AstScanner {
         astWalker.walkAndVisit(ast);
       } catch (RecognitionException e) {
         LOG.error("Unable to parse source file : " + file.getAbsolutePath());
+        LOG.error(e.getMessage(), e);
 
         try {
-          if (e.isToRetryWithExtendStackTrace()) {
-            try {
-              parserDebug.parse(file);
-            } catch (RecognitionException re) {
-              e = re;
-            } catch (Exception e2) {
-              LOG.error("Unable to get an extended stack trace on file : " + file.getAbsolutePath(), e2);
-            }
-
-            // Log the recognition exception
-            LOG.error(e.getMessage());
-          } else {
-            LOG.error(e.getMessage(), e);
-          }
-
           // Process the exception
           for (SquidAstVisitor<? extends Grammar> visitor : visitors) {
             visitor.visitFile(null);
@@ -134,7 +120,7 @@ public class AstScanner {
 
         } catch (Exception e2) {
           String errorMessage = "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
-          throw new AnalysisException(errorMessage, e);
+          throw new AnalysisException(errorMessage, e2);
         }
       } catch (Exception e) {
         String errorMessage = "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
