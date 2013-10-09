@@ -33,7 +33,7 @@ public class SurefireUtilsTest {
   @Test
   public void shouldGetReportsFromProperty() {
     Settings settings = mock(Settings.class);
-    when(settings.getString("sonar.surefire.reportsPath")).thenReturn("target/surefire");
+    when(settings.getString("sonar.junit.reportsPath")).thenReturn("target/surefire");
 
     Project project = MavenTestUtils.loadProjectFromPom(getClass(), "shouldGetReportsFromProperty/pom.xml");
     assertThat(SurefireUtils.getReportsDirectory(settings, project).exists()).isTrue();

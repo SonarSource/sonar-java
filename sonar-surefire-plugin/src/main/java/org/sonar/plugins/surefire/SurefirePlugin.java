@@ -30,10 +30,10 @@ import java.util.List;
 
 public final class SurefirePlugin extends SonarPlugin {
 
+  @Override
   public List<?> getExtensions() {
     return ImmutableList.of(
       PropertyDefinition.builder(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)
-        .deprecatedKey(SurefireUtils.SUREFIRE_REPORTS_PATH_DEPRECATED_PROPERTY)
         .name("Report path")
         .description("Path (absolute or relative) to XML report files.")
         .onlyOnQualifiers(Qualifiers.PROJECT)
