@@ -46,6 +46,12 @@ public class AstScannerTest {
   public ExpectedException thrown = ExpectedException.none();
 
   @Test
+  public void should_not_fail_whole_analysis_upon_parse_error() {
+    AstScanner scanner = new AstScanner(new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, FakeGrammar.builder().build()));
+    scanner.scan(ImmutableList.of(mockInputFile()));
+  }
+
+  @Test
   public void should_propagate_visitor_exception_when_there_also_is_a_parse_error() {
     AstScanner scanner = new AstScanner(new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, FakeGrammar.builder().build()));
     scanner.withSquidAstVisitor(new SquidAstVisitor<LexerlessGrammar>() {
