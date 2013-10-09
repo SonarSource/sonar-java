@@ -34,10 +34,10 @@ public class SwitchWithLabelsCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchAtLeastThreeCasesCheck.java"), new SwitchAtLeastThreeCasesCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchWithLabelsCheck.java"), new SwitchWithLabelsCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Replace this \"switch\" statement by \"if\" statements to increase readability.")
-      .next().atLine(22);
+      .next().atLine(8).withMessage("Remove this misleading \"foo\" label.")
+      .next().atLine(10).withMessage("Remove this misleading \"bar\" label.");
   }
 
 }
