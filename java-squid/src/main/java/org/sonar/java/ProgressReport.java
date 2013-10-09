@@ -24,17 +24,21 @@ import org.slf4j.LoggerFactory;
 
 public class ProgressReport implements Runnable {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ProgressReport.class);
-
   private final long period;
+  private final Logger logger;
   private String message = "";
   private final Thread thread;
   private String stopMessage = "";
 
-  public ProgressReport(String threadName, long period) {
+  public ProgressReport(String threadName, long period, Logger logger) {
     this.period = period;
+    this.logger = logger;
     thread = new Thread(this);
     thread.setName(threadName);
+  }
+
+  public ProgressReport(String threadName, long period) {
+    this(threadName, period, LoggerFactory.getLogger(ProgressReport.class));
   }
 
   @Override
@@ -42,16 +46,16 @@ public class ProgressReport implements Runnable {
     while (!Thread.interrupted()) {
       try {
         Thread.sleep(period);
-        LOG.info(message);
+        logger.info(message);
       } catch (InterruptedException e) {
         thread.interrupt();
       }
     }
-    LOG.info(stopMessage);
+    logger.info(stopMessage);
   }
 
   public void start(String startMessage) {
-    LOG.info(startMessage);
+    logger.info(startMessage);
     thread.start();
   }
 
