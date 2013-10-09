@@ -81,3 +81,18 @@ class A {
     }
   }
 }
+
+public interface IFoo {
+
+  static IFoo FOO = new IFoo() {
+    // Noncompliant
+    public void foo() {
+    }
+
+    // Compliant
+    public void bar() {
+      System.out.println();
+    }
+  };
+
+}
