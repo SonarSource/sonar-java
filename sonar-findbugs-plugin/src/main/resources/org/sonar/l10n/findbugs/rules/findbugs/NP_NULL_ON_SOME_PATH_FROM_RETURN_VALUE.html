@@ -10,7 +10,7 @@ public long getTime() {
   return getDate().getTime();      // NullPointerException may occur
 }
 
-@CheckForNull                      // See JSR 305 and javax.annotation.CheckForNull
+@CheckForNull                      // See javax.annotation.CheckForNull (JSR-305)
 public Date getDate() { /* ... */ }
 </pre>
 
@@ -24,6 +24,6 @@ public long getTime() {
   return date.getTime();
 }
 
-@CheckForNull                      // See JSR 305 and javax.annotation.CheckForNull
+@CheckForNull                      // See javax.annotation.CheckForNull (JSR-305)
 public Date getDate() { /* ... */ }
 </pre>
