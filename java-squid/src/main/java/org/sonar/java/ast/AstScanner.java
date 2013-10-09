@@ -95,7 +95,7 @@ public class AstScanner {
         astWalker.walkAndVisit(ast);
       } catch (RecognitionException e) {
         LOG.error("Unable to parse source file : " + file.getAbsolutePath());
-        LOG.error(e.getMessage(), e);
+        LOG.error(e.getMessage());
 
         parseErrorWalkAndVisit(e, file);
       } catch (Exception e) {
