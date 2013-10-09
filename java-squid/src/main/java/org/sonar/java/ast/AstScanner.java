@@ -27,7 +27,6 @@ import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.ast.AstWalker;
-import com.sonar.sslr.impl.events.ExtendedStackTrace;
 import com.sonar.sslr.squid.SquidAstVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,16 +58,10 @@ public class AstScanner {
   private final List<SquidAstVisitor<LexerlessGrammar>> visitors = Lists.newArrayList();
   private final List<AuditListener> auditListeners = Lists.newArrayList();
   private final Parser<LexerlessGrammar> parser;
-  private final Parser<LexerlessGrammar> parserDebug;
   private CommentAnalyser commentAnalyser;
 
   public AstScanner(Parser<LexerlessGrammar> parser) {
     this.parser = parser;
-    this.parserDebug = Parser.builder(parser)
-      .setParsingEventListeners()
-      .setExtendedStackTrace(new ExtendedStackTrace())
-      .setRecognictionExceptionListener(this.auditListeners.toArray(new AuditListener[this.auditListeners.size()]))
-      .build();
   }
 
   public void scan(Collection<InputFile> files) {
@@ -104,27 +97,9 @@ public class AstScanner {
         LOG.error("Unable to parse source file : " + file.getAbsolutePath());
         LOG.error(e.getMessage(), e);
 
-        try {
-          // Process the exception
-          for (SquidAstVisitor<? extends Grammar> visitor : visitors) {
-            visitor.visitFile(null);
-          }
-
-          for (AuditListener auditListener : auditListeners) {
-            auditListener.processRecognitionException(e);
-          }
-
-          for (SquidAstVisitor<? extends Grammar> visitor : Lists.reverse(visitors)) {
-            visitor.leaveFile(null);
-          }
-
-        } catch (Exception e2) {
-          String errorMessage = "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
-          throw new AnalysisException(errorMessage, e2);
-        }
+        parseErrorWalkAndVisit(e, file);
       } catch (Exception e) {
-        String errorMessage = "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
-        throw new AnalysisException(errorMessage, e);
+        throw new AnalysisException(getAnalyisExceptionMessage(file), e);
       }
     }
     progressReport.stop(files.size() + "/" + files.size() + " source files analyzed");
@@ -136,6 +111,30 @@ public class AstScanner {
     SourceCodeTreeDecorator decorator = new SourceCodeTreeDecorator(project);
     decorator.decorateWith(JavaMetric.values());
     decorator.decorateWith(org.sonar.squid.measures.Metric.values());
+  }
+
+  private void parseErrorWalkAndVisit(RecognitionException e, File file) {
+    try {
+      // Process the exception
+      for (SquidAstVisitor<? extends Grammar> visitor : visitors) {
+        visitor.visitFile(null);
+      }
+
+      for (AuditListener auditListener : auditListeners) {
+        auditListener.processRecognitionException(e);
+      }
+
+      for (SquidAstVisitor<? extends Grammar> visitor : Lists.reverse(visitors)) {
+        visitor.leaveFile(null);
+      }
+
+    } catch (Exception e2) {
+      throw new AnalysisException(getAnalyisExceptionMessage(file), e2);
+    }
+  }
+
+  private static String getAnalyisExceptionMessage(File file) {
+    return "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
   }
 
   public void withSquidAstVisitor(SquidAstVisitor<LexerlessGrammar> visitor) {
