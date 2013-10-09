@@ -48,6 +48,24 @@ import static org.mockito.Mockito.when;
 public class AbstractSurefireParserTest {
 
   @Test
+  public void should_store_zero_tests_when_directory_is_null_or_non_existing_or_a_file() throws Exception {
+    AbstractSurefireParser parser = newParser();
+    Project project = mock(Project.class);
+
+    SensorContext context = mockContext();
+    parser.collect(project, context, null);
+    verify(context).saveMeasure(CoreMetrics.TESTS, 0.0);
+
+    context = mockContext();
+    parser.collect(project, context, getDir("nonExistingReportsDirectory"));
+    verify(context).saveMeasure(CoreMetrics.TESTS, 0.0);
+
+    context = mockContext();
+    parser.collect(project, context, getDir("file.txt"));
+    verify(context).saveMeasure(CoreMetrics.TESTS, 0.0);
+  }
+
+  @Test
   public void shouldAggregateReports() throws URISyntaxException {
     AbstractSurefireParser parser = newParser();
     SensorContext context = mockContext();
@@ -128,11 +146,11 @@ public class AbstractSurefireParserTest {
     parser.collect(new Project("foo"), context, getDir("innerClasses"));
 
     verify(context)
-        .saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap")), eq(CoreMetrics.TESTS), eq(7.0));
+      .saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap")), eq(CoreMetrics.TESTS), eq(7.0));
     verify(context).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap")), eq(CoreMetrics.TEST_ERRORS),
-        eq(1.0));
+      eq(1.0));
     verify(context, never()).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap$TestBidiMapEntrySet")),
-        any(Metric.class), anyDouble());
+      any(Metric.class), anyDouble());
   }
 
   @Test
@@ -143,9 +161,9 @@ public class AbstractSurefireParserTest {
     parser.collect(new Project("foo"), context, getDir("nestedInnerClasses"));
 
     verify(context).saveMeasure(
-        argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.sonar.plugins.surefire.NestedInnerTest")),
-        eq(CoreMetrics.TESTS),
-        eq(3.0));
+      argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.sonar.plugins.surefire.NestedInnerTest")),
+      eq(CoreMetrics.TESTS),
+      eq(3.0));
   }
 
   private AbstractSurefireParser newParser() {
@@ -158,7 +176,7 @@ public class AbstractSurefireParserTest {
   }
 
   private java.io.File getDir(String dirname) throws URISyntaxException {
-    return new java.io.File(getClass().getResource("/org/sonar/plugins/surefire/api/AbstractSurefireParserTest/" + dirname).toURI());
+    return new java.io.File("src/test/resources/org/sonar/plugins/surefire/api/AbstractSurefireParserTest/" + dirname);
   }
 
   private SensorContext mockContext() {
