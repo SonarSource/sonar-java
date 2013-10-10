@@ -24,11 +24,12 @@ import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 public abstract class JavaTree implements Tree {
 
-  private AstNode astNode;
+  private final AstNode astNode;
 
   public JavaTree(AstNode astNode) {
     this.astNode = astNode;
@@ -270,7 +271,8 @@ public abstract class JavaTree implements Tree {
     private final List<ExpressionTree> throwsClauses;
     private final ExpressionTree defaultValue;
 
-    public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, IdentifierTree name, List<VariableTree> parameters, @Nullable BlockTree block, List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
+    public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, IdentifierTree name, List<VariableTree> parameters, @Nullable BlockTree block,
+      List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
       super(astNode);
       this.modifiers = Preconditions.checkNotNull(modifiers);
       this.returnType = returnType;
@@ -448,7 +450,8 @@ public abstract class JavaTree implements Tree {
     private final List<? extends StatementTree> update;
     private final StatementTree statement;
 
-    public ForStatementTreeImpl(AstNode astNode, List<? extends StatementTree> initializer, @Nullable ExpressionTree condition, List<? extends StatementTree> update, StatementTree statement) {
+    public ForStatementTreeImpl(AstNode astNode, List<? extends StatementTree> initializer, @Nullable ExpressionTree condition, List<? extends StatementTree> update,
+      StatementTree statement) {
       super(astNode);
       this.initializer = Preconditions.checkNotNull(initializer);
       this.condition = condition;
@@ -1064,8 +1067,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Object value() {
-      throw new UnsupportedOperationException("not implemented");
+    public String value() {
+      return super.astNode.getTokenOriginalValue();
     }
 
     @Override
@@ -1547,10 +1550,12 @@ public abstract class JavaTree implements Tree {
       this.bound = Preconditions.checkNotNull(bound);
     }
 
+    @Override
     protected Kind getKind() {
       throw new UnsupportedOperationException("not implemented");
     }
 
+    @Override
     public Tree bound() {
       return bound;
     }
@@ -1562,7 +1567,7 @@ public abstract class JavaTree implements Tree {
 
   public static class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
     // TODO remove:
-    public static final ModifiersTreeImpl EMPTY = new ModifiersTreeImpl(null, ImmutableList.<Modifier>of());
+    public static final ModifiersTreeImpl EMPTY = new ModifiersTreeImpl(null, ImmutableList.<Modifier> of());
 
     private final List<Modifier> modifiers;
 

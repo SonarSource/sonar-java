@@ -140,6 +140,7 @@ public final class CheckList {
       SwitchWithLabelsCheck.class,
       SwitchAtLeastThreeCasesCheck.class,
       ClassCouplingCheck.class,
+      OctalValuesCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,

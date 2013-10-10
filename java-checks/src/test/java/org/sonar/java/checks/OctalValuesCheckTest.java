@@ -17,21 +17,27 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.model;
+package org.sonar.java.checks;
 
-/**
- * Literal expression.
- *
- * JLS 15.8.1
- *
- * <pre>
- *   {@link #value()}
- * </pre>
- *
- * @since Java 1.3
- */
-public interface LiteralTree extends ExpressionTree {
+import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.sonar.java.JavaAstScanner;
+import org.sonar.squid.api.SourceFile;
 
-  String value();
+import java.io.File;
+
+public class OctalValuesCheckTest {
+
+  @Rule
+  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+
+  @Test
+  public void detected() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/OctalValuesCheck.java"), new OctalValuesCheck());
+    checkMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(5).withMessage("Use decimal values instead of octal ones.")
+      .next().atLine(6);
+  }
 
 }

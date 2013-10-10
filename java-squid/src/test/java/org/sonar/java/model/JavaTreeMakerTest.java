@@ -44,10 +44,10 @@ public class JavaTreeMakerTest {
   @Test
   public void integration_test() {
     Iterable<File> files = Iterables.concat(
-      FileUtils.listFiles(new File("src/main/java/"), new String[]{"java"}, true),
-      FileUtils.listFiles(new File("src/test/java/"), new String[]{"java"}, true),
-      FileUtils.listFiles(new File("src/test/files/"), new String[]{"java"}, true)
-    );
+      FileUtils.listFiles(new File("src/main/java/"), new String[] {"java"}, true),
+      FileUtils.listFiles(new File("src/test/java/"), new String[] {"java"}, true),
+      FileUtils.listFiles(new File("src/test/files/"), new String[] {"java"}, true)
+      );
     TreeVisitorsDispatcher visitors = new TreeVisitorsDispatcher(ImmutableList.of(new CompleteVisitor()));
     for (File file : files) {
       Tree tree = maker.compilationUnit(p.parse(file));
@@ -78,38 +78,47 @@ public class JavaTreeMakerTest {
     AstNode astNode = p.parse("class T { int m() { return 1; } }").getFirstDescendant(JavaGrammar.LITERAL);
     LiteralTree tree = maker.literal(astNode);
     assertThat(tree.is(Tree.Kind.INT_LITERAL)).isTrue();
+    assertThat(tree.value()).isEqualTo("1");
 
     astNode = p.parse("class T { long m() { return 1L; } }").getFirstDescendant(JavaGrammar.LITERAL);
     tree = maker.literal(astNode);
     assertThat(tree.is(Tree.Kind.LONG_LITERAL)).isTrue();
+    assertThat(tree.value()).isEqualTo("1L");
 
     astNode = p.parse("class T { float m() { return 1F; } }").getFirstDescendant(JavaGrammar.LITERAL);
     tree = maker.literal(astNode);
     assertThat(tree.is(Tree.Kind.FLOAT_LITERAL)).isTrue();
+    assertThat(tree.value()).isEqualTo("1F");
 
     astNode = p.parse("class T { double m() { return 1d; } }").getFirstDescendant(JavaGrammar.LITERAL);
     tree = maker.literal(astNode);
     assertThat(tree.is(Tree.Kind.DOUBLE_LITERAL)).isTrue();
+    assertThat(tree.value()).isEqualTo("1d");
 
     astNode = p.parse("class T { boolean m() { return true; } }").getFirstDescendant(JavaGrammar.LITERAL);
     tree = maker.literal(astNode);
     assertThat(tree.is(Tree.Kind.BOOLEAN_LITERAL)).isTrue();
+    assertThat(tree.value()).isEqualTo("true");
 
     astNode = p.parse("class T { boolean m() { return false; } }").getFirstDescendant(JavaGrammar.LITERAL);
     tree = maker.literal(astNode);
     assertThat(tree.is(Tree.Kind.BOOLEAN_LITERAL)).isTrue();
+    assertThat(tree.value()).isEqualTo("false");
 
     astNode = p.parse("class T { char m() { return 'c'; } }").getFirstDescendant(JavaGrammar.LITERAL);
     tree = maker.literal(astNode);
     assertThat(tree.is(Tree.Kind.CHAR_LITERAL)).isTrue();
+    assertThat(tree.value()).isEqualTo("'c'");
 
     astNode = p.parse("class T { String m() { return \"s\"; } }").getFirstDescendant(JavaGrammar.LITERAL);
     tree = maker.literal(astNode);
     assertThat(tree.is(Tree.Kind.STRING_LITERAL)).isTrue();
+    assertThat(tree.value()).isEqualTo("\"s\"");
 
     astNode = p.parse("class T { Object m() { return null; } }").getFirstDescendant(JavaGrammar.LITERAL);
     tree = maker.literal(astNode);
     assertThat(tree.is(Tree.Kind.NULL_LITERAL)).isTrue();
+    assertThat(tree.value()).isEqualTo("null");
   }
 
   @Test
@@ -689,7 +698,7 @@ public class JavaTreeMakerTest {
     astNode = p.parse("class T { void m() { try (Resource r = open()) { } catch (Exception e) { } finally { } } }").getFirstDescendant(JavaGrammar.STATEMENT);
     tree = (TryStatementTree) maker.statement(astNode);
     // FIXME try with resources
-//    assertThat(tree.resources()).isEmpty();
+    // assertThat(tree.resources()).isEmpty();
     assertThat(tree.block()).isNotNull();
     assertThat(tree.catches()).hasSize(1);
     assertThat(tree.finallyBlock()).isNotNull();
@@ -778,17 +787,17 @@ public class JavaTreeMakerTest {
     assertThat(tree.enclosingExpression()).isNull();
     assertThat(tree.arguments()).hasSize(2);
     // FIXME
-//    assertThat(tree.identifier()).isNotNull();
+    // assertThat(tree.identifier()).isNotNull();
     assertThat(tree.classBody()).isNotNull();
-//    assertThat(tree.typeArguments()).isEmpty();
+    // assertThat(tree.typeArguments()).isEmpty();
 
     astNode = p.parse("class T { T m() { return Enclosing.new T(true, false) {}; } }").getFirstDescendant(JavaGrammar.PRIMARY);
     tree = (NewClassTree) maker.primary(astNode);
     assertThat(tree.enclosingExpression()).isNotNull();
-//    assertThat(tree.identifier()).isNotNull();
+    // assertThat(tree.identifier()).isNotNull();
     assertThat(tree.arguments()).hasSize(2);
     assertThat(tree.classBody()).isNotNull();
-//    assertThat(tree.typeArguments()).isEmpty();
+    // assertThat(tree.typeArguments()).isEmpty();
   }
 
   /**
@@ -820,10 +829,10 @@ public class JavaTreeMakerTest {
     MemberSelectExpressionTree tree;
 
     // TODO greedily consumed by QUALIFIED_IDENTIFIER?:
-//    AstNode astNode = p.parse("class T { int m() { return primary.identifier; } }").getFirstDescendant(JavaGrammar.EXPRESSION);
-//    MemberSelectExpressionTree tree = (MemberSelectExpressionTree) maker.makeFrom(astNode);
-//    assertThat(tree.expression()).isNotNull();
-//    assertThat(tree.identifier()).isNotNull();
+    // AstNode astNode = p.parse("class T { int m() { return primary.identifier; } }").getFirstDescendant(JavaGrammar.EXPRESSION);
+    // MemberSelectExpressionTree tree = (MemberSelectExpressionTree) maker.makeFrom(astNode);
+    // assertThat(tree.expression()).isNotNull();
+    // assertThat(tree.identifier()).isNotNull();
 
     astNode = p.parse("class T { int m() { return super.identifier; } }").getFirstDescendant(JavaGrammar.EXPRESSION);
     tree = (MemberSelectExpressionTree) maker.expression(astNode);
