@@ -60,7 +60,9 @@ public class UndocumentedApiCheckTest {
         .next().atLine(139).withMessage("Document the parameter(s): a")
         .next().atLine(162).withMessage("Document the parameter(s): a, b, c")
         .next().atLine(162).withMessage("Document this method return value.")
-        .next().atLine(167).withMessage("Document this public method.");
+        .next().atLine(167).withMessage("Document this public method.")
+        .next().atLine(187).withMessage("Document this method return value.")
+        .next().atLine(200).withMessage("Document the parameter(s): <T>");
   }
 
   @Test
