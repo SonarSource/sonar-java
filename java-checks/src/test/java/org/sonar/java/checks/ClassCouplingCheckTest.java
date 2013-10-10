@@ -40,7 +40,9 @@ public class ClassCouplingCheckTest {
       .withMessage("Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 21 to the maximum authorized 20 or less.")
       .next().atLine(33)
       .next().atLine(60)
-      .next().atLine(85);
+      .next().atLine(85)
+      .next().atLine(144)
+      .withMessage("Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 21 to the maximum authorized 20 or less.");
   }
 
   @Test

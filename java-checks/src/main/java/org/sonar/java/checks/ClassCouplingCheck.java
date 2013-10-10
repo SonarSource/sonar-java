@@ -21,16 +21,15 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
-import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
@@ -54,7 +53,7 @@ public class ClassCouplingCheck extends SquidCheck<LexerlessGrammar> {
   public void init() {
     subscribeTo(
       JavaGrammar.CLASS_DECLARATION,
-      JavaGrammar.TYPE);
+      JavaGrammar.CLASS_TYPE);
   }
 
   @Override
@@ -63,7 +62,9 @@ public class ClassCouplingCheck extends SquidCheck<LexerlessGrammar> {
       nesting.push(types);
       types = Sets.newHashSet();
     } else if (types != null) {
-      types.add(joinTokens(node.getTokens()));
+      for (AstNode identifier : node.getChildren(JavaTokenType.IDENTIFIER)) {
+        types.add(identifier.getTokenOriginalValue());
+      }
     }
   }
 
@@ -80,14 +81,6 @@ public class ClassCouplingCheck extends SquidCheck<LexerlessGrammar> {
 
       types = nesting.pop();
     }
-  }
-
-  private String joinTokens(List<Token> tokens) {
-    StringBuilder sb = new StringBuilder();
-    for (Token token : tokens) {
-      sb.append(token.getOriginalValue());
-    }
-    return sb.toString();
   }
 
 }
