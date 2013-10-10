@@ -388,6 +388,7 @@
     <configKey><![CDATA[rulesets/coupling.xml/ExcessiveImports]]></configKey>
     <param key="minimum" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="LooseCoupling">

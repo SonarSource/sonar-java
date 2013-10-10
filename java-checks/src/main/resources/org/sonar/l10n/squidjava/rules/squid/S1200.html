@@ -1,0 +1,37 @@
+<p>According to the Single Responsibility Principle, introduced by Robert C. Martin in his book "Principles of Object Oriented Design", a class should have only one responsibility:</p>
+
+<blockquote>
+If a class has more than one responsibility, then the responsibilities become coupled.
+Changes to one responsibility may impair or inhibit the class’ ability to meet the others.
+This kind of coupling leads to fragile designs that break in unexpected ways when changed.
+</blockquote>
+
+<p>Classes which rely on many other classes tend to aggregate too many responsibilities and should be split into several smaller ones.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+class Foo { // Noncompliant - depends on too many other classes
+  T1 a1;    // Foo is coupled to T1
+  T2 a2;    // Foo is coupled to T2
+  T3 a3;    // Foo is coupled to T3
+  T4 a4;    // etc.
+  T5 a6;
+  T6 a6;
+  T7 a7;
+  T8 a8;
+  T9 a9;
+  T10 a10;
+  T11 a11;
+  T12 a12;
+  T13 a13;
+  T14 a14;
+  T15 a15;
+  T16 a16;
+  T17 a17;
+  T18 a18;
+  T19 a19;
+  T20 a20;
+  T21 a21;
+}
+</pre>
