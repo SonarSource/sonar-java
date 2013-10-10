@@ -38,7 +38,9 @@ public class ClassCouplingCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(1)
       .withMessage("Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 21 to the maximum authorized 20 or less.")
-      .next().atLine(33);
+      .next().atLine(33)
+      .next().atLine(60)
+      .next().atLine(85);
   }
 
   @Test

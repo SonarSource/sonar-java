@@ -32,6 +32,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 @Rule(
   key = "S1200",
@@ -46,7 +47,8 @@ public class ClassCouplingCheck extends SquidCheck<LexerlessGrammar> {
     defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private final Set<String> types = Sets.newHashSet();
+  private final Stack<Set<String>> nesting = new Stack<Set<String>>();
+  private Set<String> types;
 
   @Override
   public void init() {
@@ -58,20 +60,25 @@ public class ClassCouplingCheck extends SquidCheck<LexerlessGrammar> {
   @Override
   public void visitNode(AstNode node) {
     if (node.is(JavaGrammar.CLASS_DECLARATION)) {
-      types.clear();
-    } else {
+      nesting.push(types);
+      types = Sets.newHashSet();
+    } else if (types != null) {
       types.add(joinTokens(node.getTokens()));
     }
   }
 
   @Override
   public void leaveNode(AstNode node) {
-    if (node.is(JavaGrammar.CLASS_DECLARATION) && types.size() > max) {
-      getContext().createLineViolation(
-        this,
-        "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from " +
-          types.size() + " to the maximum authorized " + max + " or less.",
-        node);
+    if (node.is(JavaGrammar.CLASS_DECLARATION)) {
+      if (types.size() > max) {
+        getContext().createLineViolation(
+          this,
+          "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from " +
+            types.size() + " to the maximum authorized " + max + " or less.",
+          node);
+      }
+
+      types = nesting.pop();
     }
   }
 
