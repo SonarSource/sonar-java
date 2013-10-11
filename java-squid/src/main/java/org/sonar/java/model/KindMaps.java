@@ -20,11 +20,15 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.api.JavaTokenType;
 
 import java.util.EnumMap;
+import java.util.Map;
 
 public final class KindMaps {
 
@@ -33,6 +37,7 @@ public final class KindMaps {
   private final EnumMap<JavaPunctuator, Tree.Kind> postfixOperators = Maps.newEnumMap(JavaPunctuator.class);
   private final EnumMap<JavaPunctuator, Tree.Kind> binaryOperators = Maps.newEnumMap(JavaPunctuator.class);
   private final EnumMap<JavaPunctuator, Tree.Kind> assignmentOperators = Maps.newEnumMap(JavaPunctuator.class);
+  private final Map<AstNodeType, Tree.Kind> literals;
 
   public Modifier getModifier(JavaKeyword keyword) {
     return Preconditions.checkNotNull(modifiers.get(keyword), "Mapping not found for modifier %s", keyword);
@@ -54,7 +59,23 @@ public final class KindMaps {
     return Preconditions.checkNotNull(assignmentOperators.get(punctuator), "Mapping not found for assignment operator %s", punctuator);
   }
 
+  public Tree.Kind getLiteral(AstNodeType tokenType) {
+    return Preconditions.checkNotNull(literals.get(tokenType), "Mapping not found for literal %s", tokenType);
+  }
+
   public KindMaps() {
+    ImmutableMap.Builder<AstNodeType, Tree.Kind> literals = ImmutableMap.builder();
+    literals.put(JavaTokenType.INTEGER_LITERAL, Tree.Kind.INT_LITERAL);
+    literals.put(JavaTokenType.LONG_LITERAL, Tree.Kind.LONG_LITERAL);
+    literals.put(JavaTokenType.FLOAT_LITERAL, Tree.Kind.FLOAT_LITERAL);
+    literals.put(JavaTokenType.DOUBLE_LITERAL, Tree.Kind.DOUBLE_LITERAL);
+    literals.put(JavaKeyword.TRUE, Tree.Kind.BOOLEAN_LITERAL);
+    literals.put(JavaKeyword.FALSE, Tree.Kind.BOOLEAN_LITERAL);
+    literals.put(JavaTokenType.CHARACTER_LITERAL, Tree.Kind.CHAR_LITERAL);
+    literals.put(JavaTokenType.LITERAL, Tree.Kind.STRING_LITERAL);
+    literals.put(JavaKeyword.NULL, Tree.Kind.NULL_LITERAL);
+    this.literals = literals.build();
+
     modifiers.put(JavaKeyword.PUBLIC, Modifier.PUBLIC);
     modifiers.put(JavaKeyword.PROTECTED, Modifier.PROTECTED);
     modifiers.put(JavaKeyword.PRIVATE, Modifier.PRIVATE);

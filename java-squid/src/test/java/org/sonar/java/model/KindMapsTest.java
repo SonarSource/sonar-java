@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.api.JavaTokenType;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -33,6 +34,23 @@ public class KindMapsTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
+
+  @Test
+  public void literals() {
+    assertThat(kindMaps.getLiteral(JavaTokenType.INTEGER_LITERAL)).isSameAs(Tree.Kind.INT_LITERAL);
+    assertThat(kindMaps.getLiteral(JavaTokenType.LONG_LITERAL)).isSameAs(Tree.Kind.LONG_LITERAL);
+    assertThat(kindMaps.getLiteral(JavaTokenType.FLOAT_LITERAL)).isSameAs(Tree.Kind.FLOAT_LITERAL);
+    assertThat(kindMaps.getLiteral(JavaTokenType.DOUBLE_LITERAL)).isSameAs(Tree.Kind.DOUBLE_LITERAL);
+    assertThat(kindMaps.getLiteral(JavaKeyword.TRUE)).isSameAs(Tree.Kind.BOOLEAN_LITERAL);
+    assertThat(kindMaps.getLiteral(JavaKeyword.FALSE)).isSameAs(Tree.Kind.BOOLEAN_LITERAL);
+    assertThat(kindMaps.getLiteral(JavaTokenType.CHARACTER_LITERAL)).isSameAs(Tree.Kind.CHAR_LITERAL);
+    assertThat(kindMaps.getLiteral(JavaTokenType.LITERAL)).isSameAs(Tree.Kind.STRING_LITERAL);
+    assertThat(kindMaps.getLiteral(JavaKeyword.NULL)).isSameAs(Tree.Kind.NULL_LITERAL);
+
+    thrown.expect(NullPointerException.class);
+    thrown.expectMessage("Mapping not found for literal null");
+    kindMaps.getLiteral(null);
+  }
 
   @Test
   public void modifiers() {

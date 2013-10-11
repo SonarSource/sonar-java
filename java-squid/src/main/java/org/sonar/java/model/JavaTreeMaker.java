@@ -65,28 +65,8 @@ public class JavaTreeMaker {
   @VisibleForTesting
   LiteralTree literal(AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaGrammar.LITERAL), "Unexpected AstNodeType: %s", astNode.getType().toString());
-    final Tree.Kind kind;
     astNode = astNode.getFirstChild();
-    if (astNode.is(JavaTokenType.INTEGER_LITERAL)) {
-      kind = Tree.Kind.INT_LITERAL;
-    } else if (astNode.is(JavaTokenType.LONG_LITERAL)) {
-      kind = Tree.Kind.LONG_LITERAL;
-    } else if (astNode.is(JavaTokenType.FLOAT_LITERAL)) {
-      kind = Tree.Kind.FLOAT_LITERAL;
-    } else  if (astNode.is(JavaTokenType.DOUBLE_LITERAL)) {
-      kind = Tree.Kind.DOUBLE_LITERAL;
-    } else  if (astNode.is(JavaKeyword.TRUE, JavaKeyword.FALSE)) {
-      kind = Tree.Kind.BOOLEAN_LITERAL;
-    } else  if (astNode.is(JavaTokenType.CHARACTER_LITERAL)) {
-      kind = Tree.Kind.CHAR_LITERAL;
-    } else  if (astNode.is(JavaTokenType.LITERAL)) {
-      kind = Tree.Kind.STRING_LITERAL;
-    } else  if (astNode.is(JavaKeyword.NULL)) {
-      kind = Tree.Kind.NULL_LITERAL;
-    } else {
-      throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString());
-    }
-    return new JavaTree.LiteralTreeImpl(astNode, kind);
+    return new JavaTree.LiteralTreeImpl(astNode, kindMaps.getLiteral(astNode.getType()));
   }
 
   /*
