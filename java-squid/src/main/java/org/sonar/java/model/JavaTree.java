@@ -954,15 +954,15 @@ public abstract class JavaTree implements Tree {
   public static class VariableTreeImpl extends JavaTree implements VariableTree {
     private final ModifiersTree modifiers;
     private final Tree type;
-    private final IdentifierTree identifier;
+    private final String simpleName;
     @Nullable
     private final ExpressionTree initializer;
 
-    public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree identifier, @Nullable ExpressionTree initializer) {
+    public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, String simpleName, @Nullable ExpressionTree initializer) {
       super(astNode);
       this.modifiers = Preconditions.checkNotNull(modifiers);
       this.type = Preconditions.checkNotNull(type);
-      this.identifier = identifier;
+      this.simpleName = Preconditions.checkNotNull(simpleName);
       this.initializer = initializer;
     }
 
@@ -982,8 +982,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public IdentifierTree name() {
-      return identifier;
+    public String simpleName() {
+      return simpleName;
     }
 
     @Nullable

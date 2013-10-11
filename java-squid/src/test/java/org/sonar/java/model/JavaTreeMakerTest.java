@@ -216,13 +216,13 @@ public class JavaTreeMakerTest {
     VariableTree tree = (VariableTree) declarations.get(0);
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
-    assertThat(tree.name()).isNotNull();
+    assertThat(tree.simpleName()).isEqualTo("f1");
     assertThat(tree.initializer()).isNotNull();
 
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
-    assertThat(tree.name()).isNotNull();
+    assertThat(tree.simpleName()).isEqualTo("f2");
     assertThat(tree.initializer()).isNull();
   }
 
@@ -300,13 +300,13 @@ public class JavaTreeMakerTest {
     VariableTree tree = (VariableTree) declarations.get(0);
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
-    assertThat(tree.name()).isNotNull();
+    assertThat(tree.simpleName()).isEqualTo("f1");
     assertThat(tree.initializer()).isNotNull();
 
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
-    assertThat(tree.name()).isNotNull();
+    assertThat(tree.simpleName()).isEqualTo("f2");
     assertThat(tree.initializer()).isNull();
   }
 
@@ -378,13 +378,13 @@ public class JavaTreeMakerTest {
     VariableTree tree = (VariableTree) declarations.get(0);
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
-    assertThat(tree.name()).isNotNull();
+    assertThat(tree.simpleName()).isEqualTo("f1");
     assertThat(tree.initializer()).isNotNull();
 
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
-    assertThat(tree.name()).isNotNull();
+    assertThat(tree.simpleName()).isEqualTo("f2");
     assertThat(tree.initializer()).isNotNull();
   }
 
@@ -447,12 +447,12 @@ public class JavaTreeMakerTest {
 
     VariableTree tree = (VariableTree) members.get(0);
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
-    assertThat(tree.name()).isNotNull();
+    assertThat(tree.simpleName()).isEqualTo("c1");
     assertThat(tree.initializer()).isNotNull();
 
     tree = (VariableTree) members.get(1);
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
-    assertThat(tree.name()).isNotNull();
+    assertThat(tree.simpleName()).isEqualTo("c2");
     assertThat(tree.initializer()).isNotNull();
   }
 
@@ -497,12 +497,12 @@ public class JavaTreeMakerTest {
 
     VariableTree tree = (VariableTree) declarations.get(0);
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
-    assertThat(tree.name()).isNotNull();
+    assertThat(tree.simpleName()).isEqualTo("a");
     assertThat(tree.initializer()).isNotNull();
 
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
-    assertThat(tree.name()).isNotNull();
+    assertThat(tree.simpleName()).isEqualTo("b");
     assertThat(tree.initializer()).isNull();
   }
 

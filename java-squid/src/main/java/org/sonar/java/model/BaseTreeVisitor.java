@@ -275,7 +275,6 @@ public class BaseTreeVisitor implements JavaTreeVisitor {
   public void visitVariable(VariableTree tree) {
 //    scan(tree.modifiers());
 //    scan(tree.type());
-    scan(tree.name());
     scan(tree.initializer());
   }
 

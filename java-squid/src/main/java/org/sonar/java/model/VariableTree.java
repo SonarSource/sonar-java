@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
  * JLS 8.3, 14.4
  *
  * <pre>
- *   {@link #modifiers()} {@link #type()} {@link #name()} {@link #initializer()} ;
+ *   {@link #modifiers()} {@link #type()} {@link #simpleName()} {@link #initializer()} ;
  * </pre>
  *
  * @since Java 1.3
@@ -38,7 +38,7 @@ public interface VariableTree extends StatementTree {
 
   Tree type();
 
-  IdentifierTree name();
+  String simpleName();
 
   @Nullable
   ExpressionTree initializer();

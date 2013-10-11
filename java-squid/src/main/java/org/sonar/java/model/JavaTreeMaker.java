@@ -132,7 +132,7 @@ public class JavaTreeMaker {
       astNode,
       modifiers,
       applyDim(type, astNode.getChildren(JavaGrammar.DIM).size()),
-      identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER)),
+      astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
       astNode.hasDirectChildren(JavaGrammar.VARIABLE_INITIALIZER) ? variableInitializer(astNode.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER)) : null
     );
   }
@@ -358,7 +358,7 @@ public class JavaTreeMaker {
         astNode,
         JavaTree.ModifiersTreeImpl.EMPTY,
         type,
-        identifier(variableDeclaratorIdNode.getFirstChild(JavaTokenType.IDENTIFIER)),
+        variableDeclaratorIdNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
         null
       ));
     }
@@ -484,11 +484,13 @@ public class JavaTreeMaker {
     Preconditions.checkArgument(astNode.is(JavaGrammar.INTERFACE_METHOD_OR_FIELD_DECL, JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST), "Unexpected AstNodeType: %s", astNode.getType().toString());
     ExpressionTree type = referenceType(astNode.getFirstChild(JavaGrammar.TYPE, JavaKeyword.VOID));
     for (AstNode constantDeclaratorRestNode : astNode.getDescendants(JavaGrammar.CONSTANT_DECLARATOR_REST)) {
+      AstNode identifierNode = constantDeclaratorRestNode.getPreviousAstNode();
+      Preconditions.checkState(identifierNode.is(JavaTokenType.IDENTIFIER));
       members.add(new JavaTree.VariableTreeImpl(
         constantDeclaratorRestNode,
         modifiers,
         applyDim(type, constantDeclaratorRestNode.getChildren(JavaGrammar.DIM).size()),
-        identifier(constantDeclaratorRestNode.getPreviousAstNode()),
+        identifierNode.getTokenValue(),
         variableInitializer(constantDeclaratorRestNode.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER))
       ));
     }
@@ -776,7 +778,7 @@ public class JavaTreeMaker {
           JavaTree.ModifiersTreeImpl.EMPTY,
           // TODO dim
           referenceType(formalParameterNode.getFirstChild(JavaGrammar.TYPE)),
-          identifier(formalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER)),
+          formalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
           null
         ),
         expression(astNode.getFirstChild(JavaGrammar.EXPRESSION)),
@@ -860,7 +862,7 @@ public class JavaTreeMaker {
           catchFormalParameterNode,
           JavaTree.ModifiersTreeImpl.EMPTY,
           qualifiedIdentifier(catchFormalParameterNode.getFirstChild(JavaGrammar.CATCH_TYPE).getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER)),
-          identifier(catchFormalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER)),
+          catchFormalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
           null
         ),
         block(catchNode.getFirstChild(JavaGrammar.BLOCK))
