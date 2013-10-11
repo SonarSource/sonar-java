@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -27,7 +28,11 @@ import java.util.List;
  * JLS 8.1, 8.9, 9.1, 9.6
  *
  * <pre>
- *   {@link #modifiers()} class {@link #simpleName()} {@link #typeParameters()} extends {@link #extendsClause()} implements {@link #implementsClause()} {
+ *   {@link #modifiers()} class {@link #simpleName()} {@link #typeParameters()} extends {@link #superClass()} implements {@link #superInterfaces()} {
+ *     {@link #members()}
+ *   }
+ *
+ *   {@link #modifiers()} interface {@link #simpleName()} {@link #typeParameters()} extends {@link #superInterfaces()} {
  *     {@link #members()}
  *   }
  * </pre>
@@ -36,15 +41,17 @@ import java.util.List;
  */
 public interface ClassTree extends StatementTree {
 
+  @Nullable
   String simpleName();
 
   List<? extends Tree> typeParameters();
 
   ModifiersTree modifiers();
 
-  Tree extendsClause();
+  @Nullable
+  Tree superClass();
 
-  List<? extends Tree> implementsClause();
+  List<? extends Tree> superInterfaces();
 
   List<? extends Tree> members();
 

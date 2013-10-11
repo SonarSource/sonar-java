@@ -209,8 +209,27 @@ public class JavaTreeMaker {
    */
   private ClassTree classDeclaration(ModifiersTree modifiers, AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_DECLARATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
-    // TODO modifiers, extends, implements
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.CLASS, modifiers, classBody(astNode.getFirstChild(JavaGrammar.CLASS_BODY)));
+    String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
+    AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
+    Tree superClass = extendsNode != null ? classType(extendsNode.getNextSibling()) : null;
+    AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
+    List<? extends Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
+    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.CLASS,
+      modifiers,
+      simpleName,
+      superClass,
+      superInterfaces,
+      classBody(astNode.getFirstChild(JavaGrammar.CLASS_BODY))
+    );
+  }
+
+  private List<? extends Tree> classTypeList(AstNode astNode) {
+    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE_LIST));
+    ImmutableList.Builder<Tree> result = ImmutableList.builder();
+    for (AstNode classTypeNode : astNode.getChildren(JavaGrammar.CLASS_TYPE)) {
+      result.add(classType(classTypeNode));
+    }
+    return result.build();
   }
 
   /**
@@ -350,6 +369,7 @@ public class JavaTreeMaker {
    */
   private ClassTree enumDeclaration(ModifiersTree modifiers, AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaGrammar.ENUM_DECLARATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     AstNode enumBodyNode = astNode.getFirstChild(JavaGrammar.ENUM_BODY);
     AstNode enumConstantsNode = enumBodyNode.getFirstChild(JavaGrammar.ENUM_CONSTANTS);
@@ -375,7 +395,9 @@ public class JavaTreeMaker {
     if (enumBodyDeclarationsNode != null) {
       members.addAll(classBody(enumBodyDeclarationsNode));
     }
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, members.build());
+    AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
+    List<? extends Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
+    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, simpleName, null, superInterfaces, members.build());
   }
 
   /*
@@ -387,6 +409,7 @@ public class JavaTreeMaker {
    */
   private ClassTree interfaceDeclaration(ModifiersTree modifiers, AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaGrammar.INTERFACE_DECLARATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode interfaceBodyDeclarationNode : astNode.getFirstChild(JavaGrammar.INTERFACE_BODY).getChildren(JavaGrammar.INTERFACE_BODY_DECLARATION)) {
       ModifiersTree memberModifiers = modifiers(interfaceBodyDeclarationNode.getChildren(JavaGrammar.MODIFIER));
@@ -395,7 +418,9 @@ public class JavaTreeMaker {
         appendInterfaceMember(memberModifiers, members, interfaceMemberDeclNode);
       }
     }
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.INTERFACE, modifiers, members.build());
+    AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
+    List<? extends Tree> superInterfaces = extendsNode != null ? classTypeList(extendsNode.getNextSibling()) : ImmutableList.<Tree>of();
+    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.INTERFACE, modifiers, simpleName, null, superInterfaces, members.build());
   }
 
   /**
@@ -473,6 +498,7 @@ public class JavaTreeMaker {
    */
   private ClassTree annotationTypeDeclaration(ModifiersTree modifiers, AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaGrammar.ANNOTATION_TYPE_DECLARATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode annotationTypeElementDeclarationNode : astNode.getFirstChild(JavaGrammar.ANNOTATION_TYPE_BODY).getChildren(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)) {
       AstNode annotationTypeElementRestNode = annotationTypeElementDeclarationNode.getFirstChild(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST);
@@ -480,7 +506,13 @@ public class JavaTreeMaker {
         appendAnnotationTypeElementDeclaration(members, annotationTypeElementRestNode);
       }
     }
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ANNOTATION_TYPE, modifiers, members.build());
+    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ANNOTATION_TYPE,
+      modifiers,
+      simpleName,
+      null,
+      ImmutableList.<Tree>of(),
+      members.build()
+    );
   }
 
   /**

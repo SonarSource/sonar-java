@@ -168,6 +168,16 @@ public class JavaTreeMakerTest {
     AstNode astNode = p.parse("public class T extends C implements I1, I2 { }");
     ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.superClass()).isNotNull();
+    assertThat(tree.superInterfaces()).hasSize(2);
+
+    astNode = p.parse("public class T { }");
+    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.superClass()).isNull();
+    assertThat(tree.superInterfaces()).isEmpty();
   }
 
   @Test
@@ -250,6 +260,23 @@ public class JavaTreeMakerTest {
    */
 
   @Test
+  public void enum_declaration() {
+    AstNode astNode = p.parse("public enum T implements I1, I2 { }");
+    ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.superClass()).isNull();
+    assertThat(tree.superInterfaces()).hasSize(2);
+
+    astNode = p.parse("public enum T { }");
+    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.superClass()).isNull();
+    assertThat(tree.superInterfaces()).isEmpty();
+  }
+
+  @Test
   public void enum_constant() {
     AstNode astNode = p.parse("enum T { C1(1) { }, C2(2) { }; }");
     List<? extends Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
@@ -326,6 +353,23 @@ public class JavaTreeMakerTest {
    */
 
   @Test
+  public void interface_declaration() {
+    AstNode astNode = p.parse("public interface T extends I1, I2 { }");
+    ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.superClass()).isNull();
+    assertThat(tree.superInterfaces()).hasSize(2);
+
+    astNode = p.parse("public interface T { }");
+    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.superClass()).isNull();
+    assertThat(tree.superInterfaces()).isEmpty();
+  }
+
+  @Test
   public void interface_field() {
     AstNode astNode = p.parse("interface T { public int f1 = 42, f2[] = { 13 }; }");
     List<? extends Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
@@ -371,6 +415,16 @@ public class JavaTreeMakerTest {
   /*
    * 9.6. Annotation Types
    */
+
+  @Test
+  public void annotation_declaration() {
+    AstNode astNode = p.parse("public @interface T { }");
+    ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.superClass()).isNull();
+    assertThat(tree.superInterfaces()).isEmpty();
+  }
 
   @Test
   public void annotation_method() {

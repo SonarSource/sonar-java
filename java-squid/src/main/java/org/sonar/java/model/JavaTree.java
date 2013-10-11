@@ -184,13 +184,25 @@ public abstract class JavaTree implements Tree {
   public static class ClassTreeImpl extends JavaTree implements ClassTree {
     private final Kind kind;
     private final ModifiersTree modifiers;
+    private final String simpleName;
+    @Nullable
+    private final Tree superClass;
+    private final List<? extends Tree> superInterfaces;
     private final List<? extends Tree> members;
 
-    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, List<? extends Tree> members) {
+    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, String simpleName, @Nullable Tree superClass, List<? extends Tree> superInterfaces, List<? extends Tree> members) {
       super(astNode);
       this.kind = Preconditions.checkNotNull(kind);
       this.modifiers = Preconditions.checkNotNull(modifiers);
+      this.simpleName = simpleName;
+      this.superClass = superClass;
+      this.superInterfaces = Preconditions.checkNotNull(superInterfaces);
       this.members = Preconditions.checkNotNull(members);
+    }
+
+    // TODO remove:
+    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, List<? extends Tree> members) {
+      this(astNode, kind, modifiers, null, null, ImmutableList.<Tree>of(), members);
     }
 
     @Override
@@ -198,9 +210,10 @@ public abstract class JavaTree implements Tree {
       return kind;
     }
 
+    @Nullable
     @Override
     public String simpleName() {
-      throw new UnsupportedOperationException("not implemented");
+      return simpleName;
     }
 
     @Override
@@ -213,14 +226,15 @@ public abstract class JavaTree implements Tree {
       return modifiers;
     }
 
+    @Nullable
     @Override
-    public Tree extendsClause() {
-      throw new UnsupportedOperationException("not implemented");
+    public Tree superClass() {
+      return superClass;
     }
 
     @Override
-    public List<? extends Tree> implementsClause() {
-      throw new UnsupportedOperationException("not implemented");
+    public List<? extends Tree> superInterfaces() {
+      return superInterfaces;
     }
 
     @Override
@@ -231,6 +245,9 @@ public abstract class JavaTree implements Tree {
     @Override
     protected void accept(TreeVisitorsDispatcher visitors) {
       visitors.visit(this, getKind().associatedInterface);
+      scan(modifiers, visitors);
+      scan(superClass, visitors);
+      scan(superInterfaces, visitors);
       scan(members, visitors);
       visitors.leave(this, getKind().associatedInterface);
     }
