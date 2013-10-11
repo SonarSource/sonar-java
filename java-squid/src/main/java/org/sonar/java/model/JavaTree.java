@@ -748,9 +748,10 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class BreakStatementTreeImpl extends JavaTree implements BreakStatementTree {
+    @Nullable
     private final String label;
 
-    public BreakStatementTreeImpl(AstNode astNode, String label) {
+    public BreakStatementTreeImpl(AstNode astNode, @Nullable String label) {
       super(astNode);
       this.label = label;
     }
@@ -760,6 +761,7 @@ public abstract class JavaTree implements Tree {
       return Kind.BREAK_STATEMENT;
     }
 
+    @Nullable
     @Override
     public String label() {
       return label;
@@ -773,9 +775,10 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class ContinueStatementTreeImpl extends JavaTree implements ContinueStatementTree {
+    @Nullable
     private final String label;
 
-    public ContinueStatementTreeImpl(AstNode astNode, String label) {
+    public ContinueStatementTreeImpl(AstNode astNode, @Nullable String label) {
       super(astNode);
       this.label = label;
     }
@@ -785,6 +788,7 @@ public abstract class JavaTree implements Tree {
       return Kind.CONTINUE_STATEMENT;
     }
 
+    @Nullable
     @Override
     public String label() {
       return label;

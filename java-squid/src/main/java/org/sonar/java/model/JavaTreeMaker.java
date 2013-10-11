@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaKeyword;
@@ -32,10 +31,11 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 
 import javax.annotation.Nullable;
-import java.util.EnumMap;
 import java.util.List;
 
 public class JavaTreeMaker {
+
+  private final KindMaps kindMaps = new KindMaps();
 
   private IdentifierTree identifier(AstNode astNode) {
     Preconditions.checkArgument(astNode.is(
@@ -140,25 +140,10 @@ public class JavaTreeMaker {
         // TODO
       } else {
         JavaKeyword keyword = (JavaKeyword) astNode.getType();
-        modifiers.add(Preconditions.checkNotNull(this.modifiers.get(keyword), "no kind fo " + keyword));
+        modifiers.add(kindMaps.getModifier(keyword));
       }
     }
     return new JavaTree.ModifiersTreeImpl(modifierNodes.get(0), modifiers.build());
-  }
-
-  private final EnumMap<JavaKeyword, Modifier> modifiers = Maps.newEnumMap(JavaKeyword.class);
-  {
-    modifiers.put(JavaKeyword.PUBLIC, Modifier.PUBLIC);
-    modifiers.put(JavaKeyword.PROTECTED, Modifier.PROTECTED);
-    modifiers.put(JavaKeyword.PRIVATE, Modifier.PRIVATE);
-    modifiers.put(JavaKeyword.ABSTRACT, Modifier.ABSTRACT);
-    modifiers.put(JavaKeyword.STATIC, Modifier.STATIC);
-    modifiers.put(JavaKeyword.FINAL, Modifier.FINAL);
-    modifiers.put(JavaKeyword.TRANSIENT, Modifier.TRANSIENT);
-    modifiers.put(JavaKeyword.VOLATILE, Modifier.VOLATILE);
-    modifiers.put(JavaKeyword.SYNCHRONIZED, Modifier.SYNCHRONIZED);
-    modifiers.put(JavaKeyword.NATIVE, Modifier.NATIVE);
-    modifiers.put(JavaKeyword.STRICTFP, Modifier.STRICTFP);
   }
 
   private VariableTree variableDeclarator(ModifiersTree modifiers, ExpressionTree type, AstNode astNode) {
@@ -1095,7 +1080,7 @@ public class JavaTreeMaker {
     } else if (astNode.hasDirectChildren(JavaGrammar.PREFIX_OP)) {
       // 15.15. Unary Operators
       JavaPunctuator punctuator = (JavaPunctuator) astNode.getFirstChild(JavaGrammar.PREFIX_OP).getFirstChild().getType();
-      Tree.Kind kind = Preconditions.checkNotNull(prefixOperators.get(punctuator), "no kind fo " + punctuator);
+      Tree.Kind kind = kindMaps.getPrefixOperator(punctuator);
       return new JavaTree.UnaryExpressionTreeImpl(
         astNode,
         kind,
@@ -1109,7 +1094,7 @@ public class JavaTreeMaker {
       }
       for (AstNode postfixOpNode : astNode.getChildren(JavaGrammar.POST_FIX_OP)) {
         JavaPunctuator punctuator = (JavaPunctuator) postfixOpNode.getFirstChild().getType();
-        Tree.Kind kind = Preconditions.checkNotNull(postfixOperators.get(punctuator), "no kind fo " + punctuator);
+        Tree.Kind kind = kindMaps.getPostfixOperator(punctuator);
         result = new JavaTree.UnaryExpressionTreeImpl(astNode,kind, result);
       }
       return result;
@@ -1140,7 +1125,7 @@ public class JavaTreeMaker {
     ExpressionTree expression = expression(astNode.getLastChild());
     for (int i = astNode.getNumberOfChildren() - 3; i >= 0; i -= 2) {
       JavaPunctuator punctuator = (JavaPunctuator) astNode.getChild(i + 1).getType();
-      Tree.Kind kind = Preconditions.checkNotNull(binaryOperators.get(punctuator), "no kind for " + punctuator);
+      Tree.Kind kind = kindMaps.getBinaryOperator(punctuator);
       expression = new JavaTree.BinaryExpressionTreeImpl(
         astNode,
         expression(astNode.getChild(i)),
@@ -1149,62 +1134,6 @@ public class JavaTreeMaker {
       );
     }
     return expression;
-  }
-
-  private final EnumMap<JavaPunctuator, Tree.Kind> prefixOperators = Maps.newEnumMap(JavaPunctuator.class);
-  {
-    prefixOperators.put(JavaPunctuator.INC, Tree.Kind.PREFIX_INCREMENT);
-    prefixOperators.put(JavaPunctuator.DEC, Tree.Kind.PREFIX_DECREMENT);
-    prefixOperators.put(JavaPunctuator.PLUS, Tree.Kind.UNARY_PLUS);
-    prefixOperators.put(JavaPunctuator.MINUS, Tree.Kind.UNARY_MINUS);
-    prefixOperators.put(JavaPunctuator.TILDA, Tree.Kind.BITWISE_COMPLEMENT);
-    prefixOperators.put(JavaPunctuator.BANG, Tree.Kind.LOGICAL_COMPLEMENT);
-  }
-
-  private final EnumMap<JavaPunctuator, Tree.Kind> postfixOperators = Maps.newEnumMap(JavaPunctuator.class);
-  {
-    postfixOperators.put(JavaPunctuator.INC, Tree.Kind.POSTFIX_INCREMENT);
-    postfixOperators.put(JavaPunctuator.DEC, Tree.Kind.POSTFIX_DECREMENT);
-  }
-
-  private final EnumMap<JavaPunctuator, Tree.Kind> binaryOperators = Maps.newEnumMap(JavaPunctuator.class);
-  {
-    binaryOperators.put(JavaPunctuator.STAR, Tree.Kind.MULTIPLY);
-    binaryOperators.put(JavaPunctuator.DIV, Tree.Kind.DIVIDE);
-    binaryOperators.put(JavaPunctuator.MOD, Tree.Kind.REMAINDER);
-    binaryOperators.put(JavaPunctuator.PLUS, Tree.Kind.PLUS);
-    binaryOperators.put(JavaPunctuator.MINUS, Tree.Kind.MINUS);
-    binaryOperators.put(JavaPunctuator.SL, Tree.Kind.LEFT_SHIFT);
-    binaryOperators.put(JavaPunctuator.SR, Tree.Kind.RIGHT_SHIFT);
-    binaryOperators.put(JavaPunctuator.BSR, Tree.Kind.UNSIGNED_RIGHT_SHIFT);
-    binaryOperators.put(JavaPunctuator.LT, Tree.Kind.LESS_THAN);
-    binaryOperators.put(JavaPunctuator.GT, Tree.Kind.GREATER_THAN);
-    binaryOperators.put(JavaPunctuator.LE, Tree.Kind.LESS_THAN_OR_EQUAL_TO);
-    binaryOperators.put(JavaPunctuator.GE, Tree.Kind.GREATER_THAN_OR_EQUAL_TO);
-    binaryOperators.put(JavaPunctuator.EQUAL, Tree.Kind.EQUAL_TO);
-    binaryOperators.put(JavaPunctuator.NOTEQUAL, Tree.Kind.NOT_EQUAL_TO);
-    binaryOperators.put(JavaPunctuator.AND, Tree.Kind.AND);
-    binaryOperators.put(JavaPunctuator.HAT, Tree.Kind.XOR);
-    binaryOperators.put(JavaPunctuator.OR, Tree.Kind.OR);
-    binaryOperators.put(JavaPunctuator.ANDAND, Tree.Kind.CONDITIONAL_AND);
-    binaryOperators.put(JavaPunctuator.OROR, Tree.Kind.CONDITIONAL_OR);
-  }
-
-  private final EnumMap<JavaPunctuator, Tree.Kind> assignmentOperators = Maps.newEnumMap(JavaPunctuator.class);
-  {
-    assignmentOperators.put(JavaPunctuator.EQU, Tree.Kind.ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.PLUSEQU, Tree.Kind.PLUS_ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.STAREQU, Tree.Kind.MULTIPLY_ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.DIVEQU, Tree.Kind.DIVIDE_ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.MODEQU, Tree.Kind.REMAINDER_ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.PLUSEQU, Tree.Kind.PLUS_ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.MINUSEQU, Tree.Kind.MINUS_ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.SLEQU, Tree.Kind.LEFT_SHIFT_ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.SREQU, Tree.Kind.RIGHT_SHIFT_ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.BSREQU, Tree.Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.ANDEQU, Tree.Kind.AND_ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.HATEQU, Tree.Kind.XOR_ASSIGNMENT);
-    assignmentOperators.put(JavaPunctuator.OREQU, Tree.Kind.OR_ASSIGNMENT);
   }
 
   /**
@@ -1231,7 +1160,7 @@ public class JavaTreeMaker {
     ExpressionTree expression = expression(astNode.getLastChild());
     for (int i = astNode.getNumberOfChildren() - 3; i >= 0; i -= 2) {
       JavaPunctuator punctuator = (JavaPunctuator) astNode.getChild(i + 1).getFirstChild().getType();
-      Tree.Kind kind = Preconditions.checkNotNull(assignmentOperators.get(punctuator), "no kind for " + punctuator);
+      Tree.Kind kind = kindMaps.getAssignmentOperator(punctuator);
       expression = new JavaTree.AssignmentExpressionTreeImpl(
         astNode,
         expression(astNode.getChild(i)),
