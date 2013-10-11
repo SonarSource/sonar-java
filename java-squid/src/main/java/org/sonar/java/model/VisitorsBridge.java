@@ -46,7 +46,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
   public void visitFile(@Nullable AstNode astNode) {
     if (astNode != null) {
       Tree tree = treeMaker.compilationUnit(astNode);
-      ((JavaTree) tree).accept(visitors);
+      visitors.scan(tree);
     }
   }
 

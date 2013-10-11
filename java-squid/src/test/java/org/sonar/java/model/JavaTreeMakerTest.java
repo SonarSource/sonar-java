@@ -48,10 +48,10 @@ public class JavaTreeMakerTest {
       FileUtils.listFiles(new File("src/test/java/"), new String[] {"java"}, true),
       FileUtils.listFiles(new File("src/test/files/"), new String[] {"java"}, true)
       );
-    TreeVisitorsDispatcher visitors = new TreeVisitorsDispatcher(ImmutableList.of(new CompleteVisitor()));
+    TreeVisitorsDispatcher visitors = new TreeVisitorsDispatcher(ImmutableList.<TreeVisitor>of());
     for (File file : files) {
       Tree tree = maker.compilationUnit(p.parse(file));
-      JavaTree.scan(tree, visitors);
+      visitors.scan(tree);
     }
   }
 

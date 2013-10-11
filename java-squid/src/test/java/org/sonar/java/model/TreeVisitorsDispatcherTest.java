@@ -44,10 +44,8 @@ public class TreeVisitorsDispatcherTest {
     for (Tree.Kind kind : Tree.Kind.values()) {
       interfaces.add(kind.associatedInterface);
     }
-    for (Method method : CompleteVisitor.class.getMethods()) {
-      if ("visit".equals(method.getName())) {
-        interfaces.remove(method.getParameterTypes()[0]);
-      }
+    for (Method method : JavaTreeVisitor.class.getMethods()) {
+      interfaces.remove(method.getParameterTypes()[0]);
     }
     assertThat(interfaces).isEmpty();
   }
@@ -64,7 +62,7 @@ public class TreeVisitorsDispatcherTest {
     FakeVisitor visitor1 = Mockito.mock(FakeVisitor.class);
     FakeVisitor visitor2 = Mockito.mock(FakeVisitor.class);
     TreeVisitorsDispatcher dispatcher = new TreeVisitorsDispatcher(ImmutableList.of(visitor1, visitor2));
-    JavaTree.scan(ifStatement, dispatcher);
+    dispatcher.scan(ifStatement);
 
     InOrder inOrder = Mockito.inOrder(visitor1, visitor2);
     inOrder.verify(visitor1).visit(ifStatement);
@@ -92,7 +90,7 @@ public class TreeVisitorsDispatcherTest {
 
     TreeVisitorsDispatcher dispatcher = new TreeVisitorsDispatcher(ImmutableList.of(visitor));
     thrown.expect(RuntimeException.class);
-    JavaTree.scan(ifStatement, dispatcher);
+    dispatcher.scan(ifStatement);
   }
 
   private static interface FakeVisitor extends TreeVisitor {

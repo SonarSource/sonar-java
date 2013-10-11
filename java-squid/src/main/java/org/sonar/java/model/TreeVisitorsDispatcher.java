@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class TreeVisitorsDispatcher {
+public class TreeVisitorsDispatcher extends BaseTreeVisitor {
 
   private final List<? extends Object> visitors;
   private final Set<Class> visitorClasses;
@@ -96,6 +96,16 @@ public class TreeVisitorsDispatcher {
         return lookup(visitorClass, methodName, base);
       }
       return null;
+    }
+  }
+
+  @Override
+  protected void scan(Tree tree) {
+    if (tree != null) {
+      JavaTree javaTree = (JavaTree) tree;
+      visit(tree, javaTree.getKind().associatedInterface);
+      javaTree.accept(this);
+      leave(tree, javaTree.getKind().associatedInterface);
     }
   }
 

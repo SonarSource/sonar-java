@@ -50,19 +50,7 @@ public abstract class JavaTree implements Tree {
 
   protected abstract Kind getKind();
 
-  protected abstract void accept(TreeVisitorsDispatcher visitors);
-
-  protected static void scan(Iterable<? extends Tree> trees, TreeVisitorsDispatcher visitors) {
-    for (Tree tree : trees) {
-      scan(tree, visitors);
-    }
-  }
-
-  protected static void scan(@Nullable Tree tree, TreeVisitorsDispatcher visitors) {
-    if (tree != null) {
-      ((JavaTree) tree).accept(visitors);
-    }
-  }
+  public abstract void accept(JavaTreeVisitor visitor);
 
   public static class PrimitiveTypeTreeImpl extends JavaTree implements PrimitiveTypeTree {
     public PrimitiveTypeTreeImpl(AstNode astNode) {
@@ -75,7 +63,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
+    public void accept(JavaTreeVisitor visitor) {
     }
   }
 
@@ -98,9 +86,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitIdentifier(this);
     }
   }
 
@@ -144,10 +131,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(types, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitCompilationUnit(this);
     }
   }
 
@@ -177,7 +162,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
+    public void accept(JavaTreeVisitor visitor) {
     }
   }
 
@@ -243,13 +228,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(modifiers, visitors);
-      scan(superClass, visitors);
-      scan(superInterfaces, visitors);
-      scan(members, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitClass(this);
     }
   }
 
@@ -274,10 +254,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(body, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitInitializer(this);
     }
   }
 
@@ -353,10 +331,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(block, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitMethod(this);
     }
   }
 
@@ -379,10 +355,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(body, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitBlock(this);
     }
   }
 
@@ -421,12 +395,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(condition, visitors);
-      scan(thenStatement, visitors);
-      scan(elseStatement, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitIfStatement(this);
     }
   }
 
@@ -456,11 +426,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(condition, visitors);
-      scan(statement, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitWhileStatement(this);
     }
   }
 
@@ -507,13 +474,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(initializer, visitors);
-      scan(condition, visitors);
-      scan(update, visitors);
-      scan(statement, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitForStatement(this);
     }
   }
 
@@ -550,12 +512,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(variable, visitors);
-      scan(expression, visitors);
-      scan(statement, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitEnhancedForStatement(this);
     }
   }
 
@@ -570,9 +528,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitEmptyStatement(this);
     }
   }
 
@@ -595,10 +552,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(expression, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitExpressionStatement(this);
     }
   }
 
@@ -630,11 +585,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(condition, visitors);
-      scan(detail, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitAssertStatement(this);
     }
   }
 
@@ -664,11 +616,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(expression, visitors);
-      scan(cases, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitSwitchStatement(this);
     }
   }
 
@@ -698,11 +647,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(labels, visitors);
-      scan(body, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitCaseGroup(this);
     }
   }
 
@@ -727,10 +673,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(expression, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitCaseLabel(this);
     }
   }
 
@@ -760,11 +704,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(statement, visitors);
-      scan(condition, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitDoWhileStatement(this);
     }
   }
 
@@ -789,9 +730,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitBreakStatement(this);
     }
   }
 
@@ -816,9 +756,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitContinueStatement(this);
     }
   }
 
@@ -843,10 +782,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(expression, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitReturnStatement(this);
     }
   }
 
@@ -876,11 +813,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(expression, visitors);
-      scan(block, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitSynchronizedStatement(this);
     }
   }
 
@@ -903,10 +837,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(expression, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitThrowStatement(this);
     }
   }
 
@@ -952,13 +884,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(resources, visitors);
-      scan(block, visitors);
-      scan(catches, visitors);
-      scan(finallyBlock, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitTryStatement(this);
     }
   }
 
@@ -988,11 +915,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(parameter, visitors);
-      scan(block, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitCatch(this);
     }
   }
 
@@ -1022,10 +946,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(statement, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitLabeledStatement(this);
     }
   }
 
@@ -1071,10 +993,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(initializer, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitVariable(this);
     }
   }
 
@@ -1097,9 +1017,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitLiteral(this);
     }
   }
 
@@ -1131,11 +1050,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(leftOperand, visitors);
-      scan(rightOperand, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitBinaryExpression(this);
     }
   }
 
@@ -1160,10 +1076,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(expression, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitUnaryExpression(this);
     }
   }
 
@@ -1186,10 +1100,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(expression, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitParenthesized(this);
     }
   }
 
@@ -1226,12 +1138,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(condition, visitors);
-      scan(trueExpression, visitors);
-      scan(falseExpression, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitConditionalExpression(this);
     }
   }
 
@@ -1261,11 +1169,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(expression, visitors);
-      scan(type, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitInstanceOf(this);
     }
   }
 
@@ -1295,11 +1200,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(type, visitors);
-      scan(expression, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitTypeCast(this);
     }
   }
 
@@ -1331,11 +1233,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(variable, visitors);
-      scan(expression, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitAssignmentExpression(this);
     }
   }
 
@@ -1370,11 +1269,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(methodSelect, visitors);
-      scan(arguments, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitMethodInvocation(this);
     }
   }
 
@@ -1412,12 +1308,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(type, visitors);
-      scan(dimensions, visitors);
-      scan(initializers, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitNewArray(this);
     }
   }
 
@@ -1467,12 +1359,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(enclosingExpression, visitors);
-      scan(arguments, visitors);
-      scan(classBody, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitNewClass(this);
     }
   }
 
@@ -1502,11 +1390,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(expression, visitors);
-      scan(identifier, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitMemberSelectExpression(this);
     }
   }
 
@@ -1536,11 +1421,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
-      visitors.visit(this, getKind().associatedInterface);
-      scan(expression, visitors);
-      scan(index, visitors);
-      visitors.leave(this, getKind().associatedInterface);
+    public void accept(JavaTreeVisitor visitor) {
+      visitor.visitArrayAccessExpression(this);
     }
   }
 
@@ -1563,7 +1445,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
+    public void accept(JavaTreeVisitor visitor) {
     }
   }
 
@@ -1586,7 +1468,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
+    public void accept(JavaTreeVisitor visitor) {
     }
   }
 
@@ -1617,7 +1499,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected void accept(TreeVisitorsDispatcher visitors) {
+    public void accept(JavaTreeVisitor visitor) {
     }
   }
 

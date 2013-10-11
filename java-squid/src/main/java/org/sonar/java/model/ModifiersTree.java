@@ -30,11 +30,11 @@ import java.util.List;
  */
 public interface ModifiersTree extends Tree {
 
-  List<Modifier> modifiers();
-
   /**
    * @since Java 1.5
    */
   List<? extends AnnotationTree> annotations();
+
+  List<Modifier> modifiers();
 
 }
