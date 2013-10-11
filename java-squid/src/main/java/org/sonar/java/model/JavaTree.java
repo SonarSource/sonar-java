@@ -35,6 +35,10 @@ public abstract class JavaTree implements Tree {
     this.astNode = astNode;
   }
 
+  public AstNode getAstNode() {
+    return astNode;
+  }
+
   public int getLine() {
     return astNode.getTokenLine();
   }
@@ -265,14 +269,14 @@ public abstract class JavaTree implements Tree {
     @Nullable
     private final Tree returnType;
     private final IdentifierTree name;
-    private final List<VariableTree> parameters;
+    private final List<? extends VariableTree> parameters;
     @Nullable
     private final BlockTree block;
-    private final List<ExpressionTree> throwsClauses;
+    private final List<? extends ExpressionTree> throwsClauses;
     private final ExpressionTree defaultValue;
 
-    public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, IdentifierTree name, List<VariableTree> parameters, @Nullable BlockTree block,
-      List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
+    public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, IdentifierTree name, List<? extends VariableTree> parameters, @Nullable BlockTree block,
+      List<? extends ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
       super(astNode);
       this.modifiers = Preconditions.checkNotNull(modifiers);
       this.returnType = returnType;
@@ -655,7 +659,7 @@ public abstract class JavaTree implements Tree {
     private final List<? extends CaseLabelTree> labels;
     private final List<? extends StatementTree> body;
 
-    public CaseGroupTreeImpl(AstNode astNode, List<CaseLabelTree> labels, List<? extends StatementTree> body) {
+    public CaseGroupTreeImpl(AstNode astNode, List<? extends CaseLabelTree> labels, List<? extends StatementTree> body) {
       super(astNode);
       this.labels = Preconditions.checkNotNull(labels);
       this.body = Preconditions.checkNotNull(body);

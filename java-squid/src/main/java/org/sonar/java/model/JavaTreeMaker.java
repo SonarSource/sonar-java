@@ -658,14 +658,14 @@ public class JavaTreeMaker {
    */
   private SwitchStatementTree switchStatement(AstNode astNode) {
     ImmutableList.Builder<CaseGroupTree> cases = ImmutableList.builder();
-    List<CaseLabelTree > labels = Lists.newArrayList();
+    List<JavaTree.CaseLabelTreeImpl> labels = Lists.newArrayList();
     for (AstNode caseNode : astNode.getFirstChild(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS).getChildren(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)) {
       AstNode expressionNode = caseNode.getFirstChild(JavaGrammar.SWITCH_LABEL).getFirstChild(JavaGrammar.CONSTANT_EXPRESSION);
       AstNode blockStatementsNode = caseNode.getFirstChild(JavaGrammar.BLOCK_STATEMENTS);
       labels.add(new JavaTree.CaseLabelTreeImpl(caseNode, expressionNode != null ? expression(expressionNode) : null));
       if (blockStatementsNode.hasChildren()) {
         cases.add(new JavaTree.CaseGroupTreeImpl(
-          null, // TODO should not be null
+          labels.get(0).getAstNode(),
           ImmutableList.copyOf(labels),
           blockStatements(caseNode.getFirstChild(JavaGrammar.BLOCK_STATEMENTS))
         ));
@@ -674,7 +674,7 @@ public class JavaTreeMaker {
     }
     if (!labels.isEmpty()) {
       cases.add(new JavaTree.CaseGroupTreeImpl(
-        null, // TODO should not be null
+        labels.get(0).getAstNode(),
         ImmutableList.copyOf(labels),
         ImmutableList.<StatementTree>of()
       ));
