@@ -141,6 +141,7 @@ public final class CheckList {
       SwitchAtLeastThreeCasesCheck.class,
       ClassCouplingCheck.class,
       OctalValuesCheck.class,
+      NoPmdTagPresenceCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
