@@ -142,6 +142,7 @@ public final class CheckList {
       ClassCouplingCheck.class,
       OctalValuesCheck.class,
       NoPmdTagPresenceCheck.class,
+      NoCheckstyleTagPresenceCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
