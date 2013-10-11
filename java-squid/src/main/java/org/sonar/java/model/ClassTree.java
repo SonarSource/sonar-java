@@ -24,18 +24,32 @@ import java.util.List;
 
 /**
  * Class, enum, interface or annotation declaration.
- *
- * JLS 8.1, 8.9, 9.1, 9.6
- *
+ * <p>
+ * JLS 8.1. Class declaration ({@link Tree.Kind#CLASS}):
  * <pre>
  *   {@link #modifiers()} class {@link #simpleName()} {@link #typeParameters()} extends {@link #superClass()} implements {@link #superInterfaces()} {
  *     {@link #members()}
  *   }
- *
+ * </pre>
+ * JLS 8.9. Enum declaration ({@link Tree.Kind#ENUM}):
+ * <pre>
+ *   {@link #modifiers()} enum {@link #simpleName()} {@link #typeParameters()} implements {@link #superInterfaces()} {
+ *     {@link #members()}
+ *   }
+ * </pre>
+ * JLS 9.1. Interface declaration ({@link Tree.Kind#INTERFACE}):
+ * <pre>
  *   {@link #modifiers()} interface {@link #simpleName()} {@link #typeParameters()} extends {@link #superInterfaces()} {
  *     {@link #members()}
  *   }
  * </pre>
+ * JLS 9.6. Annotation declaration ({@link Tree.Kind#ANNOTATION_TYPE}):
+ * <pre>
+ *   {@link #modifiers()}{@code @}interface {@link #simpleName()} {
+ *     {@link #members()}
+ *   }
+ * </pre>
+ * </p>
  *
  * @since Java 1.3
  */
