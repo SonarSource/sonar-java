@@ -25,11 +25,19 @@ import java.util.List;
 /**
  * Method or annotation type element declaration.
  *
- * JLS 8.4, 9.4, 9.6.1, 9.6.2
+ * <p>JLS 8.4, 9.4, 9.6.1, 9.6.2</p>
  *
+ * Constructor:
  * <pre>
- *   {@link #modifiers()} {@link #typeParameters()} {@link #returnType()} {@link #name()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
- *   {@link #modifiers()} {@link #returnType()} {@link #name()} default {@link #defaultValue()} ;
+ *   {@link #modifiers()} {@link #typeParameters()} {@link #simpleName()} ()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
+ * </pre>
+ * Method:
+ * <pre>
+ *   {@link #modifiers()} {@link #typeParameters()} {@link #returnType()} {@link #simpleName()} ()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
+ * </pre>
+ * Annotation type element:
+ * <pre>
+ *   {@link #modifiers()} {@link #returnType()} {@link #simpleName()} ()} default {@link #defaultValue()} ;
  * </pre>
  *
  * @since Java 1.3
@@ -46,7 +54,7 @@ public interface MethodTree extends Tree {
   @Nullable
   Tree returnType();
 
-  IdentifierTree name();
+  String simpleName();
 
   List<? extends VariableTree> parameters();
 

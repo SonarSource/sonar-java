@@ -63,7 +63,6 @@ public class BaseTreeVisitor implements JavaTreeVisitor {
   public void visitMethod(MethodTree tree) {
 //    scan(tree.modifiers());
 //    scan(tree.returnType());
-    scan(tree.name());
     scan(tree.parameters());
     scan(tree.defaultValue());
     scan(tree.block());

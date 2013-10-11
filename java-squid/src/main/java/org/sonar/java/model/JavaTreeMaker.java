@@ -314,6 +314,7 @@ public class JavaTreeMaker {
    * 8.4. Method Declarations
    */
   private MethodTree methodDeclarator(ModifiersTree modifiers, @Nullable AstNode returnTypeNode, AstNode name, AstNode astNode) {
+    Preconditions.checkArgument(name.is(JavaTokenType.IDENTIFIER));
     Preconditions.checkArgument(astNode.is(
       JavaGrammar.METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_METHOD_DECLARATOR_REST,
@@ -339,7 +340,7 @@ public class JavaTreeMaker {
       astNode,
       modifiers,
       returnType,
-      identifier(name),
+      name.getTokenValue(),
       formalParameters(astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS)),
       body,
       throwsClauseNode != null ? qualifiedIdentifierList(throwsClauseNode) : ImmutableList.<ExpressionTree>of(),
@@ -538,7 +539,7 @@ public class JavaTreeMaker {
         annotationMethodRestNode,
         /* modifiers */ JavaTree.ModifiersTreeImpl.EMPTY,
         /* return type */ referenceType(typeNode),
-        /* name */ identifier(identifierNode),
+        /* name */ identifierNode.getTokenValue(),
         /* parameters */ ImmutableList.<VariableTree>of(),
         /* block */ null,
         /* throws */ ImmutableList.<ExpressionTree>of(),

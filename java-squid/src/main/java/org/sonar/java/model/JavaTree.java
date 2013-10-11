@@ -263,19 +263,19 @@ public abstract class JavaTree implements Tree {
     private final ModifiersTree modifiers;
     @Nullable
     private final Tree returnType;
-    private final IdentifierTree name;
+    private final String simpleName;
     private final List<? extends VariableTree> parameters;
     @Nullable
     private final BlockTree block;
     private final List<? extends ExpressionTree> throwsClauses;
     private final ExpressionTree defaultValue;
 
-    public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, IdentifierTree name, List<? extends VariableTree> parameters, @Nullable BlockTree block,
+    public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, String simpleName, List<? extends VariableTree> parameters, @Nullable BlockTree block,
       List<? extends ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
       super(astNode);
       this.modifiers = Preconditions.checkNotNull(modifiers);
       this.returnType = returnType;
-      this.name = Preconditions.checkNotNull(name);
+      this.simpleName = Preconditions.checkNotNull(simpleName);
       this.parameters = Preconditions.checkNotNull(parameters);
       this.block = block;
       this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
@@ -304,8 +304,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public IdentifierTree name() {
-      return name;
+    public String simpleName() {
+      return simpleName;
     }
 
     @Override
