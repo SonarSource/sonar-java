@@ -5,4 +5,6 @@ class A {
   int d = 010; // Noncompliant
   int e = 00; // Noncompliant
   int f = 0.; // Compliant
+  int g = 0x00; // Compliant
+  int h = 0X00; // Compliant
 }

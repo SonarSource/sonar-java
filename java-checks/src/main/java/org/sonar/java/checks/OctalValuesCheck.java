@@ -36,9 +36,20 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 public class OctalValuesCheck extends SquidCheck<LexerlessGrammar> implements TreeVisitor {
 
   public void visit(LiteralTree literal) {
-    if (literal.is(Tree.Kind.INT_LITERAL) && !"0".equals(literal.value()) && literal.value().startsWith("0")) {
+    if (literal.is(Tree.Kind.INT_LITERAL) && isOctal(literal.value())) {
       getContext().createLineViolation(this, "Use decimal values instead of octal ones.", ((JavaTree) literal).getLine());
     }
+  }
+
+  private static boolean isOctal(String value) {
+    return value.startsWith("0") &&
+      !"0".equals(value) &&
+      !isHexadecimal(value);
+  }
+
+  private static boolean isHexadecimal(String value) {
+    return value.startsWith("0x") ||
+      value.startsWith("0X");
   }
 
 }
