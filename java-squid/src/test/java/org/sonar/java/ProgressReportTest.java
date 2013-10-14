@@ -44,8 +44,9 @@ public class ProgressReportTest {
     ProgressReport report = new ProgressReport(ProgressReport.class.getName(), 500, logger);
     report.message("progress");
     report.start("foo start");
-    Thread.sleep(1000);
+    Thread.sleep(800);
     report.stop("foo stop");
+    Thread.sleep(300);
 
     ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
     verify(logger, atLeast(3)).info(captor.capture());
