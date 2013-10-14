@@ -30,23 +30,33 @@ import java.util.List;
 public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
 
   private final JavaTreeMaker treeMaker = new JavaTreeMaker();
-  private final TreeVisitorsDispatcher visitors;
+  private final TreeVisitorsDispatcher reflection;
+  private final List<JavaTreeVisitor> visitors;
 
   public VisitorsBridge(List<SquidAstVisitor<LexerlessGrammar>> visitors) {
-    ImmutableList.Builder<TreeVisitor> treeVisitors = ImmutableList.builder();
+    ImmutableList.Builder<JavaTreeVisitor> standardVisitors = ImmutableList.builder();
+    ImmutableList.Builder<TreeVisitor> reflectionVisitors = ImmutableList.builder();
     for (SquidAstVisitor visitor : visitors) {
       if (visitor instanceof TreeVisitor) {
-        treeVisitors.add((TreeVisitor) visitor);
+        reflectionVisitors.add((TreeVisitor) visitor);
+      }
+      if (visitor instanceof JavaTreeVisitorProvider) {
+        standardVisitors.add(((JavaTreeVisitorProvider) visitor).createJavaTreeVisitor());
       }
     }
-    this.visitors = new TreeVisitorsDispatcher(treeVisitors.build());
+    this.reflection = new TreeVisitorsDispatcher(reflectionVisitors.build());
+    this.visitors = standardVisitors.build();
   }
 
   @Override
   public void visitFile(@Nullable AstNode astNode) {
     if (astNode != null) {
       Tree tree = treeMaker.compilationUnit(astNode);
-      visitors.scan(tree);
+      reflection.scan(tree);
+
+      for (JavaTreeVisitor visitor : visitors) {
+        ((JavaTree) tree).accept(visitor);
+      }
     }
   }
 

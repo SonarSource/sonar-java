@@ -19,59 +19,54 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.*;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S134",
   priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class NestedIfStatementsCheck extends SquidCheck<LexerlessGrammar> {
+public class NestedIfStatementsCheck extends SquidCheck<LexerlessGrammar> implements JavaTreeVisitorProvider {
 
   private static final int DEFAULT_MAX = 3;
 
   @RuleProperty(defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private int nestingLevel;
-
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.IF_STATEMENT);
-  }
+  public JavaTreeVisitor createJavaTreeVisitor() {
+    return new BaseTreeVisitor() {
+      private int nestingLevel;
 
-  @Override
-  public void visitFile(AstNode node) {
-    nestingLevel = 0;
-  }
-
-  @Override
-  public void visitNode(AstNode node) {
-    if (!isElseIf(node)) {
-      nestingLevel++;
-
-      if (nestingLevel == max + 1) {
-        getContext().createLineViolation(this, "Refactor this code to not nest more than " + max + " if statements.", node);
+      @Override
+      public void visitCompilationUnit(CompilationUnitTree tree) {
+        nestingLevel = 0;
+        super.visitCompilationUnit(tree);
       }
-    }
-  }
 
-  @Override
-  public void leaveNode(AstNode node) {
-    if (!isElseIf(node)) {
-      nestingLevel--;
-    }
-  }
-
-  private static boolean isElseIf(AstNode node) {
-    return node.getParent().getPreviousAstNode().is(JavaKeyword.ELSE);
+      @Override
+      public void visitIfStatement(IfStatementTree tree) {
+        nestingLevel++;
+        if (nestingLevel == max + 1) {
+          getContext().createLineViolation(NestedIfStatementsCheck.this, "Refactor this code to not nest more than " + max + " if statements.", ((JavaTree) tree).getLine());
+        }
+        scan(tree.condition());
+        scan(tree.thenStatement());
+        StatementTree elseStatement = tree.elseStatement();
+        if (elseStatement != null && elseStatement.is(Tree.Kind.IF_STATEMENT)) {
+          nestingLevel--;
+          scan(elseStatement);
+        } else {
+          scan(elseStatement);
+          nestingLevel--;
+        }
+      }
+    };
   }
 
 }
