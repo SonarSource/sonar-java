@@ -457,6 +457,7 @@
     <configKey><![CDATA[Checker/TreeWalker/FinalParameters]]></configKey>
     <param key="tokens" type="s[METHOD_DEF,CTOR_DEF,LITERAL_CATCH]">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck">
@@ -975,6 +976,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Parameter Assignment]]></name>
     <configKey><![CDATA[Checker/TreeWalker/ParameterAssignment]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.naming.ParameterNameCheck">

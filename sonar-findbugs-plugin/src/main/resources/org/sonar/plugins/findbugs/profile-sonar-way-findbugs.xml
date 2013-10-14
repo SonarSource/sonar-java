@@ -1118,9 +1118,6 @@
     <Bug pattern="RV_RETURN_VALUE_IGNORED_INFERRED"/>
   </Match>
   <Match>
-    <Bug pattern="SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD"/>
-  </Match>
-  <Match>
     <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
   </Match>
   <Match>

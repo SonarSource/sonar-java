@@ -619,6 +619,7 @@
   <rule key="AvoidReassigningParameters">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/design.xml/AvoidReassigningParameters]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SwitchDensity">

@@ -2454,6 +2454,7 @@
     <priority>MAJOR</priority>
     <name><![CDATA[Self assignment of local rather than assignment to field]]></name>
     <configKey><![CDATA[SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD">

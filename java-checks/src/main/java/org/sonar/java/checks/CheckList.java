@@ -143,6 +143,7 @@ public final class CheckList {
       OctalValuesCheck.class,
       NoPmdTagPresenceCheck.class,
       NoCheckstyleTagPresenceCheck.class,
+      ParameterReassignedToCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
