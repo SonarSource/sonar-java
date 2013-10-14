@@ -80,7 +80,7 @@ public class BaseTreeVisitor implements JavaTreeVisitor {
 
   @Override
   public void visitLabeledStatement(LabeledStatementTree tree) {
-    // no subtrees
+    scan(tree.statement());
   }
 
   @Override
