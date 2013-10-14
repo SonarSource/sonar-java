@@ -27,6 +27,7 @@ import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.visitors.PublicApiVisitor;
 import org.sonar.squid.api.SourceClass;
@@ -74,13 +75,9 @@ public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private boolean isExcluded(AstNode node) {
-    return !isMatchingPattern() ||
-      isAccessor() ||
-      !isPublicApi(node);
-  }
-
-  private boolean isMatchingPattern() {
-    return WildcardPattern.match(getPatterns(), peekSourceClass().getKey());
+    return isAccessor() ||
+      !isPublicApi(node) ||
+      !isMatchingPattern();
   }
 
   private boolean isAccessor() {
@@ -90,6 +87,10 @@ public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
 
   private boolean isPublicApi(AstNode node) {
     return PublicApiVisitor.isPublicApi(node);
+  }
+
+  private boolean isMatchingPattern() {
+    return WildcardPattern.match(getPatterns(), peekSourceClass().getKey());
   }
 
   private WildcardPattern[] getPatterns() {
@@ -136,7 +137,13 @@ public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean hasNonVoidReturnType(AstNode node) {
-    return node.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST);
+    return node.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST) &&
+      !isGenericMethodReturningVoid(node);
+  }
+
+  private static boolean isGenericMethodReturningVoid(AstNode node) {
+    return node.getParent().is(JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST) &&
+      node.getParent().hasDirectChildren(JavaKeyword.VOID);
   }
 
   private static boolean hasReturnJavadoc(String comment) {

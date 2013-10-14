@@ -167,4 +167,26 @@ public class Foo { // Compliant
   public int foo(int a, int b, int c) { // Non-Compliant - single issue for complete method
     return 0;
   }
+
+  /**
+    * @param <T> foo
+    */
+  public <T> void foo() { // Compliant - does not return anything
+  }
+
+  public <T> void foo() { // Noncompliant - must document <T>
+  }
+
+  /**
+   * @param <T> foo
+   */
+  public <T> int foo() { // Noncompliant - must document return value
+  }
+
+  /**
+   * @param <T> foo
+   * @return foo
+   */
+  public <T> int foo() { // Compliant
+  }
 }
