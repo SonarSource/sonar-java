@@ -43,7 +43,6 @@ public class CaseInsensitiveComparisonCheckTest {
         .next().atLine(7)
         .next().atLine(8)
         .next().atLine(10)
-        .next().atLine(10)
         .next().atLine(12)
         .next().atLine(13)
         .next().atLine(24)

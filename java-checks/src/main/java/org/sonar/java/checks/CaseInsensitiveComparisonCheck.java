@@ -19,139 +19,53 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.*;
 import org.sonar.sslr.parser.LexerlessGrammar;
-
-import javax.annotation.Nullable;
 
 @Rule(
   key = "S1157",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class CaseInsensitiveComparisonCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class CaseInsensitiveComparisonCheck extends SquidCheck<LexerlessGrammar> implements JavaTreeVisitorProvider {
 
-  private static enum State {
-    EXPECTING_DOT_1,
-    EXPECTING_TOLOWERCASE_OR_TOUPPERCASE,
-    EXPECTING_LPAR_1,
-    EXPECTING_RPAR_1,
-    EXPECTING_DOT_2,
-    EXPECTING_EQUALS,
-    EXPECTING_LPAR_2,
-    FOUND_ISSUE
-  }
+  @Override
+  public JavaTreeVisitor createJavaTreeVisitor() {
+    return new BaseTreeVisitor() {
+      @Override
+      public void visitMethodInvocation(MethodInvocationTree tree) {
+        if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+          MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) tree.methodSelect();
+          if ("equals".equals(memberSelect.identifier().name())) {
+            if (isToUpperCaseOrToLowerCase(memberSelect.expression()) || (tree.arguments().size() == 1 && isToUpperCaseOrToLowerCase(tree.arguments().get(0)))) {
+              getContext().createLineViolation(
+                CaseInsensitiveComparisonCheck.this,
+                "Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.",
+                ((JavaTree) tree).getLine()
+              );
+            }
+          }
+        }
 
-  private static enum Symbol {
-    OTHER,
-    DOT,
-    TOLOWERCASE_OR_TOUPPERCASE,
-    LPAR,
-    RPAR,
-    EQUALS
-  }
-
-  private static final State[][] TRANSITIONS = new State[State.values().length][Symbol.values().length];
-  static {
-    for (int i = 0; i < TRANSITIONS.length; i++) {
-      for (int j = 0; j < TRANSITIONS[i].length; j++) {
-        TRANSITIONS[i][j] = State.EXPECTING_DOT_1;
+        super.visitMethodInvocation(tree);
       }
-    }
 
-    TRANSITIONS[State.EXPECTING_DOT_1.ordinal()][Symbol.DOT.ordinal()] = State.EXPECTING_TOLOWERCASE_OR_TOUPPERCASE;
-    TRANSITIONS[State.EXPECTING_TOLOWERCASE_OR_TOUPPERCASE.ordinal()][Symbol.TOLOWERCASE_OR_TOUPPERCASE.ordinal()] = State.EXPECTING_LPAR_1;
-    TRANSITIONS[State.EXPECTING_LPAR_1.ordinal()][Symbol.LPAR.ordinal()] = State.EXPECTING_RPAR_1;
-    TRANSITIONS[State.EXPECTING_RPAR_1.ordinal()][Symbol.RPAR.ordinal()] = State.EXPECTING_DOT_2;
-    TRANSITIONS[State.EXPECTING_DOT_2.ordinal()][Symbol.DOT.ordinal()] = State.EXPECTING_EQUALS;
-
-    TRANSITIONS[State.EXPECTING_EQUALS.ordinal()][Symbol.EQUALS.ordinal()] = State.EXPECTING_LPAR_2;
-    TRANSITIONS[State.EXPECTING_EQUALS.ordinal()][Symbol.TOLOWERCASE_OR_TOUPPERCASE.ordinal()] = State.EXPECTING_LPAR_1;
-
-    TRANSITIONS[State.EXPECTING_LPAR_2.ordinal()][Symbol.LPAR.ordinal()] = State.FOUND_ISSUE;
-  }
-
-  private State currentState;
-
-  @Override
-  public void init() {
-    subscribeTo(JavaGrammar.ARGUMENTS);
-  }
-
-  @Override
-  public void visitFile(@Nullable AstNode node) {
-    currentState = State.EXPECTING_DOT_1;
-  }
-
-  @Override
-  public void visitToken(Token token) {
-    currentState = TRANSITIONS[currentState.ordinal()][getSymbol(token.getOriginalValue()).ordinal()];
-
-    if (currentState == State.FOUND_ISSUE) {
-      createIssue(token.getLine());
-      currentState = State.EXPECTING_DOT_1;
-    }
-  }
-
-  private static Symbol getSymbol(String value) {
-    Symbol result = Symbol.OTHER;
-
-    if (value.length() == 1) {
-      if (".".equals(value)) {
-        result = Symbol.DOT;
-      } else if ("(".equals(value)) {
-        result = Symbol.LPAR;
-      } else if (")".equals(value)) {
-        result = Symbol.RPAR;
+      private boolean isToUpperCaseOrToLowerCase(ExpressionTree expression) {
+        if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+          MethodInvocationTree methodInvocation = (MethodInvocationTree) expression;
+          if (methodInvocation.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+            MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodInvocation.methodSelect();
+            String name = memberSelect.identifier().name();
+            return "toUpperCase".equals(name) || "toLowerCase".equals(name);
+          }
+        }
+        return false;
       }
-    } else if ("toLowerCase".equals(value) || "toUpperCase".equals(value)) {
-      result = Symbol.TOLOWERCASE_OR_TOUPPERCASE;
-    } else if ("equals".equals(value)) {
-      result = Symbol.EQUALS;
-    }
 
-    return result;
-  }
-
-  @Override
-  public void visitNode(AstNode node) {
-    if (isPreviousTokenEquals(node) &&
-      hasOneExpression(node) &&
-      endsWithToUpperCaseOrToLowerCaseCall(node.getFirstChild(JavaGrammar.EXPRESSION))) {
-      createIssue(node.getTokenLine());
-    }
-  }
-
-  private static boolean isPreviousTokenEquals(AstNode node) {
-    return "equals".equals(node.getPreviousAstNode().getLastToken().getOriginalValue());
-  }
-
-  private static boolean hasOneExpression(AstNode node) {
-    return node.hasDirectChildren(JavaGrammar.EXPRESSION) &&
-      !node.hasDirectChildren(JavaPunctuator.COMMA);
-  }
-
-  private static boolean endsWithToUpperCaseOrToLowerCaseCall(AstNode node) {
-    StringBuilder sb = new StringBuilder();
-
-    for (Token token : node.getTokens()) {
-      sb.append(token.getOriginalValue());
-    }
-
-    String s = sb.toString();
-
-    return s.endsWith(".toLowerCase()") || s.endsWith(".toUpperCase()");
-  }
-
-  private void createIssue(int line) {
-    getContext().createLineViolation(this, "Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.", line);
+    };
   }
 
 }

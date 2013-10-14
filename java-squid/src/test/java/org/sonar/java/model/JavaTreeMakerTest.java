@@ -946,7 +946,6 @@ public class JavaTreeMakerTest {
     memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
     assertThat(memberSelectExpression.identifier().name()).isEqualTo("super");
     assertThat(((IdentifierTree) memberSelectExpression.expression()).name()).isEqualTo("TypeName");
-    assertThat(tree.methodSelect()).isNotNull();
     assertThat(tree.arguments()).hasSize(2);
   }
 
