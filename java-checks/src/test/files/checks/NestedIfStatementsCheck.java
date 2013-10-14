@@ -19,6 +19,7 @@ class A {
           if (true) { // Non-Compliant - 4
             if (false) { // Compliant - 5
             }
+          } else if (true) { // Compliant - 4
           } else {
             if (false) { // Compliant - 5
             }

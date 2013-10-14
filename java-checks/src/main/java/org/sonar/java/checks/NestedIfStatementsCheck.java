@@ -55,15 +55,19 @@ public class NestedIfStatementsCheck extends SquidCheck<LexerlessGrammar> implem
         if (nestingLevel == max + 1) {
           getContext().createLineViolation(NestedIfStatementsCheck.this, "Refactor this code to not nest more than " + max + " if statements.", ((JavaTree) tree).getLine());
         }
+        visit(tree);
+        nestingLevel--;
+      }
+
+      private void visit(IfStatementTree tree) {
         scan(tree.condition());
         scan(tree.thenStatement());
-        StatementTree elseStatement = tree.elseStatement();
-        if (elseStatement != null && elseStatement.is(Tree.Kind.IF_STATEMENT)) {
-          nestingLevel--;
-          scan(elseStatement);
+
+        StatementTree elseStatementTree = tree.elseStatement();
+        if (elseStatementTree != null && elseStatementTree.is(Tree.Kind.IF_STATEMENT)) {
+          visit((IfStatementTree) elseStatementTree);
         } else {
-          scan(elseStatement);
-          nestingLevel--;
+          scan(elseStatementTree);
         }
       }
     };
