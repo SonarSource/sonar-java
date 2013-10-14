@@ -28,7 +28,9 @@ import org.slf4j.Logger;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class ProgressReportTest {
 
@@ -42,7 +44,7 @@ public class ProgressReportTest {
     ProgressReport report = new ProgressReport(ProgressReport.class.getName(), 500, logger);
     report.message("progress");
     report.start("foo start");
-    Thread.sleep(700);
+    Thread.sleep(1000);
     report.stop("foo stop");
 
     ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
