@@ -36,10 +36,9 @@ public class NoCheckstyleTagPresenceCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NoCheckstyleTagPresenceCheck.java"), new NoCheckstyleTagPresenceCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Remove usage of this Checkstyle suppression comment filter.")
-      .next().atLine(7)
-      .next().atLine(8)
-      .next().atLine(11);
+      .next().atLine(3).withMessage("Remove usage of this \"CHECKSTYLE:OFF\" suppression comment filter.")
+      .next().atLine(9)
+      .next().atLine(12);
   }
 
 }

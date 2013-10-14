@@ -6,6 +6,7 @@
 
   checkstyle:on
   checkSTYLE:ON
+  cHeCkStyLE:OFF
 */
 
 // CHECKSTYLE:OFF

@@ -31,17 +31,14 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   priority = Priority.MINOR)
 public class NoCheckstyleTagPresenceCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
-  private static final String PATTERN1 = "CHECKSTYLE:ON";
-  private static final String PATTERN2 = "CHECKSTYLE:OFF";
-  private static final String MESSAGE = "Remove usage of this Checkstyle suppression comment filter.";
+  private static final String PATTERN = "CHECKSTYLE:OFF";
+  private static final String MESSAGE = "Remove usage of this \"CHECKSTYLE:OFF\" suppression comment filter.";
 
-  private final CommentContainsPatternChecker checker1 = new CommentContainsPatternChecker(this, PATTERN1, MESSAGE);
-  private final CommentContainsPatternChecker checker2 = new CommentContainsPatternChecker(this, PATTERN2, MESSAGE);
+  private final CommentContainsPatternChecker checker = new CommentContainsPatternChecker(this, PATTERN, MESSAGE);
 
   @Override
   public void visitToken(Token token) {
-    checker1.visitToken(token);
-    checker2.visitToken(token);
+    checker.visitToken(token);
   }
 
 }
