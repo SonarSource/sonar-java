@@ -49,8 +49,16 @@ public class JavaTreeMaker {
 
   private ExpressionTree qualifiedIdentifier(AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaGrammar.QUALIFIED_IDENTIFIER), "Unexpected AstNodeType: %s", astNode.getType().toString());
-    // FIXME in javac - MemberSelectExpressionTree
-    return new JavaTree.IdentifierTreeImpl(astNode, astNode.getTokenValue());
+    List<AstNode> identifierNodes = astNode.getChildren(JavaTokenType.IDENTIFIER);
+    ExpressionTree result = identifier(identifierNodes.get(0));
+    for (int i = 1; i < identifierNodes.size(); i++) {
+      result = new JavaTree.MemberSelectExpressionTreeImpl(
+        identifierNodes.get(i),
+        result,
+        identifier(identifierNodes.get(i))
+      );
+    }
+    return result;
   }
 
   private List<ExpressionTree> qualifiedIdentifierList(AstNode astNode) {
@@ -1214,7 +1222,11 @@ public class JavaTreeMaker {
       );
     } else if (selectorNode.hasDirectChildren(JavaGrammar.SUPER_SUFFIX)) {
       return applySuperSuffix(
-        expression,
+        new JavaTree.MemberSelectExpressionTreeImpl(
+          selectorNode,
+          expression,
+          identifier(selectorNode.getFirstChild(JavaKeyword.SUPER))
+        ),
         selectorNode.getFirstChild(JavaGrammar.SUPER_SUFFIX)
       );
     } else if (selectorNode.hasDirectChildren(JavaKeyword.NEW)) {

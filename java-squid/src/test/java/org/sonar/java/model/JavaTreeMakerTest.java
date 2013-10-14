@@ -908,31 +908,44 @@ public class JavaTreeMakerTest {
 
     AstNode astNode = p.parse("class T { void m() { identifier(true, false); } }").getFirstDescendant(JavaGrammar.EXPRESSION);
     MethodInvocationTree tree = (MethodInvocationTree) maker.expression(astNode);
-    assertThat(tree.methodSelect()).isNotNull();
+    assertThat(((IdentifierTree) tree.methodSelect()).name()).isEqualTo("identifier");
     assertThat(tree.arguments()).hasSize(2);
 
     astNode = p.parse("class T { T() { super.identifier(true, false); } }").getFirstDescendant(JavaGrammar.EXPRESSION);
     tree = (MethodInvocationTree) maker.expression(astNode);
-    assertThat(tree.methodSelect()).isNotNull();
+    MemberSelectExpressionTree memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThat(memberSelectExpression.identifier().name()).isEqualTo("identifier");
+    assertThat(((IdentifierTree) memberSelectExpression.expression()).name()).isEqualTo("super");
     assertThat(tree.arguments()).hasSize(2);
 
     astNode = p.parse("class T { T() { TypeName.super.identifier(true, false); } }").getFirstDescendant(JavaGrammar.EXPRESSION);
     tree = (MethodInvocationTree) maker.expression(astNode);
-    assertThat(tree.methodSelect()).isNotNull();
+    memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThat(memberSelectExpression.identifier().name()).isEqualTo("identifier");
+    memberSelectExpression = (MemberSelectExpressionTree) memberSelectExpression.expression();
+    assertThat(memberSelectExpression.identifier().name()).isEqualTo("super");
+    assertThat(((IdentifierTree) memberSelectExpression.expression()).name()).isEqualTo("TypeName");
     assertThat(tree.arguments()).hasSize(2);
 
     astNode = p.parse("class T { T() { TypeName.identifier(true, false); } }").getFirstDescendant(JavaGrammar.EXPRESSION);
     tree = (MethodInvocationTree) maker.expression(astNode);
-    assertThat(tree.methodSelect()).isNotNull();
+    memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThat(memberSelectExpression.identifier().name()).isEqualTo("identifier");
+    assertThat(((IdentifierTree) memberSelectExpression.expression()).name()).isEqualTo("TypeName");
     assertThat(tree.arguments()).hasSize(2);
 
     astNode = p.parse("class T { T() { TypeName.<T>identifier(true, false); } }").getFirstDescendant(JavaGrammar.EXPRESSION);
     tree = (MethodInvocationTree) maker.expression(astNode);
-    assertThat(tree.methodSelect()).isNotNull();
+    memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThat(memberSelectExpression.identifier().name()).isEqualTo("identifier");
+    assertThat(((IdentifierTree) memberSelectExpression.expression()).name()).isEqualTo("TypeName");
     assertThat(tree.arguments()).hasSize(2);
 
     astNode = p.parse("class T { T() { TypeName.<T>super(true, false); } }").getFirstDescendant(JavaGrammar.EXPRESSION);
     tree = (MethodInvocationTree) maker.expression(astNode);
+    memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThat(memberSelectExpression.identifier().name()).isEqualTo("super");
+    assertThat(((IdentifierTree) memberSelectExpression.expression()).name()).isEqualTo("TypeName");
     assertThat(tree.methodSelect()).isNotNull();
     assertThat(tree.arguments()).hasSize(2);
   }
