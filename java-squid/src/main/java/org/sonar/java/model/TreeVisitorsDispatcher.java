@@ -103,6 +103,9 @@ public class TreeVisitorsDispatcher extends BaseTreeVisitor {
   protected void scan(Tree tree) {
     if (tree != null) {
       JavaTree javaTree = (JavaTree) tree;
+      if (javaTree.getKind() == null) {
+        return;
+      }
       visit(tree, javaTree.getKind().associatedInterface);
       javaTree.accept(this);
       leave(tree, javaTree.getKind().associatedInterface);

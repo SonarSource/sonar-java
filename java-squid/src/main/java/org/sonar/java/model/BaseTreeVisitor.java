@@ -42,13 +42,13 @@ public class BaseTreeVisitor implements JavaTreeVisitor {
   public void visitCompilationUnit(CompilationUnitTree tree) {
 //    scan(tree.packageAnnotations());
     scan(tree.packageName());
-//    scan(tree.imports());
+    scan(tree.imports());
     scan(tree.types());
   }
 
   @Override
   public void visitClass(ClassTree tree) {
-//    scan(tree.modifiers());
+    scan(tree.modifiers());
     scan(tree.superClass());
     scan(tree.superInterfaces());
     scan(tree.members());
@@ -61,8 +61,8 @@ public class BaseTreeVisitor implements JavaTreeVisitor {
 
   @Override
   public void visitMethod(MethodTree tree) {
-//    scan(tree.modifiers());
-//    scan(tree.returnType());
+    scan(tree.modifiers());
+    scan(tree.returnType());
     scan(tree.parameters());
     scan(tree.defaultValue());
     scan(tree.block());
@@ -226,7 +226,7 @@ public class BaseTreeVisitor implements JavaTreeVisitor {
 
   @Override
   public void visitNewArray(NewArrayTree tree) {
-//    scan(tree.type());
+    scan(tree.type());
     scan(tree.dimensions());
     scan(tree.initializers());
   }
@@ -240,14 +240,14 @@ public class BaseTreeVisitor implements JavaTreeVisitor {
 
   @Override
   public void visitTypeCast(TypeCastTree tree) {
-//    scan(tree.type());
+    scan(tree.type());
     scan(tree.expression());
   }
 
   @Override
   public void visitInstanceOf(InstanceOfTree tree) {
     scan(tree.expression());
-//    scan(tree.type());
+    scan(tree.type());
   }
 
   @Override
@@ -273,8 +273,8 @@ public class BaseTreeVisitor implements JavaTreeVisitor {
 
   @Override
   public void visitVariable(VariableTree tree) {
-//    scan(tree.modifiers());
-//    scan(tree.type());
+    scan(tree.modifiers());
+    scan(tree.type());
     scan(tree.initializer());
   }
 

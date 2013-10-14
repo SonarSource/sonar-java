@@ -59,7 +59,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Kind getKind() {
-      throw new UnsupportedOperationException("not implemented");
+      return null;
     }
 
     @Override
@@ -148,7 +148,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     protected Kind getKind() {
-      throw new UnsupportedOperationException("not implemented");
+      return null;
     }
 
     @Override
@@ -1436,7 +1436,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     protected Kind getKind() {
-      throw new UnsupportedOperationException("not implemented");
+      return null;
     }
 
     @Override
@@ -1459,7 +1459,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     protected Kind getKind() {
-      throw new UnsupportedOperationException("not implemented");
+      return null;
     }
 
     @Override
@@ -1485,7 +1485,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     protected Kind getKind() {
-      throw new UnsupportedOperationException("not implemented");
+      return null;
     }
 
     @Override
