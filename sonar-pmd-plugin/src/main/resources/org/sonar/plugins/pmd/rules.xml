@@ -399,6 +399,7 @@
   <rule key="MethodArgumentCouldBeFinal">
     <priority>MINOR</priority>
     <configKey><![CDATA[rulesets/optimizations.xml/MethodArgumentCouldBeFinal]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="AvoidInstantiatingObjectsInLoops">
