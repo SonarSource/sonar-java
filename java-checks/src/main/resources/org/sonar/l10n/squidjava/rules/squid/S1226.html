@@ -1,51 +1,53 @@
 <p>
-While it is technically correct to assign to parameters, it is better to introduce temporary variables to store intermediate results.
-This rule will typically detect cases where a constructor parameter is assigned to itself instead of a field of the same name, i.e. when <code>this.</code> was forgotten.
-Some developers might also expect assignments of method parameters to be visible from callers, which is not the case and can confuse them.
+While it is technically correct to assign to parameters from within method bodies, it is better to use temporary variables to store intermediate results.
+This rule will typically detect cases where a constructor parameter is assigned to itself instead of a field of the same name, i.e. when <code>this</code> was forgotten.
+Allowing parameters to be assigned to also reduces the code readability as developers will not be able to know whether the original parameter or some temporary variable is being accessed without going through the whole method.
+Moreover, some developers might also expect assignments of method parameters to be visible from callers, which is not the case and can confuse them.
 All parameters should be treated as <code>final</code>.
 </p>
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-class Employee {
+class MyClass {
   public String name;
 
-  public Employee(String name) {
-    name = name;                  // Noncompliant - useless identity assignment
+  public MyClass(String name) {
+    name = name;                    // Noncompliant - useless identity assignment
+  }
+
+  public int add(int a, int b) {
+    a = a + b;                      // Noncompliant - the original argument is modified
+    return a;                       // Is the original parameter accessed here?
+  }
+
+  public static void main(String[] args) {
+    MyClass foo = new MyClass();
+    int a = 40;
+    int b = 2;
+    foo.add(a, b);
+    System.out.println("a = " + a); // Will print "40", not "42", which might seem confusing
   }
 }
 </pre>
 
 <h2>Compliant Solution</h2>
 <pre>
-class Employee {
+class MyClass {
   public String name;
 
-  public Employee(String name) {
-    this.name = name;             // Compliant
+  public MyClass(String name) {
+    this.name = name;               // Compliant
   }
-}
-</pre>
 
-<h2>Noncompliant Code Example</h2>
-<pre>
-public int add(int a, int b) {
-  a = a + b;                      // Noncompliant - the original argument is not modified
-  return a;
-}
+  public int add(int a, int b) {
+    return a + b;                   // Compliant
+  }
 
-public static void main(String[] args) {
-  MyClass foo = new MyClass();
-  int a = 40;
-  int b = 2;
-  foo.add(a, b);
-  System.out.println("a = " + a); // Will print "40", not "42", which might seem confusing
-}
-</pre>
-
-<h2>Compliant Solution</h2>
-<pre>
-public int add(int a, int b) {
-  return a + b;                   // Compliant
+  public static void main(String[] args) {
+    MyClass foo = new MyClass();
+    int a = 40;
+    int b = 2;
+    System.out.println(foo.add(a, b));
+  }
 }
 </pre>
