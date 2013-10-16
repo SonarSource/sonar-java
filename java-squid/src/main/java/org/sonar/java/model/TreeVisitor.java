@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model;
 
-public interface JavaTreeVisitor {
+public interface TreeVisitor {
 
   void visitCompilationUnit(CompilationUnitTree tree);
 

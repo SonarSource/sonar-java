@@ -19,23 +19,39 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.BaseTreeVisitor;
-import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.JavaTreeVisitor;
-import org.sonar.java.model.JavaTreeVisitorProvider;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
 import org.sonar.java.model.LiteralTree;
 import org.sonar.java.model.Tree;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
-  key = "S1314",
+  key = OctalValuesCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class OctalValuesCheck extends SquidCheck<LexerlessGrammar> implements JavaTreeVisitorProvider {
+public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1314";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
+
+  @Override
+  public void scanFile(final JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
+  }
+
+  @Override
+  public void visitLiteral(LiteralTree tree) {
+    if (tree.is(Tree.Kind.INT_LITERAL) && isOctal(tree.value())) {
+      context.addIssue(tree, ruleKey, "Use decimal values instead of octal ones.");
+    }
+  }
 
   private static boolean isOctal(String value) {
     return value.startsWith("0") &&
@@ -46,18 +62,6 @@ public class OctalValuesCheck extends SquidCheck<LexerlessGrammar> implements Ja
   private static boolean isHexadecimal(String value) {
     return value.startsWith("0x") ||
       value.startsWith("0X");
-  }
-
-  @Override
-  public JavaTreeVisitor createJavaTreeVisitor() {
-    return new BaseTreeVisitor() {
-      @Override
-      public void visitLiteral(LiteralTree tree) {
-        if (tree.is(Tree.Kind.INT_LITERAL) && isOctal(tree.value())) {
-          getContext().createLineViolation(OctalValuesCheck.this, "Use decimal values instead of octal ones.", ((JavaTree) tree).getLine());
-        }
-      }
-    };
   }
 
 }

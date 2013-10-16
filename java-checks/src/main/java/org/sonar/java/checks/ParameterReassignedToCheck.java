@@ -20,75 +20,68 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AssignmentExpressionTree;
 import org.sonar.java.model.BaseTreeVisitor;
 import org.sonar.java.model.CatchTree;
-import org.sonar.java.model.CompilationUnitTree;
 import org.sonar.java.model.IdentifierTree;
-import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.JavaTreeVisitor;
-import org.sonar.java.model.JavaTreeVisitorProvider;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
 import org.sonar.java.model.MethodTree;
 import org.sonar.java.model.Tree;
 import org.sonar.java.model.VariableTree;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.Set;
 
 @Rule(
-  key = "S1226",
+  key = ParameterReassignedToCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ParameterReassignedToCheck extends SquidCheck<LexerlessGrammar> implements JavaTreeVisitorProvider {
+public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1226";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private final Set<String> variables = Sets.newHashSet();
+
+  private JavaFileScannerContext context;
 
   @Override
-  public JavaTreeVisitor createJavaTreeVisitor() {
-    return new BaseTreeVisitor() {
+  public void scanFile(final JavaFileScannerContext context) {
+    this.context = context;
+    variables.clear();
+    scan(context.getTree());
+  }
 
-      private final Set<String> variables = Sets.newHashSet();
+  @Override
+  public void visitMethod(MethodTree tree) {
+    for (VariableTree parameterTree : tree.parameters()) {
+      variables.add(parameterTree.simpleName());
+    }
+    super.visitMethod(tree);
+    for (VariableTree parameterTree : tree.parameters()) {
+      variables.remove(parameterTree.simpleName());
+    }
+  }
 
-      @Override
-      public void visitCompilationUnit(CompilationUnitTree tree) {
-        variables.clear();
-        super.visitCompilationUnit(tree);
+  @Override
+  public void visitCatch(CatchTree tree) {
+    variables.add(tree.parameter().simpleName());
+    super.visitCatch(tree);
+    variables.remove(tree.parameter().simpleName());
+  }
+
+  @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) tree.variable();
+      if (variables.contains(identifier.name())) {
+        context.addIssue(tree, ruleKey, "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".");
       }
-
-      @Override
-      public void visitMethod(MethodTree tree) {
-        for (VariableTree parameterTree : tree.parameters()) {
-          variables.add(parameterTree.simpleName());
-        }
-        super.visitMethod(tree);
-        for (VariableTree parameterTree : tree.parameters()) {
-          variables.remove(parameterTree.simpleName());
-        }
-      }
-
-      @Override
-      public void visitCatch(CatchTree tree) {
-        variables.add(tree.parameter().simpleName());
-        super.visitCatch(tree);
-        variables.remove(tree.parameter().simpleName());
-      }
-
-      @Override
-      public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-        if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
-          IdentifierTree identifier = (IdentifierTree) tree.variable();
-          if (variables.contains(identifier.name())) {
-            getContext().createLineViolation(
-              ParameterReassignedToCheck.this,
-              "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".",
-              ((JavaTree) identifier).getLine());
-          }
-        }
-      }
-
-    };
+    }
   }
 
 }

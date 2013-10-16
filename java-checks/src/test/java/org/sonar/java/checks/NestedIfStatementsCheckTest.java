@@ -23,6 +23,7 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -39,7 +40,7 @@ public class NestedIfStatementsCheckTest {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     assertThat(check.max).isEqualTo(3);
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedIfStatementsCheck.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedIfStatementsCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(19).withMessage("Refactor this code to not nest more than 3 if statements.")
         .next().atLine(41)
@@ -51,7 +52,7 @@ public class NestedIfStatementsCheckTest {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     check.max = 4;
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedIfStatementsCheck.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedIfStatementsCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(20).withMessage("Refactor this code to not nest more than 4 if statements.")
         .next().atLine(24);

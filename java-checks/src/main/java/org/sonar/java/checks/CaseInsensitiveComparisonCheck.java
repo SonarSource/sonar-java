@@ -19,60 +19,59 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.BaseTreeVisitor;
 import org.sonar.java.model.ExpressionTree;
-import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.JavaTreeVisitor;
-import org.sonar.java.model.JavaTreeVisitorProvider;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
 import org.sonar.java.model.MemberSelectExpressionTree;
 import org.sonar.java.model.MethodInvocationTree;
 import org.sonar.java.model.Tree;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
-  key = "S1157",
+  key = CaseInsensitiveComparisonCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class CaseInsensitiveComparisonCheck extends SquidCheck<LexerlessGrammar> implements JavaTreeVisitorProvider {
+public class CaseInsensitiveComparisonCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1157";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
 
   @Override
-  public JavaTreeVisitor createJavaTreeVisitor() {
-    return new BaseTreeVisitor() {
-      @Override
-      public void visitMethodInvocation(MethodInvocationTree tree) {
-        if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-          MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) tree.methodSelect();
-          boolean issue = ("equals".equals(memberSelect.identifier().name()))
-            && (isToUpperCaseOrToLowerCase(memberSelect.expression()) || (tree.arguments().size() == 1 && isToUpperCaseOrToLowerCase(tree.arguments().get(0))));
-          if (issue) {
-            getContext().createLineViolation(
-              CaseInsensitiveComparisonCheck.this,
-              "Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.",
-              ((JavaTree) tree).getLine()
-            );
-          }
-        }
+  public void scanFile(final JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
+  }
 
-        super.visitMethodInvocation(tree);
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) tree.methodSelect();
+      boolean issue = ("equals".equals(memberSelect.identifier().name()))
+        && (isToUpperCaseOrToLowerCase(memberSelect.expression()) || (tree.arguments().size() == 1 && isToUpperCaseOrToLowerCase(tree.arguments().get(0))));
+      if (issue) {
+        context.addIssue(tree, ruleKey, "Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.");
       }
+    }
 
-      private boolean isToUpperCaseOrToLowerCase(ExpressionTree expression) {
-        if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-          MethodInvocationTree methodInvocation = (MethodInvocationTree) expression;
-          if (methodInvocation.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-            MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodInvocation.methodSelect();
-            String name = memberSelect.identifier().name();
-            return "toUpperCase".equals(name) || "toLowerCase".equals(name);
-          }
-        }
-        return false;
+    super.visitMethodInvocation(tree);
+  }
+
+  private boolean isToUpperCaseOrToLowerCase(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree methodInvocation = (MethodInvocationTree) expression;
+      if (methodInvocation.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodInvocation.methodSelect();
+        String name = memberSelect.identifier().name();
+        return "toUpperCase".equals(name) || "toLowerCase".equals(name);
       }
-
-    };
+    }
+    return false;
   }
 
 }

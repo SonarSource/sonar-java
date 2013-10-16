@@ -37,6 +37,7 @@ import org.sonar.java.bytecode.visitor.DependenciesVisitor;
 import org.sonar.java.bytecode.visitor.LCOM4Visitor;
 import org.sonar.java.bytecode.visitor.NOCVisitor;
 import org.sonar.java.bytecode.visitor.RFCVisitor;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.CodeVisitor;
 import org.sonar.squid.api.Query;
 import org.sonar.squid.api.SourceCode;
@@ -46,8 +47,8 @@ import org.sonar.squid.indexer.QueryByType;
 import org.sonar.squid.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -72,6 +73,8 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
       astScanner.accept(new FileLinesVisitor(sonarComponents.getFileLinesContextFactory(), conf.getCharset()));
       astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents.getResourcePerspectives(), conf.getCharset()));
       astScanner.accept(new SymbolTableVisitor(sonarComponents.getResourcePerspectives()));
+
+      astScanner.accept(new VisitorsBridge(sonarComponents.getResourcePerspectives(), Arrays.asList(visitors)));
     }
 
     // TODO unchecked cast

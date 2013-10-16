@@ -19,37 +19,87 @@
  */
 package org.sonar.java.model;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.SquidAstVisitor;
+import org.sonar.api.batch.SquidUtils;
+import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.issue.Issuable;
+import org.sonar.api.resources.JavaFile;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.squid.api.CheckMessage;
+import org.sonar.squid.api.SourceFile;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 
 public class VisitorsBridge extends JavaAstVisitor {
 
-  private final JavaTreeMaker treeMaker = new JavaTreeMaker();
-  private final List<JavaTreeVisitor> visitors;
+  @Nullable
+  private final ResourcePerspectives resourcePerspectives;
 
-  public VisitorsBridge(List<SquidAstVisitor<LexerlessGrammar>> visitors) {
-    ImmutableList.Builder<JavaTreeVisitor> visitorsBuilder = ImmutableList.builder();
-    for (SquidAstVisitor visitor : visitors) {
-      if (visitor instanceof JavaTreeVisitorProvider) {
-        visitorsBuilder.add(((JavaTreeVisitorProvider) visitor).createJavaTreeVisitor());
+  private final JavaTreeMaker treeMaker = new JavaTreeMaker();
+  private final List<JavaFileScanner> scanners;
+
+  @VisibleForTesting
+  public VisitorsBridge(JavaFileScanner visitor) {
+    this(null, Arrays.asList(visitor));
+  }
+
+  public VisitorsBridge(@Nullable ResourcePerspectives resourcePerspectives, List visitors) {
+    this.resourcePerspectives = resourcePerspectives;
+    ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
+    for (Object visitor : visitors) {
+      if (visitor instanceof JavaFileScanner) {
+        scannersBuilder.add((JavaFileScanner) visitor);
       }
     }
-    this.visitors = visitorsBuilder.build();
+    this.scanners = scannersBuilder.build();
   }
 
   @Override
   public void visitFile(@Nullable AstNode astNode) {
     if (astNode != null) {
-      Tree tree = treeMaker.compilationUnit(astNode);
+      CompilationUnitTree tree = treeMaker.compilationUnit(astNode);
 
-      for (JavaTreeVisitor visitor : visitors) {
-        ((JavaTree) tree).accept(visitor);
+      SourceFile sourceFile = peekSourceFile();
+      JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(sourceFile.getKey());
+      Issuable issuable = resourcePerspectives == null ? null : resourcePerspectives.as(Issuable.class, sonarFile);
+      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, sourceFile, issuable);
+      for (JavaFileScanner scanner : scanners) {
+        scanner.scanFile(context);
+      }
+    }
+  }
+
+  private static class DefaultJavaFileScannerContext implements JavaFileScannerContext {
+    private final CompilationUnitTree tree;
+    private final SourceFile sourceFile;
+    private final Issuable issuable;
+
+    public DefaultJavaFileScannerContext(CompilationUnitTree tree, SourceFile sourceFile, @Nullable Issuable issuable) {
+      this.tree = tree;
+      this.sourceFile = sourceFile;
+      this.issuable = issuable;
+    }
+
+    @Override
+    public CompilationUnitTree getTree() {
+      return tree;
+    }
+
+    @Override
+    public void addIssue(Tree tree, RuleKey ruleKey, String message) {
+      int line = ((JavaTree) tree).getLine();
+
+      if (issuable == null) {
+        CheckMessage checkMessage = new CheckMessage(ruleKey, message);
+        checkMessage.setLine(line);
+        sourceFile.log(checkMessage);
+      } else {
+        issuable.addIssue(issuable.newIssueBuilder().line(line).message(message).build());
       }
     }
   }

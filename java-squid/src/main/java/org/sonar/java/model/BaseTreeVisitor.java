@@ -23,9 +23,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Default implementation of {@link JavaTreeVisitor}.
+ * Default implementation of {@link TreeVisitor}.
  */
-public class BaseTreeVisitor implements JavaTreeVisitor {
+public class BaseTreeVisitor implements TreeVisitor {
 
   protected void scan(List<? extends Tree> trees) {
     for (Tree tree : trees) {

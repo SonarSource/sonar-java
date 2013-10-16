@@ -17,28 +17,10 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.model;
 
-import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squid.api.SourceFile;
+public interface JavaFileScanner {
 
-import java.io.File;
-
-public class OctalValuesCheckTest {
-
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
-  @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/OctalValuesCheck.java"), new VisitorsBridge(new OctalValuesCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(5).withMessage("Use decimal values instead of octal ones.")
-      .next().atLine(6);
-  }
+  void scanFile(JavaFileScannerContext context);
 
 }

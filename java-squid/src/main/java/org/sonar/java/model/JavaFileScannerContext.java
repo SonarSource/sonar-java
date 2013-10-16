@@ -19,8 +19,12 @@
  */
 package org.sonar.java.model;
 
-public interface JavaTreeVisitorProvider {
+import org.sonar.api.rule.RuleKey;
 
-  JavaTreeVisitor createJavaTreeVisitor();
+public interface JavaFileScannerContext {
+
+  CompilationUnitTree getTree();
+
+  void addIssue(Tree tree, RuleKey ruleKey, String message);
 
 }

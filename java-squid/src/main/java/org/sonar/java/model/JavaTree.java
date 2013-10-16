@@ -50,7 +50,7 @@ public abstract class JavaTree implements Tree {
 
   protected abstract Kind getKind();
 
-  public abstract void accept(JavaTreeVisitor visitor);
+  public abstract void accept(TreeVisitor visitor);
 
   public static class PrimitiveTypeTreeImpl extends JavaTree implements PrimitiveTypeTree {
     public PrimitiveTypeTreeImpl(AstNode astNode) {
@@ -63,7 +63,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
     }
   }
 
@@ -86,7 +86,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitIdentifier(this);
     }
   }
@@ -131,7 +131,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitCompilationUnit(this);
     }
   }
@@ -162,7 +162,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
     }
   }
 
@@ -228,7 +228,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitClass(this);
     }
   }
@@ -254,7 +254,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitInitializer(this);
     }
   }
@@ -331,7 +331,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitMethod(this);
     }
   }
@@ -355,7 +355,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitBlock(this);
     }
   }
@@ -395,7 +395,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitIfStatement(this);
     }
   }
@@ -426,7 +426,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitWhileStatement(this);
     }
   }
@@ -474,7 +474,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitForStatement(this);
     }
   }
@@ -512,7 +512,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitEnhancedForStatement(this);
     }
   }
@@ -528,7 +528,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitEmptyStatement(this);
     }
   }
@@ -552,7 +552,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitExpressionStatement(this);
     }
   }
@@ -585,7 +585,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitAssertStatement(this);
     }
   }
@@ -616,7 +616,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitSwitchStatement(this);
     }
   }
@@ -647,7 +647,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitCaseGroup(this);
     }
   }
@@ -673,7 +673,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitCaseLabel(this);
     }
   }
@@ -704,7 +704,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitDoWhileStatement(this);
     }
   }
@@ -730,7 +730,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitBreakStatement(this);
     }
   }
@@ -756,7 +756,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitContinueStatement(this);
     }
   }
@@ -782,7 +782,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitReturnStatement(this);
     }
   }
@@ -813,7 +813,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitSynchronizedStatement(this);
     }
   }
@@ -837,7 +837,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitThrowStatement(this);
     }
   }
@@ -884,7 +884,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitTryStatement(this);
     }
   }
@@ -915,7 +915,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitCatch(this);
     }
   }
@@ -946,7 +946,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitLabeledStatement(this);
     }
   }
@@ -993,7 +993,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitVariable(this);
     }
   }
@@ -1017,7 +1017,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitLiteral(this);
     }
   }
@@ -1050,7 +1050,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitBinaryExpression(this);
     }
   }
@@ -1076,7 +1076,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitUnaryExpression(this);
     }
   }
@@ -1100,7 +1100,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitParenthesized(this);
     }
   }
@@ -1138,7 +1138,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitConditionalExpression(this);
     }
   }
@@ -1169,7 +1169,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitInstanceOf(this);
     }
   }
@@ -1200,7 +1200,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitTypeCast(this);
     }
   }
@@ -1233,7 +1233,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitAssignmentExpression(this);
     }
   }
@@ -1269,7 +1269,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitMethodInvocation(this);
     }
   }
@@ -1308,7 +1308,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitNewArray(this);
     }
   }
@@ -1359,7 +1359,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitNewClass(this);
     }
   }
@@ -1390,7 +1390,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitMemberSelectExpression(this);
     }
   }
@@ -1421,7 +1421,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
       visitor.visitArrayAccessExpression(this);
     }
   }
@@ -1445,7 +1445,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
     }
   }
 
@@ -1468,7 +1468,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
     }
   }
 
@@ -1499,7 +1499,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public void accept(JavaTreeVisitor visitor) {
+    public void accept(TreeVisitor visitor) {
     }
   }
 

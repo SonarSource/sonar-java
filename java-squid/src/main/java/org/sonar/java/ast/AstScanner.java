@@ -44,6 +44,7 @@ import org.sonar.squid.indexer.SquidIndex;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -72,7 +73,6 @@ public class AstScanner {
     VisitorContext context = new VisitorContext(project);
     context.setCommentAnalyser(commentAnalyser);
 
-    visitors.add(new VisitorsBridge(visitors));
     for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
       visitor.setContext(context);
       visitor.init();

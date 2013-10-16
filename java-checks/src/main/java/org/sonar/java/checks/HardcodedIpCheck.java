@@ -19,45 +19,47 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.BaseTreeVisitor;
-import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.JavaTreeVisitor;
-import org.sonar.java.model.JavaTreeVisitorProvider;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
 import org.sonar.java.model.LiteralTree;
 import org.sonar.java.model.Tree;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = "S1313",
+  key = HardcodedIpCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class HardcodedIpCheck extends SquidCheck<LexerlessGrammar> implements JavaTreeVisitorProvider {
+public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1313";
+  private final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final Matcher IP = Pattern.compile("[^\\d.]*?((?:\\d{1,3}\\.){3}\\d{1,3}(?!\\d|\\.)).*?").matcher("");
 
+  private JavaFileScannerContext context;
+
   @Override
-  public JavaTreeVisitor createJavaTreeVisitor() {
-    return new BaseTreeVisitor() {
+  public void scanFile(final JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
+  }
 
-      @Override
-      public void visitLiteral(LiteralTree tree) {
-        if (tree.is(Tree.Kind.STRING_LITERAL)) {
-          IP.reset(tree.value());
-          if (IP.matches()) {
-            String ip = IP.group(1);
-            getContext().createLineViolation(HardcodedIpCheck.this, "Make this IP \"" + ip + "\" address configurable.", ((JavaTree) tree).getLine());
-          }
-        }
+  @Override
+  public void visitLiteral(LiteralTree tree) {
+    if (tree.is(Tree.Kind.STRING_LITERAL)) {
+      IP.reset(tree.value());
+      if (IP.matches()) {
+        String ip = IP.group(1);
+        context.addIssue(tree, RULE, "Make this IP \"" + ip + "\" address configurable.");
       }
-
-    };
+    }
   }
 
 }
