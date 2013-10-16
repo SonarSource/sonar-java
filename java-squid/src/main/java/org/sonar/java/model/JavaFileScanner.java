@@ -19,7 +19,9 @@
  */
 package org.sonar.java.model;
 
-public interface JavaFileScanner {
+import org.sonar.squid.api.CodeVisitor;
+
+public interface JavaFileScanner extends CodeVisitor {
 
   void scanFile(JavaFileScannerContext context);
 

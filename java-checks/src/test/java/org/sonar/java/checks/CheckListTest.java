@@ -27,6 +27,7 @@ import org.sonar.api.rules.AnnotationRuleParser;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleParam;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.squid.api.CodeVisitor;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -111,7 +112,7 @@ public class CheckListTest {
     List<Class> checks = CheckList.getChecks();
 
     for (Class check : checks) {
-      Object visitor = check.newInstance();
+      CodeVisitor visitor = (CodeVisitor) check.newInstance();
       if (visitor instanceof SquidAstVisitor) {
         JavaAstScanner.scanSingleFile(new File("src/test/files/CheckListParseErrorTest.java"), (SquidAstVisitor) visitor);
       }
