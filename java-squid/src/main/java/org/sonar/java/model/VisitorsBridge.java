@@ -22,37 +22,31 @@ package org.sonar.java.model;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.squid.SquidAstVisitor;
+import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
+public class VisitorsBridge extends JavaAstVisitor {
 
   private final JavaTreeMaker treeMaker = new JavaTreeMaker();
-  private final TreeVisitorsDispatcher reflection;
   private final List<JavaTreeVisitor> visitors;
 
   public VisitorsBridge(List<SquidAstVisitor<LexerlessGrammar>> visitors) {
-    ImmutableList.Builder<JavaTreeVisitor> standardVisitors = ImmutableList.builder();
-    ImmutableList.Builder<TreeVisitor> reflectionVisitors = ImmutableList.builder();
+    ImmutableList.Builder<JavaTreeVisitor> visitorsBuilder = ImmutableList.builder();
     for (SquidAstVisitor visitor : visitors) {
-      if (visitor instanceof TreeVisitor) {
-        reflectionVisitors.add((TreeVisitor) visitor);
-      }
       if (visitor instanceof JavaTreeVisitorProvider) {
-        standardVisitors.add(((JavaTreeVisitorProvider) visitor).createJavaTreeVisitor());
+        visitorsBuilder.add(((JavaTreeVisitorProvider) visitor).createJavaTreeVisitor());
       }
     }
-    this.reflection = new TreeVisitorsDispatcher(reflectionVisitors.build());
-    this.visitors = standardVisitors.build();
+    this.visitors = visitorsBuilder.build();
   }
 
   @Override
   public void visitFile(@Nullable AstNode astNode) {
     if (astNode != null) {
       Tree tree = treeMaker.compilationUnit(astNode);
-      reflection.scan(tree);
 
       for (JavaTreeVisitor visitor : visitors) {
         ((JavaTree) tree).accept(visitor);

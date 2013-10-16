@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
@@ -48,10 +47,10 @@ public class JavaTreeMakerTest {
       FileUtils.listFiles(new File("src/test/java/"), new String[] {"java"}, true),
       FileUtils.listFiles(new File("src/test/files/"), new String[] {"java"}, true)
       );
-    TreeVisitorsDispatcher visitors = new TreeVisitorsDispatcher(ImmutableList.<TreeVisitor>of());
+    BaseTreeVisitor visitor = new BaseTreeVisitor();
     for (File file : files) {
       Tree tree = maker.compilationUnit(p.parse(file));
-      visitors.scan(tree);
+      visitor.scan(tree);
     }
   }
 

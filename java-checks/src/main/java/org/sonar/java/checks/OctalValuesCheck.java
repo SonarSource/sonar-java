@@ -23,23 +23,19 @@ import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.BaseTreeVisitor;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaTreeVisitor;
+import org.sonar.java.model.JavaTreeVisitorProvider;
 import org.sonar.java.model.LiteralTree;
 import org.sonar.java.model.Tree;
-import org.sonar.java.model.TreeVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1314",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class OctalValuesCheck extends SquidCheck<LexerlessGrammar> implements TreeVisitor {
-
-  public void visit(LiteralTree literal) {
-    if (literal.is(Tree.Kind.INT_LITERAL) && isOctal(literal.value())) {
-      getContext().createLineViolation(this, "Use decimal values instead of octal ones.", ((JavaTree) literal).getLine());
-    }
-  }
+public class OctalValuesCheck extends SquidCheck<LexerlessGrammar> implements JavaTreeVisitorProvider {
 
   private static boolean isOctal(String value) {
     return value.startsWith("0") &&
@@ -50,6 +46,18 @@ public class OctalValuesCheck extends SquidCheck<LexerlessGrammar> implements Tr
   private static boolean isHexadecimal(String value) {
     return value.startsWith("0x") ||
       value.startsWith("0X");
+  }
+
+  @Override
+  public JavaTreeVisitor createJavaTreeVisitor() {
+    return new BaseTreeVisitor() {
+      @Override
+      public void visitLiteral(LiteralTree tree) {
+        if (tree.is(Tree.Kind.INT_LITERAL) && isOctal(tree.value())) {
+          getContext().createLineViolation(OctalValuesCheck.this, "Use decimal values instead of octal ones.", ((JavaTree) tree).getLine());
+        }
+      }
+    };
   }
 
 }
