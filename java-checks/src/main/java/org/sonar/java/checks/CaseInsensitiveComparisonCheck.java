@@ -23,7 +23,14 @@ import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.*;
+import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.ExpressionTree;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaTreeVisitor;
+import org.sonar.java.model.JavaTreeVisitorProvider;
+import org.sonar.java.model.MemberSelectExpressionTree;
+import org.sonar.java.model.MethodInvocationTree;
+import org.sonar.java.model.Tree;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
@@ -39,14 +46,14 @@ public class CaseInsensitiveComparisonCheck extends SquidCheck<LexerlessGrammar>
       public void visitMethodInvocation(MethodInvocationTree tree) {
         if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
           MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) tree.methodSelect();
-          if ("equals".equals(memberSelect.identifier().name())) {
-            if (isToUpperCaseOrToLowerCase(memberSelect.expression()) || (tree.arguments().size() == 1 && isToUpperCaseOrToLowerCase(tree.arguments().get(0)))) {
-              getContext().createLineViolation(
-                CaseInsensitiveComparisonCheck.this,
-                "Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.",
-                ((JavaTree) tree).getLine()
-              );
-            }
+          boolean issue = ("equals".equals(memberSelect.identifier().name()))
+            && (isToUpperCaseOrToLowerCase(memberSelect.expression()) || (tree.arguments().size() == 1 && isToUpperCaseOrToLowerCase(tree.arguments().get(0))));
+          if (issue) {
+            getContext().createLineViolation(
+              CaseInsensitiveComparisonCheck.this,
+              "Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.",
+              ((JavaTree) tree).getLine()
+            );
           }
         }
 

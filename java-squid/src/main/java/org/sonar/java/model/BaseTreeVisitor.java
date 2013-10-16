@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ public class BaseTreeVisitor implements JavaTreeVisitor {
     }
   }
 
-  protected void scan(Tree tree) {
+  protected void scan(@Nullable Tree tree) {
     if (tree != null) {
       ((JavaTree) tree).accept(this);
     }

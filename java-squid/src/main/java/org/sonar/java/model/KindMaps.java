@@ -64,17 +64,17 @@ public final class KindMaps {
   }
 
   public KindMaps() {
-    ImmutableMap.Builder<AstNodeType, Tree.Kind> literals = ImmutableMap.builder();
-    literals.put(JavaTokenType.INTEGER_LITERAL, Tree.Kind.INT_LITERAL);
-    literals.put(JavaTokenType.LONG_LITERAL, Tree.Kind.LONG_LITERAL);
-    literals.put(JavaTokenType.FLOAT_LITERAL, Tree.Kind.FLOAT_LITERAL);
-    literals.put(JavaTokenType.DOUBLE_LITERAL, Tree.Kind.DOUBLE_LITERAL);
-    literals.put(JavaKeyword.TRUE, Tree.Kind.BOOLEAN_LITERAL);
-    literals.put(JavaKeyword.FALSE, Tree.Kind.BOOLEAN_LITERAL);
-    literals.put(JavaTokenType.CHARACTER_LITERAL, Tree.Kind.CHAR_LITERAL);
-    literals.put(JavaTokenType.LITERAL, Tree.Kind.STRING_LITERAL);
-    literals.put(JavaKeyword.NULL, Tree.Kind.NULL_LITERAL);
-    this.literals = literals.build();
+    ImmutableMap.Builder<AstNodeType, Tree.Kind> literalsBuilder = ImmutableMap.builder();
+    literalsBuilder.put(JavaTokenType.INTEGER_LITERAL, Tree.Kind.INT_LITERAL);
+    literalsBuilder.put(JavaTokenType.LONG_LITERAL, Tree.Kind.LONG_LITERAL);
+    literalsBuilder.put(JavaTokenType.FLOAT_LITERAL, Tree.Kind.FLOAT_LITERAL);
+    literalsBuilder.put(JavaTokenType.DOUBLE_LITERAL, Tree.Kind.DOUBLE_LITERAL);
+    literalsBuilder.put(JavaKeyword.TRUE, Tree.Kind.BOOLEAN_LITERAL);
+    literalsBuilder.put(JavaKeyword.FALSE, Tree.Kind.BOOLEAN_LITERAL);
+    literalsBuilder.put(JavaTokenType.CHARACTER_LITERAL, Tree.Kind.CHAR_LITERAL);
+    literalsBuilder.put(JavaTokenType.LITERAL, Tree.Kind.STRING_LITERAL);
+    literalsBuilder.put(JavaKeyword.NULL, Tree.Kind.NULL_LITERAL);
+    this.literals = literalsBuilder.build();
 
     modifiers.put(JavaKeyword.PUBLIC, Modifier.PUBLIC);
     modifiers.put(JavaKeyword.PROTECTED, Modifier.PROTECTED);
