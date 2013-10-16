@@ -99,7 +99,7 @@ public class VisitorsBridge extends JavaAstVisitor {
         checkMessage.setLine(line);
         sourceFile.log(checkMessage);
       } else {
-        issuable.addIssue(issuable.newIssueBuilder().line(line).message(message).build());
+        issuable.addIssue(issuable.newIssueBuilder().ruleKey(ruleKey).line(line).message(message).build());
       }
     }
   }
