@@ -9,4 +9,12 @@ class BadFieldName {
     int BAD_FIELD_NAME;
     int goodFieldName;
   }
+
+  interface Interface {
+    int SHOULD_NOT_BE_CHECKED = 1;
+  }
+
+  @interface Annotation {
+    int SHOULD_NOT_BE_CHECKED = 1;
+  }
 }

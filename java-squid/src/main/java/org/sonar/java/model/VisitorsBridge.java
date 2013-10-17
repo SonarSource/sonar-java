@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.api.batch.SquidUtils;
@@ -92,6 +93,8 @@ public class VisitorsBridge extends JavaAstVisitor {
 
     @Override
     public void addIssue(Tree tree, RuleKey ruleKey, String message) {
+      Preconditions.checkNotNull(ruleKey);
+      Preconditions.checkNotNull(message);
       int line = ((JavaTree) tree).getLine();
 
       if (issuable == null) {

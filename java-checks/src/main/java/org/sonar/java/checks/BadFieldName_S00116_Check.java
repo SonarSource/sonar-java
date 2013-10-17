@@ -19,24 +19,29 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.ClassTree;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.java.model.Modifier;
+import org.sonar.java.model.Tree;
+import org.sonar.java.model.VariableTree;
 
 import java.util.regex.Pattern;
 
 @Rule(
-  key = "S00116",
+  key = BadFieldName_S00116_Check.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class BadFieldName_S00116_Check extends SquidCheck<LexerlessGrammar> {
+public class BadFieldName_S00116_Check extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S00116";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^[a-z][a-zA-Z0-9]*$";
 
@@ -46,32 +51,33 @@ public class BadFieldName_S00116_Check extends SquidCheck<LexerlessGrammar> {
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.FIELD_DECLARATION);
-    pattern = Pattern.compile(format, Pattern.DOTALL);
+  public void scanFile(JavaFileScannerContext context) {
+    if (pattern == null) {
+      pattern = Pattern.compile(format, Pattern.DOTALL);
+    }
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
-    if (isNotStatic(astNode)) {
-      for (AstNode variableDeclarator : astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-        check(variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER));
+  public void visitClass(ClassTree tree) {
+    for (Tree member : tree.members()) {
+      if ((tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) && member.is(Tree.Kind.VARIABLE)) {
+        VariableTree field = (VariableTree) member;
+        if (isNotStatic(field) && !pattern.matcher(field.simpleName()).matches()) {
+          context.addIssue(field, ruleKey, "Rename this field name to match the regular expression '" + format + "'.");
+        }
       }
+      scan(member);
     }
   }
 
-  private void check(AstNode identifier) {
-    String name = identifier.getTokenValue();
-    if (!pattern.matcher(name).matches()) {
-      getContext().createLineViolation(this, "Rename this field name to match the regular expression '" + format + "'.", identifier);
-    }
-  }
-
-  private boolean isNotStatic(AstNode astNode) {
-    for (AstNode modifier : astNode.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION).getChildren(JavaGrammar.MODIFIER)) {
-      if (modifier.getFirstChild().is(JavaKeyword.STATIC)) {
+  private boolean isNotStatic(VariableTree field) {
+    for (Modifier modifier : field.modifiers().modifiers()) {
+      if (modifier == Modifier.STATIC) {
         return false;
       }
     }
