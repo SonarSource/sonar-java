@@ -45,7 +45,7 @@ public abstract class JavaTree implements Tree {
 
   @Override
   public final boolean is(Kind kind) {
-    return getKind() == kind;
+    return getKind() == null ? false : getKind() == kind;
   }
 
   protected abstract Kind getKind();
