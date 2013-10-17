@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1313";
-  private final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final Matcher IP = Pattern.compile("[^\\d.]*?((?:\\d{1,3}\\.){3}\\d{1,3}(?!\\d|\\.)).*?").matcher("");
 
@@ -57,7 +57,7 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
       IP.reset(tree.value());
       if (IP.matches()) {
         String ip = IP.group(1);
-        context.addIssue(tree, RULE, "Make this IP \"" + ip + "\" address configurable.");
+        context.addIssue(tree, ruleKey, "Make this IP \"" + ip + "\" address configurable.");
       }
     }
   }
