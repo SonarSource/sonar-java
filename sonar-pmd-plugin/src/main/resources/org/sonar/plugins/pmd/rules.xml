@@ -1064,6 +1064,7 @@
     <configKey><![CDATA[rulesets/logging-jakarta-commons.xml/ProperLogger]]></configKey>
     <param key="staticLoggerName" type="STRING">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ShortVariable">
@@ -1191,11 +1192,13 @@
   <rule key="MoreThanOneLogger">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/logging-java.xml/MoreThanOneLogger]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="LoggerIsNotStaticFinal">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/logging-java.xml/LoggerIsNotStaticFinal]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SystemPrintln">

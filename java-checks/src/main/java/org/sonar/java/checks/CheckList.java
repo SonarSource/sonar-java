@@ -145,6 +145,7 @@ public final class CheckList {
       NoCheckstyleTagPresenceCheck.class,
       ParameterReassignedToCheck.class,
       HardcodedIpCheck.class,
+      LoggersDeclarationCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,

@@ -1,0 +1,47 @@
+<p>Whatever is the logging framework (logback, log4j, commons-logging, java.util.logging, ...), a logger should be:</p>
+
+<ul>
+  <li><code>private</code>: Never be accessible outside of its parent class. If another class needs to log something, it should instantiate its own logger.</li>
+  <li><code>static</code>: Not dependent on an instance of a class (an object). When logging something, contextual information can of course be provided in the messages but the logger should be created at class level to prevent creating a logger along with each object.</li>
+  <li><code>final</code>: Be created once and only once per class.</li>
+</ul>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Foo {
+  public Logger logger = LoggerFactory.getLogger(Foo.class);         // Noncompliant
+
+  public void doSomething() {
+    /* ... */
+  }
+}
+
+public class Bar {
+  public static void main(String[] args) {
+    Foo foo = new Foo();
+    foo.logger.info("Program started");
+    foo.doSomething();
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Foo {
+  private static Logger LOGGER = LoggerFactory.getLogger(Foo.class); // Compliant
+
+  public void doSomething() {
+    /* ... */
+  }
+}
+
+public class Bar {
+  private static Log LOGGER = LogFactory.getLogger(Bar.class);       // Compliant
+
+  public static void main(String[] args) {
+    LOGGER.info("Program started");
+    Foo foo = new Foo();
+    foo.run();
+  }
+}
+</pre>
