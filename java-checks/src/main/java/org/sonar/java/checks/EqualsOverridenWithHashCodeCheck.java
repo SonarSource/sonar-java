@@ -32,8 +32,8 @@ import java.text.MessageFormat;
 
 @Rule(
   key = "S1206",
-  priority = Priority.CRITICAL)
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+  priority = Priority.BLOCKER)
+@BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
 public class EqualsOverridenWithHashCodeCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final String HASHCODE = "hashCode";
