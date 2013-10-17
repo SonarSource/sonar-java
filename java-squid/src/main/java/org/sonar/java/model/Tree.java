@@ -76,6 +76,11 @@ public interface Tree {
     /**
      * {@link MethodTree}
      */
+    CONSTRUCTOR(MethodTree.class),
+
+    /**
+     * {@link MethodTree}
+     */
     METHOD(MethodTree.class),
 
     /**

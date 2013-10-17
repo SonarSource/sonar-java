@@ -258,7 +258,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     protected Kind getKind() {
-      return Kind.METHOD;
+      return returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD;
     }
 
     @Override

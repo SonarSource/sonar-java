@@ -200,7 +200,7 @@ public class JavaTreeMakerTest {
   public void class_constructor() {
     AstNode astNode = p.parse("class T { T(int p1, int... p2) throws Exception1, Exception2 {} }");
     MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
-    assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
+    assertThat(tree.is(Tree.Kind.CONSTRUCTOR)).isTrue();
     assertThat(tree.returnType()).isNull();
     assertThat(tree.simpleName()).isEqualTo("T");
     assertThat(tree.parameters()).hasSize(2);
@@ -332,7 +332,7 @@ public class JavaTreeMakerTest {
   public void enum_constructor() {
     AstNode astNode = p.parse("enum T { ; T(int p1, int... p2) throws Exception1, Exception2 {} }");
     MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
-    assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
+    assertThat(tree.is(Tree.Kind.CONSTRUCTOR)).isTrue();
     assertThat(tree.returnType()).isNull();
     assertThat(tree.simpleName()).isEqualTo("T");
     assertThat(tree.parameters()).hasSize(2);
