@@ -10,6 +10,8 @@ class BadConstantName {
   enum Enum {
     GOOD_CONSTANT,
     bad_constant;
+
+    int SHOULD_NOT_BE_CHECKED;
   }
 
   interface Interface {
@@ -20,6 +22,8 @@ class BadConstantName {
   @interface AnnotationType {
     int GOOD_CONSTANT = 1,
         bad_constant = 2;
+
+    long serialVersionUID = 42L;
   }
 
 }

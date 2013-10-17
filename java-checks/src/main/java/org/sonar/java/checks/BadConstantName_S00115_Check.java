@@ -19,25 +19,29 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Preconditions;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.ClassTree;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.java.model.Modifier;
+import org.sonar.java.model.Tree;
+import org.sonar.java.model.VariableTree;
 
 import java.util.regex.Pattern;
 
 @Rule(
-  key = "S00115",
+  key = BadConstantName_S00115_Check.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class BadConstantName_S00115_Check extends SquidCheck<LexerlessGrammar> {
+public class BadConstantName_S00115_Check extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S00115";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$";
 
@@ -47,47 +51,48 @@ public class BadConstantName_S00115_Check extends SquidCheck<LexerlessGrammar> {
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.FIELD_DECLARATION, JavaGrammar.ENUM_CONSTANT, JavaGrammar.CONSTANT_DECLARATOR_REST);
-    pattern = Pattern.compile(format, Pattern.DOTALL);
+  public void scanFile(JavaFileScannerContext context) {
+    if (pattern == null) {
+      pattern = Pattern.compile(format, Pattern.DOTALL);
+    }
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
-    if (astNode.is(JavaGrammar.CONSTANT_DECLARATOR_REST)) {
-      check(astNode.getPreviousAstNode());
-    } else if (astNode.is(JavaGrammar.ENUM_CONSTANT)) {
-      check(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
-    } else {
-      // FIELD_DECLARATION
-      if (isConstant(astNode)) {
-        for (AstNode variableDeclarator : astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-          AstNode identifierNode = variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER);
-          if (!identifierNode.getTokenValue().equals(SerializableContract.SERIAL_VERSION_UID_FIELD)) {
-            check(identifierNode);
-          }
+  public void visitClass(ClassTree tree) {
+    for (Tree member : tree.members()) {
+      if (member.is(Tree.Kind.VARIABLE)) {
+        VariableTree variableTree = (VariableTree) member;
+        if (tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ANNOTATION_TYPE)) {
+          checkName(variableTree);
+        } else if (isStaticFinal(variableTree)) {
+          checkName(variableTree);
         }
+      } else if (member.is(Tree.Kind.ENUM_CONSTANT)) {
+        checkName((VariableTree) member);
       }
     }
+    super.visitClass(tree);
   }
 
-  private void check(AstNode identifier) {
-    Preconditions.checkArgument(identifier.is(JavaTokenType.IDENTIFIER));
-    String name = identifier.getTokenValue();
-    if (!pattern.matcher(name).matches()) {
-      getContext().createLineViolation(this, "Rename this constant name to match the regular expression '" + format + "'.", identifier);
+  private void checkName(VariableTree variableTree) {
+    if (!SerializableContract.SERIAL_VERSION_UID_FIELD.equals(variableTree.simpleName()) && !pattern.matcher(variableTree.simpleName()).matches()) {
+      context.addIssue(variableTree, ruleKey, "Rename this constant name to match the regular expression '" + format + "'.");
     }
   }
 
-  private boolean isConstant(AstNode astNode) {
+  private boolean isStaticFinal(VariableTree variableTree) {
     boolean isStatic = false;
     boolean isFinal = false;
-    for (AstNode modifier : astNode.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION).getChildren(JavaGrammar.MODIFIER)) {
-      if (modifier.getFirstChild().is(JavaKeyword.STATIC)) {
+    for (Modifier modifier : variableTree.modifiers().modifiers()) {
+      if (modifier == Modifier.STATIC) {
         isStatic = true;
-      } else if (modifier.getFirstChild().is(JavaKeyword.FINAL)) {
+      }
+      if (modifier == Modifier.FINAL) {
         isFinal = true;
       }
     }
