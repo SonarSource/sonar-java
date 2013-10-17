@@ -54,23 +54,25 @@ public class ExceptionsShouldBeImmutableCheck extends SquidCheck<LexerlessGramma
   }
 
   private static boolean isException(AstNode node) {
-    return node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue().endsWith("Exception");
+    String name = node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue();
+    return name.endsWith("Exception") ||
+      name.endsWith("Error");
   }
 
   private static Iterable<AstNode> getFields(AstNode node) {
     return node.select()
-        .children(JavaGrammar.CLASS_BODY)
-        .children(JavaGrammar.CLASS_BODY_DECLARATION)
-        .children(JavaGrammar.MEMBER_DECL)
-        .children(JavaGrammar.FIELD_DECLARATION);
+      .children(JavaGrammar.CLASS_BODY)
+      .children(JavaGrammar.CLASS_BODY_DECLARATION)
+      .children(JavaGrammar.MEMBER_DECL)
+      .children(JavaGrammar.FIELD_DECLARATION);
   }
 
   private static boolean isFinal(AstNode node) {
     return node.select()
-        .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
-        .children(JavaGrammar.MODIFIER)
-        .children(JavaKeyword.FINAL)
-        .isNotEmpty();
+      .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
+      .children(JavaGrammar.MODIFIER)
+      .children(JavaKeyword.FINAL)
+      .isNotEmpty();
   }
 
 }

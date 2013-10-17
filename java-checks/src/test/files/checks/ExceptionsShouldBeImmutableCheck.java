@@ -12,3 +12,11 @@ class Foo extends RuntimeException {
 class BarException {
   int foo; // Non-Compliant - limitation
 }
+
+class FooError extends Error {
+  int foo; // Noncompliant
+}
+
+class FooError {
+  int foo; // Noncompliant - limitation
+}
