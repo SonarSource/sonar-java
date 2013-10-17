@@ -19,63 +19,82 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.visitors.MethodHelper;
-import org.sonar.sslr.parser.LexerlessGrammar;
-
-import java.text.MessageFormat;
+import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.ClassTree;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.java.model.MethodTree;
+import org.sonar.java.model.Tree;
 
 @Rule(
-  key = "S1206",
+  key = EqualsOverridenWithHashCodeCheck.KEY,
   priority = Priority.BLOCKER)
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
-public class EqualsOverridenWithHashCodeCheck extends SquidCheck<LexerlessGrammar> {
+public class EqualsOverridenWithHashCodeCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String KEY = "S1206";
+  private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
   private static final String HASHCODE = "hashCode";
   private static final String EQUALS = "equals";
 
+  private JavaFileScannerContext context;
+
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_BODY);
-    subscribeTo(JavaGrammar.ENUM_BODY_DECLARATIONS);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    boolean hasHashCode = false;
-    int hashCodeLine = -1;
-    boolean hasEquals = false;
-    int equalsLine = -1;
+  public void visitClass(ClassTree tree) {
+    super.visitClass(tree);
 
-    for (MethodHelper method : MethodHelper.getMethods(node)) {
-      if (method.getParameters().size() == 0 && HASHCODE.equals(method.getName().getTokenOriginalValue())) {
-        hasHashCode = true;
-        hashCodeLine = method.getName().getTokenLine();
-      } else if (method.getParameters().size() == 1 && EQUALS.equals(method.getName().getTokenOriginalValue())) {
-        hasEquals = true;
-        equalsLine = method.getName().getTokenLine();
+    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.INTERFACE)) {
+      MethodTree equalsMethod = null;
+      MethodTree hashCodeMethod = null;
+
+      for (Tree memberTree : tree.members()) {
+        if (memberTree.is(Tree.Kind.METHOD)) {
+          MethodTree methodTree = (MethodTree) memberTree;
+          if (EQUALS.equals(methodTree.simpleName()) && methodTree.parameters().size() == 1) {
+            equalsMethod = methodTree;
+          } else if (HASHCODE.equals(methodTree.simpleName()) && methodTree.parameters().isEmpty()) {
+            hashCodeMethod = methodTree;
+          }
+        }
+      }
+
+      if (equalsMethod != null && hashCodeMethod == null) {
+        context.addIssue(equalsMethod, RULE_KEY, getMessage(classTreeType(tree), EQUALS, HASHCODE));
+      } else if (hashCodeMethod != null && equalsMethod == null) {
+        context.addIssue(hashCodeMethod, RULE_KEY, getMessage(classTreeType(tree), HASHCODE, EQUALS));
       }
     }
-
-    if (hasHashCode ^ hasEquals) {
-      getContext().createLineViolation(
-        this,
-        getMessage(node.is(JavaGrammar.CLASS_BODY), hasHashCode),
-        hasHashCode ? hashCodeLine : equalsLine);
-    }
   }
 
-  private static String getMessage(boolean isClass, boolean hasHashCode) {
-    return MessageFormat.format(
-      "This {0} overrides \"{1}()\" and should therefore also override \"{2}()\".",
-      isClass ? "class" : "enum",
-      hasHashCode ? HASHCODE : EQUALS,
-      hasHashCode ? EQUALS : HASHCODE);
+  private static String classTreeType(ClassTree tree) {
+    String type;
+
+    if (tree.is(Tree.Kind.CLASS)) {
+      type = "class";
+    } else if (tree.is(Tree.Kind.ENUM)) {
+      type = "enum";
+    } else if (tree.is(Tree.Kind.INTERFACE)) {
+      type = "interface";
+    } else {
+      throw new IllegalStateException();
+    }
+
+    return type;
+  }
+
+  private static String getMessage(String type, String overridenMethod, String methodToOverride) {
+    return "This " + type + " overrides \"" + overridenMethod + "()\" and should therefore also override \"" + methodToOverride + "()\".";
   }
 
 }

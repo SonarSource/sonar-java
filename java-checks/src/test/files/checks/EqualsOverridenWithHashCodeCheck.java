@@ -42,3 +42,18 @@ class A {
   public boolean equals(A o) { // Noncompliant
   }
 }
+
+class A {
+  class B {
+    public boolean equals(Object o) { // Noncompliant
+    }
+  }
+}
+
+interface A {
+  boolean equals(Object o); // Noncompliant
+}
+
+@interface A {
+  int hashCode(); // Compliant
+}

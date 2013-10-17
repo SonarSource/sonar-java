@@ -23,6 +23,7 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -34,12 +35,17 @@ public class EqualsOverridenWithHashCodeCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EqualsOverridenWithHashCodeCheck.java"), new EqualsOverridenWithHashCodeCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(
+      new File("src/test/files/checks/EqualsOverridenWithHashCodeCheck.java"),
+      new VisitorsBridge(new EqualsOverridenWithHashCodeCheck()));
+
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(5).withMessage("This class overrides \"equals()\" and should therefore also override \"hashCode()\".")
       .next().atLine(10).withMessage("This class overrides \"hashCode()\" and should therefore also override \"equals()\".")
       .next().atLine(34).withMessage("This enum overrides \"equals()\" and should therefore also override \"hashCode()\".")
-      .next().atLine(42);
+      .next().atLine(42)
+      .next().atLine(48)
+      .next().atLine(54).withMessage("This interface overrides \"equals()\" and should therefore also override \"hashCode()\".");
   }
 
 }
