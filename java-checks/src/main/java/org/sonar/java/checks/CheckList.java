@@ -146,6 +146,7 @@ public final class CheckList {
       ParameterReassignedToCheck.class,
       HardcodedIpCheck.class,
       LoggersDeclarationCheck.class,
+      ObjectEqualsNullCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,

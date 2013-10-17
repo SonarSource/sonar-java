@@ -21,7 +21,6 @@
   <rule ref="rulesets/basic.xml/UselessOperationOnImmutable" />
   <rule ref="rulesets/controversial.xml/UnusedModifier" />
   <rule ref="rulesets/optimizations.xml/UseArraysAsList" />
-  <rule ref="rulesets/design.xml/EqualsNull" />
   <rule ref="rulesets/basic.xml/BrokenNullCheck" />
   <rule ref="rulesets/strings.xml/InefficientStringBuffering" />
   <rule ref="rulesets/sunsecure.xml/ArrayIsStoredDirectly" />

@@ -681,6 +681,7 @@
   <rule key="EqualsNull">
     <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/design.xml/EqualsNull]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ConfusingTernary">
