@@ -24,21 +24,20 @@ import java.util.List;
 
 /**
  * Method or annotation type element declaration.
- *
- * <p>JLS 8.4, 9.4, 9.6.1, 9.6.2</p>
- *
- * Constructor:
+ * <p>
+ * JLS 8.8. Constructor:
  * <pre>
  *   {@link #modifiers()} {@link #typeParameters()} {@link #simpleName()} ()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
  * </pre>
- * Method:
+ * JLS 8.4, 9.4. Method:
  * <pre>
  *   {@link #modifiers()} {@link #typeParameters()} {@link #returnType()} {@link #simpleName()} ()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
  * </pre>
- * Annotation type element:
+ * JLS 9.6.1, 9.6.2. Annotation type element:
  * <pre>
  *   {@link #modifiers()} {@link #returnType()} {@link #simpleName()} ()} default {@link #defaultValue()} ;
  * </pre>
+ * </p>
  *
  * @since Java 1.3
  */

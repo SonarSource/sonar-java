@@ -233,32 +233,6 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class InitializerTreeImpl extends JavaTree implements InitializerTree {
-    private final Kind kind;
-    private final List<? extends StatementTree> body;
-
-    public InitializerTreeImpl(AstNode astNode, Kind kind, List<? extends StatementTree> body) {
-      super(astNode);
-      this.kind = kind;
-      this.body = Preconditions.checkNotNull(body);
-    }
-
-    @Override
-    protected Kind getKind() {
-      return kind;
-    }
-
-    @Override
-    public List<? extends StatementTree> body() {
-      return body;
-    }
-
-    @Override
-    public void accept(TreeVisitor visitor) {
-      visitor.visitInitializer(this);
-    }
-  }
-
   public static class MethodTreeImpl extends JavaTree implements MethodTree {
     private final ModifiersTree modifiers;
     @Nullable
@@ -337,16 +311,18 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class BlockTreeImpl extends JavaTree implements BlockTree {
+    private final Kind kind;
     private final List<? extends StatementTree> body;
 
-    public BlockTreeImpl(AstNode astNode, List<? extends StatementTree> body) {
+    public BlockTreeImpl(AstNode astNode, Kind kind, List<? extends StatementTree> body) {
       super(astNode);
+      this.kind = kind;
       this.body = Preconditions.checkNotNull(body);
     }
 
     @Override
     protected Kind getKind() {
-      return Kind.BLOCK;
+      return kind;
     }
 
     @Override

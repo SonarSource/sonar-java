@@ -25,8 +25,6 @@ public interface TreeVisitor {
 
   void visitClass(ClassTree tree);
 
-  void visitInitializer(InitializerTree tree);
-
   void visitMethod(MethodTree tree);
 
   void visitBlock(BlockTree tree);

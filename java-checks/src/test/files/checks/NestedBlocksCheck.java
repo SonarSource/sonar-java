@@ -1,15 +1,12 @@
 class A {
   private void f() { // Compliant
     if (false) { // Compliant
+      { // Non-Compliant
+      }
     }
 
     { // Non-Compliant
       System.out.println();
-    }
-
-    if (false) { // Compliant
-      { // Non-Compliant
-      }
     }
 
     while (false) { // Compliant
@@ -21,9 +18,20 @@ class A {
     for (int i = 0; i < 42; i++) { // Compliant
     }
 
-    int a;
+    switch (false) {
+      case false:
+      { // Non-Compliant
+      }
+    }
   }
 
   { // Compliant
+    { // Non-Compliant
+    }
+  }
+
+  static { // Compliant
+    { // Non-Compliant
+    }
   }
 }

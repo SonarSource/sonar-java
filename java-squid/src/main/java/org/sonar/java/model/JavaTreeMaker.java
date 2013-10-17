@@ -260,7 +260,7 @@ public class JavaTreeMaker {
         }
       } else if (classBodyDeclaration.getFirstChild().is(JavaGrammar.CLASS_INIT_DECLARATION)) {
         AstNode classInitDeclarationNode = classBodyDeclaration.getFirstChild();
-        members.add(new JavaTree.InitializerTreeImpl(
+        members.add(new JavaTree.BlockTreeImpl(
           classInitDeclarationNode,
           classInitDeclarationNode.hasDirectChildren(JavaKeyword.STATIC) ? Tree.Kind.STATIC_INITIALIZER : Tree.Kind.INITIALIZER,
           blockStatements(classInitDeclarationNode.getFirstChild(JavaGrammar.BLOCK).getFirstChild(JavaGrammar.BLOCK_STATEMENTS))
@@ -568,7 +568,7 @@ public class JavaTreeMaker {
   @VisibleForTesting
   public BlockTree block(AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaGrammar.BLOCK), "Unexpected AstNodeType: %s", astNode.getType().toString());
-    return new JavaTree.BlockTreeImpl(astNode, blockStatements(astNode.getFirstChild(JavaGrammar.BLOCK_STATEMENTS)));
+    return new JavaTree.BlockTreeImpl(astNode, Tree.Kind.BLOCK, blockStatements(astNode.getFirstChild(JavaGrammar.BLOCK_STATEMENTS)));
   }
 
   private List<StatementTree> blockStatements(AstNode astNode) {

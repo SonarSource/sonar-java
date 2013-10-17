@@ -31,14 +31,20 @@ import java.io.File;
 public class NestedBlocksCheckTest {
 
   @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+  public final CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+
+  private final NestedBlocksCheck check = new NestedBlocksCheck();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedBlocksCheck.java"), new VisitorsBridge(new NestedBlocksCheck()));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedBlocksCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("Extract this nested code block into a method.")
-        .next().atLine(11);
+      .next().atLine(4).withMessage("Extract this nested code block into a method.")
+      .next().atLine(8)
+      .next().atLine(23)
+      .next().atLine(29)
+      .next().atLine(34)
+      .noMore();
   }
 
 }

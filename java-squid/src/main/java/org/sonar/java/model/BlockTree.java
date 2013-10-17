@@ -23,12 +23,20 @@ import java.util.List;
 
 /**
  * Block.
- *
- * JLS 14.2
- *
+ * <p>
+ * JLS 8.6. Instance Initializer ({@link Tree.Kind#INITIALIZER}):
  * <pre>
  *   { {@link #body()} }
  * </pre>
+ * JLS 8.7. Static Initializer ({@link Tree.Kind#STATIC_INITIALIZER}):
+ * <pre>
+ *   static { {@link #body()} }
+ * </pre>
+ * JLS 14.2 Block ({@link Tree.Kind#BLOCK}):
+ * <pre>
+ *   { {@link #body()} }
+ * </pre>
+ * </p>
  *
  * @since Java 1.3
  */

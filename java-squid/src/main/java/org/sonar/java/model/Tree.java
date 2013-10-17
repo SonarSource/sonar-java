@@ -57,14 +57,14 @@ public interface Tree {
     ANNOTATION_TYPE(ClassTree.class),
 
     /**
-     * {@link InitializerTree}
+     * {@link BlockTree}
      */
-    INITIALIZER(InitializerTree.class),
+    INITIALIZER(BlockTree.class),
 
     /**
-     * {@link InitializerTree}
+     * {@link BlockTree}
      */
-    STATIC_INITIALIZER(InitializerTree.class),
+    STATIC_INITIALIZER(BlockTree.class),
 
     /**
      * {@link MethodTree}

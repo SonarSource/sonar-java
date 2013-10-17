@@ -182,12 +182,12 @@ public class JavaTreeMakerTest {
   @Test
   public void class_init_declaration() {
     AstNode astNode = p.parse("class T { { ; ; } }");
-    InitializerTree tree = (InitializerTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    BlockTree tree = (BlockTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.INITIALIZER)).isTrue();
     assertThat(tree.body()).hasSize(2);
 
     astNode = p.parse("class T { static { ; ; } }");
-    tree = (InitializerTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    tree = (BlockTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.STATIC_INITIALIZER)).isTrue();
     assertThat(tree.body()).hasSize(2);
   }

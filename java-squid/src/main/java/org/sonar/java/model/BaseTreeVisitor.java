@@ -56,11 +56,6 @@ public class BaseTreeVisitor implements TreeVisitor {
   }
 
   @Override
-  public void visitInitializer(InitializerTree tree) {
-    scan(tree.body());
-  }
-
-  @Override
   public void visitMethod(MethodTree tree) {
     scan(tree.modifiers());
     scan(tree.returnType());

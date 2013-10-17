@@ -25,10 +25,13 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.BaseTreeVisitor;
 import org.sonar.java.model.BlockTree;
+import org.sonar.java.model.CaseGroupTree;
 import org.sonar.java.model.JavaFileScanner;
 import org.sonar.java.model.JavaFileScannerContext;
 import org.sonar.java.model.StatementTree;
 import org.sonar.java.model.Tree;
+
+import java.util.List;
 
 @Rule(
   key = NestedBlocksCheck.RULE_KEY,
@@ -48,14 +51,23 @@ public class NestedBlocksCheck extends BaseTreeVisitor implements JavaFileScanne
   }
 
   @Override
+  public void visitCaseGroup(CaseGroupTree tree) {
+    checkStatements(tree.body());
+    super.visitCaseGroup(tree);
+  }
+
+  @Override
   public void visitBlock(BlockTree tree) {
-    for (StatementTree statement : tree.body()) {
+    checkStatements(tree.body());
+    super.visitBlock(tree);
+  }
+
+  private void checkStatements(List<? extends StatementTree> statements) {
+    for (StatementTree statement : statements) {
       if (statement.is(Tree.Kind.BLOCK)) {
         context.addIssue(statement, ruleKey, "Extract this nested code block into a method.");
       }
     }
-
-    super.visitBlock(tree);
   }
 
 }
