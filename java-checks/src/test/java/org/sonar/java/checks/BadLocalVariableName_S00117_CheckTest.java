@@ -22,32 +22,34 @@ package org.sonar.java.checks;
 import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
 public class BadLocalVariableName_S00117_CheckTest {
 
-  private BadLocalVariableName_S00117_Check check = new BadLocalVariableName_S00117_Check();
+  private final BadLocalVariableName_S00117_Check check = new BadLocalVariableName_S00117_Check();
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadLocalVariableName.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadLocalVariableName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Rename this local variable name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.")
-        .next().atLine(3)
-        .next().atLine(6)
-        .next().atLine(12)
-        .next().atLine(13)
-        .noMore();
+      .next().atLine(3).withMessage("Rename this local variable name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.")
+      .next().atLine(5)
+      .next().atLine(8)
+      .next().atLine(14)
+      .next().atLine(15)
+      .next().atLine(21)
+      .noMore();
   }
 
   @Test
   public void test2() {
     check.format = "^[a-zA-Z0-9_]*$";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadLocalVariableName.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadLocalVariableName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+      .noMore();
   }
 
 }

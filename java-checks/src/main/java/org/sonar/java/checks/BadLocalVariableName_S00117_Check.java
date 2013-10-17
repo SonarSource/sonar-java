@@ -19,23 +19,28 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.ClassTree;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.java.model.Tree;
+import org.sonar.java.model.VariableTree;
 
 import java.util.regex.Pattern;
 
 @Rule(
-  key = "S00117",
+  key = BadLocalVariableName_S00117_Check.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class BadLocalVariableName_S00117_Check extends SquidCheck<LexerlessGrammar> {
+public class BadLocalVariableName_S00117_Check  extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S00117";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^[a-z][a-zA-Z0-9]*$";
 
@@ -45,35 +50,35 @@ public class BadLocalVariableName_S00117_Check extends SquidCheck<LexerlessGramm
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(
-        JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
-        JavaGrammar.VARIABLE_DECLARATOR_ID,
-        JavaGrammar.FOR_INIT);
-    pattern = Pattern.compile(format, Pattern.DOTALL);
+  public void scanFile(JavaFileScannerContext context) {
+    if (pattern == null) {
+      pattern = Pattern.compile(format, Pattern.DOTALL);
+    }
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
-    if (astNode.is(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
-      check(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
-    } else {
-      AstNode variableDeclarators = astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS);
-      if (variableDeclarators != null) {
-        for (AstNode variableDeclarator : variableDeclarators.getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-          check(variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER));
-        }
+  public void visitClass(ClassTree tree) {
+    for (Tree member : tree.members()) {
+      if (member.is(Tree.Kind.VARIABLE)) {
+        // skip check of field
+        scan(((VariableTree) member).initializer());
+      } else {
+        scan(member);
       }
     }
   }
 
-  private void check(AstNode identifier) {
-    String name = identifier.getTokenValue();
-    if (!pattern.matcher(name).matches()) {
-      getContext().createLineViolation(this, "Rename this local variable name to match the regular expression '" + format + "'.", identifier);
+  @Override
+  public void visitVariable(VariableTree tree) {
+    if (!pattern.matcher(tree.simpleName()).matches()) {
+      context.addIssue(tree, ruleKey, "Rename this local variable name to match the regular expression '" + format + "'.");
     }
+    super.visitVariable(tree);
   }
 
 }

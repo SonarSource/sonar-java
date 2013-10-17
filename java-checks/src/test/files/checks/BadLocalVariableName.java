@@ -1,5 +1,7 @@
 class BadLocalVariableName {
-  void method(int BAD_FORMAL_PARAMETER) {
+  void method(
+    int BAD_FORMAL_PARAMETER
+  ) {
     int BAD;
     int good;
 
@@ -13,4 +15,10 @@ class BadLocalVariableName {
     } catch (Exception BAD_EXCEPTION) {
     }
   }
+
+  Object FIELD_SHOULD_NOT_BE_CHECKED = new Object(){
+    {
+      int BAD;
+    }
+  };
 }

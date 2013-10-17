@@ -363,7 +363,7 @@ public class JavaTreeMaker {
       AstNode typeNode = variableDeclaratorIdNode.getPreviousAstNode();
       Tree type = typeNode.is(JavaPunctuator.ELLIPSIS) ? new JavaTree.ArrayTypeTreeImpl(typeNode, referenceType(typeNode.getPreviousAstNode())) : referenceType(typeNode);
       result.add(new JavaTree.VariableTreeImpl(
-        astNode,
+        variableDeclaratorIdNode,
         JavaTree.ModifiersTreeImpl.EMPTY,
         type,
         variableDeclaratorIdNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
@@ -861,13 +861,13 @@ public class JavaTreeMaker {
     ImmutableList.Builder<CatchTree> catches = ImmutableList.builder();
     for (AstNode catchNode : astNode.getChildren(JavaGrammar.CATCH_CLAUSE)) {
       AstNode catchFormalParameterNode = catchNode.getFirstChild(JavaGrammar.CATCH_FORMAL_PARAMETER);
-      // TODO modifiers
       // TODO multi-catch
       // TODO WTF why VARIABLE_DECLARATOR_ID in grammar?
       catches.add(new JavaTree.CatchTreeImpl(
         catchNode,
         new JavaTree.VariableTreeImpl(
           catchFormalParameterNode,
+          // TODO modifiers:
           JavaTree.ModifiersTreeImpl.EMPTY,
           qualifiedIdentifier(catchFormalParameterNode.getFirstChild(JavaGrammar.CATCH_TYPE).getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER)),
           catchFormalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
@@ -880,13 +880,30 @@ public class JavaTreeMaker {
     if (astNode.hasDirectChildren(JavaGrammar.FINALLY_)) {
       finallyBlock = block(astNode.getFirstChild(JavaGrammar.FINALLY_).getFirstChild(JavaGrammar.BLOCK));
     }
+    AstNode resourceSpecificationNode = astNode.getFirstChild(JavaGrammar.RESOURCE_SPECIFICATION);
     return new JavaTree.TryStatementTreeImpl(
       astNode,
-      ImmutableList.<VariableTree>of(), // FIXME TRY_WITH_RESOURCES_STATEMENT
+      resourceSpecificationNode == null ? ImmutableList.<VariableTree>of() : resourceSpecification(resourceSpecificationNode),
       block(astNode.getFirstChild(JavaGrammar.BLOCK)),
       catches.build(),
       finallyBlock
     );
+  }
+
+  private List<VariableTree> resourceSpecification(AstNode astNode) {
+    Preconditions.checkArgument(astNode.is(JavaGrammar.RESOURCE_SPECIFICATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    ImmutableList.Builder<VariableTree> result = ImmutableList.builder();
+    for (AstNode resourceNode : astNode.getChildren(JavaGrammar.RESOURCE)) {
+      result.add(new JavaTree.VariableTreeImpl(
+        resourceNode,
+        // TODO modifiers:
+        JavaTree.ModifiersTreeImpl.EMPTY,
+        classType(resourceNode.getFirstChild(JavaGrammar.CLASS_TYPE)),
+        resourceNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+        expression(resourceNode.getFirstChild(JavaGrammar.EXPRESSION))
+      ));
+    }
+    return result.build();
   }
 
   @VisibleForTesting

@@ -730,16 +730,23 @@ public class JavaTreeMakerTest {
     assertThat(tree.catches()).isEmpty();
     assertThat(tree.finallyBlock()).isNotNull();
 
-    astNode = p.parse("class T { void m() { try { } catch (RuntimeException e) { } catch (Exception e) { } } }").getFirstDescendant(JavaGrammar.STATEMENT);
+    astNode = p.parse("class T { void m() { try { } catch (RuntimeException e1) { } catch (Exception e2) { } } }").getFirstDescendant(JavaGrammar.STATEMENT);
     tree = (TryStatementTree) maker.statement(astNode);
     assertThat(tree.resources()).isEmpty();
     assertThat(tree.block()).isNotNull();
-    assertThat(tree.catches()).hasSize(2);
-    assertThat(tree.catches().get(0).parameter()).isNotNull();
-    assertThat(tree.catches().get(0).block()).isNotNull();
-    assertThat(tree.catches().get(1).parameter()).isNotNull();
-    assertThat(tree.catches().get(1).block()).isNotNull();
     assertThat(tree.finallyBlock()).isNull();
+    assertThat(tree.catches()).hasSize(2);
+    CatchTree catchTree = tree.catches().get(0);
+    assertThat(catchTree.block()).isNotNull();
+    VariableTree parameterTree = catchTree.parameter();
+    assertThat(parameterTree.type()).isNotNull();
+    assertThat(parameterTree.simpleName()).isEqualTo("e1");
+    assertThat(parameterTree.initializer()).isNull();
+    catchTree = tree.catches().get(1);
+    parameterTree = catchTree.parameter();
+    assertThat(parameterTree.type()).isNotNull();
+    assertThat(parameterTree.simpleName()).isEqualTo("e2");
+    assertThat(parameterTree.initializer()).isNull();
 
     astNode = p.parse("class T { void m() { try { } catch (Exception e) { } finally { } } }").getFirstDescendant(JavaGrammar.STATEMENT);
     tree = (TryStatementTree) maker.statement(astNode);
@@ -748,13 +755,18 @@ public class JavaTreeMakerTest {
     assertThat(tree.catches()).hasSize(1);
     assertThat(tree.finallyBlock()).isNotNull();
 
-    astNode = p.parse("class T { void m() { try (Resource r = open()) { } catch (Exception e) { } finally { } } }").getFirstDescendant(JavaGrammar.STATEMENT);
+    astNode = p.parse("class T { void m() { try (Resource r1 = open(); Resource r2 = open()) { } catch (Exception e) { } finally { } } }").getFirstDescendant(JavaGrammar.STATEMENT);
     tree = (TryStatementTree) maker.statement(astNode);
-    // FIXME try with resources
-    // assertThat(tree.resources()).isEmpty();
     assertThat(tree.block()).isNotNull();
     assertThat(tree.catches()).hasSize(1);
     assertThat(tree.finallyBlock()).isNotNull();
+    assertThat(tree.resources()).hasSize(2);
+    VariableTree resource = tree.resources().get(0);
+    assertThat(resource.simpleName()).isEqualTo("r1");
+    assertThat(resource.initializer()).isNotNull();
+    resource = tree.resources().get(1);
+    assertThat(resource.simpleName()).isEqualTo("r2");
+    assertThat(resource.initializer()).isNotNull();
 
     // FIXME multi-catch
   }
