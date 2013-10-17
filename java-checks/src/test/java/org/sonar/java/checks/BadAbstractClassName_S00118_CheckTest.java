@@ -22,17 +22,18 @@ package org.sonar.java.checks;
 import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
 public class BadAbstractClassName_S00118_CheckTest {
 
-  private BadAbstractClassName_S00118_Check check = new BadAbstractClassName_S00118_Check();
+  private final BadAbstractClassName_S00118_Check check = new BadAbstractClassName_S00118_Check();
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadAbstractClassName.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadAbstractClassName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(4).withMessage("Make this class abstract or rename it, since it matches the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'.")
         .next().atLine(7).withMessage("Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'.")

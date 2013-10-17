@@ -19,22 +19,26 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.ClassTree;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.java.model.Modifier;
+import org.sonar.java.model.Tree;
 
 import java.util.regex.Pattern;
 
 @Rule(
-  key = "S00118",
+  key = BadAbstractClassName_S00118_Check.RULE_KEY,
   priority = Priority.MAJOR)
-public class BadAbstractClassName_S00118_Check extends SquidCheck<LexerlessGrammar> {
+public class BadAbstractClassName_S00118_Check extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S00118";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^Abstract[A-Z][a-zA-Z0-9]*$";
 
@@ -44,34 +48,38 @@ public class BadAbstractClassName_S00118_Check extends SquidCheck<LexerlessGramm
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_DECLARATION);
-    pattern = Pattern.compile(format, Pattern.DOTALL);
+  public void scanFile(JavaFileScannerContext context) {
+    if (pattern == null) {
+      pattern = Pattern.compile(format, Pattern.DOTALL);
+    }
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
-    String name = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
-    if (pattern.matcher(name).matches()) {
-      if (!isAbstract(astNode)) {
-        getContext().createLineViolation(this, "Make this class abstract or rename it, since it matches the regular expression '" + format + "'.", astNode);
-      }
-    } else {
-      if (isAbstract(astNode)) {
-        getContext().createLineViolation(this, "Rename this abstract class name to match the regular expression '" + format + "'.", astNode);
+  public void visitClass(ClassTree tree) {
+    if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
+      if (pattern.matcher(tree.simpleName()).matches()) {
+        if (!isAbstract(tree)) {
+          context.addIssue(tree, ruleKey, "Make this class abstract or rename it, since it matches the regular expression '" + format + "'.");
+        }
+      } else {
+        if (isAbstract(tree)) {
+          context.addIssue(tree, ruleKey, "Rename this abstract class name to match the regular expression '" + format + "'.");
+        }
       }
     }
+    super.visitClass(tree);
   }
 
-  private boolean isAbstract(AstNode astNode) {
-    AstNode modifier = astNode.getPreviousAstNode();
-    while (modifier != null && modifier.is(JavaGrammar.MODIFIER)) {
-      if (modifier.getFirstChild().is(JavaKeyword.ABSTRACT)) {
+  private boolean isAbstract(ClassTree tree) {
+    for (Modifier modifier : tree.modifiers().modifiers()) {
+      if (modifier == Modifier.ABSTRACT) {
         return true;
       }
-      modifier = modifier.getPreviousAstNode();
     }
     return false;
   }
