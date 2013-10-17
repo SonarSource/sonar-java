@@ -148,6 +148,7 @@ public final class CheckList {
       LoggersDeclarationCheck.class,
       ObjectEqualsNullCheck.class,
       MethodNameSameAsClassCheck.class,
+      CollectionImplementationReferencedCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
