@@ -19,36 +19,43 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.BlockTree;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.java.model.StatementTree;
+import org.sonar.java.model.Tree;
 
 @Rule(
-  key = "S1199",
+  key = NestedBlocksCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class NestedBlocksCheck extends SquidCheck<LexerlessGrammar> {
+public class NestedBlocksCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1199";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.BLOCK_STATEMENT);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isNestedBlock(node)) {
-      getContext().createLineViolation(this, "Extract this nested code block into a method.", node);
+  public void visitBlock(BlockTree tree) {
+    for (StatementTree statement : tree.body()) {
+      if (statement.is(Tree.Kind.BLOCK)) {
+        context.addIssue(statement, ruleKey, "Extract this nested code block into a method.");
+      }
     }
-  }
 
-  private static boolean isNestedBlock(AstNode node) {
-    AstNode statement = node.getFirstChild(JavaGrammar.STATEMENT);
-    return statement != null &&
-      statement.hasDirectChildren(JavaGrammar.BLOCK);
+    super.visitBlock(tree);
   }
 
 }

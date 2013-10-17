@@ -23,6 +23,7 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -34,7 +35,7 @@ public class NestedBlocksCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedBlocksCheck.java"), new NestedBlocksCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedBlocksCheck.java"), new VisitorsBridge(new NestedBlocksCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(6).withMessage("Extract this nested code block into a method.")
         .next().atLine(11);
