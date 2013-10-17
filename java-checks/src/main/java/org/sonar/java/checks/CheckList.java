@@ -147,6 +147,7 @@ public final class CheckList {
       HardcodedIpCheck.class,
       LoggersDeclarationCheck.class,
       ObjectEqualsNullCheck.class,
+      MethodNameSameAsClassCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,

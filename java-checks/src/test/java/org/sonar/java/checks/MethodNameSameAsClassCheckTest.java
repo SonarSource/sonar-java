@@ -28,19 +28,18 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
-public class HardcodedIpCheckTest {
+public class MethodNameSameAsClassCheckTest {
 
   @Rule
-  public final CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
-  private final HardcodedIpCheck check = new HardcodedIpCheck();
+  private final MethodNameSameAsClassCheck check = new MethodNameSameAsClassCheck();
 
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/HardcodedIpCheck.java"), new VisitorsBridge(check));
+  public void test() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodNameSameAsClassCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(2).withMessage("Make this IP \"0.0.0.0\" address configurable.")
-      .next().atLine(3).withMessage("Make this IP \"192.168.0.1\" address configurable.");
+      .next().atLine(5).withMessage("Rename this method to prevent any misunderstanding or make it a constructor.");
   }
 
 }
