@@ -34,7 +34,6 @@ import org.sonar.api.resources.InputFile;
 import org.sonar.java.ProgressReport;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.visitors.VisitorContext;
-import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.AnalysisException;
 import org.sonar.squid.api.CodeVisitor;
 import org.sonar.squid.api.SourceCodeSearchEngine;
@@ -44,7 +43,6 @@ import org.sonar.squid.indexer.SquidIndex;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
