@@ -19,39 +19,41 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.IfStatementTree;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.java.model.ParenthesizedTree;
+import org.sonar.java.model.Tree;
 
 @Rule(
-  key = "S1145",
+  key = IfConditionAlwaysTrueOrFalseCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class IfConditionAlwaysTrueOrFalseCheck extends SquidCheck<LexerlessGrammar> {
+public class IfConditionAlwaysTrueOrFalseCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1145";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.IF_STATEMENT);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isBooleanLiteral(node.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaGrammar.EXPRESSION))) {
-      getContext().createLineViolation(this, "Remove this if statement.", node);
+  public void visitIfStatement(IfStatementTree tree) {
+    if (tree.condition().is(Tree.Kind.PARENTHESIZED_EXPRESSION) && ((ParenthesizedTree) tree.condition()).expression().is(Tree.Kind.BOOLEAN_LITERAL)) {
+      context.addIssue(tree, ruleKey, "Remove this if statement.");
     }
-  }
 
-  private static boolean isBooleanLiteral(AstNode node) {
-    return node.select()
-        .children(JavaGrammar.PRIMARY)
-        .children(JavaGrammar.LITERAL)
-        .descendants(JavaKeyword.TRUE, JavaKeyword.FALSE)
-        .isNotEmpty();
+    super.visitIfStatement(tree);
   }
 
 }

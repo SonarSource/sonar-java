@@ -22,17 +22,18 @@ package org.sonar.java.checks;
 import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
 public class BadInterfaceName_S00114_CheckTest {
 
-  private BadInterfaceName_S00114_Check check = new BadInterfaceName_S00114_Check();
+  private final BadInterfaceName_S00114_Check check = new BadInterfaceName_S00114_Check();
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadInterfaceName.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadInterfaceName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(1).withMessage("Rename this interface name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.")
         .noMore();
@@ -41,7 +42,7 @@ public class BadInterfaceName_S00114_CheckTest {
   @Test
   public void test2() {
     check.format = "^[a-zA-Z0-9]*$";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadInterfaceName.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadInterfaceName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
   }

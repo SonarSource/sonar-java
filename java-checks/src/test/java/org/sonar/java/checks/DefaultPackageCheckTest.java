@@ -23,6 +23,7 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -30,11 +31,13 @@ import java.io.File;
 public class DefaultPackageCheckTest {
 
   @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+  public final CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+
+  private final DefaultPackageCheck check = new DefaultPackageCheck();
 
   @Test
   public void without_package() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/DefaultPackageCheck/WithoutPackage.java"), new DefaultPackageCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/DefaultPackageCheck/WithoutPackage.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().withMessage("Move this file to a named package.");
   }
@@ -44,7 +47,7 @@ public class DefaultPackageCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(
         new File("src/test/files/checks/DefaultPackageCheck/WithPackage.java"),
         new File("src/test/files/"),
-        new DefaultPackageCheck());
+        new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages());
   }
 

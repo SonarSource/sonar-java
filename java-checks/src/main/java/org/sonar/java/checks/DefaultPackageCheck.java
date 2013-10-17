@@ -19,24 +19,26 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
 
 @Rule(
-  key = "S1220",
+  key = DefaultPackageCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class DefaultPackageCheck extends SquidCheck<LexerlessGrammar> {
+public class DefaultPackageCheck implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1220";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
-  public void visitFile(AstNode node) {
-    if (node != null && !node.hasDirectChildren(JavaGrammar.PACKAGE_DECLARATION)) {
-      getContext().createFileViolation(this, "Move this file to a named package.");
+  public void scanFile(JavaFileScannerContext context) {
+    if (context.getTree().packageName() == null) {
+      context.addIssue(context.getTree(), ruleKey, "Move this file to a named package.");
     }
   }
 

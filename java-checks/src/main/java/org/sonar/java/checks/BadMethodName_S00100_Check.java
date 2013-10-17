@@ -19,22 +19,26 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.visitors.MethodHelper;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.java.model.MethodTree;
 
 import java.util.regex.Pattern;
 
 @Rule(
-  key = "S00100",
+  key = BadMethodName_S00100_Check.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class BadMethodName_S00100_Check extends SquidCheck<LexerlessGrammar> {
+public class BadMethodName_S00100_Check extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S00100";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^[a-z][a-zA-Z0-9]*$";
 
@@ -44,22 +48,28 @@ public class BadMethodName_S00100_Check extends SquidCheck<LexerlessGrammar> {
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    MethodHelper.subscribe(this);
-    pattern = Pattern.compile(format, Pattern.DOTALL);
+  public void scanFile(JavaFileScannerContext context) {
+    if (pattern == null) {
+      pattern = Pattern.compile(format, Pattern.DOTALL);
+    }
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
-    MethodHelper method = new MethodHelper(astNode);
-    if (!method.isConstructor()) {
-      String name = method.getName().getTokenValue();
-      if (!pattern.matcher(name).matches()) {
-        getContext().createLineViolation(this, "Rename this method name to match the regular expression '" + format + "'.", astNode);
-      }
+  public void visitMethod(MethodTree tree) {
+    if (!isConstructor(tree) && !pattern.matcher(tree.simpleName()).matches()) {
+      context.addIssue(tree, ruleKey, "Rename this method name to match the regular expression '" + format + "'.");
     }
+
+    super.visitMethod(tree);
+  }
+
+  private static boolean isConstructor(MethodTree tree) {
+    return tree.returnType() == null;
   }
 
 }

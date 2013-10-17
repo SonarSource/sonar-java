@@ -19,23 +19,27 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.ClassTree;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.java.model.Tree;
 
 import java.util.regex.Pattern;
 
 @Rule(
-  key = "S00101",
+  key = BadClassName_S00101_Check.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class BadClassName_S00101_Check extends SquidCheck<LexerlessGrammar> {
+public class BadClassName_S00101_Check extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S00101";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^[A-Z][a-zA-Z0-9]*$";
 
@@ -45,19 +49,24 @@ public class BadClassName_S00101_Check extends SquidCheck<LexerlessGrammar> {
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_DECLARATION);
-    pattern = Pattern.compile(format, Pattern.DOTALL);
+  public void scanFile(JavaFileScannerContext context) {
+    if (pattern == null) {
+      pattern = Pattern.compile(format, Pattern.DOTALL);
+    }
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
-    String name = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
-    if (!pattern.matcher(name).matches()) {
-      getContext().createLineViolation(this, "Rename this class name to match the regular expression '" + format + "'.", astNode);
+  public void visitClass(ClassTree tree) {
+    if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null && !pattern.matcher(tree.simpleName()).matches()) {
+      context.addIssue(tree, ruleKey, "Rename this class name to match the regular expression '" + format + "'.");
     }
+
+    super.visitClass(tree);
   }
 
 }

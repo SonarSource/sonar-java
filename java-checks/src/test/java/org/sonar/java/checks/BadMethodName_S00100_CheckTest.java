@@ -22,17 +22,18 @@ package org.sonar.java.checks;
 import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
 public class BadMethodName_S00100_CheckTest {
 
-  private BadMethodName_S00100_Check check = new BadMethodName_S00100_Check();
+  private final BadMethodName_S00100_Check check = new BadMethodName_S00100_Check();
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadMethodName.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadMethodName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(5).withMessage("Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.")
         .noMore();
@@ -41,7 +42,7 @@ public class BadMethodName_S00100_CheckTest {
   @Test
   public void test2() {
     check.format = "^[a-zA-Z0-9]*$";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadMethodName.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadMethodName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
   }

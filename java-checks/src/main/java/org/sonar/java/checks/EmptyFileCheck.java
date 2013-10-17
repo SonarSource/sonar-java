@@ -19,38 +19,24 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.CompilationUnitTree;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
 
-import static com.sonar.sslr.api.GenericTokenType.EOF;
+@Rule(key = EmptyFileCheck.RULE_KEY, priority = Priority.MAJOR)
+public final class EmptyFileCheck implements JavaFileScanner {
 
-@Rule(key = "EmptyFile", priority = Priority.MAJOR)
-public final class EmptyFileCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
-
-  private boolean empty;
-
-  @Override
-  public void visitFile(AstNode astNode) {
-    empty = true;
-  }
+  public static final String RULE_KEY = "EmptyFile";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
-  public void visitToken(Token token) {
-    if (token.getType() != EOF) {
-      empty = false;
-    }
-  }
-
-  @Override
-  public void leaveFile(AstNode astNode) {
-    // Note that we can't use LINES_OF_CODE here, because this measure computed after execution of this visitor
-    if (empty) {
-      getContext().createFileViolation(this, "This Java file is empty");
+  public void scanFile(JavaFileScannerContext context) {
+    CompilationUnitTree tree = context.getTree();
+    if (tree.packageName() == null && tree.types().isEmpty()) {
+      context.addIssue(context.getTree(), ruleKey, "This Java file is empty.");
     }
   }
 
