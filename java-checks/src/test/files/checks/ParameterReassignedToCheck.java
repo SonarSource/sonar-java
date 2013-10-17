@@ -27,4 +27,16 @@ class A {
   public A(int field) {
     field = field; // Noncompliant
   }
+
+  public void f(int a) {
+    a++; // Noncompliant
+    ++a; // Noncompliant
+    a--; // Noncompliant
+    --a; // Noncompliant
+    !a; // Compliant
+    ~a; // Compliant
+    int b = 0;
+    b++; // Compliant
+    this.a++; // Compliant
+  }
 }

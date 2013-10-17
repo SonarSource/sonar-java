@@ -40,7 +40,11 @@ public class ParameterReassignedToCheckTest {
       .next().atLine(6).withMessage("Introduce a new variable instead of reusing the parameter \"a\".")
       .next().atLine(7).withMessage("Introduce a new variable instead of reusing the parameter \"a\".")
       .next().atLine(12).withMessage("Introduce a new variable instead of reusing the parameter \"e\".")
-      .next().atLine(28).withMessage("Introduce a new variable instead of reusing the parameter \"field\".");
+      .next().atLine(28).withMessage("Introduce a new variable instead of reusing the parameter \"field\".")
+      .next().atLine(32)
+      .next().atLine(33)
+      .next().atLine(34)
+      .next().atLine(35);
   }
 
 }

@@ -27,11 +27,13 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.AssignmentExpressionTree;
 import org.sonar.java.model.BaseTreeVisitor;
 import org.sonar.java.model.CatchTree;
+import org.sonar.java.model.ExpressionTree;
 import org.sonar.java.model.IdentifierTree;
 import org.sonar.java.model.JavaFileScanner;
 import org.sonar.java.model.JavaFileScannerContext;
 import org.sonar.java.model.MethodTree;
 import org.sonar.java.model.Tree;
+import org.sonar.java.model.UnaryExpressionTree;
 import org.sonar.java.model.VariableTree;
 
 import java.util.Set;
@@ -76,10 +78,28 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifier = (IdentifierTree) tree.variable();
+    checkExpression(tree.variable());
+  }
+
+  @Override
+  public void visitUnaryExpression(UnaryExpressionTree tree) {
+    if (isIncrementOrDecrement(tree) && tree.expression().is(Tree.Kind.IDENTIFIER)) {
+      checkExpression(tree.expression());
+    }
+  }
+
+  private static boolean isIncrementOrDecrement(Tree tree) {
+    return tree.is(Tree.Kind.PREFIX_INCREMENT) ||
+      tree.is(Tree.Kind.PREFIX_DECREMENT) ||
+      tree.is(Tree.Kind.POSTFIX_INCREMENT) ||
+      tree.is(Tree.Kind.POSTFIX_DECREMENT);
+  }
+
+  private void checkExpression(ExpressionTree tree) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) tree;
       if (variables.contains(identifier.name())) {
-        context.addIssue(tree, ruleKey, "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".");
+        context.addIssue(identifier, ruleKey, "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".");
       }
     }
   }
