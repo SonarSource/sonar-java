@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -32,7 +33,7 @@ public class TooManyParameters_S00107_CheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyParameters.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyParameters.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(2).withMessage("Method has 8 parameters, which is greater than 7 authorized.")
         .next().atLine(5).withMessage("Method has 8 parameters, which is greater than 7 authorized.")
@@ -42,7 +43,7 @@ public class TooManyParameters_S00107_CheckTest {
   @Test
   public void test2() {
     check.maximum = 8;
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyParameters.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyParameters.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
   }

@@ -19,20 +19,24 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.java.model.MethodTree;
 
 @Rule(
-  key = "S00107",
+  key = TooManyParameters_S00107_Check.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class TooManyParameters_S00107_Check extends SquidCheck<LexerlessGrammar> {
+public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S00107";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final int DEFAULT_MAXIMUM = 7;
 
@@ -41,17 +45,22 @@ public class TooManyParameters_S00107_Check extends SquidCheck<LexerlessGrammar>
     defaultValue = "" + DEFAULT_MAXIMUM)
   public int maximum = DEFAULT_MAXIMUM;
 
+  private JavaFileScannerContext context;
+
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.FORMAL_PARAMETERS);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
-    int count = astNode.getDescendants(JavaGrammar.VARIABLE_DECLARATOR_ID).size();
+  public void visitMethod(MethodTree tree) {
+    int count = tree.parameters().size();
     if (count > maximum) {
-      getContext().createLineViolation(this, "Method has {0} parameters, which is greater than {1} authorized.", astNode, count, maximum);
+      context.addIssue(tree, ruleKey, "Method has " + count + " parameters, which is greater than " + maximum + " authorized.");
     }
+
+    super.visitMethod(tree);
   }
 
 }
