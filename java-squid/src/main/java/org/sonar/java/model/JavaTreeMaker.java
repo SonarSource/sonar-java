@@ -378,25 +378,31 @@ public class JavaTreeMaker {
    */
   private ClassTree enumDeclaration(ModifiersTree modifiers, AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaGrammar.ENUM_DECLARATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
-    String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
+    IdentifierTree enumType = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     AstNode enumBodyNode = astNode.getFirstChild(JavaGrammar.ENUM_BODY);
     AstNode enumConstantsNode = enumBodyNode.getFirstChild(JavaGrammar.ENUM_CONSTANTS);
     if (enumConstantsNode != null) {
       for (AstNode enumConstantNode : enumConstantsNode.getChildren(JavaGrammar.ENUM_CONSTANT)) {
-        // TODO identifier
         AstNode argumentsNode = enumConstantNode.getFirstChild(JavaGrammar.ARGUMENTS);
         AstNode classBodyNode = enumConstantNode.getFirstChild(JavaGrammar.CLASS_BODY);
-        members.add(new JavaTree.NewClassTreeImpl(
+        members.add(new JavaTree.EnumConstantTreeImpl(
           enumConstantNode,
-          /* enclosing expression: */ null,
-          argumentsNode != null ? arguments(argumentsNode) : ImmutableList.<ExpressionTree>of(),
-          classBodyNode != null ? new JavaTree.ClassTreeImpl(
-            classBodyNode,
-            /* TODO verify: */ Tree.Kind.CLASS,
-            JavaTree.ModifiersTreeImpl.EMPTY,
-            classBody(classBodyNode)
-          ) : null
+          JavaTree.ModifiersTreeImpl.EMPTY,
+          enumType,
+          enumConstantNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+          new JavaTree.NewClassTreeImpl(
+            enumConstantNode,
+            /* enclosing expression: */ null,
+            argumentsNode != null ? arguments(argumentsNode) : ImmutableList.<ExpressionTree>of(),
+            classBodyNode == null ? null : new JavaTree.ClassTreeImpl(
+              classBodyNode,
+              // TODO verify:
+              Tree.Kind.CLASS,
+              JavaTree.ModifiersTreeImpl.EMPTY,
+              classBody(classBodyNode)
+            )
+          )
         ));
       }
     }
@@ -406,7 +412,7 @@ public class JavaTreeMaker {
     }
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
     List<? extends Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, simpleName, null, superInterfaces, members.build());
+    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType.name(), null, superInterfaces, members.build());
   }
 
   /*
@@ -1135,7 +1141,7 @@ public class JavaTreeMaker {
       for (AstNode postfixOpNode : astNode.getChildren(JavaGrammar.POST_FIX_OP)) {
         JavaPunctuator punctuator = (JavaPunctuator) postfixOpNode.getFirstChild().getType();
         Tree.Kind kind = kindMaps.getPostfixOperator(punctuator);
-        result = new JavaTree.UnaryExpressionTreeImpl(astNode,kind, result);
+        result = new JavaTree.UnaryExpressionTreeImpl(astNode, kind, result);
       }
       return result;
     }

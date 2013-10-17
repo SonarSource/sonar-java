@@ -927,6 +927,22 @@ public abstract class JavaTree implements Tree {
     }
   }
 
+  public static class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConstantTree {
+    public EnumConstantTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, String simpleName, ExpressionTree initializer) {
+      super(astNode, modifiers, type, simpleName, Preconditions.checkNotNull(initializer));
+    }
+
+    @Override
+    protected Kind getKind() {
+      return Kind.ENUM_CONSTANT;
+    }
+
+    @Override
+    public void accept(TreeVisitor visitor) {
+      visitor.visitEnumConstant(this);
+    }
+  }
+
   public static class VariableTreeImpl extends JavaTree implements VariableTree {
     private final ModifiersTree modifiers;
     private final Tree type;

@@ -57,6 +57,13 @@ public interface Tree {
     ANNOTATION_TYPE(ClassTree.class),
 
     /**
+     * {@link EnumConstantTree}
+     *
+     * @since Java 1.5
+     */
+    ENUM_CONSTANT(EnumConstantTree.class),
+
+    /**
      * {@link BlockTree}
      */
     INITIALIZER(BlockTree.class),

@@ -97,4 +97,6 @@ public interface TreeVisitor {
 
   void visitVariable(VariableTree tree);
 
+  void visitEnumConstant(EnumConstantTree tree);
+
 }

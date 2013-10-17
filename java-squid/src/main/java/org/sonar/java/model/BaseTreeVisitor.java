@@ -274,4 +274,10 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(tree.initializer());
   }
 
+  @Override
+  public void visitEnumConstant(EnumConstantTree tree) {
+    scan(tree.modifiers());
+    scan(tree.initializer());
+  }
+
 }
