@@ -69,7 +69,6 @@ public class ObjectEqualsNullCheck extends BaseTreeVisitor implements JavaFileSc
   }
 
   private static boolean isNull(ExpressionTree tree) {
-    System.out.println(tree);
     return tree.is(Tree.Kind.NULL_LITERAL);
   }
 
