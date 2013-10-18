@@ -113,7 +113,15 @@ public class JavaTreeMaker {
       AstNode referenceTypeNode = child.getFirstChild(JavaGrammar.REFERENCE_TYPE);
       Tree typeArgument = referenceTypeNode != null ? referenceType(referenceTypeNode) : null;
       if (child.getFirstChild().is(JavaPunctuator.QUERY)) {
-        typeArgument = new JavaTree.WildcardTreeImpl(child, typeArgument);
+        final Tree.Kind kind;
+        if (child.getFirstChild().is(JavaKeyword.EXTENDS)) {
+          kind = Tree.Kind.EXTENDS_WILDCARD;
+        } else if (child.getFirstChild().is(JavaKeyword.SUPER)) {
+          kind = Tree.Kind.SUPER_WILDCARD;
+        } else {
+          kind = Tree.Kind.UNBOUNDED_WILDCARD;
+        }
+        typeArgument = new JavaTree.WildcardTreeImpl(child, kind, typeArgument);
       }
       result.add(typeArgument);
     }

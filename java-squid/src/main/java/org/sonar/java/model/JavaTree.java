@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 public abstract class JavaTree implements Tree {
@@ -64,6 +63,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public void accept(TreeVisitor visitor) {
+      visitor.visitPrimitiveType(this);
     }
   }
 
@@ -1247,7 +1247,8 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public List<? extends Tree> typeArguments() {
-      throw new UnsupportedOperationException("not implemented");
+      // TODO implement
+      return ImmutableList.<Tree>of();
     }
 
     @Override
@@ -1333,7 +1334,8 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public List<? extends Tree> typeArguments() {
-      throw new UnsupportedOperationException("not implemented");
+      // TODO implement
+      return ImmutableList.<Tree>of();
     }
 
     @Override
@@ -1430,7 +1432,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     protected Kind getKind() {
-      return null;
+      return Kind.ARRAY_TYPE;
     }
 
     @Override
@@ -1440,21 +1442,24 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public void accept(TreeVisitor visitor) {
+      visitor.visitArrayType(this);
     }
   }
 
   public static class WildcardTreeImpl extends JavaTree implements WildcardTree {
+    private final Kind kind;
     @Nullable
     private final Tree bound;
 
-    public WildcardTreeImpl(AstNode astNode, @Nullable Tree bound) {
+    public WildcardTreeImpl(AstNode astNode, Kind kind, @Nullable Tree bound) {
       super(astNode);
+      this.kind = Preconditions.checkNotNull(kind);
       this.bound = bound;
     }
 
     @Override
     protected Kind getKind() {
-      return null;
+      return kind;
     }
 
     @Nullable
@@ -1465,6 +1470,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public void accept(TreeVisitor visitor) {
+      visitor.visitWildcard(this);
     }
   }
 
@@ -1499,6 +1505,28 @@ public abstract class JavaTree implements Tree {
     }
   }
 
+  public static class UnionTypeTreeImpl extends JavaTree implements UnionTypeTree {
+    public UnionTypeTreeImpl(AstNode astNode) {
+      super(astNode);
+    }
+
+    @Override
+    protected Kind getKind() {
+      return Kind.UNION_TYPE;
+    }
+
+    @Override
+    public List<? extends Tree> typeAlternatives() {
+      // TODO implement
+      return ImmutableList.<Tree>of();
+    }
+
+    @Override
+    public void accept(TreeVisitor visitor) {
+      visitor.visitUnionType(this);
+    }
+  }
+
   public static class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
     // TODO remove:
     public static final ModifiersTreeImpl EMPTY = new ModifiersTreeImpl(null, ImmutableList.<Modifier> of());
@@ -1522,7 +1550,8 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public List<? extends AnnotationTree> annotations() {
-      throw new UnsupportedOperationException("not implemented");
+      // TODO implement
+      return ImmutableList.<AnnotationTree>of();
     }
 
     @Override

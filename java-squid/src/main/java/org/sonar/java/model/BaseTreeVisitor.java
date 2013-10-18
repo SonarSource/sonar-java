@@ -215,7 +215,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   public void visitNewClass(NewClassTree tree) {
     scan(tree.enclosingExpression());
     scan(tree.identifier());
-//    scan(tree.typeArguments());
+    scan(tree.typeArguments());
     scan(tree.arguments());
     scan(tree.classBody());
   }
@@ -230,7 +230,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
     scan(tree.methodSelect());
-//    scan(tree.typeArguments());
+    scan(tree.typeArguments());
     scan(tree.arguments());
   }
 
@@ -274,6 +274,14 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(tree.initializer());
   }
 
+  public void visitPrimitiveType(PrimitiveTypeTree tree) {
+    // no subtrees
+  }
+
+  public void visitArrayType(ArrayTypeTree tree) {
+    scan(tree.type());
+  }
+
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
     scan(tree.modifiers());
@@ -284,6 +292,16 @@ public class BaseTreeVisitor implements TreeVisitor {
   public void visitParameterizedType(ParameterizedTypeTree tree) {
     scan(tree.type());
     scan(tree.typeArguments());
+  }
+
+  @Override
+  public void visitWildcard(WildcardTree tree) {
+    scan(tree.bound());
+  }
+
+  @Override
+  public void visitUnionType(UnionTypeTree tree) {
+    scan(tree.typeAlternatives());
   }
 
 }

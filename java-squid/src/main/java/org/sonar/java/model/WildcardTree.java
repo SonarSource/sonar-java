@@ -25,12 +25,20 @@ import javax.annotation.Nullable;
  * Wildcard type argument.
  *
  * JLS 4.5.1
- *
+ * <p>
+ * {@link Tree.Kind#UNBOUNDED_WILDCARD}:
  * <pre>
  *   ?
+ * </pre>
+ * {@link Tree.Kind#EXTENDS_WILDCARD}:
+ * <pre>
  *   ? extends {@link #bound()}
+ * </pre>
+ * {@link Tree.Kind#SUPER_WILDCARD}:
+ * <pre>
  *   ? super {@link #bound()}
  * </pre>
+ * </p>
  *
  * @since Java 1.5
  */

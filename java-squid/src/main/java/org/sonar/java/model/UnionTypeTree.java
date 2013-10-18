@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Union type expression in a multi-catch.
  *
- * @since Java 7
+ * @since Java 1.7
  */
 public interface UnionTypeTree extends Tree {
 

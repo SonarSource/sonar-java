@@ -524,9 +524,42 @@ public interface Tree {
     VARIABLE(VariableTree.class),
 
     /**
-     * {@link ParameterizedTypeTree}
+     * {@link ArrayTypeTree}
      */
-    PARAMETERIZED_TYPE(ParameterizedTypeTree.class);
+    ARRAY_TYPE(ArrayTypeTree.class),
+
+    /**
+     * {@link ParameterizedTypeTree}
+     *
+     * @since Java 1.5
+     */
+    PARAMETERIZED_TYPE(ParameterizedTypeTree.class),
+
+    /**
+     * @since Java 1.7
+     */
+    UNION_TYPE(UnionTypeTree.class),
+
+    /**
+     * {@link WildcardTree}
+     *
+     * @since Java 1.5
+     */
+    UNBOUNDED_WILDCARD(WildcardTree.class),
+
+    /**
+     * {@link WildcardTree}
+     *
+     * @since Java 1.5
+     */
+    EXTENDS_WILDCARD(WildcardTree.class),
+
+    /**
+     * {@link WildcardTree}
+     *
+     * @since Java 1.5
+     */
+    SUPER_WILDCARD(WildcardTree.class);
 
     final Class<? extends Tree> associatedInterface;
 

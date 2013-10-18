@@ -99,6 +99,14 @@ public interface TreeVisitor {
 
   void visitEnumConstant(EnumConstantTree tree);
 
+  void visitPrimitiveType(PrimitiveTypeTree tree);
+
+  void visitArrayType(ArrayTypeTree tree);
+
   void visitParameterizedType(ParameterizedTypeTree tree);
+
+  void visitWildcard(WildcardTree tree);
+
+  void visitUnionType(UnionTypeTree tree);
 
 }
