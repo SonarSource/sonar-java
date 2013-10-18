@@ -381,6 +381,7 @@
     <configKey><![CDATA[rulesets/coupling.xml/CouplingBetweenObjects]]></configKey>
     <param key="threshold" type="INTEGER">
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ExcessiveImports">
