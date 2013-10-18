@@ -49,5 +49,31 @@ class A {
         else System.out.println();
       else System.out.println();
     else System.out.println();
+
+    for (int i = 0; i < 0; i++) { // Compliant - 1
+      for (Object o: getObjects()) { // Compliant - 2
+        while (false) { // Compliant - 3
+
+          for (int i = 0; i < 0; i++) { // Noncompliant - 4
+          }
+
+          for (Object o: getObjects()) { // Noncompliant - 4
+          }
+
+          while (false) { // Noncompliant - 4
+          }
+
+          do { // Noncompliant - 4
+          } while (false);
+
+          if (false) { // Noncompliant
+          }
+
+          switch (foo) { // Noncompliant
+          }
+
+        }
+      }
+    }
   }
 }

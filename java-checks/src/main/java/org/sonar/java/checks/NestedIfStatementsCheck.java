@@ -25,20 +25,25 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.BaseTreeVisitor;
+import org.sonar.java.model.DoWhileStatementTree;
+import org.sonar.java.model.EnhancedForStatementTree;
+import org.sonar.java.model.ForStatementTree;
 import org.sonar.java.model.IfStatementTree;
 import org.sonar.java.model.JavaFileScanner;
 import org.sonar.java.model.JavaFileScannerContext;
 import org.sonar.java.model.StatementTree;
+import org.sonar.java.model.SwitchStatementTree;
 import org.sonar.java.model.Tree;
+import org.sonar.java.model.WhileStatementTree;
 
 @Rule(
-  key = NestedIfStatementsCheck.RULE_KEY,
+  key = NestedIfStatementsCheck.KEY,
   priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S134";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  public static final String KEY = "S134";
+  private final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
   private static final int DEFAULT_MAX = 3;
 
@@ -58,11 +63,55 @@ public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFile
   @Override
   public void visitIfStatement(IfStatementTree tree) {
     nestingLevel++;
-    if (nestingLevel == max + 1) {
-      context.addIssue(tree, ruleKey, "Refactor this code to not nest more than " + max + " if statements.");
-    }
+    checkNesting(tree);
     visit(tree);
     nestingLevel--;
+  }
+
+  @Override
+  public void visitForStatement(ForStatementTree tree) {
+    nestingLevel++;
+    checkNesting(tree);
+    super.visitForStatement(tree);
+    nestingLevel--;
+  }
+
+  @Override
+  public void visitEnhancedForStatement(EnhancedForStatementTree tree) {
+    nestingLevel++;
+    checkNesting(tree);
+    super.visitEnhancedForStatement(tree);
+    nestingLevel--;
+  }
+
+  @Override
+  public void visitWhileStatement(WhileStatementTree tree) {
+    nestingLevel++;
+    checkNesting(tree);
+    super.visitWhileStatement(tree);
+    nestingLevel--;
+  }
+
+  @Override
+  public void visitDoWhileStatement(DoWhileStatementTree tree) {
+    nestingLevel++;
+    checkNesting(tree);
+    super.visitDoWhileStatement(tree);
+    nestingLevel--;
+  }
+
+  @Override
+  public void visitSwitchStatement(SwitchStatementTree tree) {
+    nestingLevel++;
+    checkNesting(tree);
+    super.visitSwitchStatement(tree);
+    nestingLevel--;
+  }
+
+  private void checkNesting(Tree tree) {
+    if (nestingLevel == max + 1) {
+      context.addIssue(tree, RULE_KEY, "Refactor this code to not nest more than " + max + " if/for/while/switch statements.");
+    }
   }
 
   private void visit(IfStatementTree tree) {

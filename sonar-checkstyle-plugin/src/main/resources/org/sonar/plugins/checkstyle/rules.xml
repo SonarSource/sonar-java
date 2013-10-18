@@ -1327,6 +1327,7 @@
     <param key="max" type="INTEGER">
       <defaultValue>1</defaultValue>
     </param>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.sizes.MethodCountCheck">
