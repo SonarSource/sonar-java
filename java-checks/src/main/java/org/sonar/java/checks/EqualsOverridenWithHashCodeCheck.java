@@ -61,9 +61,9 @@ public class EqualsOverridenWithHashCodeCheck extends BaseTreeVisitor implements
       for (Tree memberTree : tree.members()) {
         if (memberTree.is(Tree.Kind.METHOD)) {
           MethodTree methodTree = (MethodTree) memberTree;
-          if (EQUALS.equals(methodTree.simpleName()) && methodTree.parameters().size() == 1) {
+          if (isEquals(methodTree)) {
             equalsMethod = methodTree;
-          } else if (HASHCODE.equals(methodTree.simpleName()) && methodTree.parameters().isEmpty()) {
+          } else if (isHashCode(methodTree)) {
             hashCodeMethod = methodTree;
           }
         }
@@ -75,6 +75,14 @@ public class EqualsOverridenWithHashCodeCheck extends BaseTreeVisitor implements
         context.addIssue(hashCodeMethod, RULE_KEY, getMessage(classTreeType(tree), HASHCODE, EQUALS));
       }
     }
+  }
+
+  private static boolean isEquals(MethodTree methodTree) {
+    return EQUALS.equals(methodTree.simpleName()) && methodTree.parameters().size() == 1;
+  }
+
+  private static boolean isHashCode(MethodTree methodTree) {
+    return HASHCODE.equals(methodTree.simpleName()) && methodTree.parameters().isEmpty();
   }
 
   private static String classTreeType(ClassTree tree) {

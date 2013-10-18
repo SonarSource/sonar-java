@@ -44,38 +44,46 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   public static final String KEY = "S1319";
   private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
+  private static final String DEQUE = "Deque";
+  private static final String LIST = "List";
+  private static final String MAP = "Map";
+  private static final String QUEUE = "Queue";
+  private static final String SET = "Set";
+  private static final String SORTED_MAP = "SortedMap";
+  private static final String SORTED_SET = "SortedSet";
+
   private static final Map<String, String> MAPPING = ImmutableMap.<String, String> builder()
-    .put("ArrayDeque", "Deque")
-    .put("ConcurrentLinkedDeque", "Deque")
+    .put("ArrayDeque", DEQUE)
+    .put("ConcurrentLinkedDeque", DEQUE)
 
-    .put("AbstractList", "List")
-    .put("AbstractSequentialList", "List")
-    .put("ArrayList", "List")
-    .put("CopyOnWriteArrayList", "List")
-    .put("LinkedList", "List")
+    .put("AbstractList", LIST)
+    .put("AbstractSequentialList", LIST)
+    .put("ArrayList", LIST)
+    .put("CopyOnWriteArrayList", LIST)
+    .put("LinkedList", LIST)
 
-    .put("AbstractMap", "Map")
-    .put("ConcurrentHashMap", "Map")
-    .put("EnumMap", "Map")
-    .put("HashMap", "Map")
-    .put("Hashtable", "Map")
-    .put("IdentityHashMap", "Map")
-    .put("LinkedHashMap", "Map")
-    .put("WeakHashMap", "Map")
+    .put("AbstractMap", MAP)
+    .put("ConcurrentHashMap", MAP)
+    .put("EnumMap", MAP)
+    .put("HashMap", MAP)
+    .put("Hashtable", MAP)
+    .put("IdentityHashMap", MAP)
+    .put("LinkedHashMap", MAP)
+    .put("WeakHashMap", MAP)
 
-    .put("AbstractQueue", "Queue")
-    .put("ConcurrentLinkedQueue", "Queue")
-    .put("SynchronousQueue", "Queue")
+    .put("AbstractQueue", QUEUE)
+    .put("ConcurrentLinkedQueue", QUEUE)
+    .put("SynchronousQueue", QUEUE)
 
-    .put("AbstractSet", "Set")
-    .put("CopyOnWriteArraySet", "Set")
-    .put("EnumSet", "Set")
-    .put("HashSet", "Set")
-    .put("LinkedHashSet", "Set")
+    .put("AbstractSet", SET)
+    .put("CopyOnWriteArraySet", SET)
+    .put("EnumSet", SET)
+    .put("HashSet", SET)
+    .put("LinkedHashSet", SET)
 
-    .put("TreeMap", "SortedMap")
+    .put("TreeMap", SORTED_MAP)
 
-    .put("TreeSet", "SortedSet")
+    .put("TreeSet", SORTED_SET)
     .build();
 
   private JavaFileScannerContext context;
