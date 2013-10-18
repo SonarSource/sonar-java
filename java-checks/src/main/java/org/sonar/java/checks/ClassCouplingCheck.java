@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.collect.Sets;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.squid.checks.SquidCheck;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -36,7 +35,6 @@ import java.util.Stack;
 @Rule(
   key = "S1200",
   priority = Priority.MAJOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ClassCouplingCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final int DEFAULT_MAX = 20;
