@@ -43,7 +43,7 @@ import org.sonar.java.model.WhileStatementTree;
 public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String KEY = "S134";
-  private final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
+  private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
   private static final int DEFAULT_MAX = 3;
 
