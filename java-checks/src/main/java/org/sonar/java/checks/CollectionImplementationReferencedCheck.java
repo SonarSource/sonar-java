@@ -128,13 +128,9 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     if (tree == null) {
       return null;
     }
-    if (tree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      tree = ((ParameterizedTypeTree) tree).type();
-    }
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      return ((IdentifierTree) tree).name();
-    }
-    return null;
+
+    Tree actualTree = tree.is(Tree.Kind.PARAMETERIZED_TYPE) ? ((ParameterizedTypeTree) tree).type() : tree;
+    return actualTree.is(Tree.Kind.IDENTIFIER) ? ((IdentifierTree) actualTree).name() : null;
   }
 
   private static String messageRemainder(String collectionImplementation, String collectionInterface) {
