@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.codehaus.sonar-plugins.java</groupId>
     <artifactId>java</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5-RC1</version>
   </parent>
   <artifactId>sonar-jacoco-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
