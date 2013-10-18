@@ -214,7 +214,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   @Override
   public void visitNewClass(NewClassTree tree) {
     scan(tree.enclosingExpression());
-//    scan(tree.identifier());
+    scan(tree.identifier());
 //    scan(tree.typeArguments());
     scan(tree.arguments());
     scan(tree.classBody());

@@ -930,8 +930,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.is(Tree.Kind.NEW_CLASS)).isTrue();
     assertThat(tree.enclosingExpression()).isNull();
     assertThat(tree.arguments()).hasSize(2);
-    // FIXME
-    // assertThat(tree.identifier()).isNotNull();
+    assertThat(tree.identifier()).isNotNull();
     assertThat(tree.classBody()).isNotNull();
     // assertThat(tree.typeArguments()).isEmpty();
 
@@ -939,7 +938,7 @@ public class JavaTreeMakerTest {
     tree = (NewClassTree) maker.primary(astNode);
     assertThat(tree.is(Tree.Kind.NEW_CLASS)).isTrue();
     assertThat(tree.enclosingExpression()).isNotNull();
-    // assertThat(tree.identifier()).isNotNull();
+    assertThat(tree.identifier()).isNotNull();
     assertThat(tree.arguments()).hasSize(2);
     assertThat(tree.classBody()).isNotNull();
     // assertThat(tree.typeArguments()).isEmpty();

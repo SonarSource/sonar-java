@@ -1307,13 +1307,15 @@ public abstract class JavaTree implements Tree {
 
   public static class NewClassTreeImpl extends JavaTree implements NewClassTree {
     private final ExpressionTree enclosingExpression;
+    private final ExpressionTree identifier;
     private final List<? extends ExpressionTree> arguments;
     @Nullable
     private final ClassTree classBody;
 
-    public NewClassTreeImpl(AstNode astNode, @Nullable ExpressionTree enclosingExpression, List<? extends ExpressionTree> arguments, @Nullable ClassTree classBody) {
+    public NewClassTreeImpl(AstNode astNode, @Nullable ExpressionTree enclosingExpression, ExpressionTree identifier, List<? extends ExpressionTree> arguments, @Nullable ClassTree classBody) {
       super(astNode);
       this.enclosingExpression = enclosingExpression;
+      this.identifier = Preconditions.checkNotNull(identifier);
       this.arguments = Preconditions.checkNotNull(arguments);
       this.classBody = classBody;
     }
@@ -1336,7 +1338,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Tree identifier() {
-      throw new UnsupportedOperationException("not implemented");
+      return identifier;
     }
 
     @Override

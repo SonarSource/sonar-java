@@ -88,7 +88,7 @@ public class JavaTreeMaker {
   }
 
   private ExpressionTree classType(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE, JavaGrammar.CREATED_NAME), "Unexpected AstNodeType: %s", astNode.getType().toString());
     AstNode child = astNode.getFirstChild();
     ExpressionTree result = identifier(child);
     for (int i = 1; i < astNode.getNumberOfChildren(); i++) {
@@ -97,6 +97,8 @@ public class JavaTreeMaker {
         result = new JavaTree.MemberSelectExpressionTreeImpl(child, result, identifier(child));
       } else if (child.is(JavaGrammar.TYPE_ARGUMENTS)) {
         result = new JavaTree.ParameterizedTypeTreeImpl(child, result, typeArguments(child));
+      } else if (child.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
+        result = new JavaTree.ParameterizedTypeTreeImpl(child, result, nonWildcardTypeArguments(child));
       } else if (!child.is(JavaPunctuator.DOT)) {
         throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString());
       }
@@ -114,6 +116,15 @@ public class JavaTreeMaker {
         typeArgument = new JavaTree.WildcardTreeImpl(child, typeArgument);
       }
       result.add(typeArgument);
+    }
+    return result.build();
+  }
+
+  private List<? extends Tree> nonWildcardTypeArguments(AstNode astNode) {
+    Preconditions.checkArgument(astNode.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    ImmutableList.Builder<Tree> result = ImmutableList.builder();
+    for (AstNode child : astNode.getChildren(JavaGrammar.REFERENCE_TYPE)) {
+      result.add(referenceType(child));
     }
     return result.build();
   }
@@ -396,14 +407,16 @@ public class JavaTreeMaker {
       for (AstNode enumConstantNode : enumConstantsNode.getChildren(JavaGrammar.ENUM_CONSTANT)) {
         AstNode argumentsNode = enumConstantNode.getFirstChild(JavaGrammar.ARGUMENTS);
         AstNode classBodyNode = enumConstantNode.getFirstChild(JavaGrammar.CLASS_BODY);
+        IdentifierTree enumIdentifier = identifier(enumConstantNode.getFirstChild(JavaTokenType.IDENTIFIER));
         members.add(new JavaTree.EnumConstantTreeImpl(
           enumConstantNode,
           JavaTree.ModifiersTreeImpl.EMPTY,
           enumType,
-          enumConstantNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+          enumIdentifier.name(),
           new JavaTree.NewClassTreeImpl(
             enumConstantNode,
             /* enclosing expression: */ null,
+            enumIdentifier,
             argumentsNode != null ? arguments(argumentsNode) : ImmutableList.<ExpressionTree>of(),
             classBodyNode == null ? null : new JavaTree.ClassTreeImpl(
               classBodyNode,
@@ -1058,7 +1071,12 @@ public class JavaTreeMaker {
             );
           } else if (identifierSuffixNode.hasDirectChildren(JavaKeyword.NEW)) {
             // id.new...
-            return applyClassCreatorRest(identifier, identifierSuffixNode.getFirstChild(JavaGrammar.INNER_CREATOR).getFirstChild(JavaGrammar.CLASS_CREATOR_REST));
+            AstNode innerCreatorNode = identifierSuffixNode.getFirstChild(JavaGrammar.INNER_CREATOR);
+            return applyClassCreatorRest(
+              identifier,
+              identifier(innerCreatorNode.getFirstChild(JavaTokenType.IDENTIFIER)),
+              innerCreatorNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST)
+            );
           } else {
             throw new IllegalArgumentException("Unexpected AstNodeType: " + identifierSuffixNode.getChild(1));
           }
@@ -1084,7 +1102,11 @@ public class JavaTreeMaker {
   private ExpressionTree creator(AstNode astNode) {
     // TODO NON_WILDCARD_TYPE_ARGUMENTS
     if (astNode.hasDirectChildren(JavaGrammar.CLASS_CREATOR_REST)) {
-      return applyClassCreatorRest(null, astNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST));
+      return applyClassCreatorRest(
+        null,
+        classType(astNode.getFirstChild(JavaGrammar.CREATED_NAME)),
+        astNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST)
+      );
     } else if (astNode.hasDirectChildren(JavaGrammar.ARRAY_CREATOR_REST)) {
       AstNode arrayCreatorRestNode = astNode.getFirstChild(JavaGrammar.ARRAY_CREATOR_REST);
       AstNode typeNode = arrayCreatorRestNode.getPreviousSibling();
@@ -1306,7 +1328,7 @@ public class JavaTreeMaker {
     }
   }
 
-  private ExpressionTree applyClassCreatorRest(ExpressionTree enclosingExpression, AstNode classCreatorRestNode) {
+  private ExpressionTree applyClassCreatorRest(ExpressionTree enclosingExpression, ExpressionTree identifier, AstNode classCreatorRestNode) {
     Preconditions.checkArgument(classCreatorRestNode.is(JavaGrammar.CLASS_CREATOR_REST), "Unexpected AstNodeType: %s", classCreatorRestNode.getType().toString());
     ClassTree classBody = null;
     if (classCreatorRestNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
@@ -1320,6 +1342,7 @@ public class JavaTreeMaker {
     return new JavaTree.NewClassTreeImpl(
       classCreatorRestNode,
       enclosingExpression,
+      identifier,
       arguments(classCreatorRestNode.getFirstChild(JavaGrammar.ARGUMENTS)),
       classBody
     );
