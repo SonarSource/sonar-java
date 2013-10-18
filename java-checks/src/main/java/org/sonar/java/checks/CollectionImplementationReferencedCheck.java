@@ -29,6 +29,7 @@ import org.sonar.java.model.IdentifierTree;
 import org.sonar.java.model.JavaFileScanner;
 import org.sonar.java.model.JavaFileScannerContext;
 import org.sonar.java.model.MethodTree;
+import org.sonar.java.model.ParameterizedTypeTree;
 import org.sonar.java.model.Tree;
 import org.sonar.java.model.VariableTree;
 
@@ -118,12 +119,16 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   }
 
   private static String getTypeIdentifierOrNull(Tree tree) {
-    if (tree == null || !tree.is(Tree.Kind.IDENTIFIER)) {
+    if (tree == null) {
       return null;
     }
-
-    IdentifierTree identifierTree = (IdentifierTree) tree;
-    return identifierTree.name();
+    if (tree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      tree = ((ParameterizedTypeTree) tree).type();
+    }
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      return ((IdentifierTree) tree).name();
+    }
+    return null;
   }
 
   private static String messageRemainder(String collectionImplementation, String collectionInterface) {

@@ -1442,11 +1442,12 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class WildcardTreeImpl extends JavaTree implements WildcardTree {
+    @Nullable
     private final Tree bound;
 
-    public WildcardTreeImpl(AstNode astNode, Tree bound) {
+    public WildcardTreeImpl(AstNode astNode, @Nullable Tree bound) {
       super(astNode);
-      this.bound = Preconditions.checkNotNull(bound);
+      this.bound = bound;
     }
 
     @Override
@@ -1454,6 +1455,7 @@ public abstract class JavaTree implements Tree {
       return null;
     }
 
+    @Nullable
     @Override
     public Tree bound() {
       return bound;
@@ -1461,6 +1463,37 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public void accept(TreeVisitor visitor) {
+    }
+  }
+
+  public static class ParameterizedTypeTreeImpl extends JavaTree implements ParameterizedTypeTree, ExpressionTree {
+    private final ExpressionTree type;
+    private final List<? extends Tree> typeArguments;
+
+    public ParameterizedTypeTreeImpl(AstNode child, ExpressionTree type, List<? extends Tree> typeArguments) {
+      super(child);
+      this.type = Preconditions.checkNotNull(type);
+      this.typeArguments = Preconditions.checkNotNull(typeArguments);
+    }
+
+    @Override
+    protected Kind getKind() {
+      return Kind.PARAMETERIZED_TYPE;
+    }
+
+    @Override
+    public Tree type() {
+      return type;
+    }
+
+    @Override
+    public List<? extends Tree> typeArguments() {
+      return typeArguments;
+    }
+
+    @Override
+    public void accept(TreeVisitor visitor) {
+      visitor.visitParameterizedType(this);
     }
   }
 

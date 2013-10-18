@@ -521,7 +521,12 @@ public interface Tree {
     /**
      * {@link VariableTree}
      */
-    VARIABLE(VariableTree.class);
+    VARIABLE(VariableTree.class),
+
+    /**
+     * {@link ParameterizedTypeTree}
+     */
+    PARAMETERIZED_TYPE(ParameterizedTypeTree.class);
 
     final Class<? extends Tree> associatedInterface;
 

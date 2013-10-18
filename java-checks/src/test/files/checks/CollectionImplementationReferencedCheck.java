@@ -11,6 +11,9 @@ public class Employees {
   public java.util.HashSet<Employee> foo() {                      // Compliant - limitation
   }
 
+  public HashMap foo() {                                          // Noncompliant
+  }
+
   public Employees() {
   }
 }

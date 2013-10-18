@@ -280,4 +280,10 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(tree.initializer());
   }
 
+  @Override
+  public void visitParameterizedType(ParameterizedTypeTree tree) {
+    scan(tree.type());
+    scan(tree.typeArguments());
+  }
+
 }

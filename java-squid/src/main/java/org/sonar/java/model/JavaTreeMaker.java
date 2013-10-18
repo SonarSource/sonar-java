@@ -89,8 +89,33 @@ public class JavaTreeMaker {
 
   private ExpressionTree classType(AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE), "Unexpected AstNodeType: %s", astNode.getType().toString());
-    // TODO
-    return identifier(astNode.getFirstChild());
+    AstNode child = astNode.getFirstChild();
+    ExpressionTree result = identifier(child);
+    for (int i = 1; i < astNode.getNumberOfChildren(); i++) {
+      child = astNode.getChild(i);
+      if (child.is(JavaTokenType.IDENTIFIER)) {
+        result = new JavaTree.MemberSelectExpressionTreeImpl(child, result, identifier(child));
+      } else if (child.is(JavaGrammar.TYPE_ARGUMENTS)) {
+        result = new JavaTree.ParameterizedTypeTreeImpl(child, result, typeArguments(child));
+      } else if (!child.is(JavaPunctuator.DOT)) {
+        throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString());
+      }
+    }
+    return result;
+  }
+
+  private List<? extends Tree> typeArguments(AstNode astNode) {
+    Preconditions.checkArgument(astNode.is(JavaGrammar.TYPE_ARGUMENTS), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    ImmutableList.Builder<Tree> result = ImmutableList.builder();
+    for (AstNode child : astNode.getChildren(JavaGrammar.TYPE_ARGUMENT)) {
+      AstNode referenceTypeNode = child.getFirstChild(JavaGrammar.REFERENCE_TYPE);
+      Tree typeArgument = referenceTypeNode != null ? referenceType(referenceTypeNode) : null;
+      if (child.getFirstChild().is(JavaPunctuator.QUERY)) {
+        typeArgument = new JavaTree.WildcardTreeImpl(child, typeArgument);
+      }
+      result.add(typeArgument);
+    }
+    return result.build();
   }
 
   @VisibleForTesting
@@ -98,21 +123,6 @@ public class JavaTreeMaker {
     Preconditions.checkArgument(astNode.is(JavaGrammar.REFERENCE_TYPE, JavaGrammar.TYPE), "Unexpected AstNodeType: %s", astNode.getType().toString());
     ExpressionTree result = astNode.getFirstChild().is(JavaGrammar.BASIC_TYPE) ? basicType(astNode.getFirstChild()) : classType(astNode.getFirstChild());
     return applyDim(result, astNode.getChildren(JavaGrammar.DIM).size());
-  }
-
-  private Tree typeArgument(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.TYPE_ARGUMENT), "Unexpected AstNodeType: %s", astNode.getType().toString());
-    Tree result = referenceType(astNode.getFirstChild(JavaGrammar.REFERENCE_TYPE));
-    if (astNode.getFirstChild().is(JavaPunctuator.QUERY)) {
-      result = new JavaTree.WildcardTreeImpl(astNode, result);
-    }
-    return result;
-  }
-
-  private Tree typeArguments(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.TYPE_ARGUMENTS), "Unexpected AstNodeType: %s", astNode.getType().toString());
-    // TODO
-    return null;
   }
 
   private ModifiersTree modifiers(List<AstNode> modifierNodes) {

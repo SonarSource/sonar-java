@@ -19,6 +19,8 @@
  */
 package org.sonar.java.model;
 
+import javax.annotation.Nullable;
+
 /**
  * Wildcard type argument.
  *
@@ -34,6 +36,7 @@ package org.sonar.java.model;
  */
 public interface WildcardTree extends Tree {
 
+  @Nullable
   Tree bound();
 
 }
