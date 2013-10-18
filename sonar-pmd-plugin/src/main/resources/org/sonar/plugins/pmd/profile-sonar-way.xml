@@ -27,7 +27,6 @@
   <rule ref="rulesets/strings.xml/StringBufferInstantiationWithChar" />
   <rule ref="rulesets/strings.xml/StringToString" />
   <rule ref="rulesets/design.xml/SimplifyConditional" />
-  <rule ref="rulesets/naming.xml/MethodWithSameNameAsEnclosingClass" />
   <rule ref="rulesets/codesize.xml/NcssTypeCount">
     <properties>
       <property value="800" name="minimum"/>

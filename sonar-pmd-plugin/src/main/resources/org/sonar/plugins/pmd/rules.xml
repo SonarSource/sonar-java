@@ -1121,6 +1121,7 @@
   <rule key="MethodWithSameNameAsEnclosingClass">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/naming.xml/MethodWithSameNameAsEnclosingClass]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="SuspiciousHashcodeMethodName">
