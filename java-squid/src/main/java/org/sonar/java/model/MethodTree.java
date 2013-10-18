@@ -25,15 +25,15 @@ import java.util.List;
 /**
  * Method or annotation type element declaration.
  * <p>
- * JLS 8.8. Constructor:
+ * JLS 8.8. Constructor ({@link Tree.Kind#CONSTRUCTOR}):
  * <pre>
  *   {@link #modifiers()} {@link #typeParameters()} {@link #simpleName()} ()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
  * </pre>
- * JLS 8.4, 9.4. Method:
+ * JLS 8.4, 9.4. Method ({@link Tree.Kind#METHOD}):
  * <pre>
  *   {@link #modifiers()} {@link #typeParameters()} {@link #returnType()} {@link #simpleName()} ()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
  * </pre>
- * JLS 9.6.1, 9.6.2. Annotation type element:
+ * JLS 9.6.1, 9.6.2. Annotation type element ({@link Tree.Kind#METHOD}):
  * <pre>
  *   {@link #modifiers()} {@link #returnType()} {@link #simpleName()} ()} default {@link #defaultValue()} ;
  * </pre>

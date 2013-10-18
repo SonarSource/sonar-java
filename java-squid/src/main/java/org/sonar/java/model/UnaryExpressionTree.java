@@ -25,8 +25,14 @@ package org.sonar.java.model;
  * JLS 15.14 and 15.15
  *
  * <pre>
- *   {@link #expression()} ++
- *   ++ {@link #expression()}
+ *   {@link #expression()} {@link Tree.Kind#POSTFIX_INCREMENT ++}
+ *   {@link #expression()} {@link Tree.Kind#POSTFIX_DECREMENT --}
+ *   {@link Tree.Kind#PREFIX_INCREMENT ++} {@link #expression()}
+ *   {@link Tree.Kind#PREFIX_DECREMENT --} {@link #expression()}
+ *   {@link Tree.Kind#UNARY_PLUS +} {@link #expression()}
+ *   {@link Tree.Kind#UNARY_MINUS -} {@link #expression()}
+ *   {@link Tree.Kind#BITWISE_COMPLEMENT ~} {@link #expression()}
+ *   {@link Tree.Kind#LOGICAL_COMPLEMENT !} {@link #expression()}
  * </pre>
  *
  * @since Java 1.3

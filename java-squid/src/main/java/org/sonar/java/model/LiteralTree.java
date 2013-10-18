@@ -24,6 +24,15 @@ package org.sonar.java.model;
  *
  * JLS 15.8.1
  *
+ * {@link Tree.Kind#INT_LITERAL},
+ * {@link Tree.Kind#LONG_LITERAL},
+ * {@link Tree.Kind#FLOAT_LITERAL},
+ * {@link Tree.Kind#DOUBLE_LITERAL},
+ * {@link Tree.Kind#BOOLEAN_LITERAL},
+ * {@link Tree.Kind#CHAR_LITERAL},
+ * {@link Tree.Kind#STRING_LITERAL},
+ * {@link Tree.Kind#NULL_LITERAL}
+ *
  * <pre>
  *   {@link #value()}
  * </pre>
