@@ -26,7 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.BaseTreeVisitor;
 import org.sonar.java.model.DoWhileStatementTree;
-import org.sonar.java.model.EnhancedForStatementTree;
+import org.sonar.java.model.ForEachStatement;
 import org.sonar.java.model.ForStatementTree;
 import org.sonar.java.model.IfStatementTree;
 import org.sonar.java.model.JavaFileScanner;
@@ -77,10 +77,10 @@ public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFile
   }
 
   @Override
-  public void visitEnhancedForStatement(EnhancedForStatementTree tree) {
+  public void visitForEachStatement(ForEachStatement tree) {
     nestingLevel++;
     checkNesting(tree);
-    super.visitEnhancedForStatement(tree);
+    super.visitForEachStatement(tree);
     nestingLevel--;
   }
 

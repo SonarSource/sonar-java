@@ -455,12 +455,12 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class EnhancedForStatementTreeImpl extends JavaTree implements EnhancedForStatementTree {
+  public static class ForEachStatementImpl extends JavaTree implements ForEachStatement {
     private final VariableTree variable;
     private final ExpressionTree expression;
     private final StatementTree statement;
 
-    public EnhancedForStatementTreeImpl(AstNode astNode, VariableTree variable, ExpressionTree expression, StatementTree statement) {
+    public ForEachStatementImpl(AstNode astNode, VariableTree variable, ExpressionTree expression, StatementTree statement) {
       super(astNode);
       this.variable = Preconditions.checkNotNull(variable);
       this.expression = Preconditions.checkNotNull(expression);
@@ -469,7 +469,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     protected Kind getKind() {
-      return Kind.ENHANCED_FOR_STATEMENT;
+      return Kind.FOR_EACH_STATEMENT;
     }
 
     @Override
@@ -489,7 +489,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public void accept(TreeVisitor visitor) {
-      visitor.visitEnhancedForStatement(this);
+      visitor.visitForEachStatement(this);
     }
   }
 

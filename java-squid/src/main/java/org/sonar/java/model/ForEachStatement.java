@@ -30,7 +30,7 @@ package org.sonar.java.model;
  *
  * @since Java 1.5
  */
-public interface EnhancedForStatementTree extends StatementTree {
+public interface ForEachStatement extends StatementTree {
 
   VariableTree variable();
 

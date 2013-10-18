@@ -135,7 +135,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   }
 
   @Override
-  public void visitEnhancedForStatement(EnhancedForStatementTree tree) {
+  public void visitForEachStatement(ForEachStatement tree) {
     scan(tree.variable());
     scan(tree.expression());
     scan(tree.statement());

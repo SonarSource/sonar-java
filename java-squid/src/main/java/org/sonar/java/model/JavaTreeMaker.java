@@ -795,7 +795,7 @@ public class JavaTreeMaker {
         statement(astNode.getFirstChild(JavaGrammar.STATEMENT))
       );
     } else {
-      return new JavaTree.EnhancedForStatementTreeImpl(
+      return new JavaTree.ForEachStatementImpl(
         astNode,
         new JavaTree.VariableTreeImpl(
           formalParameterNode,

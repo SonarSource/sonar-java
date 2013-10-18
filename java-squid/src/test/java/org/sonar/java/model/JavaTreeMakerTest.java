@@ -706,8 +706,8 @@ public class JavaTreeMakerTest {
   @Test
   public void enhanced_for_statement() {
     AstNode astNode = p.parse("class T { void m() { for (Object o : objects) ; } }").getFirstDescendant(JavaGrammar.STATEMENT);
-    EnhancedForStatementTree tree = (EnhancedForStatementTree) maker.statement(astNode);
-    assertThat(tree.is(Tree.Kind.ENHANCED_FOR_STATEMENT)).isTrue();
+    ForEachStatement tree = (ForEachStatement) maker.statement(astNode);
+    assertThat(tree.is(Tree.Kind.FOR_EACH_STATEMENT)).isTrue();
     assertThat(tree.variable()).isNotNull();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.statement()).isNotNull();

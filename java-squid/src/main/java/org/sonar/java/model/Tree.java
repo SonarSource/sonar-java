@@ -146,11 +146,11 @@ public interface Tree {
     FOR_STATEMENT(ForStatementTree.class),
 
     /**
-     * {@link EnhancedForStatementTree}
+     * {@link ForEachStatement}
      *
      * @since Java 1.5
      */
-    ENHANCED_FOR_STATEMENT(EnhancedForStatementTree.class),
+    FOR_EACH_STATEMENT(ForEachStatement.class),
 
     /**
      * {@link BreakStatementTree}

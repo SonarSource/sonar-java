@@ -51,7 +51,7 @@ public interface TreeVisitor {
 
   void visitForStatement(ForStatementTree tree);
 
-  void visitEnhancedForStatement(EnhancedForStatementTree tree);
+  void visitForEachStatement(ForEachStatement tree);
 
   void visitBreakStatement(BreakStatementTree tree);
 
