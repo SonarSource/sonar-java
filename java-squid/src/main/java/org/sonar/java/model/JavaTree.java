@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 public abstract class JavaTree implements Tree {
@@ -175,7 +176,8 @@ public abstract class JavaTree implements Tree {
     private final List<? extends Tree> superInterfaces;
     private final List<? extends Tree> members;
 
-    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, String simpleName, @Nullable Tree superClass, List<? extends Tree> superInterfaces, List<? extends Tree> members) {
+    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable String simpleName, @Nullable Tree superClass, List<? extends Tree> superInterfaces,
+      List<? extends Tree> members) {
       super(astNode);
       this.kind = Preconditions.checkNotNull(kind);
       this.modifiers = Preconditions.checkNotNull(modifiers);
@@ -187,7 +189,7 @@ public abstract class JavaTree implements Tree {
 
     // TODO remove:
     public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, List<? extends Tree> members) {
-      this(astNode, kind, modifiers, null, null, ImmutableList.<Tree>of(), members);
+      this(astNode, kind, modifiers, null, null, ImmutableList.<Tree> of(), members);
     }
 
     @Override
@@ -244,7 +246,8 @@ public abstract class JavaTree implements Tree {
     private final List<? extends ExpressionTree> throwsClauses;
     private final ExpressionTree defaultValue;
 
-    public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, String simpleName, List<? extends VariableTree> parameters, @Nullable BlockTree block,
+    public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, String simpleName, List<? extends VariableTree> parameters,
+      @Nullable BlockTree block,
       List<? extends ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
       super(astNode);
       this.modifiers = Preconditions.checkNotNull(modifiers);
@@ -1248,7 +1251,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<? extends Tree> typeArguments() {
       // TODO implement
-      return ImmutableList.<Tree>of();
+      return ImmutableList.<Tree> of();
     }
 
     @Override
@@ -1313,7 +1316,8 @@ public abstract class JavaTree implements Tree {
     @Nullable
     private final ClassTree classBody;
 
-    public NewClassTreeImpl(AstNode astNode, @Nullable ExpressionTree enclosingExpression, ExpressionTree identifier, List<? extends ExpressionTree> arguments, @Nullable ClassTree classBody) {
+    public NewClassTreeImpl(AstNode astNode, @Nullable ExpressionTree enclosingExpression, ExpressionTree identifier, List<? extends ExpressionTree> arguments,
+      @Nullable ClassTree classBody) {
       super(astNode);
       this.enclosingExpression = enclosingExpression;
       this.identifier = Preconditions.checkNotNull(identifier);
@@ -1335,7 +1339,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<? extends Tree> typeArguments() {
       // TODO implement
-      return ImmutableList.<Tree>of();
+      return ImmutableList.<Tree> of();
     }
 
     @Override
@@ -1518,7 +1522,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<? extends Tree> typeAlternatives() {
       // TODO implement
-      return ImmutableList.<Tree>of();
+      return ImmutableList.<Tree> of();
     }
 
     @Override
@@ -1551,7 +1555,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<? extends AnnotationTree> annotations() {
       // TODO implement
-      return ImmutableList.<AnnotationTree>of();
+      return ImmutableList.<AnnotationTree> of();
     }
 
     @Override
