@@ -118,7 +118,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   }
 
   private static String getTypeIdentifierOrNull(Tree tree) {
-    if (!tree.is(Tree.Kind.IDENTIFIER)) {
+    if (tree == null || !tree.is(Tree.Kind.IDENTIFIER)) {
       return null;
     }
 

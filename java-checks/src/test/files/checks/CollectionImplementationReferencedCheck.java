@@ -10,6 +10,9 @@ public class Employees {
 
   public java.util.HashSet<Employee> foo() {                      // Compliant - limitation
   }
+
+  public Employees() {
+  }
 }
 
 public class Employees {
