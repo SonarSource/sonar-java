@@ -16,6 +16,9 @@ public class Employees {
 
   public Employees() {
   }
+
+  private Stack stack;
+  private Vector vector;
 }
 
 public class Employees {

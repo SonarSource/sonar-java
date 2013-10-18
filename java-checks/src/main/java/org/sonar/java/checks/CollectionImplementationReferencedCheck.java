@@ -53,8 +53,6 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     .put("ArrayList", "List")
     .put("CopyOnWriteArrayList", "List")
     .put("LinkedList", "List")
-    .put("Stack", "List")
-    .put("Vector", "List")
 
     .put("AbstractMap", "Map")
     .put("ConcurrentHashMap", "Map")
