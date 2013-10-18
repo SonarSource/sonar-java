@@ -19,18 +19,30 @@
  */
 package org.sonar.java;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.java.model.JavaFileScanner;
+import org.sonar.java.model.JavaFileScannersFactory;
+
+import javax.annotation.Nullable;
 
 public class SonarComponents implements BatchExtension {
 
   private final FileLinesContextFactory fileLinesContextFactory;
   private final ResourcePerspectives resourcePerspectives;
+  private final JavaFileScannersFactory[] fileScannersFactories;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives) {
+    this(fileLinesContextFactory, resourcePerspectives, null);
+  }
+
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, @Nullable JavaFileScannersFactory[] fileScannersFactories) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
+    this.fileScannersFactories = fileScannersFactories;
   }
 
   public FileLinesContextFactory getFileLinesContextFactory() {
@@ -39,6 +51,16 @@ public class SonarComponents implements BatchExtension {
 
   public ResourcePerspectives getResourcePerspectives() {
     return resourcePerspectives;
+  }
+
+  public Iterable<JavaFileScanner> createJavaFileScanners() {
+    Iterable<JavaFileScanner> result = ImmutableList.of();
+    if (fileScannersFactories != null) {
+      for (JavaFileScannersFactory factory : fileScannersFactories) {
+        result = Iterables.concat(result, factory.createJavaFileScanners());
+      }
+    }
+    return result;
   }
 
 }

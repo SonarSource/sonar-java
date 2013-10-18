@@ -49,7 +49,7 @@ public class VisitorsBridge extends JavaAstVisitor {
     this(null, Arrays.asList(visitor));
   }
 
-  public VisitorsBridge(@Nullable ResourcePerspectives resourcePerspectives, List visitors) {
+  public VisitorsBridge(@Nullable ResourcePerspectives resourcePerspectives, Iterable visitors) {
     this.resourcePerspectives = resourcePerspectives;
     ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
     for (Object visitor : visitors) {

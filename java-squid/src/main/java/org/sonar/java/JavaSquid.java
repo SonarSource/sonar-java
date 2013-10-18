@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.sonar.api.resources.InputFile;
@@ -74,7 +75,11 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
       astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents.getResourcePerspectives(), conf.getCharset()));
       astScanner.accept(new SymbolTableVisitor(sonarComponents.getResourcePerspectives()));
 
-      astScanner.accept(new VisitorsBridge(sonarComponents.getResourcePerspectives(), Arrays.asList(visitors)));
+      VisitorsBridge visitorsBridge = new VisitorsBridge(sonarComponents.getResourcePerspectives(), Iterables.concat(
+        sonarComponents.createJavaFileScanners(),
+        Arrays.asList(visitors)
+      ));
+      astScanner.accept(visitorsBridge);
     }
 
     // TODO unchecked cast
