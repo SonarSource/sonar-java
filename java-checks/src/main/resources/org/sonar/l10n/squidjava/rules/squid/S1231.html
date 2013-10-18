@@ -1,8 +1,7 @@
 <p>
 According to the Java Code Conventions as defined by Oracle, the parts of a class or interface declaration should appear in the following order in the source files:
 <ul>
-<li>Class (static) variables: first the public class variables, then the protected, then package level (no access modifier), and then the private.</li>
-<li>Instance variables: first the public class variables, then the protected, then package level (no access modifier), and then the private.</li>
+<li>Class and instance variables</li>
 <li>Constructors</li>
 <li>Methods</li>
 </ul>
@@ -10,11 +9,11 @@ According to the Java Code Conventions as defined by Oracle, the parts of a clas
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-public class Foo{  // Noncompliant
+public class Foo {
   private int field = 0;
   isTrue() {...}
-  public Foo() {...}
-  public static final int OPEN = 4;
+  public Foo() {...}                // Noncompliant, constructor defined after method
+  public static final int OPEN = 4; // Noncompliant, variable defined after method
 }
 </pre>
 

@@ -27,11 +27,7 @@ import org.sonar.java.model.BaseTreeVisitor;
 import org.sonar.java.model.ClassTree;
 import org.sonar.java.model.JavaFileScanner;
 import org.sonar.java.model.JavaFileScannerContext;
-import org.sonar.java.model.MethodTree;
-import org.sonar.java.model.Modifier;
-import org.sonar.java.model.ModifiersTree;
 import org.sonar.java.model.Tree;
-import org.sonar.java.model.VariableTree;
 
 @Rule(
   key = IncorrectOrderOfMembersCheck.RULE_KEY,
@@ -41,6 +37,8 @@ public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements Jav
 
   public static final String RULE_KEY = "S1231";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private static final String[] NAMES = {"variable", "constructor", "method"};
 
   private JavaFileScannerContext context;
 
@@ -55,50 +53,21 @@ public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements Jav
     int prev = 0;
     for (int i = 0; i < tree.members().size(); i++) {
       final Tree member = tree.members().get(i);
-      final int typePriority;
-      final ModifiersTree modifiers;
+      final int priority;
       if (member.is(Tree.Kind.VARIABLE)) {
-        typePriority = 2;
-        modifiers = ((VariableTree) member).modifiers();
+        priority = 0;
       } else if (member.is(Tree.Kind.CONSTRUCTOR)) {
-        typePriority = 3;
-        modifiers = ((MethodTree) member).modifiers();
+        priority = 1;
       } else if (member.is(Tree.Kind.METHOD)) {
-        typePriority = 4;
-        modifiers = ((MethodTree) member).modifiers();
+        priority = 2;
       } else {
         continue;
       }
-      boolean isStatic = false;
-      int visibilityPriority = /* package local */ 2;
-      for (Modifier modifier : modifiers.modifiers()) {
-        switch (modifier) {
-          case STATIC:
-            isStatic = true;
-            break;
-          case PUBLIC:
-            visibilityPriority = 0;
-            break;
-          case PROTECTED:
-            visibilityPriority = 1;
-            break;
-          case PRIVATE:
-            visibilityPriority = 3;
-            break;
-        }
-      }
-      int priority = typePriority;
-      if (member.is(Tree.Kind.VARIABLE) && isStatic) {
-        priority--;
-      }
-      priority *= 4;
-      priority += visibilityPriority;
-
       if (priority < prev) {
-        context.addIssue(tree, ruleKey, "Change order of members to comply with Java Coding conventions.");
-        break;
+        context.addIssue(member, ruleKey, "Move this " + NAMES[priority] + " to comply with Java Code Conventions.");
+      } else {
+        prev = priority;
       }
-      prev = priority;
     }
 
     super.visitClass(tree);

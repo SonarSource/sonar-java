@@ -39,12 +39,8 @@ public class IncorrectOrderOfMembersCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IncorrectOrderOfMembersCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(1).withMessage("Change order of members to comply with Java Coding conventions.")
-      .next().atLine(6)
-      .next().atLine(12)
-      .next().atLine(19)
-      .next().atLine(24)
-      .next().atLine(29);
+      .next().atLine(4).withMessage("Move this variable to comply with Java Code Conventions.")
+      .next().atLine(10).withMessage("Move this constructor to comply with Java Code Conventions.");
   }
 
 }
