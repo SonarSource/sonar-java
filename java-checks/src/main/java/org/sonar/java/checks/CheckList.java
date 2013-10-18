@@ -149,6 +149,7 @@ public final class CheckList {
       ObjectEqualsNullCheck.class,
       MethodNameSameAsClassCheck.class,
       CollectionImplementationReferencedCheck.class,
+      IncorrectOrderOfMembersCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
