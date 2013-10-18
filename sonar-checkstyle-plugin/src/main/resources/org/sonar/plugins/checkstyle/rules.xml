@@ -344,6 +344,7 @@
     <param key="ignoreConstructors" type="BOOLEAN"/>
     <param key="ignoreMethods" type="BOOLEAN"/>
     <param key="ignoreModifiers" type="BOOLEAN"/>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.DefaultComesLastCheck">
