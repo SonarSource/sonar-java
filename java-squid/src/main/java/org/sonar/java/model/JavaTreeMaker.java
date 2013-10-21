@@ -106,7 +106,8 @@ public class JavaTreeMaker {
     return result;
   }
 
-  private List<? extends Tree> typeArguments(AstNode astNode) {
+  @VisibleForTesting
+  List<? extends Tree> typeArguments(AstNode astNode) {
     checkType(astNode, JavaGrammar.TYPE_ARGUMENTS);
     ImmutableList.Builder<Tree> result = ImmutableList.builder();
     for (AstNode child : astNode.getChildren(JavaGrammar.TYPE_ARGUMENT)) {
@@ -114,9 +115,9 @@ public class JavaTreeMaker {
       Tree typeArgument = referenceTypeNode != null ? referenceType(referenceTypeNode) : null;
       if (child.getFirstChild().is(JavaPunctuator.QUERY)) {
         final Tree.Kind kind;
-        if (child.getFirstChild().is(JavaKeyword.EXTENDS)) {
+        if (child.hasDirectChildren(JavaKeyword.EXTENDS)) {
           kind = Tree.Kind.EXTENDS_WILDCARD;
-        } else if (child.getFirstChild().is(JavaKeyword.SUPER)) {
+        } else if (child.hasDirectChildren(JavaKeyword.SUPER)) {
           kind = Tree.Kind.SUPER_WILDCARD;
         } else {
           kind = Tree.Kind.UNBOUNDED_WILDCARD;
@@ -949,8 +950,30 @@ public class JavaTreeMaker {
       // (expression)
       return expression(firstChildNode);
     } else if (firstChildNode.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
-      // FIXME
-      throw new UnsupportedOperationException("not implemented");
+      if (astNode.hasDirectChildren(JavaKeyword.THIS)) {
+        // <T>this(arguments)
+        return new JavaTree.MethodInvocationTreeImpl(
+          astNode,
+          identifier(astNode.getFirstChild(JavaKeyword.THIS)),
+          arguments(astNode.getFirstChild(JavaGrammar.ARGUMENTS))
+        );
+      } else {
+        AstNode explicitGenericInvocationSuffixNode = astNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX);
+        if (explicitGenericInvocationSuffixNode.hasDirectChildren(JavaKeyword.SUPER)) {
+          // <T>super...
+          return applySuperSuffix(
+            identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaKeyword.SUPER)),
+            explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.SUPER_SUFFIX)
+          );
+        } else {
+          // <T>id(arguments)
+          return new JavaTree.MethodInvocationTreeImpl(
+            astNode,
+            identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)),
+            arguments(explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS))
+          );
+        }
+      }
     } else if (firstChildNode.is(JavaKeyword.THIS)) {
       IdentifierTree identifier = identifier(firstChildNode);
       if (astNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
