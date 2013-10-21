@@ -915,17 +915,16 @@ public class JavaTreeMaker {
     ImmutableList.Builder<CatchTree> catches = ImmutableList.builder();
     for (AstNode catchNode : astNode.getChildren(JavaGrammar.CATCH_CLAUSE)) {
       AstNode catchFormalParameterNode = catchNode.getFirstChild(JavaGrammar.CATCH_FORMAL_PARAMETER);
-      // TODO multi-catch
-      // TODO WTF why VARIABLE_DECLARATOR_ID in grammar?
       catches.add(new JavaTree.CatchTreeImpl(
         catchNode,
         new JavaTree.VariableTreeImpl(
           catchFormalParameterNode,
           // TODO modifiers:
           JavaTree.ModifiersTreeImpl.EMPTY,
-          qualifiedIdentifier(catchFormalParameterNode.getFirstChild(JavaGrammar.CATCH_TYPE).getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER)),
+          catchType(catchFormalParameterNode.getFirstChild(JavaGrammar.CATCH_TYPE)),
+          // TODO WTF why VARIABLE_DECLARATOR_ID in grammar?
           catchFormalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
-          null
+          /* initializer: */ null
         ),
         block(catchNode.getFirstChild(JavaGrammar.BLOCK))
       ));
@@ -942,6 +941,20 @@ public class JavaTreeMaker {
       catches.build(),
       finallyBlock
     );
+  }
+
+  private Tree catchType(AstNode astNode) {
+    Preconditions.checkArgument(astNode.is(JavaGrammar.CATCH_TYPE));
+    List<AstNode> children = astNode.getChildren(JavaGrammar.QUALIFIED_IDENTIFIER);
+    if (children.size() == 1) {
+      return qualifiedIdentifier(children.get(0));
+    } else {
+      ImmutableList.Builder<Tree> typeAlternatives = ImmutableList.builder();
+      for (AstNode child : children) {
+        typeAlternatives.add(qualifiedIdentifier(child));
+      }
+      return new JavaTree.UnionTypeTreeImpl(astNode, typeAlternatives.build());
+    }
   }
 
   private List<VariableTree> resourceSpecification(AstNode astNode) {

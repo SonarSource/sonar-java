@@ -838,7 +838,10 @@ public class JavaTreeMakerTest {
     assertThat(resource.simpleName()).isEqualTo("r2");
     assertThat(resource.initializer()).isNotNull();
 
-    // FIXME multi-catch
+    astNode = p.parse("class T { void m() { try { } catch (Exception1 | Exception2 e) { } } }").getFirstDescendant(JavaGrammar.STATEMENT);
+    tree = (TryStatementTree) maker.statement(astNode);
+    parameterTree = tree.catches().get(0).parameter();
+    assertThat(((UnionTypeTree) parameterTree.type()).typeAlternatives()).hasSize(2);
   }
 
   /*

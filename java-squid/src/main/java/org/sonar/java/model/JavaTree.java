@@ -1510,8 +1510,11 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class UnionTypeTreeImpl extends JavaTree implements UnionTypeTree {
-    public UnionTypeTreeImpl(AstNode astNode) {
+    private final List<? extends Tree> typeAlternatives;
+
+    public UnionTypeTreeImpl(AstNode astNode, List<? extends Tree> typeAlternatives) {
       super(astNode);
+      this.typeAlternatives = Preconditions.checkNotNull(typeAlternatives);
     }
 
     @Override
@@ -1521,8 +1524,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public List<? extends Tree> typeAlternatives() {
-      // TODO implement
-      return ImmutableList.<Tree> of();
+      return typeAlternatives;
     }
 
     @Override
