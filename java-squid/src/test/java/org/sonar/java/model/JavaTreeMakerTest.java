@@ -46,7 +46,7 @@ public class JavaTreeMakerTest {
       FileUtils.listFiles(new File("src/main/java/"), new String[] {"java"}, true),
       FileUtils.listFiles(new File("src/test/java/"), new String[] {"java"}, true),
       FileUtils.listFiles(new File("src/test/files/"), new String[] {"java"}, true)
-      );
+    );
     BaseTreeVisitor visitor = new BaseTreeVisitor();
     for (File file : files) {
       Tree tree = maker.compilationUnit(p.parse(file));
@@ -942,6 +942,14 @@ public class JavaTreeMakerTest {
     assertThat(tree.arguments()).hasSize(2);
     assertThat(tree.classBody()).isNotNull();
     // assertThat(tree.typeArguments()).isEmpty();
+
+    astNode = p.parse("class T { T m() { return this.new T(true, false) {}; } }").getFirstDescendant(JavaGrammar.EXPRESSION);
+    tree = (NewClassTree) maker.expression(astNode);
+    assertThat(tree.enclosingExpression()).isNotNull();
+    assertThat(tree.identifier()).isNotNull();
+    assertThat(tree.arguments()).hasSize(2);
+    assertThat(tree.classBody()).isNotNull();
+    // assertThat(tree.typeArguments()).isEmpty();
   }
 
   /**
@@ -999,7 +1007,6 @@ public class JavaTreeMakerTest {
   @Test
   public void method_invocation_expression() {
     // TODO test NonWildTypeArguments
-
     AstNode astNode = p.parse("class T { void m() { identifier(true, false); } }").getFirstDescendant(JavaGrammar.EXPRESSION);
     MethodInvocationTree tree = (MethodInvocationTree) maker.expression(astNode);
     assertThat(tree.is(Tree.Kind.METHOD_INVOCATION)).isTrue();
@@ -1046,6 +1053,14 @@ public class JavaTreeMakerTest {
     memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
     assertThat(memberSelectExpression.identifier().name()).isEqualTo("super");
     assertThat(((IdentifierTree) memberSelectExpression.expression()).name()).isEqualTo("TypeName");
+    assertThat(tree.arguments()).hasSize(2);
+
+    astNode = p.parse("class T { T() { primary().<T>identifier(true, false); } }").getFirstDescendant(JavaGrammar.EXPRESSION);
+    tree = (MethodInvocationTree) maker.expression(astNode);
+    assertThat(tree.is(Tree.Kind.METHOD_INVOCATION)).isTrue();
+    memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThat(memberSelectExpression.identifier().name()).isEqualTo("identifier");
+    assertThat(memberSelectExpression.expression()).isInstanceOf(MethodInvocationTree.class);
     assertThat(tree.arguments()).hasSize(2);
   }
 

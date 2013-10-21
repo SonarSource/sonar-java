@@ -1310,8 +1310,12 @@ public class JavaTreeMaker {
         selectorNode.getFirstChild(JavaGrammar.SUPER_SUFFIX)
       );
     } else if (selectorNode.hasDirectChildren(JavaKeyword.NEW)) {
-      // dead grammar part?
-      throw new UnsupportedOperationException("not implemented");
+      AstNode innerCreatorNode = selectorNode.getFirstChild(JavaGrammar.INNER_CREATOR);
+      return applyClassCreatorRest(
+        expression,
+        identifier(innerCreatorNode.getFirstChild(JavaTokenType.IDENTIFIER)),
+        innerCreatorNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST)
+      );
     } else if (selectorNode.hasDirectChildren(JavaGrammar.DIM_EXPR)) {
       return new JavaTree.ArrayAccessExpressionTreeImpl(
         selectorNode,
