@@ -32,36 +32,12 @@ import java.util.Map;
 
 public final class KindMaps {
 
-  private final EnumMap<JavaKeyword, Modifier> modifiers = Maps.newEnumMap(JavaKeyword.class);
-  private final EnumMap<JavaPunctuator, Tree.Kind> prefixOperators = Maps.newEnumMap(JavaPunctuator.class);
-  private final EnumMap<JavaPunctuator, Tree.Kind> postfixOperators = Maps.newEnumMap(JavaPunctuator.class);
-  private final EnumMap<JavaPunctuator, Tree.Kind> binaryOperators = Maps.newEnumMap(JavaPunctuator.class);
-  private final EnumMap<JavaPunctuator, Tree.Kind> assignmentOperators = Maps.newEnumMap(JavaPunctuator.class);
+  private final Map<JavaKeyword, Modifier> modifiers = Maps.newEnumMap(JavaKeyword.class);
+  private final Map<JavaPunctuator, Tree.Kind> prefixOperators = Maps.newEnumMap(JavaPunctuator.class);
+  private final Map<JavaPunctuator, Tree.Kind> postfixOperators = Maps.newEnumMap(JavaPunctuator.class);
+  private final Map<JavaPunctuator, Tree.Kind> binaryOperators = Maps.newEnumMap(JavaPunctuator.class);
+  private final Map<JavaPunctuator, Tree.Kind> assignmentOperators = Maps.newEnumMap(JavaPunctuator.class);
   private final Map<AstNodeType, Tree.Kind> literals;
-
-  public Modifier getModifier(JavaKeyword keyword) {
-    return Preconditions.checkNotNull(modifiers.get(keyword), "Mapping not found for modifier %s", keyword);
-  }
-
-  public Tree.Kind getPrefixOperator(JavaPunctuator punctuator) {
-    return Preconditions.checkNotNull(prefixOperators.get(punctuator), "Mapping not found for prefix operator %s", punctuator);
-  }
-
-  public Tree.Kind getPostfixOperator(JavaPunctuator punctuator) {
-    return Preconditions.checkNotNull(postfixOperators.get(punctuator), "Mapping not found for postfix operator %s", punctuator);
-  }
-
-  public Tree.Kind getBinaryOperator(JavaPunctuator punctuator) {
-    return Preconditions.checkNotNull(binaryOperators.get(punctuator), "Mapping not found for binary operator %s", punctuator);
-  }
-
-  public Tree.Kind getAssignmentOperator(JavaPunctuator punctuator) {
-    return Preconditions.checkNotNull(assignmentOperators.get(punctuator), "Mapping not found for assignment operator %s", punctuator);
-  }
-
-  public Tree.Kind getLiteral(AstNodeType tokenType) {
-    return Preconditions.checkNotNull(literals.get(tokenType), "Mapping not found for literal %s", tokenType);
-  }
 
   public KindMaps() {
     ImmutableMap.Builder<AstNodeType, Tree.Kind> literalsBuilder = ImmutableMap.builder();
@@ -131,6 +107,30 @@ public final class KindMaps {
     assignmentOperators.put(JavaPunctuator.ANDEQU, Tree.Kind.AND_ASSIGNMENT);
     assignmentOperators.put(JavaPunctuator.HATEQU, Tree.Kind.XOR_ASSIGNMENT);
     assignmentOperators.put(JavaPunctuator.OREQU, Tree.Kind.OR_ASSIGNMENT);
+  }
+
+  public Modifier getModifier(JavaKeyword keyword) {
+    return Preconditions.checkNotNull(modifiers.get(keyword), "Mapping not found for modifier %s", keyword);
+  }
+
+  public Tree.Kind getPrefixOperator(JavaPunctuator punctuator) {
+    return Preconditions.checkNotNull(prefixOperators.get(punctuator), "Mapping not found for prefix operator %s", punctuator);
+  }
+
+  public Tree.Kind getPostfixOperator(JavaPunctuator punctuator) {
+    return Preconditions.checkNotNull(postfixOperators.get(punctuator), "Mapping not found for postfix operator %s", punctuator);
+  }
+
+  public Tree.Kind getBinaryOperator(JavaPunctuator punctuator) {
+    return Preconditions.checkNotNull(binaryOperators.get(punctuator), "Mapping not found for binary operator %s", punctuator);
+  }
+
+  public Tree.Kind getAssignmentOperator(JavaPunctuator punctuator) {
+    return Preconditions.checkNotNull(assignmentOperators.get(punctuator), "Mapping not found for assignment operator %s", punctuator);
+  }
+
+  public Tree.Kind getLiteral(AstNodeType tokenType) {
+    return Preconditions.checkNotNull(literals.get(tokenType), "Mapping not found for literal %s", tokenType);
   }
 
 }

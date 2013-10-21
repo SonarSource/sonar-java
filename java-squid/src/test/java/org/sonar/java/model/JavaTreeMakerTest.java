@@ -1325,21 +1325,21 @@ public class JavaTreeMakerTest {
     AstNode astNode = p.parse("class T { boolean m() { return true ? true : false; } }").getFirstDescendant(JavaGrammar.EXPRESSION);
     ConditionalExpressionTree tree = (ConditionalExpressionTree) maker.expression(astNode);
     assertThat(tree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
-    assertThat(tree.condition()).isNotNull();
-    assertThat(tree.trueExpression()).isNotNull();
-    assertThat(tree.falseExpression()).isNotNull();
+    assertThat(tree.condition()).isInstanceOf(LiteralTree.class);
+    assertThat(tree.trueExpression()).isInstanceOf(LiteralTree.class);
+    assertThat(tree.falseExpression()).isInstanceOf(LiteralTree.class);
 
     astNode = p.parse("class T { boolean m() { return true ? true : false ? true : false; } }").getFirstDescendant(JavaGrammar.EXPRESSION);
     tree = (ConditionalExpressionTree) maker.expression(astNode);
     assertThat(tree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
-    assertThat(tree.condition()).isNotNull();
-    assertThat(tree.trueExpression()).isNotNull();
-    assertThat(tree.falseExpression()).isNotNull();
+    assertThat(tree.condition()).isInstanceOf(LiteralTree.class);
+    assertThat(tree.trueExpression()).isInstanceOf(LiteralTree.class);
+    assertThat(tree.falseExpression()).isInstanceOf(ConditionalExpressionTree.class);
     tree = (ConditionalExpressionTree) tree.falseExpression();
     assertThat(tree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
-    assertThat(tree.condition()).isNotNull();
-    assertThat(tree.trueExpression()).isNotNull();
-    assertThat(tree.falseExpression()).isNotNull();
+    assertThat(tree.condition()).isInstanceOf(LiteralTree.class);
+    assertThat(tree.trueExpression()).isInstanceOf(LiteralTree.class);
+    assertThat(tree.falseExpression()).isInstanceOf(LiteralTree.class);
   }
 
   /**

@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
@@ -37,18 +38,17 @@ public class JavaTreeMaker {
 
   private final KindMaps kindMaps = new KindMaps();
 
+  private static void checkType(AstNode astNode, AstNodeType... expected) {
+    Preconditions.checkArgument(astNode.is(expected), "Unexpected AstNodeType: %s", astNode.getType().toString());
+  }
+
   private IdentifierTree identifier(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(
-      JavaTokenType.IDENTIFIER,
-      JavaKeyword.THIS,
-      JavaKeyword.CLASS,
-      JavaKeyword.SUPER
-    ), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaTokenType.IDENTIFIER, JavaKeyword.THIS, JavaKeyword.CLASS, JavaKeyword.SUPER);
     return new JavaTree.IdentifierTreeImpl(astNode, astNode.getTokenValue());
   }
 
   private ExpressionTree qualifiedIdentifier(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.QUALIFIED_IDENTIFIER), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.QUALIFIED_IDENTIFIER);
     List<AstNode> identifierNodes = astNode.getChildren(JavaTokenType.IDENTIFIER);
     ExpressionTree result = identifier(identifierNodes.get(0));
     for (int i = 1; i < identifierNodes.size(); i++) {
@@ -62,7 +62,7 @@ public class JavaTreeMaker {
   }
 
   private List<ExpressionTree> qualifiedIdentifierList(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.QUALIFIED_IDENTIFIER_LIST), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.QUALIFIED_IDENTIFIER_LIST);
     ImmutableList.Builder<ExpressionTree> result = ImmutableList.builder();
     for (AstNode qualifiedIdentifierNode : astNode.getChildren(JavaGrammar.QUALIFIED_IDENTIFIER)) {
       result.add(qualifiedIdentifier(qualifiedIdentifierNode));
@@ -72,7 +72,7 @@ public class JavaTreeMaker {
 
   @VisibleForTesting
   LiteralTree literal(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.LITERAL), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.LITERAL);
     astNode = astNode.getFirstChild();
     return new JavaTree.LiteralTreeImpl(astNode, kindMaps.getLiteral(astNode.getType()));
   }
@@ -83,12 +83,12 @@ public class JavaTreeMaker {
 
   @VisibleForTesting
   PrimitiveTypeTree basicType(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.BASIC_TYPE, JavaKeyword.VOID), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.BASIC_TYPE, JavaKeyword.VOID);
     return new JavaTree.PrimitiveTypeTreeImpl(astNode);
   }
 
   private ExpressionTree classType(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE, JavaGrammar.CREATED_NAME), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.CLASS_TYPE, JavaGrammar.CREATED_NAME);
     AstNode child = astNode.getFirstChild();
     ExpressionTree result = identifier(child);
     for (int i = 1; i < astNode.getNumberOfChildren(); i++) {
@@ -107,7 +107,7 @@ public class JavaTreeMaker {
   }
 
   private List<? extends Tree> typeArguments(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.TYPE_ARGUMENTS), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.TYPE_ARGUMENTS);
     ImmutableList.Builder<Tree> result = ImmutableList.builder();
     for (AstNode child : astNode.getChildren(JavaGrammar.TYPE_ARGUMENT)) {
       AstNode referenceTypeNode = child.getFirstChild(JavaGrammar.REFERENCE_TYPE);
@@ -129,7 +129,7 @@ public class JavaTreeMaker {
   }
 
   private List<? extends Tree> nonWildcardTypeArguments(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS);
     ImmutableList.Builder<Tree> result = ImmutableList.builder();
     for (AstNode child : astNode.getChildren(JavaGrammar.REFERENCE_TYPE)) {
       result.add(referenceType(child));
@@ -139,7 +139,7 @@ public class JavaTreeMaker {
 
   @VisibleForTesting
   ExpressionTree referenceType(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.REFERENCE_TYPE, JavaGrammar.TYPE), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.REFERENCE_TYPE, JavaGrammar.TYPE);
     ExpressionTree result = astNode.getFirstChild().is(JavaGrammar.BASIC_TYPE) ? basicType(astNode.getFirstChild()) : classType(astNode.getFirstChild());
     return applyDim(result, astNode.getChildren(JavaGrammar.DIM).size());
   }
@@ -164,7 +164,7 @@ public class JavaTreeMaker {
   }
 
   private VariableTree variableDeclarator(ModifiersTree modifiers, ExpressionTree type, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.VARIABLE_DECLARATOR), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.VARIABLE_DECLARATOR);
     return new JavaTree.VariableTreeImpl(
       astNode,
       modifiers,
@@ -175,7 +175,7 @@ public class JavaTreeMaker {
   }
 
   private List<StatementTree> variableDeclarators(ModifiersTree modifiers, ExpressionTree type, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.VARIABLE_DECLARATORS), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.VARIABLE_DECLARATORS);
     ImmutableList.Builder<StatementTree> result = ImmutableList.builder();
     for (AstNode variableDeclaratorNode : astNode.getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
       result.add(variableDeclarator(modifiers, type, variableDeclaratorNode));
@@ -188,7 +188,7 @@ public class JavaTreeMaker {
    */
 
   public CompilationUnitTree compilationUnit(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.COMPILATION_UNIT), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.COMPILATION_UNIT);
     ImmutableList.Builder<ImportTree> imports = ImmutableList.builder();
     for (AstNode importNode : astNode.getChildren(JavaGrammar.IMPORT_DECLARATION)) {
       // TODO star import?
@@ -245,7 +245,7 @@ public class JavaTreeMaker {
    * 8.1. Class Declarations
    */
   private ClassTree classDeclaration(ModifiersTree modifiers, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_DECLARATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.CLASS_DECLARATION);
     String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
     AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
     Tree superClass = extendsNode != null ? classType(extendsNode.getNextSibling()) : null;
@@ -261,7 +261,7 @@ public class JavaTreeMaker {
   }
 
   private List<? extends Tree> classTypeList(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE_LIST));
+    checkType(astNode, JavaGrammar.CLASS_TYPE_LIST);
     ImmutableList.Builder<Tree> result = ImmutableList.builder();
     for (AstNode classTypeNode : astNode.getChildren(JavaGrammar.CLASS_TYPE)) {
       result.add(classType(classTypeNode));
@@ -273,7 +273,7 @@ public class JavaTreeMaker {
    * 8.1.6. Class Body and Member Declarations
    */
   private List<Tree> classBody(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_BODY, JavaGrammar.ENUM_BODY_DECLARATIONS), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.CLASS_BODY, JavaGrammar.ENUM_BODY_DECLARATIONS);
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode classBodyDeclaration : astNode.getChildren(JavaGrammar.CLASS_BODY_DECLARATION)) {
       ModifiersTree modifiers = modifiers(classBodyDeclaration.getChildren(JavaGrammar.MODIFIER));
@@ -303,7 +303,7 @@ public class JavaTreeMaker {
    * 8.2. Class Members
    */
   private Tree memberDeclaration(ModifiersTree modifiers, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.MEMBER_DECL));
+    checkType(astNode, JavaGrammar.MEMBER_DECL);
     AstNode declaration = astNode.getFirstChild(
       JavaGrammar.INTERFACE_DECLARATION,
       JavaGrammar.CLASS_DECLARATION,
@@ -343,7 +343,7 @@ public class JavaTreeMaker {
    * 8.3. Field Declarations
    */
   private List<StatementTree> fieldDeclaration(ModifiersTree modifiers, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.FIELD_DECLARATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.FIELD_DECLARATION);
     return variableDeclarators(modifiers, referenceType(astNode.getFirstChild(JavaGrammar.TYPE)), astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS));
   }
 
@@ -351,14 +351,12 @@ public class JavaTreeMaker {
    * 8.4. Method Declarations
    */
   private MethodTree methodDeclarator(ModifiersTree modifiers, @Nullable AstNode returnTypeNode, AstNode name, AstNode astNode) {
-    Preconditions.checkArgument(name.is(JavaTokenType.IDENTIFIER));
-    Preconditions.checkArgument(astNode.is(
-      JavaGrammar.METHOD_DECLARATOR_REST,
+    checkType(name, JavaTokenType.IDENTIFIER);
+    checkType(astNode, JavaGrammar.METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_METHOD_DECLARATOR_REST,
       JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
       JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-      JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST
-    ), "Unexpected AstNodeType: %s", astNode.getType().toString());
+      JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST);
     // TODO type parameters
     Tree returnType = null;
     if (returnTypeNode != null) {
@@ -386,7 +384,7 @@ public class JavaTreeMaker {
   }
 
   private List<VariableTree> formalParameters(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.FORMAL_PARAMETERS), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.FORMAL_PARAMETERS);
     ImmutableList.Builder<VariableTree> result = ImmutableList.builder();
     for (AstNode variableDeclaratorIdNode : astNode.getDescendants(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
       AstNode typeNode = variableDeclaratorIdNode.getPreviousAstNode();
@@ -406,7 +404,7 @@ public class JavaTreeMaker {
    * 8.9. Enums
    */
   private ClassTree enumDeclaration(ModifiersTree modifiers, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.ENUM_DECLARATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.ENUM_DECLARATION);
     IdentifierTree enumType = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     AstNode enumBodyNode = astNode.getFirstChild(JavaGrammar.ENUM_BODY);
@@ -428,7 +426,6 @@ public class JavaTreeMaker {
             argumentsNode != null ? arguments(argumentsNode) : ImmutableList.<ExpressionTree>of(),
             classBodyNode == null ? null : new JavaTree.ClassTreeImpl(
               classBodyNode,
-              // TODO verify:
               Tree.Kind.CLASS,
               JavaTree.ModifiersTreeImpl.EMPTY,
               classBody(classBodyNode)
@@ -443,7 +440,7 @@ public class JavaTreeMaker {
     }
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
     List<? extends Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType.name(), null, superInterfaces, members.build());
+    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType.name(), /* super class: */ null, superInterfaces, members.build());
   }
 
   /*
@@ -454,7 +451,7 @@ public class JavaTreeMaker {
    * 9.1. Interface Declarations
    */
   private ClassTree interfaceDeclaration(ModifiersTree modifiers, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.INTERFACE_DECLARATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.INTERFACE_DECLARATION);
     String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode interfaceBodyDeclarationNode : astNode.getFirstChild(JavaGrammar.INTERFACE_BODY).getChildren(JavaGrammar.INTERFACE_BODY_DECLARATION)) {
@@ -473,7 +470,7 @@ public class JavaTreeMaker {
    * 9.1.4. Interface Body and Member Declarations
    */
   private void appendInterfaceMember(ModifiersTree modifiers, ImmutableList.Builder<Tree> members, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.INTERFACE_MEMBER_DECL), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.INTERFACE_MEMBER_DECL);
     AstNode declarationNode = astNode.getFirstChild(
       JavaGrammar.INTERFACE_DECLARATION,
       JavaGrammar.CLASS_DECLARATION,
@@ -526,7 +523,7 @@ public class JavaTreeMaker {
   }
 
   private void appendConstantDeclarations(ModifiersTree modifiers, ImmutableList.Builder<Tree> members, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.INTERFACE_METHOD_OR_FIELD_DECL, JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.INTERFACE_METHOD_OR_FIELD_DECL, JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST);
     ExpressionTree type = referenceType(astNode.getFirstChild(JavaGrammar.TYPE, JavaKeyword.VOID));
     for (AstNode constantDeclaratorRestNode : astNode.getDescendants(JavaGrammar.CONSTANT_DECLARATOR_REST)) {
       AstNode identifierNode = constantDeclaratorRestNode.getPreviousAstNode();
@@ -545,7 +542,7 @@ public class JavaTreeMaker {
    * 9.6. Annotation Types
    */
   private ClassTree annotationTypeDeclaration(ModifiersTree modifiers, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.ANNOTATION_TYPE_DECLARATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.ANNOTATION_TYPE_DECLARATION);
     String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode annotationTypeElementDeclarationNode : astNode.getFirstChild(JavaGrammar.ANNOTATION_TYPE_BODY).getChildren(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)) {
@@ -557,7 +554,7 @@ public class JavaTreeMaker {
     return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ANNOTATION_TYPE,
       modifiers,
       simpleName,
-      null,
+      /* super class: */ null,
       ImmutableList.<Tree>of(),
       members.build()
     );
@@ -567,7 +564,7 @@ public class JavaTreeMaker {
    * 9.6.1. Annotation Type Elements
    */
   private void appendAnnotationTypeElementDeclaration(ImmutableList.Builder<Tree> members, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST);
     AstNode declarationNode = astNode.getFirstChild(
       JavaGrammar.INTERFACE_DECLARATION,
       JavaGrammar.CLASS_DECLARATION,
@@ -602,13 +599,13 @@ public class JavaTreeMaker {
    */
 
   @VisibleForTesting
-  public BlockTree block(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.BLOCK), "Unexpected AstNodeType: %s", astNode.getType().toString());
+  BlockTree block(AstNode astNode) {
+    checkType(astNode, JavaGrammar.BLOCK);
     return new JavaTree.BlockTreeImpl(astNode, Tree.Kind.BLOCK, blockStatements(astNode.getFirstChild(JavaGrammar.BLOCK_STATEMENTS)));
   }
 
   private List<StatementTree> blockStatements(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.BLOCK_STATEMENTS), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.BLOCK_STATEMENTS);
     ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
     for (AstNode statementNode : astNode.getChildren(JavaGrammar.BLOCK_STATEMENT)) {
       statementNode = statementNode.getFirstChild(
@@ -638,8 +635,8 @@ public class JavaTreeMaker {
   }
 
   @VisibleForTesting
-  public StatementTree statement(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.STATEMENT), "Unexpected AstNodeType: %s", astNode.getType().toString());
+  StatementTree statement(AstNode astNode) {
+    checkType(astNode, JavaGrammar.STATEMENT);
     final AstNode statementNode = astNode.getFirstChild();
     final StatementTree result;
     switch ((JavaGrammar) statementNode.getType()) {
@@ -647,46 +644,100 @@ public class JavaTreeMaker {
         result = block(statementNode);
         break;
       case EMPTY_STATEMENT:
-        result = emptyStatement(statementNode);
+        // 14.6. The Empty Statement
+        result = new JavaTree.EmptyStatementTreeImpl(statementNode);
         break;
       case LABELED_STATEMENT:
-        result = labeledStatement(statementNode);
+        // 14.7. Labeled Statement
+        result = new JavaTree.LabeledStatementTreeImpl(
+          statementNode,
+          statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+          statement(statementNode.getFirstChild(JavaGrammar.STATEMENT))
+        );
         break;
       case EXPRESSION_STATEMENT:
-        result = expressionStatement(statementNode);
+        // 14.8. Expression Statement
+        result = new JavaTree.ExpressionStatementTreeImpl(
+          statementNode,
+          expression(statementNode.getFirstChild(JavaGrammar.STATEMENT_EXPRESSION))
+        );
         break;
       case IF_STATEMENT:
-        result = ifStatement(statementNode);
+        // 14.9. The if Statement
+        List<AstNode> statements = statementNode.getChildren(JavaGrammar.STATEMENT);
+        result = new JavaTree.IfStatementTreeImpl(
+          statementNode,
+          expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
+          statement(statements.get(0)),
+          statements.size() > 1 ? statement(statements.get(1)) : null
+        );
         break;
       case ASSERT_STATEMENT:
-        result = assertStatement(statementNode);
+        // 14.10. The assert Statement
+        List<AstNode> expressions = statementNode.getChildren(JavaGrammar.EXPRESSION);
+        result = new JavaTree.AssertStatementTreeImpl(
+          statementNode,
+          expression(expressions.get(0)),
+          expressions.size() > 1 ? expression(expressions.get(1)) : null
+        );
         break;
       case SWITCH_STATEMENT:
         result = switchStatement(statementNode);
         break;
       case WHILE_STATEMENT:
-        result = whileStatement(statementNode);
+        // 14.12. The while Statement
+        result = new JavaTree.WhileStatementTreeImpl(
+          statementNode,
+          expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
+          statement(statementNode.getFirstChild(JavaGrammar.STATEMENT))
+        );
         break;
       case DO_STATEMENT:
-        result = doStatement(statementNode);
+        // 14.13. The do Statement
+        result = new JavaTree.DoWhileStatementTreeImpl(
+          statementNode,
+          statement(statementNode.getFirstChild(JavaGrammar.STATEMENT)),
+          expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION))
+        );
         break;
       case FOR_STATEMENT:
         result = forStatement(statementNode);
         break;
       case BREAK_STATEMENT:
-        result = breakStatement(statementNode);
+        // 14.15. The break Statement
+        result = new JavaTree.BreakStatementTreeImpl(
+          statementNode,
+          statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue() : null
+        );
         break;
       case CONTINUE_STATEMENT:
-        result = continueStatement(statementNode);
+        // 14.16. The continue Statement
+        result = new JavaTree.ContinueStatementTreeImpl(
+          statementNode,
+          statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue() : null
+        );
         break;
       case RETURN_STATEMENT:
-        result = returnStatement(statementNode);
+        // 14.17. The return Statement
+        result = new JavaTree.ReturnStatementTreeImpl(
+          statementNode,
+          statementNode.hasDirectChildren(JavaGrammar.EXPRESSION) ? expression(statementNode.getFirstChild(JavaGrammar.EXPRESSION)) : null
+        );
         break;
       case THROW_STATEMENT:
-        result = throwStatement(statementNode);
+        // 14.18. The throw Statement
+        result = new JavaTree.ThrowStatementTreeImpl(
+          statementNode,
+          expression(statementNode.getFirstChild(JavaGrammar.EXPRESSION))
+        );
         break;
       case SYNCHRONIZED_STATEMENT:
-        result = synchronizedStatement(statementNode);
+        // 14.19. The synchronized Statement
+        result = new JavaTree.SynchronizedStatementTreeImpl(
+          statementNode,
+          expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
+          block(statementNode.getFirstChild(JavaGrammar.BLOCK))
+        );
         break;
       case TRY_STATEMENT:
         result = tryStatement(statementNode);
@@ -695,59 +746,6 @@ public class JavaTreeMaker {
         throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString());
     }
     return result;
-  }
-
-  /**
-   * 14.6. The Empty Statement
-   */
-  private EmptyStatementTree emptyStatement(AstNode astNode) {
-    return new JavaTree.EmptyStatementTreeImpl(astNode);
-  }
-
-  /**
-   * 14.7. Labeled Statements
-   */
-  private LabeledStatementTree labeledStatement(AstNode astNode) {
-    return new JavaTree.LabeledStatementTreeImpl(
-      astNode,
-      astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
-      statement(astNode.getFirstChild(JavaGrammar.STATEMENT))
-    );
-  }
-
-  /**
-   * 14.8. Expression Statements
-   */
-  private ExpressionStatementTree expressionStatement(AstNode astNode) {
-    return new JavaTree.ExpressionStatementTreeImpl(
-      astNode,
-      expression(astNode.getFirstChild(JavaGrammar.STATEMENT_EXPRESSION))
-    );
-  }
-
-  /**
-   * 14.9. The if Statement
-   */
-  private IfStatementTree ifStatement(AstNode astNode) {
-    List<AstNode> statements = astNode.getChildren(JavaGrammar.STATEMENT);
-    return new JavaTree.IfStatementTreeImpl(
-      astNode,
-      expression(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
-      statement(statements.get(0)),
-      (statements.size() > 1 ? statement(statements.get(1)) : null)
-    );
-  }
-
-  /**
-   * 14.10. The assert Statement
-   */
-  private AssertStatementTree assertStatement(AstNode astNode) {
-    List<AstNode> expressions = astNode.getChildren(JavaGrammar.EXPRESSION);
-    return new JavaTree.AssertStatementTreeImpl(
-      astNode,
-      expression(expressions.get(0)),
-      (expressions.size() > 1 ? expression(expressions.get(1)) : null)
-    );
   }
 
   /**
@@ -780,28 +778,6 @@ public class JavaTreeMaker {
       astNode,
       expression(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
       cases.build()
-    );
-  }
-
-  /**
-   * 14.12. The while Statement
-   */
-  private WhileStatementTree whileStatement(AstNode astNode) {
-    return new JavaTree.WhileStatementTreeImpl(
-      astNode,
-      expression(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
-      statement(astNode.getFirstChild(JavaGrammar.STATEMENT))
-    );
-  }
-
-  /**
-   * 14.13. The do Statement
-   */
-  private DoWhileStatementTree doStatement(AstNode astNode) {
-    return new JavaTree.DoWhileStatementTreeImpl(
-      astNode,
-      statement(astNode.getFirstChild(JavaGrammar.STATEMENT)),
-      expression(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION))
     );
   }
 
@@ -841,7 +817,7 @@ public class JavaTreeMaker {
           // TODO dim
           referenceType(formalParameterNode.getFirstChild(JavaGrammar.TYPE)),
           formalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
-          null
+          /* initializer: */ null
         ),
         expression(astNode.getFirstChild(JavaGrammar.EXPRESSION)),
         statement(astNode.getFirstChild(JavaGrammar.STATEMENT))
@@ -850,59 +826,12 @@ public class JavaTreeMaker {
   }
 
   private List<StatementTree> statementExpressions(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.FOR_INIT, JavaGrammar.FOR_UPDATE), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.FOR_INIT, JavaGrammar.FOR_UPDATE);
     ImmutableList.Builder<StatementTree> result = ImmutableList.builder();
     for (AstNode statementExpressionNode : astNode.getChildren(JavaGrammar.STATEMENT_EXPRESSION)) {
       result.add(new JavaTree.ExpressionStatementTreeImpl(statementExpressionNode, expression(statementExpressionNode)));
     }
     return result.build();
-  }
-
-  /**
-   * 14.15. The break Statement
-   */
-  private BreakStatementTree breakStatement(AstNode astNode) {
-    AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-    return new JavaTree.BreakStatementTreeImpl(astNode, identifierNode != null ? identifierNode.getTokenValue() : null);
-  }
-
-  /**
-   * 14.16. The continue Statement
-   */
-  private ContinueStatementTree continueStatement(AstNode astNode) {
-    AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-    return new JavaTree.ContinueStatementTreeImpl(astNode, identifierNode != null ? identifierNode.getTokenValue() : null);
-  }
-
-  /**
-   * 14.17. The return Statement
-   */
-  private ReturnStatementTree returnStatement(AstNode astNode) {
-    return new JavaTree.ReturnStatementTreeImpl(
-      astNode,
-      astNode.hasDirectChildren(JavaGrammar.EXPRESSION) ? expression(astNode.getFirstChild(JavaGrammar.EXPRESSION)) : null
-    );
-  }
-
-  /**
-   * 14.18. The throw Statement
-   */
-  private ThrowStatementTree throwStatement(AstNode astNode) {
-    return new JavaTree.ThrowStatementTreeImpl(
-      astNode,
-      expression(astNode.getFirstChild(JavaGrammar.EXPRESSION))
-    );
-  }
-
-  /**
-   * 14.19. The synchronized Statement
-   */
-  private SynchronizedStatementTree synchronizedStatement(AstNode astNode) {
-    return new JavaTree.SynchronizedStatementTreeImpl(
-      astNode,
-      expression(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
-      block(astNode.getFirstChild(JavaGrammar.BLOCK))
-    );
   }
 
   /**
@@ -944,7 +873,7 @@ public class JavaTreeMaker {
   }
 
   private Tree catchType(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.CATCH_TYPE));
+    checkType(astNode, JavaGrammar.CATCH_TYPE);
     List<AstNode> children = astNode.getChildren(JavaGrammar.QUALIFIED_IDENTIFIER);
     if (children.size() == 1) {
       return qualifiedIdentifier(children.get(0));
@@ -958,7 +887,7 @@ public class JavaTreeMaker {
   }
 
   private List<VariableTree> resourceSpecification(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.RESOURCE_SPECIFICATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.RESOURCE_SPECIFICATION);
     ImmutableList.Builder<VariableTree> result = ImmutableList.builder();
     for (AstNode resourceNode : astNode.getChildren(JavaGrammar.RESOURCE)) {
       result.add(new JavaTree.VariableTreeImpl(
@@ -974,7 +903,7 @@ public class JavaTreeMaker {
   }
 
   @VisibleForTesting
-  public ExpressionTree expression(AstNode astNode) {
+  ExpressionTree expression(AstNode astNode) {
     if (astNode.is(JavaGrammar.CONSTANT_EXPRESSION, JavaGrammar.STATEMENT_EXPRESSION)) {
       astNode = astNode.getFirstChild(JavaGrammar.EXPRESSION).getFirstChild();
     } else if (astNode.is(JavaGrammar.EXPRESSION)) {
@@ -1013,7 +942,7 @@ public class JavaTreeMaker {
    * 15.13. Array Access Expressions
    */
   @VisibleForTesting
-  public ExpressionTree primary(AstNode astNode) {
+  ExpressionTree primary(AstNode astNode) {
     AstNode firstChildNode = astNode.getFirstChild();
     if (firstChildNode.is(JavaGrammar.PAR_EXPRESSION)) {
       // (expression)
@@ -1141,7 +1070,7 @@ public class JavaTreeMaker {
     // TODO NON_WILDCARD_TYPE_ARGUMENTS
     if (astNode.hasDirectChildren(JavaGrammar.CLASS_CREATOR_REST)) {
       return applyClassCreatorRest(
-        null,
+        /* enclosing expression: */ null,
         classType(astNode.getFirstChild(JavaGrammar.CREATED_NAME)),
         astNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST)
       );
@@ -1253,10 +1182,9 @@ public class JavaTreeMaker {
   }
 
   /**
-   * 15.25. Conditional Operators
+   * 15.25. Conditional Operator ? :
    */
   private ExpressionTree conditionalExpression(AstNode astNode) {
-    // TODO verify
     ExpressionTree expression = expression(astNode.getLastChild());
     for (int i = astNode.getNumberOfChildren() - 5; i >= 0; i -= 4) {
       expression = new JavaTree.ConditionalExpressionTreeImpl(
@@ -1288,7 +1216,7 @@ public class JavaTreeMaker {
   }
 
   private ExpressionTree applySelector(ExpressionTree expression, AstNode selectorNode) {
-    Preconditions.checkArgument(selectorNode.is(JavaGrammar.SELECTOR), "Unexpected AstNodeType: %s", selectorNode.getType().toString());
+    checkType(selectorNode, JavaGrammar.SELECTOR);
     if (selectorNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
       return new JavaTree.MethodInvocationTreeImpl(
         selectorNode,
@@ -1341,7 +1269,7 @@ public class JavaTreeMaker {
   }
 
   private ExpressionTree applySuperSuffix(ExpressionTree expression, AstNode superSuffixNode) {
-    Preconditions.checkArgument(superSuffixNode.is(JavaGrammar.SUPER_SUFFIX), "Unexpected AstNodeType: %s", superSuffixNode.getType().toString());
+    checkType(superSuffixNode, JavaGrammar.SUPER_SUFFIX);
     if (superSuffixNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
       // super(arguments)
       // super.method(arguments)
@@ -1371,12 +1299,12 @@ public class JavaTreeMaker {
   }
 
   private ExpressionTree applyClassCreatorRest(ExpressionTree enclosingExpression, ExpressionTree identifier, AstNode classCreatorRestNode) {
-    Preconditions.checkArgument(classCreatorRestNode.is(JavaGrammar.CLASS_CREATOR_REST), "Unexpected AstNodeType: %s", classCreatorRestNode.getType().toString());
+    checkType(classCreatorRestNode, JavaGrammar.CLASS_CREATOR_REST);
     ClassTree classBody = null;
     if (classCreatorRestNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
       classBody = new JavaTree.ClassTreeImpl(
         classCreatorRestNode,
-        /* TODO verify: */ Tree.Kind.CLASS,
+        Tree.Kind.CLASS,
         JavaTree.ModifiersTreeImpl.EMPTY,
         classBody(classCreatorRestNode.getFirstChild(JavaGrammar.CLASS_BODY))
       );
@@ -1391,7 +1319,7 @@ public class JavaTreeMaker {
   }
 
   private ExpressionTree applyExplicitGenericInvocation(ExpressionTree expression, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.EXPLICIT_GENERIC_INVOCATION), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.EXPLICIT_GENERIC_INVOCATION);
     // TODO NON_WILDCARD_TYPE_ARGUMENTS
     AstNode explicitGenericInvocationSuffixNode = astNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX);
     if (explicitGenericInvocationSuffixNode.hasDirectChildren(JavaGrammar.SUPER_SUFFIX)) {
@@ -1415,7 +1343,7 @@ public class JavaTreeMaker {
   }
 
   private List<? extends ExpressionTree> arguments(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.ARGUMENTS), "Unexpected AstNodeType: %s", astNode.getType().toString());
+    checkType(astNode, JavaGrammar.ARGUMENTS);
     ImmutableList.Builder<ExpressionTree> arguments = ImmutableList.builder();
     for (AstNode argument : astNode.getChildren(JavaGrammar.EXPRESSION)) {
       arguments.add(expression(argument));

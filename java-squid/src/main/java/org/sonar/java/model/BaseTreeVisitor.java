@@ -41,7 +41,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-//    scan(tree.packageAnnotations());
+    scan(tree.packageAnnotations());
     scan(tree.packageName());
     scan(tree.imports());
     scan(tree.types());
@@ -50,6 +50,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   @Override
   public void visitClass(ClassTree tree) {
     scan(tree.modifiers());
+    scan(tree.typeParameters());
     scan(tree.superClass());
     scan(tree.superInterfaces());
     scan(tree.members());
@@ -58,6 +59,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   @Override
   public void visitMethod(MethodTree tree) {
     scan(tree.modifiers());
+    scan(tree.typeParameters());
     scan(tree.returnType());
     scan(tree.parameters());
     scan(tree.defaultValue());

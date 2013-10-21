@@ -112,7 +112,8 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public List<? extends AnnotationTree> packageAnnotations() {
-      throw new UnsupportedOperationException("not implemented");
+      // TODO implement
+      return ImmutableList.<AnnotationTree>of();
     }
 
     @Nullable
@@ -205,7 +206,8 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public List<? extends Tree> typeParameters() {
-      throw new UnsupportedOperationException("not implemented");
+      // TODO implement
+      return ImmutableList.<Tree>of();
     }
 
     @Override
@@ -271,7 +273,8 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public List<? extends Tree> typeParameters() {
-      throw new UnsupportedOperationException("not implemented");
+      // TODO implement
+      return ImmutableList.<Tree>of();
     }
 
     @Nullable
