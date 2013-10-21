@@ -73,8 +73,8 @@ public class JavaTreeMaker {
   @VisibleForTesting
   LiteralTree literal(AstNode astNode) {
     checkType(astNode, JavaGrammar.LITERAL);
-    astNode = astNode.getFirstChild();
-    return new JavaTree.LiteralTreeImpl(astNode, kindMaps.getLiteral(astNode.getType()));
+    AstNode childNode = astNode.getFirstChild();
+    return new JavaTree.LiteralTreeImpl(childNode, kindMaps.getLiteral(childNode.getType()));
   }
 
   /*
@@ -587,7 +587,8 @@ public class JavaTreeMaker {
         /* parameters */ ImmutableList.<VariableTree>of(),
         /* block */ null,
         /* throws */ ImmutableList.<ExpressionTree>of(),
-        /* default value */ null // TODO DEFAULT_VALUE
+        // TODO DEFAULT_VALUE
+        /* default value */ null
       ));
     } else {
       appendConstantDeclarations(JavaTree.ModifiersTreeImpl.EMPTY, members, astNode);
@@ -1352,10 +1353,11 @@ public class JavaTreeMaker {
   }
 
   private ExpressionTree applyDim(ExpressionTree expression, int count) {
+    ExpressionTree result = expression;
     for (int i = 0; i < count; i++) {
-      expression = new JavaTree.ArrayTypeTreeImpl(/* FIXME should not be null */null, expression);
+      result = new JavaTree.ArrayTypeTreeImpl(/* FIXME should not be null */null, expression);
     }
-    return expression;
+    return result;
   }
 
 }
