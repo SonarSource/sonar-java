@@ -592,7 +592,6 @@ public class JavaTreeMaker {
         /* throws */ ImmutableList.<ExpressionTree>of(),
         /* default value */ null // TODO DEFAULT_VALUE
       ));
-      return;
     } else {
       appendConstantDeclarations(JavaTree.ModifiersTreeImpl.EMPTY, members, astNode);
     }
@@ -641,43 +640,61 @@ public class JavaTreeMaker {
   @VisibleForTesting
   public StatementTree statement(AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaGrammar.STATEMENT), "Unexpected AstNodeType: %s", astNode.getType().toString());
-    astNode = astNode.getFirstChild();
-    switch ((JavaGrammar) astNode.getType()) {
+    final AstNode statementNode = astNode.getFirstChild();
+    final StatementTree result;
+    switch ((JavaGrammar) statementNode.getType()) {
       case BLOCK:
-        return block(astNode);
+        result = block(statementNode);
+        break;
       case EMPTY_STATEMENT:
-        return emptyStatement(astNode);
+        result = emptyStatement(statementNode);
+        break;
       case LABELED_STATEMENT:
-        return labeledStatement(astNode);
+        result = labeledStatement(statementNode);
+        break;
       case EXPRESSION_STATEMENT:
-        return expressionStatement(astNode);
+        result = expressionStatement(statementNode);
+        break;
       case IF_STATEMENT:
-        return ifStatement(astNode);
+        result = ifStatement(statementNode);
+        break;
       case ASSERT_STATEMENT:
-        return assertStatement(astNode);
+        result = assertStatement(statementNode);
+        break;
       case SWITCH_STATEMENT:
-        return switchStatement(astNode);
+        result = switchStatement(statementNode);
+        break;
       case WHILE_STATEMENT:
-        return whileStatement(astNode);
+        result = whileStatement(statementNode);
+        break;
       case DO_STATEMENT:
-        return doStatement(astNode);
+        result = doStatement(statementNode);
+        break;
       case FOR_STATEMENT:
-        return forStatement(astNode);
+        result = forStatement(statementNode);
+        break;
       case BREAK_STATEMENT:
-        return breakStatement(astNode);
+        result = breakStatement(statementNode);
+        break;
       case CONTINUE_STATEMENT:
-        return continueStatement(astNode);
+        result = continueStatement(statementNode);
+        break;
       case RETURN_STATEMENT:
-        return returnStatement(astNode);
+        result = returnStatement(statementNode);
+        break;
       case THROW_STATEMENT:
-        return throwStatement(astNode);
+        result = throwStatement(statementNode);
+        break;
       case SYNCHRONIZED_STATEMENT:
-        return synchronizedStatement(astNode);
+        result = synchronizedStatement(statementNode);
+        break;
       case TRY_STATEMENT:
-        return tryStatement(astNode);
+        result = tryStatement(statementNode);
+        break;
       default:
         throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString());
     }
+    return result;
   }
 
   /**
