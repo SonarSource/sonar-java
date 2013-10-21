@@ -16,7 +16,7 @@
     <name>Portability</name>
     <chc>
       <key>COMPILER_RELATED_PORTABILITY</key>
-      <name>Compiler related portability</name>
+      <name>Compiler</name>
       <chc>
         <rule-repo>pmd</rule-repo>
         <rule-key>AvoidAssertAsIdentifier</rule-key>
@@ -111,7 +111,7 @@
     </chc>
     <chc>
       <key>HARDWARE_RELATED_PORTABILITY</key>
-      <name>Hardware related portability</name>
+      <name>Hardware</name>
       <chc>
         <rule-repo>pmd</rule-repo>
         <rule-key>AvoidUsingHardCodedIP</rule-key>
@@ -167,7 +167,7 @@
     </chc>
     <chc>
       <key>LANGUAGE_RELATED_PORTABILITY</key>
-      <name>Language related portability</name>
+      <name>Language</name>
       <chc>
         <rule-repo>pmd</rule-repo>
         <rule-key>SimpleDateFormatNeedsLocale</rule-key>
@@ -210,7 +210,7 @@
     </chc>
     <chc>
       <key>OS_RELATED_PORTABILITY</key>
-      <name>OS related portability</name>
+      <name>OS</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.whitespace.FileTabCharacterCheck</rule-key>
@@ -279,7 +279,7 @@
     </chc>
     <chc>
       <key>SOFTWARE_RELATED_PORTABILITY</key>
-      <name>Software related portability</name>
+      <name>Software</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.NewlineAtEndOfFileCheck</rule-key>
@@ -413,7 +413,7 @@
     </chc>
     <chc>
       <key>TIME_ZONE_RELATED_PORTABILITY</key>
-      <name>Time zone related portability</name>
+      <name>Time zone</name>
     </chc>
   </chc>
   <chc>
@@ -2018,6 +2018,45 @@
         <prop>
           <key>remediationFactor</key>
           <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1301</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1219</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1231</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>1.0</val>
           <txt>mn</txt>
         </prop>
       </chc>
@@ -4183,6 +4222,45 @@
           <txt>mn</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1315</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>5.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1312</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>5.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1310</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
   </chc>
   <chc>
@@ -5470,7 +5548,7 @@
     <name>Changeability</name>
     <chc>
       <key>ARCHITECTURE_CHANGEABILITY</key>
-      <name>Architecture related changeability</name>
+      <name>Architecture</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.design.VisibilityModifierCheck</rule-key>
@@ -5822,10 +5900,49 @@
           <txt>mn</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1200</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>2.0</val>
+          <txt>h</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1313</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>30.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1319</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>10.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
     <chc>
       <key>DATA_CHANGEABILITY</key>
-      <name>Data related changeability</name>
+      <name>Data</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.coding.MagicNumberCheck</rule-key>
@@ -5881,7 +5998,7 @@
     </chc>
     <chc>
       <key>LOGIC_CHANGEABILITY</key>
-      <name>Logic related changeability</name>
+      <name>Logic</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.blocks.NeedBracesCheck</rule-key>
@@ -6110,7 +6227,7 @@
     <name>Reliability</name>
     <chc>
       <key>ARCHITECTURE_RELIABILITY</key>
-      <name>Architecture related reliability</name>
+      <name>Architecture</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck</rule-key>
@@ -6813,10 +6930,62 @@
           <txt>mn</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1206</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>30.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1226</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>5.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1223</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>5.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1210</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>30.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
     <chc>
       <key>DATA_RELIABILITY</key>
-      <name>Data related reliability</name>
+      <name>Data</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck</rule-key>
@@ -7337,6 +7506,19 @@
           <txt>mn</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1314</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>5.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
     <chc>
       <key>EXCEPTION_HANDLING</key>
@@ -7751,7 +7933,7 @@
     </chc>
     <chc>
       <key>INSTRUCTION_RELIABILITY</key>
-      <name>Instruction related reliability</name>
+      <name>Instruction</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.whitespace.TypecastParenPadCheck</rule-key>
@@ -9351,10 +9533,36 @@
           <txt>mn</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1318</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>5.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1217</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>linear</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20.0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
     <chc>
       <key>LOGIC_RELIABILITY</key>
-      <name>Logic related reliability</name>
+      <name>Logic</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.blocks.EmptyBlockCheck</rule-key>
@@ -10722,8 +10930,12 @@
       </chc>
     </chc>
     <chc>
+      <key>RESOURCE_RELIABILITY</key>
+      <name>Resource</name>
+    </chc>
+    <chc>
       <key>SYNCHRONIZATION_RELIABILITY</key>
-      <name>Synchronization related reliability</name>
+      <name>Synchronization</name>
       <chc>
         <rule-repo>pmd</rule-repo>
         <rule-key>UseNotifyAllInsteadOfNotify</rule-key>
@@ -11377,13 +11589,13 @@
     </chc>
     <chc>
       <key>UNIT_TESTS</key>
-      <name>Unit tests</name>
+      <name>Unit tests coverage</name>
       <chc>
         <rule-repo>common-java</rule-repo>
         <rule-key>InsufficientLineCoverage</rule-key>
         <prop>
           <key>remediationFactor</key>
-          <val>10.0</val>
+          <val>3.0</val>
           <txt>mn</txt>
         </prop>
         <prop>
@@ -11396,7 +11608,7 @@
         <rule-key>InsufficientBranchCoverage</rule-key>
         <prop>
           <key>remediationFactor</key>
-          <val>30.0</val>
+          <val>10.0</val>
           <txt>mn</txt>
         </prop>
         <prop>
@@ -11437,11 +11649,11 @@
     <name>Testability</name>
     <chc>
       <key>INTEGRATION_TESTABILITY</key>
-      <name>Integration level testability</name>
+      <name>Integration level</name>
     </chc>
     <chc>
       <key>UNIT_TESTABILITY</key>
-      <name>Unit level testability</name>
+      <name>Unit level</name>
       <chc>
         <rule-repo>checkstyle</rule-repo>
         <rule-key>com.puppycrawl.tools.checkstyle.checks.sizes.ParameterNumberCheck</rule-key>
