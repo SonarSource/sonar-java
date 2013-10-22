@@ -58,15 +58,15 @@ public interface ClassTree extends StatementTree {
   @Nullable
   String simpleName();
 
-  List<? extends Tree> typeParameters();
+  List<Tree> typeParameters();
 
   ModifiersTree modifiers();
 
   @Nullable
   Tree superClass();
 
-  List<? extends Tree> superInterfaces();
+  List<Tree> superInterfaces();
 
-  List<? extends Tree> members();
+  List<Tree> members();
 
 }

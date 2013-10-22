@@ -36,8 +36,8 @@ public interface NewArrayTree extends ExpressionTree {
 
   Tree type();
 
-  List<? extends ExpressionTree> dimensions();
+  List<ExpressionTree> dimensions();
 
-  List<? extends ExpressionTree> initializers();
+  List<ExpressionTree> initializers();
 
 }

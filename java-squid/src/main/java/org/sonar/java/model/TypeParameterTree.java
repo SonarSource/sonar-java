@@ -37,6 +37,6 @@ public interface TypeParameterTree extends Tree {
 
   String name();
 
-  List<? extends Tree> bounds();
+  List<Tree> bounds();
 
 }

@@ -166,7 +166,7 @@ public class JavaTreeMakerTest {
   @Test
   public void type_arguments() {
     AstNode astNode = p.parse("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }").getFirstDescendant(JavaGrammar.TYPE_ARGUMENTS);
-    List<? extends Tree> typeArguments = maker.typeArguments(astNode);
+    List<Tree> typeArguments = maker.typeArguments(astNode);
     assertThat(typeArguments).hasSize(4);
 
     WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
@@ -238,7 +238,7 @@ public class JavaTreeMakerTest {
   @Test
   public void class_field() {
     AstNode astNode = p.parse("class T { public int f1 = 42, f2[]; }");
-    List<? extends Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
+    List<Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
     assertThat(declarations).hasSize(2);
 
     VariableTree tree = (VariableTree) declarations.get(0);
@@ -313,7 +313,7 @@ public class JavaTreeMakerTest {
   @Test
   public void enum_constant() {
     AstNode astNode = p.parse("enum T { C1, C2(2) { }; }");
-    List<? extends Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
+    List<Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
     assertThat(declarations).hasSize(2);
 
     EnumConstantTree tree = (EnumConstantTree) declarations.get(0);
@@ -334,7 +334,7 @@ public class JavaTreeMakerTest {
   @Test
   public void enum_field() {
     AstNode astNode = p.parse("enum T { ; public int f1 = 42, f2[]; }");
-    List<? extends Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
+    List<Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
     assertThat(declarations).hasSize(2);
 
     VariableTree tree = (VariableTree) declarations.get(0);
@@ -419,7 +419,7 @@ public class JavaTreeMakerTest {
   @Test
   public void interface_field() {
     AstNode astNode = p.parse("interface T { public int f1 = 42, f2[] = { 13 }; }");
-    List<? extends Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
+    List<Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
     assertThat(declarations).hasSize(2);
 
     VariableTree tree = (VariableTree) declarations.get(0);
@@ -495,7 +495,7 @@ public class JavaTreeMakerTest {
   @Test
   public void annotation_constant() {
     AstNode astNode = p.parse("@interface T { int c1 = 1, c2[] = { 2 }; }");
-    List<? extends Tree> members = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
+    List<Tree> members = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
     assertThat(members).hasSize(2);
 
     VariableTree tree = (VariableTree) members.get(0);
@@ -548,7 +548,7 @@ public class JavaTreeMakerTest {
   @Test
   public void local_variable_declaration() {
     AstNode astNode = p.parse("class T { void m() { int a = 42, b[]; } }").getFirstDescendant(JavaGrammar.BLOCK);
-    List<? extends StatementTree> declarations = maker.block(astNode).body();
+    List<StatementTree> declarations = maker.block(astNode).body();
     assertThat(declarations).hasSize(2);
 
     // TODO test modifiers

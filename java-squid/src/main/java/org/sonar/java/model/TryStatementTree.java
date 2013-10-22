@@ -39,11 +39,11 @@ public interface TryStatementTree extends StatementTree {
   /**
    * @since Java 1.7
    */
-  List<? extends VariableTree> resources();
+  List<VariableTree> resources();
 
   BlockTree block();
 
-  List<? extends CatchTree> catches();
+  List<CatchTree> catches();
 
   @Nullable
   BlockTree finallyBlock();

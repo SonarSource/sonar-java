@@ -33,7 +33,7 @@ public interface ModifiersTree extends Tree {
   /**
    * @since Java 1.5
    */
-  List<? extends AnnotationTree> annotations();
+  List<AnnotationTree> annotations();
 
   List<Modifier> modifiers();
 

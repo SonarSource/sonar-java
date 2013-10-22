@@ -45,7 +45,7 @@ public interface MethodTree extends Tree {
 
   ModifiersTree modifiers();
 
-  List<? extends Tree> typeParameters();
+  List<Tree> typeParameters();
 
   /**
    * @return null in case of constructor
@@ -55,9 +55,9 @@ public interface MethodTree extends Tree {
 
   String simpleName();
 
-  List<? extends VariableTree> parameters();
+  List<VariableTree> parameters();
 
-  List<? extends ExpressionTree> throwsClauses();
+  List<ExpressionTree> throwsClauses();
 
   @Nullable
   BlockTree block();

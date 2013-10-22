@@ -28,6 +28,6 @@ import java.util.List;
  */
 public interface UnionTypeTree extends Tree {
 
-  List<? extends Tree> typeAlternatives();
+  List<Tree> typeAlternatives();
 
 }

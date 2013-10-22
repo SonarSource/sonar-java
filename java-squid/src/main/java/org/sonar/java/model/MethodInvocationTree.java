@@ -38,10 +38,10 @@ public interface MethodInvocationTree extends ExpressionTree {
   /**
    * @since Java 1.5
    */
-  List<? extends Tree> typeArguments();
+  List<Tree> typeArguments();
 
   ExpressionTree methodSelect();
 
-  List<? extends ExpressionTree> arguments();
+  List<ExpressionTree> arguments();
 
 }

@@ -34,13 +34,13 @@ public interface CompilationUnitTree extends Tree {
   /**
    * @since Java 1.5
    */
-  List<? extends AnnotationTree> packageAnnotations();
+  List<AnnotationTree> packageAnnotations();
 
   @Nullable
   ExpressionTree packageName();
 
-  List<? extends ImportTree> imports();
+  List<ImportTree> imports();
 
-  List<? extends Tree> types();
+  List<Tree> types();
 
 }

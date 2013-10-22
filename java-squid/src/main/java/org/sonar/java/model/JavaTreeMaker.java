@@ -107,7 +107,7 @@ public class JavaTreeMaker {
   }
 
   @VisibleForTesting
-  List<? extends Tree> typeArguments(AstNode astNode) {
+  List<Tree> typeArguments(AstNode astNode) {
     checkType(astNode, JavaGrammar.TYPE_ARGUMENTS);
     ImmutableList.Builder<Tree> result = ImmutableList.builder();
     for (AstNode child : astNode.getChildren(JavaGrammar.TYPE_ARGUMENT)) {
@@ -129,7 +129,7 @@ public class JavaTreeMaker {
     return result.build();
   }
 
-  private List<? extends Tree> nonWildcardTypeArguments(AstNode astNode) {
+  private List<Tree> nonWildcardTypeArguments(AstNode astNode) {
     checkType(astNode, JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS);
     ImmutableList.Builder<Tree> result = ImmutableList.builder();
     for (AstNode child : astNode.getChildren(JavaGrammar.REFERENCE_TYPE)) {
@@ -251,7 +251,7 @@ public class JavaTreeMaker {
     AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
     Tree superClass = extendsNode != null ? classType(extendsNode.getNextSibling()) : null;
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
-    List<? extends Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
+    List<Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
     return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.CLASS,
       modifiers,
       simpleName,
@@ -261,7 +261,7 @@ public class JavaTreeMaker {
     );
   }
 
-  private List<? extends Tree> classTypeList(AstNode astNode) {
+  private List<Tree> classTypeList(AstNode astNode) {
     checkType(astNode, JavaGrammar.CLASS_TYPE_LIST);
     ImmutableList.Builder<Tree> result = ImmutableList.builder();
     for (AstNode classTypeNode : astNode.getChildren(JavaGrammar.CLASS_TYPE)) {
@@ -440,7 +440,7 @@ public class JavaTreeMaker {
       members.addAll(classBody(enumBodyDeclarationsNode));
     }
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
-    List<? extends Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
+    List<Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
     return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType.name(), /* super class: */ null, superInterfaces, members.build());
   }
 
@@ -463,7 +463,7 @@ public class JavaTreeMaker {
       }
     }
     AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
-    List<? extends Tree> superInterfaces = extendsNode != null ? classTypeList(extendsNode.getNextSibling()) : ImmutableList.<Tree>of();
+    List<Tree> superInterfaces = extendsNode != null ? classTypeList(extendsNode.getNextSibling()) : ImmutableList.<Tree>of();
     return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.INTERFACE, modifiers, simpleName, null, superInterfaces, members.build());
   }
 
@@ -763,7 +763,7 @@ public class JavaTreeMaker {
       if (blockStatementsNode.hasChildren()) {
         cases.add(new JavaTree.CaseGroupTreeImpl(
           labels.get(0).getAstNode(),
-          ImmutableList.copyOf(labels),
+          ImmutableList.<CaseLabelTree>copyOf(labels),
           blockStatements(caseNode.getFirstChild(JavaGrammar.BLOCK_STATEMENTS))
         ));
         labels.clear();
@@ -772,7 +772,7 @@ public class JavaTreeMaker {
     if (!labels.isEmpty()) {
       cases.add(new JavaTree.CaseGroupTreeImpl(
         labels.get(0).getAstNode(),
-        ImmutableList.copyOf(labels),
+        ImmutableList.<CaseLabelTree>copyOf(labels),
         ImmutableList.<StatementTree>of()
       ));
     }
@@ -1366,7 +1366,7 @@ public class JavaTreeMaker {
     }
   }
 
-  private List<? extends ExpressionTree> arguments(AstNode astNode) {
+  private List<ExpressionTree> arguments(AstNode astNode) {
     checkType(astNode, JavaGrammar.ARGUMENTS);
     ImmutableList.Builder<ExpressionTree> arguments = ImmutableList.builder();
     for (AstNode argument : astNode.getChildren(JavaGrammar.EXPRESSION)) {

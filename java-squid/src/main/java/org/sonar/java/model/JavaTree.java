@@ -95,10 +95,10 @@ public abstract class JavaTree implements Tree {
   public static class CompilationUnitTreeImpl extends JavaTree implements CompilationUnitTree {
     @Nullable
     private final ExpressionTree packageName;
-    private final List<? extends ImportTree> imports;
-    private final List<? extends Tree> types;
+    private final List<ImportTree> imports;
+    private final List<Tree> types;
 
-    public CompilationUnitTreeImpl(AstNode astNode, @Nullable ExpressionTree packageName, List<? extends ImportTree> imports, List<? extends Tree> types) {
+    public CompilationUnitTreeImpl(AstNode astNode, @Nullable ExpressionTree packageName, List<ImportTree> imports, List<Tree> types) {
       super(astNode);
       this.packageName = packageName;
       this.imports = Preconditions.checkNotNull(imports);
@@ -111,7 +111,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends AnnotationTree> packageAnnotations() {
+    public List<AnnotationTree> packageAnnotations() {
       // TODO implement
       return ImmutableList.<AnnotationTree>of();
     }
@@ -123,12 +123,12 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends ImportTree> imports() {
+    public List<ImportTree> imports() {
       return imports;
     }
 
     @Override
-    public List<? extends Tree> types() {
+    public List<Tree> types() {
       return types;
     }
 
@@ -174,11 +174,11 @@ public abstract class JavaTree implements Tree {
     private final String simpleName;
     @Nullable
     private final Tree superClass;
-    private final List<? extends Tree> superInterfaces;
-    private final List<? extends Tree> members;
+    private final List<Tree> superInterfaces;
+    private final List<Tree> members;
 
-    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable String simpleName, @Nullable Tree superClass, List<? extends Tree> superInterfaces,
-      List<? extends Tree> members) {
+    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable String simpleName, @Nullable Tree superClass, List<Tree> superInterfaces,
+      List<Tree> members) {
       super(astNode);
       this.kind = Preconditions.checkNotNull(kind);
       this.modifiers = Preconditions.checkNotNull(modifiers);
@@ -189,7 +189,7 @@ public abstract class JavaTree implements Tree {
     }
 
     // TODO remove:
-    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, List<? extends Tree> members) {
+    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, List<Tree> members) {
       this(astNode, kind, modifiers, null, null, ImmutableList.<Tree> of(), members);
     }
 
@@ -205,7 +205,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends Tree> typeParameters() {
+    public List<Tree> typeParameters() {
       // TODO implement
       return ImmutableList.<Tree>of();
     }
@@ -222,12 +222,12 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends Tree> superInterfaces() {
+    public List<Tree> superInterfaces() {
       return superInterfaces;
     }
 
     @Override
-    public List<? extends Tree> members() {
+    public List<Tree> members() {
       return members;
     }
 
@@ -242,15 +242,15 @@ public abstract class JavaTree implements Tree {
     @Nullable
     private final Tree returnType;
     private final String simpleName;
-    private final List<? extends VariableTree> parameters;
+    private final List<VariableTree> parameters;
     @Nullable
     private final BlockTree block;
-    private final List<? extends ExpressionTree> throwsClauses;
+    private final List<ExpressionTree> throwsClauses;
     private final ExpressionTree defaultValue;
 
-    public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, String simpleName, List<? extends VariableTree> parameters,
+    public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, String simpleName, List<VariableTree> parameters,
       @Nullable BlockTree block,
-      List<? extends ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
+      List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
       super(astNode);
       this.modifiers = Preconditions.checkNotNull(modifiers);
       this.returnType = returnType;
@@ -272,7 +272,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends Tree> typeParameters() {
+    public List<Tree> typeParameters() {
       // TODO implement
       return ImmutableList.<Tree>of();
     }
@@ -289,12 +289,12 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends VariableTree> parameters() {
+    public List<VariableTree> parameters() {
       return parameters;
     }
 
     @Override
-    public List<? extends ExpressionTree> throwsClauses() {
+    public List<ExpressionTree> throwsClauses() {
       return throwsClauses;
     }
 
@@ -318,9 +318,9 @@ public abstract class JavaTree implements Tree {
 
   public static class BlockTreeImpl extends JavaTree implements BlockTree {
     private final Kind kind;
-    private final List<? extends StatementTree> body;
+    private final List<StatementTree> body;
 
-    public BlockTreeImpl(AstNode astNode, Kind kind, List<? extends StatementTree> body) {
+    public BlockTreeImpl(AstNode astNode, Kind kind, List<StatementTree> body) {
       super(astNode);
       this.kind = kind;
       this.body = Preconditions.checkNotNull(body);
@@ -332,7 +332,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends StatementTree> body() {
+    public List<StatementTree> body() {
       return body;
     }
 
@@ -414,13 +414,13 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
-    private final List<? extends StatementTree> initializer;
+    private final List<StatementTree> initializer;
     @Nullable
     private final ExpressionTree condition;
-    private final List<? extends StatementTree> update;
+    private final List<StatementTree> update;
     private final StatementTree statement;
 
-    public ForStatementTreeImpl(AstNode astNode, List<? extends StatementTree> initializer, @Nullable ExpressionTree condition, List<? extends StatementTree> update,
+    public ForStatementTreeImpl(AstNode astNode, List<StatementTree> initializer, @Nullable ExpressionTree condition, List<StatementTree> update,
       StatementTree statement) {
       super(astNode);
       this.initializer = Preconditions.checkNotNull(initializer);
@@ -435,7 +435,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends StatementTree> initializer() {
+    public List<StatementTree> initializer() {
       return initializer;
     }
 
@@ -446,7 +446,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends StatementTree> update() {
+    public List<StatementTree> update() {
       return update;
     }
 
@@ -574,9 +574,9 @@ public abstract class JavaTree implements Tree {
 
   public static class SwitchStatementTreeImpl extends JavaTree implements SwitchStatementTree {
     private final ExpressionTree expression;
-    private final List<? extends CaseGroupTree> cases;
+    private final List<CaseGroupTree> cases;
 
-    public SwitchStatementTreeImpl(AstNode astNode, ExpressionTree expression, List<? extends CaseGroupTree> cases) {
+    public SwitchStatementTreeImpl(AstNode astNode, ExpressionTree expression, List<CaseGroupTree> cases) {
       super(astNode);
       this.expression = Preconditions.checkNotNull(expression);
       this.cases = Preconditions.checkNotNull(cases);
@@ -593,7 +593,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends CaseGroupTree> cases() {
+    public List<CaseGroupTree> cases() {
       return cases;
     }
 
@@ -604,10 +604,10 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
-    private final List<? extends CaseLabelTree> labels;
-    private final List<? extends StatementTree> body;
+    private final List<CaseLabelTree> labels;
+    private final List<StatementTree> body;
 
-    public CaseGroupTreeImpl(AstNode astNode, List<? extends CaseLabelTree> labels, List<? extends StatementTree> body) {
+    public CaseGroupTreeImpl(AstNode astNode, List<CaseLabelTree> labels, List<StatementTree> body) {
       super(astNode);
       this.labels = Preconditions.checkNotNull(labels);
       this.body = Preconditions.checkNotNull(body);
@@ -619,12 +619,12 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends CaseLabelTree> labels() {
+    public List<CaseLabelTree> labels() {
       return labels;
     }
 
     @Override
-    public List<? extends StatementTree> body() {
+    public List<StatementTree> body() {
       return body;
     }
 
@@ -825,13 +825,13 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
-    private final List<? extends VariableTree> resources;
+    private final List<VariableTree> resources;
     private final BlockTree block;
-    private final List<? extends CatchTree> catches;
+    private final List<CatchTree> catches;
     @Nullable
     private final BlockTree finallyBlock;
 
-    public TryStatementTreeImpl(AstNode astNode, List<? extends VariableTree> resources, BlockTree block, List<? extends CatchTree> catches, @Nullable BlockTree finallyBlock) {
+    public TryStatementTreeImpl(AstNode astNode, List<VariableTree> resources, BlockTree block, List<CatchTree> catches, @Nullable BlockTree finallyBlock) {
       super(astNode);
       this.resources = Preconditions.checkNotNull(resources);
       this.block = Preconditions.checkNotNull(block);
@@ -845,7 +845,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends VariableTree> resources() {
+    public List<VariableTree> resources() {
       return resources;
     }
 
@@ -855,7 +855,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends CatchTree> catches() {
+    public List<CatchTree> catches() {
       return catches;
     }
 
@@ -1238,9 +1238,9 @@ public abstract class JavaTree implements Tree {
 
   public static class MethodInvocationTreeImpl extends JavaTree implements MethodInvocationTree {
     private final ExpressionTree methodSelect;
-    private final List<? extends ExpressionTree> arguments;
+    private final List<ExpressionTree> arguments;
 
-    public MethodInvocationTreeImpl(AstNode astNode, ExpressionTree methodSelect, List<? extends ExpressionTree> arguments) {
+    public MethodInvocationTreeImpl(AstNode astNode, ExpressionTree methodSelect, List<ExpressionTree> arguments) {
       super(astNode);
       this.methodSelect = Preconditions.checkNotNull(methodSelect);
       this.arguments = Preconditions.checkNotNull(arguments);
@@ -1252,7 +1252,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends Tree> typeArguments() {
+    public List<Tree> typeArguments() {
       // TODO implement
       return ImmutableList.<Tree> of();
     }
@@ -1263,7 +1263,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends ExpressionTree> arguments() {
+    public List<ExpressionTree> arguments() {
       return arguments;
     }
 
@@ -1275,10 +1275,10 @@ public abstract class JavaTree implements Tree {
 
   public static class NewArrayTreeImpl extends JavaTree implements NewArrayTree {
     private final Tree type;
-    private final List<? extends ExpressionTree> dimensions;
-    private final List<? extends ExpressionTree> initializers;
+    private final List<ExpressionTree> dimensions;
+    private final List<ExpressionTree> initializers;
 
-    public NewArrayTreeImpl(AstNode astNode, Tree type, List<? extends ExpressionTree> dimensions, List<? extends ExpressionTree> initializers) {
+    public NewArrayTreeImpl(AstNode astNode, Tree type, List<ExpressionTree> dimensions, List<ExpressionTree> initializers) {
       super(astNode);
       // TODO maybe type should not be null?
       this.type = type;
@@ -1297,12 +1297,12 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends ExpressionTree> dimensions() {
+    public List<ExpressionTree> dimensions() {
       return dimensions;
     }
 
     @Override
-    public List<? extends ExpressionTree> initializers() {
+    public List<ExpressionTree> initializers() {
       return initializers;
     }
 
@@ -1315,11 +1315,11 @@ public abstract class JavaTree implements Tree {
   public static class NewClassTreeImpl extends JavaTree implements NewClassTree {
     private final ExpressionTree enclosingExpression;
     private final ExpressionTree identifier;
-    private final List<? extends ExpressionTree> arguments;
+    private final List<ExpressionTree> arguments;
     @Nullable
     private final ClassTree classBody;
 
-    public NewClassTreeImpl(AstNode astNode, @Nullable ExpressionTree enclosingExpression, ExpressionTree identifier, List<? extends ExpressionTree> arguments,
+    public NewClassTreeImpl(AstNode astNode, @Nullable ExpressionTree enclosingExpression, ExpressionTree identifier, List<ExpressionTree> arguments,
       @Nullable ClassTree classBody) {
       super(astNode);
       this.enclosingExpression = enclosingExpression;
@@ -1340,7 +1340,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends Tree> typeArguments() {
+    public List<Tree> typeArguments() {
       // TODO implement
       return ImmutableList.<Tree> of();
     }
@@ -1351,7 +1351,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends ExpressionTree> arguments() {
+    public List<ExpressionTree> arguments() {
       return arguments;
     }
 
@@ -1483,9 +1483,9 @@ public abstract class JavaTree implements Tree {
 
   public static class ParameterizedTypeTreeImpl extends JavaTree implements ParameterizedTypeTree, ExpressionTree {
     private final ExpressionTree type;
-    private final List<? extends Tree> typeArguments;
+    private final List<Tree> typeArguments;
 
-    public ParameterizedTypeTreeImpl(AstNode child, ExpressionTree type, List<? extends Tree> typeArguments) {
+    public ParameterizedTypeTreeImpl(AstNode child, ExpressionTree type, List<Tree> typeArguments) {
       super(child);
       this.type = Preconditions.checkNotNull(type);
       this.typeArguments = Preconditions.checkNotNull(typeArguments);
@@ -1502,7 +1502,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends Tree> typeArguments() {
+    public List<Tree> typeArguments() {
       return typeArguments;
     }
 
@@ -1513,9 +1513,9 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class UnionTypeTreeImpl extends JavaTree implements UnionTypeTree {
-    private final List<? extends Tree> typeAlternatives;
+    private final List<Tree> typeAlternatives;
 
-    public UnionTypeTreeImpl(AstNode astNode, List<? extends Tree> typeAlternatives) {
+    public UnionTypeTreeImpl(AstNode astNode, List<Tree> typeAlternatives) {
       super(astNode);
       this.typeAlternatives = Preconditions.checkNotNull(typeAlternatives);
     }
@@ -1526,7 +1526,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends Tree> typeAlternatives() {
+    public List<Tree> typeAlternatives() {
       return typeAlternatives;
     }
 
@@ -1558,7 +1558,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends AnnotationTree> annotations() {
+    public List<AnnotationTree> annotations() {
       // TODO implement
       return ImmutableList.<AnnotationTree> of();
     }

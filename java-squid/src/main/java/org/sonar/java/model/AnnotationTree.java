@@ -37,6 +37,6 @@ public interface AnnotationTree extends Tree {
 
   Tree annotationType();
 
-  List<? extends ExpressionTree> arguments();
+  List<ExpressionTree> arguments();
 
 }

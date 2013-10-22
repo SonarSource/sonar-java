@@ -44,11 +44,11 @@ public interface NewClassTree extends ExpressionTree {
   /**
    * @since Java 1.5
    */
-  List<? extends Tree> typeArguments();
+  List<Tree> typeArguments();
 
   Tree identifier();
 
-  List<? extends ExpressionTree> arguments();
+  List<ExpressionTree> arguments();
 
   @Nullable
   ClassTree classBody();

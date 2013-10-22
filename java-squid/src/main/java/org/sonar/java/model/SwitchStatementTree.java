@@ -38,6 +38,6 @@ public interface SwitchStatementTree extends StatementTree {
 
   ExpressionTree expression();
 
-  List<? extends CaseGroupTree> cases();
+  List<CaseGroupTree> cases();
 
 }

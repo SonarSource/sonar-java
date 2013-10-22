@@ -36,6 +36,6 @@ public interface ParameterizedTypeTree extends Tree {
 
   Tree type();
 
-  List<? extends Tree> typeArguments();
+  List<Tree> typeArguments();
 
 }

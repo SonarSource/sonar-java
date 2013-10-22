@@ -35,12 +35,12 @@ import java.util.List;
  */
 public interface ForStatementTree extends StatementTree {
 
-  List<? extends StatementTree> initializer();
+  List<StatementTree> initializer();
 
   @Nullable
   ExpressionTree condition();
 
-  List<? extends StatementTree> update();
+  List<StatementTree> update();
 
   StatementTree statement();
 

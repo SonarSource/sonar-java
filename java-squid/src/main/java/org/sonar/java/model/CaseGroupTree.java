@@ -34,8 +34,8 @@ import java.util.List;
  */
 public interface CaseGroupTree extends Tree {
 
-  List<? extends CaseLabelTree> labels();
+  List<CaseLabelTree> labels();
 
-  List<? extends StatementTree> body();
+  List<StatementTree> body();
 
 }
