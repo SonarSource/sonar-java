@@ -23,12 +23,12 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.BaseTreeVisitor;
-import org.sonar.java.model.IfStatementTree;
-import org.sonar.java.model.JavaFileScanner;
-import org.sonar.java.model.JavaFileScannerContext;
-import org.sonar.java.model.ParenthesizedTree;
-import org.sonar.java.model.Tree;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
   key = IfConditionAlwaysTrueOrFalseCheck.RULE_KEY,

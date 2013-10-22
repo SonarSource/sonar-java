@@ -23,8 +23,8 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaFileScanner;
-import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 @Rule(
   key = DefaultPackageCheck.RULE_KEY,

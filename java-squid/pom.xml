@@ -14,6 +14,13 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.codehaus.sonar-plugins.java</groupId>
+      <artifactId>sonar-java-plugin</artifactId>
+      <type>sonar-plugin</type>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.codehaus.sonar.sslr</groupId>
       <artifactId>sslr-core</artifactId>
     </dependency>

@@ -29,6 +29,10 @@ import org.sonar.api.issue.Issuable;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.SourceFile;
 

@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.CompilationUnitTree;
-import org.sonar.java.model.JavaFileScanner;
-import org.sonar.java.model.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 @Rule(key = EmptyFileCheck.RULE_KEY, priority = Priority.MAJOR)
 public final class EmptyFileCheck implements JavaFileScanner {

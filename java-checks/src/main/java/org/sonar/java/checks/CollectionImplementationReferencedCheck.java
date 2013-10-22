@@ -24,14 +24,14 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.BaseTreeVisitor;
-import org.sonar.java.model.IdentifierTree;
-import org.sonar.java.model.JavaFileScanner;
-import org.sonar.java.model.JavaFileScannerContext;
-import org.sonar.java.model.MethodTree;
-import org.sonar.java.model.ParameterizedTypeTree;
-import org.sonar.java.model.Tree;
-import org.sonar.java.model.VariableTree;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Map;
 

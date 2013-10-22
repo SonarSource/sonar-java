@@ -24,17 +24,17 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.BaseTreeVisitor;
-import org.sonar.java.model.DoWhileStatementTree;
-import org.sonar.java.model.ForEachStatement;
-import org.sonar.java.model.ForStatementTree;
-import org.sonar.java.model.IfStatementTree;
-import org.sonar.java.model.JavaFileScanner;
-import org.sonar.java.model.JavaFileScannerContext;
-import org.sonar.java.model.StatementTree;
-import org.sonar.java.model.SwitchStatementTree;
-import org.sonar.java.model.Tree;
-import org.sonar.java.model.WhileStatementTree;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 @Rule(
   key = NestedIfStatementsCheck.KEY,

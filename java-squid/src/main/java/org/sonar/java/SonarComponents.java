@@ -24,8 +24,8 @@ import com.google.common.collect.Iterables;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.FileLinesContextFactory;
-import org.sonar.java.model.JavaFileScanner;
-import org.sonar.java.model.JavaFileScannersFactory;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannersFactory;
 
 import javax.annotation.Nullable;
 

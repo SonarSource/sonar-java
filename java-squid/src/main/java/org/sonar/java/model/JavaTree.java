@@ -22,9 +22,60 @@ package org.sonar.java.model;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.AssertStatementTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.ContinueStatementTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
+import org.sonar.plugins.java.api.tree.EmptyStatementTree;
+import org.sonar.plugins.java.api.tree.EnumConstantTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.InstanceOfTree;
+import org.sonar.plugins.java.api.tree.LabeledStatementTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.plugins.java.api.tree.UnionTypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
+import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 public abstract class JavaTree implements Tree {
@@ -49,8 +100,6 @@ public abstract class JavaTree implements Tree {
   }
 
   protected abstract Kind getKind();
-
-  public abstract void accept(TreeVisitor visitor);
 
   public static class PrimitiveTypeTreeImpl extends JavaTree implements PrimitiveTypeTree {
     public PrimitiveTypeTreeImpl(AstNode astNode) {
@@ -113,7 +162,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<AnnotationTree> packageAnnotations() {
       // TODO implement
-      return ImmutableList.<AnnotationTree>of();
+      return ImmutableList.of();
     }
 
     @Nullable
@@ -207,7 +256,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<Tree> typeParameters() {
       // TODO implement
-      return ImmutableList.<Tree>of();
+      return ImmutableList.of();
     }
 
     @Override
@@ -274,7 +323,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<Tree> typeParameters() {
       // TODO implement
-      return ImmutableList.<Tree>of();
+      return ImmutableList.of();
     }
 
     @Nullable
@@ -1254,7 +1303,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<Tree> typeArguments() {
       // TODO implement
-      return ImmutableList.<Tree> of();
+      return ImmutableList.of();
     }
 
     @Override
@@ -1342,7 +1391,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<Tree> typeArguments() {
       // TODO implement
-      return ImmutableList.<Tree> of();
+      return ImmutableList.of();
     }
 
     @Override
@@ -1560,7 +1609,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<AnnotationTree> annotations() {
       // TODO implement
-      return ImmutableList.<AnnotationTree> of();
+      return ImmutableList.of();
     }
 
     @Override

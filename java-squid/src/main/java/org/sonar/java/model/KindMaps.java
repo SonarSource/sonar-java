@@ -26,8 +26,9 @@ import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.EnumMap;
 import java.util.Map;
 
 public final class KindMaps {

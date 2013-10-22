@@ -25,6 +25,8 @@ import org.junit.rules.ExpectedException;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.fest.assertions.Assertions.assertThat;
 
