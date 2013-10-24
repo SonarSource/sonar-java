@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import com.google.common.annotations.Beta;
+
 /**
  * Enum constant.
  *
@@ -26,6 +28,7 @@ package org.sonar.plugins.java.api.tree;
  *
  * @since Java 1.5
  */
+@Beta
 public interface EnumConstantTree extends Tree {
 
   ModifiersTree modifiers();

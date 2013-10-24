@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import com.google.common.annotations.Beta;
+
 import java.util.List;
 
 /**
@@ -26,6 +28,7 @@ import java.util.List;
  *
  * @since Java 1.7
  */
+@Beta
 public interface UnionTypeTree extends Tree {
 
   List<Tree> typeAlternatives();

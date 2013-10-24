@@ -19,10 +19,12 @@
  */
 package org.sonar.plugins.java.api;
 
+import com.google.common.annotations.Beta;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+@Beta
 public interface JavaFileScannerContext {
 
   CompilationUnitTree getTree();

@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import com.google.common.annotations.Beta;
+
 /**
  * Enhanced 'for' statement.
  *
@@ -30,6 +32,7 @@ package org.sonar.plugins.java.api.tree;
  *
  * @since Java 1.5
  */
+@Beta
 public interface ForEachStatement extends StatementTree {
 
   VariableTree variable();

@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import com.google.common.annotations.Beta;
+
 /**
  * Labeled statement.
  *
@@ -30,6 +32,7 @@ package org.sonar.plugins.java.api.tree;
  *
  * @since Java 1.3
  */
+@Beta
 public interface LabeledStatementTree extends StatementTree {
 
   String label();

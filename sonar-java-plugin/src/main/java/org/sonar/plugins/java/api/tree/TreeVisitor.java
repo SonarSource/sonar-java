@@ -19,6 +19,12 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import com.google.common.annotations.Beta;
+
+/**
+ * @see BaseTreeVisitor
+ */
+@Beta
 public interface TreeVisitor {
 
   void visitCompilationUnit(CompilationUnitTree tree);

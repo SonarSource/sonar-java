@@ -19,8 +19,10 @@
  */
 package org.sonar.plugins.java.api;
 
+import com.google.common.annotations.Beta;
 import org.sonar.squid.api.CodeVisitor;
 
+@Beta
 public interface JavaFileScanner extends CodeVisitor {
 
   void scanFile(JavaFileScannerContext context);

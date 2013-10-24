@@ -19,9 +19,14 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import com.google.common.annotations.Beta;
+
 /**
  * Common interface for all nodes in an abstract syntax tree.
+ *
+ * <p><b>WARNING:</b> This interface and its sub-interfaces are subject to change as the Java&trade; language evolves.</p>
  */
+@Beta
 public interface Tree {
 
   boolean is(Kind kind);

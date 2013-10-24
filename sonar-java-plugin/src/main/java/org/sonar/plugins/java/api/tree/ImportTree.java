@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import com.google.common.annotations.Beta;
+
 /**
  * Import declaration.
  *
@@ -31,6 +33,7 @@ package org.sonar.plugins.java.api.tree;
  *
  * @since Java 1.3
  */
+@Beta
 public interface ImportTree extends Tree {
 
   /**

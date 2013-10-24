@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import com.google.common.annotations.Beta;
+
 /**
  * Binary expression.
  *
@@ -48,6 +50,7 @@ package org.sonar.plugins.java.api.tree;
  *
  * @since Java 1.3
  */
+@Beta
 public interface BinaryExpressionTree extends ExpressionTree {
 
   ExpressionTree leftOperand();

@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import com.google.common.annotations.Beta;
+
 import java.util.List;
 
 /**
@@ -33,6 +35,7 @@ import java.util.List;
  *
  * @since Java 1.3
  */
+@Beta
 public interface TypeParameterTree extends Tree {
 
   String name();
