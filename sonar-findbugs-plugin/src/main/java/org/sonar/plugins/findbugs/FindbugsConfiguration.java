@@ -72,9 +72,11 @@ public class FindbugsConfiguration implements BatchExtension {
     }
     boolean hasExistingBinaryDir = false;
     for (File binaryDir : fileSystem.binaryDirs()) {
-      if (binaryDir.exists()) {
+      if (binaryDir.isDirectory()) {
         hasExistingBinaryDir = true;
-        findbugsProject.addFile(binaryDir.getAbsolutePath());
+        for (File binaryFile : FileUtils.listFiles(binaryDir, new String[] {"class"}, true)) {
+          findbugsProject.addFile(binaryFile.getAbsolutePath());
+        }
       }
     }
     if (!hasExistingBinaryDir) {

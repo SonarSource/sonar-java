@@ -118,20 +118,25 @@ public class FindbugsConfigurationTest {
     conf.getFindbugsProject();
   }
 
-  /**
-   * @since 1.2
-   */
   @Test
   public void should_support_multiple_binary_dirs() throws IOException {
     File binaryDir1 = temp.newFolder("binary1");
+    File binaryFile11 = temp.newFile("binary1/MyClass11.class");
+    temp.newFolder("binary1/sub");
+    File binaryFile12 = temp.newFile("binary1/sub/MyClass12.class");
+    temp.newFile("binary1/Fake.txt");
     File binaryDir2 = temp.newFolder("binary2");
+    File binaryFile21 = temp.newFile("binary2/MyClass21.class");
+
     fs.addBinaryDir(binaryDir1);
     fs.addBinaryDir(binaryDir2);
 
     Project findbugsProject = conf.getFindbugsProject();
 
-    assertThat(findbugsProject.getFileCount()).isEqualTo(2);
-    assertThat(findbugsProject.getFile(0)).isEqualTo(binaryDir1.getAbsolutePath());
-    assertThat(findbugsProject.getFile(1)).isEqualTo(binaryDir2.getAbsolutePath());
+    assertThat(findbugsProject.getFileCount()).isEqualTo(3);
+    assertThat(findbugsProject.getFile(0)).isEqualTo(binaryFile11.getAbsolutePath());
+    assertThat(findbugsProject.getFile(1)).isEqualTo(binaryFile12.getAbsolutePath());
+    assertThat(findbugsProject.getFile(2)).isEqualTo(binaryFile21.getAbsolutePath());
   }
+
 }
