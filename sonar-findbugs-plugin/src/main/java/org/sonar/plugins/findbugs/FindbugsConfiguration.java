@@ -22,7 +22,6 @@ package org.sonar.plugins.findbugs;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.CharEncoding;
@@ -45,7 +44,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class FindbugsConfiguration implements BatchExtension {
 
@@ -73,12 +71,10 @@ public class FindbugsConfiguration implements BatchExtension {
       findbugsProject.addSourceDir(dir.getAbsolutePath());
     }
     boolean hasExistingBinaryDir = false;
-    Set<String> binaryDirPaths = Sets.newHashSet();
     for (File binaryDir : fileSystem.binaryDirs()) {
       if (binaryDir.exists()) {
         hasExistingBinaryDir = true;
         findbugsProject.addFile(binaryDir.getAbsolutePath());
-        binaryDirPaths.add(binaryDir.getCanonicalPath());
       }
     }
     if (!hasExistingBinaryDir) {
@@ -87,7 +83,7 @@ public class FindbugsConfiguration implements BatchExtension {
     }
 
     for (File file : projectClasspath.getElements()) {
-      if (file.isFile() || !binaryDirPaths.contains(file.getCanonicalPath())) {
+      if (file.isFile()) {
         findbugsProject.addAuxClasspathEntry(file.getAbsolutePath());
       }
     }
