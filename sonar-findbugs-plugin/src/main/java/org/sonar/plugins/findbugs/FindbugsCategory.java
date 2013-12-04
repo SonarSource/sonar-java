@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 
 public final class FindbugsCategory {
-  private static final Map<String, String> FINDBUGS_TO_SONAR = ImmutableMap.<String, String>builder()
+  private static final Map<String, String> FINDBUGS_TO_SONAR = ImmutableMap.<String, String> builder()
     .put("BAD_PRACTICE", "Bad practice")
     .put("CORRECTNESS", "Correctness")
     .put("MT_CORRECTNESS", "Multithreaded correctness")
@@ -36,11 +36,11 @@ public final class FindbugsCategory {
     .put("STYLE", "Style")
     .build();
 
-
   public static String findbugsToSonar(String findbugsCategKey) {
     return FINDBUGS_TO_SONAR.get(findbugsCategKey);
   }
 
   private FindbugsCategory() {
   }
+
 }

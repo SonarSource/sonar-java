@@ -33,11 +33,9 @@ public final class FindbugsConstants {
   public static final String TIMEOUT_PROPERTY = "sonar.findbugs.timeout";
   public static final long TIMEOUT_DEFAULT_VALUE = 600000L;
 
-  /**
-   * @since 2.10
-   */
   public static final String EXCLUDES_FILTERS_PROPERTY = "sonar.findbugs.excludesFilters";
 
   private FindbugsConstants() {
   }
+
 }

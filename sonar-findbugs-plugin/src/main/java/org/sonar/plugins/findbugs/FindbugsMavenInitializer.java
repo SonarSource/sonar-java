@@ -30,8 +30,6 @@ import org.sonar.api.resources.Project;
 /**
  * Configures Sonar FindBugs Plugin according to configuration of findbugs-maven-plugin.
  * Supports only "excludeFilterFile".
- * 
- * @since 2.10
  */
 @SupportedEnvironment("maven")
 public class FindbugsMavenInitializer extends Initializer {

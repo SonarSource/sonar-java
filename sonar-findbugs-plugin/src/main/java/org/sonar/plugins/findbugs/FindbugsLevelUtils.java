@@ -35,4 +35,5 @@ public class FindbugsLevelUtils {
     }
     throw new IllegalArgumentException("Priority not supported: " + priority);
   }
+
 }

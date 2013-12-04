@@ -19,16 +19,13 @@
  */
 package org.sonar.plugins.findbugs;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.LoggerFactory;
-
-/**
- * @since 2.4
- */
 public enum FindbugsVersion {
   INSTANCE;
 
@@ -54,4 +51,5 @@ public enum FindbugsVersion {
       IOUtils.closeQuietly(input);
     }
   }
+
 }

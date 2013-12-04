@@ -47,9 +47,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-/**
- * @since 2.4
- */
 public class FindbugsConfiguration implements BatchExtension {
 
   private final ModuleFileSystem fileSystem;
@@ -214,7 +211,7 @@ public class FindbugsConfiguration implements BatchExtension {
           "If set to \"medium\" (the default), low confidence issues are supressed. If set to \"high\", only high confidence bugs are reported. ")
         .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
         .build()
-    );
+      );
   }
 
 }

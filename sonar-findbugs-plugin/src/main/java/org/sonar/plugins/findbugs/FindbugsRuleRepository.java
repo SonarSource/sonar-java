@@ -49,4 +49,5 @@ public final class FindbugsRuleRepository extends RuleRepository {
     }
     return rules;
   }
+
 }

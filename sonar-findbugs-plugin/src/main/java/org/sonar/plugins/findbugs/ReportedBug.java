@@ -50,4 +50,5 @@ public class ReportedBug {
   public int getStartLine() {
     return startLine;
   }
+
 }

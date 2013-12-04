@@ -19,17 +19,17 @@
  */
 package org.sonar.plugins.findbugs;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
-
 import org.sonar.api.profiles.ProfileDefinition;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.utils.ValidationMessages;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
+
 public class SonarWayWithFindbugsProfile extends ProfileDefinition {
 
-  private FindbugsProfileImporter importer;
+  private final FindbugsProfileImporter importer;
 
   public SonarWayWithFindbugsProfile(FindbugsProfileImporter importer) {
     this.importer = importer;
@@ -38,10 +38,11 @@ public class SonarWayWithFindbugsProfile extends ProfileDefinition {
   @Override
   public RulesProfile createProfile(ValidationMessages messages) {
     Reader pmdSonarWayProfile = new InputStreamReader(this.getClass().getResourceAsStream(
-        "/org/sonar/plugins/findbugs/profile-sonar-way-findbugs.xml"));
+      "/org/sonar/plugins/findbugs/profile-sonar-way-findbugs.xml"));
     RulesProfile profile = importer.importProfile(pmdSonarWayProfile, messages);
     profile.setLanguage(Java.KEY);
     profile.setName(RulesProfile.SONAR_WAY_FINDBUGS_NAME);
     return profile;
   }
+
 }

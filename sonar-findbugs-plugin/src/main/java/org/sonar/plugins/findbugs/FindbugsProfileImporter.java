@@ -19,9 +19,7 @@
  */
 package org.sonar.plugins.findbugs;
 
-import java.io.Reader;
-import java.util.Map;
-
+import com.thoughtworks.xstream.XStream;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +33,8 @@ import org.sonar.api.rules.RuleQuery;
 import org.sonar.api.utils.ValidationMessages;
 import org.sonar.plugins.findbugs.xml.FindBugsFilter;
 
-import com.thoughtworks.xstream.XStream;
+import java.io.Reader;
+import java.util.Map;
 
 public class FindbugsProfileImporter extends ProfileImporter {
 
@@ -88,7 +87,7 @@ public class FindbugsProfileImporter extends ProfileImporter {
           profile.activateRule(rule, codeLevel.getValue());
         }
       }
-      if ( !someRulesHaveBeenActivated) {
+      if (!someRulesHaveBeenActivated) {
         messages.addWarningText("Unable to find any rules associated to code  : '" + codeLevel.getKey() + "'");
       }
     }
@@ -104,9 +103,10 @@ public class FindbugsProfileImporter extends ProfileImporter {
           profile.activateRule(rule, categoryLevel.getValue());
         }
       }
-      if ( !someRulesHaveBeenActivated) {
+      if (!someRulesHaveBeenActivated) {
         messages.addWarningText("Unable to find any rules associated to category  : '" + categoryLevel.getKey() + "'");
       }
     }
   }
+
 }
