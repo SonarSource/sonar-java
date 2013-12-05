@@ -150,6 +150,7 @@ public final class CheckList {
       MethodNameSameAsClassCheck.class,
       CollectionImplementationReferencedCheck.class,
       IncorrectOrderOfMembersCheck.class,
+      PublicStaticFieldShouldBeFinalCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,

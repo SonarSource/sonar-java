@@ -1,0 +1,22 @@
+<p>
+  There are no good reasons to declare a field "public" and "static" without declaring it "final". Most of the time this is a cheap but crappy way to share a state among several objects. With this approach, any object can do whatever it wants with the shared state like setting it to ... null.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public class Greeter {
+  public static Foo foo = new Foo(...);
+  ...
+}
+</pre>
+
+
+<h2>Compliant Solution</h2>
+
+<pre>
+public class Greeter {
+  public static final Foo foo = new Foo(...);
+  ...
+}
+</pre>
