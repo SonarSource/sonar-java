@@ -1,0 +1,21 @@
+<p>
+  Using a wildcard as a return type implicitly means that the return parameter should be considered as real-only but without any way to enforce this contract.
+</p>
+<p>
+  Let's take the example of method returning a "List&#60;&#63; extends Animal&#62;". Is it possible on this list to add a Dog, a Cat, ... we simply don't know. The consumer of a method should not have to deal with such disruptive questions.
+</p>
+
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+List<? extends Animal> getAnimals(){...}
+</pre>
+
+<h2>Compliant solution</h2>
+<pre>
+//First Solution: the list can contain any kind of animals
+List&#60;Animal&#62; getAnimals(){...}
+
+//Second Solution: the list can contain only one type of animal
+List&#60;E&#62; getAnimals(){...} //Where E extends Animal in the signature of the nesting class
+</pre>

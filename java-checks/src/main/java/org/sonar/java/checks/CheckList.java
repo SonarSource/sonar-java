@@ -151,6 +151,7 @@ public final class CheckList {
       CollectionImplementationReferencedCheck.class,
       IncorrectOrderOfMembersCheck.class,
       PublicStaticFieldShouldBeFinalCheck.class,
+      WildcardReturnParameterTypeCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
