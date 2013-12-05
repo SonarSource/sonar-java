@@ -133,10 +133,10 @@ public class FindbugsConfigurationTest {
 
     Project findbugsProject = conf.getFindbugsProject();
 
-    assertThat(findbugsProject.getFileCount()).isEqualTo(3);
-    assertThat(findbugsProject.getFile(0)).isEqualTo(binaryFile11.getAbsolutePath());
-    assertThat(findbugsProject.getFile(1)).isEqualTo(binaryFile12.getAbsolutePath());
-    assertThat(findbugsProject.getFile(2)).isEqualTo(binaryFile21.getAbsolutePath());
+    assertThat(findbugsProject.getFileList()).containsOnly(
+      binaryFile11.getCanonicalPath(),
+      binaryFile12.getCanonicalPath(),
+      binaryFile21.getCanonicalPath());
   }
 
 }
