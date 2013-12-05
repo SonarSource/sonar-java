@@ -34,6 +34,7 @@ import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.api.scan.filesystem.FileQuery;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.utils.SonarException;
@@ -42,6 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -70,16 +72,18 @@ public class FindbugsConfiguration implements BatchExtension {
     for (File dir : fileSystem.sourceDirs()) {
       findbugsProject.addSourceDir(dir.getAbsolutePath());
     }
-    boolean hasExistingBinaryDir = false;
-    for (File binaryDir : fileSystem.binaryDirs()) {
-      if (binaryDir.isDirectory()) {
-        hasExistingBinaryDir = true;
-        for (File binaryFile : FileUtils.listFiles(binaryDir, new String[] {"class"}, true)) {
-          findbugsProject.addFile(binaryFile.getCanonicalPath());
-        }
-      }
+
+    List<File> classesToAnalyze = new FindbugsSourceBinaryMatcher(
+      fileSystem.files(FileQuery.onSource()),
+      fileSystem.sourceDirs(),
+      fileSystem.binaryDirs())
+      .classesToAnalyze(Collections.EMPTY_LIST);
+
+    for (File classToAnalyze : classesToAnalyze) {
+      findbugsProject.addFile(classToAnalyze.getCanonicalPath());
     }
-    if (!hasExistingBinaryDir) {
+
+    if (classesToAnalyze.isEmpty()) {
       throw new SonarException("Findbugs needs sources to be compiled. "
         + "Please build project before executing sonar and check the location of compiled classes.");
     }
