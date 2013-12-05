@@ -13,4 +13,9 @@ public class Greeter {
   public static method() {
     Foo foo = new Foo ();
   }
+
+  class InnerClass {
+    public static Foo foo; // NOK
+  }
+
 }

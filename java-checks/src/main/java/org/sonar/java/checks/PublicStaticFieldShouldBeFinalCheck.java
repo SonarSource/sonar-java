@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -49,15 +50,14 @@ public class PublicStaticFieldShouldBeFinalCheck extends BaseTreeVisitor impleme
 
   @Override
   public void visitClass(ClassTree tree) {
-    for (Tree member : tree.members()) {
-      if ((tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM))
-        && member.is(Tree.Kind.VARIABLE) && isPublicStaticNotFinal((VariableTree) member)) {
-
-        context.addIssue(member, ruleKey, "Make this \"public static\" field final");
+    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) {
+      for (Tree member : tree.members()) {
+        if (member.is(Tree.Kind.VARIABLE) && isPublicStaticNotFinal((VariableTree) member)) {
+          context.addIssue(member, ruleKey, "Make this \"public static\" field final");
+        }
       }
-      scan(member);
     }
-
+    super.visitClass(tree);
   }
 
   private boolean isPublicStaticNotFinal(VariableTree tree) {
