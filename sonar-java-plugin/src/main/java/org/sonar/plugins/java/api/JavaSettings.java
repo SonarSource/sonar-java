@@ -20,28 +20,16 @@
 package org.sonar.plugins.java.api;
 
 import org.sonar.api.BatchExtension;
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
 import org.sonar.api.ServerExtension;
+import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
-
-/**
- * @since 1.1
- */
-@Properties(
-  @Property(
-    key = "sonar.java.coveragePlugin",
-    name = "Code coverage plugin", description = "Key of the code coverage plugin to use for unit tests.",
-    defaultValue = "jacoco",
-    global = true, project = true,
-    category = "java")
-)
+import org.sonar.api.resources.Qualifiers;
 
 public class JavaSettings implements BatchExtension, ServerExtension {
 
   private static final String PROPERTY_COVERAGE_PLUGIN = "sonar.java.coveragePlugin";
 
-  private Settings settings;
+  private final Settings settings;
 
   public JavaSettings(Settings settings) {
     this.settings = settings;
@@ -58,4 +46,16 @@ public class JavaSettings implements BatchExtension, ServerExtension {
     }
     return settings.getString(PROPERTY_COVERAGE_PLUGIN);
   }
+
+  public static PropertyDefinition property() {
+    return PropertyDefinition.builder("sonar.java.coveragePlugin")
+      .defaultValue("jacoco")
+      .category("java")
+      .subCategory("General")
+      .name("Code coverage plugin")
+      .description("Key of the code coverage plugin to use for unit tests.")
+      .onQualifiers(Qualifiers.PROJECT)
+      .build();
+  }
+
 }

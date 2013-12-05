@@ -33,7 +33,7 @@ public class JavaSettingsTest {
 
   @Before
   public void init() {
-    settings = new Settings(new PropertyDefinitions(JavaSettings.class));
+    settings = new Settings(new PropertyDefinitions(JavaSettings.property()));
     javaSettings = new JavaSettings(settings);
   }
 
