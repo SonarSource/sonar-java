@@ -20,39 +20,31 @@
 package org.sonar.java.ast.visitors;
 
 import com.sonar.sslr.api.AstNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SquidUtils;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.source.Symbolizable;
+import org.sonar.java.SemanticModelProvider;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 
 import java.util.Map;
 
-public class SymbolTableVisitor extends JavaAstVisitor {
-
-  private static final Logger LOG = LoggerFactory.getLogger(SymbolTableVisitor.class);
+public class SonarSymbolTableVisitor extends JavaAstVisitor {
 
   private final ResourcePerspectives perspectives;
+  private final SemanticModelProvider semanticModelProvider;
 
-  public SymbolTableVisitor(ResourcePerspectives perspectives) {
+  public SonarSymbolTableVisitor(ResourcePerspectives perspectives, SemanticModelProvider semanticModelProvider) {
     this.perspectives = perspectives;
+    this.semanticModelProvider = semanticModelProvider;
   }
 
   @Override
   public void visitFile(AstNode astNode) {
-    if (astNode == null) {
-      // parse error
-      return;
-    }
-
-    SemanticModel semanticModel;
-    try {
-      semanticModel = SemanticModel.createFor(astNode);
-    } catch (Exception e) {
-      LOG.error("Unable to create symbol table for " + getContext().getFile(), e);
+    SemanticModel semanticModel = semanticModelProvider.semanticModel();
+    if (semanticModel == null) {
+      // parse or semantic error
       return;
     }
 

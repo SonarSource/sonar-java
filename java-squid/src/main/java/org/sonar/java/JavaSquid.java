@@ -30,7 +30,8 @@ import org.sonar.graph.DirectedGraph;
 import org.sonar.graph.DirectedGraphAccessor;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
-import org.sonar.java.ast.visitors.SymbolTableVisitor;
+import org.sonar.java.ast.visitors.SemanticModelVisitor;
+import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.DITVisitor;
@@ -48,6 +49,7 @@ import org.sonar.squid.indexer.QueryByType;
 import org.sonar.squid.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -69,16 +71,20 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
   }
 
   public JavaSquid(JavaConfiguration conf, @Nullable SonarComponents sonarComponents, CodeVisitor... visitors) {
+    SemanticModelVisitor semanticModelVisitor = new SemanticModelVisitor();
+
     astScanner = JavaAstScanner.create(conf);
+    astScanner.accept(semanticModelVisitor);
+
     if (sonarComponents != null) {
       astScanner.accept(new FileLinesVisitor(sonarComponents.getFileLinesContextFactory(), conf.getCharset()));
       astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents.getResourcePerspectives(), conf.getCharset()));
-      astScanner.accept(new SymbolTableVisitor(sonarComponents.getResourcePerspectives()));
+      astScanner.accept(new SonarSymbolTableVisitor(sonarComponents.getResourcePerspectives(), semanticModelVisitor));
 
       VisitorsBridge visitorsBridge = new VisitorsBridge(sonarComponents.getResourcePerspectives(), Iterables.concat(
         sonarComponents.createJavaFileScanners(),
         Arrays.asList(visitors)
-      ));
+        ));
       astScanner.accept(visitorsBridge);
     }
 
@@ -96,6 +102,9 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     for (CodeVisitor visitor : visitors) {
       if (visitor instanceof CharsetAwareVisitor) {
         ((CharsetAwareVisitor) visitor).setCharset(conf.getCharset());
+      }
+      if (visitor instanceof SemanticModelProviderAwareVisitor) {
+        ((SemanticModelProviderAwareVisitor) visitor).setSemanticModelProvider(semanticModelVisitor);
       }
       astScanner.accept(visitor);
       bytecodeScanner.accept(visitor);
