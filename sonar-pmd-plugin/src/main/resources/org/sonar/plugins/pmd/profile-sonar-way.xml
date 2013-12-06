@@ -14,7 +14,6 @@
   <rule ref="rulesets/strings.xml/UseIndexOfChar" />
   <rule ref="rulesets/basic.xml/BigIntegerInstantiation" />
   <rule ref="rulesets/design.xml/InstantiationToGetClass" />
-  <rule ref="rulesets/unusedcode.xml/UnusedLocalVariable" />
   <rule ref="rulesets/design.xml/SingularField" />
   <rule ref="rulesets/design.xml/CloseResource" />
   <rule ref="rulesets/basic.xml/UselessOperationOnImmutable" />

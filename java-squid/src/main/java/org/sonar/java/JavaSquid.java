@@ -73,8 +73,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
   public JavaSquid(JavaConfiguration conf, @Nullable SonarComponents sonarComponents, CodeVisitor... visitors) {
     SemanticModelVisitor semanticModelVisitor = new SemanticModelVisitor();
 
-    astScanner = JavaAstScanner.create(conf);
-    astScanner.accept(semanticModelVisitor);
+    astScanner = JavaAstScanner.create(conf, semanticModelVisitor);
 
     if (sonarComponents != null) {
       astScanner.accept(new FileLinesVisitor(sonarComponents.getFileLinesContextFactory(), conf.getCharset()));

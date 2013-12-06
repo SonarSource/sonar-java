@@ -17,23 +17,27 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java.api;
+package org.sonar.java.checks;
 
-import com.google.common.annotations.Beta;
-import org.sonar.api.rule.RuleKey;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
+import org.sonar.squid.api.SourceFile;
 
-import javax.annotation.Nullable;
+import java.io.File;
 
-@Beta
-public interface JavaFileScannerContext {
+public class UnusedLocalVariableCheckTest {
 
-  CompilationUnitTree getTree();
+  @Rule
+  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
-  void addIssue(Tree tree, RuleKey ruleKey, String message);
-
-  @Nullable
-  Object getSemanticModel();
+  @Test
+  public void test() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UnusedLocalVariableCheck.java"), new VisitorsBridge(new UnusedLocalVariableCheck()));
+    checkMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(6).withMessage("Remove this unused \"unusedLocalVariable\" local variable.");
+  }
 
 }

@@ -31,7 +31,7 @@ public final class CheckList {
   }
 
   public static List<Class> getChecks() {
-    return ImmutableList.<Class> of(
+    return ImmutableList.<Class>of(
       TabCharacter_S00105_Check.class,
       TooLongLine_S00103_Check.class,
       MissingNewLineAtEndOfFile_S00113_Check.class,
@@ -152,6 +152,7 @@ public final class CheckList {
       IncorrectOrderOfMembersCheck.class,
       PublicStaticFieldShouldBeFinalCheck.class,
       WildcardReturnParameterTypeCheck.class,
+      UnusedLocalVariableCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,

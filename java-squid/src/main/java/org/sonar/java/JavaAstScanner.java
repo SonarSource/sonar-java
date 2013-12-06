@@ -41,6 +41,7 @@ import org.sonar.java.ast.visitors.LinesVisitor;
 import org.sonar.java.ast.visitors.MethodVisitor;
 import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.java.ast.visitors.PublicApiVisitor;
+import org.sonar.java.ast.visitors.SemanticModelVisitor;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.indexer.QueryByType;
@@ -71,7 +72,7 @@ public final class JavaAstScanner {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
-    org.sonar.java.ast.AstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitors);
+    org.sonar.java.ast.AstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), new SemanticModelVisitor(), visitors);
     InputFile inputFile = InputFileUtils.create(parentFile, file);
     scanner.scan(Collections.singleton(inputFile));
     Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));
@@ -81,10 +82,12 @@ public final class JavaAstScanner {
     return (SourceFile) sources.iterator().next();
   }
 
-  public static AstScanner create(JavaConfiguration conf, SquidAstVisitor<LexerlessGrammar>... visitors) {
+  public static AstScanner create(JavaConfiguration conf, SemanticModelVisitor semanticModelVisitor, SquidAstVisitor<LexerlessGrammar>... visitors) {
     final Parser<LexerlessGrammar> parser = new ParserAdapter<LexerlessGrammar>(conf.getCharset(), JavaGrammar.createGrammar());
 
     AstScanner builder = new AstScanner(parser);
+
+    builder.withSquidAstVisitor(semanticModelVisitor);
 
     /* Packages */
     builder.withSquidAstVisitor(new PackageVisitor());
@@ -107,25 +110,25 @@ public final class JavaAstScanner {
 
     /* Comments */
     builder.setCommentAnalyser(
-        new CommentAnalyser() {
-          @Override
-          public boolean isBlank(String line) {
-            // Implementation of this method was taken from org.sonar.squid.text.Line#isThereBlankComment()
-            // TODO Godin: for some languages we use Character.isLetterOrDigit instead of Character.isWhitespace
-            for (int i = 0; i < line.length(); i++) {
-              char character = line.charAt(i);
-              if (!Character.isWhitespace(character) && character != '*' && character != '/') {
-                return false;
-              }
+      new CommentAnalyser() {
+        @Override
+        public boolean isBlank(String line) {
+          // Implementation of this method was taken from org.sonar.squid.text.Line#isThereBlankComment()
+          // TODO Godin: for some languages we use Character.isLetterOrDigit instead of Character.isWhitespace
+          for (int i = 0; i < line.length(); i++) {
+            char character = line.charAt(i);
+            if (!Character.isWhitespace(character) && character != '*' && character != '/') {
+              return false;
             }
-            return true;
           }
+          return true;
+        }
 
-          @Override
-          public String getContents(String comment) {
-            return comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
-          }
-        });
+        @Override
+        public String getContents(String comment) {
+          return comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
+        }
+      });
 
     /* Metrics */
 
@@ -133,30 +136,30 @@ public final class JavaAstScanner {
 
     builder.withSquidAstVisitor(new LinesOfCodeVisitor());
     builder.withSquidAstVisitor(new CommentLinesVisitor());
-    builder.withSquidAstVisitor(CommentsVisitor.<LexerlessGrammar> builder()
-        .withNoSonar(true)
-        .withIgnoreHeaderComment(true)
-        .build());
-    builder.withSquidAstVisitor(CounterVisitor.<LexerlessGrammar> builder()
-        .setMetricDef(JavaMetric.STATEMENTS)
-        .subscribeTo(
-            // This is mostly the same elements as for the grammar rule "statement", but "labeledStatement" and "block" were excluded
-            JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
-            JavaGrammar.ASSERT_STATEMENT,
-            JavaGrammar.IF_STATEMENT,
-            JavaGrammar.FOR_STATEMENT,
-            JavaGrammar.WHILE_STATEMENT,
-            JavaGrammar.DO_STATEMENT,
-            JavaGrammar.TRY_STATEMENT,
-            JavaGrammar.SWITCH_STATEMENT,
-            JavaGrammar.SYNCHRONIZED_STATEMENT,
-            JavaGrammar.RETURN_STATEMENT,
-            JavaGrammar.THROW_STATEMENT,
-            JavaGrammar.BREAK_STATEMENT,
-            JavaGrammar.CONTINUE_STATEMENT,
-            JavaGrammar.EXPRESSION_STATEMENT,
-            JavaGrammar.EMPTY_STATEMENT)
-        .build());
+    builder.withSquidAstVisitor(CommentsVisitor.<LexerlessGrammar>builder()
+      .withNoSonar(true)
+      .withIgnoreHeaderComment(true)
+      .build());
+    builder.withSquidAstVisitor(CounterVisitor.<LexerlessGrammar>builder()
+      .setMetricDef(JavaMetric.STATEMENTS)
+      .subscribeTo(
+        // This is mostly the same elements as for the grammar rule "statement", but "labeledStatement" and "block" were excluded
+        JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
+        JavaGrammar.ASSERT_STATEMENT,
+        JavaGrammar.IF_STATEMENT,
+        JavaGrammar.FOR_STATEMENT,
+        JavaGrammar.WHILE_STATEMENT,
+        JavaGrammar.DO_STATEMENT,
+        JavaGrammar.TRY_STATEMENT,
+        JavaGrammar.SWITCH_STATEMENT,
+        JavaGrammar.SYNCHRONIZED_STATEMENT,
+        JavaGrammar.RETURN_STATEMENT,
+        JavaGrammar.THROW_STATEMENT,
+        JavaGrammar.BREAK_STATEMENT,
+        JavaGrammar.CONTINUE_STATEMENT,
+        JavaGrammar.EXPRESSION_STATEMENT,
+        JavaGrammar.EMPTY_STATEMENT)
+      .build());
 
     builder.withSquidAstVisitor(new ComplexityVisitor());
 
@@ -164,6 +167,9 @@ public final class JavaAstScanner {
     for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
       if (visitor instanceof CharsetAwareVisitor) {
         ((CharsetAwareVisitor) visitor).setCharset(conf.getCharset());
+      }
+      if (visitor instanceof SemanticModelProviderAwareVisitor) {
+        ((SemanticModelProviderAwareVisitor) visitor).setSemanticModelProvider(semanticModelVisitor);
       }
       builder.withSquidAstVisitor(visitor);
     }
