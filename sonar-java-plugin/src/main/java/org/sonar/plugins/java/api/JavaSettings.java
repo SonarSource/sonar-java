@@ -48,7 +48,7 @@ public class JavaSettings implements BatchExtension, ServerExtension {
   }
 
   public static PropertyDefinition property() {
-    return PropertyDefinition.builder("sonar.java.coveragePlugin")
+    return PropertyDefinition.builder(PROPERTY_COVERAGE_PLUGIN)
       .defaultValue("jacoco")
       .category("java")
       .subCategory("General")
