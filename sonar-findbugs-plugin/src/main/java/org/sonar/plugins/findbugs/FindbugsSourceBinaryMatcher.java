@@ -33,18 +33,16 @@ public class FindbugsSourceBinaryMatcher {
 
   private final PathResolver pathResolver = new PathResolver();
 
-  private final List<File> allSources;
   private final List<File> sourceDirs;
   private final List<File> binaryDirs;
 
-  public FindbugsSourceBinaryMatcher(List<File> allSources, List<File> sourceDirs, List<File> binaryDirs) {
-    this.allSources = allSources;
+  public FindbugsSourceBinaryMatcher(List<File> sourceDirs, List<File> binaryDirs) {
     this.sourceDirs = sourceDirs;
     this.binaryDirs = binaryDirs;
   }
 
   public List<File> classesToAnalyze(List<File> sourcesToAnalyze) {
-    Set<String> allSourcesQualifiedNames = toQualifiedNames(allSources, sourceDirs);
+    Set<String> allSourcesQualifiedNames = toQualifiedNames(allSources(), sourceDirs);
     Set<String> allSourcesToAnalyzeQualifiedNames = toQualifiedNames(sourcesToAnalyze, sourceDirs);
 
     ImmutableList.Builder<File> builder = ImmutableList.builder();
@@ -55,6 +53,20 @@ public class FindbugsSourceBinaryMatcher {
 
       if (allSourcesToAnalyzeQualifiedNames.contains(correspondingSourceQualifiedName) || !allSourcesQualifiedNames.contains(correspondingSourceQualifiedName)) {
         builder.add(clazz);
+      }
+    }
+
+    return builder.build();
+  }
+
+  private List<File> allSources() {
+    ImmutableList.Builder<File> builder = ImmutableList.builder();
+
+    for (File binaryDir : sourceDirs) {
+      if (binaryDir.isDirectory()) {
+        for (File binaryFile : FileUtils.listFiles(binaryDir, new String[] {"java"}, true)) {
+          builder.add(binaryFile);
+        }
       }
     }
 
@@ -93,7 +105,12 @@ public class FindbugsSourceBinaryMatcher {
     int lastDotIndex = StringUtils.lastIndexOf(s, '.');
     int lastDollarIndex = StringUtils.lastIndexOf(s, '$');
 
-    int trimToIndex = Math.min(lastDotIndex, lastDollarIndex);
+    int trimToIndex;
+    if (lastDotIndex != -1 && lastDollarIndex != -1) {
+      trimToIndex = Math.min(lastDotIndex, lastDollarIndex);
+    } else {
+      trimToIndex = Math.max(lastDotIndex, lastDollarIndex);
+    }
 
     return trimToIndex == -1 ? s : s.substring(0, trimToIndex);
   }

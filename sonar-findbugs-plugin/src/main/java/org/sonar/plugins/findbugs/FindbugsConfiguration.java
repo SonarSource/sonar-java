@@ -43,7 +43,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -74,10 +73,9 @@ public class FindbugsConfiguration implements BatchExtension {
     }
 
     List<File> classesToAnalyze = new FindbugsSourceBinaryMatcher(
-      fileSystem.files(FileQuery.onSource()),
       fileSystem.sourceDirs(),
       fileSystem.binaryDirs())
-      .classesToAnalyze(Collections.EMPTY_LIST);
+      .classesToAnalyze(fileSystem.files(FileQuery.onSource()));
 
     for (File classToAnalyze : classesToAnalyze) {
       findbugsProject.addFile(classToAnalyze.getCanonicalPath());
@@ -89,9 +87,7 @@ public class FindbugsConfiguration implements BatchExtension {
     }
 
     for (File file : projectClasspath.getElements()) {
-      if (file.isFile()) {
-        findbugsProject.addAuxClasspathEntry(file.getAbsolutePath());
-      }
+      findbugsProject.addAuxClasspathEntry(file.getAbsolutePath());
     }
     if (annotationsLib != null) {
       // Findbugs dependencies are packaged by Maven. They are not available during execution of unit tests.
