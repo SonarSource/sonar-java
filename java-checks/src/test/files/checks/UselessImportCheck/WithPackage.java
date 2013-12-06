@@ -32,7 +32,7 @@ import javax.annotation.ParametersAreNonnullByDefault; // Compliant
 
 import java.lang.annotation.*;      // Compliant
 
-class Foo extends Foo {
+class Foo2 extends Foo {
   Bar a = new Baz<String>();
 
   @Qux

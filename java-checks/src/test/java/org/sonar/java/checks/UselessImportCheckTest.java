@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
@@ -33,9 +32,7 @@ public class UselessImportCheckTest {
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
-  // FIXME
   @Test
-  @Ignore("Stackoverflow due to the symbol table")
   public void detected_with_package() {
     SourceFile file = JavaAstScanner.scanSingleFile(
       new File("src/test/files/checks/UselessImportCheck/WithPackage.java"),
