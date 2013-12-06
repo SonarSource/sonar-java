@@ -35,7 +35,7 @@ public class PublicStaticFieldShouldBeFinalCheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/PublicStaticFieldShouldBeFinalCheck.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Make this \"public static\" field final")
+      .next().atLine(3).withMessage("Make this \"public static " + "foo" + "\" field final")
       .next().atLine(18)
       .noMore();
 
