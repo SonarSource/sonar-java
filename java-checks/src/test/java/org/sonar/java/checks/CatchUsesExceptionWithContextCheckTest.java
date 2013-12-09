@@ -19,23 +19,22 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
+import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
 public class CatchUsesExceptionWithContextCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+  public CatchUsesExceptionWithContextCheck check = new CatchUsesExceptionWithContextCheck();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchUsesExceptionWithContextCheck.java"), new CatchUsesExceptionWithContextCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchUsesExceptionWithContextCheck.java"), new VisitorsBridge(check));
+    CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(4).withMessage("Either log or rethrow this exception along with some contextual information.")
       .next().atLine(5)
       .next().atLine(7)
@@ -43,12 +42,14 @@ public class CatchUsesExceptionWithContextCheckTest {
       .next().atLine(18)
       .next().atLine(20)
       .next().atLine(22)
+      .next().atLine(43) // Old imp.
       .next().atLine(45)
-      .next().atLine(56)
+      .next().atLine(56) // Old imp.
       .next().atLine(62)
       .next().atLine(64)
       .next().atLine(75)
-      .next().atLine(82);
+      .next().atLine(82) // Old imp.
+      .noMore();
   }
 
 }

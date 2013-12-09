@@ -1,30 +1,30 @@
 class A {
   private void f() {
     try {
-    } catch (Exception e) { // Non-Compliant
-    } catch (Exception e) { // Non-Compliant
+    } catch (Exception e) {                     // Noncompliant
+    } catch (Exception e) {                     // Noncompliant
       System.out.println(e);
-    } catch (Exception e) { // Non-Compliant
+    } catch (Exception e) {                     // Noncompliant
       System.out.println("foo", e.getMessage());
-    } catch (Exception e) { // Compliant
+    } catch (Exception e) {                     // Compliant
       System.out.println("", e);
-    } catch (Exception f) { // Non-Compliant
+    } catch (Exception f) {                     // Noncompliant
       System.out.println("", e);
-    } catch (Exception f) { // Compliant
+    } catch (Exception f) {                     // Compliant
       System.out.println("", f);
-    } catch (Exception e) { // Compliant
+    } catch (Exception e) {                     // Compliant
       System.out.println("", e);
       try {
-      } catch (Exception f) { // Non-Compliant
+      } catch (Exception f) {                   // Noncompliant
       }
-    } catch (Exception e) { // Non-Compliant
+    } catch (Exception e) {                     // Noncompliant
       try {
-      } catch (Exception f) { // Non-Compliant
+      } catch (Exception f) {                   // Noncompliant
         System.out.println("", e);
       }
     } catch (RuntimeException e) {
       try {
-      } catch (Exception f) { // Compliant
+      } catch (Exception f) {                   // Compliant
         System.out.println("", f);
       }
       System.out.println("", e);
@@ -38,49 +38,51 @@ class A {
   private void h() {
     try {
       /* ... */
-    } catch (NumberFormatException e) {                                       // Compliant
+    } catch (Exception e) {                     // Compliant
       throw Throwables.propagate(e);
-    } catch (RuntimeException e) {                                            // Compliant - propagation
+    } catch (RuntimeException e) {              // Compliant - propagation
       throw e;
-    } catch (Exception e) {                                                   // Non-Compliant - exception is lost
+    } catch (Exception e) {                     // Noncompliant - exception is lost
       throw new RuntimeException("context");
     }
 
     try {
       /* ... */
-    } catch (Exception e) {                                                   // Compliant
+    } catch (Exception e) {                      // Compliant
       throw new RuntimeException("context", e);
     }
 
     try {
-    } catch (Exception e) {                                                   // Non-Compliant
+    } catch (Exception e) {                      // Compliant
       throw e;
     } finally {
     }
 
     try {
-    } catch (Exception e) {                                                   // Non-Compliant
+    } catch (Exception e) {                      // Noncompliant
       int a;
-    } catch (Throwable e) {                                                   // Non-Compliant
+    } catch (Throwable e) {                      // Noncompliant
     }
 
     try {
-    } catch (IOException e) {                                                 // Compliant - checked to unchecked
+    } catch (IOException e) {                    // Compliant - checked to unchecked
       throw Throwables.propagate(e);
     }
 
     try {
-    } catch (IOException e) {                                                 // Compliant
+    } catch (IOException e) {                    // Compliant
       throw new RuntimeException(e);
-    } catch (NumberFormatException e) {                                       // Non-Compliant
+    } catch (Exception e) {                      // Noncompliant
       throw new RuntimeException(e.getMessage());
-    } catch (Exception e) {                                                   // Compliant
+    } catch (Exception e) {                      // Compliant
       throw Throwables.propagate(e);
     }
 
     try {
-    } catch (Exception e) {                                                   // Non-Compliant - not propagation
+    } catch (Exception e) {                      // Compliant
       throw e;
+    } catch (Exception ex) {
+      throw new XNIException(ex);
     }
   }
 }

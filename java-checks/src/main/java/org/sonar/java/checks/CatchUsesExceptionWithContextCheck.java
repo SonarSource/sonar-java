@@ -19,146 +19,103 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 import java.util.Stack;
 
 @Rule(
-  key = "S1166",
-  priority = Priority.CRITICAL)
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class CatchUsesExceptionWithContextCheck extends SquidCheck<LexerlessGrammar> {
+  key = CatchUsesExceptionWithContextCheck.RULE_KEY,
+  priority = Priority.MAJOR)
+@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private final Stack<String> exceptionVariables = new Stack<String>();
-  private final Stack<Boolean> foundCorrectUsages = new Stack<Boolean>();
+  public static final String RULE_KEY = "S1166";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
-  @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CATCH_CLAUSE);
-    subscribeTo(JavaGrammar.ARGUMENTS);
+  private Stack<CatchState> catchStack = new Stack<CatchState>();
+  private boolean inThrow;
+  private JavaFileScannerContext context;
+
+  private static class CatchState {
+    public String caughtVariable;
+    public boolean isExceptionCorrectlyUsed;
+
+    public CatchState(String caughtVariable) {
+      this.caughtVariable = caughtVariable;
+    }
+
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.CATCH_CLAUSE) && !isExcluded(node)) {
-      exceptionVariables.push(getCaughtVariable(node));
-      foundCorrectUsages.push(false);
-    } else if (isWithinCatch() && isArgumentsWithSeveralExpressions(node)) {
-      for (AstNode expression : node.getChildren(JavaGrammar.EXPRESSION)) {
-        if (isExceptionVariable(expression)) {
-          foundCorrectUsages.pop();
-          foundCorrectUsages.push(true);
-        }
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    this.catchStack.clear();
+    this.inThrow = false;
+    scan(context.getTree());
+  }
+
+  @Override
+  public void visitCatch(CatchTree tree) {
+    if (tree.is(Tree.Kind.CATCH)) {
+      catchStack.push(new CatchState(tree.parameter().simpleName()));
+      super.visitCatch(tree);
+
+      if (!catchStack.pop().isExceptionCorrectlyUsed) {
+        context.addIssue(tree, ruleKey, "Either log or rethrow this exception along with some contextual information.");
+      }
+//      }
+    }
+  }
+
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    if (!catchStack.empty() && tree.is(Tree.Kind.METHOD_INVOCATION) && (inThrow || tree.arguments().size() > 1)) {
+      checkArguments(tree.arguments());
+    }
+    super.visitMethodInvocation(tree);
+  }
+
+
+  @Override
+  public void visitNewClass(NewClassTree tree) {
+    if (!catchStack.empty() && tree.is(Tree.Kind.NEW_CLASS) && inThrow) {
+      checkArguments(tree.arguments());
+    }
+    super.visitNewClass(tree);
+  }
+
+  private void checkArguments(List<ExpressionTree> arguments) {
+    for (ExpressionTree expression : arguments) {
+      if (expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).name().equals(catchStack.peek().caughtVariable)) {
+        catchStack.peek().isExceptionCorrectlyUsed = true;
       }
     }
   }
 
   @Override
-  public void leaveNode(AstNode node) {
-    if (node.is(JavaGrammar.CATCH_CLAUSE) && !isExcluded(node)) {
-      exceptionVariables.pop();
-      boolean foundCorrectUsage = foundCorrectUsages.pop();
+  public void visitThrowStatement(ThrowStatementTree tree) {
+    if (!catchStack.empty() && tree.is(Tree.Kind.THROW_STATEMENT)) {
 
-      if (!foundCorrectUsage) {
-        getContext().createLineViolation(this, "Either log or rethrow this exception along with some contextual information.", node);
-      }
+      inThrow = true;
+      super.visitThrowStatement(tree);
+      inThrow = false;
+
     }
   }
 
-  private boolean isWithinCatch() {
-    return !exceptionVariables.isEmpty();
-  }
-
-  private static boolean isArgumentsWithSeveralExpressions(AstNode node) {
-    return node.hasDirectChildren(JavaPunctuator.COMMA);
-  }
-
-  private boolean isExceptionVariable(AstNode node) {
-    return hasSingleToken(node) && node.getTokenValue().equals(exceptionVariables.peek());
-  }
-
-  private static boolean hasSingleToken(AstNode node) {
-    return node.getToken().equals(node.getLastToken());
-  }
-
-  private static boolean isExcluded(AstNode node) {
-    List<AstNode> blockStatements = node.getFirstChild(JavaGrammar.BLOCK)
-      .getFirstChild(JavaGrammar.BLOCK_STATEMENTS)
-      .getChildren(JavaGrammar.BLOCK_STATEMENT);
-
-    if (blockStatements.size() != 1) {
-      return false;
-    }
-
-    AstNode blockStatement = blockStatements.get(0);
-    AstNode throwStatement = getThrowStatement(blockStatement);
-    if (throwStatement == null) {
-      return false;
-    }
-
-    String caughtVariable = getCaughtVariable(node);
-
-    return isPropagation(node, caughtVariable, throwStatement) || isCheckedToUncheckedConversion(caughtVariable, blockStatement);
-  }
-
-  private static AstNode getThrowStatement(AstNode blockStatement) {
-    AstNode statement = blockStatement.getFirstChild(JavaGrammar.STATEMENT);
-    if (statement == null) {
-      return null;
-    }
-
-    AstNode throwStatement = statement.getFirstChild(JavaGrammar.THROW_STATEMENT);
-    if (throwStatement == null) {
-      return null;
-    }
-
-    return throwStatement;
-  }
-
-  private static String getCaughtVariable(AstNode catchClause) {
-    return catchClause.getFirstChild(JavaGrammar.CATCH_FORMAL_PARAMETER)
-      .getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID)
-      .getTokenOriginalValue();
-  }
-
-  private static boolean isPropagation(AstNode catchClause, String caughtVariable, AstNode throwStatement) {
-    return !isLastCatch(catchClause) && isRethrowStatement(caughtVariable, throwStatement);
-  }
-
-  private static boolean isCheckedToUncheckedConversion(String caughtVariable, AstNode throwStatement) {
-    for (AstNode arguments : throwStatement.getDescendants(JavaGrammar.ARGUMENTS)) {
-      for (AstNode expression : arguments.getChildren(JavaGrammar.EXPRESSION)) {
-        if (AstNodeTokensMatcher.matches(expression, caughtVariable)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  private static boolean isLastCatch(AstNode node) {
-    AstNode nextSibling = node.getNextSibling();
-    return nextSibling == null ||
-      !nextSibling.is(JavaGrammar.CATCH_CLAUSE);
-  }
-
-  private static boolean isRethrowStatement(String caughtVariable, AstNode throwStatement) {
-    return caughtVariable.equals(getThrownVariable(throwStatement));
-  }
-
-  private static String getThrownVariable(AstNode throwStatement) {
-    AstNode expression = throwStatement.getFirstChild(JavaGrammar.EXPRESSION);
-
-    return expression.getToken().equals(expression.getLastToken()) ? expression.getTokenOriginalValue() : "";
-  }
 
 }
