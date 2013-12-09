@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -96,6 +97,13 @@ public class UnusedLocalVariableCheck extends BaseTreeVisitor implements JavaFil
   public void visitCatch(CatchTree tree) {
     super.visitVariable(tree.parameter());
     scan(tree.block());
+  }
+
+  @Override
+  public void visitForEachStatement(ForEachStatement tree) {
+    super.visitVariable(tree.variable());
+    scan(tree.expression());
+    scan(tree.statement());
   }
 
   @Override

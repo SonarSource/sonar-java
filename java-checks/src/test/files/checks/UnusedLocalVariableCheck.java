@@ -14,6 +14,9 @@ class Foo {
 
     try (Stream foo = new Stream()) { // Compliant
     }
+
+    for (int a: new int[]{ 0, 1, 2 }) { // Compliant
+    }
   }
 
 }
