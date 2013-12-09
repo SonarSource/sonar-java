@@ -1,11 +1,13 @@
 class Foo {
 
-  int unusedField; // Noncompliant
+  private int unusedField; // Noncompliant
 
   @UsedBySomeFramework
-  int foo; // Noncompliant
+  private int foo; // Noncompliant
 
   int usedField; // Compliant
+
+  public int foo; // Compliant
 
   public void f(int unusedParameter) {
     int unusedLocalVariable;
@@ -23,5 +25,17 @@ class Foo {
     for (int a: new int[]{ 0, 1, 2 }) { // Noncompliant
     }
   }
+
+}
+
+enum Foo {
+
+  FOO;
+
+}
+
+interface Foo {
+
+  int FOO = 0; // Compliant
 
 }
