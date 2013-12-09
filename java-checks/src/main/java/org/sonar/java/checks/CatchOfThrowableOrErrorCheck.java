@@ -27,7 +27,9 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
@@ -38,6 +40,9 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
 public class CatchOfThrowableOrErrorCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String ERROR = "Error";
+  private static final String THROWABLE = "Throwable";
+
   public static final String RULE_KEY = "S1181";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
@@ -47,9 +52,7 @@ public class CatchOfThrowableOrErrorCheck extends BaseTreeVisitor implements Jav
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
 
-    if (context.getSemanticModel() != null) {
-      scan(context.getTree());
-    }
+    scan(context.getTree());
   }
 
   @Override
@@ -72,10 +75,30 @@ public class CatchOfThrowableOrErrorCheck extends BaseTreeVisitor implements Jav
     if (tree.is(Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) tree;
 
-      if ("Error".equals(identifierTree.name()) || "Throwable".equals(identifierTree.name())) {
-        context.addIssue(tree, ruleKey, "Catch Exception instead of " + identifierTree.name() + ".");
+      if (ERROR.equals(identifierTree.name()) || THROWABLE.equals(identifierTree.name())) {
+        addIssue(tree, identifierTree.name());
+      }
+    } else if (tree.is(Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) tree;
+
+      if (ERROR.equals(memberSelectTree.identifier().name()) || THROWABLE.equals(memberSelectTree.identifier().name())) {
+        ExpressionTree tree2 = memberSelectTree.expression();
+
+        if (tree2.is(Kind.MEMBER_SELECT)) {
+          MemberSelectExpressionTree memberSelectTree2 = (MemberSelectExpressionTree) tree2;
+
+          if ("lang".equals(memberSelectTree2.identifier().name()) &&
+            memberSelectTree2.expression().is(Kind.IDENTIFIER) &&
+            "java".equals(((IdentifierTree) memberSelectTree2.expression()).name())) {
+            addIssue(tree, memberSelectTree.identifier().name());
+          }
+        }
       }
     }
+  }
+
+  private void addIssue(Tree tree, String type) {
+    context.addIssue(tree, ruleKey, "Catch Exception instead of " + type + ".");
   }
 
 }

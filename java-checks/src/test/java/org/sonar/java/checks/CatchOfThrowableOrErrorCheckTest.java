@@ -40,7 +40,9 @@ public class CatchOfThrowableOrErrorCheckTest {
       .next().atLine(5).withMessage("Catch Exception instead of Throwable.")
       .next().atLine(6).withMessage("Catch Exception instead of Error.")
       .next().atLine(9).withMessage("Catch Exception instead of Error.")
-      .next().atLine(13);
+      .next().atLine(13)
+      .next().atLine(15).withMessage("Catch Exception instead of Throwable.")
+      .next().atLine(16).withMessage("Catch Exception instead of Error.");
   }
 
 }
