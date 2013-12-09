@@ -42,13 +42,10 @@ public class CatchUsesExceptionWithContextCheckTest {
       .next().atLine(18)
       .next().atLine(20)
       .next().atLine(22)
-      .next().atLine(43) // Old imp.
       .next().atLine(45)
-      .next().atLine(56) // Old imp.
       .next().atLine(62)
       .next().atLine(64)
       .next().atLine(75)
-      .next().atLine(82) // Old imp.
       .noMore();
   }
 

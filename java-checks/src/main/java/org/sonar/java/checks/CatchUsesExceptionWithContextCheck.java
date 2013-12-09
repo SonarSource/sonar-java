@@ -109,6 +109,11 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
     if (!catchStack.empty() && tree.is(Tree.Kind.THROW_STATEMENT)) {
+      ExpressionTree expr = tree.expression();
+
+      if (expr.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expr).name().equals(catchStack.peek().caughtVariable)) {
+        catchStack.peek().isExceptionCorrectlyUsed = true;
+      }
 
       inThrow = true;
       super.visitThrowStatement(tree);
