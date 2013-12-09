@@ -84,5 +84,15 @@ class A {
     } catch (Exception ex) {
       throw new XNIException(ex);
     }
+
+
+    try {
+    } catch (NumberFormatException e) {          // Compliant
+      return 0;
+    } catch (InterruptedExcetpion e) {           // Compliant
+      /* do nothing */
+    } catch (ParseException e) {                 // Compliant
+    } catch (MalformedURLException e) {          // Compliant
+    }
   }
 }

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
@@ -45,6 +46,11 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   public static final String RULE_KEY = "S1166";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private static final String[] EXCLUDED_EXCEPTION_TYPE = {
+    "NumberFormatException",
+    "InterruptedExcetpion",
+    "ParseException",
+    "MalformedURLException"};
 
   private Stack<CatchState> catchStack = new Stack<CatchState>();
   private boolean inThrow;
@@ -71,14 +77,24 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   @Override
   public void visitCatch(CatchTree tree) {
     if (tree.is(Tree.Kind.CATCH)) {
-      catchStack.push(new CatchState(tree.parameter().simpleName()));
-      super.visitCatch(tree);
 
-      if (!catchStack.pop().isExceptionCorrectlyUsed) {
-        context.addIssue(tree, ruleKey, "Either log or rethrow this exception along with some contextual information.");
+      if (isExcludedExceptionType(tree)) {
+        super.visitCatch(tree);
+      } else {
+        catchStack.push(new CatchState(tree.parameter().simpleName()));
+        super.visitCatch(tree);
+
+        if (!catchStack.pop().isExceptionCorrectlyUsed) {
+          context.addIssue(tree, ruleKey, "Either log or rethrow this exception along with some contextual information.");
+        }
       }
-//      }
     }
+  }
+
+  private boolean isExcludedExceptionType(CatchTree tree) {
+    Tree exceptionType = tree.parameter().type();
+    return exceptionType.is(Tree.Kind.IDENTIFIER)
+      && ArrayUtils.contains(EXCLUDED_EXCEPTION_TYPE, ((IdentifierTree) exceptionType).name());
   }
 
   @Override
