@@ -9,7 +9,6 @@
   <rule ref="rulesets/unusedcode.xml/UnusedFormalParameter" />
   <rule ref="rulesets/basic.xml/ClassCastExceptionWithToArray" />
   <rule ref="rulesets/strictexception.xml/AvoidThrowingNullPointerException" />
-  <rule ref="rulesets/unusedcode.xml/UnusedPrivateField" />
   <rule ref="rulesets/design.xml/CompareObjectsWithEquals" />
   <rule ref="rulesets/strings.xml/UseIndexOfChar" />
   <rule ref="rulesets/basic.xml/BigIntegerInstantiation" />

@@ -153,6 +153,7 @@ public final class CheckList {
       PublicStaticFieldShouldBeFinalCheck.class,
       WildcardReturnParameterTypeCheck.class,
       UnusedLocalVariableCheck.class,
+      UnusedPrivateFieldCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
