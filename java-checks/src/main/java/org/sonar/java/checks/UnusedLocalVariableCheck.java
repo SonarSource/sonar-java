@@ -31,9 +31,11 @@ import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(
@@ -61,7 +63,7 @@ public class UnusedLocalVariableCheck extends BaseTreeVisitor implements JavaFil
     for (Tree member : tree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         // skip check of field
-        scan(((VariableTree) member).initializer());
+        super.visitVariable((VariableTree) member);
       } else {
         scan(member);
       }
@@ -73,7 +75,26 @@ public class UnusedLocalVariableCheck extends BaseTreeVisitor implements JavaFil
     scan(tree.modifiers());
     scan(tree.typeParameters());
     scan(tree.returnType());
+    for (VariableTree parameter : tree.parameters()) {
+      super.visitVariable(parameter);
+    }
     scan(tree.defaultValue());
+    scan(tree.block());
+  }
+
+  @Override
+  public void visitTryStatement(TryStatementTree tree) {
+    for (VariableTree resource : tree.resources()) {
+      super.visitVariable(resource);
+    }
+    scan(tree.block());
+    scan(tree.catches());
+    scan(tree.finallyBlock());
+  }
+
+  @Override
+  public void visitCatch(CatchTree tree) {
+    super.visitVariable(tree.parameter());
     scan(tree.block());
   }
 
