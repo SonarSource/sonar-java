@@ -23,6 +23,7 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -34,11 +35,12 @@ public class CatchOfThrowableOrErrorCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchOfThrowableOrErrorCheck.java"), new CatchOfThrowableOrErrorCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchOfThrowableOrErrorCheck.java"), new VisitorsBridge(new CatchOfThrowableOrErrorCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("Catch Exception instead of Throwable.")
-        .next().atLine(6).withMessage("Catch Exception instead of Error.")
-        .next().atLine(9).withMessage("Catch Exception instead of Error.");
+      .next().atLine(5).withMessage("Catch Exception instead of Throwable.")
+      .next().atLine(6).withMessage("Catch Exception instead of Error.")
+      .next().atLine(9).withMessage("Catch Exception instead of Error.")
+      .next().atLine(13);
   }
 
 }

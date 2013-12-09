@@ -8,6 +8,10 @@ class A {
     } catch (Foo |
         Error |                       // Non-Compliant
         RuntimeException e) {
+
+      try {
+      } catch (Error e) {             // Noncompliant
+      }
     } catch (java.lang.Throwable e) { // Compliant - limitation
     } finally {
     }

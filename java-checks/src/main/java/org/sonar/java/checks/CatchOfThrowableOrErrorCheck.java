@@ -19,41 +19,63 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.UnionTypeTree;
 
 @Rule(
-  key = "S1181",
+  key = CatchOfThrowableOrErrorCheck.RULE_KEY,
   priority = Priority.BLOCKER)
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
-public class CatchOfThrowableOrErrorCheck extends SquidCheck<LexerlessGrammar> {
+public class CatchOfThrowableOrErrorCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1181";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CATCH_TYPE);
-  }
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
 
-  @Override
-  public void visitNode(AstNode node) {
-    for (AstNode qualifiedIdentifier : node.getChildren(JavaGrammar.QUALIFIED_IDENTIFIER)) {
-      if (hasSingleIdentifier(qualifiedIdentifier)) {
-        String caughtException = qualifiedIdentifier.getTokenOriginalValue();
-
-        if ("Throwable".equals(caughtException) || "Error".equals(caughtException)) {
-          getContext().createLineViolation(this, "Catch Exception instead of " + caughtException + ".", qualifiedIdentifier);
-        }
-      }
+    if (context.getSemanticModel() != null) {
+      scan(context.getTree());
     }
   }
 
-  private static boolean hasSingleIdentifier(AstNode node) {
-    return !node.hasDirectChildren(JavaPunctuator.DOT);
+  @Override
+  public void visitCatch(CatchTree tree) {
+    super.visitCatch(tree);
+
+    Tree typeTree = tree.parameter().type();
+
+    if (typeTree.is(Kind.UNION_TYPE)) {
+      UnionTypeTree unionTypeTree = (UnionTypeTree) typeTree;
+      for (Tree typeAlternativeTree : unionTypeTree.typeAlternatives()) {
+        checkType(typeAlternativeTree);
+      }
+    } else {
+      checkType(typeTree);
+    }
+  }
+
+  private void checkType(Tree tree) {
+    if (tree.is(Kind.IDENTIFIER)) {
+      IdentifierTree identifierTree = (IdentifierTree) tree;
+
+      if ("Error".equals(identifierTree.name()) || "Throwable".equals(identifierTree.name())) {
+        context.addIssue(tree, ruleKey, "Catch Exception instead of " + identifierTree.name() + ".");
+      }
+    }
   }
 
 }
