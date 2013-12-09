@@ -37,7 +37,9 @@ public class UnusedLocalVariableCheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UnusedLocalVariableCheck.java"), new VisitorsBridge(new UnusedLocalVariableCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Remove this unused \"unusedLocalVariable\" local variable.");
+      .next().atLine(6).withMessage("Remove this unused \"unusedLocalVariable\" local variable.")
+      .next().atLine(15).withMessage("Remove this unused \"foo\" local variable.")
+      .next().atLine(18);
   }
 
 }

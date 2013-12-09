@@ -12,10 +12,10 @@ class Foo {
     } catch (Exception e) { // Compliant
     }
 
-    try (Stream foo = new Stream()) { // Compliant
+    try (Stream foo = new Stream()) { // Noncompliant
     }
 
-    for (int a: new int[]{ 0, 1, 2 }) { // Compliant
+    for (int a: new int[]{ 0, 1, 2 }) { // Noncompliant
     }
   }
 

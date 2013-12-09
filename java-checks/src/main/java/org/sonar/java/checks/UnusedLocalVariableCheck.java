@@ -25,6 +25,7 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
@@ -33,10 +34,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(
@@ -84,33 +83,23 @@ public class UnusedLocalVariableCheck extends BaseTreeVisitor implements JavaFil
   }
 
   @Override
-  public void visitTryStatement(TryStatementTree tree) {
-    for (VariableTree resource : tree.resources()) {
-      super.visitVariable(resource);
-    }
-    scan(tree.block());
-    scan(tree.catches());
-    scan(tree.finallyBlock());
-  }
-
-  @Override
   public void visitCatch(CatchTree tree) {
     super.visitVariable(tree.parameter());
     scan(tree.block());
   }
 
   @Override
-  public void visitForEachStatement(ForEachStatement tree) {
-    super.visitVariable(tree.variable());
-    scan(tree.expression());
-    scan(tree.statement());
-  }
-
-  @Override
   public void visitVariable(VariableTree tree) {
     super.visitVariable(tree);
 
-    AstNode identifierAstNode = ((JavaTree) tree).getAstNode().getFirstChild(JavaTokenType.IDENTIFIER);
+    AstNode astNode = ((JavaTree) tree).getAstNode();
+    AstNode variableAstNode;
+    if (astNode.is(JavaGrammar.RESOURCE) || astNode.is(JavaGrammar.FORMAL_PARAMETER)) {
+      variableAstNode = astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR, JavaGrammar.VARIABLE_DECLARATOR_ID);
+    } else {
+      variableAstNode = astNode;
+    }
+    AstNode identifierAstNode = variableAstNode.getFirstChild(JavaTokenType.IDENTIFIER);
 
     SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
     Symbol symbol = semanticModel.getSymbol(identifierAstNode);
