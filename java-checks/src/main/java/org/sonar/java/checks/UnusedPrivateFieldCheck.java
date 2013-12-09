@@ -68,7 +68,7 @@ public class UnusedPrivateFieldCheck extends BaseTreeVisitor implements JavaFile
   }
 
   public void checkIfUnused(VariableTree tree) {
-    if (tree.modifiers().modifiers().contains(Modifier.PRIVATE)) {
+    if (tree.modifiers().modifiers().contains(Modifier.PRIVATE) && !"serialVersionUID".equals(tree.simpleName())) {
       AstNode identifierAstNode = ((JavaTree) tree).getAstNode().getFirstChild(JavaTokenType.IDENTIFIER);
 
       SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();

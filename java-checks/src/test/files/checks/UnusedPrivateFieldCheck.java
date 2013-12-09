@@ -9,6 +9,8 @@ class Foo {
 
   public int foo; // Compliant
 
+  private static final long serialVersionUID = 4858622370623524688L; // Compliant
+
   public void f(int unusedParameter) {
     int unusedLocalVariable;
 
