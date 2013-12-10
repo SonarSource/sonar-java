@@ -19,37 +19,53 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(
-  key = "AssignmentInSubExpressionCheck",
+  key = AssignmentInSubExpressionCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class AssignmentInSubExpressionCheck extends SquidCheck<LexerlessGrammar> {
+public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "AssignmentInSubExpressionCheck";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.ASSIGNMENT_EXPRESSION);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (!isExpressionStatement(node)) {
-      getContext().createLineViolation(this, "Extract the assignment out of this expression.", node);
+  public void visitExpressionStatement(ExpressionStatementTree tree) {
+    ExpressionTree expressionTree = tree.expression();
+
+    while (expressionTree instanceof AssignmentExpressionTree) {
+      AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) expressionTree;
+      scan(assignmentExpressionTree.variable());
+      expressionTree = assignmentExpressionTree.expression();
     }
+
+    scan(expressionTree);
   }
 
-  private static boolean isExpressionStatement(AstNode node) {
-    return node
-        .getParent()
-        .getParent()
-        .is(JavaGrammar.STATEMENT_EXPRESSION);
+  @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    super.visitAssignmentExpression(tree);
+
+    context.addIssue(tree, ruleKey, "Extract the assignment out of this expression.");
   }
 
 }
