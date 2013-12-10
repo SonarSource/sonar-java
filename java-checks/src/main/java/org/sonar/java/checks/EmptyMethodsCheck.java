@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
@@ -77,7 +76,12 @@ public class EmptyMethodsCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isInAbstractClass(AstNode node) {
-    AstNode modifier = getFirstAncestor(node, JavaGrammar.CLASS_DECLARATION, JavaGrammar.ENUM_BODY_DECLARATIONS, JavaGrammar.CLASS_CREATOR_REST).getPreviousAstNode();
+    AstNode modifier = node.getFirstAncestor(
+      JavaGrammar.CLASS_DECLARATION,
+      JavaGrammar.ENUM_BODY_DECLARATIONS,
+      JavaGrammar.ENUM_CONSTANT,
+      JavaGrammar.CLASS_CREATOR_REST).getPreviousAstNode();
+
     while (modifier != null && modifier.is(JavaGrammar.MODIFIER)) {
       if (modifier.hasDirectChildren(JavaKeyword.ABSTRACT)) {
         return true;
@@ -86,16 +90,6 @@ public class EmptyMethodsCheck extends SquidCheck<LexerlessGrammar> {
     }
 
     return false;
-  }
-
-  private static AstNode getFirstAncestor(AstNode node, AstNodeType t1, AstNodeType t2, AstNodeType t3) {
-    AstNode result = node.getParent();
-
-    while (!result.is(t1, t2, t3)) {
-      result = result.getParent();
-    }
-
-    return result;
   }
 
 }

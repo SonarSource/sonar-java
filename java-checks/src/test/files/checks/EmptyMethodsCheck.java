@@ -96,3 +96,22 @@ public interface IFoo {
   };
 
 }
+
+enum Foo {
+
+  FOO {
+    // Noncompliant
+    public void foo() {
+    }
+
+    // Compliant
+    public int bar() {
+      return 0;
+    }
+  };
+
+  // Noncompliant
+  public void foo() {
+  }
+
+}

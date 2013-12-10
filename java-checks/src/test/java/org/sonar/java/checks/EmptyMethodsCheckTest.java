@@ -43,7 +43,9 @@ public class EmptyMethodsCheckTest {
       .next().atLine(57)
       .next().atLine(67)
       .next().atLine(80)
-      .next().atLine(89);
+      .next().atLine(89)
+      .next().atLine(104)
+      .next().atLine(114);
   }
 
 }
