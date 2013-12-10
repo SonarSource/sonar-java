@@ -94,5 +94,12 @@ class A {
     } catch (ParseException e) {                 // Compliant
     } catch (MalformedURLException e) {          // Compliant
     }
+
+    try {
+    } catch (Exception e) {                      // Compliant
+       foo(someContextVariable, e);
+    } catch (Exception e) {                      // Compliant
+      throw (Exception)new Foo("bar").initCause(e);
+    }
   }
 }

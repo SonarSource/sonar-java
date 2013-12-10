@@ -19,7 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import org.apache.commons.lang.ArrayUtils;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
@@ -34,9 +35,12 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 
+import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
+import java.util.Set;
 
 @Rule(
   key = CatchUsesExceptionWithContextCheck.RULE_KEY,
@@ -46,97 +50,93 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   public static final String RULE_KEY = "S1166";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-  private static final String[] EXCLUDED_EXCEPTION_TYPE = {
+
+  private static final Set<String> EXCLUDED_EXCEPTION_TYPE = ImmutableSet.of(
     "NumberFormatException",
     "InterruptedExcetpion",
     "ParseException",
-    "MalformedURLException"};
+    "MalformedURLException");
 
-  private Stack<CatchState> catchStack = new Stack<CatchState>();
-  private boolean inThrow;
   private JavaFileScannerContext context;
 
-  private static class CatchState {
-    public String caughtVariable;
-    public boolean isExceptionCorrectlyUsed;
-
-    public CatchState(String caughtVariable) {
-      this.caughtVariable = caughtVariable;
-    }
-
-  }
+  private final Set<CatchTree> invalidCatchesCheck = Sets.newHashSet();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    this.catchStack.clear();
-    this.inThrow = false;
+
     scan(context.getTree());
   }
 
   @Override
   public void visitCatch(CatchTree tree) {
-    if (tree.is(Tree.Kind.CATCH)) {
+    invalidCatchesCheck.add(tree);
 
-      if (isExcludedExceptionType(tree)) {
-        super.visitCatch(tree);
-      } else {
-        catchStack.push(new CatchState(tree.parameter().simpleName()));
-        super.visitCatch(tree);
+    super.visitCatch(tree);
 
-        if (!catchStack.pop().isExceptionCorrectlyUsed) {
-          context.addIssue(tree, ruleKey, "Either log or rethrow this exception along with some contextual information.");
-        }
+    if (invalidCatchesCheck.contains(tree)) {
+      invalidCatchesCheck.remove(tree);
+
+      if (!isExcludedType(tree.parameter().type())) {
+        context.addIssue(tree, ruleKey, "Either log or rethrow this exception along with some contextual information.");
       }
     }
   }
 
-  private boolean isExcludedExceptionType(CatchTree tree) {
-    Tree exceptionType = tree.parameter().type();
-    return exceptionType.is(Tree.Kind.IDENTIFIER)
-      && ArrayUtils.contains(EXCLUDED_EXCEPTION_TYPE, ((IdentifierTree) exceptionType).name());
+  private boolean isExcludedType(Tree tree) {
+    return tree.is(Kind.IDENTIFIER) &&
+      EXCLUDED_EXCEPTION_TYPE.contains(((IdentifierTree) tree).name());
   }
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    if (!catchStack.empty() && tree.is(Tree.Kind.METHOD_INVOCATION) && (inThrow || tree.arguments().size() > 1)) {
-      checkArguments(tree.arguments());
-    }
     super.visitMethodInvocation(tree);
-  }
 
-
-  @Override
-  public void visitNewClass(NewClassTree tree) {
-    if (!catchStack.empty() && tree.is(Tree.Kind.NEW_CLASS) && inThrow) {
-      checkArguments(tree.arguments());
+    if (tree.arguments().size() >= 2) {
+      handleArguments(tree.arguments());
     }
-    super.visitNewClass(tree);
   }
 
-  private void checkArguments(List<ExpressionTree> arguments) {
-    for (ExpressionTree expression : arguments) {
-      if (expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).name().equals(catchStack.peek().caughtVariable)) {
-        catchStack.peek().isExceptionCorrectlyUsed = true;
+  private void removeInvalidCatches(String exceptionName) {
+    Iterator<CatchTree> it = invalidCatchesCheck.iterator();
+    while (it.hasNext()) {
+      CatchTree tree = it.next();
+
+      if (exceptionName.equals(tree.parameter().simpleName())) {
+        it.remove();
+      }
+    }
+  }
+
+  private void handleArguments(List<ExpressionTree> trees) {
+    for (Tree tree : trees) {
+      if (tree.is(Kind.IDENTIFIER)) {
+        removeInvalidCatches(((IdentifierTree) tree).name());
       }
     }
   }
 
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
-    if (!catchStack.empty() && tree.is(Tree.Kind.THROW_STATEMENT)) {
-      ExpressionTree expr = tree.expression();
+    super.visitThrowStatement(tree);
 
-      if (expr.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expr).name().equals(catchStack.peek().caughtVariable)) {
-        catchStack.peek().isExceptionCorrectlyUsed = true;
-      }
-
-      inThrow = true;
-      super.visitThrowStatement(tree);
-      inThrow = false;
-
-    }
+    handleThrowExpression(tree.expression());
   }
 
+  private void handleThrowExpression(ExpressionTree tree) {
+    if (tree.is(Kind.IDENTIFIER)) {
+      removeInvalidCatches(((IdentifierTree) tree).name());
+    } else if (tree.is(Kind.NEW_CLASS)) {
+      NewClassTree newClassTree = (NewClassTree) tree;
+
+      handleArguments(newClassTree.arguments());
+    } else if (tree.is(Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
+
+      handleArguments(methodInvocationTree.arguments());
+    } else if (tree.is(Kind.TYPE_CAST)) {
+      handleThrowExpression(((TypeCastTree) tree).expression());
+    }
+  }
 
 }
