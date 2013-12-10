@@ -27,8 +27,14 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
+
+import javax.annotation.Nullable;
 
 @Rule(
   key = AssignmentInSubExpressionCheck.RULE_KEY,
@@ -59,6 +65,47 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
     }
 
     scan(expressionTree);
+  }
+
+  @Override
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    if (isRelationalExpression(tree)) {
+      visitInnerExpression(tree.leftOperand());
+      visitInnerExpression(tree.rightOperand());
+    } else {
+      super.visitBinaryExpression(tree);
+    }
+  }
+
+  private void visitInnerExpression(ExpressionTree tree) {
+    AssignmentExpressionTree assignmentExpressionTree = getInnerAssignmentExpression(tree);
+    if (assignmentExpressionTree != null) {
+      super.visitAssignmentExpression(assignmentExpressionTree);
+    } else {
+      scan(tree);
+    }
+  }
+
+  @Nullable
+  private static AssignmentExpressionTree getInnerAssignmentExpression(ExpressionTree tree) {
+    if (tree.is(Kind.PARENTHESIZED_EXPRESSION)) {
+      ParenthesizedTree parenthesizedTree = (ParenthesizedTree) tree;
+
+      if (parenthesizedTree.expression().is(Kind.ASSIGNMENT)) {
+        return (AssignmentExpressionTree) parenthesizedTree.expression();
+      }
+    }
+
+    return null;
+  }
+
+  private static boolean isRelationalExpression(Tree tree) {
+    return tree.is(Kind.EQUAL_TO) ||
+      tree.is(Kind.NOT_EQUAL_TO) ||
+      tree.is(Kind.LESS_THAN) ||
+      tree.is(Kind.LESS_THAN_OR_EQUAL_TO) ||
+      tree.is(Kind.GREATER_THAN) ||
+      tree.is(Kind.GREATER_THAN_OR_EQUAL_TO);
   }
 
   @Override

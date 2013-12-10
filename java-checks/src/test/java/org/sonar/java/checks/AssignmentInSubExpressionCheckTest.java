@@ -40,7 +40,11 @@ public class AssignmentInSubExpressionCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(6).withMessage("Extract the assignment out of this expression.")
       .next().atLine(7)
-      .next().atLine(14);
+      .next().atLine(14)
+      .next().atLine(23)
+      .next().atLine(41)
+      .next().atLine(44)
+      .next().atLine(48);
   }
 
 }
