@@ -22,7 +22,6 @@
   <rule ref="rulesets/strings.xml/InefficientStringBuffering" />
   <rule ref="rulesets/sunsecure.xml/ArrayIsStoredDirectly" />
   <rule ref="rulesets/design.xml/MissingStaticMethodInNonInstantiatableClass" />
-  <rule ref="rulesets/strings.xml/StringBufferInstantiationWithChar" />
   <rule ref="rulesets/strings.xml/StringToString" />
   <rule ref="rulesets/design.xml/SimplifyConditional" />
   <rule ref="rulesets/codesize.xml/NcssTypeCount">

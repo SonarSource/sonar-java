@@ -154,6 +154,7 @@ public final class CheckList {
       WildcardReturnParameterTypeCheck.class,
       UnusedLocalVariableCheck.class,
       UnusedPrivateFieldCheck.class,
+      StringBufferAndBuilderWithCharCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,

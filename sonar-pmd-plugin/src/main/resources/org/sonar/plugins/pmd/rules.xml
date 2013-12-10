@@ -972,6 +972,7 @@
   <rule key="StringBufferInstantiationWithChar">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/strings.xml/StringBufferInstantiationWithChar]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ExcessiveMethodLength">
