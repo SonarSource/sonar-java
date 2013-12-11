@@ -56,6 +56,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
@@ -92,7 +93,7 @@ public class JavaTreeMakerTest {
       FileUtils.listFiles(new File("src/main/java/"), new String[] {"java"}, true),
       FileUtils.listFiles(new File("src/test/java/"), new String[] {"java"}, true),
       FileUtils.listFiles(new File("src/test/files/"), new String[] {"java"}, true)
-    );
+      );
     BaseTreeVisitor visitor = new BaseTreeVisitor();
     for (File file : files) {
       Tree tree = maker.compilationUnit(p.parse(file));
@@ -577,14 +578,16 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void local_class_declaration() {
-    AstNode astNode = p.parse("class T { void m() { class Local { } } }").getFirstDescendant(JavaGrammar.BLOCK);
+    AstNode astNode = p.parse("class T { void m() { abstract class Local { } } }").getFirstDescendant(JavaGrammar.BLOCK);
     ClassTree tree = (ClassTree) maker.block(astNode).body().get(0);
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
+    assertThat(tree.modifiers().modifiers()).containsOnly(Modifier.ABSTRACT);
     assertThat(tree).isNotNull();
 
-    astNode = p.parse("class T { void m() { enum Local { ; } } }").getFirstDescendant(JavaGrammar.BLOCK);
+    astNode = p.parse("class T { void m() { static enum Local { ; } } }").getFirstDescendant(JavaGrammar.BLOCK);
     tree = (ClassTree) maker.block(astNode).body().get(0);
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
+    assertThat(tree.modifiers().modifiers()).containsOnly(Modifier.STATIC);
     assertThat(tree).isNotNull();
   }
 
@@ -593,23 +596,30 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void local_variable_declaration() {
-    AstNode astNode = p.parse("class T { void m() { int a = 42, b[]; } }").getFirstDescendant(JavaGrammar.BLOCK);
+    AstNode astNode = p.parse("class T { void m() { int a = 42, b[]; final int c = 42; } }").getFirstDescendant(JavaGrammar.BLOCK);
     List<StatementTree> declarations = maker.block(astNode).body();
-    assertThat(declarations).hasSize(2);
-
-    // TODO test modifiers
+    assertThat(declarations).hasSize(3);
 
     VariableTree tree = (VariableTree) declarations.get(0);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
+    assertThat(tree.modifiers().modifiers()).isEmpty();
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.simpleName()).isEqualTo("a");
     assertThat(tree.initializer()).isNotNull();
 
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
+    assertThat(tree.modifiers().modifiers()).isEmpty();
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.simpleName()).isEqualTo("b");
     assertThat(tree.initializer()).isNull();
+
+    tree = (VariableTree) declarations.get(2);
+    assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
+    assertThat(tree.modifiers().modifiers()).containsOnly(Modifier.FINAL);
+    assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
+    assertThat(tree.simpleName()).isEqualTo("c");
+    assertThat(tree.initializer()).isNotNull();
   }
 
   /**
@@ -894,7 +904,8 @@ public class JavaTreeMakerTest {
     assertThat(tree.catches()).hasSize(1);
     assertThat(tree.finallyBlock()).isNotNull();
 
-    astNode = p.parse("class T { void m() { try (Resource r1 = open(); Resource r2 = open()) { } catch (Exception e) { } finally { } } }").getFirstDescendant(JavaGrammar.STATEMENT);
+    astNode = p.parse("class T { void m() { try (Resource r1 = open(); Resource r2 = open()) { } catch (Exception e) { } finally { } } }")
+      .getFirstDescendant(JavaGrammar.STATEMENT);
     tree = (TryStatementTree) maker.statement(astNode);
     assertThat(tree.is(Tree.Kind.TRY_STATEMENT)).isTrue();
     assertThat(tree.block()).isNotNull();

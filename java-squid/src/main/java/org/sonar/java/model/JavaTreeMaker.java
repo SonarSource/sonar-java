@@ -51,6 +51,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 public class JavaTreeMaker {
@@ -75,7 +76,7 @@ public class JavaTreeMaker {
         identifierNodes.get(i),
         result,
         identifier(identifierNodes.get(i))
-      );
+        );
     }
     return result;
   }
@@ -190,8 +191,7 @@ public class JavaTreeMaker {
       modifiers,
       applyDim(type, astNode.getChildren(JavaGrammar.DIM).size()),
       astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
-      astNode.hasDirectChildren(JavaGrammar.VARIABLE_INITIALIZER) ? variableInitializer(astNode.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER)) : null
-    );
+      astNode.hasDirectChildren(JavaGrammar.VARIABLE_INITIALIZER) ? variableInitializer(astNode.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER)) : null);
   }
 
   private List<StatementTree> variableDeclarators(ModifiersTree modifiers, ExpressionTree type, AstNode astNode) {
@@ -216,7 +216,7 @@ public class JavaTreeMaker {
         importNode,
         importNode.hasDirectChildren(JavaKeyword.STATIC),
         qualifiedIdentifier(importNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER))
-      ));
+        ));
     }
     ImmutableList.Builder<Tree> types = ImmutableList.builder();
     for (AstNode typeNode : astNode.getChildren(JavaGrammar.TYPE_DECLARATION)) {
@@ -225,7 +225,7 @@ public class JavaTreeMaker {
         JavaGrammar.ENUM_DECLARATION,
         JavaGrammar.INTERFACE_DECLARATION,
         JavaGrammar.ANNOTATION_TYPE_DECLARATION
-      );
+        );
       if (declarationNode != null) {
         types.add(typeDeclaration(modifiers(typeNode.getChildren(JavaGrammar.MODIFIER)), declarationNode));
       }
@@ -239,8 +239,7 @@ public class JavaTreeMaker {
       astNode,
       packageDeclaration,
       imports.build(),
-      types.build()
-    );
+      types.build());
   }
 
   private ClassTree typeDeclaration(ModifiersTree modifiers, AstNode astNode) {
@@ -276,8 +275,7 @@ public class JavaTreeMaker {
       simpleName,
       superClass,
       superInterfaces,
-      classBody(astNode.getFirstChild(JavaGrammar.CLASS_BODY))
-    );
+      classBody(astNode.getFirstChild(JavaGrammar.CLASS_BODY)));
   }
 
   private List<Tree> classTypeList(AstNode astNode) {
@@ -303,7 +301,7 @@ public class JavaTreeMaker {
           members.addAll(fieldDeclaration(
             modifiers,
             memberDeclNode.getFirstChild(JavaGrammar.FIELD_DECLARATION)
-          ));
+            ));
         } else {
           members.add(memberDeclaration(modifiers, memberDeclNode));
         }
@@ -313,7 +311,7 @@ public class JavaTreeMaker {
           classInitDeclarationNode,
           classInitDeclarationNode.hasDirectChildren(JavaKeyword.STATIC) ? Tree.Kind.STATIC_INITIALIZER : Tree.Kind.INITIALIZER,
           blockStatements(classInitDeclarationNode.getFirstChild(JavaGrammar.BLOCK).getFirstChild(JavaGrammar.BLOCK_STATEMENTS))
-        ));
+          ));
       }
     }
     return members.build();
@@ -329,7 +327,7 @@ public class JavaTreeMaker {
       JavaGrammar.CLASS_DECLARATION,
       JavaGrammar.ENUM_DECLARATION,
       JavaGrammar.ANNOTATION_TYPE_DECLARATION
-    );
+      );
     if (declaration != null) {
       return typeDeclaration(modifiers, declaration);
     }
@@ -338,23 +336,21 @@ public class JavaTreeMaker {
       // TODO TYPE_PARAMETERS
       return methodDeclarator(
         modifiers,
-        /* type */ declaration.getFirstChild(JavaGrammar.TYPE, JavaKeyword.VOID),
-        /* name */ declaration.getFirstChild(JavaTokenType.IDENTIFIER),
-        declaration.getFirstChild(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)
-      );
+        /* type */declaration.getFirstChild(JavaGrammar.TYPE, JavaKeyword.VOID),
+        /* name */declaration.getFirstChild(JavaTokenType.IDENTIFIER),
+        declaration.getFirstChild(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST));
     }
     declaration = astNode.getFirstChild(
       JavaGrammar.METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_METHOD_DECLARATOR_REST,
       JavaGrammar.CONSTRUCTOR_DECLARATOR_REST
-    );
+      );
     if (declaration != null) {
       return methodDeclarator(
         modifiers,
-        /* type */ astNode.getFirstChild(JavaGrammar.TYPE, JavaKeyword.VOID),
-        /* name */ astNode.getFirstChild(JavaTokenType.IDENTIFIER),
-        declaration
-      );
+        /* type */astNode.getFirstChild(JavaGrammar.TYPE, JavaKeyword.VOID),
+        /* name */astNode.getFirstChild(JavaTokenType.IDENTIFIER),
+        declaration);
     }
     throw new IllegalStateException();
   }
@@ -399,8 +395,7 @@ public class JavaTreeMaker {
       formalParameters(astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS)),
       body,
       throwsClauseNode != null ? qualifiedIdentifierList(throwsClauseNode) : ImmutableList.<ExpressionTree>of(),
-      null
-    );
+      null);
   }
 
   private List<VariableTree> formalParameters(AstNode astNode) {
@@ -415,7 +410,7 @@ public class JavaTreeMaker {
         type,
         variableDeclaratorIdNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
         null
-      ));
+        ));
     }
     return result.build();
   }
@@ -441,7 +436,7 @@ public class JavaTreeMaker {
           enumIdentifier.name(),
           new JavaTree.NewClassTreeImpl(
             enumConstantNode,
-            /* enclosing expression: */ null,
+            /* enclosing expression: */null,
             enumIdentifier,
             argumentsNode != null ? arguments(argumentsNode) : ImmutableList.<ExpressionTree>of(),
             classBodyNode == null ? null : new JavaTree.ClassTreeImpl(
@@ -449,9 +444,9 @@ public class JavaTreeMaker {
               Tree.Kind.CLASS,
               JavaTree.ModifiersTreeImpl.EMPTY,
               classBody(classBodyNode)
-            )
+              )
           )
-        ));
+          ));
       }
     }
     AstNode enumBodyDeclarationsNode = enumBodyNode.getFirstChild(JavaGrammar.ENUM_BODY_DECLARATIONS);
@@ -460,7 +455,7 @@ public class JavaTreeMaker {
     }
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
     List<Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType.name(), /* super class: */ null, superInterfaces, members.build());
+    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType.name(), /* super class: */null, superInterfaces, members.build());
   }
 
   /*
@@ -496,7 +491,7 @@ public class JavaTreeMaker {
       JavaGrammar.CLASS_DECLARATION,
       JavaGrammar.ENUM_DECLARATION,
       JavaGrammar.ANNOTATION_TYPE_DECLARATION
-    );
+      );
     if (declarationNode != null) {
       members.add(typeDeclaration(modifiers, declarationNode));
       return;
@@ -511,7 +506,7 @@ public class JavaTreeMaker {
           declarationNode.getFirstChild(JavaGrammar.TYPE, JavaKeyword.VOID),
           declarationNode.getFirstChild(JavaTokenType.IDENTIFIER),
           interfaceMethodDeclaratorRestNode
-        ));
+          ));
         return;
       } else {
         appendConstantDeclarations(modifiers, members, declarationNode);
@@ -523,20 +518,20 @@ public class JavaTreeMaker {
       // TODO TYPE_PARAMETERS
       members.add(methodDeclarator(
         modifiers,
-        /* type */ declarationNode.getFirstChild(JavaGrammar.TYPE, JavaKeyword.VOID),
-        /* name */ declarationNode.getFirstChild(JavaTokenType.IDENTIFIER),
+        /* type */declarationNode.getFirstChild(JavaGrammar.TYPE, JavaKeyword.VOID),
+        /* name */declarationNode.getFirstChild(JavaTokenType.IDENTIFIER),
         declarationNode.getFirstChild(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST)
-      ));
+        ));
       return;
     }
     declarationNode = astNode.getFirstChild(JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST);
     if (declarationNode != null) {
       members.add(methodDeclarator(
         modifiers,
-        /* type */ astNode.getFirstChild(JavaKeyword.VOID),
-        /* name */ astNode.getFirstChild(JavaTokenType.IDENTIFIER),
+        /* type */astNode.getFirstChild(JavaKeyword.VOID),
+        /* name */astNode.getFirstChild(JavaTokenType.IDENTIFIER),
         declarationNode
-      ));
+        ));
       return;
     }
     throw new IllegalStateException();
@@ -554,7 +549,7 @@ public class JavaTreeMaker {
         applyDim(type, constantDeclaratorRestNode.getChildren(JavaGrammar.DIM).size()),
         identifierNode.getTokenValue(),
         variableInitializer(constantDeclaratorRestNode.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER))
-      ));
+        ));
     }
   }
 
@@ -574,10 +569,9 @@ public class JavaTreeMaker {
     return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ANNOTATION_TYPE,
       modifiers,
       simpleName,
-      /* super class: */ null,
+      /* super class: */null,
       ImmutableList.<Tree>of(),
-      members.build()
-    );
+      members.build());
   }
 
   /**
@@ -590,7 +584,7 @@ public class JavaTreeMaker {
       JavaGrammar.CLASS_DECLARATION,
       JavaGrammar.ENUM_DECLARATION,
       JavaGrammar.ANNOTATION_TYPE_DECLARATION
-    );
+      );
     if (declarationNode != null) {
       members.add(typeDeclaration(JavaTree.ModifiersTreeImpl.EMPTY, declarationNode));
       return;
@@ -601,15 +595,15 @@ public class JavaTreeMaker {
     if (annotationMethodRestNode != null) {
       members.add(new JavaTree.MethodTreeImpl(
         annotationMethodRestNode,
-        /* modifiers */ JavaTree.ModifiersTreeImpl.EMPTY,
-        /* return type */ referenceType(typeNode),
-        /* name */ identifierNode.getTokenValue(),
-        /* parameters */ ImmutableList.<VariableTree>of(),
-        /* block */ null,
-        /* throws */ ImmutableList.<ExpressionTree>of(),
+        /* modifiers */JavaTree.ModifiersTreeImpl.EMPTY,
+        /* return type */referenceType(typeNode),
+        /* name */identifierNode.getTokenValue(),
+        /* parameters */ImmutableList.<VariableTree>of(),
+        /* block */null,
+        /* throws */ImmutableList.<ExpressionTree>of(),
         // TODO DEFAULT_VALUE
-        /* default value */ null
-      ));
+        /* default value */null
+        ));
     } else {
       appendConstantDeclarations(JavaTree.ModifiersTreeImpl.EMPTY, members, astNode);
     }
@@ -628,31 +622,45 @@ public class JavaTreeMaker {
   private List<StatementTree> blockStatements(AstNode astNode) {
     checkType(astNode, JavaGrammar.BLOCK_STATEMENTS);
     ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
-    for (AstNode statementNode : astNode.getChildren(JavaGrammar.BLOCK_STATEMENT)) {
-      statementNode = statementNode.getFirstChild(
+    for (AstNode blockStatementNode : astNode.getChildren(JavaGrammar.BLOCK_STATEMENT)) {
+      AstNode statementNode = blockStatementNode.getFirstChild(
         JavaGrammar.STATEMENT,
         JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
         JavaGrammar.CLASS_DECLARATION,
         JavaGrammar.ENUM_DECLARATION
-      );
+        );
       if (statementNode.is(JavaGrammar.STATEMENT)) {
         statements.add(statement(statementNode));
       } else if (statementNode.is(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)) {
-        // TODO modifiers
         statements.addAll(variableDeclarators(
-          JavaTree.ModifiersTreeImpl.EMPTY,
+          variableModifiers(statementNode.getFirstChild(JavaGrammar.VARIABLE_MODIFIERS)),
           referenceType(statementNode.getFirstChild(JavaGrammar.TYPE)),
           statementNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS)
-        ));
+          ));
       } else if (statementNode.is(JavaGrammar.CLASS_DECLARATION)) {
-        statements.add(classDeclaration(JavaTree.ModifiersTreeImpl.EMPTY, statementNode));
+        statements.add(classDeclaration(modifiers(blockStatementNode.getChildren(JavaGrammar.MODIFIER)), statementNode));
       } else if (statementNode.is(JavaGrammar.ENUM_DECLARATION)) {
-        statements.add(enumDeclaration(JavaTree.ModifiersTreeImpl.EMPTY, statementNode));
+        statements.add(enumDeclaration(modifiers(blockStatementNode.getChildren(JavaGrammar.MODIFIER)), statementNode));
       } else {
         throw new IllegalStateException("Unexpected AstNodeType: " + statementNode.getType().toString());
       }
     }
     return statements.build();
+  }
+
+  private ModifiersTree variableModifiers(@Nullable AstNode astNode) {
+    if (astNode == null) {
+      return JavaTree.ModifiersTreeImpl.EMPTY;
+    }
+
+    Preconditions.checkArgument(astNode.is(JavaGrammar.VARIABLE_MODIFIERS), "Unexpected AstNodeType: %s", astNode.getType().toString());
+
+    ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
+    for (AstNode modifierAstNode : astNode.getChildren()) {
+      JavaKeyword keyword = (JavaKeyword) modifierAstNode.getType();
+      modifiers.add(kindMaps.getModifier(keyword));
+    }
+    return new JavaTree.ModifiersTreeImpl(astNode, modifiers.build());
   }
 
   @VisibleForTesting
@@ -674,14 +682,14 @@ public class JavaTreeMaker {
           statementNode,
           statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
           statement(statementNode.getFirstChild(JavaGrammar.STATEMENT))
-        );
+          );
         break;
       case EXPRESSION_STATEMENT:
         // 14.8. Expression Statement
         result = new JavaTree.ExpressionStatementTreeImpl(
           statementNode,
           expression(statementNode.getFirstChild(JavaGrammar.STATEMENT_EXPRESSION))
-        );
+          );
         break;
       case IF_STATEMENT:
         // 14.9. The if Statement
@@ -691,7 +699,7 @@ public class JavaTreeMaker {
           expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
           statement(statements.get(0)),
           statements.size() > 1 ? statement(statements.get(1)) : null
-        );
+          );
         break;
       case ASSERT_STATEMENT:
         // 14.10. The assert Statement
@@ -700,7 +708,7 @@ public class JavaTreeMaker {
           statementNode,
           expression(expressions.get(0)),
           expressions.size() > 1 ? expression(expressions.get(1)) : null
-        );
+          );
         break;
       case SWITCH_STATEMENT:
         result = switchStatement(statementNode);
@@ -711,7 +719,7 @@ public class JavaTreeMaker {
           statementNode,
           expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
           statement(statementNode.getFirstChild(JavaGrammar.STATEMENT))
-        );
+          );
         break;
       case DO_STATEMENT:
         // 14.13. The do Statement
@@ -719,7 +727,7 @@ public class JavaTreeMaker {
           statementNode,
           statement(statementNode.getFirstChild(JavaGrammar.STATEMENT)),
           expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION))
-        );
+          );
         break;
       case FOR_STATEMENT:
         result = forStatement(statementNode);
@@ -729,28 +737,28 @@ public class JavaTreeMaker {
         result = new JavaTree.BreakStatementTreeImpl(
           statementNode,
           statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue() : null
-        );
+          );
         break;
       case CONTINUE_STATEMENT:
         // 14.16. The continue Statement
         result = new JavaTree.ContinueStatementTreeImpl(
           statementNode,
           statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue() : null
-        );
+          );
         break;
       case RETURN_STATEMENT:
         // 14.17. The return Statement
         result = new JavaTree.ReturnStatementTreeImpl(
           statementNode,
           statementNode.hasDirectChildren(JavaGrammar.EXPRESSION) ? expression(statementNode.getFirstChild(JavaGrammar.EXPRESSION)) : null
-        );
+          );
         break;
       case THROW_STATEMENT:
         // 14.18. The throw Statement
         result = new JavaTree.ThrowStatementTreeImpl(
           statementNode,
           expression(statementNode.getFirstChild(JavaGrammar.EXPRESSION))
-        );
+          );
         break;
       case SYNCHRONIZED_STATEMENT:
         // 14.19. The synchronized Statement
@@ -758,7 +766,7 @@ public class JavaTreeMaker {
           statementNode,
           expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
           block(statementNode.getFirstChild(JavaGrammar.BLOCK))
-        );
+          );
         break;
       case TRY_STATEMENT:
         result = tryStatement(statementNode);
@@ -784,7 +792,7 @@ public class JavaTreeMaker {
           labels.get(0).getAstNode(),
           ImmutableList.<CaseLabelTree>copyOf(labels),
           blockStatements(caseNode.getFirstChild(JavaGrammar.BLOCK_STATEMENTS))
-        ));
+          ));
         labels.clear();
       }
     }
@@ -793,13 +801,12 @@ public class JavaTreeMaker {
         labels.get(0).getAstNode(),
         ImmutableList.<CaseLabelTree>copyOf(labels),
         ImmutableList.<StatementTree>of()
-      ));
+        ));
     }
     return new JavaTree.SwitchStatementTreeImpl(
       astNode,
       expression(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
-      cases.build()
-    );
+      cases.build());
   }
 
   /**
@@ -818,7 +825,7 @@ public class JavaTreeMaker {
           JavaTree.ModifiersTreeImpl.EMPTY,
           referenceType(forInitNode.getFirstChild(JavaGrammar.TYPE)),
           forInitNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS)
-        );
+          );
       } else {
         forInit = statementExpressions(astNode.getFirstChild(JavaGrammar.FOR_INIT));
       }
@@ -827,8 +834,7 @@ public class JavaTreeMaker {
         forInit,
         astNode.hasDirectChildren(JavaGrammar.EXPRESSION) ? expression(astNode.getFirstChild(JavaGrammar.EXPRESSION)) : null,
         astNode.hasDirectChildren(JavaGrammar.FOR_UPDATE) ? statementExpressions(astNode.getFirstChild(JavaGrammar.FOR_UPDATE)) : ImmutableList.<StatementTree>of(),
-        statement(astNode.getFirstChild(JavaGrammar.STATEMENT))
-      );
+        statement(astNode.getFirstChild(JavaGrammar.STATEMENT)));
     } else {
       return new JavaTree.ForEachStatementImpl(
         astNode,
@@ -838,11 +844,10 @@ public class JavaTreeMaker {
           // TODO dim
           referenceType(formalParameterNode.getFirstChild(JavaGrammar.TYPE)),
           formalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
-          /* initializer: */ null
+          /* initializer: */null
         ),
         expression(astNode.getFirstChild(JavaGrammar.EXPRESSION)),
-        statement(astNode.getFirstChild(JavaGrammar.STATEMENT))
-      );
+        statement(astNode.getFirstChild(JavaGrammar.STATEMENT)));
     }
   }
 
@@ -874,10 +879,10 @@ public class JavaTreeMaker {
           catchType(catchFormalParameterNode.getFirstChild(JavaGrammar.CATCH_TYPE)),
           // TODO WTF why VARIABLE_DECLARATOR_ID in grammar?
           catchFormalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
-          /* initializer: */ null
+          /* initializer: */null
         ),
         block(catchNode.getFirstChild(JavaGrammar.BLOCK))
-      ));
+        ));
     }
     BlockTree finallyBlock = null;
     if (astNode.hasDirectChildren(JavaGrammar.FINALLY_)) {
@@ -889,8 +894,7 @@ public class JavaTreeMaker {
       resourceSpecificationNode == null ? ImmutableList.<VariableTree>of() : resourceSpecification(resourceSpecificationNode),
       block(astNode.getFirstChild(JavaGrammar.BLOCK)),
       catches.build(),
-      finallyBlock
-    );
+      finallyBlock);
   }
 
   private Tree catchType(AstNode astNode) {
@@ -918,7 +922,7 @@ public class JavaTreeMaker {
         classType(resourceNode.getFirstChild(JavaGrammar.CLASS_TYPE)),
         resourceNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
         expression(resourceNode.getFirstChild(JavaGrammar.EXPRESSION))
-      ));
+        ));
     }
     return result.build();
   }
@@ -974,23 +978,20 @@ public class JavaTreeMaker {
         return new JavaTree.MethodInvocationTreeImpl(
           astNode,
           identifier(astNode.getFirstChild(JavaKeyword.THIS)),
-          arguments(astNode.getFirstChild(JavaGrammar.ARGUMENTS))
-        );
+          arguments(astNode.getFirstChild(JavaGrammar.ARGUMENTS)));
       } else {
         AstNode explicitGenericInvocationSuffixNode = astNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX);
         if (explicitGenericInvocationSuffixNode.hasDirectChildren(JavaKeyword.SUPER)) {
           // <T>super...
           return applySuperSuffix(
             identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaKeyword.SUPER)),
-            explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.SUPER_SUFFIX)
-          );
+            explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
         } else {
           // <T>id(arguments)
           return new JavaTree.MethodInvocationTreeImpl(
             astNode,
             identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-            arguments(explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS))
-          );
+            arguments(explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)));
         }
       }
     } else if (firstChildNode.is(JavaKeyword.THIS)) {
@@ -1000,8 +1001,7 @@ public class JavaTreeMaker {
         return new JavaTree.MethodInvocationTreeImpl(
           astNode,
           identifier,
-          arguments(astNode.getFirstChild(JavaGrammar.ARGUMENTS))
-        );
+          arguments(astNode.getFirstChild(JavaGrammar.ARGUMENTS)));
       } else {
         // this
         return identifier;
@@ -1010,8 +1010,7 @@ public class JavaTreeMaker {
       // super...
       return applySuperSuffix(
         identifier(firstChildNode),
-        astNode.getFirstChild(JavaGrammar.SUPER_SUFFIX)
-      );
+        astNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
     } else if (firstChildNode.is(JavaGrammar.LITERAL)) {
       // "literal"
       return literal(firstChildNode);
@@ -1032,23 +1031,20 @@ public class JavaTreeMaker {
             return new JavaTree.MemberSelectExpressionTreeImpl(
               astNode,
               applyDim(identifier, identifierSuffixNode.getChildren(JavaGrammar.DIM).size() + 1),
-              identifier(identifierSuffixNode.getFirstChild(JavaKeyword.CLASS))
-            );
+              identifier(identifierSuffixNode.getFirstChild(JavaKeyword.CLASS)));
           } else {
             // id[expression]
             return new JavaTree.ArrayAccessExpressionTreeImpl(
               astNode,
               identifier,
-              expression(identifierSuffixNode.getFirstChild(JavaGrammar.EXPRESSION))
-            );
+              expression(identifierSuffixNode.getFirstChild(JavaGrammar.EXPRESSION)));
           }
         } else if (identifierSuffixNode.getFirstChild().is(JavaGrammar.ARGUMENTS)) {
           // id(arguments)
           return new JavaTree.MethodInvocationTreeImpl(
             astNode,
             identifier,
-            arguments(identifierSuffixNode.getFirstChild())
-          );
+            arguments(identifierSuffixNode.getFirstChild()));
         } else if (identifierSuffixNode.getFirstChild().is(JavaPunctuator.DOT)) {
           if (identifierSuffixNode.hasDirectChildren(JavaKeyword.CLASS)) {
             // 15.8.2. Class Literals
@@ -1056,8 +1052,7 @@ public class JavaTreeMaker {
             return new JavaTree.MemberSelectExpressionTreeImpl(
               astNode,
               identifier,
-              identifier(identifierSuffixNode.getFirstChild(JavaKeyword.CLASS))
-            );
+              identifier(identifierSuffixNode.getFirstChild(JavaKeyword.CLASS)));
           } else if (identifierSuffixNode.hasDirectChildren(JavaGrammar.EXPLICIT_GENERIC_INVOCATION)) {
             // id.<...>...
             return applyExplicitGenericInvocation(identifier, identifierSuffixNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION));
@@ -1066,8 +1061,7 @@ public class JavaTreeMaker {
             return new JavaTree.MemberSelectExpressionTreeImpl(
               astNode,
               identifier,
-              identifier(identifierSuffixNode.getFirstChild(JavaKeyword.THIS))
-            );
+              identifier(identifierSuffixNode.getFirstChild(JavaKeyword.THIS)));
           } else if (identifierSuffixNode.hasDirectChildren(JavaKeyword.SUPER)) {
             // id.super(arguments)
             return new JavaTree.MethodInvocationTreeImpl(
@@ -1077,16 +1071,14 @@ public class JavaTreeMaker {
                 identifier,
                 identifier(identifierSuffixNode.getFirstChild(JavaKeyword.SUPER))
               ),
-              arguments(identifierSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS))
-            );
+              arguments(identifierSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)));
           } else if (identifierSuffixNode.hasDirectChildren(JavaKeyword.NEW)) {
             // id.new...
             AstNode innerCreatorNode = identifierSuffixNode.getFirstChild(JavaGrammar.INNER_CREATOR);
             return applyClassCreatorRest(
               identifier,
               identifier(innerCreatorNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-              innerCreatorNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST)
-            );
+              innerCreatorNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST));
           } else {
             throw new IllegalArgumentException("Unexpected AstNodeType: " + identifierSuffixNode.getChild(1));
           }
@@ -1102,8 +1094,7 @@ public class JavaTreeMaker {
       return new JavaTree.MemberSelectExpressionTreeImpl(
         astNode,
         applyDim(basicType(firstChildNode), astNode.getChildren(JavaGrammar.DIM).size()),
-        identifier(astNode.getFirstChild(JavaKeyword.CLASS))
-      );
+        identifier(astNode.getFirstChild(JavaKeyword.CLASS)));
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + firstChildNode.getType());
     }
@@ -1113,10 +1104,9 @@ public class JavaTreeMaker {
     // TODO NON_WILDCARD_TYPE_ARGUMENTS
     if (astNode.hasDirectChildren(JavaGrammar.CLASS_CREATOR_REST)) {
       return applyClassCreatorRest(
-        /* enclosing expression: */ null,
+        /* enclosing expression: */null,
         classType(astNode.getFirstChild(JavaGrammar.CREATED_NAME)),
-        astNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST)
-      );
+        astNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST));
     } else if (astNode.hasDirectChildren(JavaGrammar.ARRAY_CREATOR_REST)) {
       AstNode arrayCreatorRestNode = astNode.getFirstChild(JavaGrammar.ARRAY_CREATOR_REST);
       AstNode typeNode = arrayCreatorRestNode.getPreviousSibling();
@@ -1163,8 +1153,7 @@ public class JavaTreeMaker {
       return new JavaTree.TypeCastExpressionTreeImpl(
         astNode,
         referenceType(astNode.getFirstChild(JavaGrammar.TYPE)),
-        expression(astNode.getChild(3))
-      );
+        expression(astNode.getChild(3)));
     } else if (astNode.hasDirectChildren(JavaGrammar.PREFIX_OP)) {
       // 15.15. Unary Operators
       JavaPunctuator punctuator = (JavaPunctuator) astNode.getFirstChild(JavaGrammar.PREFIX_OP).getFirstChild().getType();
@@ -1172,8 +1161,7 @@ public class JavaTreeMaker {
       return new JavaTree.UnaryExpressionTreeImpl(
         astNode,
         kind,
-        expression(astNode.getChild(1))
-      );
+        expression(astNode.getChild(1)));
     } else {
       // 15.14. Postfix Expressions
       ExpressionTree result = expression(astNode.getFirstChild());
@@ -1206,8 +1194,7 @@ public class JavaTreeMaker {
       return new JavaTree.InstanceOfTreeImpl(
         astNode,
         expression(astNode.getFirstChild()),
-        referenceType(astNode.getFirstChild(JavaGrammar.REFERENCE_TYPE))
-      );
+        referenceType(astNode.getFirstChild(JavaGrammar.REFERENCE_TYPE)));
     }
 
     ExpressionTree expression = expression(astNode.getLastChild());
@@ -1219,7 +1206,7 @@ public class JavaTreeMaker {
         expression(astNode.getChild(i)),
         kind,
         expression
-      );
+        );
     }
     return expression;
   }
@@ -1235,7 +1222,7 @@ public class JavaTreeMaker {
         expression(astNode.getChild(i)),
         expression(astNode.getChild(i + 2)),
         expression
-      );
+        );
     }
     return expression;
   }
@@ -1253,7 +1240,7 @@ public class JavaTreeMaker {
         expression(astNode.getChild(i)),
         kind,
         expression
-      );
+        );
     }
     return expression;
   }
@@ -1268,22 +1255,19 @@ public class JavaTreeMaker {
           expression,
           identifier(selectorNode.getFirstChild(JavaTokenType.IDENTIFIER))
         ),
-        arguments(selectorNode.getFirstChild(JavaGrammar.ARGUMENTS))
-      );
+        arguments(selectorNode.getFirstChild(JavaGrammar.ARGUMENTS)));
     } else if (selectorNode.hasDirectChildren(JavaTokenType.IDENTIFIER)) {
       return new JavaTree.MemberSelectExpressionTreeImpl(
         selectorNode,
         expression,
-        identifier(selectorNode.getFirstChild(JavaTokenType.IDENTIFIER))
-      );
+        identifier(selectorNode.getFirstChild(JavaTokenType.IDENTIFIER)));
     } else if (selectorNode.hasDirectChildren(JavaGrammar.EXPLICIT_GENERIC_INVOCATION)) {
       return applyExplicitGenericInvocation(expression, selectorNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION));
     } else if (selectorNode.hasDirectChildren(JavaKeyword.THIS)) {
       return new JavaTree.MemberSelectExpressionTreeImpl(
         selectorNode,
         expression,
-        identifier(selectorNode.getFirstChild(JavaKeyword.THIS))
-      );
+        identifier(selectorNode.getFirstChild(JavaKeyword.THIS)));
     } else if (selectorNode.hasDirectChildren(JavaGrammar.SUPER_SUFFIX)) {
       return applySuperSuffix(
         new JavaTree.MemberSelectExpressionTreeImpl(
@@ -1291,21 +1275,18 @@ public class JavaTreeMaker {
           expression,
           identifier(selectorNode.getFirstChild(JavaKeyword.SUPER))
         ),
-        selectorNode.getFirstChild(JavaGrammar.SUPER_SUFFIX)
-      );
+        selectorNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
     } else if (selectorNode.hasDirectChildren(JavaKeyword.NEW)) {
       AstNode innerCreatorNode = selectorNode.getFirstChild(JavaGrammar.INNER_CREATOR);
       return applyClassCreatorRest(
         expression,
         identifier(innerCreatorNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-        innerCreatorNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST)
-      );
+        innerCreatorNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST));
     } else if (selectorNode.hasDirectChildren(JavaGrammar.DIM_EXPR)) {
       return new JavaTree.ArrayAccessExpressionTreeImpl(
         selectorNode,
         expression,
-        expression(selectorNode.getFirstChild(JavaGrammar.DIM_EXPR).getFirstChild(JavaGrammar.EXPRESSION))
-      );
+        expression(selectorNode.getFirstChild(JavaGrammar.DIM_EXPR).getFirstChild(JavaGrammar.EXPRESSION)));
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }
@@ -1324,20 +1305,18 @@ public class JavaTreeMaker {
           superSuffixNode,
           expression,
           identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER))
-        );
+          );
       }
       return new JavaTree.MethodInvocationTreeImpl(
         superSuffixNode,
         methodSelect,
-        arguments(superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS))
-      );
+        arguments(superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)));
     } else {
       // super.field
       return new JavaTree.MemberSelectExpressionTreeImpl(
         superSuffixNode,
         expression,
-        identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER))
-      );
+        identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)));
     }
   }
 
@@ -1350,15 +1329,14 @@ public class JavaTreeMaker {
         Tree.Kind.CLASS,
         JavaTree.ModifiersTreeImpl.EMPTY,
         classBody(classCreatorRestNode.getFirstChild(JavaGrammar.CLASS_BODY))
-      );
+        );
     }
     return new JavaTree.NewClassTreeImpl(
       classCreatorRestNode,
       enclosingExpression,
       identifier,
       arguments(classCreatorRestNode.getFirstChild(JavaGrammar.ARGUMENTS)),
-      classBody
-    );
+      classBody);
   }
 
   private ExpressionTree applyExplicitGenericInvocation(ExpressionTree expression, AstNode astNode) {
@@ -1370,7 +1348,7 @@ public class JavaTreeMaker {
         astNode,
         expression,
         identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaKeyword.SUPER))
-      );
+        );
       return applySuperSuffix(expression, explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
     } else {
       return new JavaTree.MethodInvocationTreeImpl(
@@ -1380,8 +1358,7 @@ public class JavaTreeMaker {
           expression,
           identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER))
         ),
-        arguments(explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS))
-      );
+        arguments(explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)));
     }
   }
 
