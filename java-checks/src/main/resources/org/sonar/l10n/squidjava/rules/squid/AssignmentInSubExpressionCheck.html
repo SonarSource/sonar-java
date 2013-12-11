@@ -4,21 +4,32 @@ It is also a common mistake to write <code>=</code> when <code>==</code> was mea
 Ideally, expressions should not have side-effects.
 </p>
 
-<p>The following code:</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
-System.out.println(i = 42);  // Non-Compliant
+System.out.println(i = 42);  
 </pre>
 
-<p>should be refactored into:</p>
+<h2>Compliant Solution</h2>
 
 <pre>
-System.out.println(i == 42); // Compliant
+System.out.println(i == 42); 
 </pre>
 
 <p>or:</p>
 
 <pre>
 i = 42;
-System.out.println(i);       // Compliant
+System.out.println(i);   
+</pre>
+
+<h2>Exceptions</h2>
+Assignments done into relational expressions are allowed
+
+<pre>
+BufferedReader br = new BufferedReader(...);
+String line;
+while ((line = br.readLine()) != null) {   //Compliant
+  ...
+}
 </pre>
