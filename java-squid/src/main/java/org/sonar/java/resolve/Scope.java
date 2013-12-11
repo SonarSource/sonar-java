@@ -20,7 +20,10 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,13 +51,11 @@ public class Scope {
   }
 
   public List<Symbol> lookup(String name) {
-    List<Symbol> result = symbols.get(name);
     Scope scope = this;
-    while (result.isEmpty() && scope.next != null) {
-      result = scope.next.lookup(name);
+    while (scope != null && !scope.symbols.containsKey(name)) {
       scope = scope.next;
     }
-    return result;
+    return scope == null ? ImmutableList.<Symbol>of() : scope.symbols.get(name);
   }
 
 }
