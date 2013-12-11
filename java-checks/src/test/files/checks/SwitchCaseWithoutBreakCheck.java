@@ -18,6 +18,7 @@ class A {
         int a = 0;
       case 7: // Compliant
         continue;
+      case 8: // Noncompliant
     }
   }
 }

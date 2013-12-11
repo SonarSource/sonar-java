@@ -19,44 +19,50 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import com.google.common.collect.Iterables;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(
-  key = "S128",
+  key = SwitchCaseWithoutBreakCheck.RULE_KEY,
   priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class SwitchCaseWithoutBreakCheck extends SquidCheck<LexerlessGrammar> {
+public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S128";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    AstNode lastBlockStatement = getLastStatement(node);
-    if (lastBlockStatement != null && !isBreakContinueReturnOrThrow(lastBlockStatement)) {
-      getContext().createLineViolation(this, "End this switch case with an unconditional break, continue, return or throw statement.", node);
+  public void visitCaseGroup(CaseGroupTree tree) {
+    super.visitCaseGroup(tree);
+
+    if (tree.body().isEmpty() || !isBreakContinueReturnOrThrow(Iterables.getLast(tree.body()))) {
+      context.addIssue(Iterables.getLast(tree.labels()), ruleKey, "End this switch case with an unconditional break, continue, return or throw statement.");
     }
   }
 
-  private static AstNode getLastStatement(AstNode node) {
-    return node.getFirstChild(JavaGrammar.BLOCK_STATEMENTS).getLastChild();
-  }
-
-  private static boolean isBreakContinueReturnOrThrow(AstNode blockStatement) {
-    AstNode statement = blockStatement.getFirstChild(JavaGrammar.STATEMENT);
-    if (statement == null) {
-      return false;
-    }
-
-    return statement.hasDirectChildren(JavaGrammar.BREAK_STATEMENT, JavaGrammar.CONTINUE_STATEMENT, JavaGrammar.RETURN_STATEMENT, JavaGrammar.THROW_STATEMENT);
+  private static boolean isBreakContinueReturnOrThrow(StatementTree tree) {
+    return tree.is(Kind.BREAK_STATEMENT) ||
+      tree.is(Kind.CONTINUE_STATEMENT) ||
+      tree.is(Kind.RETURN_STATEMENT) ||
+      tree.is(Kind.THROW_STATEMENT);
   }
 
 }

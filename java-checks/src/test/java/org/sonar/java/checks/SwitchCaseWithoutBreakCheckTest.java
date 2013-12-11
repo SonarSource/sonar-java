@@ -23,6 +23,7 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -34,12 +35,13 @@ public class SwitchCaseWithoutBreakCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseWithoutBreakCheck.java"), new SwitchCaseWithoutBreakCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseWithoutBreakCheck.java"), new VisitorsBridge(new SwitchCaseWithoutBreakCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("End this switch case with an unconditional break, continue, return or throw statement.")
-        .next().atLine(13)
-        .next().atLine(15)
-        .next().atLine(17);
+      .next().atLine(5).withMessage("End this switch case with an unconditional break, continue, return or throw statement.")
+      .next().atLine(13)
+      .next().atLine(15)
+      .next().atLine(17)
+      .next().atLine(21);
   }
 
 }
