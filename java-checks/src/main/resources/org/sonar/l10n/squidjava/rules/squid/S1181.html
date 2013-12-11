@@ -9,10 +9,17 @@ Catching either <code>Throwable</code> or <code>Error</code> will also catch <co
 
 <p>Only <code>Exception</code> and its subclasses should be caught.</p>
 
-<p>The following code snippet illustrates this rule:</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
-try { /* ... */ } catch (Throwable t) { /* ... */ }    // Non-Compliant
-try { /* ... */ } catch (Error e) { /* ... */ }        // Non-Compliant
-try { /* ... */ } catch (Exception e) { /* ... */ }    // Compliant
+try { /* ... */ } catch (Throwable t) { /* ... */ }
+try { /* ... */ } catch (Error e) { /* ... */ } 
+</pre>
+
+<h2>Compliant Solution</h2>
+
+<pre>
+try { /* ... */ } catch (Exception e) { /* ... */ }  
+try { /* ... */ } catch (RuntimeException e) { /* ... */ }  
+try { /* ... */ } catch (MyException e) { /* ... */ }  
 </pre>
