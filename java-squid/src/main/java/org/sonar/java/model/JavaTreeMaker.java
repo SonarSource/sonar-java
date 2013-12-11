@@ -657,8 +657,12 @@ public class JavaTreeMaker {
 
     ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
     for (AstNode modifierAstNode : astNode.getChildren()) {
-      JavaKeyword keyword = (JavaKeyword) modifierAstNode.getType();
-      modifiers.add(kindMaps.getModifier(keyword));
+      if (modifierAstNode.is(JavaGrammar.ANNOTATION)) {
+        // TODO
+      } else {
+        JavaKeyword keyword = (JavaKeyword) modifierAstNode.getType();
+        modifiers.add(kindMaps.getModifier(keyword));
+      }
     }
     return new JavaTree.ModifiersTreeImpl(astNode, modifiers.build());
   }

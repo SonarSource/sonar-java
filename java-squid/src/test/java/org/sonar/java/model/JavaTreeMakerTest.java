@@ -596,7 +596,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void local_variable_declaration() {
-    AstNode astNode = p.parse("class T { void m() { int a = 42, b[]; final int c = 42; } }").getFirstDescendant(JavaGrammar.BLOCK);
+    AstNode astNode = p.parse("class T { void m() { int a = 42, b[]; final @Nullable int c = 42; } }").getFirstDescendant(JavaGrammar.BLOCK);
     List<StatementTree> declarations = maker.block(astNode).body();
     assertThat(declarations).hasSize(3);
 
@@ -613,6 +613,8 @@ public class JavaTreeMakerTest {
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.simpleName()).isEqualTo("b");
     assertThat(tree.initializer()).isNull();
+
+    // TODO Test annotation
 
     tree = (VariableTree) declarations.get(2);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
