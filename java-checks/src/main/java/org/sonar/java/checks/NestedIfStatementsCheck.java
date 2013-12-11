@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 @Rule(
@@ -108,9 +109,20 @@ public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFile
     nestingLevel--;
   }
 
+  @Override
+  public void visitTryStatement(TryStatementTree tree) {
+    nestingLevel++;
+    checkNesting(tree);
+    scan(tree.block());
+    nestingLevel--;
+    scan(tree.resources());
+    scan(tree.catches());
+    scan(tree.finallyBlock());
+  }
+
   private void checkNesting(Tree tree) {
     if (nestingLevel == max + 1) {
-      context.addIssue(tree, RULE_KEY, "Refactor this code to not nest more than " + max + " if/for/while/switch statements.");
+      context.addIssue(tree, RULE_KEY, "Refactor this code to not nest more than " + max + " if/for/while/switch/try statements.");
     }
   }
 

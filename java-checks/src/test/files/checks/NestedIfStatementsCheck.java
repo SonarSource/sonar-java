@@ -72,6 +72,9 @@ class A {
           switch (foo) { // Noncompliant
           }
 
+          try {  // Noncompliant
+          } catch (Exception e) {
+          }
         }
       }
     }
