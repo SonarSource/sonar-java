@@ -7,29 +7,29 @@ Ideally, expressions should not have side-effects.
 <h2>Noncompliant Code Example</h2>
 
 <pre>
-System.out.println(i = 42);  
+System.out.println(i = 42);
 </pre>
 
 <h2>Compliant Solution</h2>
 
 <pre>
-System.out.println(i == 42); 
+System.out.println(i == 42);
 </pre>
 
 <p>or:</p>
 
 <pre>
 i = 42;
-System.out.println(i);   
+System.out.println(i);
 </pre>
 
 <h2>Exceptions</h2>
-<p>Assignments done into relational expressions are allowed</p>
+<p>Assignments enclosed in relational expressions are allowed.</p>
 
 <pre>
-BufferedReader br = new BufferedReader(...);
+BufferedReader br = new BufferedReader(/* ... */);
 String line;
-while ((line = br.readLine()) != null) {   //Compliant
-  ...
+while ((line = br.readLine()) != null) {
+  /* ... */
 }
 </pre>
