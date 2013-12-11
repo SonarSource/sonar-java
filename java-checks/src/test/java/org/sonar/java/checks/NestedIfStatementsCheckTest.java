@@ -42,7 +42,7 @@ public class NestedIfStatementsCheckTest {
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedIfStatementsCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(19).withMessage("Refactor this code to not nest more than 3 if/for/while/switch statements.")
+      .next().atLine(19).withMessage("Refactor this code to not nest more than 3 if/for/while/switch/try statements.")
       .next().atLine(41)
       .next().atLine(47)
       .next().atLine(57)
@@ -50,7 +50,8 @@ public class NestedIfStatementsCheckTest {
       .next().atLine(63)
       .next().atLine(66)
       .next().atLine(69)
-      .next().atLine(72);
+      .next().atLine(72)
+      .next().atLine(75);
   }
 
   @Test
@@ -60,7 +61,7 @@ public class NestedIfStatementsCheckTest {
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedIfStatementsCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(20).withMessage("Refactor this code to not nest more than 4 if/for/while/switch statements.")
+      .next().atLine(20).withMessage("Refactor this code to not nest more than 4 if/for/while/switch/try statements.")
       .next().atLine(24);
   }
 
