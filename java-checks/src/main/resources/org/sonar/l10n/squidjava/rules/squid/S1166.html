@@ -1,63 +1,63 @@
-<p>When handling a caught exception, two mandatory informations should be either logged, or present in a rethrown exception:</p>
+<p>
+When handling a caught exception, two mandatory informations should be logged:
+</p>
 
 <ul>
   <li>Some context to ease the reproduction of the issue.</li>
-  <li>The original's exception, for its message and stack trace.</li>
+  <li>The original's exception, for its message and stack trace.</lu>
 </ul>
 
 <h2>Noncompliant Code Example</h2>
 
 <pre>
+ // Noncompliant - exception is lost
+try { /* ... */ } catch (Exception e) { LOGGER.info("context"); }
+
+// Noncompliant - context is required
+try { /* ... */ } catch (Exception e) { LOGGER.info(e); }
+
+// Noncompliant - exception is lost (only message is preserved)
+try { /* ... */ } catch (Exception e) { LOGGER.info(e.getMessage()); }
+
 // Noncompliant - exception is lost
-try { /* ... */ } catch (Exception e) { LOGGER.info("context"); }   
-
-// Noncompliant - context is required     
-try { /* ... */ } catch (Exception e) { LOGGER.info(e); }          
-
-// Noncompliant - exception is lost (only message is preserved)       
-try { /* ... */ } catch (Exception e) { LOGGER.info(e.getMessage()); }   
-
-// Noncompliant - exception is lost 
-try {/* ... */} catch (Exception e) {throw new RuntimeException("context");}
+try { /* ... */ } catch (Exception e) { throw new RuntimeException("context"); }
 </pre>
 
 <h2>Compliant Solution</h2>
 
 <pre>
-try { /* ... */ } catch (Exception e) { LOGGER.info("context", e); }   
+try { /* ... */ } catch (Exception e) { LOGGER.info("context", e); }
 
-try {/* ... */} catch (Exception e) { throw new RuntimeException("context", e);}
+try { /* ... */ } catch (Exception e) { throw new RuntimeException("context", e); }
 </pre>
 
 <h2>Exceptions</h2>
-<p>
-When all instances of a general exception must be handled, but some specific ones not, propagation must be used.
-Propagation is allowed by this rule.
-</p>
 
-<p>
-For example, the following code logs all <code>Exception</code> exceptions which are not <code>RuntimeException</code>.
-All <code>RuntimeException</code> exceptions are propagated.
-</p>
+<p>It is allowed to let the exception propagate.</p>
 
 <pre>
 try {
   /* ... */
-} catch (RuntimeException e) {            // Compliant - propagation of the specific exception
+} catch (RuntimeException e) {
+  doSomething();
   throw e;
-} catch (Exception e) {                   // Compliant - catching of the general exception
-  LOGGER.error("...", e);
+} catch (Exception e) {
+  // Conversion into unchecked exception is also allowed
+  throw new RuntimeException(e);
 }
 </pre>
 
 <p>
-Conversion of checked exceptions into unchecked exceptions to ease propagation of checked exceptions is also allowed by this rule.
+<code>InterruptedException</code>, <code>NumberFormatException</code>, <code>ParseException</code> and <code>MalformedURLException</code> exceptions are arguably used to indicate nonexceptional outcomes.
+As they are part of Java, developers have no choice but to deal with them. This rule does not verify that those particular exceptions are correctly handled.
 </p>
 
 <pre>
+int myInteger;
 try {
-  /* ... */
-} catch (IOException e) {            // Compliant - propagation of checked exception by encapsulating it into an unchecked exception
-  throw new MyRuntimeException(e);
+  myInteger = Integer.parseInt(myString);
+} catch (NumberFormatException e) {
+  // It is perfectly acceptable to not handle "e" here
+  myInteger = 0;
 }
 </pre>
