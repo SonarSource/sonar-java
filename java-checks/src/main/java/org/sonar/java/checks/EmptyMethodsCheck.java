@@ -20,76 +20,71 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(
-  key = "S1186",
+  key = EmptyMethodsCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class EmptyMethodsCheck extends SquidCheck<LexerlessGrammar> {
+public class EmptyMethodsCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1186";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.VOID_METHOD_DECLARATOR_REST);
-    subscribeTo(JavaGrammar.METHOD_DECLARATOR_REST);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (hasEmptyMethodBody(node) && !isInAbstractClass(node)) {
-      getContext().createLineViolation(
-        this,
-        "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.",
-        node);
-    }
-  }
-
-  private static boolean hasEmptyMethodBody(AstNode node) {
-    AstNode methodBody = node.getFirstChild(JavaGrammar.METHOD_BODY);
-    if (methodBody == null) {
-      return false;
-    }
-
-    return isEmptyMethodBody(methodBody);
-  }
-
-  private static boolean isEmptyMethodBody(AstNode node) {
-    AstNode block = node.getFirstChild(JavaGrammar.BLOCK);
-
-    return isEmptyBlock(block) &&
-      !hasComments(block.getFirstChild(JavaPunctuator.RWING));
-  }
-
-  private static boolean isEmptyBlock(AstNode node) {
-    return node.getFirstChild(JavaGrammar.BLOCK_STATEMENTS).getNumberOfChildren() == 0;
-  }
-
-  private static boolean hasComments(AstNode node) {
-    return node.getToken().hasTrivia();
-  }
-
-  private static boolean isInAbstractClass(AstNode node) {
-    AstNode modifier = node.getFirstAncestor(
-      JavaGrammar.CLASS_DECLARATION,
-      JavaGrammar.ENUM_BODY_DECLARATIONS,
-      JavaGrammar.ENUM_CONSTANT,
-      JavaGrammar.CLASS_CREATOR_REST).getPreviousAstNode();
-
-    while (modifier != null && modifier.is(JavaGrammar.MODIFIER)) {
-      if (modifier.hasDirectChildren(JavaKeyword.ABSTRACT)) {
-        return true;
+  public void visitClass(ClassTree tree) {
+    if (!tree.modifiers().modifiers().contains(Modifier.ABSTRACT)) {
+      super.visitClass(tree);
+    } else {
+      scan(tree.modifiers());
+      scan(tree.typeParameters());
+      scan(tree.superClass());
+      scan(tree.superInterfaces());
+      for (Tree memberTree : tree.members()) {
+        if (memberTree.is(Kind.METHOD)) {
+          super.visitMethod((MethodTree) memberTree);
+        } else {
+          scan(memberTree);
+        }
       }
-      modifier = modifier.getPreviousAstNode();
     }
+  }
 
-    return false;
+  @Override
+  public void visitMethod(MethodTree tree) {
+    super.visitMethod(tree);
+
+    BlockTree block = tree.block();
+    if (block != null && block.body().isEmpty() && !tree.is(Kind.CONSTRUCTOR) && !containsComment(block)) {
+      context.addIssue(tree, ruleKey, "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
+    }
+  }
+
+  private static boolean containsComment(BlockTree tree) {
+    AstNode blockAstNode = ((JavaTree) tree).getAstNode();
+    return blockAstNode.getLastToken().hasTrivia();
   }
 
 }

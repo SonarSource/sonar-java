@@ -23,6 +23,7 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -34,18 +35,19 @@ public class EmptyMethodsCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyMethodsCheck.java"), new EmptyMethodsCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyMethodsCheck.java"), new VisitorsBridge(new EmptyMethodsCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(15)
       .withMessage("Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.")
       .next().atLine(29)
       .next().atLine(33)
       .next().atLine(57)
-      .next().atLine(67)
-      .next().atLine(80)
-      .next().atLine(89)
-      .next().atLine(104)
-      .next().atLine(114);
+      .next().atLine(64)
+      .next().atLine(73)
+      .next().atLine(86)
+      .next().atLine(95)
+      .next().atLine(110)
+      .next().atLine(120);
   }
 
 }

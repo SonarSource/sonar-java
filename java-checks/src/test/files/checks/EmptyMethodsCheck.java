@@ -58,6 +58,12 @@ abstract class A {
       }
     }
   }
+
+  Foo bar = new IFoo() {
+    // Noncompliant
+    public void f() {
+    }
+  };
 }
 
 enum A {
