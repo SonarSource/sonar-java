@@ -41,7 +41,8 @@ public class SwitchCaseWithoutBreakCheckTest {
       .next().atLine(13)
       .next().atLine(15)
       .next().atLine(17)
-      .next().atLine(21);
+      .next().atLine(28)
+      .next().atLine(35);
   }
 
 }

@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
@@ -27,9 +28,13 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.ContinueStatementTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
+
+import java.util.Set;
 
 @Rule(
   key = SwitchCaseWithoutBreakCheck.RULE_KEY,
@@ -42,6 +47,8 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
 
   private JavaFileScannerContext context;
 
+  private final Set<CaseGroupTree> invalidCaseGroups = Sets.newHashSet();
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
@@ -51,18 +58,43 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
 
   @Override
   public void visitCaseGroup(CaseGroupTree tree) {
+    invalidCaseGroups.add(tree);
+
     super.visitCaseGroup(tree);
 
-    if (tree.body().isEmpty() || !isBreakContinueReturnOrThrow(Iterables.getLast(tree.body()))) {
+    boolean wasInInvalidSet = invalidCaseGroups.remove(tree);
+
+    if (wasInInvalidSet) {
       context.addIssue(Iterables.getLast(tree.labels()), ruleKey, "End this switch case with an unconditional break, continue, return or throw statement.");
     }
   }
 
-  private static boolean isBreakContinueReturnOrThrow(StatementTree tree) {
-    return tree.is(Kind.BREAK_STATEMENT) ||
-      tree.is(Kind.CONTINUE_STATEMENT) ||
-      tree.is(Kind.RETURN_STATEMENT) ||
-      tree.is(Kind.THROW_STATEMENT);
+  @Override
+  public void visitBreakStatement(BreakStatementTree tree) {
+    super.visitBreakStatement(tree);
+    markSwitchCasesAsCompliant();
+  }
+
+  @Override
+  public void visitContinueStatement(ContinueStatementTree tree) {
+    super.visitContinueStatement(tree);
+    markSwitchCasesAsCompliant();
+  }
+
+  @Override
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    super.visitReturnStatement(tree);
+    markSwitchCasesAsCompliant();
+  }
+
+  @Override
+  public void visitThrowStatement(ThrowStatementTree tree) {
+    super.visitThrowStatement(tree);
+    markSwitchCasesAsCompliant();
+  }
+
+  private void markSwitchCasesAsCompliant() {
+    invalidCaseGroups.clear();
   }
 
 }
