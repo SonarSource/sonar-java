@@ -36,10 +36,12 @@ public class TodoTagPresenceCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TodoTagPresenceCheck.java"), new TodoTagPresenceCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Complete the task associated to this TODO comment.")
-        .next().atLine(7)
-        .next().atLine(8)
-        .next().atLine(11);
+      .next().atLine(3).withMessage("Complete the task associated to this TODO comment.")
+      .next().atLine(7)
+      .next().atLine(8)
+      .next().atLine(11)
+      .next().atLine(13)
+      .next().atLine(15);
   }
 
 }

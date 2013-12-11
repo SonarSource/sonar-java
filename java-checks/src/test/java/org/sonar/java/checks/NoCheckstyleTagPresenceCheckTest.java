@@ -38,7 +38,8 @@ public class NoCheckstyleTagPresenceCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(3).withMessage("Remove usage of this \"CHECKSTYLE:OFF\" suppression comment filter.")
       .next().atLine(9)
-      .next().atLine(12);
+      .next().atLine(12)
+      .next().atLine(14);
   }
 
 }

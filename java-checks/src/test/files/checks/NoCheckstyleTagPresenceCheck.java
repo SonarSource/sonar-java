@@ -10,3 +10,9 @@
 */
 
 // CHECKSTYLE:OFF
+
+// [CHECKSTYLE:OFF]
+
+// PreCheckstyle:on
+// cheCkstyle:onPost
+// PreCheckstyle:onPost

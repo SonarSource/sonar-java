@@ -39,7 +39,8 @@ public class NoPmdTagPresenceCheckTest {
       .next().atLine(3).withMessage("Remove usage of this \"NOPMD\" suppression comment filter.")
       .next().atLine(7)
       .next().atLine(8)
-      .next().atLine(11);
+      .next().atLine(11)
+      .next().atLine(13);
   }
 
 }

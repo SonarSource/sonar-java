@@ -41,13 +41,24 @@ public class CommentContainsPatternChecker {
       String comment = trivia.getToken().getOriginalValue();
       if (StringUtils.containsIgnoreCase(comment, pattern)) {
         String[] lines = comment.split("\r\n?|\n");
+
         for (int i = 0; i < lines.length; i++) {
-          if (StringUtils.containsIgnoreCase(lines[i], pattern)) {
+          if (StringUtils.containsIgnoreCase(lines[i], pattern) && !isLetterAround(lines[i], pattern)) {
             check.getContext().createLineViolation(check, message, trivia.getToken().getLine() + i);
           }
         }
       }
     }
+  }
+
+  private boolean isLetterAround(String line, String pattern) {
+    int start = StringUtils.indexOfIgnoreCase(line, pattern);
+    int end = start + pattern.length();
+
+    boolean pre = start > 0 ? Character.isLetter(line.charAt(start - 1)) : false;
+    boolean post = end < line.length() - 1 ? Character.isLetter(line.charAt(end + 1)) : false;
+
+    return pre || post;
   }
 
 }

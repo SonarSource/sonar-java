@@ -9,3 +9,10 @@
 */
 
 // TODO
+
+// TODO Explenation
+
+// [TODO]
+
+// PreTodo
+// toDomain

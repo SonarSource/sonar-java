@@ -36,10 +36,11 @@ public class FixmeTagPresenceCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FixmeTagPresenceCheck.java"), new FixmeTagPresenceCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Take the required action to fix the issue indicated by this comment.")
-        .next().atLine(7)
-        .next().atLine(8)
-        .next().atLine(11);
+      .next().atLine(3).withMessage("Take the required action to fix the issue indicated by this comment.")
+      .next().atLine(7)
+      .next().atLine(8)
+      .next().atLine(11)
+      .next().atLine(13);
   }
 
 }
