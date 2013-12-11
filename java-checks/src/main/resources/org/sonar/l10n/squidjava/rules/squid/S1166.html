@@ -5,28 +5,31 @@
   <li>The original's exception, for its message and stack trace.</li>
 </ul>
 
-<p>The following code snippet illustrates this rule:</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
-try { /* ... */ } catch (Exception e) { LOGGER.info("context"); }         // Non-Compliant - exception is lost
-try { /* ... */ } catch (Exception e) { LOGGER.info(e); }                 // Non-Compliant - context is required
-try { /* ... */ } catch (Exception e) { LOGGER.info(e.getMessage()); }    // Non-Compliant - exception is lost (only message is preserved)
+// Noncompliant - exception is lost
+try { /* ... */ } catch (Exception e) { LOGGER.info("context"); }   
 
-try { /* ... */ } catch (Exception e) { LOGGER.info("context", e); }      // Compliant
+// Noncompliant - context is required     
+try { /* ... */ } catch (Exception e) { LOGGER.info(e); }          
 
-try {
-  /* ... */
-} catch (Exception e) {                                                   // Non-Compliant - exception is lost
-  throw new RuntimeException("context");
-}
+// Noncompliant - exception is lost (only message is preserved)       
+try { /* ... */ } catch (Exception e) { LOGGER.info(e.getMessage()); }   
 
-try {
-  /* ... */
-} catch (Exception e) {                                                   // Compliant
-  throw new RuntimeException("context", e);
-}
+// Noncompliant - exception is lost 
+try {/* ... */} catch (Exception e) {throw new RuntimeException("context");}
 </pre>
 
+<h2>Compliant Solution</h2>
+
+<pre>
+try { /* ... */ } catch (Exception e) { LOGGER.info("context", e); }   
+
+try {/* ... */} catch (Exception e) { throw new RuntimeException("context", e);}
+</pre>
+
+<h2>Exceptions</h2>
 <p>
 When all instances of a general exception must be handled, but some specific ones not, propagation must be used.
 Propagation is allowed by this rule.
