@@ -52,6 +52,11 @@ public class JUnitListenerTest {
   }
 
   @Test
+  public void should_have_public_no_arg_constructor() throws Exception {
+    JUnitListener.class.getConstructor();
+  }
+
+  @Test
   public void test_success() {
     execute(Success.class);
     String testName = getClass().getCanonicalName() + "$Success test";

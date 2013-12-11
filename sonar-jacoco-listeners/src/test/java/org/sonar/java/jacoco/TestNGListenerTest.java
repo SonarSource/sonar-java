@@ -21,11 +21,17 @@ package org.sonar.java.jacoco;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.Description;
 import org.mockito.InOrder;
+import org.testng.ITestClass;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.TestNG;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class TestNGListenerTest {
 
@@ -56,6 +62,11 @@ public class TestNGListenerTest {
   public void setUp() {
     jacoco = mock(JacocoController.class);
     listener = new TestNGListener(jacoco);
+  }
+
+  @Test
+  public void should_have_public_no_arg_constructor() throws Exception {
+    TestNGListener.class.getConstructor();
   }
 
   @Test
@@ -90,6 +101,70 @@ public class TestNGListenerTest {
     testNg.addListener(listener);
     testNg.setTestClasses(new Class[] {cls});
     testNg.run();
+  }
+
+  // JUnit
+
+  @Test
+  public void testStarted() {
+    listener.testStarted(mockDescription());
+    verify(jacoco).onTestStart("class method");
+  }
+
+  @Test
+  public void testFinished() {
+    listener.testFinished(mockDescription());
+    verify(jacoco).onTestFinish("class method");
+  }
+
+  // TestNG
+
+  @Test
+  public void onTestStart() {
+    listener.onTestStart(mockTestResult());
+    verify(jacoco).onTestStart("class method");
+  }
+
+  @Test
+  public void onTestSuccess() {
+    listener.onTestSuccess(mockTestResult());
+    verify(jacoco).onTestFinish("class method");
+  }
+
+  @Test
+  public void onTestFailure() {
+    listener.onTestFailure(mockTestResult());
+    verify(jacoco).onTestFinish("class method");
+  }
+
+  @Test
+  public void onTestSkipped() {
+    listener.onTestSkipped(mockTestResult());
+    verify(jacoco).onTestFinish("class method");
+  }
+
+  @Test
+  public void onTestFailedButWithinSuccessPercentage() {
+    listener.onTestFailedButWithinSuccessPercentage(mockTestResult());
+    verify(jacoco).onTestFinish("class method");
+  }
+
+  private ITestResult mockTestResult() {
+    ITestResult testResult = mock(ITestResult.class);
+    ITestClass testClass = mock(ITestClass.class);
+    when(testResult.getTestClass()).thenReturn(testClass);
+    ITestNGMethod testMethod = mock(ITestNGMethod.class);
+    when(testResult.getMethod()).thenReturn(testMethod);
+    when(testClass.getName()).thenReturn("class");
+    when(testMethod.getMethodName()).thenReturn("method");
+    return testResult;
+  }
+
+  private Description mockDescription() {
+    Description description = mock(Description.class);
+    when(description.getClassName()).thenReturn("class");
+    when(description.getMethodName()).thenReturn("method");
+    return description;
   }
 
 }

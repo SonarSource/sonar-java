@@ -27,7 +27,7 @@ import org.junit.runner.notification.RunListener;
  */
 public class JUnitListener extends RunListener {
 
-  private final JacocoController jacoco;
+  protected final JacocoController jacoco;
 
   public JUnitListener() {
     this(JacocoController.getInstance());
