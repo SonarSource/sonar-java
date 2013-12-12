@@ -1,14 +1,23 @@
 class A {
   public void f() {
-    var == false;       // Non-Compliant
-    var == true;        // Non-Compliant
-    var != false;       // Non-Compliant
-    var != true;        // Non-Compliant
-    false == var;       // Non-Compliant
-    true == var;        // Non-Compliant
-    false != var;       // Non-Compliant
-    true != var;        // Non-Compliant
+    var == false;       // Noncompliant
+    var == true;        // Noncompliant
+    var != false;       // Noncompliant
+    var != true;        // Noncompliant
+    false == var;       // Noncompliant
+    true == var;        // Noncompliant
+    false != var;       // Noncompliant
+    true != var;        // Noncompliant
+    !true;              // Noncompliant
+    !false;             // Noncompliant
+    false && foo();     // Noncompliant
+    foo() || true;      // Noncompliant
 
     var == foo(true);   // Compliant
+    true < 0;           // Compliant
+    ~true;              // Compliant
+    ++ true;            // Compliant
+    !foo;               // Compliant
+    foo() && bar();     // Compliant
   }
 }

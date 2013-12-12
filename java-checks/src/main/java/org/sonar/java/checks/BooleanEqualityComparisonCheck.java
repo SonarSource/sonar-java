@@ -29,15 +29,16 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 @Rule(
   key = BooleanEqualityComparisonCheck.RULE_KEY,
-  priority = Priority.MAJOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  priority = Priority.MINOR)
+@BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class BooleanEqualityComparisonCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1125";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -52,13 +53,24 @@ public class BooleanEqualityComparisonCheck extends BaseTreeVisitor implements J
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     super.visitBinaryExpression(tree);
 
-    if (isEqualityExpression(tree) && hasBooleanLiteralOperands(tree)) {
-      context.addIssue(tree, ruleKey, "Remove the unnecessary boolean comparison to simplify this expression.");
+    String operator = operator(tree);
+    if (operator != null && hasBooleanLiteralOperands(tree)) {
+      addIssue(tree, operator);
     }
   }
 
-  private static boolean isEqualityExpression(Tree tree) {
-    return tree.is(Kind.EQUAL_TO) || tree.is(Kind.NOT_EQUAL_TO);
+  @Override
+  public void visitUnaryExpression(UnaryExpressionTree tree) {
+    super.visitUnaryExpression(tree);
+
+    String operator = operator(tree);
+    if (operator != null && isBooleanLiteral(tree.expression())) {
+      addIssue(tree, operator);
+    }
+  }
+
+  private void addIssue(Tree tree, String operator) {
+    context.addIssue(tree, RULE, "Remove the useless \"" + operator + "\" operator.");
   }
 
   private static boolean hasBooleanLiteralOperands(BinaryExpressionTree tree) {
@@ -68,6 +80,26 @@ public class BooleanEqualityComparisonCheck extends BaseTreeVisitor implements J
 
   private static boolean isBooleanLiteral(Tree tree) {
     return tree.is(Kind.BOOLEAN_LITERAL);
+  }
+
+  private static String operator(Tree tree) {
+    String result;
+
+    if (tree.is(Kind.EQUAL_TO)) {
+      result = "==";
+    } else if (tree.is(Kind.NOT_EQUAL_TO)) {
+      result = "!=";
+    } else if (tree.is(Kind.CONDITIONAL_AND)) {
+      result = "&&";
+    } else if (tree.is(Kind.CONDITIONAL_OR)) {
+      result = "||";
+    } else if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
+      result = "!";
+    } else {
+      result = null;
+    }
+
+    return result;
   }
 
 }

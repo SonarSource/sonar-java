@@ -1,17 +1,22 @@
 <p>
-Boolean expressions should not be compared against boolean literals, as their value can be directly used.
+Boolean expressions should be as compact as possible to improve readability.
+Useless operators should be removed.
 </p>
 
-<p>The following code:</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
-if (booleanVariable == true) { /* ... */ }         // Non-Compliant
-if (booleanVariable != true) { /* ... */ }         // Non-Compliant
+if (booleanVariable == true) { /* ... */ }
+if (booleanVariable != true) { /* ... */ }
+if (booleanVariable || false) { /* ... */ }
+doSomething(!false);
 </pre>
 
-<p>should be refactored into:</p>
+<h2>Compliant Solution</h2>
 
 <pre>
-if (booleanVariable) { /* ... */ }                 // Compliant
-if (!booleanVariable) { /* ... */ }                // Compliant
+if (booleanVariable) { /* ... */ }
+if (!booleanVariable) { /* ... */ }
+if (booleanVariable) { /* ... */ }
+doSomething(true);
 </pre>

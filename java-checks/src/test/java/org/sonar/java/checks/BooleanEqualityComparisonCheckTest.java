@@ -38,14 +38,18 @@ public class BooleanEqualityComparisonCheckTest {
     SourceFile file = JavaAstScanner
       .scanSingleFile(new File("src/test/files/checks/BooleanEqualityComparisonCheck.java"), new VisitorsBridge(new BooleanEqualityComparisonCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Remove the unnecessary boolean comparison to simplify this expression.")
+      .next().atLine(3).withMessage("Remove the useless \"==\" operator.")
       .next().atLine(4)
-      .next().atLine(5)
+      .next().atLine(5).withMessage("Remove the useless \"!=\" operator.")
       .next().atLine(6)
       .next().atLine(7)
       .next().atLine(8)
       .next().atLine(9)
-      .next().atLine(10);
+      .next().atLine(10)
+      .next().atLine(11).withMessage("Remove the useless \"!\" operator.")
+      .next().atLine(12)
+      .next().atLine(13).withMessage("Remove the useless \"&&\" operator.")
+      .next().atLine(14).withMessage("Remove the useless \"||\" operator.");
   }
 
 }
