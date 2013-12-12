@@ -155,6 +155,7 @@ public final class CheckList {
       UnusedLocalVariableCheck.class,
       UnusedPrivateFieldCheck.class,
       StringBufferAndBuilderWithCharCheck.class,
+      FileHeaderCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
