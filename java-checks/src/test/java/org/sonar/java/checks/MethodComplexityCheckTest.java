@@ -42,7 +42,7 @@ public class MethodComplexityCheckTest {
     check.setMax(1);
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodComplexity.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("The Cyclomatic Complexity of this method 'sayHello' is 2 which is greater than 1 authorized.")
+        .next().atLine(3).withMessage("The Cyclomatic Complexity of this method \"sayHello\" is 2 which is greater than 1 authorized.")
         .noMore();
   }
 
