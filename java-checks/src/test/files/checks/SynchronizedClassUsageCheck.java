@@ -14,15 +14,15 @@ class A {
   Stack a = new Stack();         // Non-Compliant
 
   private void f() {
-    System.out.println(Vector.class); // Non-Compliant
-    System.out.println(new java.util.Vector()); // Non-Compliant
+    System.out.println(Vector.class); // OK
+    a.call(new java.util.Vector()); // OK
     java.util.Vector<Integer> result = null; // Non-Compliant
     List result = new java.util.Vector<Integer>(); // Non-Compliant
   }
 
   public Vector a; // Non-Compliant
 
-  public Vector f() { // Non-Compliant
+  public Stack f() { // Non-Compliant
   }
 
   public void f(Vector a) { // Non-Compliant
@@ -32,8 +32,10 @@ class A {
   public Vector f(Vector a) { // Compliant
     Vector a; // Non-Compliant
 
-    try (Vector a = null) { // Non-Compliant
+    try (Vector a = null) { // OK
     }
+  }
+  public void f(Integer i) { // OK
   }
 }
 

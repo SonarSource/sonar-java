@@ -19,23 +19,24 @@
  */
 package org.sonar.java.checks;
 
+import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
 public class SynchronizedClassUsageCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+  private final SynchronizedClassUsageCheck check = new SynchronizedClassUsageCheck();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SynchronizedClassUsageCheck.java"), new SynchronizedClassUsageCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SynchronizedClassUsageCheck.java"), new VisitorsBridge(check));
+    CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(5).withMessage("Replace the synchronized class \"Vector\" by an unsynchronized one such as \"ArrayList\" or \"LinkedList\".")
         .next().atLine(6)
         .next().atLine(7).withMessage("Replace the synchronized class \"Hashtable\" by an unsynchronized one such as \"HashMap\".")
@@ -44,8 +45,6 @@ public class SynchronizedClassUsageCheckTest {
         .next().atLine(12)
         .next().atLine(13).withMessage("Replace the synchronized class \"StringBuffer\" by an unsynchronized one such as \"StringBuilder\".")
         .next().atLine(14).withMessage("Replace the synchronized class \"Stack\" by an unsynchronized one such as \"Deque\".")
-        .next().atLine(17)
-        .next().atLine(18)
         .next().atLine(19)
         .next().atLine(20)
         .next().atLine(23)
@@ -53,9 +52,9 @@ public class SynchronizedClassUsageCheckTest {
         .next().atLine(28)
         .next().atLine(33)
         .next().atLine(35)
-        .next().atLine(41)
-        .next().atLine(47)
-        .next().atLine(49);
+        .next().atLine(43)
+        .next().atLine(49)
+        .next().atLine(51);
   }
 
 }

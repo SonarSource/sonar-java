@@ -21,110 +21,122 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.List;
 import java.util.Map;
 
 @Rule(
-  key = "S1149",
+  key = SynchronizedClassUsageCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> {
+public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String> builder()
+  private JavaFileScannerContext context;
+  public static final String RULE_KEY = "S1149";
+  private static final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String>builder()
     .put("Vector", "\"ArrayList\" or \"LinkedList\"")
     .put("Hashtable", "\"HashMap\"")
     .put("StringBuffer", "\"StringBuilder\"")
     .put("Stack", "\"Deque\"")
     .build();
 
-  private int lastReportedLine;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_TYPE);
-    subscribeTo(JavaGrammar.CREATED_NAME);
-    subscribeTo(JavaGrammar.QUALIFIED_IDENTIFIER);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitFile(AstNode astNode) {
-    lastReportedLine = -1;
-  }
+  public void visitVariable(VariableTree tree) {
+    super.visitVariable(tree);
+    String declaredType = getTypeName(tree.type());
 
-  @Override
-  public void visitNode(AstNode node) {
-    String className = getClassName(node);
-
-    if (lastReportedLine != node.getTokenLine() && isSynchronizedClass(className) && !isExcluded(node)) {
-      getContext().createLineViolation(this, "Replace the synchronized class \"" + className + "\" by an unsynchronized one such as " + REPLACEMENTS.get(className) + ".", node);
-      lastReportedLine = node.getTokenLine();
-    }
-  }
-
-  private static String getClassName(AstNode node) {
-    String className;
-
-    if (!node.hasDirectChildren(JavaPunctuator.DOT)) {
-      className = node.getTokenOriginalValue();
+    if (REPLACEMENTS.containsKey(declaredType)) {
+      reportIssue(tree.type(), declaredType);
     } else {
-      List<AstNode> identifiers = node.getChildren(JavaTokenType.IDENTIFIER);
-      className = identifiers.get(identifiers.size() - 1).getTokenOriginalValue();
+      ExpressionTree init = tree.initializer();
+      if (init != null && init.is(Tree.Kind.NEW_CLASS)) {
+        String initType = getTypeName(((NewClassTree) tree.initializer()).identifier());
+        reportIssueIfDeprecatedType(tree.initializer(), initType);
+      }
+    }
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    scan(tree.modifiers());
+    scan(tree.typeParameters());
+    scan(tree.returnType());
+    scan(tree.defaultValue());
+    scan(tree.block());
+    if (!isOverriding(tree)) {
+      for (VariableTree param : tree.parameters()) {
+        reportIssueIfDeprecatedType(param, getTypeName(param.type()));
+      }
+      reportIssueIfDeprecatedType(tree, getTypeName(tree.returnType()));
     }
 
-    return className;
   }
 
-  private static boolean isSynchronizedClass(String className) {
-    return REPLACEMENTS.containsKey(className);
-  }
-
-  private static boolean isExcluded(AstNode node) {
-    return node.hasAncestor(JavaGrammar.IMPORT_DECLARATION) ||
-      isInOverridenMethodSignature(node);
-  }
-
-  private static boolean isInOverridenMethodSignature(AstNode node) {
-    return isInMethodSignature(node) && isOverridenInClass(node);
-  }
-
-  private static boolean isInMethodSignature(AstNode node) {
-    return node.is(JavaGrammar.CLASS_TYPE) &&
-      node.getParent().is(JavaGrammar.TYPE) &&
-      node.getParent().getParent().is(JavaGrammar.MEMBER_DECL, JavaGrammar.FORMAL_PARAMETER_DECLS);
-  }
-
-  private static boolean isOverridenInClass(AstNode node) {
-    AstNode enclosingClassOrInterface = getFirstAncestor(node, JavaGrammar.MEMBER_DECL, JavaGrammar.INTERFACE_MEMBER_DECL);
-    if (!enclosingClassOrInterface.is(JavaGrammar.MEMBER_DECL)) {
-      return false;
+  @Override
+  public void visitClass(ClassTree tree) {
+    super.visitClass(tree);
+    for (Tree parent : tree.superInterfaces()) {
+      reportIssueIfDeprecatedType(parent, getTypeName(parent));
     }
 
-    for (AstNode modifier : enclosingClassOrInterface.getParent().getChildren(JavaGrammar.MODIFIER)) {
+  }
+
+  private void reportIssueIfDeprecatedType(Tree tree, String type) {
+    if (REPLACEMENTS.containsKey(type)) {
+      reportIssue(tree, type);
+    }
+  }
+
+  private void reportIssue(Tree tree, String type) {
+    context.addIssue(tree, ruleKey, "Replace the synchronized class \"" + type + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type) + ".");
+  }
+
+  private String getTypeName(Tree typeTree) {
+    if (typeTree != null) {
+
+      if (typeTree.is(Tree.Kind.IDENTIFIER)) {
+        return ((IdentifierTree) typeTree).name();
+      } else if (typeTree.is(Tree.Kind.MEMBER_SELECT)) {
+        return ((MemberSelectExpressionTree) typeTree).identifier().name();
+      } else if (typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+        return getTypeName(((ParameterizedTypeTree) typeTree).type());
+      }
+    }
+    return "";
+  }
+
+  private boolean isOverriding(MethodTree tree) {
+    AstNode memberDec = ((JavaTree) tree).getAstNode().getParent().getParent();
+    for (AstNode modifier : memberDec.getChildren(JavaGrammar.MODIFIER)) {
       if (AstNodeTokensMatcher.matches(modifier, "@Override")) {
         return true;
       }
     }
-
     return false;
   }
-
-  private static AstNode getFirstAncestor(AstNode node, AstNodeType t1, AstNodeType t2) {
-    AstNode result = node.getParent();
-    while (result != null && !result.is(t1, t2)) {
-      result = result.getParent();
-    }
-
-    return result;
-  }
-
 }
