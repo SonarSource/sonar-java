@@ -51,8 +51,9 @@ public class MethodComplexityCheck extends SquidCheck<LexerlessGrammar> {
     int complexity = ChecksHelper.getRecursiveMeasureInt(sourceMethod, JavaMetric.COMPLEXITY);
     if (complexity > max) {
       getContext().createLineViolation(this,
-        "The Cyclomatic Complexity of this method is {0,number,integer} which is greater than {1,number,integer} authorized.",
+        "The Cyclomatic Complexity of this method ''{0}'' is {1,number,integer} which is greater than {2,number,integer} authorized.",
         node,
+        (new MethodHelper(node)).getName().getTokenValue(),
         complexity,
         max);
     }
