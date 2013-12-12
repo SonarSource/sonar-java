@@ -156,6 +156,7 @@ public final class CheckList {
       UnusedPrivateFieldCheck.class,
       StringBufferAndBuilderWithCharCheck.class,
       FileHeaderCheck.class,
+      IncrementDecrementInSubExpressionCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,

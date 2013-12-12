@@ -132,6 +132,7 @@
   <rule key="AvoidMultipleUnaryOperators">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/basic.xml/AvoidMultipleUnaryOperators]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="DoubleCheckedLocking">
