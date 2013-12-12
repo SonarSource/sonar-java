@@ -12,21 +12,23 @@ Unfortunately, synchronization has a big negative impact on performance, even wh
   <li><code>StringBuilder</code> instead of <code>StringBuffer</code></li>
 </ul>
 
-<p>The following code:</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
-Vector cats = new Vector();       // Non-Compliant
+Vector cats = new Vector();
 </pre>
 
-<p>should be refactored into:</p>
+<h2>Compliant Solution</h2>
 
 <pre>
-ArrayList cats = new ArrayList(); // Compliant
+ArrayList cats = new ArrayList(); 
 </pre>
+
+<h2>Exceptions</h2>
 
 <p>Use of those synchronized classes is allowed in method signatures when overriding an existing method.</p>
 
 <pre>
 @Override
-public Vector getCats() {...}   //Compliant
+public Vector getCats() {...} 
 </pre>
