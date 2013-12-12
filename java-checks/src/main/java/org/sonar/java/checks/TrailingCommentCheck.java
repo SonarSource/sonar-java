@@ -19,17 +19,20 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableSet;
 import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
 import com.sonar.sslr.squid.checks.SquidCheck;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Rule(
@@ -39,6 +42,7 @@ import java.util.regex.Pattern;
 public class TrailingCommentCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private static final String DEFAULT_LEGAL_COMMENT_PATTERN = "^\\s*+[^\\s]++$";
+  private static final Set<String> EXCLUDED_PATTERNS = ImmutableSet.of("NOSONAR", "NOPMD", "CHECKSTYLE:");
 
   @RuleProperty(
     key = "legalCommentPattern",
@@ -64,7 +68,7 @@ public class TrailingCommentCheck extends SquidCheck<LexerlessGrammar> implement
           comment = comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
           comment = comment.trim();
 
-          if (!pattern.matcher(comment).matches()) {
+          if (!pattern.matcher(comment).matches() && !containsExcludedPattern(comment)) {
             getContext().createLineViolation(this, "Move this trailing comment on the previous empty line.", previousTokenLine);
           }
         }
@@ -74,4 +78,12 @@ public class TrailingCommentCheck extends SquidCheck<LexerlessGrammar> implement
     previousTokenLine = token.getLine();
   }
 
+  private boolean containsExcludedPattern(String comment) {
+    for (String pattern : EXCLUDED_PATTERNS) {
+      if (StringUtils.containsIgnoreCase(comment, pattern)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
