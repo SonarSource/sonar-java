@@ -19,42 +19,55 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(
-  key = "S1125",
+  key = BooleanEqualityComparisonCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class BooleanEqualityComparisonCheck extends SquidCheck<LexerlessGrammar> {
+public class BooleanEqualityComparisonCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1125";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.EQUALITY_EXPRESSION);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (hasBooleanLiteralOperand(node)) {
-      getContext().createLineViolation(
-          this,
-          "Remove the unnecessary boolean comparison to simplify this expression.",
-          node);
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    super.visitBinaryExpression(tree);
+
+    if (isEqualityExpression(tree) && hasBooleanLiteralOperands(tree)) {
+      context.addIssue(tree, ruleKey, "Remove the unnecessary boolean comparison to simplify this expression.");
     }
   }
 
-  private static boolean hasBooleanLiteralOperand(AstNode node) {
-    return node.select()
-        .children(JavaGrammar.PRIMARY)
-        .children(JavaGrammar.LITERAL)
-        .descendants(JavaKeyword.TRUE, JavaKeyword.FALSE)
-        .isNotEmpty();
+  private static boolean isEqualityExpression(Tree tree) {
+    return tree.is(Kind.EQUAL_TO) || tree.is(Kind.NOT_EQUAL_TO);
+  }
+
+  private static boolean hasBooleanLiteralOperands(BinaryExpressionTree tree) {
+    return isBooleanLiteral(tree.leftOperand()) ||
+      isBooleanLiteral(tree.rightOperand());
+  }
+
+  private static boolean isBooleanLiteral(Tree tree) {
+    return tree.is(Kind.BOOLEAN_LITERAL);
   }
 
 }
