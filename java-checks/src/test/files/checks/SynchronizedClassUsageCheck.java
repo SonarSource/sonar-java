@@ -11,6 +11,7 @@ class A {
   ArrayList a = new ArrayList(); // Compliant
   Vector<Integer> a;             // Non-Compliant
   StringBuffer a = new StringBuffer(); // Non-Compliant
+  Stack a = new Stack();         // Non-Compliant
 
   private void f() {
     System.out.println(Vector.class); // Non-Compliant

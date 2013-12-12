@@ -43,18 +43,19 @@ public class SynchronizedClassUsageCheckTest {
         .next().atLine(9)
         .next().atLine(12)
         .next().atLine(13).withMessage("Replace the synchronized class \"StringBuffer\" by an unsynchronized one such as \"StringBuilder\".")
-        .next().atLine(16)
+        .next().atLine(14).withMessage("Replace the synchronized class \"Stack\" by an unsynchronized one such as \"Deque\".")
         .next().atLine(17)
         .next().atLine(18)
         .next().atLine(19)
-        .next().atLine(22)
-        .next().atLine(24)
-        .next().atLine(27)
-        .next().atLine(32)
-        .next().atLine(34)
-        .next().atLine(40)
-        .next().atLine(46)
-        .next().atLine(48);
+        .next().atLine(20)
+        .next().atLine(23)
+        .next().atLine(25)
+        .next().atLine(28)
+        .next().atLine(33)
+        .next().atLine(35)
+        .next().atLine(41)
+        .next().atLine(47)
+        .next().atLine(49);
   }
 
 }

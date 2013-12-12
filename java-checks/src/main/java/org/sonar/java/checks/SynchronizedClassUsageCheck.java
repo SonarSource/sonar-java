@@ -44,6 +44,7 @@ public class SynchronizedClassUsageCheck extends SquidCheck<LexerlessGrammar> {
     .put("Vector", "\"ArrayList\" or \"LinkedList\"")
     .put("Hashtable", "\"HashMap\"")
     .put("StringBuffer", "\"StringBuilder\"")
+    .put("Stack", "\"Deque\"")
     .build();
 
   private int lastReportedLine;
