@@ -50,7 +50,7 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
 
   private JavaFileScannerContext context;
   public static final String RULE_KEY = "S1149";
-  private static final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private static final RuleKey RULE_KEY_FOR_REPOSITORY = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String>builder()
     .put("Vector", "\"ArrayList\" or \"LinkedList\"")
     .put("Hashtable", "\"HashMap\"")
@@ -113,7 +113,7 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
   }
 
   private void reportIssue(Tree tree, String type) {
-    context.addIssue(tree, ruleKey, "Replace the synchronized class \"" + type + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type) + ".");
+    context.addIssue(tree, RULE_KEY_FOR_REPOSITORY, "Replace the synchronized class \"" + type + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type) + ".");
   }
 
   private String getTypeName(Tree typeTree) {
