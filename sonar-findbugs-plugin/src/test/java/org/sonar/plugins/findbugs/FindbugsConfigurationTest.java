@@ -90,12 +90,6 @@ public class FindbugsConfigurationTest {
   }
 
   @Test
-  public void should_return_locale() {
-    settings.setProperty(CoreProperties.CORE_VIOLATION_LOCALE_PROPERTY, "fr");
-    assertThat(conf.getLocale()).isEqualTo(Locale.FRENCH);
-  }
-
-  @Test
   public void should_return_excludes_filters() {
     assertThat(conf.getExcludesFilters()).isEmpty();
     settings.setProperty(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY, " foo.xml , bar.xml,");

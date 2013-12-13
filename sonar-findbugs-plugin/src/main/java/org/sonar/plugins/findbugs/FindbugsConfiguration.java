@@ -133,10 +133,6 @@ public class FindbugsConfiguration implements BatchExtension {
     return settings.getLong(FindbugsConstants.TIMEOUT_PROPERTY);
   }
 
-  public Locale getLocale() {
-    return new Locale(settings.getString(CoreProperties.CORE_VIOLATION_LOCALE_PROPERTY));
-  }
-
   private File jsr305Lib;
   private File annotationsLib;
 

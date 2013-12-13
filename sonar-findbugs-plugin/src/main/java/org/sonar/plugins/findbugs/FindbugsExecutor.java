@@ -90,9 +90,9 @@ public class FindbugsExecutor implements BatchExtension {
     ClassLoader initialClassLoader = Thread.currentThread().getContextClassLoader();
     Thread.currentThread().setContextClassLoader(FindBugs2.class.getClassLoader());
 
-    // This is a dirty workaround, but unfortunately there is no other way to specify locale for FindBugs - see SONAR-2594
+    // This is a dirty workaround, but unfortunately there is no other way to make Findbugs generate english messages only - see SONARJAVA-380
     Locale initialLocale = Locale.getDefault();
-    Locale.setDefault(configuration.getLocale());
+    Locale.setDefault(Locale.ENGLISH);
 
     OutputStream xmlOutput = null;
     Collection<Plugin> customPlugins = null;
