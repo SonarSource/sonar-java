@@ -5567,8 +5567,8 @@
         <rule-key>LooseCoupling</rule-key>
         <prop>
           <key>remediationFactor</key>
-          <val>1.0</val>
-          <txt>h</txt>
+          <val>10.0</val>
+          <txt>mn</txt>
         </prop>
         <prop>
           <key>remediationFunction</key>
