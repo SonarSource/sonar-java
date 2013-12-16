@@ -62,6 +62,8 @@ public class CheckstyleExecutor implements BatchExtension {
     ClassLoader initialClassLoader = Thread.currentThread().getContextClassLoader();
     Thread.currentThread().setContextClassLoader(PackageNamesLoader.class.getClassLoader());
 
+    Locale initialLocale = Locale.getDefault();
+    Locale.setDefault(Locale.ENGLISH);
     Checker checker = null;
     OutputStream xmlOutput = null;
     try {
@@ -79,7 +81,6 @@ public class CheckstyleExecutor implements BatchExtension {
       }
 
       checker.setCharset(configuration.getCharset().name());
-      configureLocale(checker);
       checker.configure(configuration.getCheckstyleConfiguration());
       checker.process(configuration.getSourceFiles());
 
@@ -94,13 +95,8 @@ public class CheckstyleExecutor implements BatchExtension {
       }
       IOUtils.closeQuietly(xmlOutput);
       Thread.currentThread().setContextClassLoader(initialClassLoader);
+      Locale.setDefault(initialLocale);
     }
-  }
-
-  private void configureLocale(Checker checker) {
-    Locale locale = configuration.getLocale();
-    checker.setLocaleLanguage(locale.getLanguage());
-    checker.setLocaleCountry(locale.getCountry());
   }
 
 }

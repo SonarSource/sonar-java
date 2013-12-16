@@ -34,7 +34,6 @@ import java.util.Locale;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.internal.matchers.StringContains.containsString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -71,16 +70,27 @@ public class CheckstyleExecutorTest {
   }
 
   @Test
-  public void canGenerateXMLReport() throws Exception {
-    CheckstyleConfiguration conf = mockConf();
-    File report = new File("target/test-tmp/checkstyle-report.xml");
-    when(conf.getTargetXMLReport()).thenReturn(report);
-    CheckstyleAuditListener listener = mockListener();
-    CheckstyleExecutor executor = new CheckstyleExecutor(conf, listener, getClass().getClassLoader());
-    executor.execute();
+  public void canGenerateXMLReport_in_english() throws Exception {
+    Locale initialLocale = Locale.getDefault();
+    Locale.setDefault(Locale.FRENCH);
 
-    assertThat(report.exists(), is(true));
-    assertThat(FileUtils.readFileToString(report), containsString("<error"));
+    try {
+      CheckstyleConfiguration conf = mockConf();
+      File report = new File("target/test-tmp/checkstyle-report.xml");
+      when(conf.getTargetXMLReport()).thenReturn(report);
+      CheckstyleAuditListener listener = mockListener();
+      CheckstyleExecutor executor = new CheckstyleExecutor(conf, listener, getClass().getClassLoader());
+      executor.execute();
+
+      assertThat(report.exists(), is(true));
+
+      String reportContents = FileUtils.readFileToString(report);
+      assertThat(reportContents).contains("<error");
+      assertThat(reportContents).contains("Empty statement.");
+    } finally {
+      assertThat(Locale.getDefault()).isEqualTo(Locale.FRENCH);
+      Locale.setDefault(initialLocale);
+    }
   }
 
   private CheckstyleAuditListener mockListener() {
@@ -92,7 +102,6 @@ public class CheckstyleExecutorTest {
     when(conf.getCharset()).thenReturn(Charset.defaultCharset());
     when(conf.getCheckstyleConfiguration()).thenReturn(CheckstyleConfiguration.toCheckstyleConfiguration(new File("test-resources/checkstyle-conf.xml")));
     when(conf.getSourceFiles()).thenReturn(Arrays.<File> asList(new File("test-resources/Hello.java"), new File("test-resources/World.java")));
-    when(conf.getLocale()).thenReturn(Locale.ENGLISH);
     return conf;
   }
 

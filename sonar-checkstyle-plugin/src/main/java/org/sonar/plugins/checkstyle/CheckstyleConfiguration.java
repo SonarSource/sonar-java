@@ -28,7 +28,6 @@ import org.apache.commons.lang.CharEncoding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.InputFileUtils;
@@ -43,7 +42,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
 
 public class CheckstyleConfiguration implements BatchExtension {
@@ -107,16 +105,12 @@ public class CheckstyleConfiguration implements BatchExtension {
   private void defineCharset(com.puppycrawl.tools.checkstyle.api.Configuration configuration) {
     com.puppycrawl.tools.checkstyle.api.Configuration[] modules = configuration.getChildren();
     for (com.puppycrawl.tools.checkstyle.api.Configuration module : modules) {
-      if (("Checker".equals(module.getName()) || "com.puppycrawl.tools.checkstyle.Checker".equals(module.getName())) && (module instanceof DefaultConfiguration)) {
+      if (("Checker".equals(module.getName()) || "com.puppycrawl.tools.checkstyle.Checker".equals(module.getName())) && module instanceof DefaultConfiguration) {
         Charset charset = getCharset();
         LOG.info("Checkstyle charset: " + charset.name());
         ((DefaultConfiguration) module).addAttribute("charset", charset.name());
       }
     }
-  }
-
-  public Locale getLocale() {
-    return new Locale(conf.getString(CoreProperties.CORE_VIOLATION_LOCALE_PROPERTY));
   }
 
   public Charset getCharset() {
