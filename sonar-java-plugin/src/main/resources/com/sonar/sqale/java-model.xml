@@ -9451,7 +9451,7 @@
         </prop>
         <prop>
           <key>remediationFactor</key>
-          <val>30.0</val>
+          <val>10.0</val>
           <txt>mn</txt>
         </prop>
       </chc>
