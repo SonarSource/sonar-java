@@ -4814,7 +4814,7 @@
         <rule-key>UnnecessaryLocalBeforeReturn</rule-key>
         <prop>
           <key>remediationFactor</key>
-          <val>30.0</val>
+          <val>5.0</val>
           <txt>mn</txt>
         </prop>
         <prop>
