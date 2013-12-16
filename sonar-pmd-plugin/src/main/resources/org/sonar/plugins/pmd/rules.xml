@@ -188,7 +188,7 @@
   </rule>
 
   <rule key="OverrideBothEqualsAndHashcode">
-    <priority>CRITICAL</priority>
+    <priority>BLOCKER</priority>
     <configKey><![CDATA[rulesets/basic.xml/OverrideBothEqualsAndHashcode]]></configKey>
     <status>DEPRECATED</status>
   </rule>
@@ -653,7 +653,7 @@
   </rule>
 
   <rule key="CloseResource">
-    <priority>MAJOR</priority>
+    <priority>CRITICAL</priority>
     <configKey><![CDATA[rulesets/design.xml/CloseResource]]></configKey>
     <param key="types" type="STRING">
     </param>

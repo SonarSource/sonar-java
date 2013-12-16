@@ -1132,7 +1132,7 @@
   </rule>
 
   <rule key="com.puppycrawl.tools.checkstyle.checks.coding.StringLiteralEqualityCheck">
-    <priority>MAJOR</priority>
+    <priority>CRITICAL</priority>
     <name><![CDATA[String Literal Equality]]></name>
     <configKey><![CDATA[Checker/TreeWalker/StringLiteralEquality]]></configKey>
     <status>DEPRECATED</status>
