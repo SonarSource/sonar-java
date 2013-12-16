@@ -1,21 +1,27 @@
 <p>
-Each source file should always start with a header stating who owns the file and the license which must be used to distribute the application.
-This rule must be fed with a regular expression which is used to be sure that the beginning of the file start with the expected header.
+Each source file should start with a header stating file ownership and the license which must be used to distribute the application.
+This rule must be fed with the header text which is expected at the beginning of every file.
 </p>
 
-<p>For example, the header format regular expression can be set to:</p>
+<p>For example, for SonarSource's open source softwares, the <code>headerFormat</code> property must be set to:</p>
 <pre>
-/\*
- \* (C) Copyright 20\d\d Nuxeo SA (http://nuxeo\.com/) and others\.
- \*
- \* All rights reserved\. This program and the accompanying materials
- \* are made available under the terms of the GNU Lesser General Public License
- \* (LGPL) version 2\.1 which accompanies this distribution, and is available at
- \* http://www\.gnu\.org/licenses/lgpl-2\.1\.html
- \*
- \* This library is distributed in the hope that it will be useful,
- \* but WITHOUT ANY WARRANTY; without even the implied warranty of
- \* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE\. See the GNU
- \* Lesser General Public License for more details\.
- \*/
+/*
+ * SonarQube, open source software quality management tool.
+ * Copyright (C) 2008-2013 SonarSource
+ * mailto:contact AT sonarsource DOT com
+ *
+ * SonarQube is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * SonarQube is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 </pre>

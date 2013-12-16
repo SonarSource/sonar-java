@@ -31,7 +31,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.regex.Pattern;
+import java.util.List;
 
 @Rule(
   key = "S1451",
@@ -47,7 +47,7 @@ public class FileHeaderCheck extends SquidCheck<LexerlessGrammar> implements Cha
   public String headerFormat = DEFAULT_HEADER_FORMAT;
 
   private Charset charset;
-  private Pattern pattern = null;
+  private String[] expectedLines;
 
   @Override
   public void setCharset(Charset charset) {
@@ -56,23 +56,45 @@ public class FileHeaderCheck extends SquidCheck<LexerlessGrammar> implements Cha
 
   @Override
   public void init() {
-    if (pattern == null) {
-      pattern = Pattern.compile(headerFormat, Pattern.DOTALL);
-    }
+    expectedLines = headerFormat.split("(?:\r)?\n|\r");
   }
 
   @Override
   public void visitFile(AstNode astNode) {
-    String contents;
+    List<String> lines;
     try {
-      contents = Files.toString(getContext().getFile(), charset);
+      lines = Files.readLines(getContext().getFile(), charset);
     } catch (IOException e) {
       throw new SonarException(e);
     }
 
-    if (!pattern.matcher(contents).lookingAt()) {
+    if (!matches(expectedLines, lines)) {
       getContext().createFileViolation(this, "Add or update the header of this file.");
     }
+  }
+
+  private static boolean matches(String[] expectedLines, List<String> lines) {
+    boolean result;
+
+    if (expectedLines.length <= lines.size()) {
+      result = true;
+
+      int i = 0;
+      for (String line : lines) {
+        if (!line.equals(expectedLines[i])) {
+          result = false;
+          break;
+        }
+        i++;
+        if (i == expectedLines.length) {
+          break;
+        }
+      }
+    } else {
+      result = false;
+    }
+
+    return result;
   }
 
 }
