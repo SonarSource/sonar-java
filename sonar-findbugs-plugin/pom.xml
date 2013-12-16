@@ -108,6 +108,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
+              <stripVersion>true</stripVersion>
               <outputDirectory>${project.build.outputDirectory}</outputDirectory>
               <includeArtifactIds>annotations,jsr305</includeArtifactIds>
             </configuration>

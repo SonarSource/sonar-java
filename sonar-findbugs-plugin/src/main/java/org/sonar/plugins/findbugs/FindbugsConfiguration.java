@@ -44,7 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.Locale;
+
 
 public class FindbugsConfiguration implements BatchExtension {
 
@@ -140,8 +140,8 @@ public class FindbugsConfiguration implements BatchExtension {
    * Invoked by PicoContainer to extract additional FindBugs libraries into temporary files.
    */
   public void start() {
-    jsr305Lib = copyLib("/jsr305-" + FindbugsVersion.getVersion() + ".jar");
-    annotationsLib = copyLib("/annotations-" + FindbugsVersion.getVersion() + ".jar");
+    jsr305Lib = copyLib("/jsr305.jar");
+    annotationsLib = copyLib("/annotations.jar");
   }
 
   /**
@@ -156,9 +156,11 @@ public class FindbugsConfiguration implements BatchExtension {
     InputStream input = null;
     try {
       input = getClass().getResourceAsStream(name);
-      File temp = File.createTempFile("findbugs", ".jar");
-      FileUtils.copyInputStreamToFile(input, temp);
-      return temp;
+      File dir = new File(fileSystem.workingDir(), "findbugs");
+      FileUtils.forceMkdir(dir);
+      File target = new File(dir, name);
+      FileUtils.copyInputStreamToFile(input, target);
+      return target;
     } catch (IOException e) {
       throw new IllegalStateException("Fail to extract Findbugs dependency", e);
     } finally {

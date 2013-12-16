@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
@@ -35,7 +34,6 @@ import org.sonar.api.utils.SonarException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Locale;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -131,6 +129,19 @@ public class FindbugsConfigurationTest {
       binaryFile11.getCanonicalPath(),
       binaryFile12.getCanonicalPath(),
       binaryFile21.getCanonicalPath());
+  }
+
+  @Test
+  public void should_copy_lib_in_working_dir() throws IOException {
+    String jsr205 = "findbugs/jsr305.jar";
+    String annotations = "findbugs/annotations.jar";
+
+    conf.start();
+    assertThat(new File(fs.workingDir(), jsr205)).isFile();
+    assertThat(new File(fs.workingDir(), annotations)).isFile();
+    conf.stop();
+    assertThat(new File(fs.workingDir(), jsr205)).doesNotExist();
+    assertThat(new File(fs.workingDir(), annotations)).doesNotExist();
   }
 
 }
