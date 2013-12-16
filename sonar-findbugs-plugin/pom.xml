@@ -15,7 +15,7 @@
   <description>FindBugs is a program that uses static analysis to look for bugs in Java code. It can detect a variety of common coding mistakes, including thread synchronization problems, misuse of API methods.</description>
 
   <properties>
-    <findbugs.version>2.0.2</findbugs.version>
+    <findbugs.version>2.0.3</findbugs.version>
   </properties>
 
   <dependencies>
@@ -45,7 +45,24 @@
           <groupId>xom</groupId>
           <artifactId>xom</artifactId>
         </exclusion>
+        <exclusion>
+          <!-- For some reasons appeared as a transitive dependency of FindBugs 2.0.3, but not presented/used in zip-distribution -->
+          <groupId>com.apple</groupId>
+          <artifactId>AppleJavaExtensions</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- For some reasons appeared as a transitive dependency of FindBugs 2.0.3 -->
+          <groupId>net.jcip</groupId>
+          <artifactId>jcip-annotations</artifactId>
+        </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <!-- For some reasons was not deployed with FindBugs 2.0.3 and not transitive dependency anymore -->
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
+      <version>2.0.1</version>
     </dependency>
 
     <dependency>
@@ -139,8 +156,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>4800000</maxsize>
-                  <minsize>4600000</minsize>
+                  <maxsize>4900000</maxsize>
+                  <minsize>4700000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>

@@ -2529,4 +2529,28 @@
     <configKey><![CDATA[TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED]]></configKey>
   </rule>
 
+  <rule key="DLS_DEAD_LOCAL_INCREMENT_IN_RETURN">
+    <priority>MAJOR</priority>
+    <name><![CDATA[Useless increment in return statement]]></name>
+    <configKey><![CDATA[DLS_DEAD_LOCAL_INCREMENT_IN_RETURN]]></configKey>
+  </rule>
+
+  <rule key="DM_BOXED_PRIMITIVE_FOR_PARSING">
+    <priority>MAJOR</priority>
+    <name><![CDATA[Boxing/unboxing to parse a primitive]]></name>
+    <configKey><![CDATA[DM_BOXED_PRIMITIVE_FOR_PARSING]]></configKey>
+  </rule>
+
+  <rule key="NP_METHOD_RETURN_RELAXING_ANNOTATION">
+    <priority>MAJOR</priority>
+    <name><![CDATA[Method relaxes nullness annotation on return value]]></name>
+    <configKey><![CDATA[NP_METHOD_RETURN_RELAXING_ANNOTATION]]></configKey>
+  </rule>
+
+  <rule key="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION">
+    <priority>MAJOR</priority>
+    <name><![CDATA[Method tightens nullness annotation on parameter]]></name>
+    <configKey><![CDATA[NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION]]></configKey>
+  </rule>
+
 </rules>
