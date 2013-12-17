@@ -26,6 +26,7 @@ import net.sourceforge.pmd.RuleSets;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Java;
@@ -55,10 +56,11 @@ public class PmdExecutorTest {
   PmdProfileExporter pmdProfileExporter = mock(PmdProfileExporter.class);
   PmdConfiguration pmdConfiguration = mock(PmdConfiguration.class);
   PmdTemplate pmdTemplate = mock(PmdTemplate.class);
+  ProjectClasspath projectClasspath = mock(ProjectClasspath.class);
 
   @Before
   public void setUpPmdExecutor() {
-    pmdExecutor = Mockito.spy(new PmdExecutor(project, projectFileSystem, rulesProfile, pmdProfileExporter, pmdConfiguration));
+    pmdExecutor = Mockito.spy(new PmdExecutor(project, projectFileSystem, rulesProfile, pmdProfileExporter, pmdConfiguration, projectClasspath));
 
     doReturn(pmdTemplate).when(pmdExecutor).createPmdTemplate();
   }
@@ -112,7 +114,7 @@ public class PmdExecutorTest {
     when(pmdProfileExporter.exportProfile(PmdConstants.REPOSITORY_KEY, rulesProfile)).thenReturn(TestUtils.getResourceContent("/org/sonar/plugins/pmd/simple.xml"));
     when(projectFileSystem.getSourceCharset()).thenReturn(Charsets.UTF_8);
     when(projectFileSystem.mainFiles(Java.KEY)).thenReturn(Arrays.asList(srcFile));
-    when(projectFileSystem.testFiles(Java.KEY)).thenReturn(Collections.<InputFile> emptyList());
+    when(projectFileSystem.testFiles(Java.KEY)).thenReturn(Collections.<InputFile>emptyList());
 
     pmdExecutor.execute();
 

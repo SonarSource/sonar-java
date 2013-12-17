@@ -21,8 +21,13 @@ package org.sonar.plugins.pmd;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Closeables;
-import net.sourceforge.pmd.*;
+import net.sourceforge.pmd.Report;
+import net.sourceforge.pmd.RuleContext;
+import net.sourceforge.pmd.RuleSet;
+import net.sourceforge.pmd.RuleSetFactory;
+import net.sourceforge.pmd.RuleSets;
 import org.sonar.api.BatchExtension;
+import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Java;
@@ -42,13 +47,16 @@ public class PmdExecutor implements BatchExtension {
   private final RulesProfile rulesProfile;
   private final PmdProfileExporter pmdProfileExporter;
   private final PmdConfiguration pmdConfiguration;
+  private final ClassLoader projectClassloader;
 
-  public PmdExecutor(Project project, ProjectFileSystem projectFileSystem, RulesProfile rulesProfile, PmdProfileExporter pmdProfileExporter, PmdConfiguration pmdConfiguration) {
+  public PmdExecutor(Project project, ProjectFileSystem projectFileSystem, RulesProfile rulesProfile, PmdProfileExporter pmdProfileExporter, PmdConfiguration pmdConfiguration,
+    ProjectClasspath classpath) {
     this.project = project;
     this.projectFileSystem = projectFileSystem;
     this.rulesProfile = rulesProfile;
     this.pmdProfileExporter = pmdProfileExporter;
     this.pmdConfiguration = pmdConfiguration;
+    this.projectClassloader = classpath.getClassloader();
   }
 
   public Report execute() {
@@ -93,13 +101,13 @@ public class PmdExecutor implements BatchExtension {
     }
 
     Charset encoding = projectFileSystem.getSourceCharset();
-    
+
     rulesets.start(ruleContext);
-    
+
     for (InputFile file : files) {
       pmdFactory.process(file, encoding, rulesets, ruleContext);
     }
-    
+
     rulesets.end(ruleContext);
   }
 
@@ -124,6 +132,7 @@ public class PmdExecutor implements BatchExtension {
 
   @VisibleForTesting
   PmdTemplate createPmdTemplate() {
-    return new PmdTemplate(JavaUtils.getSourceVersion(project));
+    return new PmdTemplate(JavaUtils.getSourceVersion(project), projectClassloader);
   }
+
 }

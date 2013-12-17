@@ -42,17 +42,18 @@ public class PmdTemplate {
   private static final Logger LOG = LoggerFactory.getLogger(PmdTemplate.class);
 
   private static final Map<String, String> JAVA_VERSIONS = ImmutableMap.of(
-      "1.1", "1.3",
-      "1.2", "1.3",
-      "5", "1.5",
-      "6", "1.6",
-      "7", "1.7");
+    "1.1", "1.3",
+    "1.2", "1.3",
+    "5", "1.5",
+    "6", "1.6",
+    "7", "1.7");
 
   private final PMD pmd;
 
-  public PmdTemplate(String javaVersion) {
+  public PmdTemplate(String javaVersion, ClassLoader classloader) {
     this(new PMD());
     setJavaVersion(pmd, javaVersion);
+    setClassloader(pmd, classloader);
   }
 
   @VisibleForTesting
@@ -93,4 +94,10 @@ public class PmdTemplate {
   private static String normalize(String version) {
     return Functions.forMap(JAVA_VERSIONS, version).apply(version);
   }
+
+  @VisibleForTesting
+  static void setClassloader(PMD pmd, ClassLoader classloader) {
+    pmd.setClassLoader(classloader);
+  }
+
 }

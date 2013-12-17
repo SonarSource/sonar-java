@@ -102,11 +102,22 @@ public class PmdTemplateTest {
 
   @Test(expected = SonarException.class)
   public void should_fail_on_invalid_java_version() {
-    new PmdTemplate("12.2");
+    new PmdTemplate("12.2", mock(ClassLoader.class));
   }
 
   @Test
   public void shouldnt_fail_on_valid_java_version() {
-    new PmdTemplate("6");
+    new PmdTemplate("6", mock(ClassLoader.class));
   }
+
+  /**
+   * SONARPLUGINS-3318
+   */
+  @Test
+  public void should_set_classloader() {
+    ClassLoader classloader = mock(ClassLoader.class);
+    PmdTemplate.setClassloader(pmd, classloader);
+    verify(pmd).setClassLoader(classloader);
+  }
+
 }
