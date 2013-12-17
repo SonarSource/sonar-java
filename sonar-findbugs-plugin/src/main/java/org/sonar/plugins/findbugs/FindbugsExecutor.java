@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,14 +67,18 @@ public class FindbugsExecutor implements BatchExtension {
 
   private static final Logger LOG = LoggerFactory.getLogger(FindbugsExecutor.class);
 
-  /** Map of priority level names to their numeric values. */
+  /**
+   * Map of priority level names to their numeric values.
+   */
   private static Map<String, Integer> priorityNameToValueMap = new HashMap<String, Integer>();
+
   static {
     priorityNameToValueMap.put("high", Priorities.HIGH_PRIORITY);
     priorityNameToValueMap.put("medium", Priorities.NORMAL_PRIORITY);
     priorityNameToValueMap.put("low", Priorities.LOW_PRIORITY);
     priorityNameToValueMap.put("experimental", Priorities.EXP_PRIORITY);
   }
+
   private static final Integer DEFAULT_PRIORITY = Priorities.NORMAL_PRIORITY;
 
   private final FindbugsConfiguration configuration;
@@ -213,9 +218,11 @@ public class FindbugsExecutor implements BatchExtension {
       Enumeration<URL> urls = contextClassLoader.getResources("findbugs.xml");
       while (urls.hasMoreElements()) {
         URL url = urls.nextElement();
-        pluginJarPathList.add(StringUtils.removeStart(StringUtils.substringBefore(url.toString(), "!"), "jar:file:"));
+        pluginJarPathList.add(StringUtils.removeStart(StringUtils.substringBefore(url.toURI().getSchemeSpecificPart(), "!"), "file:"));
       }
     } catch (IOException e) {
+      throw new SonarException(e);
+    } catch (URISyntaxException e) {
       throw new SonarException(e);
     }
 
