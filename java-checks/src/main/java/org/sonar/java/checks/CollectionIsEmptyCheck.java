@@ -19,60 +19,72 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(
-  key = "S1155",
+  key = CollectionIsEmptyCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class CollectionIsEmptyCheck extends SquidCheck<LexerlessGrammar> {
+public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1155";
+  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.EQUALITY_EXPRESSION);
-    subscribeTo(JavaGrammar.RELATIONAL_EXPRESSION);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isEmptyComparison(node) && hasSizeCallingOperand(node)) {
-      getContext().createLineViolation(this, "Use isEmpty() to check whether the collection is empty or not.", node);
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    super.visitBinaryExpression(tree);
+
+    if (hasCallToSizeMethod(tree) && isEmptyComparison(tree)) {
+      context.addIssue(tree, RULE, "Use isEmpty() to check whether the collection is empty or not.");
     }
   }
 
-  private static boolean isEmptyComparison(AstNode node) {
-    return isEqualityExpressionWithZeroLiteral(node) ||
-      isRelationalExpressionWithZeroOrOne(node);
+  private static boolean hasCallToSizeMethod(BinaryExpressionTree tree) {
+    return isCallToSizeMethod(tree.leftOperand()) ||
+      isCallToSizeMethod(tree.rightOperand());
   }
 
-  private static boolean isRelationalExpressionWithZeroOrOne(AstNode node) {
-    if (!node.is(JavaGrammar.RELATIONAL_EXPRESSION)) {
+  private static boolean isCallToSizeMethod(ExpressionTree tree) {
+    if (!tree.is(Kind.METHOD_INVOCATION)) {
       return false;
     }
 
-    AstNode operand1 = node.getChild(0);
-    AstNode operator = node.getChild(1);
-    AstNode operand2 = node.getChild(2);
-
-    return isBadRelation(operand1, operator.getType(), operand2);
+    MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
+    return methodInvocationTree.arguments().isEmpty() &&
+      methodInvocationTree.methodSelect().is(Kind.MEMBER_SELECT) &&
+      "size".equals(((MemberSelectExpressionTree) methodInvocationTree.methodSelect()).identifier().name());
   }
 
-  private static boolean isBadRelation(AstNode operand1, AstNodeType operatorType, AstNode operand2) {
+  private static boolean isEmptyComparison(BinaryExpressionTree tree) {
     boolean result;
 
-    if (operatorType == JavaPunctuator.GE || operatorType == JavaPunctuator.LT) {
-      result = isZero(operand1) || isOne(operand2);
-    } else if (operatorType == JavaPunctuator.GT || operatorType == JavaPunctuator.LE) {
-      result = isOne(operand1) || isZero(operand2);
+    if (isEqualityExpression(tree)) {
+      result = isZero(tree.leftOperand()) || isZero(tree.rightOperand());
+    } else if (tree.is(Kind.GREATER_THAN_OR_EQUAL_TO) || tree.is(Kind.LESS_THAN)) {
+      result = isZero(tree.leftOperand()) || isOne(tree.rightOperand());
+    } else if (tree.is(Kind.GREATER_THAN) || tree.is(Kind.LESS_THAN_OR_EQUAL_TO)) {
+      result = isOne(tree.leftOperand()) || isZero(tree.rightOperand());
     } else {
       result = false;
     }
@@ -80,58 +92,19 @@ public class CollectionIsEmptyCheck extends SquidCheck<LexerlessGrammar> {
     return result;
   }
 
-  private static boolean isEqualityExpressionWithZeroLiteral(AstNode node) {
-    return node.is(JavaGrammar.EQUALITY_EXPRESSION) &&
-      hasZeroLiteral(node);
+  private static boolean isEqualityExpression(BinaryExpressionTree tree) {
+    return tree.is(Kind.EQUAL_TO) ||
+      tree.is(Kind.NOT_EQUAL_TO);
   }
 
-  private static boolean hasZeroLiteral(AstNode node) {
-    for (AstNode child : node.getChildren()) {
-      if (child.hasDescendant(JavaTokenType.INTEGER_LITERAL) && isZero(child)) {
-        return true;
-      }
-    }
-    return false;
+  private static boolean isZero(ExpressionTree tree) {
+    return tree.is(Kind.INT_LITERAL) &&
+      "0".equals(((LiteralTree) tree).value());
   }
 
-  private static boolean isZero(AstNode node) {
-    return node.getToken().equals(node.getLastToken()) &&
-      "0".equals(node.getTokenOriginalValue());
-  }
-
-  private static boolean isOne(AstNode node) {
-    return node.getToken().equals(node.getLastToken()) &&
-      "1".equals(node.getTokenOriginalValue());
-  }
-
-  private static boolean hasSizeCallingOperand(AstNode node) {
-    AstNode operand1 = node.getChild(0);
-    AstNode operand2 = node.getChild(2);
-
-    return isSizeCall(operand1) ||
-      isSizeCall(operand2);
-  }
-
-  private static boolean isSizeCall(AstNode node) {
-    if (!node.is(JavaGrammar.PRIMARY)) {
-      return false;
-    }
-
-    AstNode identifierSuffix = node.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
-    if (identifierSuffix == null) {
-      return false;
-    }
-
-    AstNode arguments = identifierSuffix.getFirstChild(JavaGrammar.ARGUMENTS);
-    if (arguments == null || arguments.getNumberOfChildren() != 2) {
-      return false;
-    }
-
-    return isSizeQualifiedIdentifier(node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
-  }
-
-  private static boolean isSizeQualifiedIdentifier(AstNode node) {
-    return "size".equals(node.getLastChild().getTokenOriginalValue());
+  private static boolean isOne(ExpressionTree tree) {
+    return tree.is(Kind.INT_LITERAL) &&
+      "1".equals(((LiteralTree) tree).value());
   }
 
 }

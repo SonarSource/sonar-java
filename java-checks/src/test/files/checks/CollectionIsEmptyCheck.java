@@ -37,5 +37,11 @@ class A {
 
     1 + 1 == 0; // Compliant
     foo.size[0] == 0; // Compliant
+
+    size() == 0; // Compliant
+    foo.size() && 0; // Compliant
+    foo.bar() == 0; // Compliant
+
+    foo.bar().baz().size() == 0; // Noncompliant
   }
 }
