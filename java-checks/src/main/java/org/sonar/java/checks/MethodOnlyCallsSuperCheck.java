@@ -67,8 +67,8 @@ public class MethodOnlyCallsSuperCheck extends SquidCheck<LexerlessGrammar> {
 
     AstNode blockStatements = methodBody.getFirstChild(JavaGrammar.BLOCK).getFirstChild(JavaGrammar.BLOCK_STATEMENTS);
     return blockStatements.getNumberOfChildren() == 1 ?
-        blockStatements.getChild(0) :
-        null;
+      blockStatements.getFirstChild() :
+      null;
   }
 
   private static boolean isSuperOrReturnOfSuperReference(AstNode node) {
@@ -121,10 +121,10 @@ public class MethodOnlyCallsSuperCheck extends SquidCheck<LexerlessGrammar> {
 
   private static boolean hasAnnotationDifferentFromOverride(AstNode node) {
     AstSelect query = node.select()
-        .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
-        .children(JavaGrammar.MODIFIER)
-        .children(JavaGrammar.ANNOTATION)
-        .children(JavaGrammar.QUALIFIED_IDENTIFIER);
+      .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
+      .children(JavaGrammar.MODIFIER)
+      .children(JavaGrammar.ANNOTATION)
+      .children(JavaGrammar.QUALIFIED_IDENTIFIER);
 
     for (AstNode qualifiedIdentifier : query) {
       if (!isOverride(qualifiedIdentifier)) {
