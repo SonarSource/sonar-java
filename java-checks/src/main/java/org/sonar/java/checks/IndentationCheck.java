@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
@@ -29,8 +28,6 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
-
-import java.util.List;
 
 @Rule(
   key = "IndentationCheck",
@@ -118,26 +115,7 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
       lastNodeWithTokens = lastNodeWithTokens.getPreviousAstNode();
     }
 
-    List<Token> tokens = getTokens(lastNodeWithTokens);
-    Token lastToken = tokens.get(tokens.size() - 1);
-
-    return lastToken;
-  }
-
-  private static List<Token> getTokens(AstNode node) {
-    List<Token> tokens = Lists.newArrayList();
-    getTokens(node, tokens);
-    return tokens;
-  }
-
-  private static void getTokens(AstNode node, List<Token> tokens) {
-    if (!node.hasChildren() && node.hasToken()) {
-      tokens.add(node.getToken());
-    } else {
-      for (int i = 0; i < node.getChildren().size(); i++) {
-        getTokens(node.getChild(i), tokens);
-      }
-    }
+    return lastNodeWithTokens.getLastToken();
   }
 
 }

@@ -31,6 +31,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Iterator;
 import java.util.List;
 
 @Rule(
@@ -79,14 +80,11 @@ public class FileHeaderCheck extends SquidCheck<LexerlessGrammar> implements Cha
     if (expectedLines.length <= lines.size()) {
       result = true;
 
-      int i = 0;
-      for (String line : lines) {
+      Iterator<String> it = lines.iterator();
+      for (int i = 0; i < expectedLines.length; i++) {
+        String line = it.next();
         if (!line.equals(expectedLines[i])) {
           result = false;
-          break;
-        }
-        i++;
-        if (i == expectedLines.length) {
           break;
         }
       }

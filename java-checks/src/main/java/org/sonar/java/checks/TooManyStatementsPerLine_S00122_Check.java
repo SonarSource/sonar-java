@@ -45,7 +45,7 @@ public class TooManyStatementsPerLine_S00122_Check extends AbstractOneStatementP
 
   @Override
   public boolean isExcluded(AstNode astNode) {
-    AstNode statementNode = astNode.getChild(0);
+    AstNode statementNode = astNode.getFirstChild();
     return statementNode.is(JavaGrammar.BLOCK)
       || statementNode.is(JavaGrammar.EMPTY_STATEMENT)
       || statementNode.is(JavaGrammar.LABELED_STATEMENT);

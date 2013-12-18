@@ -37,16 +37,16 @@ public class MissingCurlyBraces_S00121_Check extends SquidCheck<LexerlessGrammar
   @Override
   public void init() {
     subscribeTo(
-        JavaGrammar.IF_STATEMENT,
-        JavaGrammar.FOR_STATEMENT,
-        JavaGrammar.WHILE_STATEMENT,
-        JavaGrammar.DO_STATEMENT);
+      JavaGrammar.IF_STATEMENT,
+      JavaGrammar.FOR_STATEMENT,
+      JavaGrammar.WHILE_STATEMENT,
+      JavaGrammar.DO_STATEMENT);
   }
 
   @Override
   public void visitNode(AstNode astNode) {
     AstNode statement = astNode.getFirstChild(JavaGrammar.STATEMENT);
-    if (!statement.getChild(0).is(JavaGrammar.BLOCK)) {
+    if (!statement.getFirstChild().is(JavaGrammar.BLOCK)) {
       getContext().createLineViolation(this, "Missing curly brace.", astNode);
     }
 
@@ -54,7 +54,7 @@ public class MissingCurlyBraces_S00121_Check extends SquidCheck<LexerlessGrammar
       AstNode elseClause = astNode.getFirstChild(JavaKeyword.ELSE);
       if (elseClause != null) {
         statement = elseClause.getNextSibling();
-        if (!statement.getChild(0).is(JavaGrammar.BLOCK) && !statement.getChild(0).is(JavaGrammar.IF_STATEMENT)) {
+        if (!statement.getFirstChild().is(JavaGrammar.BLOCK) && !statement.getFirstChild().is(JavaGrammar.IF_STATEMENT)) {
           getContext().createLineViolation(this, "Missing curly brace.", elseClause);
         }
       }

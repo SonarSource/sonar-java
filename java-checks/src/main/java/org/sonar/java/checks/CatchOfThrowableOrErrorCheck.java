@@ -75,13 +75,13 @@ public class CatchOfThrowableOrErrorCheck extends BaseTreeVisitor implements Jav
     if (tree.is(Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) tree;
 
-      if (ERROR.equals(identifierTree.name()) || THROWABLE.equals(identifierTree.name())) {
+      if (isErrorOrThrowable(identifierTree.name())) {
         addIssue(tree, identifierTree.name());
       }
     } else if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) tree;
 
-      if (ERROR.equals(memberSelectTree.identifier().name()) || THROWABLE.equals(memberSelectTree.identifier().name())) {
+      if (isErrorOrThrowable(memberSelectTree.identifier().name())) {
         ExpressionTree tree2 = memberSelectTree.expression();
 
         if (tree2.is(Kind.MEMBER_SELECT)) {
@@ -95,6 +95,10 @@ public class CatchOfThrowableOrErrorCheck extends BaseTreeVisitor implements Jav
         }
       }
     }
+  }
+
+  private static boolean isErrorOrThrowable(String name) {
+    return ERROR.equals(name) || THROWABLE.equals(name);
   }
 
   private void addIssue(Tree tree, String type) {
