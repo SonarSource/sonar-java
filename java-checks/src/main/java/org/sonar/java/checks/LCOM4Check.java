@@ -29,9 +29,10 @@ import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.measures.Metric;
 
-@Rule(key = "MaximumLackOfCohesionOfMethods", priority = Priority.MAJOR)
+@Rule(key = LCOM4Check.RULE_KEY, priority = Priority.MAJOR)
 public class LCOM4Check extends BytecodeVisitor {
 
+  public static final String RULE_KEY = "MaximumLackOfCohesionOfMethods";
   public static final int DEFAULT_MAX = 1;
 
   @RuleProperty(defaultValue = "" + DEFAULT_MAX)
@@ -51,6 +52,11 @@ public class LCOM4Check extends BytecodeVisitor {
 
   public void setMax(int max) {
     this.max = max;
+  }
+
+  @Override
+  public String toString() {
+    return RULE_KEY + " rule";
   }
 
 }

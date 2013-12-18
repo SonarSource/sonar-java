@@ -45,4 +45,9 @@ public class DITVisitor extends BytecodeVisitor {
     return dit;
   }
 
+  @Override
+  public String toString() {
+    return "Depth of Inheritance Tree (DIT) metric";
+  }
+
 }

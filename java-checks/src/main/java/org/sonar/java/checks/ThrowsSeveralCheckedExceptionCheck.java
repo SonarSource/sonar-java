@@ -34,10 +34,11 @@ import org.sonar.squid.api.SourceMethod;
 import java.util.Collections;
 import java.util.List;
 
-@Rule(key = "S1160", priority = Priority.MAJOR)
+@Rule(key = ThrowsSeveralCheckedExceptionCheck.RULE_KEY, priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
 
+  public static final String RULE_KEY = "S1160";
   private AsmClass asmClass;
 
   @Override
@@ -109,6 +110,11 @@ public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
       }
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return RULE_KEY + " rule";
   }
 
 }

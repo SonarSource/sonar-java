@@ -29,10 +29,11 @@ import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourceMethod;
 
-@Rule(key = "UnusedPrivateMethod", priority = Priority.MAJOR)
+@Rule(key = UnusedPrivateMethodCheck.RULE_KEY, priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
+  public static final String RULE_KEY = "UnusedPrivateMethod";
   private AsmClass asmClass;
 
   @Override
@@ -51,6 +52,11 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
       SourceFile file = getSourceFile(asmClass);
       file.log(message);
     }
+  }
+
+  @Override
+  public String toString() {
+    return RULE_KEY + " rule";
   }
 
 }

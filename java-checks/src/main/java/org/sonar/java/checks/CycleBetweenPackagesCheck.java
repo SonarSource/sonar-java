@@ -32,8 +32,10 @@ import javax.annotation.CheckForNull;
  *
  * @since 3.2
  */
-@Rule(key = "CycleBetweenPackages", priority = Priority.MAJOR)
+@Rule(key = CycleBetweenPackagesCheck.RULE_KEY, priority = Priority.MAJOR)
 public class CycleBetweenPackagesCheck extends BytecodeVisitor {
+
+  public static final String RULE_KEY = "CycleBetweenPackages";
 
   /**
    * @return null, if this check is inactive
@@ -46,6 +48,11 @@ public class CycleBetweenPackagesCheck extends BytecodeVisitor {
       }
     }
     return null;
+  }
+
+  @Override
+  public String toString() {
+    return RULE_KEY + " rule";
   }
 
 }

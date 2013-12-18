@@ -24,14 +24,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.squid.api.SourceFile;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class ThrowsSeveralCheckedExceptionCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
+  private final ThrowsSeveralCheckedExceptionCheck check = new ThrowsSeveralCheckedExceptionCheck();
+
   @Test
   public void test() {
-    SourceFile file = BytecodeFixture.scan("ThrowsSeveralCheckedExceptionCheck", new ThrowsSeveralCheckedExceptionCheck());
+    SourceFile file = BytecodeFixture.scan("ThrowsSeveralCheckedExceptionCheck", check);
     checkMessagesVerifier
       .verify(file.getCheckMessages())
 
@@ -52,6 +56,11 @@ public class ThrowsSeveralCheckedExceptionCheckTest {
 
       .next()
       .atLine(100);
+  }
+
+  @Test
+  public void test_toString() {
+    assertThat(check.toString()).isEqualTo("S1160 rule");
   }
 
 }

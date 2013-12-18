@@ -23,16 +23,23 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.squid.api.SourceFile;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class UnusedPrivateMethodCheckTest {
 
-  private UnusedPrivateMethodCheck check = new UnusedPrivateMethodCheck();
+  private final UnusedPrivateMethodCheck check = new UnusedPrivateMethodCheck();
 
   @Test
   public void test() {
     SourceFile file = BytecodeFixture.scan("UnusedPrivateMethod", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().withMessage("Private method 'unusedPrivateMethod(...)' is never used.") // TODO verify line?
-        .noMore();
+      .next().withMessage("Private method 'unusedPrivateMethod(...)' is never used.") // TODO verify line?
+      .noMore();
+  }
+
+  @Test
+  public void test_toString() {
+    assertThat(check.toString()).isEqualTo("UnusedPrivateMethod rule");
   }
 
 }

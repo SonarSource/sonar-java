@@ -23,16 +23,23 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.squid.api.SourceFile;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class CallToFileDeleteOnExitMethodCheckTest {
 
-  private CallToFileDeleteOnExitMethodCheck check = new CallToFileDeleteOnExitMethodCheck();
+  private final CallToFileDeleteOnExitMethodCheck check = new CallToFileDeleteOnExitMethodCheck();
 
   @Test
   public void test() {
     SourceFile file = BytecodeFixture.scan("CallToFileDeleteOnExitMethod", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(27).withMessage("Do not use method 'File#deleteOnExit()'.")
-        .noMore();
+      .next().atLine(27).withMessage("Do not use method 'File#deleteOnExit()'.")
+      .noMore();
+  }
+
+  @Test
+  public void test_toString() {
+    assertThat(check.toString()).isEqualTo("CallToFileDeleteOnExitMethod rule");
   }
 
 }

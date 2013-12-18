@@ -23,17 +23,19 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.squid.api.SourceFile;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class ArchitectureCheckTest {
 
-  private ArchitectureCheck check = new ArchitectureCheck();
+  private final ArchitectureCheck check = new ArchitectureCheck();
 
   @Test
   public void test() {
     check.setToClasses("java.**.Pattern");
     SourceFile file = BytecodeFixture.scan("ArchitectureConstraint", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(27).withMessage("org/sonar/java/checks/targets/ArchitectureConstraint must not use java/util/regex/Pattern")
-        .noMore();
+      .next().atLine(27).withMessage("org/sonar/java/checks/targets/ArchitectureConstraint must not use java/util/regex/Pattern")
+      .noMore();
   }
 
   @Test
@@ -42,7 +44,12 @@ public class ArchitectureCheckTest {
     check.setToClasses("java.**.Pattern");
     SourceFile file = BytecodeFixture.scan("ArchitectureConstraint", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+      .noMore();
+  }
+
+  @Test
+  public void test_toString() {
+    assertThat(check.toString()).isEqualTo("ArchitecturalConstraint rule");
   }
 
 }

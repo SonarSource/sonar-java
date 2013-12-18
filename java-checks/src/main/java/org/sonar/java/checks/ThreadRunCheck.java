@@ -30,10 +30,12 @@ import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.SourceFile;
 
 @Rule(
-  key = "S1217",
+  key = ThreadRunCheck.RULE_KEY,
   priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class ThreadRunCheck extends BytecodeVisitor {
+
+  public static final String RULE_KEY = "S1217";
 
   private static final String THREAD_CLASS = "java/lang/Thread";
   private static final String RUNNABLE_CLASS = "java/lang/Runnable";
@@ -79,6 +81,11 @@ public class ThreadRunCheck extends BytecodeVisitor {
     }
 
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return RULE_KEY + " rule";
   }
 
 }

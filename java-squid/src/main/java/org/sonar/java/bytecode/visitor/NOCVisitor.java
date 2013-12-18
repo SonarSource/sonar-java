@@ -33,4 +33,9 @@ public class NOCVisitor extends BytecodeVisitor {
     }
   }
 
+  @Override
+  public String toString() {
+    return "Number of Children (NOC) metric";
+  }
+
 }

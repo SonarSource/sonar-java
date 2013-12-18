@@ -22,7 +22,12 @@ package org.sonar.java.bytecode.visitor;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmEdge;
-import org.sonar.squid.api.*;
+import org.sonar.squid.api.SourceClass;
+import org.sonar.squid.api.SourceCode;
+import org.sonar.squid.api.SourceCodeEdge;
+import org.sonar.squid.api.SourceCodeEdgeUsage;
+import org.sonar.squid.api.SourceFile;
+import org.sonar.squid.api.SourcePackage;
 import org.sonar.squid.measures.Metric;
 
 public class DependenciesVisitor extends BytecodeVisitor {
@@ -68,7 +73,7 @@ public class DependenciesVisitor extends BytecodeVisitor {
   }
 
   private SourceCodeEdge createEdgeBetweenParents(Class<? extends SourceCode> type, SourceClass from, SourceClass to,
-      SourceCodeEdge rootEdge) {
+    SourceCodeEdge rootEdge) {
     SourceCode fromParent = from.getParent(type);
     SourceCode toParent = to.getParent(type);
     SourceCodeEdge parentEdge = null;
@@ -95,6 +100,11 @@ public class DependenciesVisitor extends BytecodeVisitor {
 
   private boolean canWeLinkNodes(SourceCode from, SourceCode to) {
     return from != null && to != null && !from.equals(to);
+  }
+
+  @Override
+  public String toString() {
+    return "deperecated dependencies metrics";
   }
 
 }

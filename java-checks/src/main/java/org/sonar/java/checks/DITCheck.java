@@ -29,9 +29,10 @@ import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.measures.Metric;
 
-@Rule(key = "MaximumInheritanceDepth", priority = Priority.MAJOR)
+@Rule(key = DITCheck.RULE_KEY, priority = Priority.MAJOR)
 public class DITCheck extends BytecodeVisitor {
 
+  public static final String RULE_KEY = "MaximumInheritanceDepth";
   public static final int DEFAULT_MAX = 5;
 
   @RuleProperty(defaultValue = "" + DEFAULT_MAX)
@@ -51,6 +52,11 @@ public class DITCheck extends BytecodeVisitor {
 
   public void setMax(int max) {
     this.max = max;
+  }
+
+  @Override
+  public String toString() {
+    return RULE_KEY + " rule";
   }
 
 }

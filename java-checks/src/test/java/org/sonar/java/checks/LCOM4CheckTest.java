@@ -23,16 +23,18 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.squid.api.SourceFile;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class LCOM4CheckTest {
 
-  private LCOM4Check check = new LCOM4Check();
+  private final LCOM4Check check = new LCOM4Check();
 
   @Test
   public void defaults() {
     SourceFile file = BytecodeFixture.scan("Lcom4", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(22).withMessage("This class has an LCOM4 of 2, which is greater than 1 authorized.")
-        .noMore();
+      .next().atLine(22).withMessage("This class has an LCOM4 of 2, which is greater than 1 authorized.")
+      .noMore();
   }
 
   @Test
@@ -40,7 +42,12 @@ public class LCOM4CheckTest {
     check.setMax(2);
     SourceFile file = BytecodeFixture.scan("Lcom4", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+      .noMore();
+  }
+
+  @Test
+  public void test_toString() {
+    assertThat(check.toString()).isEqualTo("MaximumLackOfCohesionOfMethods rule");
   }
 
 }

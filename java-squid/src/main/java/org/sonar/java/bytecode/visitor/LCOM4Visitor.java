@@ -149,4 +149,9 @@ public class LCOM4Visitor extends BytecodeVisitor {
     return block;
   }
 
+  @Override
+  public String toString() {
+    return "Lack of Cohesion (LCOM4) metric";
+  }
+
 }

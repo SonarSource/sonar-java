@@ -28,9 +28,10 @@ import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourceMethod;
 
-@Rule(key = "UnusedProtectedMethod", priority = Priority.MAJOR)
+@Rule(key = UnusedProtectedMethodCheck.RULE_KEY, priority = Priority.MAJOR)
 public class UnusedProtectedMethodCheck extends BytecodeVisitor {
 
+  public static final String RULE_KEY = "UnusedProtectedMethod";
   private AsmClass asmClass;
 
   @Override
@@ -40,8 +41,8 @@ public class UnusedProtectedMethodCheck extends BytecodeVisitor {
 
   @Override
   public void visitMethod(AsmMethod asmMethod) {
-    if ( !asmMethod.isUsed() && asmMethod.isProtected() && !asmClass.isAbstract() && !SerializableContract.methodMatch(asmMethod)
-        && !asmMethod.isInherited()) {
+    if (!asmMethod.isUsed() && asmMethod.isProtected() && !asmClass.isAbstract() && !SerializableContract.methodMatch(asmMethod)
+      && !asmMethod.isInherited()) {
       CheckMessage message = new CheckMessage(this, "Protected method '" + asmMethod.getName() + "(...)' is never used.");
       SourceMethod sourceMethod = getSourceMethod(asmMethod);
       if (sourceMethod != null) {
@@ -50,6 +51,11 @@ public class UnusedProtectedMethodCheck extends BytecodeVisitor {
       SourceFile file = getSourceFile(asmClass);
       file.log(message);
     }
+  }
+
+  @Override
+  public String toString() {
+    return RULE_KEY + " rule";
   }
 
 }

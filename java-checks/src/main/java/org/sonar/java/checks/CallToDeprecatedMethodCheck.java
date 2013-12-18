@@ -29,8 +29,10 @@ import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.SourceFile;
 
-@Rule(key = "CallToDeprecatedMethod", priority = Priority.MINOR)
+@Rule(key = CallToDeprecatedMethodCheck.RULE_KEY, priority = Priority.MINOR)
 public class CallToDeprecatedMethodCheck extends BytecodeVisitor {
+
+  public static final String RULE_KEY = "CallToDeprecatedMethod";
 
   private AsmClass asmClass;
 
@@ -60,6 +62,11 @@ public class CallToDeprecatedMethodCheck extends BytecodeVisitor {
 
   public String getShortClassName(AsmClass asmClass) {
     return StringUtils.substringAfterLast(asmClass.getInternalName(), "/");
+  }
+
+  @Override
+  public String toString() {
+    return RULE_KEY + " rule";
   }
 
 }

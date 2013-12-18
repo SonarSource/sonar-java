@@ -33,10 +33,11 @@ import org.sonar.squid.api.SourceMethod;
 import java.util.List;
 import java.util.Set;
 
-@Rule(key = "RedundantThrowsDeclarationCheck", priority = Priority.MAJOR)
+@Rule(key = RedundantThrowsDeclarationCheck.RULE_KEY, priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
 
+  public static final String RULE_KEY = "RedundantThrowsDeclarationCheck";
   private AsmClass asmClass;
 
   @Override
@@ -108,6 +109,11 @@ public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
       }
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return RULE_KEY + " rule";
   }
 
 }

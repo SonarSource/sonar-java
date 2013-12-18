@@ -23,17 +23,24 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.squid.api.SourceFile;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class CallToDeprecatedMethodCheckTest {
 
-  private CallToDeprecatedMethodCheck check = new CallToDeprecatedMethodCheck();
+  private final CallToDeprecatedMethodCheck check = new CallToDeprecatedMethodCheck();
 
   @Test
   public void test() {
     SourceFile file = BytecodeFixture.scan("CallToDeprecatedMethod", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(26).withMessage("Method 'String.getBytes(...)' is deprecated.")
-        .next().atLine(27).withMessage("Constructor 'CallToDeprecatedMethod$DeprecatedConstructor(...)' is deprecated.")
-        .noMore();
+      .next().atLine(26).withMessage("Method 'String.getBytes(...)' is deprecated.")
+      .next().atLine(27).withMessage("Constructor 'CallToDeprecatedMethod$DeprecatedConstructor(...)' is deprecated.")
+      .noMore();
+  }
+
+  @Test
+  public void test_toString() {
+    assertThat(check.toString()).isEqualTo("CallToDeprecatedMethod rule");
   }
 
 }

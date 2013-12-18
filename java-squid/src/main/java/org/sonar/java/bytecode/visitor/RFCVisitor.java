@@ -66,4 +66,9 @@ public class RFCVisitor extends BytecodeVisitor {
     }
   }
 
+  @Override
+  public String toString() {
+    return "Response for Class (RFC) metric";
+  }
+
 }

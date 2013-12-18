@@ -28,9 +28,10 @@ import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.SourceFile;
 
-@Rule(key = "CallToFileDeleteOnExitMethod", priority = Priority.MAJOR)
+@Rule(key = CallToFileDeleteOnExitMethodCheck.RULE_KEY, priority = Priority.MAJOR)
 public class CallToFileDeleteOnExitMethodCheck extends BytecodeVisitor {
 
+  public static final String RULE_KEY = "CallToFileDeleteOnExitMethod";
   private AsmClass asmClass;
 
   @Override
@@ -50,6 +51,11 @@ public class CallToFileDeleteOnExitMethodCheck extends BytecodeVisitor {
         sourceFile.log(message);
       }
     }
+  }
+
+  @Override
+  public String toString() {
+    return RULE_KEY + " rule";
   }
 
 }

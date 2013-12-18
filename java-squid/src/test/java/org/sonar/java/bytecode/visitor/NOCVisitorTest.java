@@ -17,24 +17,17 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.bytecode.visitor;
 
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class CycleBetweenPackagesCheckTest {
-
-  private final CycleBetweenPackagesCheck check = new CycleBetweenPackagesCheck();
-
-  @Test
-  public void test() {
-    // TODO
-  }
+public class NOCVisitorTest {
 
   @Test
   public void test_toString() {
-    assertThat(check.toString()).isEqualTo("CycleBetweenPackages rule");
+    assertThat(new NOCVisitor().toString()).isEqualTo("Number of Children (NOC) metric");
   }
 
 }

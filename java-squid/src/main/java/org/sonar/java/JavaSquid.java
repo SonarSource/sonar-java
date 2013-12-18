@@ -20,9 +20,12 @@
 package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.api.utils.TimeProfiler;
@@ -57,6 +60,8 @@ import java.util.List;
 import java.util.Set;
 
 public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEdge>, SourceCodeSearchEngine {
+
+  private static final Logger LOG = LoggerFactory.getLogger(JavaSquid.class);
 
   private final SquidIndex squidIndex;
   private final AstScanner astScanner;
@@ -139,6 +144,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
       bytecodeScanned = true;
       profiler.stop();
     } else {
+      LOG.warn("Java bytecode has not been made available to the analyzer. The " + Joiner.on(", ").join(bytecodeScanner.getVisitors()) + " are disabled.");
       bytecodeScanned = false;
     }
   }

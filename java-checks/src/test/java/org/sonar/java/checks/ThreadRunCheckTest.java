@@ -24,14 +24,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.squid.api.SourceFile;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class ThreadRunCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
+  private final ThreadRunCheck check = new ThreadRunCheck();
+
   @Test
   public void detected() {
-    SourceFile file = BytecodeFixture.scan("ThreadRunCheck", new ThreadRunCheck());
+    SourceFile file = BytecodeFixture.scan("ThreadRunCheck", check);
     checkMessagesVerifier
       .verify(file.getCheckMessages())
       .next().atLine(29).withMessage("Call the method Thread.start() to execute the content of the run() method in a dedicated thread.")
@@ -39,6 +43,11 @@ public class ThreadRunCheckTest {
       .next().atLine(42)
       .next().atLine(45)
       .next().atLine(53);
+  }
+
+  @Test
+  public void test_toString() {
+    assertThat(check.toString()).isEqualTo("S1217 rule");
   }
 
 }

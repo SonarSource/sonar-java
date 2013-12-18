@@ -23,16 +23,23 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.squid.api.SourceFile;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class UnusedProtectedMethodCheckTest {
 
-  private UnusedProtectedMethodCheck check = new UnusedProtectedMethodCheck();
+  private final UnusedProtectedMethodCheck check = new UnusedProtectedMethodCheck();
 
   @Test
   public void test() {
     SourceFile file = BytecodeFixture.scan("UnusedProtectedMethod", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().withMessage("Protected method 'unusedProtectedMethod(...)' is never used.") // TODO verify line?
-        .noMore();
+      .next().withMessage("Protected method 'unusedProtectedMethod(...)' is never used.") // TODO verify line?
+      .noMore();
+  }
+
+  @Test
+  public void test_toString() {
+    assertThat(check.toString()).isEqualTo("UnusedProtectedMethod rule");
   }
 
 }

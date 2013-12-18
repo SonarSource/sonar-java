@@ -23,15 +23,17 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.squid.api.SourceFile;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class DITCheckTest {
 
-  private DITCheck check = new DITCheck();
+  private final DITCheck check = new DITCheck();
 
   @Test
   public void defaults() {
     SourceFile file = BytecodeFixture.scan("Dit", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+      .noMore();
   }
 
   @Test
@@ -39,8 +41,13 @@ public class DITCheckTest {
     check.setMax(2);
     SourceFile file = BytecodeFixture.scan("Dit", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(22).withMessage("This class has 3 parents which is greater than 2 authorized.")
-        .noMore();
+      .next().atLine(22).withMessage("This class has 3 parents which is greater than 2 authorized.")
+      .noMore();
+  }
+
+  @Test
+  public void test_toString() {
+    assertThat(check.toString()).isEqualTo("MaximumInheritanceDepth rule");
   }
 
 }

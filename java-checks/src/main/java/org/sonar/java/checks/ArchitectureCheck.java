@@ -36,8 +36,10 @@ import org.sonar.squid.api.SourceMethod;
 
 import java.util.Map;
 
-@Rule(key = "ArchitecturalConstraint", cardinality = Cardinality.MULTIPLE, priority = Priority.MAJOR)
+@Rule(key = ArchitectureCheck.RULE_KEY, cardinality = Cardinality.MULTIPLE, priority = Priority.MAJOR)
 public class ArchitectureCheck extends BytecodeVisitor {
+
+  public static final String RULE_KEY = "ArchitecturalConstraint";
 
   @RuleProperty
   private String fromClasses = "";
@@ -91,7 +93,7 @@ public class ArchitectureCheck extends BytecodeVisitor {
   public void visitEdge(AsmEdge edge) {
     if (asmClass != null && edge != null) {
       String internalNameTargetClass = edge.getTargetAsmClass().getInternalName();
-      if ( !internalNames.containsKey(internalNameTargetClass)) {
+      if (!internalNames.containsKey(internalNameTargetClass)) {
         if (WildcardPattern.match(getToPatterns(), internalNameTargetClass)) {
           int sourceLineNumber = getSourceLineNumber(edge);
           logMessage(asmClass.getInternalName(), internalNameTargetClass, sourceLineNumber);
@@ -107,7 +109,7 @@ public class ArchitectureCheck extends BytecodeVisitor {
   }
 
   private int getSourceLineNumber(AsmEdge edge) {
-    if ((edge.getSourceLineNumber() == 0) && (edge.getFrom() instanceof AsmMethod)) {
+    if (edge.getSourceLineNumber() == 0 && edge.getFrom() instanceof AsmMethod) {
       SourceMethod sourceMethod = getSourceMethod((AsmMethod) edge.getFrom());
       if (sourceMethod != null) {
         return sourceMethod.getStartAtLine();
@@ -134,6 +136,11 @@ public class ArchitectureCheck extends BytecodeVisitor {
       toPatterns = PatternUtils.createPatterns(toClasses);
     }
     return toPatterns;
+  }
+
+  @Override
+  public String toString() {
+    return RULE_KEY + " rule";
   }
 
 }
