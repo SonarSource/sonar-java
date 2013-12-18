@@ -62,7 +62,7 @@ public class MethodHelper {
       throw new IllegalStateException();
     }
     for (AstNode modifierNode : node.getChildren(JavaGrammar.MODIFIER)) {
-      if (modifierNode.getChild(0).is(JavaKeyword.PUBLIC)) {
+      if (modifierNode.getFirstChild().is(JavaKeyword.PUBLIC)) {
         return true;
       }
     }
