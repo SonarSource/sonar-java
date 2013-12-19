@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -190,6 +191,10 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       allowIfExceptionInExpression(((MemberSelectExpressionTree) tree).expression(), false);
     } else if (tree.is(Kind.PARENTHESIZED_EXPRESSION)) {
       allowIfExceptionInExpression(((ParenthesizedTree) tree).expression(), allowIdentifier);
+    } else if (tree.is(Kind.CONDITIONAL_EXPRESSION)) {
+      ConditionalExpressionTree conditionalExpressionTree = (ConditionalExpressionTree) tree;
+      allowIfExceptionInExpression(conditionalExpressionTree.trueExpression(), allowIdentifier);
+      allowIfExceptionInExpression(conditionalExpressionTree.falseExpression(), allowIdentifier);
     }
   }
 

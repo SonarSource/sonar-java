@@ -130,6 +130,17 @@ class A {
     } catch (foo.text.ParseException e) {         // Noncompliant
     } catch (text.ParseException e) {             // Noncompliant
     } catch (foo.java.text.ParseException e) {    // Noncompliant
-  }
+    } catch (Exception e) {                       // Compliant
+      Exception foo = false ? e : null;
+    } catch (Exception e) {                       // Compliant
+      Exception foo = false ? null : e;
+    } catch (Exception e) {                       // Compliant
+      Exception e2;
+      foo = (e2 = e) ? null : null;
+    } catch (Exception e) {                       // Compliant
+      throw wrapHttpException ? handleHttpException(e) : null;
+    } catch (Exception e) {                       // Compliant
+      throw wrapHttpException ? null : e;
+    }
   }
 }
