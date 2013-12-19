@@ -27,6 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -39,6 +40,7 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Iterator;
 import java.util.List;
@@ -55,9 +57,14 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   private static final Set<String> EXCLUDED_EXCEPTION_TYPE = ImmutableSet.of(
     "NumberFormatException",
-    "InterruptedExcetpion",
+    "InterruptedException",
     "ParseException",
     "MalformedURLException");
+
+  private static final Set<String> JAVA_SUB_PACKAGE = ImmutableSet.of(
+    "lang",
+    "text",
+    "net");
 
   private JavaFileScannerContext context;
 
@@ -85,9 +92,33 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     }
   }
 
-  private boolean isExcludedType(Tree tree) {
+  private static boolean isExcludedType(Tree tree) {
+    return isUnqualifiedExcludedType(tree) ||
+      isQualifiedExcludedType(tree);
+  }
+
+  private static boolean isUnqualifiedExcludedType(Tree tree) {
     return tree.is(Kind.IDENTIFIER) &&
       EXCLUDED_EXCEPTION_TYPE.contains(((IdentifierTree) tree).name());
+  }
+
+  private static boolean isQualifiedExcludedType(Tree tree) {
+    if (!tree.is(Kind.MEMBER_SELECT)) {
+      return false;
+    }
+
+    MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) tree;
+    if (!EXCLUDED_EXCEPTION_TYPE.contains(memberSelectExpressionTree.identifier().name()) || !memberSelectExpressionTree.expression().is(Kind.MEMBER_SELECT)) {
+      return false;
+    }
+
+    memberSelectExpressionTree = (MemberSelectExpressionTree) memberSelectExpressionTree.expression();
+    if (!JAVA_SUB_PACKAGE.contains(memberSelectExpressionTree.identifier().name()) || !memberSelectExpressionTree.expression().is(Kind.IDENTIFIER)) {
+      return false;
+    }
+
+    IdentifierTree identifierTree = (IdentifierTree) memberSelectExpressionTree.expression();
+    return "java".equals(identifierTree.name());
   }
 
   @Override
@@ -123,6 +154,22 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     super.visitThrowStatement(tree);
 
     allowIfExceptionInExpression(tree.expression(), true);
+  }
+
+  @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    super.visitAssignmentExpression(tree);
+
+    allowIfExceptionInExpression(tree.expression(), true);
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    super.visitVariable(tree);
+
+    if (tree.initializer() != null) {
+      allowIfExceptionInExpression(tree.initializer(), true);
+    }
   }
 
   private void allowIfExceptionInExpression(ExpressionTree tree, boolean allowIdentifier) {

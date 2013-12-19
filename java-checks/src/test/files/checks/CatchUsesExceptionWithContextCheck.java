@@ -89,7 +89,7 @@ class A {
     try {
     } catch (NumberFormatException e) {          // Compliant
       return 0;
-    } catch (InterruptedExcetpion e) {           // Compliant
+    } catch (InterruptedException e) {           // Compliant
       /* do nothing */
     } catch (ParseException e) {                 // Compliant
     } catch (MalformedURLException e) {          // Compliant
@@ -112,6 +112,24 @@ class A {
       throw (e);
     } catch (Exception e) {                      // Noncompliant
       throw (e).getClause();
-    }
+    } catch (Exception e) {                      // Compliant
+      Exception e2 = e;
+      throw e2;
+    } catch (Exception e) {                      // Compliant
+      Exception foo = new RuntimeException(e);
+    } catch (Exception e) {
+      Exception foo = (e);
+    } catch (Exception e) {                      // Compliant
+      Exception foo;
+      foo = e;
+    } catch (java.lang.NumberFormatException e) { // Compliant
+    } catch (java.net.MalformedURLException e) {  // Compliant
+    } catch (java.text.ParseException e) {        // Compliant
+    } catch (java.text.foo e) {                   // Noncompliant
+    } catch (java.foo.ParseException e) {         // Noncompliant
+    } catch (foo.text.ParseException e) {         // Noncompliant
+    } catch (text.ParseException e) {             // Noncompliant
+    } catch (foo.java.text.ParseException e) {    // Noncompliant
+  }
   }
 }
