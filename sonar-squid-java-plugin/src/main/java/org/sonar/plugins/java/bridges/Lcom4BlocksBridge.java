@@ -81,11 +81,12 @@ public class Lcom4BlocksBridge extends Bridge {
 
   private void serializeBlock(Set<AsmResource> block, StringBuilder sb) {
     List<AsmResource> sortedResources = sortResourcesInBlock(block);
-    int indexResource = 0;
+    boolean indexResource = false;
     for (AsmResource resource : sortedResources) {
-      if (indexResource++ > 0) {
+      if (indexResource) {
         sb.append(',');
       }
+      indexResource = true;
       serializeResource(resource, sb);
     }
   }
@@ -106,12 +107,14 @@ public class Lcom4BlocksBridge extends Bridge {
   }
 
   private static class SetsComparator implements Comparator<Set> {
+    @Override
     public int compare(Set set1, Set set2) {
       return set1.size() - set2.size();
     }
   }
 
   private static class ResourcesComparator implements Comparator<AsmResource> {
+    @Override
     public int compare(AsmResource asmResource1, AsmResource asmResource2) {
       int result = compareType(asmResource1, asmResource2);
       if (result == 0) {
@@ -122,9 +125,9 @@ public class Lcom4BlocksBridge extends Bridge {
 
     private int compareType(AsmResource asmResource1, AsmResource asmResource2) {
       if (asmResource1 instanceof AsmField) {
-        return (asmResource2 instanceof AsmField) ? 0 : -1;
+        return asmResource2 instanceof AsmField ? 0 : -1;
       }
-      return (asmResource2 instanceof AsmMethod) ? 0 : 1;
+      return asmResource2 instanceof AsmMethod ? 0 : 1;
     }
   }
 

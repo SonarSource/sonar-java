@@ -28,7 +28,7 @@ import java.util.List;
 public final class JavaPlugin extends SonarPlugin {
 
   @Override
-  public List<?> getExtensions() {
+  public List getExtensions() {
     return ImmutableList.of(
       JavaCommonRulesEngineProvider.class,
       JavaSettings.class,

@@ -26,7 +26,8 @@ import java.util.List;
 
 public class FindbugsPlugin extends SonarPlugin {
 
-  public List<?> getExtensions() {
+  @Override
+  public List getExtensions() {
     ImmutableList.Builder<Object> extensions = ImmutableList.builder();
     extensions.addAll(FindbugsConfiguration.getPropertyDefinitions());
     extensions.add(

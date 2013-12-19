@@ -41,21 +41,24 @@ public class SurefireJavaParser extends AbstractSurefireParser implements BatchE
     this.perspectives = perspectives;
   }
 
+  @Override
   protected void saveResults(SensorContext context, Resource testFile, UnitTestClassReport report) {
     for (UnitTestResult unitTestResult : report.getResults()) {
       MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {
         testPlan.addTestCase(unitTestResult.getName())
-            .setDurationInMs(unitTestResult.getDurationMilliseconds())
-            .setStatus(TestCase.Status.of(unitTestResult.getStatus()))
-            .setMessage(unitTestResult.getMessage())
-            .setType(TestCase.TYPE_UNIT)
-            .setStackTrace(unitTestResult.getStackTrace());
+          .setDurationInMs(unitTestResult.getDurationMilliseconds())
+          .setStatus(TestCase.Status.of(unitTestResult.getStatus()))
+          .setMessage(unitTestResult.getMessage())
+          .setType(TestCase.TYPE_UNIT)
+          .setStackTrace(unitTestResult.getStackTrace());
       }
     }
   }
 
-  protected Resource<?> getUnitTestResource(String classKey) {
+  @Override
+  protected Resource getUnitTestResource(String classKey) {
     return new JavaFile(classKey, true);
   }
+
 }

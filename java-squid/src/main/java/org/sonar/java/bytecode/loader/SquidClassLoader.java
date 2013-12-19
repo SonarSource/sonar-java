@@ -54,7 +54,7 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
   }
 
   @Override
-  protected Class<?> findClass(String name) throws ClassNotFoundException {
+  protected Class findClass(String name) throws ClassNotFoundException {
     String resourceName = name.replace('.', '/') + ".class";
     for (Loader loader : loaders) {
       byte[] classBytes = loader.loadBytes(resourceName);
@@ -95,6 +95,7 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
    *
    * If class loader is already closed, then invoking this method has no effect.
    */
+  @Override
   public void close() {
     for (Loader loader : loaders) {
       loader.close();

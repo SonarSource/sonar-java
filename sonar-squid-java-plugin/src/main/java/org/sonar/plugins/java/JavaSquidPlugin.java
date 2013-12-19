@@ -46,7 +46,7 @@ public class JavaSquidPlugin extends SonarPlugin {
   public static final String FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION_DEFAULT_VALUE = "LOG, logger";
 
   @Override
-  public List<?> getExtensions() {
+  public List getExtensions() {
     return ImmutableList.of(
       PropertyDefinition.builder(JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY)
         .defaultValue(JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE + "")

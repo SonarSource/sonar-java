@@ -31,7 +31,7 @@ import java.util.List;
 public final class SurefirePlugin extends SonarPlugin {
 
   @Override
-  public List<?> getExtensions() {
+  public List getExtensions() {
     return ImmutableList.of(
       PropertyDefinition.builder(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)
         .name("Report path")
