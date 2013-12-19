@@ -31,8 +31,10 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -120,11 +122,11 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   public void visitThrowStatement(ThrowStatementTree tree) {
     super.visitThrowStatement(tree);
 
-    handleThrowExpression(tree.expression());
+    allowIfExceptionInExpression(tree.expression(), true);
   }
 
-  private void handleThrowExpression(ExpressionTree tree) {
-    if (tree.is(Kind.IDENTIFIER)) {
+  private void allowIfExceptionInExpression(ExpressionTree tree, boolean allowIdentifier) {
+    if (tree.is(Kind.IDENTIFIER) && allowIdentifier) {
       removeInvalidCatches(((IdentifierTree) tree).name());
     } else if (tree.is(Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) tree;
@@ -133,9 +135,14 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     } else if (tree.is(Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
 
+      allowIfExceptionInExpression(methodInvocationTree.methodSelect(), false);
       handleArguments(methodInvocationTree.arguments());
     } else if (tree.is(Kind.TYPE_CAST)) {
-      handleThrowExpression(((TypeCastTree) tree).expression());
+      allowIfExceptionInExpression(((TypeCastTree) tree).expression(), allowIdentifier);
+    } else if (tree.is(Kind.MEMBER_SELECT)) {
+      allowIfExceptionInExpression(((MemberSelectExpressionTree) tree).expression(), false);
+    } else if (tree.is(Kind.PARENTHESIZED_EXPRESSION)) {
+      allowIfExceptionInExpression(((ParenthesizedTree) tree).expression(), allowIdentifier);
     }
   }
 

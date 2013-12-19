@@ -100,6 +100,18 @@ class A {
        foo(someContextVariable, e);
     } catch (Exception e) {                      // Compliant
       throw (Exception)new Foo("bar").initCause(e);
+    } catch (Exception e) {                      // Compliant
+      foo(null, e).bar();
+    } catch (Exception e) {                      // Compliant
+      throw foo(e).bar();
+    } catch (Exception e) {                      // Noncompliant
+      throw e.getCause();
+    } catch (Exception e) {                      // Compliant
+      throw (Exception)e;
+    } catch (Exception e) {                      // Compliant
+      throw (e);
+    } catch (Exception e) {                      // Noncompliant
+      throw (e).getClause();
     }
   }
 }
