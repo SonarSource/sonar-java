@@ -29,17 +29,27 @@ import java.io.File;
 
 public class SunPackagesUsedCheckTest {
 
+  private final SunPackagesUsedCheck check = new SunPackagesUsedCheck();
+
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SunPackagesUsedCheck.java"), new SunPackagesUsedCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SunPackagesUsedCheck.java"), check);
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(1).withMessage("Replace this usage of Sun classes by ones from the Java API.")
-        .next().atLine(6)
+        .next().atLine(2)
         .next().atLine(7)
-        .next().atLine(9);
+        .next().atLine(8)
+        .next().atLine(10);
   }
 
+  @Test
+  public void check_with_exclusion() {
+    check.exclude = "com.sun.imageio;com.sun.jersey";
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SunPackagesUsedCheck.java"), check);
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(10).withMessage("Replace this usage of Sun classes by ones from the Java API.");
+  }
 }

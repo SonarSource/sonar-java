@@ -1,4 +1,5 @@
 import com.sun.imageio.plugins; // Non-Compliant
+import com.sun.jersey.api.client.ClientHandlerException; // Non-Compliant
 import java.util.ArrayList; // Compliant
 
 class A {
