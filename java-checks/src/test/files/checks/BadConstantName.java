@@ -1,3 +1,6 @@
+import java.util.Vector;
+import java.net.URI;
+
 class BadConstantName {
 
   static final long serialVersionUID = 42L;
@@ -6,6 +9,9 @@ class BadConstantName {
   public static final int bad_constant = 0;
   public static int static_field;
   public final int final_field = 0;
+  public static final Vector vector = new Vector();
+  public static final java.io.File file = new File("test");
+  public static final URI uri = null;
 
   enum Enum {
     GOOD_CONSTANT,
