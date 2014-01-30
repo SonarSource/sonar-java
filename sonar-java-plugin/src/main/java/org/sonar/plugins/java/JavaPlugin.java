@@ -30,7 +30,7 @@ public final class JavaPlugin extends SonarPlugin {
   @Override
   public List getExtensions() {
     return ImmutableList.of(
-      JavaCommonRulesEngineProvider.class,
+      JavaCommonRulesEngine.class,
       JavaSettings.class,
       JavaSettings.property(),
       Java.class,

@@ -1,3 +1,4 @@
+
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
@@ -20,33 +21,25 @@
 package org.sonar.plugins.java;
 
 import org.sonar.api.resources.Java;
-import org.sonar.api.resources.Project;
 import org.sonar.commonrules.api.CommonRulesEngine;
-import org.sonar.commonrules.api.CommonRulesEngineProvider;
+import org.sonar.commonrules.api.CommonRulesRepository;
 
-public class JavaCommonRulesEngineProvider extends CommonRulesEngineProvider {
+public class JavaCommonRulesEngine extends CommonRulesEngine {
 
-  public JavaCommonRulesEngineProvider() {
-    super();
-  }
-
-  public JavaCommonRulesEngineProvider(Project project) {
-    super(project);
+  public JavaCommonRulesEngine() {
+    super(Java.KEY);
   }
 
   @Override
-  protected void doActivation(CommonRulesEngine engine) {
-    engine.activateRule("InsufficientBranchCoverage");
-    engine.activateRule("InsufficientCommentDensity");
-    engine.activateRule("DuplicatedBlocks");
-    engine.activateRule("InsufficientLineCoverage");
-    engine.activateRule("SkippedUnitTests");
-    engine.activateRule("FailedUnitTests");
-  }
+  protected void doEnableRules(CommonRulesRepository repository) {
+    repository
+      .enableDuplicatedBlocksRule()
+      .enableSkippedUnitTestsRule()
+      .enableFailedUnitTestsRule()
 
-  @Override
-  protected String getLanguageKey() {
-    return Java.KEY;
+        // null parameters -> keep default values as hardcoded in sonar-common-rules
+      .enableInsufficientBranchCoverageRule(null)
+      .enableInsufficientCommentDensityRule(null)
+      .enableInsufficientLineCoverageRule(null);
   }
-
 }

@@ -20,18 +20,30 @@
 package org.sonar.plugins.java;
 
 import org.junit.Test;
+import org.sonar.commonrules.api.CommonRulesRepository;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class JavaCommonRulesEngineProviderTest {
+public class JavaCommonRulesEngineTest {
 
   @Test
-  public void shouldProvideExpectedExtensions() {
-    JavaCommonRulesEngineProvider provider = new JavaCommonRulesEngineProvider();
-    assertThat(provider.provide().size()).isGreaterThan(1);
-
-    provider = new JavaCommonRulesEngineProvider(null);
+  public void provide_extensions() {
+    JavaCommonRulesEngine provider = new JavaCommonRulesEngine();
     assertThat(provider.provide().size()).isGreaterThan(1);
   }
 
+  @Test
+  public void enable_common_rules() {
+    JavaCommonRulesEngine provider = new JavaCommonRulesEngine();
+    CommonRulesRepository repo = provider.newRepository();
+    assertThat(repo.rules()).hasSize(6);
+    assertThat(repo.rule(CommonRulesRepository.RULE_INSUFFICIENT_COMMENT_DENSITY)).isNotNull();
+    assertThat(repo.rule(CommonRulesRepository.RULE_FAILED_UNIT_TESTS)).isNotNull();
+    assertThat(repo.rule(CommonRulesRepository.RULE_INSUFFICIENT_COMMENT_DENSITY)).isNotNull();
+    assertThat(repo.rule(CommonRulesRepository.RULE_INSUFFICIENT_BRANCH_COVERAGE)).isNotNull();
+    assertThat(repo.rule(CommonRulesRepository.RULE_INSUFFICIENT_LINE_COVERAGE)).isNotNull();
+    assertThat(repo.rule(CommonRulesRepository.RULE_SKIPPED_UNIT_TESTS)).isNotNull();
+  }
 }
+
+
