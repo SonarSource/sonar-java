@@ -50,15 +50,6 @@ import static org.mockito.Mockito.when;
 public class FindbugsSensorTest extends FindbugsTests {
 
   @Test
-  public void shouldNotAnalyseIfNoJavaProject() {
-    Project project = mock(Project.class);
-    when(project.getLanguageKey()).thenReturn("php");
-
-    FindbugsSensor sensor = new FindbugsSensor(null, null, null);
-    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
-  }
-
-  @Test
   public void shouldNotAnalyseIfJavaProjectButNoSource() {
     Project project = mock(Project.class);
     ProjectFileSystem fs = mock(ProjectFileSystem.class);

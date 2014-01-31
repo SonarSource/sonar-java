@@ -48,16 +48,11 @@ public class FindbugsSensor implements Sensor {
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    return Java.KEY.equals(project.getLanguageKey())
-        && !project.getFileSystem().mainFiles(Java.KEY).isEmpty()
+    return !project.getFileSystem().mainFiles(Java.KEY).isEmpty()
         && !profile.getActiveRulesByRepository(FindbugsConstants.REPOSITORY_KEY).isEmpty();
   }
 
   public void analyse(Project project, SensorContext context) {
-    if (project.getReuseExistingRulesConfig()) {
-      LOG.warn("Reusing existing Findbugs configuration not supported any more.");
-    }
-
     Collection<ReportedBug> collection = executor.execute();
 
     for (ReportedBug bugInstance : collection) {
