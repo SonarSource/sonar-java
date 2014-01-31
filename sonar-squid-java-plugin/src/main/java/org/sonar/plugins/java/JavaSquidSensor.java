@@ -33,6 +33,8 @@ import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
+import org.sonar.api.scan.filesystem.FileQuery;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.SonarComponents;
@@ -55,16 +57,18 @@ public class JavaSquidSensor implements Sensor {
   private final NoSonarFilter noSonarFilter;
   private final ProjectClasspath projectClasspath;
   private final SonarComponents sonarComponents;
+  private final ModuleFileSystem moduleFileSystem;
 
-  public JavaSquidSensor(RulesProfile profile, NoSonarFilter noSonarFilter, ProjectClasspath projectClasspath, SonarComponents sonarComponents) {
+  public JavaSquidSensor(RulesProfile profile, NoSonarFilter noSonarFilter, ProjectClasspath projectClasspath, SonarComponents sonarComponents, ModuleFileSystem moduleFileSystem) {
     this.annotationCheckFactory = AnnotationCheckFactory.create(profile, CheckList.REPOSITORY_KEY, CheckList.getChecks());
     this.noSonarFilter = noSonarFilter;
     this.projectClasspath = projectClasspath;
     this.sonarComponents = sonarComponents;
+    this.moduleFileSystem = moduleFileSystem;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    return Java.KEY.equals(project.getLanguageKey());
+    return !moduleFileSystem.files(FileQuery.onSource().onLanguage(Java.KEY)).isEmpty();
   }
 
   public void analyse(Project project, SensorContext context) {
@@ -99,7 +103,7 @@ public class JavaSquidSensor implements Sensor {
     String fieldNamesToExcludeFromLcom4Computation = project.getConfiguration().getString(
         JavaSquidPlugin.FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION,
         JavaSquidPlugin.FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION_DEFAULT_VALUE);
-    Charset charset = project.getFileSystem().getSourceCharset();
+    Charset charset = moduleFileSystem.sourceCharset();
 
     JavaConfiguration conf = new JavaConfiguration(charset);
     conf.setAnalyzePropertyAccessors(analyzePropertyAccessors);

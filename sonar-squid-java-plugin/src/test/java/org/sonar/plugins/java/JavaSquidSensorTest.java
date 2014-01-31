@@ -19,34 +19,47 @@
  */
 package org.sonar.plugins.java;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.api.scan.filesystem.FileQuery;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.java.SonarComponents;
 
+import java.io.File;
+
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class JavaSquidSensorTest {
 
+  private final ModuleFileSystem moduleFileSystem = mock(ModuleFileSystem.class);
   private JavaSquidSensor sensor;
 
   @Before
   public void setUp() {
-    sensor = new JavaSquidSensor(mock(RulesProfile.class), mock(NoSonarFilter.class), mock(ProjectClasspath.class), mock(SonarComponents.class));
+    sensor = new JavaSquidSensor(mock(RulesProfile.class), mock(NoSonarFilter.class), mock(ProjectClasspath.class), mock(SonarComponents.class), moduleFileSystem);
   }
 
   @Test
   public void should_execute_on_java_project() {
     Project project = mock(Project.class);
-    when(project.getLanguageKey()).thenReturn("java");
-    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
-    when(project.getLanguageKey()).thenReturn("py");
+
+    when(moduleFileSystem.files(any(FileQuery.class))).thenReturn(ImmutableList.<File>of());
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
+
+    when(moduleFileSystem.files(any(FileQuery.class))).thenReturn(ImmutableList.<File>of(new File("Fake.java")));
+    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
   }
 
   @Test
