@@ -20,14 +20,16 @@
 package org.sonar.plugins.java;
 
 import org.junit.Test;
+import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.resources.ProjectFileSystem;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
-public class JavaPluginTest {
-
+public class JavaCommonRulesDecoratorTest {
   @Test
-  public void testGetExtensions() {
-    assertThat(new JavaPlugin().getExtensions()).hasSize(7);
+  public void test_declaration() throws Exception {
+    JavaCommonRulesDecorator decorator = new JavaCommonRulesDecorator(mock(ProjectFileSystem.class), mock(RulesProfile.class));
+    assertThat(decorator.language()).isEqualTo(Java.KEY);
   }
-
 }

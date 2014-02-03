@@ -31,6 +31,7 @@ public final class JavaPlugin extends SonarPlugin {
   public List getExtensions() {
     return ImmutableList.of(
       JavaCommonRulesEngine.class,
+      JavaCommonRulesDecorator.class,
       JavaSettings.class,
       JavaSettings.property(),
       Java.class,

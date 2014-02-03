@@ -1,4 +1,3 @@
-
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
@@ -20,26 +19,14 @@
  */
 package org.sonar.plugins.java;
 
-import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
-import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.commonrules.api.CommonRulesEngine;
 import org.sonar.commonrules.api.CommonRulesRepository;
 
 public class JavaCommonRulesEngine extends CommonRulesEngine {
 
-  /**
-   * Server side
-   */
   public JavaCommonRulesEngine() {
     super(Java.KEY);
-  }
-
-  /**
-   * Batch side
-   */
-  public JavaCommonRulesEngine(RulesProfile rulesProfile, ProjectFileSystem fs) {
-    super(Java.KEY, rulesProfile, fs);
   }
 
   @Override

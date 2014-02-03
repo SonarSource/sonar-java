@@ -19,15 +19,12 @@
  */
 package org.sonar.plugins.java;
 
-import org.junit.Test;
+import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.commonrules.api.CommonRulesDecorator;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-public class JavaPluginTest {
-
-  @Test
-  public void testGetExtensions() {
-    assertThat(new JavaPlugin().getExtensions()).hasSize(7);
+public class JavaCommonRulesDecorator extends CommonRulesDecorator {
+  public JavaCommonRulesDecorator(ProjectFileSystem fs, RulesProfile qProfile) {
+    super(Java.KEY, fs, qProfile);
   }
-
 }
