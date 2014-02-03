@@ -160,7 +160,6 @@ public final class CheckList {
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
-      LCOM4Check.class,
       ArchitectureCheck.class,
       CallToDeprecatedMethodCheck.class,
       CallToFileDeleteOnExitMethodCheck.class,

@@ -34,18 +34,7 @@ import org.sonar.api.resources.Scopes;
 
 public final class ChidamberKemererDistributionBuilder implements Decorator {
 
-  private static final Integer[] LCOM4_LIMITS = {/* 1 is excluded */2, 3, 4, 5, 10};
   private static final Integer[] RFC_LIMITS = {0, 5, 10, 20, 30, 50, 90, 150};
-
-  @DependedUpon
-  public Metric generatesLcom4Distribution() {
-    return CoreMetrics.LCOM4_DISTRIBUTION;
-  }
-
-  @DependsUpon
-  public Metric dependsInLcom4() {
-    return CoreMetrics.LCOM4;
-  }
 
   @DependedUpon
   public Metric generatesRfcDistribution() {
@@ -59,17 +48,14 @@ public final class ChidamberKemererDistributionBuilder implements Decorator {
 
   public void decorate(Resource resource, DecoratorContext context) {
     if (shouldExecuteOn(resource)) {
-      RangeDistributionBuilder lcom4Distribution = new RangeDistributionBuilder(CoreMetrics.LCOM4_DISTRIBUTION, LCOM4_LIMITS);
       RangeDistributionBuilder rfcDistribution = new RangeDistributionBuilder(CoreMetrics.RFC_DISTRIBUTION, RFC_LIMITS);
 
       for (DecoratorContext childContext : context.getChildren()) {
         if (Scopes.isFile(childContext.getResource())) {
-          addMeasureToDistribution(childContext, lcom4Distribution, CoreMetrics.LCOM4);
           addMeasureToDistribution(childContext, rfcDistribution, CoreMetrics.RFC);
         }
       }
 
-      saveDistribution(context, lcom4Distribution);
       saveDistribution(context, rfcDistribution);
     }
   }

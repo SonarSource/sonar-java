@@ -98,7 +98,6 @@ public class SquidUserGuideTest {
     assertThat(squid.search("org/apache/commons/collections/bag/AbstractBagDecorator").getInt(Metric.NOC)).isEqualTo(3);
     assertThat(squid.search("org/apache/commons/collections/bag/PredicatedBag").getInt(Metric.DIT)).isEqualTo(4);
     assertThat(squid.search("org/apache/commons/collections/ArrayStack").getInt(Metric.RFC)).isEqualTo(15);
-    assertThat(squid.search("org/apache/commons/collections/ArrayStack").getInt(Metric.LCOM4)).isEqualTo(3);
   }
 
   @Test

@@ -19,15 +19,11 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Sets;
-
 import java.nio.charset.Charset;
-import java.util.Set;
 
 public class JavaConfiguration {
 
   private final Charset charset;
-  private final Set<String> fieldsToExcludeFromLcom4Calculation = Sets.newHashSet();
   private boolean analyzePropertyAccessors = true;
 
   public JavaConfiguration(Charset charset) {
@@ -36,14 +32,6 @@ public class JavaConfiguration {
 
   public Charset getCharset() {
     return charset;
-  }
-
-  public Set<String> getFieldsToExcludeFromLcom4Calculation() {
-    return fieldsToExcludeFromLcom4Calculation;
-  }
-
-  public void addFieldToExcludeFromLcom4Calculation(String fieldName) {
-    fieldsToExcludeFromLcom4Calculation.add(fieldName);
   }
 
   public boolean isAnalysePropertyAccessors() {

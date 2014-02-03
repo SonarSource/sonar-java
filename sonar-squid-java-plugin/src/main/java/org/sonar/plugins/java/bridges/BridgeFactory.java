@@ -42,7 +42,6 @@ public final class BridgeFactory {
         new NoSonarFilterLoader(noSonarFilter),
         new ChidamberKemererBridge(),
         new RobertCMartinBridge(),
-        new Lcom4BlocksBridge(),
         new ChecksBridge());
     if (!skipPackageDesignAnalysis) {
       result.add(new DesignBridge());

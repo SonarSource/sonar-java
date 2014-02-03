@@ -48,8 +48,6 @@ public class ChidamberKemererDistributionBuilderTest {
 
   @Test
   public void test_dependencies() {
-    assertThat(decorator.generatesLcom4Distribution()).isSameAs(CoreMetrics.LCOM4_DISTRIBUTION);
-    assertThat(decorator.dependsInLcom4()).isSameAs(CoreMetrics.LCOM4);
     assertThat(decorator.generatesRfcDistribution()).isSameAs(CoreMetrics.RFC_DISTRIBUTION);
     assertThat(decorator.dependsInRfc()).isSameAs(CoreMetrics.RFC);
   }

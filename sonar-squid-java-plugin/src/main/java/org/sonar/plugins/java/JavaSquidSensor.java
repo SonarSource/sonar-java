@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import org.apache.commons.lang.StringUtils;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
@@ -100,19 +99,9 @@ public class JavaSquidSensor implements Sensor {
     boolean analyzePropertyAccessors = project.getConfiguration().getBoolean(
         JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY,
         JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE);
-    String fieldNamesToExcludeFromLcom4Computation = project.getConfiguration().getString(
-        JavaSquidPlugin.FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION,
-        JavaSquidPlugin.FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION_DEFAULT_VALUE);
     Charset charset = moduleFileSystem.sourceCharset();
-
     JavaConfiguration conf = new JavaConfiguration(charset);
     conf.setAnalyzePropertyAccessors(analyzePropertyAccessors);
-    for (String fieldName : StringUtils.split(fieldNamesToExcludeFromLcom4Computation, ',')) {
-      if (StringUtils.isNotBlank(fieldName)) {
-        conf.addFieldToExcludeFromLcom4Calculation(fieldName);
-      }
-    }
-
     return conf;
   }
 

@@ -35,14 +35,6 @@ public class ChidamberKemererBridge extends Bridge {
     context.saveMeasure(sonarFile, CoreMetrics.DEPTH_IN_TREE, squidFile.getDouble(Metric.DIT));
     context.saveMeasure(sonarFile, CoreMetrics.NUMBER_OF_CHILDREN, squidFile.getDouble(Metric.NOC));
     context.saveMeasure(sonarFile, CoreMetrics.RFC, squidFile.getDouble(Metric.RFC));
-    context.saveMeasure(sonarFile, CoreMetrics.LCOM4, getLcom4(squidFile));
-  }
-
-  static double getLcom4(SourceFile squidFile) {
-    // Squid API does not support null values, so sometimes it returns LCOM4 values with value 0. It occurs
-    // for example with files without any classes, like package-info.java.
-    // Minimum value must be 1.
-    return Math.max(squidFile.getDouble(Metric.LCOM4), 1.0);
   }
 
 }

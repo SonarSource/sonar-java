@@ -107,18 +107,6 @@ public class BytecodeVisitorsTest {
   }
 
   @Test
-  public void lcom4() {
-    assertThat(index.search("tags/impl/Todo").getInt(Metric.LCOM4)).isEqualTo(1);
-    assertThat(index.search("tags/impl/Todo.java").getInt(Metric.LCOM4)).isEqualTo(1);
-
-    List<Set<AsmResource>> lcom4Blocks = (List<Set<AsmResource>>) index.search("tags/impl/Todo.java").getData(Metric.LCOM4_BLOCKS);
-    assertThat(lcom4Blocks.size()).isEqualTo(0);
-
-    assertThat(index.search("tags/Tag").getInt(Metric.LCOM4)).isEqualTo(1);
-    assertThat(index.search("tags/TagName").getInt(Metric.LCOM4)).isEqualTo(1);
-  }
-
-  @Test
   public void afferent_coupling() {
     assertThat(index.search("tags/Tag").getInt(Metric.CA)).isEqualTo(2);
     assertThat(index.search("tags/Tag.java").getInt(Metric.CA)).isEqualTo(2);

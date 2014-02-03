@@ -39,7 +39,6 @@ import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.DITVisitor;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
-import org.sonar.java.bytecode.visitor.LCOM4Visitor;
 import org.sonar.java.bytecode.visitor.NOCVisitor;
 import org.sonar.java.bytecode.visitor.RFCVisitor;
 import org.sonar.java.model.VisitorsBridge;
@@ -52,7 +51,6 @@ import org.sonar.squid.indexer.QueryByType;
 import org.sonar.squid.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -100,7 +98,6 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     bytecodeScanner.accept(new DITVisitor());
     bytecodeScanner.accept(new RFCVisitor());
     bytecodeScanner.accept(new NOCVisitor());
-    bytecodeScanner.accept(new LCOM4Visitor(conf.getFieldsToExcludeFromLcom4Calculation()));
     bytecodeScanner.accept(new DependenciesVisitor(graph));
 
     // External visitors (typically Check ones):

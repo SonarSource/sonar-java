@@ -42,9 +42,6 @@ public class JavaSquidPlugin extends SonarPlugin {
   public static final String SQUID_ANALYSE_ACCESSORS_PROPERTY = "sonar.squid.analyse.property.accessors";
   public static final boolean SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE = true;
 
-  public static final String FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION = "sonar.squid.fieldsToExcludeFromLcom4Computation";
-  public static final String FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION_DEFAULT_VALUE = "LOG, logger";
-
   @Override
   public List getExtensions() {
     return ImmutableList.of(
@@ -56,17 +53,6 @@ public class JavaSquidPlugin extends SonarPlugin {
         .description("Flag whether Squid should separate accessors (getters/setters) from methods. " +
           "In that case, accessors are not counted in metrics such as complexity or API documentation.")
         .type(PropertyType.BOOLEAN)
-        .onQualifiers(Qualifiers.PROJECT)
-        .build(),
-      PropertyDefinition.builder(JavaSquidPlugin.FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION)
-        .defaultValue(JavaSquidPlugin.FIELDS_TO_EXCLUDE_FROM_LCOM4_COMPUTATION_DEFAULT_VALUE)
-        .category(JAVA_CATEGORY)
-        .subCategory(GENERAL_SUBCATEGORY)
-        .name("List of fields to exclude from LCOM4 computation")
-        .description("Some fields should not be taken into account when computing LCOM4 measure as they " +
-          "unexpectedly and artificially decrease the LCOM4 measure. " +
-          "The best example is a logger used by all methods of a class. " +
-          "All field names to exclude from LCOM4 computation must be separated by a comma.")
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
       PropertyDefinition.builder(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)
