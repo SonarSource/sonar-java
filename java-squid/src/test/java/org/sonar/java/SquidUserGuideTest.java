@@ -94,13 +94,6 @@ public class SquidUserGuideTest {
   }
 
   @Test
-  public void getChidamberAndKemererMetrics() {
-    assertThat(squid.search("org/apache/commons/collections/bag/AbstractBagDecorator").getInt(Metric.NOC)).isEqualTo(3);
-    assertThat(squid.search("org/apache/commons/collections/bag/PredicatedBag").getInt(Metric.DIT)).isEqualTo(4);
-    assertThat(squid.search("org/apache/commons/collections/ArrayStack").getInt(Metric.RFC)).isEqualTo(15);
-  }
-
-  @Test
   public void getDependenciesBetweenPackages() {
     SourceCode collectionsPackage = squid.search("org/apache/commons/collections");
     SourceCode bufferPackage = squid.search("org/apache/commons/collections/buffer");

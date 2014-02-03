@@ -159,7 +159,6 @@ public final class CheckList {
       IncrementDecrementInSubExpressionCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
-      DITCheck.class,
       ArchitectureCheck.class,
       CallToDeprecatedMethodCheck.class,
       CallToFileDeleteOnExitMethodCheck.class,

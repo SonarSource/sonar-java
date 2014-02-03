@@ -3780,24 +3780,6 @@
         </prop>
       </chc>
       <chc>
-        <rule-repo>squid</rule-repo>
-        <rule-key>MaximumInheritanceDepth</rule-key>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>linear</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>4.0</val>
-          <txt>h</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-      </chc>
-      <chc>
         <rule-repo>findbugs</rule-repo>
         <rule-key>USM_USELESS_ABSTRACT_METHOD</rule-key>
         <prop>

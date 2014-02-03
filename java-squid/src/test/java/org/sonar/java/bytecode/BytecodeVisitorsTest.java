@@ -82,31 +82,6 @@ public class BytecodeVisitorsTest {
   }
 
   @Test
-  public void rfc() {
-    assertThat(index.search("tags/impl/Todo").getInt(Metric.RFC)).isEqualTo(8);
-    assertThat(index.search("tags/impl/Todo.java").getInt(Metric.RFC)).isEqualTo(8);
-    assertThat(index.search("tags/SourceFile").getInt(Metric.RFC)).isEqualTo(5);
-  }
-
-  @Test
-  public void dit() {
-    assertThat(index.search("tags/SourceFile").getInt(Metric.DIT)).isEqualTo(3);
-    assertThat(index.search("tags/File").getInt(Metric.DIT)).isEqualTo(2);
-    assertThat(index.search("tags/Content").getInt(Metric.DIT)).isEqualTo(1);
-    assertThat(index.search("tags/TagException").getInt(Metric.DIT)).isEqualTo(3);
-    assertThat(index.search("tags/Comment").getInt(Metric.DIT)).isEqualTo(0);
-    assertThat(index.search("tags/Tag").getInt(Metric.DIT)).isEqualTo(1);
-  }
-
-  @Test
-  public void noc() {
-    assertThat(index.search("tags/File").getInt(Metric.NOC)).isEqualTo(1);
-    assertThat(index.search("tags/Tag").getInt(Metric.NOC)).isEqualTo(2); // Tag is an interface
-    assertThat(index.search("tags/SourceFile").getInt(Metric.NOC)).isEqualTo(0);
-    assertThat(index.search("tags/Content").getInt(Metric.NOC)).isEqualTo(2); // Content has only one direct child
-  }
-
-  @Test
   public void afferent_coupling() {
     assertThat(index.search("tags/Tag").getInt(Metric.CA)).isEqualTo(2);
     assertThat(index.search("tags/Tag.java").getInt(Metric.CA)).isEqualTo(2);
