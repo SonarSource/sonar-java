@@ -28,7 +28,7 @@ import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
-public class BooleanEqualityComparisonCheckTest {
+public class BooleanLiteralCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
@@ -36,20 +36,21 @@ public class BooleanEqualityComparisonCheckTest {
   @Test
   public void detected() {
     SourceFile file = JavaAstScanner
-      .scanSingleFile(new File("src/test/files/checks/BooleanEqualityComparisonCheck.java"), new VisitorsBridge(new BooleanEqualityComparisonCheck()));
+      .scanSingleFile(new File("src/test/files/checks/BooleanEqualityComparisonCheck.java"), new VisitorsBridge(new BooleanLiteralCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Remove the useless \"==\" operator.")
+      .next().atLine(3).withMessage("Remove the literal \"false\" boolean value.")
       .next().atLine(4)
-      .next().atLine(5).withMessage("Remove the useless \"!=\" operator.")
+      .next().atLine(5).withMessage("Remove the literal \"false\" boolean value.")
       .next().atLine(6)
       .next().atLine(7)
       .next().atLine(8)
       .next().atLine(9)
       .next().atLine(10)
-      .next().atLine(11).withMessage("Remove the useless \"!\" operator.")
+      .next().atLine(11).withMessage("Remove the literal \"true\" boolean value.")
       .next().atLine(12)
-      .next().atLine(13).withMessage("Remove the useless \"&&\" operator.")
-      .next().atLine(14).withMessage("Remove the useless \"||\" operator.");
+      .next().atLine(13).withMessage("Remove the literal \"false\" boolean value.")
+      .next().atLine(14).withMessage("Remove the literal \"true\" boolean value.")
+      .noMore();
   }
 
 }

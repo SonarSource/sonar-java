@@ -88,7 +88,7 @@ public final class CheckList {
       UtilityClassWithPublicConstructorCheck.class,
       StringLiteralInsideEqualsCheck.class,
       ReturnOfBooleanExpressionsCheck.class,
-      BooleanEqualityComparisonCheck.class,
+      BooleanLiteralCheck.class,
       ExpressionComplexityCheck.class,
       NestedTryCatchCheck.class,
       SystemExitCalledCheck.class,
