@@ -27,7 +27,7 @@ public class JavaSquidPluginTest {
 
   @Test
   public void test() {
-    assertThat(new JavaSquidPlugin().getExtensions().size()).isEqualTo(10);
+    assertThat(new JavaSquidPlugin().getExtensions().size()).isEqualTo(9);
   }
 
 }

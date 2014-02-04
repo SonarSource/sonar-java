@@ -21,6 +21,8 @@ package org.sonar.plugins.java.bridges;
 
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
+import org.sonar.api.measures.PersistenceMode;
+import org.sonar.api.measures.RangeDistributionBuilder;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squid.api.SourceClass;
@@ -30,9 +32,12 @@ import org.sonar.squid.api.SourceMethod;
 
 public class FunctionsBridge extends Bridge {
 
+  private static final Number[] LIMITS = { 1, 2, 4, 6, 8, 10, 12 };
+
   private int methods;
-  private int complexityInMethods;
   private int accessors;
+  private int complexityInMethods;
+  private RangeDistributionBuilder methodComplexityDistribution;
 
   protected FunctionsBridge() {
     super(false);
@@ -43,12 +48,14 @@ public class FunctionsBridge extends Bridge {
     methods = 0;
     complexityInMethods = 0;
     accessors = 0;
+    methodComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, LIMITS);
 
     visit(squidFile);
 
     context.saveMeasure(sonarFile, new Measure(CoreMetrics.FUNCTIONS, (double) methods));
     context.saveMeasure(sonarFile, new Measure(CoreMetrics.ACCESSORS, (double) accessors));
     context.saveMeasure(sonarFile, new Measure(CoreMetrics.COMPLEXITY_IN_FUNCTIONS, (double) complexityInMethods));
+    context.saveMeasure(sonarFile, methodComplexityDistribution.build(true).setPersistenceMode(PersistenceMode.MEMORY));
   }
 
   private void visit(SourceCode squidCode) {
@@ -63,7 +70,9 @@ public class FunctionsBridge extends Bridge {
             accessors++;
           } else {
             methods++;
-            complexityInMethods += code.getInt(JavaMetric.COMPLEXITY);
+            int complexity = code.getInt(JavaMetric.COMPLEXITY);
+            complexityInMethods += complexity;
+            methodComplexityDistribution.add(complexity);
           }
           visit(code);
         }
