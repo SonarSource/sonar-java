@@ -65,8 +65,6 @@ public class DependenciesVisitor extends BytecodeVisitor {
     if (canWeLinkNodes(from, to) && graph.getEdge(from, to) == null) {
       SourceCodeEdge edge = new SourceCodeEdge(from, to, link);
       graph.addEdge(edge);
-      from.add(Metric.CE, 1);
-      to.add(Metric.CA, 1);
       SourceCodeEdge fileEdge = createEdgeBetweenParents(SourceFile.class, from, to, edge);
       createEdgeBetweenParents(SourcePackage.class, from, to, fileEdge);
     }
@@ -82,16 +80,8 @@ public class DependenciesVisitor extends BytecodeVisitor {
         parentEdge = new SourceCodeEdge(fromParent, toParent, SourceCodeEdgeUsage.USES);
         parentEdge.addRootEdge(rootEdge);
         graph.addEdge(parentEdge);
-        fromParent.add(Metric.CE, 1);
-        toParent.add(Metric.CA, 1);
       } else {
         parentEdge = graph.getEdge(fromParent, toParent);
-        if (!parentEdge.hasAnEdgeFromRootNode(rootEdge.getFrom())) {
-          toParent.add(Metric.CA, 1);
-        }
-        if (!parentEdge.hasAnEdgeToRootNode(rootEdge.getTo())) {
-          fromParent.add(Metric.CE, 1);
-        }
         parentEdge.addRootEdge(rootEdge);
       }
     }

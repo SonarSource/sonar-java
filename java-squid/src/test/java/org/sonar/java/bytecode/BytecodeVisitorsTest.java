@@ -82,21 +82,6 @@ public class BytecodeVisitorsTest {
   }
 
   @Test
-  public void afferent_coupling() {
-    assertThat(index.search("tags/Tag").getInt(Metric.CA)).isEqualTo(2);
-    assertThat(index.search("tags/Tag.java").getInt(Metric.CA)).isEqualTo(2);
-    assertThat(index.search("tags").getInt(Metric.CA)).isEqualTo(2);
-    assertThat(index.search("tags/impl").getInt(Metric.CA)).isEqualTo(0);
-  }
-
-  @Test
-  public void efferent_coupling() {
-    assertThat(index.search("tags/Tag").getInt(Metric.CE)).isEqualTo(3);
-    assertThat(index.search("tags/Tag.java").getInt(Metric.CE)).isEqualTo(3);
-    assertThat(index.search("tags").getInt(Metric.CE)).isEqualTo(0);
-  }
-
-  @Test
   public void testExtendsRelationShips() {
     assertThat(graph.getEdge(sourceFile, file).getUsage()).isEqualTo(SourceCodeEdgeUsage.EXTENDS);
   }

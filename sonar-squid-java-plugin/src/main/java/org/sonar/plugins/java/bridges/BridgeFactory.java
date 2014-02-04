@@ -40,7 +40,6 @@ public final class BridgeFactory {
         new PackagesBridge(),
         new PublicUndocumentedApiBridge(),
         new NoSonarFilterLoader(noSonarFilter),
-        new RobertCMartinBridge(),
         new ChecksBridge());
     if (!skipPackageDesignAnalysis) {
       result.add(new DesignBridge());

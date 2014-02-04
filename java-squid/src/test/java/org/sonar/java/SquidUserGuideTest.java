@@ -82,18 +82,6 @@ public class SquidUserGuideTest {
   }
 
   @Test
-  public void getRobertCMartinOOMetrics() {
-    SourceCode bufferPackage = squid.search("org/apache/commons/collections/buffer");
-    assertThat(bufferPackage.getInt(JavaMetric.CLASSES)).isEqualTo(13);
-    // TODO assertEquals(1, bufferPackage.getInt(Metric.ABSTRACT_CLASSES));
-    assertThat(bufferPackage.getInt(Metric.CA)).isEqualTo(1);
-    assertThat(bufferPackage.getInt(Metric.CE)).isEqualTo(14);
-    // TODO assertEquals(0.93, bufferPackage.getDouble(Metric.INSTABILITY), 0.01);
-    // TODO assertEquals(0.07, bufferPackage.getDouble(Metric.ABSTRACTNESS), 0.01);
-    // TODO assertEquals(0.01, bufferPackage.getDouble(Metric.DISTANCE), 0.01);
-  }
-
-  @Test
   public void getDependenciesBetweenPackages() {
     SourceCode collectionsPackage = squid.search("org/apache/commons/collections");
     SourceCode bufferPackage = squid.search("org/apache/commons/collections/buffer");
