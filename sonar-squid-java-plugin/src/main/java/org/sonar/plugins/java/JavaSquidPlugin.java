@@ -28,7 +28,6 @@ import org.sonar.api.resources.Qualifiers;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.decorators.FileComplexityDistributionDecorator;
 import org.sonar.plugins.java.decorators.FunctionComplexityDistributionBuilder;
-import org.sonar.plugins.java.decorators.FunctionsDecorator;
 
 import java.util.List;
 
@@ -69,8 +68,7 @@ public class JavaSquidPlugin extends SonarPlugin {
       SonarComponents.class,
       JavaSquidSensor.class,
       FileComplexityDistributionDecorator.class,
-      FunctionComplexityDistributionBuilder.class,
-      FunctionsDecorator.class);
+      FunctionComplexityDistributionBuilder.class);
   }
 
 }
