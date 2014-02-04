@@ -57,7 +57,7 @@ public class FindbugsProfileImporterTest {
     RulesProfile profile = importer.importProfile(new InputStreamReader(input), ValidationMessages.create());
     List<ActiveRule> results = profile.getActiveRules();
 
-    assertThat(results).hasSize(19);
+    assertThat(results).hasSize(18);
     assertThat(profile.getActiveRule(FindbugsConstants.REPOSITORY_KEY, "EC_INCOMPATIBLE_ARRAY_COMPARE")).isNotNull();
     assertThat(profile.getActiveRule(FindbugsConstants.REPOSITORY_KEY, "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY")).isNotNull();
   }
@@ -68,8 +68,8 @@ public class FindbugsProfileImporterTest {
     RulesProfile profile = importer.importProfile(new InputStreamReader(input), ValidationMessages.create());
     List<ActiveRule> results = profile.getActiveRules();
 
-    assertThat(results).hasSize(182);
-    assertThat(profile.getActiveRule(FindbugsConstants.REPOSITORY_KEY, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE")).isNotNull();
+    assertThat(results).hasSize(180);
+    assertThat(profile.getActiveRule(FindbugsConstants.REPOSITORY_KEY, "BC_IMPOSSIBLE_DOWNCAST")).isNotNull();
   }
 
   @Test
@@ -124,7 +124,7 @@ public class FindbugsProfileImporterTest {
     RulesProfile profile = importer.importProfile(new StringReader(uncorrectFindbugsXml), messages);
     List<ActiveRule> results = profile.getActiveRules();
 
-    assertThat(results).hasSize(141);
+    assertThat(results).hasSize(139);
     assertThat(messages.getWarnings()).hasSize(1);
   }
 

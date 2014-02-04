@@ -18,18 +18,6 @@
     <configKey><![CDATA[EC_INCOMPATIBLE_ARRAY_COMPARE]]></configKey>
   </rule>
 
-  <rule key="EC_INCOMPATIBLE_ARRAY_COMPARE">
-    <priority>BLOCKER</priority>
-    <name><![CDATA[Correctness - equals(...) used to compare incompatible arrays]]></name>
-    <configKey><![CDATA[EC_INCOMPATIBLE_ARRAY_COMPARE]]></configKey>
-  </rule>
-
-  <rule key="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE">
-    <priority>MAJOR</priority>
-    <name><![CDATA[Correctness - Potential lost logger changes due to weak reference in OpenJDK ]]></name>
-    <configKey><![CDATA[LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE]]></configKey>
-  </rule>
-
   <rule key="NP_CLOSING_NULL">
     <priority>BLOCKER</priority>
     <name><![CDATA[Correctness - close() invoked on a value that is always null]]></name>
@@ -2268,12 +2256,6 @@
     <name><![CDATA[Class defines hashcode(); should it be hashCode()?]]></name>
     <configKey><![CDATA[NM_LCASE_HASHCODE]]></configKey>
     <status>DEPRECATED</status>
-  </rule>
-
-  <rule key="NM_LCASE_TOSTRING">
-    <priority>MAJOR</priority>
-    <name><![CDATA[Class defines tostring(); should it be toString()?]]></name>
-    <configKey><![CDATA[NM_LCASE_TOSTRING]]></configKey>
   </rule>
 
   <rule key="NM_LCASE_TOSTRING">
