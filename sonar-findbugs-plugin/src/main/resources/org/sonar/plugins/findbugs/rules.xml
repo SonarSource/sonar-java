@@ -1598,6 +1598,7 @@
     <priority>CRITICAL</priority>
     <name><![CDATA[Performance - Private method is never called]]></name>
     <configKey><![CDATA[UPM_UNCALLED_PRIVATE_METHOD]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS">
