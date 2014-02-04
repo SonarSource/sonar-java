@@ -34,7 +34,6 @@ public class NoSonarFilterLoader extends Bridge {
   private NoSonarFilter noSonarFilter;
 
   protected NoSonarFilterLoader(NoSonarFilter noSonarFilter) {
-    super(false);
     this.noSonarFilter = noSonarFilter;
   }
 

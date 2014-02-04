@@ -53,8 +53,9 @@ public class DesignBridge extends Bridge {
    */
   private DependencyIndex dependencyIndex = new DependencyIndex();
 
-  protected DesignBridge() {
-    super(true);
+  @Override
+  public boolean needsBytecode() {
+    return true;
   }
 
   @Override

@@ -33,18 +33,13 @@ import org.sonar.squid.api.SourceProject;
  */
 public abstract class Bridge {
 
-  boolean needsBytecode = false;
   JavaSquid squid;
   ResourceIndex resourceIndex;
   SensorContext context;
   CheckFactory checkFactory;
 
-  protected Bridge(boolean needsBytecode) {
-    this.needsBytecode = needsBytecode;
-  }
-
-  public final boolean needsBytecode() {
-    return needsBytecode;
+  public boolean needsBytecode() {
+    return false;
   }
 
   protected final void setSquid(JavaSquid squid) {

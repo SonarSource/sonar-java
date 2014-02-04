@@ -30,10 +30,6 @@ import java.util.Set;
 
 public class ChecksBridge extends Bridge {
 
-  protected ChecksBridge() {
-    super(false);
-  }
-
   @Override
   public void onFile(SourceFile squidFile, Resource sonarFile) {
     Set<CheckMessage> messages = squidFile.getCheckMessages();

@@ -39,10 +39,6 @@ public class FunctionsBridge extends Bridge {
   private int complexityInMethods;
   private RangeDistributionBuilder methodComplexityDistribution;
 
-  protected FunctionsBridge() {
-    super(false);
-  }
-
   @Override
   public void onFile(SourceFile squidFile, Resource sonarFile) {
     methods = 0;

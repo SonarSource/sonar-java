@@ -38,8 +38,6 @@ public final class BridgeFactory {
     ArrayList<Bridge> result = Lists.newArrayList(
         new CopyBasicMeasuresBridge(),
         new FunctionsBridge(),
-        new PackagesBridge(),
-        new PublicUndocumentedApiBridge(),
         new NoSonarFilterLoader(noSonarFilter),
         new ChecksBridge());
     if (!skipPackageDesignAnalysis) {
