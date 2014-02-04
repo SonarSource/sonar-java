@@ -29,6 +29,10 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
 import org.sonar.java.api.JavaMethod;
 
+/**
+ * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
+ */
+@Deprecated
 public final class FunctionsDecorator implements Decorator {
 
   public void decorate(Resource resource, DecoratorContext context) {

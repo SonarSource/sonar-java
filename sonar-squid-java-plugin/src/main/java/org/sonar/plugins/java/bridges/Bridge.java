@@ -75,11 +75,20 @@ public abstract class Bridge {
 
   }
 
+  /**
+   * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
+   */
+  @Deprecated
   public void onClass(SourceClass squidClass, JavaClass sonarClass) {
 
   }
 
+  /**
+   * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
+   */
+  @Deprecated
   public void onMethod(SourceMethod squidMethod, JavaMethod sonarMethod) {
 
   }
+
 }

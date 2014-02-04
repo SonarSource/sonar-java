@@ -77,6 +77,10 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
     }
   }
 
+  /**
+   * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
+   */
+  @Deprecated
   private void loadSquidClasses(SquidIndex squid, SensorContext context) {
     Collection<SourceCode> classes = squid.search(new QueryByType(SourceClass.class), new QueryByMeasure(JavaMetric.CLASSES, QueryByMeasure.Operator.GREATER_THAN_EQUALS, 1));
     for (SourceCode squidClass : classes) {
@@ -91,6 +95,10 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
     }
   }
 
+  /**
+   * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
+   */
+  @Deprecated
   private void loadSquidMethods(SquidIndex squid, SensorContext context) {
     Collection<SourceCode> methods = squid.search(new QueryByType(SourceMethod.class));
     for (SourceCode squidMethod : methods) {

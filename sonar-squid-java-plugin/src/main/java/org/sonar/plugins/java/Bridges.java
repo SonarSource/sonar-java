@@ -94,6 +94,10 @@ public class Bridges {
     }
   }
 
+  /**
+   * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
+   */
+  @Deprecated
   private void saveClasses(ResourceIndex resourceIndex, List<Bridge> bridges) {
     Collection<SourceCode> squidClasses = squid.search(new QueryByType(SourceClass.class));
     for (SourceCode squidClass : squidClasses) {
@@ -107,6 +111,10 @@ public class Bridges {
     }
   }
 
+  /**
+   * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
+   */
+  @Deprecated
   private void saveMethods(ResourceIndex resourceIndex, List<Bridge> bridges) {
     Collection<SourceCode> squidMethods = squid.search(new QueryByType(SourceMethod.class));
     for (SourceCode squidMethod : squidMethods) {

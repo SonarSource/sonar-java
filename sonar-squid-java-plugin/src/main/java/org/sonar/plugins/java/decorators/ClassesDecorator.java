@@ -25,6 +25,10 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.*;
 
+/**
+ * @deprecated usage of {@link Scopes#isProgramUnit(org.sonar.api.resources.Resource)} should be removed for SQ 4.2 (SONARJAVA-438)
+ */
+@Deprecated
 public final class ClassesDecorator implements Decorator {
 
   public void decorate(Resource resource, DecoratorContext context) {

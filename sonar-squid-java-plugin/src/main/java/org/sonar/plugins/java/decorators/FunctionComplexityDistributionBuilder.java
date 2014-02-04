@@ -32,7 +32,9 @@ import org.sonar.java.api.JavaMethod;
 
 /**
  * @since 2.6
+ * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
  */
+@Deprecated
 public final class FunctionComplexityDistributionBuilder implements Decorator {
 
   private static final Number[] LIMITS = { 1, 2, 4, 6, 8, 10, 12 };
