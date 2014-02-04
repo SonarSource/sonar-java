@@ -42,6 +42,7 @@ public final class CopyBasicMeasuresBridge extends Bridge {
   public void onFile(SourceFile squidFile, Resource sonarResource) {
     copyStandard(squidFile, sonarResource);
     copy(squidFile, sonarResource, JavaMetric.FILES, CoreMetrics.FILES);
+    copy(squidFile, sonarResource, JavaMetric.CLASSES, CoreMetrics.CLASSES);
     context.saveMeasure(sonarResource, CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY, ParsingUtils.scaleValue(squidFile.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY) * 100, 2));
   }
 
