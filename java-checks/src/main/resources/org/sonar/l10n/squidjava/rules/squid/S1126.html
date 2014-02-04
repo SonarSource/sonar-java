@@ -1,35 +1,18 @@
 <p>
-Return of boolean literal statements wrapped into if-then-else ones should be simplified.
+Return of boolean literal statements wrapped into <code>if-then-else</code> ones should be simplified.
 </p>
 
-<p>For example, the following code:</p>
-
+<h2>Noncompliant Code Example</h2>
 <pre>
-if (someBooleanMethod()) {    // Non-Compliant
+if (expression) {
   return true;
 } else {
   return false;
 }
 </pre>
 
-<p>should be refactored into:</p>
+<h2>Compliant Solution</h2>
 
 <pre>
-return someBooleanMethod();   // Compliant
-</pre>
-
-<p>and, the following code:</p>
-
-<pre>
-if (someBooleanMethod()) {    // Non-Compliant
-  return false;
-} else {
-  return true;
-}
-</pre>
-
-<p>should be refactored into:</p>
-
-<pre>
-return !someBooleanMethod();  // Compliant
+return expression;   
 </pre>
