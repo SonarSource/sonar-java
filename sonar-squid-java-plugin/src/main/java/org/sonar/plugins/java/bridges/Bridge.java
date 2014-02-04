@@ -24,12 +24,12 @@ import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaSquid;
-import org.sonar.java.api.JavaClass;
-import org.sonar.java.api.JavaMethod;
-import org.sonar.squid.api.*;
+import org.sonar.squid.api.SourceFile;
+import org.sonar.squid.api.SourcePackage;
+import org.sonar.squid.api.SourceProject;
 
 /**
- * Pattern visitor : project -> packages -> files -> classes
+ * Pattern visitor : project -> packages -> files
  */
 public abstract class Bridge {
 
@@ -72,22 +72,6 @@ public abstract class Bridge {
   }
 
   public void onFile(SourceFile squidFile, Resource sonarFile) {
-
-  }
-
-  /**
-   * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
-   */
-  @Deprecated
-  public void onClass(SourceClass squidClass, JavaClass sonarClass) {
-
-  }
-
-  /**
-   * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
-   */
-  @Deprecated
-  public void onMethod(SourceMethod squidMethod, JavaMethod sonarMethod) {
 
   }
 

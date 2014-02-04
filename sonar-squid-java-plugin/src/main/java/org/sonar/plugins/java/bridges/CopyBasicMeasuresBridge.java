@@ -22,13 +22,9 @@ package org.sonar.plugins.java.bridges;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.ParsingUtils;
-import org.sonar.java.api.JavaClass;
-import org.sonar.java.api.JavaMethod;
 import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourceMethod;
 import org.sonar.squid.measures.Metric;
 import org.sonar.squid.measures.MetricDef;
 
@@ -40,29 +36,15 @@ public final class CopyBasicMeasuresBridge extends Bridge {
 
   @Override
   public void onFile(SourceFile squidFile, Resource sonarResource) {
-    copyStandard(squidFile, sonarResource);
+    copy(squidFile, sonarResource, JavaMetric.LINES_OF_CODE, CoreMetrics.NCLOC);
+    copy(squidFile, sonarResource, JavaMetric.LINES, CoreMetrics.LINES);
+    copy(squidFile, sonarResource, JavaMetric.COMMENT_LINES_WITHOUT_HEADER, CoreMetrics.COMMENT_LINES);
+    copy(squidFile, sonarResource, Metric.PUBLIC_API, CoreMetrics.PUBLIC_API);
+    copy(squidFile, sonarResource, JavaMetric.COMPLEXITY, CoreMetrics.COMPLEXITY);
+    copy(squidFile, sonarResource, JavaMetric.STATEMENTS, CoreMetrics.STATEMENTS);
     copy(squidFile, sonarResource, JavaMetric.FILES, CoreMetrics.FILES);
     copy(squidFile, sonarResource, JavaMetric.CLASSES, CoreMetrics.CLASSES);
     context.saveMeasure(sonarResource, CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY, ParsingUtils.scaleValue(squidFile.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY) * 100, 2));
-  }
-
-  @Override
-  public void onClass(SourceClass squidClass, JavaClass sonarClass) {
-    copyStandard(squidClass, sonarClass);
-  }
-
-  @Override
-  public void onMethod(SourceMethod squidMethod, JavaMethod sonarMethod) {
-    copyStandard(squidMethod, sonarMethod);
-  }
-
-  private void copyStandard(SourceCode squidCode, Resource sonarResource) {
-    copy(squidCode, sonarResource, JavaMetric.LINES_OF_CODE, CoreMetrics.NCLOC);
-    copy(squidCode, sonarResource, JavaMetric.LINES, CoreMetrics.LINES);
-    copy(squidCode, sonarResource, JavaMetric.COMMENT_LINES_WITHOUT_HEADER, CoreMetrics.COMMENT_LINES);
-    copy(squidCode, sonarResource, Metric.PUBLIC_API, CoreMetrics.PUBLIC_API);
-    copy(squidCode, sonarResource, JavaMetric.COMPLEXITY, CoreMetrics.COMPLEXITY);
-    copy(squidCode, sonarResource, JavaMetric.STATEMENTS, CoreMetrics.STATEMENTS);
   }
 
   private void copy(SourceCode squidResource, Resource sonarResource, MetricDef squidMetric, org.sonar.api.measures.Metric sonarMetric) {

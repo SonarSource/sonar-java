@@ -26,12 +26,13 @@ import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaSquid;
-import org.sonar.java.api.JavaClass;
-import org.sonar.java.api.JavaMethod;
 import org.sonar.plugins.java.bridges.Bridge;
 import org.sonar.plugins.java.bridges.BridgeFactory;
 import org.sonar.plugins.java.bridges.ResourceIndex;
-import org.sonar.squid.api.*;
+import org.sonar.squid.api.SourceCode;
+import org.sonar.squid.api.SourceFile;
+import org.sonar.squid.api.SourcePackage;
+import org.sonar.squid.api.SourceProject;
 import org.sonar.squid.indexer.QueryByType;
 
 import java.util.Collection;
@@ -62,8 +63,6 @@ public class Bridges {
     saveProject(resourceIndex, bridges);
     savePackages(resourceIndex, bridges);
     saveFiles(resourceIndex, bridges);
-    saveClasses(resourceIndex, bridges);
-    saveMethods(resourceIndex, bridges);
   }
 
   private void saveProject(ResourceIndex resourceIndex, List<Bridge> bridges) {
@@ -90,39 +89,6 @@ public class Bridges {
       Resource sonarFile = resourceIndex.get(squidFile);
       for (Bridge bridge : bridges) {
         bridge.onFile((SourceFile) squidFile, sonarFile);
-      }
-    }
-  }
-
-  /**
-   * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
-   */
-  @Deprecated
-  private void saveClasses(ResourceIndex resourceIndex, List<Bridge> bridges) {
-    Collection<SourceCode> squidClasses = squid.search(new QueryByType(SourceClass.class));
-    for (SourceCode squidClass : squidClasses) {
-      Resource sonarClass = resourceIndex.get(squidClass);
-      // can be null with anonymous classes
-      if (sonarClass != null) {
-        for (Bridge bridge : bridges) {
-          bridge.onClass((SourceClass) squidClass, (JavaClass) sonarClass);
-        }
-      }
-    }
-  }
-
-  /**
-   * @deprecated usage of {@link JavaMethod} should be removed for SQ 4.2 (SONARJAVA-438)
-   */
-  @Deprecated
-  private void saveMethods(ResourceIndex resourceIndex, List<Bridge> bridges) {
-    Collection<SourceCode> squidMethods = squid.search(new QueryByType(SourceMethod.class));
-    for (SourceCode squidMethod : squidMethods) {
-      JavaMethod sonarMethod = (JavaMethod) resourceIndex.get(squidMethod);
-      if (sonarMethod != null) {
-        for (Bridge bridge : bridges) {
-          bridge.onMethod((SourceMethod) squidMethod, sonarMethod);
-        }
       }
     }
   }
