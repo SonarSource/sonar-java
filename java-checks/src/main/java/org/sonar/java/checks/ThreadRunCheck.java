@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.bytecode.asm.AsmResource;
+
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -49,8 +51,7 @@ public class ThreadRunCheck extends BytecodeVisitor {
 
   @Override
   public void visitEdge(AsmEdge edge) {
-    if (isCallToRun(edge) && isThreadOrRunnable(edge.getTargetAsmClass())) {
-      edge.getTo();
+    if (notSuperCall(edge) && isCallToRun(edge) && isThreadOrRunnable(edge.getTargetAsmClass())) {
       SourceFile sourceFile = getSourceFile(asmClass);
       CheckMessage message = new CheckMessage(this, "Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
       message.setLine(edge.getSourceLineNumber());
@@ -58,10 +59,31 @@ public class ThreadRunCheck extends BytecodeVisitor {
     }
   }
 
-  private static boolean isCallToRun(AsmEdge edge) {
-    return edge.getTo() instanceof AsmMethod &&
-      "run()V".equals(((AsmMethod) edge.getTo()).getKey());
+  private boolean notSuperCall(AsmEdge edge) {
+    return !(isCallFromRun(edge) && isCallToRun(edge) && isParentFromEqualsTarget(edge));
   }
+
+  private boolean isParentFromEqualsTarget(AsmEdge edge) {
+    boolean result = false;
+    AsmClass superclass = edge.getFrom().getParent().getSuperClass();
+    if (superclass != null) {
+      result = superclass.equals(edge.getTargetAsmClass());
+    }
+    return result;
+  }
+
+  private static boolean isCallFromRun(AsmEdge edge) {
+    return isCallRun(edge.getFrom());
+  }
+
+  private static boolean isCallToRun(AsmEdge edge) {
+    return isCallRun(edge.getTo());
+  }
+
+  private static boolean isCallRun(AsmResource resource) {
+    return resource instanceof AsmMethod && "run()V".equals(((AsmMethod) resource).getKey());
+  }
+
 
   private static boolean isThreadOrRunnable(AsmClass asmClass) {
     AsmClass currentClass = asmClass;

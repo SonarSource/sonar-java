@@ -68,7 +68,12 @@ class A {
   }
 
   static class D extends C {
-
+    @Override
+    public void run() {
+      C c = new C();
+      c.run(); // Noncompliant but false negative
+      super.run();
+    }
   }
 
   static class E implements Serializable {
