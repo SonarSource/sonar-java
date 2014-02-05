@@ -39,7 +39,9 @@ public class ConstantsShouldBeStaticFinalCheckTest {
         .next().atLine(2).withMessage("Make this final field static too.")
         .next().atLine(5)
         .next().atLine(12)
-        .next().atLine(15);
+        .next().atLine(15)
+        .next().atLine(19)
+        .next().atLine(20);
   }
 
 }

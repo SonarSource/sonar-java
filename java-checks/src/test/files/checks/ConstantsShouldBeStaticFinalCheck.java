@@ -15,6 +15,13 @@ class A {
    f13 = BAR;                                           // Non-Compliant
 
   private final int[] foo = new int[42];                // Compliant
+  public class InnerClass{
+    private final int POSSIBLE = 4; //Non-Compliant
+    private final String POSSIBLE_2 = ""; //Non-Compliant
+
+    private final String[] NOT_POSSIBLE = {}; //Compliant
+    private final Object NOT_POSSIBLE_2 = new Object(); //Compliant
+  }
 }
 
 interface B {

@@ -3,18 +3,21 @@ Making a constant just <code>final</code> as opposed to <code>static final</code
 uselessly increasing the amount of memory required to execute the application.
 </p>
 
-<p>The following code:</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
 public class Myclass {
-  public final THRESHOLD = 3;           // Non-Compliant
+  public final int THRESHOLD = 3;           // Non-Compliant
 }
 </pre>
 
-<p>should be refactored into:</p>
+<h2>Compliant Solution</h2>
 
 <pre>
 public class Myclass {
-  public static final THRESHOLD = 3;    // Compliant
+  public static final int THRESHOLD = 3;    // Compliant
 }
 </pre>
+<h2>Exceptions</h2>
+<p>No issues are reported on final fields of inner classes whose type is not a primitive or a String. Indeed according to the Java specification:</p>
+<blockquote>An inner class is a nested class that is not explicitly or implicitly declared static. Inner classes may not declare static initializers (&sect; 8.7) or member interfaces. Inner classes may not declare static members, unless they are compile-time constant fields (&sect; 15.28).</blockquote>
