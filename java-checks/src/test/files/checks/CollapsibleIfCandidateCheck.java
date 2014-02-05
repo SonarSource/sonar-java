@@ -61,5 +61,13 @@ class A {
   {
     if (false) { // Compliant
     }
+      if (false) {
+        switch ("SELECT") {
+          case "SELECT":
+            if ("SELECT".equals(token.getValue())) { // Compliant
+            }
+            break;
+          }
+       }
   }
 }

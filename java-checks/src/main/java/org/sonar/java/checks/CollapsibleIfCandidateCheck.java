@@ -64,7 +64,7 @@ public class CollapsibleIfCandidateCheck extends SquidCheck<LexerlessGrammar> {
       return null;
     }
 
-    AstNode statement = grandParent.getFirstAncestor(JavaGrammar.BLOCK).getParent();
+    AstNode statement = grandParent.getFirstAncestor(JavaGrammar.BLOCK, JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP).getParent();
     if (!statement.is(JavaGrammar.STATEMENT)) {
       return null;
     }
