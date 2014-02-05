@@ -45,7 +45,7 @@ public class UselessImportCheckTest {
       .next().atLine(16)
       .next().atLine(17).withMessage("Remove this duplicated import.")
       .next().atLine(19).withMessage("Remove this unnecessary import: same package classes are always implicitly imported.")
-      .next().atLine(23);
+      .next().atLine(24);
   }
 
   @Test

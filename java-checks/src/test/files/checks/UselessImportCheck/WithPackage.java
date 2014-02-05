@@ -17,6 +17,7 @@ import java.lang.*;                 // Non-Compliant
 import a.b.c.Foo;                   // Non-Compliant
 
 import checks.UselessImportCheck.*;              // Non-Compliant
+import checks.UselessImportCheckClose.*;              // Non-Compliant
 import static checks.UselessImportCheck.Foo.*;   // Compliant
 import checks.UselessImportCheck.foo.*;          // Compliant
 

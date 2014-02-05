@@ -120,7 +120,7 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
   private boolean isImportFromSamePackage(String reference) {
     return !currentPackage.isEmpty() &&
       reference.startsWith(currentPackage) &&
-      reference.lastIndexOf('.') < currentPackage.length();
+      (reference.length() == currentPackage.length() || reference.substring(reference.indexOf(currentPackage)).startsWith("."));
   }
 
   private boolean isDuplicatedImport(String reference) {
@@ -128,21 +128,15 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
   }
 
   private void updatePendingImports(String reference) {
-    if (!isFullyQualified(reference)) {
-      Iterator<String> it = pendingImports.iterator();
-      while (it.hasNext()) {
-        String pendingImport = it.next();
-        if (pendingImport.endsWith(reference)) {
-          it.remove();
-        }
-      }
-    } else {
-      Iterator<String> it = pendingImports.iterator();
-      while (it.hasNext()) {
-        String pendingImport = it.next();
-        if (pendingImport.endsWith(extractFirstClassName(reference))) {
-          it.remove();
-        }
+    String firstClassReference = reference;
+    if (isFullyQualified(firstClassReference)) {
+      firstClassReference = extractFirstClassName(firstClassReference);
+    }
+    Iterator<String> it = pendingImports.iterator();
+    while (it.hasNext()) {
+      String pendingImport = it.next();
+      if (pendingImport.endsWith(firstClassReference)) {
+        it.remove();
       }
     }
   }
@@ -161,11 +155,9 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
 
       return builder.build();
     } else {
-      AstNode actualNode;
+      AstNode actualNode = node;
       if (node.is(JavaGrammar.ANNOTATION)) {
         actualNode = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-      } else {
-        actualNode = node;
       }
 
       return Collections.singleton(mergeIdentifiers(actualNode));
