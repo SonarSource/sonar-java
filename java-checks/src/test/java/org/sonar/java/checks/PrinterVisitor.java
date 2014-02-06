@@ -47,6 +47,13 @@ public class PrinterVisitor extends BaseTreeVisitor {
     pv.scan(tree);
     return pv.sb.toString();
   }
+  public static String print(List<? extends Tree> trees) {
+    StringBuilder result = new StringBuilder();
+    for (Tree tree : trees) {
+      result.append(print(tree));
+    }
+    return result.toString();
+  }
 
   private StringBuilder indent(){
     return sb.append(StringUtils.leftPad("", INDENT_SPACES * indentLevel));
