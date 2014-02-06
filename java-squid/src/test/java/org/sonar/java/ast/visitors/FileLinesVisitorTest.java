@@ -30,6 +30,7 @@ import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.JavaConfiguration;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.AstScanner;
 
 import java.io.File;
@@ -43,11 +44,11 @@ public class FileLinesVisitorTest {
 
   @Test
   public void lines_of_code_data() {
-    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
+    SonarComponents sonarComponents = mock(SonarComponents.class);
     FileLinesContext context = mock(FileLinesContext.class);
-    when(fileLinesContextFactory.createFor(Mockito.any(org.sonar.api.resources.Resource.class))).thenReturn(context);
+    when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
 
-    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new SemanticModelVisitor(), new FileLinesVisitor(fileLinesContextFactory, Charsets.UTF_8));
+    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new SemanticModelVisitor(), new FileLinesVisitor(sonarComponents, Charsets.UTF_8));
     File baseDir = new File("src/test/files/metrics");
     List<InputFile> inputFiles = InputFileUtils.create(baseDir, ImmutableList.of(new File("src/test/files/metrics/LinesOfCode.java")));
     scanner.scan(inputFiles);
@@ -64,11 +65,11 @@ public class FileLinesVisitorTest {
 
   @Test
   public void comment_lines_data() {
-    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
+    SonarComponents sonarComponents = mock(SonarComponents.class);
     FileLinesContext context = mock(FileLinesContext.class);
-    when(fileLinesContextFactory.createFor(Mockito.any(org.sonar.api.resources.Resource.class))).thenReturn(context);
+    when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
 
-    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new SemanticModelVisitor(), new FileLinesVisitor(fileLinesContextFactory, Charsets.UTF_8));
+    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new SemanticModelVisitor(), new FileLinesVisitor(sonarComponents, Charsets.UTF_8));
     File baseDir = new File("src/test/files/metrics");
     List<InputFile> inputFiles = InputFileUtils.create(baseDir, ImmutableList.of(new File("src/test/files/metrics/Comments.java")));
     scanner.scan(inputFiles);

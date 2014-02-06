@@ -26,10 +26,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
-import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.source.Highlightable;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.SonarComponents;
 
 import java.io.File;
 import java.util.List;
@@ -39,18 +38,18 @@ public class SyntaxHighlighterVisitorTest {
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
-  private final ResourcePerspectives resourcePerspectives = Mockito.mock(ResourcePerspectives.class);
+  private final SonarComponents sonarComponents = Mockito.mock(SonarComponents.class);
   private final Highlightable highlightable = Mockito.mock(Highlightable.class);
   private final Highlightable.HighlightingBuilder highlighting = Mockito.mock(Highlightable.HighlightingBuilder.class);
 
-  private final SyntaxHighlighterVisitor syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(resourcePerspectives, Charsets.UTF_8);
+  private final SyntaxHighlighterVisitor syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents, Charsets.UTF_8);
 
   private List<String> lines;
   private String eol;
 
   @Before
   public void setUp() {
-    Mockito.when(resourcePerspectives.as(Mockito.eq(Highlightable.class), Mockito.any(JavaFile.class))).thenReturn(highlightable);
+    Mockito.when(sonarComponents.highlightableFor(Mockito.any(File.class))).thenReturn(highlightable);
     Mockito.when(highlightable.newHighlighting()).thenReturn(highlighting);
   }
 
@@ -60,7 +59,7 @@ public class SyntaxHighlighterVisitorTest {
     Files.write("ParseError", file, Charsets.UTF_8);
     JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
 
-    Mockito.verifyZeroInteractions(resourcePerspectives);
+    Mockito.verifyZeroInteractions(highlightable);
   }
 
   @Test

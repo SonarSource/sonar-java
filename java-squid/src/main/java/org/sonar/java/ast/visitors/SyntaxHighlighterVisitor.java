@@ -28,10 +28,8 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
-import org.sonar.api.batch.SquidUtils;
-import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.source.Highlightable;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
@@ -43,16 +41,16 @@ import java.util.Map;
 
 public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTokenVisitor {
 
-  private final ResourcePerspectives perspectives;
+  private final SonarComponents sonarComponents;
   private final Map<AstNodeType, String> types;
   private final Charset charset;
 
   private Highlightable.HighlightingBuilder highlighting;
   private List<Integer> lineStart;
 
-  public SyntaxHighlighterVisitor(ResourcePerspectives perspectives, Charset charset) {
+  public SyntaxHighlighterVisitor(SonarComponents sonarComponents, Charset charset) {
+    this.sonarComponents = sonarComponents;
     this.charset = charset;
-    this.perspectives = perspectives;
 
     ImmutableMap.Builder<AstNodeType, String> typesBuilder = ImmutableMap.builder();
     for (AstNodeType type : JavaKeyword.values()) {
@@ -82,8 +80,7 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
       return;
     }
 
-    JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(peekSourceFile().getKey());
-    highlighting = perspectives.as(Highlightable.class, sonarFile).newHighlighting();
+    highlighting = sonarComponents.highlightableFor(getContext().getFile()).newHighlighting();
 
     lineStart = Lists.newArrayList();
     final String content;

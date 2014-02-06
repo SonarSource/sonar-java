@@ -23,30 +23,35 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.issue.Issuable;
+import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.resources.Project;
+import org.sonar.api.resources.Resource;
+import org.sonar.api.source.Highlightable;
+import org.sonar.api.source.Symbolizable;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannersFactory;
 
 import javax.annotation.Nullable;
+import java.io.File;
 
 public class SonarComponents implements BatchExtension {
 
   private final FileLinesContextFactory fileLinesContextFactory;
   private final ResourcePerspectives resourcePerspectives;
   private final JavaFileScannersFactory[] fileScannersFactories;
+  private final Project project;
 
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives) {
-    this(fileLinesContextFactory, resourcePerspectives, null);
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project) {
+    this(fileLinesContextFactory, resourcePerspectives, project, null);
   }
 
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, @Nullable JavaFileScannersFactory[] fileScannersFactories) {
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project, @Nullable JavaFileScannersFactory[] fileScannersFactories) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
+    this.project = project;
     this.fileScannersFactories = fileScannersFactories;
-  }
-
-  public FileLinesContextFactory getFileLinesContextFactory() {
-    return fileLinesContextFactory;
   }
 
   public ResourcePerspectives getResourcePerspectives() {
@@ -63,4 +68,23 @@ public class SonarComponents implements BatchExtension {
     return result;
   }
 
+  public Resource resourceFromIOFile(File file) {
+    return org.sonar.api.resources.File.fromIOFile(file, project);
+  }
+
+  public FileLinesContext fileLinesContextFor(File file) {
+    return fileLinesContextFactory.createFor(resourceFromIOFile(file));
+  }
+
+  public Symbolizable symbolizableFor(File file) {
+    return resourcePerspectives.as(Symbolizable.class, resourceFromIOFile(file));
+  }
+
+  public Highlightable highlightableFor(File file) {
+    return resourcePerspectives.as(Highlightable.class, resourceFromIOFile(file));
+  }
+
+  public Issuable issuableFor(File file) {
+    return resourcePerspectives.as(Issuable.class, resourceFromIOFile(file));
+  }
 }

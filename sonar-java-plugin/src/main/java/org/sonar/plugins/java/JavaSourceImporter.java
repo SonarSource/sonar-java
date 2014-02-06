@@ -19,25 +19,25 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.ImmutableList;
-import org.sonar.api.SonarPlugin;
-import org.sonar.plugins.java.api.JavaSettings;
+import org.sonar.api.batch.AbstractSourceImporter;
+import org.sonar.api.batch.DependedUpon;
+import org.sonar.api.batch.Phase;
 
-import java.util.List;
+/**
+ * @deprecated useless for SQ 4.2 (SONARJAVA-438)
+ */
+@Deprecated
+@Phase(name = Phase.Name.PRE)
+@DependedUpon("BEFORE_SQUID")
+public final class JavaSourceImporter extends AbstractSourceImporter {
 
-public final class JavaPlugin extends SonarPlugin {
+  public JavaSourceImporter(Java language) {
+    super(language);
+  }
 
   @Override
-  public List getExtensions() {
-    return ImmutableList.of(
-      JavaCommonRulesEngine.class,
-      JavaCommonRulesDecorator.class,
-      JavaSettings.class,
-      JavaSettings.property(),
-      Java.class,
-      JavaSourceImporter.class,
-      CommonRulesSonarWayProfile.class,
-      CommonRulesSonarWayWithFindbugsProfile.class);
+  public String toString() {
+    return getClass().getSimpleName();
   }
 
 }

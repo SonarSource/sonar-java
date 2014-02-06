@@ -23,13 +23,11 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.api.batch.SquidUtils;
-import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.issue.Issuable;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.SemanticModelProvider;
 import org.sonar.java.SemanticModelProviderAwareVisitor;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -39,14 +37,13 @@ import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.SourceFile;
 
 import javax.annotation.Nullable;
-
 import java.util.Arrays;
 import java.util.List;
 
 public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProviderAwareVisitor {
 
   @Nullable
-  private final ResourcePerspectives resourcePerspectives;
+  private final SonarComponents sonarComponents;
 
   private final JavaTreeMaker treeMaker = new JavaTreeMaker();
   private final List<JavaFileScanner> scanners;
@@ -58,8 +55,8 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
     this(null, Arrays.asList(visitor));
   }
 
-  public VisitorsBridge(@Nullable ResourcePerspectives resourcePerspectives, Iterable visitors) {
-    this.resourcePerspectives = resourcePerspectives;
+  public VisitorsBridge(@Nullable SonarComponents sonarComponents, Iterable visitors) {
+    this.sonarComponents = sonarComponents;
     ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
@@ -79,10 +76,8 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
     if (astNode != null) {
       CompilationUnitTree tree = treeMaker.compilationUnit(astNode);
 
-      SourceFile sourceFile = peekSourceFile();
-      JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(sourceFile.getKey());
-      Issuable issuable = resourcePerspectives == null ? null : resourcePerspectives.as(Issuable.class, sonarFile);
-      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, sourceFile, issuable, semanticModelProvider);
+      Issuable issuable = sonarComponents == null ? null : sonarComponents.issuableFor(getContext().getFile());
+      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), issuable, semanticModelProvider);
       for (JavaFileScanner scanner : scanners) {
         scanner.scanFile(context);
       }

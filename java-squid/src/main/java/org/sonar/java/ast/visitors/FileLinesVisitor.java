@@ -27,12 +27,9 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
-import org.sonar.api.batch.SquidUtils;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
-import org.sonar.api.measures.FileLinesContextFactory;
-import org.sonar.api.resources.JavaFile;
-import org.sonar.squid.api.SourceFile;
+import org.sonar.java.SonarComponents;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -44,21 +41,19 @@ import java.util.Set;
  */
 public class FileLinesVisitor extends JavaAstVisitor implements AstAndTokenVisitor {
 
-  private final FileLinesContextFactory fileLinesContextFactory;
+  private final SonarComponents sonarComponents;
   private final Charset charset;
   private final Set<Integer> linesOfCode = Sets.newHashSet();
   private final Set<Integer> linesOfComments = Sets.newHashSet();
 
-  public FileLinesVisitor(FileLinesContextFactory fileLinesContextFactory, Charset charset) {
-    this.fileLinesContextFactory = fileLinesContextFactory;
+  public FileLinesVisitor(SonarComponents sonarComponents, Charset charset) {
+    this.sonarComponents = sonarComponents;
     this.charset = charset;
   }
 
   @Override
   public void leaveFile(AstNode astNode) {
-    SourceFile file = (SourceFile) getContext().peekSourceCode();
-    JavaFile javaFile = SquidUtils.convertJavaFileKeyFromSquidFormat(file.getKey());
-    FileLinesContext fileLinesContext = fileLinesContextFactory.createFor(javaFile);
+    FileLinesContext fileLinesContext = sonarComponents.fileLinesContextFor(getContext().getFile());
 
     // TODO minimize access to files, another one in LinesVisitor
     int fileLength;

@@ -25,11 +25,13 @@ import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourcePackage;
 
+import java.io.File;
+
 public class FileVisitor extends JavaAstVisitor {
 
   @Override
   public void visitFile(AstNode astNode) {
-    SourceFile sourceFile = createSourceFile(peekParentPackage(), getContext().getFile().getName());
+    SourceFile sourceFile = createSourceFile(peekParentPackage(), getContext().getFile());
     sourceFile.setMeasure(JavaMetric.FILES, 1);
     getContext().addSourceCode(sourceFile);
   }
@@ -40,14 +42,14 @@ public class FileVisitor extends JavaAstVisitor {
     getContext().popSourceCode();
   }
 
-  private static SourceFile createSourceFile(SourcePackage parentPackage, String fileName) {
+  private static SourceFile createSourceFile(SourcePackage parentPackage, File file) {
     StringBuilder key = new StringBuilder();
     if (parentPackage != null && !"".equals(parentPackage.getKey())) {
       key.append(parentPackage.getKey());
       key.append("/");
     }
-    key.append(fileName);
-    return new SourceFile(key.toString(), fileName);
+    key.append(file.getName());
+    return new SourceFile(key.toString(), file.getPath());
   }
 
 }

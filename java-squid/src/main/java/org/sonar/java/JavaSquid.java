@@ -76,11 +76,11 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     astScanner = JavaAstScanner.create(conf, semanticModelVisitor);
 
     if (sonarComponents != null) {
-      astScanner.accept(new FileLinesVisitor(sonarComponents.getFileLinesContextFactory(), conf.getCharset()));
-      astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents.getResourcePerspectives(), conf.getCharset()));
-      astScanner.accept(new SonarSymbolTableVisitor(sonarComponents.getResourcePerspectives(), semanticModelVisitor));
+      astScanner.accept(new FileLinesVisitor(sonarComponents, conf.getCharset()));
+      astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
+      astScanner.accept(new SonarSymbolTableVisitor(sonarComponents, semanticModelVisitor));
 
-      VisitorsBridge visitorsBridge = new VisitorsBridge(sonarComponents.getResourcePerspectives(), Iterables.concat(
+      VisitorsBridge visitorsBridge = new VisitorsBridge(sonarComponents, Iterables.concat(
         sonarComponents.createJavaFileScanners(),
         Arrays.asList(visitors)
         ));

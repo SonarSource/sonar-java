@@ -20,11 +20,9 @@
 package org.sonar.java.ast.visitors;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.api.batch.SquidUtils;
-import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.java.SemanticModelProvider;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 
@@ -32,11 +30,11 @@ import java.util.Map;
 
 public class SonarSymbolTableVisitor extends JavaAstVisitor {
 
-  private final ResourcePerspectives perspectives;
   private final SemanticModelProvider semanticModelProvider;
+  private final SonarComponents sonarComponents;
 
-  public SonarSymbolTableVisitor(ResourcePerspectives perspectives, SemanticModelProvider semanticModelProvider) {
-    this.perspectives = perspectives;
+  public SonarSymbolTableVisitor(SonarComponents sonarComponents, SemanticModelProvider semanticModelProvider) {
+    this.sonarComponents = sonarComponents;
     this.semanticModelProvider = semanticModelProvider;
   }
 
@@ -48,8 +46,7 @@ public class SonarSymbolTableVisitor extends JavaAstVisitor {
       return;
     }
 
-    JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(peekSourceFile().getKey());
-    Symbolizable symbolizable = perspectives.as(Symbolizable.class, sonarFile);
+    Symbolizable symbolizable = sonarComponents.symbolizableFor(getContext().getFile());
     Symbolizable.SymbolTableBuilder symbolTableBuilder = symbolizable.newSymbolTableBuilder();
 
     for (Map.Entry<AstNode, Symbol> entry : semanticModel.getSymbols().entrySet()) {

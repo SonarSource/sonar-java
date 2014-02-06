@@ -21,7 +21,6 @@ package org.sonar.plugins.java.bridges;
 
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.SquidUtils;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.JavaPackage;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
@@ -33,6 +32,7 @@ import org.sonar.squid.api.SourceProject;
 import org.sonar.squid.indexer.QueryByType;
 import org.sonar.squid.indexer.SquidIndex;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -43,7 +43,7 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
   public ResourceIndex loadSquidResources(JavaSquid squid, SensorContext context, Project project) {
     loadSquidProject(squid.getIndex(), project);
     loadSquidPackages(squid.getIndex(), context);
-    loadSquidFiles(squid.getIndex(), context);
+    loadSquidFiles(squid.getIndex(), context, project);
     return this;
   }
 
@@ -51,6 +51,9 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
     put(squid.search(new QueryByType(SourceProject.class)).iterator().next(), project);
   }
 
+  /**
+   * @see org.sonar.java.ast.visitors.PackageVisitor
+   */
   private void loadSquidPackages(SquidIndex squid, SensorContext context) {
     Collection<SourceCode> packages = squid.search(new QueryByType(SourcePackage.class));
     for (SourceCode squidPackage : packages) {
@@ -61,11 +64,15 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
     }
   }
 
-  private void loadSquidFiles(SquidIndex squid, SensorContext context) {
+  /**
+   * @see org.sonar.java.ast.visitors.FileVisitor
+   */
+  private void loadSquidFiles(SquidIndex squid, SensorContext context, Project project) {
     Collection<SourceCode> files = squid.search(new QueryByType(SourceFile.class));
     for (SourceCode squidFile : files) {
-      JavaFile sonarFile = SquidUtils.convertJavaFileKeyFromSquidFormat(squidFile.getKey());
-      JavaPackage sonarPackage = (JavaPackage) get(squidFile.getParent(SourcePackage.class));
+      String filePath = squidFile.getName();
+      Resource sonarFile = org.sonar.api.resources.File.fromIOFile(new File(filePath), project);
+      Resource sonarPackage = get(squidFile.getParent(SourcePackage.class));
       context.index(sonarFile, sonarPackage);
       // resource is reloaded to get the id:
       put(squidFile, context.getResource(sonarFile));
