@@ -22,6 +22,13 @@ class A {
     private final String[] NOT_POSSIBLE = {}; //Compliant
     private final Object NOT_POSSIBLE_2 = new Object(); //Compliant
   }
+  enum enumTest {
+    TEST1(4);
+    private final int possible;
+    private enumTest(int test) {
+      possible = test;
+    }
+  }
 }
 
 interface B {

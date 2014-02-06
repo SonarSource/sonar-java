@@ -46,7 +46,7 @@ public class ConstantsShouldBeStaticFinalCheck extends SquidCheck<LexerlessGramm
 
     if (isFinal(classMemberDeclaration) && !isStatic(classMemberDeclaration)) {
       for (AstNode variableDeclarator : node.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-        if ( !isObjectInInnerClass(classMemberDeclaration) && hasConstantInitializer(variableDeclarator)) {
+        if (!isObjectInInnerClass(classMemberDeclaration) && hasConstantInitializer(variableDeclarator)) {
           getContext().createLineViolation(this, "Make this final field static too.", variableDeclarator);
         }
       }
@@ -54,31 +54,33 @@ public class ConstantsShouldBeStaticFinalCheck extends SquidCheck<LexerlessGramm
   }
 
   private boolean isObjectInInnerClass(AstNode classMemberDeclaration) {
-    AstNode innerClassDeclaration  = classMemberDeclaration.getFirstAncestor(JavaGrammar.CLASS_DECLARATION);
-    AstNode outerClassDeclaration  = innerClassDeclaration.getFirstAncestor(JavaGrammar.CLASS_DECLARATION);
-    if(outerClassDeclaration!=null){
-      AstNode classType = classMemberDeclaration.getFirstDescendant(JavaGrammar.CLASS_TYPE);
-      return classType!=null && !isClassTypeString(classType);
+    AstNode innerClassDeclaration = classMemberDeclaration.getFirstAncestor(JavaGrammar.CLASS_DECLARATION);
+    if (innerClassDeclaration != null) {
+      AstNode outerClassDeclaration = innerClassDeclaration.getFirstAncestor(JavaGrammar.CLASS_DECLARATION);
+      if (outerClassDeclaration != null) {
+        AstNode classType = classMemberDeclaration.getFirstDescendant(JavaGrammar.CLASS_TYPE);
+        return classType != null && !isClassTypeString(classType);
+      }
     }
     return false;
   }
 
-  private boolean isClassTypeString(AstNode classType){
-    return "String".equals(classType.getTokenValue()) && classType.getNextSibling()==null;
+  private boolean isClassTypeString(AstNode classType) {
+    return "String".equals(classType.getTokenValue()) && classType.getNextSibling() == null;
   }
 
   private static boolean isFinal(AstNode node) {
     return node.select()
-        .children(JavaGrammar.MODIFIER)
-        .children(JavaKeyword.FINAL)
-        .isNotEmpty();
+      .children(JavaGrammar.MODIFIER)
+      .children(JavaKeyword.FINAL)
+      .isNotEmpty();
   }
 
   private static boolean isStatic(AstNode node) {
     return node.select()
-        .children(JavaGrammar.MODIFIER)
-        .children(JavaKeyword.STATIC)
-        .isNotEmpty();
+      .children(JavaGrammar.MODIFIER)
+      .children(JavaKeyword.STATIC)
+      .isNotEmpty();
   }
 
   private static boolean hasConstantInitializer(AstNode node) {
