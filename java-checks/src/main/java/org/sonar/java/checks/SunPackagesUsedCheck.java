@@ -25,6 +25,7 @@ import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -36,6 +37,16 @@ public class SunPackagesUsedCheck extends SquidCheck<LexerlessGrammar> {
 
   private int lastReportedLine;
 
+  private static final String DEFAULT_FORMAT = "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$";
+
+  @RuleProperty(
+      key = "exclude",
+      defaultValue = "" + DEFAULT_FORMAT)
+  public String exclude = DEFAULT_FORMAT;
+  private String[] excludePackages = null;
+
+
+
   @Override
   public void init() {
     subscribeTo(JavaGrammar.QUALIFIED_IDENTIFIER);
@@ -46,18 +57,28 @@ public class SunPackagesUsedCheck extends SquidCheck<LexerlessGrammar> {
   @Override
   public void visitFile(AstNode node) {
     lastReportedLine = -1;
+    excludePackages = exclude.split(";");
   }
 
   @Override
   public void visitNode(AstNode node) {
-    if (lastReportedLine != node.getTokenLine() && isSunClass(node)) {
+    String reference = merge(node);
+    if (lastReportedLine != node.getTokenLine() && isSunClass(reference) && !isExcluded(reference)) {
       getContext().createLineViolation(this, "Replace this usage of Sun classes by ones from the Java API.", node);
       lastReportedLine = node.getTokenLine();
     }
   }
 
-  private static boolean isSunClass(AstNode node) {
-    String reference = merge(node);
+  private boolean isExcluded(String reference) {
+    for(String str: excludePackages) {
+       if(reference.startsWith(str)) {
+         return true;
+       }
+    }
+    return false;
+  }
+
+  private static boolean isSunClass(String reference) {
     return reference.startsWith("com.sun.") || reference.startsWith("sun.");
   }
 
