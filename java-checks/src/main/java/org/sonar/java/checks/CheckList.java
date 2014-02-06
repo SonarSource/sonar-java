@@ -167,7 +167,9 @@ public final class CheckList {
       UnusedPrivateMethodCheck.class,
       RedundantThrowsDeclarationCheck.class,
       ThrowsSeveralCheckedExceptionCheck.class,
-      ThreadRunCheck.class);
+      ThreadRunCheck.class,
+      ImmediatelyReturnedVariableCheck.class
+      );
   }
 
 }
