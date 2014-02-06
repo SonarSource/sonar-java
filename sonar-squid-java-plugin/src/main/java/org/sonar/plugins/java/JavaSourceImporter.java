@@ -37,6 +37,10 @@ import org.sonar.java.api.JavaUtils;
 import java.nio.charset.Charset;
 import java.util.List;
 
+/**
+ * @deprecated useless for SQ 4.2 (SONARJAVA-438)
+ */
+@Deprecated
 @Phase(name = Phase.Name.PRE)
 @DependedUpon(JavaUtils.BARRIER_BEFORE_SQUID)
 public final class JavaSourceImporter implements Sensor {
