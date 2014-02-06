@@ -99,7 +99,7 @@ public abstract class JavaTree implements Tree {
     return getKind() == null ? false : getKind() == kind;
   }
 
-  protected abstract Kind getKind();
+  public abstract Kind getKind();
 
   public static class PrimitiveTypeTreeImpl extends JavaTree implements PrimitiveTypeTree {
     public PrimitiveTypeTreeImpl(AstNode astNode) {
@@ -126,7 +126,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.IDENTIFIER;
     }
 
@@ -155,7 +155,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.COMPILATION_UNIT;
     }
 
@@ -198,7 +198,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return null;
     }
 
@@ -243,7 +243,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return kind;
     }
 
@@ -311,7 +311,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD;
     }
 
@@ -376,7 +376,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return kind;
     }
 
@@ -405,7 +405,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.IF_STATEMENT;
     }
 
@@ -442,7 +442,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.WHILE_STATEMENT;
     }
 
@@ -479,7 +479,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.FOR_STATEMENT;
     }
 
@@ -523,7 +523,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.FOR_EACH_STATEMENT;
     }
 
@@ -554,7 +554,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.EMPTY_STATEMENT;
     }
 
@@ -573,7 +573,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.EXPRESSION_STATEMENT;
     }
 
@@ -600,7 +600,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.ASSERT_STATEMENT;
     }
 
@@ -632,7 +632,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.SWITCH_STATEMENT;
     }
 
@@ -663,7 +663,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.CASE_GROUP;
     }
 
@@ -693,7 +693,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.CASE_LABEL;
     }
 
@@ -720,7 +720,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.DO_STATEMENT;
     }
 
@@ -750,7 +750,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.BREAK_STATEMENT;
     }
 
@@ -776,7 +776,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.CONTINUE_STATEMENT;
     }
 
@@ -802,7 +802,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.RETURN_STATEMENT;
     }
 
@@ -829,7 +829,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.SYNCHRONIZED_STATEMENT;
     }
 
@@ -858,7 +858,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.THROW_STATEMENT;
     }
 
@@ -889,7 +889,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.TRY_STATEMENT;
     }
 
@@ -931,7 +931,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.CATCH;
     }
 
@@ -962,7 +962,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.LABELED_STATEMENT;
     }
 
@@ -988,7 +988,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.ENUM_CONSTANT;
     }
 
@@ -1014,7 +1014,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.VARIABLE;
     }
 
@@ -1054,7 +1054,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return kind;
     }
 
@@ -1092,7 +1092,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return kind;
     }
 
@@ -1113,7 +1113,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return kind;
     }
 
@@ -1137,7 +1137,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.PARENTHESIZED_EXPRESSION;
     }
 
@@ -1165,7 +1165,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.CONDITIONAL_EXPRESSION;
     }
 
@@ -1201,7 +1201,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.INSTANCE_OF;
     }
 
@@ -1232,7 +1232,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.TYPE_CAST;
     }
 
@@ -1265,7 +1265,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return kind;
     }
 
@@ -1296,7 +1296,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.METHOD_INVOCATION;
     }
 
@@ -1336,7 +1336,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.NEW_ARRAY;
     }
 
@@ -1378,7 +1378,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.NEW_CLASS;
     }
 
@@ -1427,7 +1427,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.MEMBER_SELECT;
     }
 
@@ -1458,7 +1458,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.ARRAY_ACCESS_EXPRESSION;
     }
 
@@ -1487,7 +1487,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.ARRAY_TYPE;
     }
 
@@ -1514,7 +1514,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return kind;
     }
 
@@ -1541,7 +1541,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.PARAMETERIZED_TYPE;
     }
 
@@ -1570,7 +1570,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return Kind.UNION_TYPE;
     }
 
@@ -1597,7 +1597,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
       return null;
     }
 

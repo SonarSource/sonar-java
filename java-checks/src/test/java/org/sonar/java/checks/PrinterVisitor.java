@@ -72,7 +72,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
   @Override
   protected void scan(@Nullable Tree tree) {
     if (tree != null) {
-      indent().append(tree.getClass().getSimpleName());
+      indent().append(((JavaTree) tree).getKind().getAssociatedInterface());
       AstNode node = ((JavaTree) tree).getAstNode();
       if(node!=null){
         sb.append(" ").append(node.getTokenLine());

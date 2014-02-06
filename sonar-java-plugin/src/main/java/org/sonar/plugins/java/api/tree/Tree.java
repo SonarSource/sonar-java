@@ -573,6 +573,10 @@ public interface Tree {
     private Kind(Class<? extends Tree> associatedInterface) {
       this.associatedInterface = associatedInterface;
     }
+
+    public Class<? extends Tree> getAssociatedInterface() {
+      return associatedInterface;
+    }
   }
 
 }
