@@ -157,6 +157,7 @@ public final class CheckList {
       StringBufferAndBuilderWithCharCheck.class,
       FileHeaderCheck.class,
       IncrementDecrementInSubExpressionCheck.class,
+      CollectionsEmptyConstantsCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       ArchitectureCheck.class,
