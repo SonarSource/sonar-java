@@ -20,6 +20,8 @@
 package org.sonar.plugins.java;
 
 import com.google.common.base.Preconditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -31,6 +33,8 @@ import org.sonar.squid.indexer.SquidIndex;
 import java.io.File;
 
 public class DefaultJavaResourceLocator implements JavaResourceLocator {
+
+  private static final Logger LOG = LoggerFactory.getLogger(JavaResourceLocator.class);
 
   private final Project project;
   private SquidIndex squidIndex;
@@ -45,10 +49,14 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   @Override
   public Resource findResourceByClassName(String name) {
-    Preconditions.checkState(squidIndex != null);
+    Preconditions.checkState(squidIndex != null, "SquidIndex can't be null");
     name = name.replace('.', '/');
     SourceCode sourceCode = squidIndex.search(name);
-    Preconditions.checkState(sourceCode instanceof SourceClass);
+    if (sourceCode == null) {
+      LOG.debug("Class not found in SquidIndex: {}", name);
+      return null;
+    }
+    Preconditions.checkState(sourceCode instanceof SourceClass, "Expected SourceClass, got %s for %s", sourceCode.getClass().getSimpleName(), name);
     String filePath = sourceCode.getParent(SourceFile.class).getName();
     return org.sonar.api.resources.File.fromIOFile(new File(filePath), project);
   }
