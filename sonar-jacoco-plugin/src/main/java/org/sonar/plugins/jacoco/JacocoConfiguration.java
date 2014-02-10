@@ -52,7 +52,6 @@ public class JacocoConfiguration implements BatchExtension {
    */
   public static final String EXCLUDES_DEFAULT_VALUE = "*_javassist_*";
   public static final String EXCLCLASSLOADER_PROPERTY = "sonar.jacoco.exclclassloader";
-  public static final String ANT_TARGETS_DEFAULT_VALUE = "";
 
   private final Settings settings;
   private final JavaSettings javaSettings;
