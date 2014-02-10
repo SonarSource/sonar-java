@@ -21,7 +21,9 @@ package org.sonar.plugins.findbugs;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.config.Settings;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
@@ -36,10 +38,14 @@ import static org.mockito.Mockito.when;
 
 public class FindbugsExecutorTest {
 
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
   @Test
   public void canGenerateXMLReport() throws Exception {
     FindbugsConfiguration conf = mockConf();
-    File reportFile = new File("target/test-tmp/findbugs-report.xml");
+
+    File reportFile = temporaryFolder.newFile("findbugs-report.xml");
     when(conf.getTargetXMLReport()).thenReturn(reportFile);
 
     new FindbugsExecutor(conf).execute();
@@ -55,7 +61,7 @@ public class FindbugsExecutorTest {
   @Test
   public void canGenerateXMLReportWithCustomConfidence() throws Exception {
     FindbugsConfiguration conf = mockConf();
-    File reportFile = new File("target/test-tmp/customized-findbugs-report.xml");
+    File reportFile = temporaryFolder.newFile("customized-findbugs-report.xml");
     when(conf.getTargetXMLReport()).thenReturn(reportFile);
     when(conf.getConfidenceLevel()).thenReturn("low");
 
