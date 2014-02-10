@@ -146,12 +146,14 @@ public abstract class JavaTree implements Tree {
     private final ExpressionTree packageName;
     private final List<ImportTree> imports;
     private final List<Tree> types;
+    private final List<AnnotationTree> packageAnnotations;
 
-    public CompilationUnitTreeImpl(AstNode astNode, @Nullable ExpressionTree packageName, List<ImportTree> imports, List<Tree> types) {
+    public CompilationUnitTreeImpl(AstNode astNode, @Nullable ExpressionTree packageName, List<ImportTree> imports, List<Tree> types, List<AnnotationTree> packageAnnotations) {
       super(astNode);
       this.packageName = packageName;
       this.imports = Preconditions.checkNotNull(imports);
       this.types = Preconditions.checkNotNull(types);
+      this.packageAnnotations = Preconditions.checkNotNull(packageAnnotations);
     }
 
     @Override
@@ -161,8 +163,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public List<AnnotationTree> packageAnnotations() {
-      // TODO implement
-      return ImmutableList.of();
+      return packageAnnotations;
     }
 
     @Nullable
