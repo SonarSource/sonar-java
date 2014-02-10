@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -52,6 +53,12 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
     this.context = context;
 
     scan(context.getTree());
+  }
+
+  @Override
+  public void visitAnnotation(AnnotationTree annotationTree) {
+    //skip scanning of annotation : assignment in annotation is normal behaviour
+    scan(annotationTree.annotationType());
   }
 
   @Override

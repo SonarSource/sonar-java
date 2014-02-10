@@ -50,4 +50,8 @@ class Foo {
     while (null != (foo = bar())) { // Compliant
     }
   }
+  @MyAnnotation(name="toto", type=Type.SubType) // Compliant
+  void bar(){
+
+  }
 }
