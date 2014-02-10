@@ -7,4 +7,9 @@ class BadMethodName {
 
   void good() {
   }
+
+  @Override
+  void BadButOverrides(){
+
+  }
 }

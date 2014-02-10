@@ -26,8 +26,11 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.regex.Pattern;
 
@@ -61,14 +64,26 @@ public class BadMethodName_S00100_Check extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitMethod(MethodTree tree) {
-    if (!isConstructor(tree) && !pattern.matcher(tree.simpleName()).matches()) {
+    if (!isConstructor(tree) && !isOverride(tree) && !pattern.matcher(tree.simpleName()).matches()) {
       context.addIssue(tree, ruleKey, "Rename this method name to match the regular expression '" + format + "'.");
     }
 
     super.visitMethod(tree);
   }
 
-  private static boolean isConstructor(MethodTree tree) {
+  private boolean isOverride(MethodTree tree) {
+    for (AnnotationTree annotationTree : tree.modifiers().annotations()) {
+      if(annotationTree.annotationType().is(Tree.Kind.IDENTIFIER)){
+        IdentifierTree identifier = (IdentifierTree)annotationTree.annotationType();
+        if(Override.class.getSimpleName().equals(identifier.name())){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private boolean isConstructor(MethodTree tree) {
     return tree.returnType() == null;
   }
 
