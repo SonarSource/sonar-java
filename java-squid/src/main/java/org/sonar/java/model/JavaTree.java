@@ -1601,7 +1601,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Kind getKind() {
-      return null;
+      return Kind.MODIFIERS;
     }
 
     @Override

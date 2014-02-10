@@ -573,7 +573,12 @@ public interface Tree {
      *
      * @since Java 1.5
      */
-    ANNOTATION(AnnotationTree.class);
+    ANNOTATION(AnnotationTree.class),
+    /**
+     * {@link ModifiersTree}
+     *
+     */
+    MODIFIERS(ModifiersTree.class);
 
     final Class<? extends Tree> associatedInterface;
 
