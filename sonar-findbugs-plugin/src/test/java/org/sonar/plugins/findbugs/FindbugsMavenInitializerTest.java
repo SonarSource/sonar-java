@@ -19,17 +19,16 @@
  */
 package org.sonar.plugins.findbugs;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.resources.InputFile;
-import org.sonar.api.resources.InputFileUtils;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.test.MavenTestUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
@@ -42,38 +41,26 @@ import static org.mockito.Mockito.when;
 public class FindbugsMavenInitializerTest {
 
   private Project project;
+  private ProjectFileSystem fileSystem;
   private FindbugsMavenInitializer initializer;
 
   @Before
   public void setUp() {
     project = mock(Project.class);
+    fileSystem = mock(ProjectFileSystem.class);
+    when(project.getFileSystem()).thenReturn(fileSystem);
     initializer = new FindbugsMavenInitializer();
   }
 
   @Test
-  public void shouldNotAnalyseIfNoJavaProject() {
-    Project project = mock(Project.class);
-    when(project.getLanguageKey()).thenReturn("php");
-    assertThat(initializer.shouldExecuteOnProject(project)).isFalse();
-  }
-
-  @Test
-  public void shouldNotAnalyseIfJavaProjectButNoSource() {
-    Project project = mock(Project.class);
-    ProjectFileSystem fs = mock(ProjectFileSystem.class);
-    when(fs.mainFiles("java")).thenReturn(new ArrayList<InputFile>());
-    when(project.getFileSystem()).thenReturn(fs);
-    when(project.getLanguageKey()).thenReturn("java");
+  public void should_not_analyse_if_no_sources() {
+    when(fileSystem.mainFiles("java")).thenReturn(Collections.<InputFile>emptyList());
     assertThat(initializer.shouldExecuteOnProject(project)).isFalse();
   }
 
   @Test
   public void shouldAnalyse() {
-    Project project = mock(Project.class);
-    ProjectFileSystem fs = mock(ProjectFileSystem.class);
-    when(fs.mainFiles("java")).thenReturn(Lists.newArrayList(InputFileUtils.create(null, "")));
-    when(project.getFileSystem()).thenReturn(fs);
-    when(project.getLanguageKey()).thenReturn("java");
+    when(fileSystem.mainFiles("java")).thenReturn(Collections.singletonList(mock(InputFile.class)));
     when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
     assertThat(initializer.shouldExecuteOnProject(project)).isTrue();
   }

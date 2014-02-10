@@ -39,8 +39,7 @@ public class FindbugsMavenInitializer extends Initializer {
 
   @Override
   public boolean shouldExecuteOnProject(Project project) {
-    return Java.KEY.equals(project.getLanguageKey())
-      && !project.getFileSystem().mainFiles(Java.KEY).isEmpty();
+    return !project.getFileSystem().mainFiles(Java.KEY).isEmpty();
   }
 
   @Override

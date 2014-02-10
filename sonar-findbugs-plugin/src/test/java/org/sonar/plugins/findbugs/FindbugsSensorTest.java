@@ -57,7 +57,6 @@ public class FindbugsSensorTest extends FindbugsTests {
     ProjectFileSystem fs = mock(ProjectFileSystem.class);
     when(fs.mainFiles("java")).thenReturn(new ArrayList<InputFile>());
     when(project.getFileSystem()).thenReturn(fs);
-    when(project.getLanguageKey()).thenReturn("java");
 
     FindbugsSensor sensor = new FindbugsSensor(null, null, null, mockJavaResourceLocator());
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
@@ -69,7 +68,6 @@ public class FindbugsSensorTest extends FindbugsTests {
     ProjectFileSystem fs = mock(ProjectFileSystem.class);
     when(fs.mainFiles("java")).thenReturn(Lists.newArrayList(InputFileUtils.create(null, "")));
     when(project.getFileSystem()).thenReturn(fs);
-    when(project.getLanguageKey()).thenReturn("java");
 
     FindbugsSensor sensor = new FindbugsSensor(RulesProfile.create(), null, null, null);
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
@@ -81,7 +79,6 @@ public class FindbugsSensorTest extends FindbugsTests {
     ProjectFileSystem fs = mock(ProjectFileSystem.class);
     when(fs.mainFiles("java")).thenReturn(Lists.newArrayList(InputFileUtils.create(null, "")));
     when(project.getFileSystem()).thenReturn(fs);
-    when(project.getLanguageKey()).thenReturn("java");
 
     FindbugsSensor sensor = new FindbugsSensor(createRulesProfileWithActiveRules(), null, null, mockJavaResourceLocator());
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
