@@ -56,6 +56,10 @@ public class SurefireJavaParser extends AbstractSurefireParser implements BatchE
     }
   }
 
+  /**
+   * @deprecated usage of {@link JavaFile} should be removed for multi-language support in SQ 4.2 (SONARJAVA-438)
+   */
+  @Deprecated
   @Override
   protected Resource getUnitTestResource(String classKey) {
     return new JavaFile(classKey, true);

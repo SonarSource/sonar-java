@@ -79,6 +79,10 @@ public class FindbugsSensor implements Sensor {
     }
   }
 
+  /**
+   * @deprecated should be removed for multi-language support in SQ 4.2 (SONARJAVA-438)
+   */
+  @Deprecated
   private static String getSonarJavaFileKey(String className) {
     if (className.indexOf('$') > -1) {
       return className.substring(0, className.indexOf('$'));

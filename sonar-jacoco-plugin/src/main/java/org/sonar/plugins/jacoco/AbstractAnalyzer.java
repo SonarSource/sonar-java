@@ -73,6 +73,10 @@ public abstract class AbstractAnalyzer {
     return excludesMatcher.matches(name);
   }
 
+  /**
+   * @deprecated usage of {@link JavaFile} should be removed for multi-language support in SQ 4.2 (SONARJAVA-438)
+   */
+  @Deprecated
   @VisibleForTesting
   static JavaFile getResource(ISourceFileCoverage coverage, SensorContext context) {
     String packageName = StringUtils.replaceChars(coverage.getPackageName(), '/', '.');
