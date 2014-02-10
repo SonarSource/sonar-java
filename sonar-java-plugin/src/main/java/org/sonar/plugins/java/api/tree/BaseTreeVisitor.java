@@ -309,4 +309,15 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(tree.typeAlternatives());
   }
 
+  @Override
+  public void visitModifier(ModifiersTree modifiersTree) {
+    scan(modifiersTree.annotations());
+  }
+
+  @Override
+  public void visitAnnotation(AnnotationTree annotationTree) {
+    scan(annotationTree.annotationType());
+    scan(annotationTree.arguments());
+  }
+
 }

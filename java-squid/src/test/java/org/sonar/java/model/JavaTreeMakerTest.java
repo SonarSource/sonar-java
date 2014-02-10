@@ -27,53 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
-import org.sonar.plugins.java.api.tree.ArrayTypeTree;
-import org.sonar.plugins.java.api.tree.AssertStatementTree;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.BreakStatementTree;
-import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
-import org.sonar.plugins.java.api.tree.ContinueStatementTree;
-import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
-import org.sonar.plugins.java.api.tree.EmptyStatementTree;
-import org.sonar.plugins.java.api.tree.EnumConstantTree;
-import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
-import org.sonar.plugins.java.api.tree.ForEachStatement;
-import org.sonar.plugins.java.api.tree.ForStatementTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.IfStatementTree;
-import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.InstanceOfTree;
-import org.sonar.plugins.java.api.tree.LabeledStatementTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
-import org.sonar.plugins.java.api.tree.ReturnStatementTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
-import org.sonar.plugins.java.api.tree.SwitchStatementTree;
-import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
-import org.sonar.plugins.java.api.tree.ThrowStatementTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
-import org.sonar.plugins.java.api.tree.TypeCastTree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
-import org.sonar.plugins.java.api.tree.UnionTypeTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.plugins.java.api.tree.WhileStatementTree;
-import org.sonar.plugins.java.api.tree.WildcardTree;
+import org.sonar.plugins.java.api.tree.*;
 import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
@@ -252,6 +206,41 @@ public class JavaTreeMakerTest {
     assertThat(tree.simpleName()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).isEmpty();
+
+    astNode = p.parse("@Deprecated class T { }");
+    assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
+    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    assertThat(tree.modifiers().annotations()).hasSize(1);
+  }
+
+
+  @Test
+  public void annotations() {
+    AstNode astNode = p.parse("@SuppressWarnings(\"unchecked\") class T { }");
+    ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    List<AnnotationTree> annotations = tree.modifiers().annotations();
+    assertThat(annotations).hasSize(1);
+    AnnotationTree annotation = annotations.get(0);
+    assertThat(annotation.annotationType().is(Tree.Kind.IDENTIFIER)).isTrue();
+    assertThat(annotation.arguments()).hasSize(1);
+    assertThat(annotation.arguments().get(0).is(Tree.Kind.STRING_LITERAL)).isTrue();
+
+    astNode = p.parse("@Target({ElementType.METHOD}) class U {}");
+    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    annotations = tree.modifiers().annotations();
+    assertThat(annotations).hasSize(1);
+    annotation = annotations.get(0);
+    assertThat(annotation.arguments()).hasSize(1);
+    assertThat(annotation.arguments().get(0).is(Tree.Kind.NEW_ARRAY)).isTrue();
+
+    astNode = p.parse("@Target(value={ElementType.METHOD}, value2=\"toto\") class T { }");
+    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    annotations = tree.modifiers().annotations();
+    assertThat(annotations).hasSize(1);
+    annotation = annotations.get(0);
+    assertThat(annotation.annotationType().is(Tree.Kind.IDENTIFIER)).isTrue();
+    assertThat(annotation.arguments()).hasSize(2);
+    assertThat(annotation.arguments().get(0).is(Tree.Kind.ASSIGNMENT)).isTrue();
   }
 
   @Test

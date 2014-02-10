@@ -115,4 +115,7 @@ public interface TreeVisitor {
 
   void visitUnionType(UnionTypeTree tree);
 
+  void visitModifier(ModifiersTree modifiersTree);
+
+  void visitAnnotation(AnnotationTree annotationTree);
 }

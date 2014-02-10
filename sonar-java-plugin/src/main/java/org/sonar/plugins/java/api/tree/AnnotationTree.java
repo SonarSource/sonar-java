@@ -36,7 +36,7 @@ import java.util.List;
  * @since Java 1.5
  */
 @Beta
-public interface AnnotationTree extends Tree {
+public interface AnnotationTree extends ExpressionTree {
 
   Tree annotationType();
 

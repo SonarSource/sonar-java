@@ -566,7 +566,14 @@ public interface Tree {
      *
      * @since Java 1.5
      */
-    SUPER_WILDCARD(WildcardTree.class);
+    SUPER_WILDCARD(WildcardTree.class),
+
+    /**
+     * {@link AnnotationTree}
+     *
+     * @since Java 1.5
+     */
+    ANNOTATION(AnnotationTree.class);
 
     final Class<? extends Tree> associatedInterface;
 

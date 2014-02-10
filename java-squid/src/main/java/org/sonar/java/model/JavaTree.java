@@ -227,7 +227,7 @@ public abstract class JavaTree implements Tree {
     private final List<Tree> members;
 
     public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable String simpleName, @Nullable Tree superClass, List<Tree> superInterfaces,
-      List<Tree> members) {
+                         List<Tree> members) {
       super(astNode);
       this.kind = Preconditions.checkNotNull(kind);
       this.modifiers = Preconditions.checkNotNull(modifiers);
@@ -239,7 +239,7 @@ public abstract class JavaTree implements Tree {
 
     // TODO remove:
     public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, List<Tree> members) {
-      this(astNode, kind, modifiers, null, null, ImmutableList.<Tree> of(), members);
+      this(astNode, kind, modifiers, null, null, ImmutableList.<Tree>of(), members);
     }
 
     @Override
@@ -298,8 +298,8 @@ public abstract class JavaTree implements Tree {
     private final ExpressionTree defaultValue;
 
     public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, String simpleName, List<VariableTree> parameters,
-      @Nullable BlockTree block,
-      List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
+                          @Nullable BlockTree block,
+                          List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
       super(astNode);
       this.modifiers = Preconditions.checkNotNull(modifiers);
       this.returnType = returnType;
@@ -470,7 +470,7 @@ public abstract class JavaTree implements Tree {
     private final StatementTree statement;
 
     public ForStatementTreeImpl(AstNode astNode, List<StatementTree> initializer, @Nullable ExpressionTree condition, List<StatementTree> update,
-      StatementTree statement) {
+                                StatementTree statement) {
       super(astNode);
       this.initializer = Preconditions.checkNotNull(initializer);
       this.condition = condition;
@@ -1369,7 +1369,7 @@ public abstract class JavaTree implements Tree {
     private final ClassTree classBody;
 
     public NewClassTreeImpl(AstNode astNode, @Nullable ExpressionTree enclosingExpression, ExpressionTree identifier, List<ExpressionTree> arguments,
-      @Nullable ClassTree classBody) {
+                            @Nullable ClassTree classBody) {
       super(astNode);
       this.enclosingExpression = enclosingExpression;
       this.identifier = Preconditions.checkNotNull(identifier);
@@ -1587,13 +1587,15 @@ public abstract class JavaTree implements Tree {
 
   public static class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
     // TODO remove:
-    public static final ModifiersTreeImpl EMPTY = new ModifiersTreeImpl(null, ImmutableList.<Modifier> of());
+    public static final ModifiersTreeImpl EMPTY = new ModifiersTreeImpl(null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
 
     private final List<Modifier> modifiers;
+    private final List<AnnotationTree> annotations;
 
-    public ModifiersTreeImpl(AstNode astNode, List<Modifier> modifiers) {
+    public ModifiersTreeImpl(AstNode astNode, List<Modifier> modifiers, List<AnnotationTree> annotations) {
       super(astNode);
       this.modifiers = Preconditions.checkNotNull(modifiers);
+      this.annotations = Preconditions.checkNotNull(annotations);
     }
 
     @Override
@@ -1608,12 +1610,45 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public List<AnnotationTree> annotations() {
-      // TODO implement
-      return ImmutableList.of();
+      return annotations;
     }
 
     @Override
     public void accept(TreeVisitor visitor) {
+      visitor.visitModifier(this);
+    }
+  }
+
+  public static class AnnotationTreeImpl extends JavaTree implements AnnotationTree {
+
+    private final List<ExpressionTree> arguments;
+    private final Tree annotationType;
+
+    public AnnotationTreeImpl(AstNode astNode, Tree annotationType, List<ExpressionTree> arguments) {
+      super(astNode);
+      this.annotationType = annotationType;
+      this.arguments = arguments;
+    }
+
+    @Override
+    public Tree annotationType() {
+      return annotationType;
+    }
+
+    @Override
+    public List<ExpressionTree> arguments() {
+      return arguments;
+    }
+
+    @Override
+    public Kind getKind() {
+      return Kind.ANNOTATION;
+    }
+
+    @Override
+    public void accept(TreeVisitor visitor) {
+      visitor.visitAnnotation(this);
+
     }
   }
 

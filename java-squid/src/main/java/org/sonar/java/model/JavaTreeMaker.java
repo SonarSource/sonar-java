@@ -30,28 +30,9 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.CaseLabelTree;
-import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
-import org.sonar.plugins.java.api.tree.SwitchStatementTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.*;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 public class JavaTreeMaker {
@@ -171,17 +152,63 @@ public class JavaTreeMaker {
     }
 
     ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
+    ImmutableList.Builder<AnnotationTree> annotations = ImmutableList.builder();
     for (AstNode astNode : modifierNodes) {
       Preconditions.checkArgument(astNode.is(JavaGrammar.MODIFIER), "Unexpected AstNodeType: %s", astNode.getType().toString());
       astNode = astNode.getFirstChild();
       if (astNode.is(JavaGrammar.ANNOTATION)) {
-        // TODO
+        annotations.add(annotation(astNode));
       } else {
         JavaKeyword keyword = (JavaKeyword) astNode.getType();
         modifiers.add(kindMaps.getModifier(keyword));
       }
     }
-    return new JavaTree.ModifiersTreeImpl(modifierNodes.get(0), modifiers.build());
+    return new JavaTree.ModifiersTreeImpl(modifierNodes.get(0), modifiers.build(), annotations.build());
+  }
+
+  private AnnotationTree annotation(AstNode astNode){
+    ImmutableList.Builder<ExpressionTree> arguments = ImmutableList.builder();
+    ExpressionTree annotationType = qualifiedIdentifier(astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
+    if(astNode.hasDirectChildren(JavaGrammar.ANNOTATION_REST)){
+      astNode = astNode.getFirstChild(JavaGrammar.ANNOTATION_REST).getFirstChild();
+      if(astNode.is(JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST)){
+        arguments.add(elementValue(astNode.getFirstChild(JavaGrammar.ELEMENT_VALUE)));
+      }else if(astNode.is(JavaGrammar.NORMAL_ANNOTATION_REST)){
+        astNode = astNode.getFirstChild(JavaGrammar.ELEMENT_VALUE_PAIRS);
+        List<AstNode> values = astNode.getChildren(JavaGrammar.ELEMENT_VALUE_PAIR);
+        for (AstNode value : values) {
+          AstNode identifier = value.getFirstChild(JavaTokenType.IDENTIFIER);
+          arguments.add(new JavaTree.AssignmentExpressionTreeImpl(
+              value,
+              identifier(identifier),
+              kindMaps.getAssignmentOperator(JavaPunctuator.EQU),
+              elementValue(value.getFirstChild(JavaGrammar.ELEMENT_VALUE))
+          ));
+        }
+
+      }
+    }
+    return new JavaTree.AnnotationTreeImpl(astNode, annotationType, arguments.build());
+  }
+
+  private ExpressionTree elementValue(AstNode astNode) {
+    astNode = astNode.getFirstChild();
+    ExpressionTree result;
+    if(astNode.is(JavaGrammar.ANNOTATION)){
+      result = annotation(astNode);
+    }else if(astNode.is(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER)){
+      List<ExpressionTree> elementValues = Lists.newArrayList();
+      if(astNode.hasDirectChildren(JavaGrammar.ELEMENT_VALUES)){
+        astNode = astNode.getFirstChild(JavaGrammar.ELEMENT_VALUES);
+        for(AstNode node : astNode.getChildren(JavaGrammar.ELEMENT_VALUE)){
+          elementValues.add(elementValue(node));
+        }
+      }
+      result = new JavaTree.NewArrayTreeImpl(astNode, null, ImmutableList.<ExpressionTree>of(), elementValues);
+    }else{
+      result = expression(astNode);
+    }
+    return result;
   }
 
   private VariableTree variableDeclarator(ModifiersTree modifiers, ExpressionTree type, AstNode astNode) {
@@ -656,6 +683,7 @@ public class JavaTreeMaker {
     Preconditions.checkArgument(astNode.is(JavaGrammar.VARIABLE_MODIFIERS), "Unexpected AstNodeType: %s", astNode.getType().toString());
 
     ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
+    ImmutableList.Builder<AnnotationTree> annotations = ImmutableList.builder();
     for (AstNode modifierAstNode : astNode.getChildren()) {
       if (modifierAstNode.is(JavaGrammar.ANNOTATION)) {
         // TODO
@@ -664,7 +692,7 @@ public class JavaTreeMaker {
         modifiers.add(kindMaps.getModifier(keyword));
       }
     }
-    return new JavaTree.ModifiersTreeImpl(astNode, modifiers.build());
+    return new JavaTree.ModifiersTreeImpl(astNode, modifiers.build(), annotations.build());
   }
 
   @VisibleForTesting
