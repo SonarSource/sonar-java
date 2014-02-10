@@ -24,25 +24,28 @@ import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.util.Collection;
 
 public class JaCoCoSensor implements Sensor {
 
-  private JacocoConfiguration configuration;
+  private final JacocoConfiguration configuration;
   private final ResourcePerspectives perspectives;
   private final ModuleFileSystem fileSystem;
   private final PathResolver pathResolver;
+  private final JavaResourceLocator javaResourceLocator;
 
-  public JaCoCoSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver) {
+  public JaCoCoSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator) {
     this.configuration = configuration;
     this.perspectives = perspectives;
     this.fileSystem = fileSystem;
     this.pathResolver = pathResolver;
+    this.javaResourceLocator = javaResourceLocator;
   }
 
   @DependsUpon
@@ -60,7 +63,7 @@ public class JaCoCoSensor implements Sensor {
 
   class UnitTestsAnalyzer extends AbstractAnalyzer {
     public UnitTestsAnalyzer(ResourcePerspectives perspectives) {
-      super(perspectives, fileSystem, pathResolver);
+      super(perspectives, fileSystem, pathResolver, javaResourceLocator);
     }
 
     @Override
@@ -74,7 +77,7 @@ public class JaCoCoSensor implements Sensor {
     }
 
     @Override
-    protected void saveMeasures(SensorContext context, JavaFile resource, Collection<Measure> measures) {
+    protected void saveMeasures(SensorContext context, Resource resource, Collection<Measure> measures) {
       for (Measure measure : measures) {
         context.saveMeasure(resource, measure);
       }

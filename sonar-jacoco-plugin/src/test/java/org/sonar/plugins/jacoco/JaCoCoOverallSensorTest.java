@@ -32,6 +32,7 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
 
 import java.io.File;
@@ -56,6 +57,7 @@ public class JaCoCoOverallSensorTest {
   private Project project;
   private ResourcePerspectives perspectives;
   private JaCoCoOverallSensor sensor;
+  private JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
 
   @Before
   public void before(){
@@ -65,7 +67,7 @@ public class JaCoCoOverallSensorTest {
     pathResolver = mock(PathResolver.class);
     project = mock(Project.class);
     perspectives = mock(ResourcePerspectives.class);
-    sensor = new JaCoCoOverallSensor(configuration, perspectives, fileSystem, pathResolver);
+    sensor = new JaCoCoOverallSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator);
   }
 
   @Test
@@ -93,6 +95,7 @@ public class JaCoCoOverallSensorTest {
     JavaFile resource = new JavaFile("com.sonar.coverages.HelloWorld");
 
     when(context.getResource(any(Resource.class))).thenReturn(resource);
+    when(javaResourceLocator.findResourceByClassName("com/sonar/coverages/HelloWorld")).thenReturn(resource);
     when(configuration.getReportPath()).thenReturn("ut.exec");
     when(configuration.getItReportPath()).thenReturn("it.exec");
     when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));

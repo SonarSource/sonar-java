@@ -39,6 +39,7 @@ import org.sonar.api.test.IsResource;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
 
 import java.io.File;
@@ -71,6 +72,7 @@ public class JaCoCoSensorTest {
   private PathResolver pathResolver;
   private Project project;
   private JaCoCoSensor sensor;
+  private JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
 
   @Before
   public void setUp() throws Exception {
@@ -86,7 +88,7 @@ public class JaCoCoSensorTest {
 
     configuration = mock(JacocoConfiguration.class);
     perspectives = mock(ResourcePerspectives.class);
-    sensor = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver);
+    sensor = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator);
   }
 
   @Test
@@ -108,6 +110,7 @@ public class JaCoCoSensorTest {
   @Test
   public void test_read_execution_data() {
     JavaFile resource = new JavaFile("org.sonar.plugins.jacoco.tests.Hello");
+    when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
     when(context.getResource(any(Resource.class))).thenReturn(resource);
 
     when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));

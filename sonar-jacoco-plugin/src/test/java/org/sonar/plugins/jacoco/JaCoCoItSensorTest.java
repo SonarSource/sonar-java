@@ -35,6 +35,7 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
 
 import java.io.File;
@@ -59,6 +60,7 @@ public class JaCoCoItSensorTest {
   private ModuleFileSystem fileSystem;
   private PathResolver pathResolver;
   private JaCoCoItSensor sensor;
+  private JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
 
   @BeforeClass
   public static void setUpOutputDir() throws IOException {
@@ -74,7 +76,7 @@ public class JaCoCoItSensorTest {
     perspectives = mock(ResourcePerspectives.class);
     fileSystem = mock(ModuleFileSystem.class);
     pathResolver = mock(PathResolver.class);
-    sensor = new JaCoCoItSensor(configuration, perspectives, fileSystem, pathResolver);
+    sensor = new JaCoCoItSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator);
   }
 
   @Test
@@ -113,6 +115,7 @@ public class JaCoCoItSensorTest {
   @Test
   public void testReadExecutionData() {
     JavaFile resource = new JavaFile("org.sonar.plugins.jacoco.tests.Hello");
+    when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
     SensorContext context = mock(SensorContext.class);
     Project project = mock(Project.class);
     when(context.getResource(any(Resource.class))).thenReturn(resource);
@@ -143,4 +146,5 @@ public class JaCoCoItSensorTest {
 
     verify(context, never()).saveMeasure(any(Resource.class), any(Measure.class));
   }
+
 }

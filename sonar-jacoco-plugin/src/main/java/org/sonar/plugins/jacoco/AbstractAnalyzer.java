@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.jacoco.core.analysis.Analyzer;
@@ -46,6 +45,7 @@ import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
 import org.sonar.api.test.Testable;
 import org.sonar.api.utils.SonarException;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,11 +61,13 @@ public abstract class AbstractAnalyzer {
   private final ResourcePerspectives perspectives;
   private final ModuleFileSystem fileSystem;
   private final PathResolver pathResolver;
+  private final JavaResourceLocator javaResourceLocator;
 
-  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver) {
+  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator) {
     this.perspectives = perspectives;
     this.fileSystem = fileSystem;
     this.pathResolver = pathResolver;
+    this.javaResourceLocator = javaResourceLocator;
   }
 
   private static boolean isExcluded(ISourceFileCoverage coverage, WildcardMatcher excludesMatcher) {
@@ -73,19 +75,11 @@ public abstract class AbstractAnalyzer {
     return excludesMatcher.matches(name);
   }
 
-  /**
-   * @deprecated usage of {@link JavaFile} should be removed for multi-language support in SQ 4.2 (SONARJAVA-438)
-   */
-  @Deprecated
-  @VisibleForTesting
-  static JavaFile getResource(ISourceFileCoverage coverage, SensorContext context) {
-    String packageName = StringUtils.replaceChars(coverage.getPackageName(), '/', '.');
-    String fileName = StringUtils.substringBeforeLast(coverage.getName(), ".");
+  private Resource getResource(ISourceFileCoverage coverage, SensorContext context) {
+    String className = coverage.getPackageName() + "/" + StringUtils.substringBeforeLast(coverage.getName(), ".");
 
-    JavaFile resource = new JavaFile(packageName, fileName);
-
-    JavaFile resourceInContext = context.getResource(resource);
-    if (null == resourceInContext) {
+    Resource resourceInContext = context.getResource(javaResourceLocator.findResourceByClassName(className));
+    if (resourceInContext == null) {
       // Do not save measures on resource which doesn't exist in the context
       return null;
     }
@@ -147,7 +141,7 @@ public abstract class AbstractAnalyzer {
     CoverageBuilder coverageBuilder = analyze(executionDataVisitor.getMerged());
     int analyzedResources = 0;
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
-      JavaFile resource = getResource(coverage, context);
+      Resource resource = getResource(coverage, context);
       if (resource != null) {
         if (!isExcluded(coverage, excludes)) {
           CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
@@ -165,6 +159,10 @@ public abstract class AbstractAnalyzer {
     }
   }
 
+  /**
+   * @deprecated usage of {@link JavaFile} should be removed for multi-language support in SQ 4.2 (SONARJAVA-438)
+   */
+  @Deprecated
   private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, SensorContext context, WildcardMatcher excludes) {
     int i = sessionId.indexOf(' ');
     if (i < 0) {
@@ -181,7 +179,7 @@ public abstract class AbstractAnalyzer {
     boolean result = false;
     CoverageBuilder coverageBuilder = analyze2(executionDataStore);
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
-      JavaFile resource = getResource(coverage, context);
+      Resource resource = getResource(coverage, context);
       if (resource != null && !isExcluded(coverage, excludes)) {
         CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
         List<Integer> coveredLines = getCoveredLines(builder);
@@ -223,7 +221,7 @@ public abstract class AbstractAnalyzer {
     return linesCover;
   }
 
-  private boolean addCoverage(JavaFile resource, Resource testFile, String testName, List<Integer> coveredLines) {
+  private boolean addCoverage(Resource resource, Resource testFile, String testName, List<Integer> coveredLines) {
     boolean result = false;
     Testable testAbleFile = perspectives.as(MutableTestable.class, resource);
     if (testAbleFile != null) {
@@ -264,7 +262,7 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  private CoverageMeasuresBuilder analyzeFile(JavaFile resource, ISourceFileCoverage coverage) {
+  private CoverageMeasuresBuilder analyzeFile(Resource resource, ISourceFileCoverage coverage) {
     CoverageMeasuresBuilder builder = CoverageMeasuresBuilder.create();
     for (int lineId = coverage.getFirstLine(); lineId <= coverage.getLastLine(); lineId++) {
       final int hits;
@@ -295,7 +293,7 @@ public abstract class AbstractAnalyzer {
     return builder;
   }
 
-  protected abstract void saveMeasures(SensorContext context, JavaFile resource, Collection<Measure> measures);
+  protected abstract void saveMeasures(SensorContext context, Resource resource, Collection<Measure> measures);
 
   protected abstract String getReportPath(Project project);
 

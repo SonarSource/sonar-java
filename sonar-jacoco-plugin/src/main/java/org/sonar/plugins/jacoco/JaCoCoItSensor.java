@@ -25,10 +25,11 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.util.Collection;
 
@@ -37,12 +38,14 @@ public class JaCoCoItSensor implements Sensor {
   private final ResourcePerspectives perspectives;
   private final ModuleFileSystem fileSystem;
   private final PathResolver pathResolver;
+  private final JavaResourceLocator javaResourceLocator;
 
-  public JaCoCoItSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver) {
+  public JaCoCoItSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator) {
     this.configuration = configuration;
     this.perspectives = perspectives;
     this.fileSystem = fileSystem;
     this.pathResolver = pathResolver;
+    this.javaResourceLocator = javaResourceLocator;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
@@ -55,7 +58,7 @@ public class JaCoCoItSensor implements Sensor {
 
   class ITAnalyzer extends AbstractAnalyzer {
     public ITAnalyzer(ResourcePerspectives perspectives) {
-      super(perspectives, fileSystem, pathResolver);
+      super(perspectives, fileSystem, pathResolver, javaResourceLocator);
     }
 
     @Override
@@ -69,7 +72,7 @@ public class JaCoCoItSensor implements Sensor {
     }
 
     @Override
-    protected void saveMeasures(SensorContext context, JavaFile resource, Collection<Measure> measures) {
+    protected void saveMeasures(SensorContext context, Resource resource, Collection<Measure> measures) {
       for (Measure measure : measures) {
         Measure itMeasure = convertForIT(measure);
         if (itMeasure != null) {
