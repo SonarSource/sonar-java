@@ -23,11 +23,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
+import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
+import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.plugins.java.api.JavaSettings;
 
 import java.io.File;
+import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -50,8 +53,7 @@ public class JacocoConfigurationTest {
 
   @Test
   public void should_be_enabled() {
-    Project project = mock(Project.class);
-    when(project.getLanguageKey()).thenReturn(Java.KEY);
+    Project project = mockProject("java");
     when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
     when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JaCoCoUtils.PLUGIN_KEY);
 
@@ -60,8 +62,7 @@ public class JacocoConfigurationTest {
 
   @Test
   public void should_be_enabled_if_reuse_report() {
-    Project project = mock(Project.class);
-    when(project.getLanguageKey()).thenReturn(Java.KEY);
+    Project project = mockProject("java");
     when(project.getAnalysisType()).thenReturn(Project.AnalysisType.REUSE_REPORTS);
     when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JaCoCoUtils.PLUGIN_KEY);
 
@@ -70,8 +71,7 @@ public class JacocoConfigurationTest {
 
   @Test
   public void should_be_enabled_if_static_analysis_only() {
-    Project project = mock(Project.class);
-    when(project.getLanguageKey()).thenReturn(Java.KEY);
+    Project project = mockProject("java");
     when(project.getAnalysisType()).thenReturn(Project.AnalysisType.STATIC);
     when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JaCoCoUtils.PLUGIN_KEY);
 
@@ -80,8 +80,7 @@ public class JacocoConfigurationTest {
 
   @Test
   public void plugin_should_be_disabled() {
-    Project project = mock(Project.class);
-    when(project.getLanguageKey()).thenReturn(Java.KEY);
+    Project project = mockProject("java");
     when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
     when(javaSettings.getEnabledCoveragePlugin()).thenReturn("cobertura");
 
@@ -90,8 +89,7 @@ public class JacocoConfigurationTest {
 
   @Test
   public void should_be_disabled_if_not_java() {
-    Project project = mock(Project.class);
-    when(project.getLanguageKey()).thenReturn("flex");
+    Project project = mockProject("javascript");
     when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
     when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JaCoCoUtils.PLUGIN_KEY);
 
@@ -130,6 +128,14 @@ public class JacocoConfigurationTest {
     assertThat(jacocoSettings.getJvmArgument()).isEqualTo(
         "-javaagent:jacocoagent.jar=destfile=target/jacoco.exec,includes=org.sonar.*,excludes=org.sonar.api.*,exclclassloader=sun.reflect.DelegatingClassLoader"
         );
+  }
+
+  private static Project mockProject(String language) {
+    Project project = mock(Project.class);
+    ProjectFileSystem fileSystem = mock(ProjectFileSystem.class);
+    when(fileSystem.mainFiles(language)).thenReturn(Collections.singletonList(mock(InputFile.class)));
+    when(project.getFileSystem()).thenReturn(fileSystem);
+    return project;
   }
 
 }
