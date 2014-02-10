@@ -47,6 +47,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
     pv.scan(tree);
     return pv.sb.toString();
   }
+
   public static String print(List<? extends Tree> trees) {
     StringBuilder result = new StringBuilder();
     for (Tree tree : trees) {
@@ -55,7 +56,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
     return result.toString();
   }
 
-  private StringBuilder indent(){
+  private StringBuilder indent() {
     return sb.append(StringUtils.leftPad("", INDENT_SPACES * indentLevel));
   }
 
@@ -72,9 +73,14 @@ public class PrinterVisitor extends BaseTreeVisitor {
   @Override
   protected void scan(@Nullable Tree tree) {
     if (tree != null) {
-      indent().append(((JavaTree) tree).getKind().getAssociatedInterface());
+      Tree.Kind kind = ((JavaTree) tree).getKind();
+      String nodeName = ((JavaTree) tree).getClass().getSimpleName();
+      if (kind != null) {
+        nodeName = kind.getAssociatedInterface().getSimpleName();
+      }
+      indent().append(nodeName);
       AstNode node = ((JavaTree) tree).getAstNode();
-      if(node!=null){
+      if (node != null) {
         sb.append(" ").append(node.getTokenLine());
       }
       sb.append("\n");
