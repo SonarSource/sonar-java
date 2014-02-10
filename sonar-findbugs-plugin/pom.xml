@@ -78,6 +78,14 @@
       </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>sonar-java-plugin</artifactId>
+      <type>sonar-plugin</type>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- TODO http://jira.codehaus.org/browse/SONAR-2011
     We need following dependency, otherwise we will receive compilation error
     -->

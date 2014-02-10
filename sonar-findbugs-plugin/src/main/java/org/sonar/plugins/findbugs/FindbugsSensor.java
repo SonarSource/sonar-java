@@ -25,11 +25,12 @@ import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.rules.Violation;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.util.Collection;
 
@@ -40,11 +41,13 @@ public class FindbugsSensor implements Sensor {
   private RulesProfile profile;
   private RuleFinder ruleFinder;
   private FindbugsExecutor executor;
+  private final JavaResourceLocator javaResourceLocator;
 
-  public FindbugsSensor(RulesProfile profile, RuleFinder ruleFinder, FindbugsExecutor executor) {
+  public FindbugsSensor(RulesProfile profile, RuleFinder ruleFinder, FindbugsExecutor executor, JavaResourceLocator javaResourceLocator) {
     this.profile = profile;
     this.ruleFinder = ruleFinder;
     this.executor = executor;
+    this.javaResourceLocator = javaResourceLocator;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
@@ -67,7 +70,7 @@ public class FindbugsSensor implements Sensor {
       String className = bugInstance.getClassName();
       int start = bugInstance.getStartLine();
 
-      JavaFile resource = new JavaFile(getSonarJavaFileKey(className));
+      Resource resource = javaResourceLocator.findResourceByClassName(className);
       if (context.getResource(resource) != null) {
         Violation violation = Violation.create(rule, resource)
             .setMessage(longMessage);
@@ -77,17 +80,6 @@ public class FindbugsSensor implements Sensor {
         context.saveViolation(violation);
       }
     }
-  }
-
-  /**
-   * @deprecated should be removed for multi-language support in SQ 4.2 (SONARJAVA-438)
-   */
-  @Deprecated
-  private static String getSonarJavaFileKey(String className) {
-    if (className.indexOf('$') > -1) {
-      return className.substring(0, className.indexOf('$'));
-    }
-    return className;
   }
 
   @Override

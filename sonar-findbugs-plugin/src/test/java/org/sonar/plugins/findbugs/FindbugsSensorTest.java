@@ -34,6 +34,7 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.Violation;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +42,7 @@ import java.util.Collection;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -57,7 +59,7 @@ public class FindbugsSensorTest extends FindbugsTests {
     when(project.getFileSystem()).thenReturn(fs);
     when(project.getLanguageKey()).thenReturn("java");
 
-    FindbugsSensor sensor = new FindbugsSensor(null, null, null);
+    FindbugsSensor sensor = new FindbugsSensor(null, null, null, mockJavaResourceLocator());
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 
@@ -69,7 +71,7 @@ public class FindbugsSensorTest extends FindbugsTests {
     when(project.getFileSystem()).thenReturn(fs);
     when(project.getLanguageKey()).thenReturn("java");
 
-    FindbugsSensor sensor = new FindbugsSensor(RulesProfile.create(), null, null);
+    FindbugsSensor sensor = new FindbugsSensor(RulesProfile.create(), null, null, null);
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 
@@ -81,7 +83,7 @@ public class FindbugsSensorTest extends FindbugsTests {
     when(project.getFileSystem()).thenReturn(fs);
     when(project.getLanguageKey()).thenReturn("java");
 
-    FindbugsSensor sensor = new FindbugsSensor(createRulesProfileWithActiveRules(), null, null);
+    FindbugsSensor sensor = new FindbugsSensor(createRulesProfileWithActiveRules(), null, null, mockJavaResourceLocator());
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
   }
 
@@ -105,7 +107,7 @@ public class FindbugsSensorTest extends FindbugsTests {
 
     when(context.getResource(any(Resource.class))).thenReturn(new JavaFile("org.sonar.MyClass"));
 
-    FindbugsSensor analyser = new FindbugsSensor(createRulesProfileWithActiveRules(), FakeRuleFinder.create(), executor);
+    FindbugsSensor analyser = new FindbugsSensor(createRulesProfileWithActiveRules(), FakeRuleFinder.create(), executor, mockJavaResourceLocator());
     analyser.analyse(project, context);
 
     verify(executor).execute();
@@ -127,7 +129,7 @@ public class FindbugsSensorTest extends FindbugsTests {
     Collection<ReportedBug> collection = Arrays.asList(new ReportedBug(bugInstance));
     when(executor.execute()).thenReturn(collection);
 
-    FindbugsSensor analyser = new FindbugsSensor(createRulesProfileWithActiveRules(), FakeRuleFinder.create(), executor);
+    FindbugsSensor analyser = new FindbugsSensor(createRulesProfileWithActiveRules(), FakeRuleFinder.create(), executor, mockJavaResourceLocator());
     analyser.analyse(project, context);
 
     verify(context, never()).saveViolation(any(Violation.class));
@@ -140,6 +142,13 @@ public class FindbugsSensorTest extends FindbugsTests {
     Project project = mock(Project.class);
     when(project.getFileSystem()).thenReturn(fileSystem);
     return project;
+  }
+
+  private static JavaResourceLocator mockJavaResourceLocator() {
+    JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
+    Resource resource = mock(Resource.class);
+    when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
+    return javaResourceLocator;
   }
 
 }

@@ -17,17 +17,15 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java;
+package org.sonar.plugins.java.api;
 
-import org.junit.Test;
+import com.google.common.annotations.Beta;
+import org.sonar.api.BatchExtension;
+import org.sonar.api.resources.Resource;
 
-import static org.fest.assertions.Assertions.assertThat;
+@Beta
+public interface JavaResourceLocator extends BatchExtension {
 
-public class JavaSquidPluginTest {
-
-  @Test
-  public void test() {
-    assertThat(new JavaSquidPlugin().getExtensions().size()).isEqualTo(8);
-  }
+  Resource findResourceByClassName(String name);
 
 }
