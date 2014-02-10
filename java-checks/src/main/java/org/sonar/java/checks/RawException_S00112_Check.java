@@ -20,70 +20,65 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
 import java.util.Set;
 
 @Rule(
-  key = "S00112",
-  priority = Priority.MAJOR)
+    key = RawException_S00112_Check.RULE_KEY,
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class RawException_S00112_Check extends SquidCheck<LexerlessGrammar> {
+public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S00112";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final Set<String> RAW_EXCEPTIONS = ImmutableSet.of("Throwable", "Error", "Exception", "RuntimeException");
 
+  private JavaFileScannerContext context;
+
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.THROW_STATEMENT);
-    subscribeTo(JavaKeyword.THROWS);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    for (AstNode nameNode : getExceptionNameNodes(node)) {
-      String name = merge(nameNode);
-      if (RAW_EXCEPTIONS.contains(name)) {
-        getContext().createLineViolation(this, "Define and throw a dedicated exception instead of using a generic one.", nameNode);
+  public void visitMethod(MethodTree tree) {
+      for (ExpressionTree throwClause : tree.throwsClauses()) {
+        checkExceptionAndRaiseIssue(throwClause);
       }
+    super.visitMethod(tree);
+  }
+
+  @Override
+  public void visitThrowStatement(ThrowStatementTree tree) {
+    if(tree.expression().is(Tree.Kind.NEW_CLASS)){
+      checkExceptionAndRaiseIssue(((NewClassTree)tree.expression()).identifier());
+    }
+    super.visitThrowStatement(tree);
+  }
+
+  private void checkExceptionAndRaiseIssue(Tree tree) {
+    if (isRawException(tree)) {
+      context.addIssue(tree, ruleKey, "Define and throw a dedicated exception instead of using a generic one.");
     }
   }
 
-  private static Iterable<AstNode> getExceptionNameNodes(AstNode node) {
-    return node.is(JavaGrammar.THROW_STATEMENT) ? getThrowStatementExceptionNames(node) : getThrowsDeclarationExceptionNames(node);
+  private boolean isRawException(Tree tree) {
+    return tree.is(Tree.Kind.IDENTIFIER) && RAW_EXCEPTIONS.contains(((IdentifierTree) tree).name());
   }
-
-  private static Iterable<AstNode> getThrowStatementExceptionNames(AstNode node) {
-    AstNode primary = node.getFirstChild(JavaGrammar.EXPRESSION).getFirstChild(JavaGrammar.PRIMARY);
-    if (primary == null || primary.getFirstChild().isNot(JavaKeyword.NEW)) {
-      return Collections.EMPTY_LIST;
-    }
-    AstNode createdName = primary.getFirstDescendant(JavaGrammar.CREATED_NAME);
-    if (createdName == null) {
-      return Collections.EMPTY_LIST;
-    }
-    return Collections.singleton(createdName);
-  }
-
-  private static Iterable<AstNode> getThrowsDeclarationExceptionNames(AstNode node) {
-    AstNode qualifiedIdentifierList = node.getNextSibling();
-    return qualifiedIdentifierList.getChildren(JavaGrammar.QUALIFIED_IDENTIFIER);
-  }
-
-  private static String merge(AstNode node) {
-    StringBuilder sb = new StringBuilder();
-    for (Token token : node.getTokens()) {
-      sb.append(token.getValue());
-    }
-    return sb.toString();
-  }
-
 }

@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -32,7 +33,7 @@ public class RawException_S00112_CheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RawException.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RawException.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("Define and throw a dedicated exception instead of using a generic one.")
         .next().atLine(4)
