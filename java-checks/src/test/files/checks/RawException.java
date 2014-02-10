@@ -49,4 +49,9 @@ public class Example {
 
      throw new int[0];        // Compliant
      }
+
+  @Override
+  public void throws_Exception() throws Exception { //Compliant because of overrides
+
+  }
 }

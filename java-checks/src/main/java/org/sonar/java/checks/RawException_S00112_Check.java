@@ -58,16 +58,18 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
 
   @Override
   public void visitMethod(MethodTree tree) {
+    if (!isOverride(tree)) {
       for (ExpressionTree throwClause : tree.throwsClauses()) {
         checkExceptionAndRaiseIssue(throwClause);
       }
+    }
     super.visitMethod(tree);
   }
 
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
-    if(tree.expression().is(Tree.Kind.NEW_CLASS)){
-      checkExceptionAndRaiseIssue(((NewClassTree)tree.expression()).identifier());
+    if (tree.expression().is(Tree.Kind.NEW_CLASS)) {
+      checkExceptionAndRaiseIssue(((NewClassTree) tree.expression()).identifier());
     }
     super.visitThrowStatement(tree);
   }
@@ -81,4 +83,17 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
   private boolean isRawException(Tree tree) {
     return tree.is(Tree.Kind.IDENTIFIER) && RAW_EXCEPTIONS.contains(((IdentifierTree) tree).name());
   }
+
+  private boolean isOverride(MethodTree tree) {
+    for (AnnotationTree annotationTree : tree.modifiers().annotations()) {
+      if (annotationTree.annotationType().is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifier = (IdentifierTree) annotationTree.annotationType();
+        if (Override.class.getSimpleName().equals(identifier.name())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
 }
