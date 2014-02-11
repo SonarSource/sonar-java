@@ -112,7 +112,6 @@ public class AstScanner {
       count++;
 
       context.setFile(file);
-      context.setInputFile(inputFile);
 
       try {
         AstNode ast = parser.parse(file);

@@ -149,14 +149,4 @@ public class VisitorContext extends SquidAstVisitorContext<LexerlessGrammar> {
     }
   }
 
-  private InputFile inputFile;
-
-  public void setInputFile(InputFile inputFile) {
-    this.inputFile = inputFile;
-  }
-
-  public InputFile getInputFile() {
-    return inputFile;
-  }
-
 }

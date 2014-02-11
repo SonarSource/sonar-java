@@ -59,15 +59,13 @@ public class PackageVisitor extends JavaAstVisitor {
   }
 
   private String getPackageKey(AstNode astNode) {
-    String packageKey;
     if (astNode != null && astNode.getFirstChild().is(JavaGrammar.PACKAGE_DECLARATION)) {
       AstNode packageNameNode = astNode.getFirstChild().getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-      packageKey = getAstNodeValue(packageNameNode).replace('.', '/');
+      return getAstNodeValue(packageNameNode).replace('.', '/');
     } else {
-      packageKey = guessPackageKey();
+      // unnamed package
+      return "";
     }
-    checkPhysicalDirectory(packageKey);
-    return packageKey;
   }
 
   private static String getAstNodeValue(AstNode astNode) {
@@ -76,42 +74,6 @@ public class PackageVisitor extends JavaAstVisitor {
       sb.append(child.getTokenValue());
     }
     return sb.toString();
-  }
-
-  private InputFile getInputFile() {
-    // TODO Unchecked cast
-    return ((VisitorContext) getContext()).getInputFile();
-  }
-
-  /**
-   * Guess package key from directory.
-   * @deprecated should be removed for multi-language support in SQ 4.2 (SONARJAVA-438)
-   */
-  @Deprecated
-  private String guessPackageKey() {
-    return InputFileUtils.getRelativeDirectory(getInputFile());
-  }
-
-  /**
-   * Check that package declaration is consistent with the physical location of Java file.
-   * It aims to detect two cases :
-   * - wrong package declaration : "package org.foo" stored in the directory "org/bar"
-   * - source directory badly configured : src/ instead of src/main/java/
-   *
-   * @since 2.8
-   * @deprecated should be removed for multi-language support in SQ 4.2 (SONARJAVA-438)
-   */
-  @Deprecated
-  private void checkPhysicalDirectory(String key) {
-    String relativeDirectory = InputFileUtils.getRelativeDirectory(getInputFile());
-    // both relativeDirectory and key use slash '/' as separator
-    if (!StringUtils.equals(relativeDirectory, key)) {
-      String packageName = StringUtils.replace(key, "/", ".");
-      if (StringUtils.contains(relativeDirectory, key) || StringUtils.contains(key, relativeDirectory)) {
-        throw new AnalysisException(String.format("The source directory does not correspond to the package declaration %s", packageName));
-      }
-      throw new AnalysisException(String.format("The package declaration %s does not correspond to the file path %s", packageName, getInputFile().getRelativePath()));
-    }
   }
 
 }
