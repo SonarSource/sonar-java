@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
@@ -32,8 +33,11 @@ import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Set;
 
 @Rule(
@@ -47,8 +51,8 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
 
   private JavaFileScannerContext context;
 
-  private final Set<CaseGroupTree> invalidCaseGroups = Sets.newHashSet();
-
+  private final Deque<CaseGroupTree> invalidCaseGroups = new ArrayDeque<CaseGroupTree>();
+  private CaseGroupTree currentTree = null;
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
@@ -57,16 +61,24 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
   }
 
   @Override
+  public void visitSwitchStatement(SwitchStatementTree tree) {
+    scan(tree.expression());
+    if(!tree.cases().isEmpty()){
+      scan(tree.cases().subList(0, tree.cases().size() - 1));
+    }
+  }
+
+  @Override
   public void visitCaseGroup(CaseGroupTree tree) {
-    invalidCaseGroups.add(tree);
+    currentTree = tree;
+    invalidCaseGroups.push(tree);
 
     super.visitCaseGroup(tree);
 
-    boolean wasInInvalidSet = invalidCaseGroups.remove(tree);
-
-    if (wasInInvalidSet) {
+    if (invalidCaseGroups.remove(tree)) {
       context.addIssue(Iterables.getLast(tree.labels()), ruleKey, "End this switch case with an unconditional break, continue, return or throw statement.");
     }
+    currentTree = invalidCaseGroups.peek();
   }
 
   @Override
@@ -94,7 +106,7 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
   }
 
   private void markSwitchCasesAsCompliant() {
-    invalidCaseGroups.clear();
+    invalidCaseGroups.remove(currentTree);
   }
 
 }

@@ -25,19 +25,41 @@ class A {
           break;
         }
       }
-      case 9: // Noncompliant
+      case 9: // Compliant
     }
 
     switch (myVariable) {
-      case 0: // Compliant - limitation but false negative
+      case 0: // Non Compliant
         switch (myVariable) {
           case 0:
           case 1: // Noncompliant
             System.out.println();
+            switch (myVariable){
+              case 0:
+              case 1:
+                break;
+            }
           case 2: // Compliant
             break;
         }
         System.out.println();
+      case 1: // Compliant
+        switch (myVariable) {
+          case 0:
+          case 1: // Compliant
+            System.out.println();
+            switch (myVariable){
+              case 0:
+                System.out.println(); // Non Compliant
+              case 1:
+                break;
+            }
+            break;
+          case 2: // Compliant
+            break;
+        }
+        break;
+      case 2: // Compliant
     }
   }
 }
