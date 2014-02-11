@@ -34,7 +34,6 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoverageMeasuresBuilder;
 import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.ResourceUtils;
@@ -159,10 +158,6 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  /**
-   * @deprecated usage of {@link JavaFile} should be removed for multi-language support in SQ 4.2 (SONARJAVA-438)
-   */
-  @Deprecated
   private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, SensorContext context, WildcardMatcher excludes) {
     int i = sessionId.indexOf(' ');
     if (i < 0) {
@@ -170,7 +165,7 @@ public abstract class AbstractAnalyzer {
     }
     String testClassName = sessionId.substring(0, i);
     String testName = sessionId.substring(i + 1);
-    Resource testResource = context.getResource(new JavaFile(testClassName, true));
+    Resource testResource = context.getResource(javaResourceLocator.findResourceByClassName(testClassName));
     if (testResource == null) {
       // No such test class
       return false;

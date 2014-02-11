@@ -22,10 +22,10 @@ package org.sonar.plugins.surefire;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.surefire.api.AbstractSurefireParser;
 import org.sonar.plugins.surefire.data.UnitTestClassReport;
 import org.sonar.plugins.surefire.data.UnitTestResult;
@@ -36,9 +36,11 @@ import org.sonar.plugins.surefire.data.UnitTestResult;
 public class SurefireJavaParser extends AbstractSurefireParser implements BatchExtension {
 
   private final ResourcePerspectives perspectives;
+  private final JavaResourceLocator javaResourceLocator;
 
-  public SurefireJavaParser(ResourcePerspectives perspectives) {
+  public SurefireJavaParser(ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator) {
     this.perspectives = perspectives;
+    this.javaResourceLocator = javaResourceLocator;
   }
 
   @Override
@@ -56,13 +58,9 @@ public class SurefireJavaParser extends AbstractSurefireParser implements BatchE
     }
   }
 
-  /**
-   * @deprecated usage of {@link JavaFile} should be removed for multi-language support in SQ 4.2 (SONARJAVA-438)
-   */
-  @Deprecated
   @Override
   protected Resource getUnitTestResource(String classKey) {
-    return new JavaFile(classKey, true);
+    return javaResourceLocator.findResourceByClassName(classKey);
   }
 
 }

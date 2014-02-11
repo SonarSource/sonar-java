@@ -21,8 +21,11 @@ package org.sonar.plugins.surefire;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.resources.Resource;
@@ -31,6 +34,7 @@ import org.sonar.api.test.IsResource;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.net.URISyntaxException;
 
@@ -46,12 +50,22 @@ import static org.mockito.Mockito.when;
 public class SurefireJavaParserTest {
 
   private ResourcePerspectives perspectives;
+  private JavaResourceLocator javaResourceLocator;
   private SurefireJavaParser parser;
 
   @Before
   public void before() {
     perspectives = mock(ResourcePerspectives.class);
-    parser = new SurefireJavaParser(perspectives);
+
+    javaResourceLocator = mock(JavaResourceLocator.class);
+    when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(new Answer<Resource>() {
+      @Override
+      public Resource answer(InvocationOnMock invocation) throws Throwable {
+        return new JavaFile((String) invocation.getArguments()[0], true);
+      }
+    });
+
+    parser = new SurefireJavaParser(perspectives, javaResourceLocator);
   }
 
   @Test

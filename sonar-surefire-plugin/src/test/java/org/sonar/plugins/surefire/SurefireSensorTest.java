@@ -21,11 +21,14 @@ package org.sonar.plugins.surefire;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
+import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
@@ -34,16 +37,19 @@ import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
 import org.sonar.api.test.IsResource;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -54,27 +60,40 @@ import static org.mockito.Mockito.when;
 
 public class SurefireSensorTest {
 
+  private Project project;
+  private ProjectFileSystem fileSystem;
   private ResourcePerspectives perspectives;
+  private JavaResourceLocator javaResourceLocator;
   private SurefireSensor surefireSensor;
 
   @Before
   public void before() {
+    project = mock(Project.class);
+    fileSystem = mock(ProjectFileSystem.class);
+    when(fileSystem.mainFiles("java")).thenReturn(Collections.singletonList(mock(InputFile.class)));
+    when(project.getFileSystem()).thenReturn(fileSystem);
+
     perspectives = mock(ResourcePerspectives.class);
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives), mock(Settings.class));
+
+    javaResourceLocator = mock(JavaResourceLocator.class);
+    when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(new Answer<Resource>() {
+      @Override
+      public Resource answer(InvocationOnMock invocation) throws Throwable {
+        return new JavaFile((String) invocation.getArguments()[0], true);
+      }
+    });
+
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class));
   }
 
   @Test
   public void shouldNotAnalyseIfStaticAnalysis() {
-    Project project = mock(Project.class);
-    when(project.getLanguageKey()).thenReturn(Java.KEY);
     when(project.getAnalysisType()).thenReturn(Project.AnalysisType.STATIC);
     assertFalse(surefireSensor.shouldExecuteOnProject(project));
   }
 
   @Test
   public void shouldAnalyseIfReuseDynamicReports() {
-    Project project = mock(Project.class);
-    when(project.getLanguageKey()).thenReturn(Java.KEY);
     when(project.getAnalysisType()).thenReturn(Project.AnalysisType.REUSE_REPORTS);
     assertThat(surefireSensor.shouldExecuteOnProject(project), is(true));
   }

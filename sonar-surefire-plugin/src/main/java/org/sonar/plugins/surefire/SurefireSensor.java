@@ -53,7 +53,8 @@ public class SurefireSensor implements Sensor {
 
   @Override
   public boolean shouldExecuteOnProject(Project project) {
-    return project.getAnalysisType().isDynamic(true) && Java.KEY.equals(project.getLanguageKey());
+    return project.getAnalysisType().isDynamic(true)
+      && !project.getFileSystem().mainFiles(Java.KEY).isEmpty();
   }
 
   @Override
