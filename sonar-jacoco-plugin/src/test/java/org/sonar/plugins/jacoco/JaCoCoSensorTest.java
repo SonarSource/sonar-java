@@ -21,6 +21,7 @@ package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
+import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
@@ -94,6 +95,11 @@ public class JaCoCoSensorTest {
   @Test
   public void testSensorDefinition() {
     assertThat(sensor.toString(), is("JaCoCoSensor"));
+  }
+
+  @Test
+  public void should_depend_on_surefire() {
+    Assertions.assertThat(sensor.dependsOnSurefireSensors()).isEqualTo("surefire-java");
   }
 
   @Test

@@ -48,8 +48,11 @@ public class JaCoCoSensor implements Sensor {
     this.javaResourceLocator = javaResourceLocator;
   }
 
+  /**
+   * Should be executed after Surefire, which imports details of the tests.
+   */
   @DependsUpon
-  public String dependsUponSurefireSensors() {
+  public String dependsOnSurefireSensors() {
     return "surefire-java";
   }
 

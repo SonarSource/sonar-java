@@ -20,15 +20,23 @@
 package org.sonar.plugins.jacoco;
 
 import org.sonar.api.batch.CoverageExtension;
+import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.Initializer;
+import org.sonar.api.batch.Phase;
+import org.sonar.api.batch.Sensor;
+import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.SupportedEnvironment;
 import org.sonar.api.batch.maven.DependsUponMavenPlugin;
 import org.sonar.api.batch.maven.MavenPluginHandler;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
 
+/**
+ * Should be executed before {@link JaCoCoSensor}.
+ */
+@Phase(name = Phase.Name.PRE)
 @SupportedEnvironment("maven")
-public class JacocoMavenInitializer extends Initializer implements CoverageExtension, DependsUponMavenPlugin {
+public class JacocoMavenInitializer implements Sensor, CoverageExtension, DependsUponMavenPlugin {
 
   private JaCoCoMavenPluginHandler handler;
   private JacocoConfiguration configuration;
@@ -46,7 +54,7 @@ public class JacocoMavenInitializer extends Initializer implements CoverageExten
   }
 
   @Override
-  public void execute(Project project) {
+  public void analyse(Project project, SensorContext context) {
     // nothing to do
   }
 

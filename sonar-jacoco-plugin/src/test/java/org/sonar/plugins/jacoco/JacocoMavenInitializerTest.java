@@ -19,9 +19,8 @@
  */
 package org.sonar.plugins.jacoco;
 
-import org.hamcrest.core.Is;
-import org.junit.Before;
 import org.junit.Test;
+import org.sonar.api.batch.SensorContext;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
@@ -30,58 +29,57 @@ import org.sonar.api.resources.ProjectFileSystem;
 import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class JacocoMavenInitializerTest {
-  private JaCoCoMavenPluginHandler mavenPluginHandler;
-  private JacocoMavenInitializer initializer;
-  private JacocoConfiguration jacocoSettings;
 
-  @Before
-  public void setUp() {
-    mavenPluginHandler = mock(JaCoCoMavenPluginHandler.class);
-    jacocoSettings = mock(JacocoConfiguration.class);
-    when(jacocoSettings.isEnabled(any(Project.class))).thenReturn(true);
-    initializer = new JacocoMavenInitializer(mavenPluginHandler, jacocoSettings);
-  }
+  private final Project project = mockProject();
+  private final JaCoCoMavenPluginHandler mavenPluginHandler = mock(JaCoCoMavenPluginHandler.class);
+  private final JacocoConfiguration jacocoSettings = mock(JacocoConfiguration.class);
+
+  private final JacocoMavenInitializer initializer = new JacocoMavenInitializer(mavenPluginHandler, jacocoSettings);
 
   @Test
   public void shouldDoNothing() {
-    Project project = mockProject();
-    initializer.execute(project);
+    initializer.analyse(project, mock(SensorContext.class));
     verifyNoMoreInteractions(project);
     verifyNoMoreInteractions(mavenPluginHandler);
   }
 
   @Test
-  public void shouldExecuteMaven() {
-    Project project = mockProject();
-    InputFile inputFile = mock(InputFile.class);
-    when(project.getFileSystem().testFiles(Java.KEY)).thenReturn(Collections.singletonList(inputFile));
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
+  public void should_not_execute_when_jacoco_not_enabled() {
+    when(jacocoSettings.isEnabled(project)).thenReturn(false);
 
-    assertThat(initializer.shouldExecuteOnProject(project)).isTrue();
-    assertThat(initializer.getMavenPluginHandler(project)).isInstanceOf(JaCoCoMavenPluginHandler.class);
+    assertThat(initializer.shouldExecuteOnProject(project)).isFalse();
   }
 
   @Test
-  public void shouldNotExecuteMavenWhenReuseReports() {
-    Project project = mockProject();
-    InputFile inputFile = mock(InputFile.class);
-    when(project.getFileSystem().testFiles(Java.KEY)).thenReturn(Collections.singletonList(inputFile));
+  public void should_not_execute_when_reuse_reports() {
+    when(jacocoSettings.isEnabled(project)).thenReturn(true);
+    when(project.getFileSystem().testFiles(Java.KEY)).thenReturn(Collections.singletonList(mock(InputFile.class)));
     when(project.getAnalysisType()).thenReturn(Project.AnalysisType.REUSE_REPORTS);
 
     assertThat(initializer.shouldExecuteOnProject(project)).isFalse();
   }
 
   @Test
-  public void shouldNotExecuteMavenWhenNoTests() {
-    Project project = mockProject();
-    when(project.getFileSystem().hasTestFiles(argThat(Is.is(Java.INSTANCE)))).thenReturn(false);
+  public void should_not_execute_when_no_tests() {
+    when(jacocoSettings.isEnabled(project)).thenReturn(true);
     when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
 
     assertThat(initializer.shouldExecuteOnProject(project)).isFalse();
+  }
+
+  @Test
+  public void should_execute() {
+    when(jacocoSettings.isEnabled(project)).thenReturn(true);
+    when(project.getFileSystem().testFiles(Java.KEY)).thenReturn(Collections.singletonList(mock(InputFile.class)));
+    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
+
+    assertThat(initializer.shouldExecuteOnProject(project)).isTrue();
+    assertThat(initializer.getMavenPluginHandler(project)).isInstanceOf(JaCoCoMavenPluginHandler.class);
   }
 
   private Project mockProject() {
@@ -90,4 +88,5 @@ public class JacocoMavenInitializerTest {
     when(project.getFileSystem()).thenReturn(projectFileSystem);
     return project;
   }
+
 }
