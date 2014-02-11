@@ -40,28 +40,11 @@ import static org.mockito.Mockito.when;
 
 public class FindbugsMavenInitializerTest {
 
-  private Project project;
-  private ProjectFileSystem fileSystem;
-  private FindbugsMavenInitializer initializer;
-
-  @Before
-  public void setUp() {
-    project = mock(Project.class);
-    fileSystem = mock(ProjectFileSystem.class);
-    when(project.getFileSystem()).thenReturn(fileSystem);
-    initializer = new FindbugsMavenInitializer();
-  }
+  private final Project project = mock(Project.class);
+  private final FindbugsMavenInitializer initializer = new FindbugsMavenInitializer();
 
   @Test
-  public void should_not_analyse_if_no_sources() {
-    when(fileSystem.mainFiles("java")).thenReturn(Collections.<InputFile>emptyList());
-    assertThat(initializer.shouldExecuteOnProject(project)).isFalse();
-  }
-
-  @Test
-  public void shouldAnalyse() {
-    when(fileSystem.mainFiles("java")).thenReturn(Collections.singletonList(mock(InputFile.class)));
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
+  public void should_analyse() {
     assertThat(initializer.shouldExecuteOnProject(project)).isTrue();
   }
 

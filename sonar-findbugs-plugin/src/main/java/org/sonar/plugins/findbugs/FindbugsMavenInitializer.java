@@ -39,7 +39,7 @@ public class FindbugsMavenInitializer extends Initializer {
 
   @Override
   public boolean shouldExecuteOnProject(Project project) {
-    return !project.getFileSystem().mainFiles(Java.KEY).isEmpty();
+    return true;
   }
 
   @Override
