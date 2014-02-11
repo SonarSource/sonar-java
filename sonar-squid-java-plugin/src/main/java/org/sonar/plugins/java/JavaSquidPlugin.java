@@ -26,7 +26,6 @@ import org.sonar.api.SonarPlugin;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.java.SonarComponents;
-import org.sonar.plugins.java.bridges.ResourceIndex;
 
 import java.util.List;
 

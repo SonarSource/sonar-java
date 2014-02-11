@@ -28,7 +28,6 @@ import org.sonar.squid.api.SourceCodeEdge;
 import org.sonar.squid.api.SourceCodeEdgeUsage;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourcePackage;
-import org.sonar.squid.measures.Metric;
 
 public class DependenciesVisitor extends BytecodeVisitor {
 

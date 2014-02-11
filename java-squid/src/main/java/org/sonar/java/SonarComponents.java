@@ -54,10 +54,6 @@ public class SonarComponents implements BatchExtension {
     this.fileScannersFactories = fileScannersFactories;
   }
 
-  public ResourcePerspectives getResourcePerspectives() {
-    return resourcePerspectives;
-  }
-
   public Iterable<JavaFileScanner> createJavaFileScanners() {
     Iterable<JavaFileScanner> result = ImmutableList.of();
     if (fileScannersFactories != null) {
