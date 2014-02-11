@@ -211,21 +211,21 @@ public class JavaTreeMaker {
   }
 
   private ExpressionTree elementValue(AstNode astNode) {
-    astNode = astNode.getFirstChild();
+    AstNode elementValue = astNode.getFirstChild();
     ExpressionTree result;
-    if (astNode.is(JavaGrammar.ANNOTATION)) {
-      result = annotation(astNode);
-    } else if (astNode.is(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER)) {
+    if (elementValue.is(JavaGrammar.ANNOTATION)) {
+      result = annotation(elementValue);
+    } else if (elementValue.is(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER)) {
       List<ExpressionTree> elementValues = Lists.newArrayList();
-      if (astNode.hasDirectChildren(JavaGrammar.ELEMENT_VALUES)) {
-        AstNode elementValuesNode = astNode.getFirstChild(JavaGrammar.ELEMENT_VALUES);
+      if (elementValue.hasDirectChildren(JavaGrammar.ELEMENT_VALUES)) {
+        AstNode elementValuesNode = elementValue.getFirstChild(JavaGrammar.ELEMENT_VALUES);
         for (AstNode node : elementValuesNode.getChildren(JavaGrammar.ELEMENT_VALUE)) {
           elementValues.add(elementValue(node));
         }
       }
-      result = new JavaTree.NewArrayTreeImpl(astNode, null, ImmutableList.<ExpressionTree>of(), elementValues);
+      result = new JavaTree.NewArrayTreeImpl(elementValue, null, ImmutableList.<ExpressionTree>of(), elementValues);
     } else {
-      result = expression(astNode);
+      result = expression(elementValue);
     }
     return result;
   }

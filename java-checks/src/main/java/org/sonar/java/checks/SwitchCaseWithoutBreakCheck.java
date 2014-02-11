@@ -20,8 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
@@ -38,7 +36,6 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Set;
 
 @Rule(
   key = SwitchCaseWithoutBreakCheck.RULE_KEY,
