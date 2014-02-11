@@ -57,7 +57,7 @@ public class SunPackagesUsedCheck extends SquidCheck<LexerlessGrammar> {
   @Override
   public void visitFile(AstNode node) {
     lastReportedLine = -1;
-    excludePackages = exclude.split(";");
+    excludePackages = exclude.split(",");
   }
 
   @Override

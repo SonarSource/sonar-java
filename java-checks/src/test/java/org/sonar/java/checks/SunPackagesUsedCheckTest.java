@@ -47,7 +47,7 @@ public class SunPackagesUsedCheckTest {
 
   @Test
   public void check_with_exclusion() {
-    check.exclude = "com.sun.imageio;com.sun.jersey";
+    check.exclude = "com.sun.imageio,com.sun.jersey";
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SunPackagesUsedCheck.java"), check);
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(10).withMessage("Replace this usage of Sun classes by ones from the Java API.");
