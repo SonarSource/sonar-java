@@ -32,10 +32,14 @@ import org.sonar.api.utils.TimeProfiler;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.graph.DirectedGraphAccessor;
 import org.sonar.java.ast.AstScanner;
+import org.sonar.java.ast.visitors.ClassVisitor;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
+import org.sonar.java.ast.visitors.FileVisitor;
+import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.java.ast.visitors.SemanticModelVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
+import org.sonar.java.ast.visitors.TestVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
 import org.sonar.java.model.VisitorsBridge;
@@ -51,6 +55,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -60,6 +65,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
 
   private final SquidIndex squidIndex;
   private final AstScanner astScanner;
+  private final AstScanner astScannerForTests;
   private final BytecodeScanner bytecodeScanner;
   private final DirectedGraph<SourceCode, SourceCodeEdge> graph = new DirectedGraph<SourceCode, SourceCodeEdge>();
 
@@ -105,6 +111,12 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
       astScanner.accept(visitor);
       bytecodeScanner.accept(visitor);
     }
+
+    astScannerForTests = new AstScanner(astScanner);
+    astScannerForTests.accept(new PackageVisitor());
+    astScannerForTests.accept(new FileVisitor());
+    astScannerForTests.accept(new TestVisitor());
+    astScannerForTests.accept(new ClassVisitor());
   }
 
   @VisibleForTesting
@@ -113,17 +125,24 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     for (File dir : sourceDirectories) {
       sourceFiles.addAll(InputFileUtils.create(dir, FileUtils.listFiles(dir, new String[] {"java"}, true)));
     }
-    scan(sourceFiles, bytecodeFilesOrDirectories);
+    scan(sourceFiles, Collections.<InputFile>emptyList(), bytecodeFilesOrDirectories);
   }
 
-  public void scan(Collection<InputFile> sourceFiles, Collection<File> bytecodeFilesOrDirectories) {
+  public void scan(Collection<InputFile> sourceFiles, Collection<InputFile> testFiles, Collection<File> bytecodeFilesOrDirectories) {
     scanSources(sourceFiles);
     scanBytecode(bytecodeFilesOrDirectories);
+    scanTests(testFiles);
   }
 
   private void scanSources(Collection<InputFile> sourceFiles) {
-    TimeProfiler profiler = new TimeProfiler(getClass()).start("Java AST scan");
+    TimeProfiler profiler = new TimeProfiler(getClass()).start("Java Main Files AST scan");
     astScanner.scan(sourceFiles);
+    profiler.stop();
+  }
+
+  private void scanTests(Collection<InputFile> testFiles) {
+    TimeProfiler profiler = new TimeProfiler(getClass()).start("Java Test Files AST scan");
+    astScannerForTests.simpleScan(testFiles);
     profiler.stop();
   }
 

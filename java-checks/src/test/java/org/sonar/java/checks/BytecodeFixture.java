@@ -48,7 +48,7 @@ public class BytecodeFixture {
     }
 
     JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), visitor);
-    javaSquid.scan(Collections.singleton(sourceFile), Collections.singleton(bytecodeFile));
+    javaSquid.scan(Collections.singleton(sourceFile), Collections.<InputFile>emptyList(), Collections.singleton(bytecodeFile));
 
     Collection<SourceCode> sources = javaSquid.getIndex().search(new QueryByType(SourceFile.class));
     if (sources.size() != 1) {

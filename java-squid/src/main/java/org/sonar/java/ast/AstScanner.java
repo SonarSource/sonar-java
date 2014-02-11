@@ -48,13 +48,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Replacement for {@link com.sonar.sslr.squid.AstScanner<JavaGrammar>}.
+ * Replacement for {@link com.sonar.sslr.squid.AstScanner}.
  */
 public class AstScanner {
 
   private static final Logger LOG = LoggerFactory.getLogger(AstScanner.class);
 
-  private final SquidIndex index = new SquidIndex();
+  private final SquidIndex index;
   private final List<SquidAstVisitor<LexerlessGrammar>> visitors = Lists.newArrayList();
   private final List<AuditListener> auditListeners = Lists.newArrayList();
   private final Parser<LexerlessGrammar> parser;
@@ -62,12 +62,36 @@ public class AstScanner {
 
   public AstScanner(Parser<LexerlessGrammar> parser) {
     this.parser = parser;
+    this.index = new SquidIndex();
+  }
+
+  /**
+   * Takes parser and index from another instance of {@link AstScanner}
+   */
+  public AstScanner(AstScanner astScanner) {
+    this.parser = astScanner.parser;
+    this.index = astScanner.index;
   }
 
   public void scan(Collection<InputFile> files) {
     SourceProject project = new SourceProject("Java Project");
     index.index(project);
     project.setSourceCodeIndexer(index);
+    VisitorContext context = new VisitorContext(project);
+    context.setCommentAnalyser(commentAnalyser);
+
+    simpleScan(files);
+
+    SourceCodeTreeDecorator decorator = new SourceCodeTreeDecorator(project);
+    decorator.decorateWith(JavaMetric.values());
+    decorator.decorateWith(org.sonar.squid.measures.Metric.values());
+  }
+
+  /**
+   * Used to do scan of test files.
+   */
+  public void simpleScan(Collection<InputFile> files) {
+    SourceProject project = (SourceProject) index.search("Java Project");
     VisitorContext context = new VisitorContext(project);
     context.setCommentAnalyser(commentAnalyser);
 
@@ -107,10 +131,6 @@ public class AstScanner {
     for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
       visitor.destroy();
     }
-
-    SourceCodeTreeDecorator decorator = new SourceCodeTreeDecorator(project);
-    decorator.decorateWith(JavaMetric.values());
-    decorator.decorateWith(org.sonar.squid.measures.Metric.values());
   }
 
   private void parseErrorWalkAndVisit(RecognitionException e, File file) {

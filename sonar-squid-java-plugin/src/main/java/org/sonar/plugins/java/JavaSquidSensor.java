@@ -81,7 +81,7 @@ public class JavaSquidSensor implements Sensor {
     Collection<CodeVisitor> checks = annotationCheckFactory.getChecks();
 
     JavaSquid squid = new JavaSquid(createConfiguration(project), sonarComponents, checks.toArray(new CodeVisitor[checks.size()]));
-    squid.scan(sourceFiles, getBytecodeFiles(project));
+    squid.scan(sourceFiles, getTestFiles(project), getBytecodeFiles(project));
 
     javaResourceLocator.setSquidIndex(squid.getIndex());
 
@@ -90,6 +90,10 @@ public class JavaSquidSensor implements Sensor {
 
   private List<InputFile> getSourceFiles(Project project) {
     return project.getFileSystem().mainFiles(Java.KEY);
+  }
+
+  private List<InputFile> getTestFiles(Project project) {
+    return project.getFileSystem().testFiles(Java.KEY);
   }
 
   private List<File> getBytecodeFiles(Project project) {

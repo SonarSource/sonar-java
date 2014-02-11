@@ -26,6 +26,7 @@ import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaSquid;
+import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.plugins.java.bridges.Bridge;
 import org.sonar.plugins.java.bridges.BridgeFactory;
 import org.sonar.plugins.java.bridges.ResourceIndex;
@@ -33,6 +34,7 @@ import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourcePackage;
 import org.sonar.squid.api.SourceProject;
+import org.sonar.squid.indexer.QueryByMeasure;
 import org.sonar.squid.indexer.QueryByType;
 
 import java.util.Collection;
@@ -84,7 +86,9 @@ public class Bridges {
   }
 
   private void saveFiles(ResourceIndex resourceIndex, List<Bridge> bridges) {
-    Collection<SourceCode> squidFiles = squid.search(new QueryByType(SourceFile.class));
+    Collection<SourceCode> squidFiles = squid.search(
+      new QueryByType(SourceFile.class),
+      /* excluding test files: */ new QueryByMeasure(JavaMetric.TESTS, QueryByMeasure.Operator.LESS_THAN, 1));
     for (SourceCode squidFile : squidFiles) {
       Resource sonarFile = resourceIndex.get(squidFile);
       for (Bridge bridge : bridges) {

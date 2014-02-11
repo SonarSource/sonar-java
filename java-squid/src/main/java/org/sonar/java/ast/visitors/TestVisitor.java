@@ -17,27 +17,18 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.api;
+package org.sonar.java.ast.visitors;
 
-import org.junit.Test;
+import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaMetric;
 
-import static org.fest.assertions.Assertions.assertThat;
+import javax.annotation.Nullable;
 
-public class JavaMetricTest {
+public class TestVisitor extends JavaAstVisitor {
 
-  @Test
-  public void test() {
-    assertThat(JavaMetric.values()).hasSize(10);
-
-    for (JavaMetric metric : JavaMetric.values()) {
-      assertThat(metric.getName()).isEqualTo(metric.name());
-      assertThat(metric.isCalculatedMetric()).isFalse();
-      assertThat(metric.isThereAggregationFormula()).isTrue();
-      assertThat(metric.getCalculatedMetricFormula()).isNull();
-    }
-
-    assertThat(JavaMetric.CLASSES.aggregateIfThereIsAlreadyAValue()).isTrue();
-    assertThat(JavaMetric.LINES.aggregateIfThereIsAlreadyAValue()).isFalse();
+  @Override
+  public void visitFile(@Nullable AstNode astNode) {
+    peekSourceFile().setMeasure(JavaMetric.TESTS, 1);
   }
 
 }
