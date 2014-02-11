@@ -21,7 +21,6 @@ package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
-import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
@@ -47,8 +46,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
@@ -59,9 +57,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Evgeny Mandrikov
- */
 public class JaCoCoSensorTest {
 
   private File jacocoExecutionData;
@@ -94,12 +89,12 @@ public class JaCoCoSensorTest {
 
   @Test
   public void testSensorDefinition() {
-    assertThat(sensor.toString(), is("JaCoCoSensor"));
+    assertThat(sensor.toString()).isEqualTo("JaCoCoSensor");
   }
 
   @Test
   public void should_depend_on_surefire() {
-    Assertions.assertThat(sensor.dependsOnSurefireSensors()).isEqualTo("surefire-java");
+    assertThat(sensor.dependsOnSurefireSensors()).isEqualTo("surefire-java");
   }
 
   @Test
@@ -107,10 +102,10 @@ public class JaCoCoSensorTest {
     Project project = mock(Project.class);
 
     when(configuration.isEnabled(project)).thenReturn(true);
-    assertThat(sensor.shouldExecuteOnProject(project), is(true));
+    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();;
 
     when(configuration.isEnabled(project)).thenReturn(false);
-    assertThat(sensor.shouldExecuteOnProject(project), is(false));
+    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 
   @Test

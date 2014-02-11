@@ -31,13 +31,12 @@ import org.sonar.plugins.java.api.JavaSettings;
 
 import java.io.File;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-/**
- * @author Evgeny Mandrikov
- */
 public class JaCoCoMavenPluginHandlerTest {
 
   private JacocoConfiguration configuration;
@@ -55,11 +54,11 @@ public class JaCoCoMavenPluginHandlerTest {
 
   @Test
   public void testMavenPluginDefinition() {
-    assertThat(handler.getGroupId(), is(MavenSurefireUtils.GROUP_ID));
-    assertThat(handler.getArtifactId(), is(MavenSurefireUtils.ARTIFACT_ID));
-    assertThat(handler.getVersion(), is(MavenSurefireUtils.VERSION));
-    assertThat(handler.getGoals(), is(new String[] { "test" }));
-    assertThat(handler.isFixedVersion(), is(false));
+    assertThat(handler.getGroupId()).isEqualTo(MavenSurefireUtils.GROUP_ID);
+    assertThat(handler.getArtifactId()).isEqualTo(MavenSurefireUtils.ARTIFACT_ID);
+    assertThat(handler.getVersion()).isEqualTo(MavenSurefireUtils.VERSION);
+    assertThat(handler.getGoals()).isEqualTo(new String[] { "test" });
+    assertThat(handler.isFixedVersion()).isFalse();
   }
 
   @Test
@@ -70,8 +69,8 @@ public class JaCoCoMavenPluginHandlerTest {
     handler.configure(project, plugin);
 
     verify(configuration).getJvmArgument();
-    assertThat(plugin.getParameter("argLine"), is("-javaagent:jacocoagent.jar=destfile=target/jacoco.exec,excludes=*_javassist_*"));
-    assertThat(plugin.getParameter("testFailureIgnore"), is("true"));
+    assertThat(plugin.getParameter("argLine")).isEqualTo("-javaagent:jacocoagent.jar=destfile=target/jacoco.exec,excludes=*_javassist_*");
+    assertThat(plugin.getParameter("testFailureIgnore")).isEqualTo("true");
   }
 
   @Test
@@ -82,8 +81,8 @@ public class JaCoCoMavenPluginHandlerTest {
     handler.configure(project, plugin);
 
     verify(configuration).getJvmArgument();
-    assertThat(plugin.getParameter("argLine"), is("-javaagent:jacocoagent.jar=destfile=target/jacoco.exec,excludes=*_javassist_* -esa"));
-    assertThat(plugin.getParameter("testFailureIgnore"), is("true"));
+    assertThat(plugin.getParameter("argLine")).isEqualTo("-javaagent:jacocoagent.jar=destfile=target/jacoco.exec,excludes=*_javassist_* -esa");
+    assertThat(plugin.getParameter("testFailureIgnore")).isEqualTo("true");
   }
 
 }

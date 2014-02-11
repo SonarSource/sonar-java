@@ -21,13 +21,13 @@ package org.sonar.plugins.jacoco;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class JaCoCoPluginTest {
 
   @Test
   public void testExtensions() {
-    assertThat(new JaCoCoPlugin().getExtensions().size(), greaterThan(0));
+    assertThat(new JaCoCoPlugin().getExtensions().size()).isEqualTo(12);
   }
+
 }
