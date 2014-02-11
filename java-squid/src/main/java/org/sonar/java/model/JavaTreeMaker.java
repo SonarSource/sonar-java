@@ -189,12 +189,12 @@ public class JavaTreeMaker {
     ImmutableList.Builder<ExpressionTree> arguments = ImmutableList.builder();
     ExpressionTree annotationType = qualifiedIdentifier(astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
     if (astNode.hasDirectChildren(JavaGrammar.ANNOTATION_REST)) {
-      astNode = astNode.getFirstChild(JavaGrammar.ANNOTATION_REST).getFirstChild();
-      if (astNode.is(JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST)) {
-        arguments.add(elementValue(astNode.getFirstChild(JavaGrammar.ELEMENT_VALUE)));
-      } else if (astNode.is(JavaGrammar.NORMAL_ANNOTATION_REST)) {
-        astNode = astNode.getFirstChild(JavaGrammar.ELEMENT_VALUE_PAIRS);
-        List<AstNode> values = astNode.getChildren(JavaGrammar.ELEMENT_VALUE_PAIR);
+      AstNode annotationRest = astNode.getFirstChild(JavaGrammar.ANNOTATION_REST).getFirstChild();
+      if (annotationRest.is(JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST)) {
+        arguments.add(elementValue(annotationRest.getFirstChild(JavaGrammar.ELEMENT_VALUE)));
+      } else if (annotationRest.is(JavaGrammar.NORMAL_ANNOTATION_REST)) {
+        AstNode elementValuePairs = annotationRest.getFirstChild(JavaGrammar.ELEMENT_VALUE_PAIRS);
+        List<AstNode> values = elementValuePairs.getChildren(JavaGrammar.ELEMENT_VALUE_PAIR);
         for (AstNode value : values) {
           AstNode identifier = value.getFirstChild(JavaTokenType.IDENTIFIER);
           arguments.add(new JavaTree.AssignmentExpressionTreeImpl(
@@ -218,8 +218,8 @@ public class JavaTreeMaker {
     } else if (astNode.is(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER)) {
       List<ExpressionTree> elementValues = Lists.newArrayList();
       if (astNode.hasDirectChildren(JavaGrammar.ELEMENT_VALUES)) {
-        astNode = astNode.getFirstChild(JavaGrammar.ELEMENT_VALUES);
-        for (AstNode node : astNode.getChildren(JavaGrammar.ELEMENT_VALUE)) {
+        AstNode elementValuesNode = astNode.getFirstChild(JavaGrammar.ELEMENT_VALUES);
+        for (AstNode node : elementValuesNode.getChildren(JavaGrammar.ELEMENT_VALUE)) {
           elementValues.add(elementValue(node));
         }
       }

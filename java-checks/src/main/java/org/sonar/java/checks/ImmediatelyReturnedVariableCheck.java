@@ -48,7 +48,7 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
 
   public static final String RULE_KEY = "S1488";
   private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-  private static final Map<Kind, String> keys = ImmutableMap.of(Kind.THROW_STATEMENT, "throw", Kind.RETURN_STATEMENT, "return");
+  private static final Map<Kind, String> MESSAGE_KEYS = ImmutableMap.of(Kind.THROW_STATEMENT, "throw", Kind.RETURN_STATEMENT, "return");
 
   private JavaFileScannerContext context;
   private String lastTypeForMessage;
@@ -85,10 +85,10 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
     lastTypeForMessage = null;
     ExpressionTree expr = null;
     if (lastSatementOfBlock.is(Kind.THROW_STATEMENT)) {
-      lastTypeForMessage = keys.get(Kind.THROW_STATEMENT);
+      lastTypeForMessage = MESSAGE_KEYS.get(Kind.THROW_STATEMENT);
       expr = ((ThrowStatementTree) lastSatementOfBlock).expression();
     } else if (lastSatementOfBlock.is(Kind.RETURN_STATEMENT)) {
-      lastTypeForMessage = keys.get(Kind.RETURN_STATEMENT);
+      lastTypeForMessage = MESSAGE_KEYS.get(Kind.RETURN_STATEMENT);
       expr = ((ReturnStatementTree) lastSatementOfBlock).expression();
     }
     if (expr != null && expr.is(Kind.IDENTIFIER)) {

@@ -41,7 +41,7 @@ public class CollectionsEmptyConstantsCheck extends BaseTreeVisitor implements J
 
   public static final String RULE_KEY = "S1596";
   private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-  private static final Map<String, String> identifierReplacement = new ImmutableMap.Builder<String, String>()
+  private static final Map<String, String> IDENTIFIER_REPLACEMENT = new ImmutableMap.Builder<String, String>()
     .put("EMPTY_LIST", "emptyList()")
     .put("EMPTY_MAP", "emptyMap()")
     .put("EMPTY_SET", "emptySet()")
@@ -62,7 +62,7 @@ public class CollectionsEmptyConstantsCheck extends BaseTreeVisitor implements J
     boolean isCollectionsCall = tree.expression().is(Kind.IDENTIFIER) && "Collections".equals(((IdentifierTree) tree.expression()).name());
     boolean callEmptyConstant = identifier.startsWith("EMPTY_");
     if (isCollectionsCall && callEmptyConstant) {
-      context.addIssue(tree, RULE, "Replace \"Collections."+identifier+"\" by \"Collections."+identifierReplacement.get(identifier)+"\".");
+      context.addIssue(tree, RULE, "Replace \"Collections."+identifier+"\" by \"Collections."+ IDENTIFIER_REPLACEMENT.get(identifier)+"\".");
     }
   }
 
