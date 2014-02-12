@@ -74,8 +74,12 @@ public abstract class AbstractAnalyzer {
     return excludesMatcher.matches(name);
   }
 
+  private static String fullyQualifiedClassName(String packageName, String simpleClassName) {
+    return ("".equals(packageName) ? "" : packageName + "/") + StringUtils.substringBeforeLast(simpleClassName, ".");
+  }
+
   private Resource getResource(ISourceFileCoverage coverage, SensorContext context) {
-    String className = coverage.getPackageName() + "/" + StringUtils.substringBeforeLast(coverage.getName(), ".");
+    String className = fullyQualifiedClassName(coverage.getPackageName(), coverage.getName());
 
     Resource resourceInContext = context.getResource(javaResourceLocator.findResourceByClassName(className));
     if (resourceInContext == null) {
