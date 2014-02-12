@@ -27,20 +27,30 @@ public class SymbolTableTest {
 
   @Test
   public void ClassDeclaration() {
-    Result result = Result.createFor("declarations/ClassDeclaration");
 
+    Result result = Result.createFor("declarations/ClassDeclaration");
     Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration");
     assertThat(typeSymbol.owner()).isSameAs(result.symbol("ClassDeclaration"));
     assertThat(typeSymbol.flags()).isEqualTo(Flags.PRIVATE);
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass").type);
     assertThat(typeSymbol.getInterfaces()).containsExactly(
-      result.symbol("FirstInterface").type,
-      result.symbol("SecondInterface").type);
+        result.symbol("FirstInterface").type,
+        result.symbol("SecondInterface").type);
     assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Superclass");
     assertThat(typeSymbol.getSuperclass()).isNull(); // FIXME should be java.lang.Object
     assertThat(typeSymbol.getInterfaces()).isEmpty();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void DirectCyclingClassDeclaration() {
+    Result.createForJavaFile("src/test/filesInError/DirectCyclingClassDeclaration");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void CyclingClassDeclaration() {
+    Result.createForJavaFile("src/test/filesInError/CyclingClassDeclaration");
   }
 
   @Test
@@ -82,8 +92,8 @@ public class SymbolTableTest {
     assertThat(interfaceSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.INTERFACE);
     assertThat(interfaceSymbol.getSuperclass()).isNull(); // TODO should it be java.lang.Object?
     assertThat(interfaceSymbol.getInterfaces()).containsExactly(
-      result.symbol("FirstInterface").type,
-      result.symbol("SecondInterface").type);
+        result.symbol("FirstInterface").type,
+        result.symbol("SecondInterface").type);
     assertThat(interfaceSymbol.members.lookup("this")).isEmpty();
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
@@ -120,8 +130,8 @@ public class SymbolTableTest {
     assertThat(enumSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.ENUM);
     assertThat(enumSymbol.getSuperclass()).isNull(); // FIXME should be java.lang.Enum
     assertThat(enumSymbol.getInterfaces()).containsExactly(
-      result.symbol("FirstInterface").type,
-      result.symbol("SecondInterface").type);
+        result.symbol("FirstInterface").type,
+        result.symbol("SecondInterface").type);
     assertThat(enumSymbol.members.lookup("this")).isNotEmpty();
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
@@ -200,8 +210,8 @@ public class SymbolTableTest {
     assertThat(methodSymbol.flags()).isEqualTo(Flags.PROTECTED);
     assertThat(methodSymbol.getReturnType()).isSameAs(result.symbol("ReturnType"));
     assertThat(methodSymbol.getThrownTypes()).containsExactly(
-      result.symbol("FirstExceptionType"),
-      result.symbol("SecondExceptionType"));
+        result.symbol("FirstExceptionType"),
+        result.symbol("SecondExceptionType"));
   }
 
   @Test
@@ -213,8 +223,8 @@ public class SymbolTableTest {
     assertThat(methodSymbol.flags()).isEqualTo(0);
     assertThat(methodSymbol.getReturnType()).isNull(); // TODO should it be result.symbol("ConstructorDeclaration")?
     assertThat(methodSymbol.getThrownTypes()).containsExactly(
-      result.symbol("FirstExceptionType"),
-      result.symbol("SecondExceptionType"));
+        result.symbol("FirstExceptionType"),
+        result.symbol("SecondExceptionType"));
   }
 
   @Test

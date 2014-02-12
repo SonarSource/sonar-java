@@ -31,7 +31,11 @@ import java.io.File;
 class Result {
 
   public static Result createFor(String name) {
-    File file = new File("src/test/files/sym/" + name + ".java");
+    return createForJavaFile("src/test/files/sym/" + name);
+  }
+
+  public static Result createForJavaFile(String filePath) {
+    File file = new File(filePath + ".java");
     AstNode astNode = parser.parse(file);
     return new Result(SemanticModel.createFor(astNode));
   }
@@ -63,7 +67,7 @@ class Result {
 
   public Symbol symbol(String name, int line) {
     Symbol result = null;
-    for (Symbol symbol :semanticModel.getSymbols().values()) {
+    for (Symbol symbol : semanticModel.getSymbols().values()) {
       if (name.equals(symbol.name) && semanticModel.getAstNode(symbol).getTokenLine() == line) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");

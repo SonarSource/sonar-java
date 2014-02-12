@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
@@ -28,6 +29,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Completes hierarchy of types.
@@ -75,6 +77,14 @@ public class SecondPass implements Symbol.Completer {
     AstNode superclassNode = astNode.getFirstChild(JavaGrammar.CLASS_TYPE);
     if (superclassNode != null) {
       ((Type.ClassType) symbol.type).supertype = resolveType(env, superclassNode).type;
+      Set<Type.ClassType> types = Sets.newHashSet();
+      Type.ClassType type = (Type.ClassType) symbol.type;
+      while (type != null) {
+        if (!types.add(type)) {
+          throw new IllegalStateException();
+        }
+        type = (Type.ClassType) type.supertype;
+      }
     } else {
       // TODO superclass is java.lang.Object or java.lang.Enum
     }
