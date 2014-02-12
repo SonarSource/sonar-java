@@ -40,7 +40,8 @@ public class JaCoCoSensor implements Sensor {
   private final PathResolver pathResolver;
   private final JavaResourceLocator javaResourceLocator;
 
-  public JaCoCoSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator) {
+  public JaCoCoSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver,
+                      JavaResourceLocator javaResourceLocator) {
     this.configuration = configuration;
     this.perspectives = perspectives;
     this.fileSystem = fileSystem;

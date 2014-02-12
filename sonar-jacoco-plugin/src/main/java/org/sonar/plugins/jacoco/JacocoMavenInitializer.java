@@ -20,8 +20,6 @@
 package org.sonar.plugins.jacoco;
 
 import org.sonar.api.batch.CoverageExtension;
-import org.sonar.api.batch.DependedUpon;
-import org.sonar.api.batch.Initializer;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;

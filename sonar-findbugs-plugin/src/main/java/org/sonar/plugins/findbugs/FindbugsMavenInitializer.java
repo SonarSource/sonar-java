@@ -24,7 +24,6 @@ import org.sonar.api.batch.Initializer;
 import org.sonar.api.batch.SupportedEnvironment;
 import org.sonar.api.batch.maven.MavenPlugin;
 import org.sonar.api.batch.maven.MavenUtils;
-import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
 
 /**
