@@ -21,8 +21,10 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sonar.sslr.api.AstNode;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
@@ -77,14 +79,7 @@ public class SecondPass implements Symbol.Completer {
     AstNode superclassNode = astNode.getFirstChild(JavaGrammar.CLASS_TYPE);
     if (superclassNode != null) {
       ((Type.ClassType) symbol.type).supertype = resolveType(env, superclassNode).type;
-      Set<Type.ClassType> types = Sets.newHashSet();
-      Type.ClassType type = (Type.ClassType) symbol.type;
-      while (type != null) {
-        if (!types.add(type)) {
-          throw new IllegalStateException();
-        }
-        type = (Type.ClassType) type.supertype;
-      }
+      checkHierarchyCycles(symbol.type);
     } else {
       // TODO superclass is java.lang.Object or java.lang.Enum
     }
@@ -100,6 +95,17 @@ public class SecondPass implements Symbol.Completer {
     }
     // TODO interface of AnnotationType is java.lang.annotation.Annotation
     ((Type.ClassType) symbol.type).interfaces = interfaces.build();
+  }
+
+  private void checkHierarchyCycles(Type baseType) {
+    Set<Type.ClassType> types = Sets.newHashSet();
+    Type.ClassType type = (Type.ClassType) baseType;
+    while (type != null) {
+      if (!types.add(type)) {
+        throw new IllegalStateException("Cycling class hierarchy detected with symbol : "+baseType.symbol.name+".");
+      }
+      type = (Type.ClassType) type.symbol.getSuperclass();
+    }
   }
 
   public void complete(Symbol.MethodSymbol symbol) {

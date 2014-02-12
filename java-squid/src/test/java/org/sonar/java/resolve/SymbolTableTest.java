@@ -19,11 +19,16 @@
  */
 package org.sonar.java.resolve;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class SymbolTableTest {
+
+  @Rule
+  public ExpectedException expectedEx = ExpectedException.none();
 
   @Test
   public void ClassDeclaration() {
@@ -41,15 +46,22 @@ public class SymbolTableTest {
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Superclass");
     assertThat(typeSymbol.getSuperclass()).isNull(); // FIXME should be java.lang.Object
     assertThat(typeSymbol.getInterfaces()).isEmpty();
+
+    typeSymbol = (Symbol.TypeSymbol) result.symbol("Foo");
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Baz").type);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void DirectCyclingClassDeclaration() {
+    expectedEx.expectMessage("Cycling class hierarchy detected with symbol : Foo");
+    expectedEx.expect(IllegalStateException.class);
     Result.createForJavaFile("src/test/filesInError/DirectCyclingClassDeclaration");
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void CyclingClassDeclaration() {
+    expectedEx.expect(IllegalStateException.class);
+    expectedEx.expectMessage("Cycling class hierarchy detected with symbol : Qix");
     Result.createForJavaFile("src/test/filesInError/CyclingClassDeclaration");
   }
 
