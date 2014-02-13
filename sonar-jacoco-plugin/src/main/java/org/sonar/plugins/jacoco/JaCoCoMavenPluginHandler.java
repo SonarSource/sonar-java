@@ -20,6 +20,7 @@
 package org.sonar.plugins.jacoco;
 
 import org.apache.commons.lang.StringUtils;
+import org.sonar.api.batch.CheckProject;
 import org.sonar.api.batch.maven.MavenPlugin;
 import org.sonar.api.batch.maven.MavenPluginHandler;
 import org.sonar.api.batch.maven.MavenSurefireUtils;
@@ -28,7 +29,7 @@ import org.sonar.api.utils.SonarException;
 
 import java.io.File;
 
-public class JaCoCoMavenPluginHandler implements MavenPluginHandler {
+public class JaCoCoMavenPluginHandler implements MavenPluginHandler, CheckProject {
 
   private static final String ARG_LINE_PARAMETER = "argLine";
   private static final String TEST_FAILURE_IGNORE_PARAMETER = "testFailureIgnore";
@@ -64,6 +65,11 @@ public class JaCoCoMavenPluginHandler implements MavenPluginHandler {
 
   public String[] getGoals() {
     return new String[] { "test" };
+  }
+
+  @Override
+  public boolean shouldExecuteOnProject(Project project) {
+    return project.getAnalysisType().equals(Project.AnalysisType.DYNAMIC);
   }
 
   public void configure(Project project, MavenPlugin plugin) {
