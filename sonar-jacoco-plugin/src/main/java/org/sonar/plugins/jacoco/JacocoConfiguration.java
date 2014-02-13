@@ -92,7 +92,7 @@ public class JacocoConfiguration implements BatchExtension {
     if (StringUtils.isNotBlank(exclclassloader)) {
       options.setExclClassloader(exclclassloader);
     }
-    return options.getVMArgument(downloader.getAgentJarFile());
+    return options.getQuotedVMArgument(downloader.getAgentJarFile());
   }
 
   public String getExcludes() {

@@ -69,7 +69,7 @@
 
     <sonar.version>3.6</sonar.version>
     <sslr.version>1.19.2</sslr.version>
-    <jacoco.version>0.6.3.201306030806</jacoco.version>
+    <jacoco.version>0.6.4.201312101107</jacoco.version>
   </properties>
 
   <dependencyManagement>

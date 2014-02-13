@@ -119,6 +119,14 @@ public class JacocoConfigurationTest {
   }
 
   @Test
+  public void shouldQuoteDestfileWithSpace() {
+    settings.setProperty(JacocoConfiguration.REPORT_PATH_PROPERTY, "folder spaced/jacoco.exec");
+
+    assertThat(jacocoSettings.getReportPath()).isEqualTo("folder spaced/jacoco.exec");
+    assertThat(jacocoSettings.getJvmArgument()).isEqualTo("\"-javaagent:jacocoagent.jar=destfile=folder spaced/jacoco.exec,excludes=*_javassist_*\"");
+  }
+
+  @Test
   public void shouldSetIncludesAndExcludes() {
     settings.setProperty(JacocoConfiguration.INCLUDES_PROPERTY, "org.sonar.*");
     settings.setProperty(JacocoConfiguration.EXCLUDES_PROPERTY, "org.sonar.api.*");
