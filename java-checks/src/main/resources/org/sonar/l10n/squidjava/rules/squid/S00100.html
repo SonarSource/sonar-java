@@ -2,19 +2,31 @@
 Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all function/method names match a provided regular expression.
 </p>
 
+<h2>
+Noncompliant Code Example
+</h2>
 <p>
-The following code snippet illustrates this rule when the regular expression value is "^[a-z][a-zA-Z0-9]*$":
+With default provided regular expression: "^[a-z][a-zA-Z0-9]*$":
 </p>
 <pre>
-public class MyClass {
-  private int myProperty;
+public void Do_Something() {...}
+</pre>
 
-  public int getMyProperty() { // Compliant
-    return myProperty;
-  }
-
-  public void SetMyProperty(int value) { // Non-Compliant
-    myProperty = value;
-  }
+<h2>
+Compliant Solution
+</h2>
+<pre>
+public void doSomething(int value) {…}
 }
+</pre>
+
+<h2>
+Exceptions
+</h2>
+<p>
+Overriding methods are excluded.
+</p>
+<pre>
+@Override
+public void Do_Something() {...}
 </pre>
