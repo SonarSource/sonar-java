@@ -320,4 +320,9 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(annotationTree.arguments());
   }
 
+  @Override
+  public void visitOther(Tree tree) {
+   //nop
+  }
+
 }

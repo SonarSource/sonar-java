@@ -63,6 +63,7 @@ public final class KindMaps {
     modifiers.put(JavaKeyword.VOLATILE, Modifier.VOLATILE);
     modifiers.put(JavaKeyword.SYNCHRONIZED, Modifier.SYNCHRONIZED);
     modifiers.put(JavaKeyword.NATIVE, Modifier.NATIVE);
+    modifiers.put(JavaKeyword.DEFAULT, Modifier.DEFAULT);
     modifiers.put(JavaKeyword.STRICTFP, Modifier.STRICTFP);
 
     prefixOperators.put(JavaPunctuator.INC, Tree.Kind.PREFIX_INCREMENT);

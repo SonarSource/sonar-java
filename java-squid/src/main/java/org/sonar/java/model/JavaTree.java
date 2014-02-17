@@ -1653,4 +1653,28 @@ public abstract class JavaTree implements Tree {
     }
   }
 
+  public static class NotImplementedTreeImpl extends JavaTree implements ExpressionTree{
+
+    private String name;
+
+    public NotImplementedTreeImpl(AstNode astNode, String name) {
+      super(astNode);
+      this.name = name;
+    }
+
+    @Override
+    public Kind getKind() {
+      return Kind.OTHER;
+    }
+
+    @Override
+    public void accept(TreeVisitor visitor) {
+      visitor.visitOther(this);
+    }
+
+    public String getName() {
+      return name;
+    }
+  }
+
 }

@@ -34,7 +34,10 @@ public class VariableDeclaratorIdTest {
     assertThat(g.rule(JavaGrammar.VARIABLE_DECLARATOR_ID))
         .matches("identifier")
         .matches("identifier []")
-        .matches("identifier [] []");
+        .matches("identifier @Foo []")
+        .matches("identifier [] []")
+        .matches("identifier [] @Foo @Bar []")
+    ;
   }
 
 }

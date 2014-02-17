@@ -33,11 +33,18 @@ public class FormalParameterDeclsRestTest {
   public void ok() {
     g.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).mock();
     g.rule(JavaGrammar.FORMAL_PARAMETER_DECLS).mock();
+    g.rule(JavaGrammar.ANNOTATION).mock();
 
     assertThat(g.rule(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST))
         .matches("variableDeclaratorId")
         .matches("variableDeclaratorId , formalParameterDecls")
-        .matches("... variableDeclaratorId");
+        .matches("... variableDeclaratorId")
+        .matches("annotation ... variableDeclaratorId");
   }
 
+  @Test
+  public void realLife() {
+    assertThat(g.rule(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST))
+        .matches("@Foo ... variableDeclaratorId");
+  }
 }

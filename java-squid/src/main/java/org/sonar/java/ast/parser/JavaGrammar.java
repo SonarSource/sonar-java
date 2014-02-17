@@ -89,6 +89,7 @@ import static org.sonar.java.ast.api.JavaPunctuator.BSR;
 import static org.sonar.java.ast.api.JavaPunctuator.BSREQU;
 import static org.sonar.java.ast.api.JavaPunctuator.COLON;
 import static org.sonar.java.ast.api.JavaPunctuator.COMMA;
+import static org.sonar.java.ast.api.JavaPunctuator.DBLECOLON;
 import static org.sonar.java.ast.api.JavaPunctuator.DEC;
 import static org.sonar.java.ast.api.JavaPunctuator.DIV;
 import static org.sonar.java.ast.api.JavaPunctuator.DIVEQU;
@@ -261,7 +262,6 @@ public enum JavaGrammar implements GrammarRuleKey {
   CONSTANT_EXPRESSION,
 
   BASIC_TYPE,
-  REFERENCE_TYPE,
   TYPE_ARGUMENTS,
   TYPE_ARGUMENT,
   TYPE_PARAMETER,
@@ -320,7 +320,13 @@ public enum JavaGrammar implements GrammarRuleKey {
 
   LETTER_OR_DIGIT,
   KEYWORD,
-  SPACING;
+  SPACING,
+
+  METHOD_REFERENCE,
+  LAMBDA_EXPRESSION,
+  LAMBDA_PARAMETERS,
+  LAMBDA_BODY,
+  ARROW;
 
   public static LexerlessGrammar createGrammar() {
     return createGrammarBuilder().build();
@@ -357,6 +363,7 @@ public enum JavaGrammar implements GrammarRuleKey {
     punctuator(b, BSR, ">>>", b.nextNot("="));
     punctuator(b, BSREQU, ">>>=");
     punctuator(b, COLON, ":");
+    punctuator(b, DBLECOLON, "::");
     punctuator(b, COMMA, ",");
     punctuator(b, DEC, "--");
     punctuator(b, DIV, "/", b.nextNot("="));
@@ -400,6 +407,8 @@ public enum JavaGrammar implements GrammarRuleKey {
 
     punctuator(b, LPOINT, "<");
     punctuator(b, RPOINT, ">");
+
+    punctuator(b, ARROW, "->");
   }
 
   private static void keywords(LexerlessGrammarBuilder b) {
@@ -519,19 +528,19 @@ public enum JavaGrammar implements GrammarRuleKey {
    * 4. Types, Values and Variables
    */
   private static void types(LexerlessGrammarBuilder b) {
-    b.rule(TYPE).is(b.firstOf(BASIC_TYPE, CLASS_TYPE), b.zeroOrMore(DIM));
-    b.rule(REFERENCE_TYPE).is(b.firstOf(
-        b.sequence(BASIC_TYPE, b.zeroOrMore(DIM)),
-        b.sequence(CLASS_TYPE, b.zeroOrMore(DIM))));
-    b.rule(CLASS_TYPE).is(IDENTIFIER, b.optional(TYPE_ARGUMENTS), b.zeroOrMore(DOT, IDENTIFIER, b.optional(TYPE_ARGUMENTS)));
+    b.rule(TYPE).is(b.firstOf(BASIC_TYPE, CLASS_TYPE), b.zeroOrMore(b.zeroOrMore(ANNOTATION), DIM));
+    b.rule(CLASS_TYPE).is(b.zeroOrMore(ANNOTATION), IDENTIFIER, b.optional(TYPE_ARGUMENTS), b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), IDENTIFIER, b.optional(TYPE_ARGUMENTS)));
     b.rule(CLASS_TYPE_LIST).is(CLASS_TYPE, b.zeroOrMore(COMMA, CLASS_TYPE));
     b.rule(TYPE_ARGUMENTS).is(LPOINT, TYPE_ARGUMENT, b.zeroOrMore(COMMA, TYPE_ARGUMENT), RPOINT);
-    b.rule(TYPE_ARGUMENT).is(b.firstOf(
-        REFERENCE_TYPE,
-        b.sequence(QUERY, b.optional(b.firstOf(EXTENDS, SUPER), REFERENCE_TYPE))));
+    b.rule(TYPE_ARGUMENT).is(
+        b.zeroOrMore(ANNOTATION),
+        b.firstOf(
+          TYPE,
+          b.sequence(QUERY, b.optional(b.firstOf(EXTENDS, SUPER), b.zeroOrMore(ANNOTATION), TYPE)))
+    );
     b.rule(TYPE_PARAMETERS).is(LPOINT, TYPE_PARAMETER, b.zeroOrMore(COMMA, TYPE_PARAMETER), RPOINT);
-    b.rule(TYPE_PARAMETER).is(IDENTIFIER, b.optional(EXTENDS, BOUND));
-    b.rule(BOUND).is(CLASS_TYPE, b.zeroOrMore(AND, CLASS_TYPE));
+    b.rule(TYPE_PARAMETER).is(b.zeroOrMore(ANNOTATION), IDENTIFIER, b.optional(EXTENDS, BOUND));
+    b.rule(BOUND).is(CLASS_TYPE, b.zeroOrMore(AND, b.zeroOrMore(ANNOTATION), CLASS_TYPE));
     b.rule(MODIFIER).is(b.firstOf(
         ANNOTATION,
         PUBLIC,
@@ -544,6 +553,7 @@ public enum JavaGrammar implements GrammarRuleKey {
         VOLATILE,
         SYNCHRONIZED,
         NATIVE,
+        DEFAULT,
         STRICTFP));
   }
 
@@ -587,7 +597,7 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(GENERIC_METHOD_OR_CONSTRUCTOR_REST).is(b.firstOf(
         b.sequence(b.firstOf(TYPE, VOID), IDENTIFIER, METHOD_DECLARATOR_REST),
         b.sequence(IDENTIFIER, CONSTRUCTOR_DECLARATOR_REST)));
-    b.rule(METHOD_DECLARATOR_REST).is(FORMAL_PARAMETERS, b.zeroOrMore(DIM), b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), b.firstOf(METHOD_BODY, SEMI));
+    b.rule(METHOD_DECLARATOR_REST).is(FORMAL_PARAMETERS, b.zeroOrMore(b.zeroOrMore(ANNOTATION), DIM), b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), b.firstOf(METHOD_BODY, SEMI));
     b.rule(VOID_METHOD_DECLARATOR_REST).is(FORMAL_PARAMETERS, b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), b.firstOf(METHOD_BODY, SEMI));
     b.rule(CONSTRUCTOR_DECLARATOR_REST).is(FORMAL_PARAMETERS, b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), METHOD_BODY);
     b.rule(METHOD_BODY).is(BLOCK);
@@ -626,9 +636,9 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(INTERFACE_METHOD_OR_FIELD_REST).is(b.firstOf(
         b.sequence(CONSTANT_DECLARATORS_REST, SEMI),
         INTERFACE_METHOD_DECLARATOR_REST));
-    b.rule(INTERFACE_METHOD_DECLARATOR_REST).is(FORMAL_PARAMETERS, b.zeroOrMore(DIM), b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), SEMI);
+    b.rule(INTERFACE_METHOD_DECLARATOR_REST).is(FORMAL_PARAMETERS, b.zeroOrMore(b.zeroOrMore(ANNOTATION), DIM), b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), b.firstOf(SEMI, BLOCK));
     b.rule(INTERFACE_GENERIC_METHOD_DECL).is(TYPE_PARAMETERS, b.firstOf(TYPE, VOID), IDENTIFIER, INTERFACE_METHOD_DECLARATOR_REST);
-    b.rule(VOID_INTERFACE_METHOD_DECLARATORS_REST).is(FORMAL_PARAMETERS, b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), SEMI);
+    b.rule(VOID_INTERFACE_METHOD_DECLARATORS_REST).is(FORMAL_PARAMETERS, b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), b.firstOf(SEMI, BLOCK));
     b.rule(CONSTANT_DECLARATORS_REST).is(CONSTANT_DECLARATOR_REST, b.zeroOrMore(COMMA, CONSTANT_DECLARATOR));
     b.rule(CONSTANT_DECLARATOR).is(IDENTIFIER, CONSTANT_DECLARATOR_REST);
     b.rule(CONSTANT_DECLARATOR_REST).is(b.zeroOrMore(DIM), EQU, VARIABLE_INITIALIZER);
@@ -643,8 +653,8 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(FORMAL_PARAMETER_DECLS).is(b.zeroOrMore(b.firstOf(FINAL, ANNOTATION)), TYPE, FORMAL_PARAMETERS_DECLS_REST);
     b.rule(FORMAL_PARAMETERS_DECLS_REST).is(b.firstOf(
         b.sequence(VARIABLE_DECLARATOR_ID, b.optional(COMMA, FORMAL_PARAMETER_DECLS)),
-        b.sequence(ELLIPSIS, VARIABLE_DECLARATOR_ID)));
-    b.rule(VARIABLE_DECLARATOR_ID).is(IDENTIFIER, b.zeroOrMore(DIM));
+        b.sequence(b.zeroOrMore(ANNOTATION), ELLIPSIS, VARIABLE_DECLARATOR_ID)));
+    b.rule(VARIABLE_DECLARATOR_ID).is(IDENTIFIER, b.zeroOrMore(b.zeroOrMore(ANNOTATION), DIM));
   }
 
   /**
@@ -811,24 +821,36 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(EQUALITY_EXPRESSION).is(RELATIONAL_EXPRESSION, b.zeroOrMore(b.firstOf(EQUAL, NOTEQUAL), RELATIONAL_EXPRESSION)).skipIfOneChild();
     b.rule(RELATIONAL_EXPRESSION).is(SHIFT_EXPRESSION, b.zeroOrMore(b.firstOf(
         b.sequence(b.firstOf(GE, GT, LE, LT), SHIFT_EXPRESSION),
-        b.sequence(INSTANCEOF, REFERENCE_TYPE)))).skipIfOneChild();
+        b.sequence(INSTANCEOF, TYPE)))).skipIfOneChild();
     b.rule(SHIFT_EXPRESSION).is(ADDITIVE_EXPRESSION, b.zeroOrMore(b.firstOf(SL, BSR, SR), ADDITIVE_EXPRESSION)).skipIfOneChild();
     b.rule(ADDITIVE_EXPRESSION).is(MULTIPLICATIVE_EXPRESSION, b.zeroOrMore(b.firstOf(PLUS, MINUS), MULTIPLICATIVE_EXPRESSION)).skipIfOneChild();
     b.rule(MULTIPLICATIVE_EXPRESSION).is(UNARY_EXPRESSION, b.zeroOrMore(b.firstOf(STAR, DIV, MOD), UNARY_EXPRESSION)).skipIfOneChild();
     b.rule(UNARY_EXPRESSION).is(b.firstOf(
+        METHOD_REFERENCE,
         b.sequence(PREFIX_OP, UNARY_EXPRESSION),
         b.sequence(LPAR, TYPE, RPAR, UNARY_EXPRESSION),
-        b.sequence(PRIMARY, b.zeroOrMore(SELECTOR), b.zeroOrMore(POST_FIX_OP)))).skipIfOneChild();
+        b.sequence(PRIMARY, b.zeroOrMore(SELECTOR), b.zeroOrMore(POST_FIX_OP))
+    )).skipIfOneChild();
     b.rule(PRIMARY).is(b.firstOf(
+        LAMBDA_EXPRESSION,
         PAR_EXPRESSION,
         b.sequence(NON_WILDCARD_TYPE_ARGUMENTS, b.firstOf(EXPLICIT_GENERIC_INVOCATION_SUFFIX, b.sequence(THIS, ARGUMENTS))),
         b.sequence(THIS, b.optional(ARGUMENTS)),
         b.sequence(SUPER, SUPER_SUFFIX),
         LITERAL,
-        b.sequence(NEW, CREATOR),
+        b.sequence(NEW, b.zeroOrMore(ANNOTATION), CREATOR),
         b.sequence(QUALIFIED_IDENTIFIER, b.optional(IDENTIFIER_SUFFIX)),
         b.sequence(BASIC_TYPE, b.zeroOrMore(DIM), DOT, CLASS),
-        b.sequence(VOID, DOT, CLASS)));
+        b.sequence(VOID, DOT, CLASS)
+        ));
+
+    b.rule(METHOD_REFERENCE).is(b.firstOf(
+        SUPER,
+        TYPE,
+        PRIMARY
+        ),
+        DBLECOLON, b.optional(TYPE_ARGUMENTS), b.firstOf(NEW,IDENTIFIER)
+    );
     b.rule(IDENTIFIER_SUFFIX).is(b.firstOf(
         b.sequence(LBRK, b.firstOf(b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), b.sequence(EXPRESSION, RBRK))),
         ARGUMENTS,
@@ -839,7 +861,7 @@ public enum JavaGrammar implements GrammarRuleKey {
             b.sequence(SUPER, ARGUMENTS),
             b.sequence(NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR)))));
     b.rule(EXPLICIT_GENERIC_INVOCATION).is(NON_WILDCARD_TYPE_ARGUMENTS, EXPLICIT_GENERIC_INVOCATION_SUFFIX);
-    b.rule(NON_WILDCARD_TYPE_ARGUMENTS).is(LPOINT, REFERENCE_TYPE, b.zeroOrMore(COMMA, REFERENCE_TYPE), RPOINT);
+    b.rule(NON_WILDCARD_TYPE_ARGUMENTS).is(LPOINT, TYPE, b.zeroOrMore(COMMA, TYPE), RPOINT);
     b.rule(EXPLICIT_GENERIC_INVOCATION_SUFFIX).is(b.firstOf(
         b.sequence(SUPER, SUPER_SUFFIX),
         b.sequence(IDENTIFIER, ARGUMENTS)));
@@ -864,7 +886,7 @@ public enum JavaGrammar implements GrammarRuleKey {
         ARGUMENTS,
         b.sequence(DOT, IDENTIFIER, b.optional(ARGUMENTS)),
         b.sequence(DOT, NON_WILDCARD_TYPE_ARGUMENTS, IDENTIFIER, ARGUMENTS)));
-    b.rule(BASIC_TYPE).is(b.firstOf(
+    b.rule(BASIC_TYPE).is(b.zeroOrMore(ANNOTATION), b.firstOf(
         BYTE,
         SHORT,
         CHAR,
@@ -877,20 +899,30 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(CREATOR).is(b.firstOf(
         b.sequence(b.optional(NON_WILDCARD_TYPE_ARGUMENTS), CREATED_NAME, CLASS_CREATOR_REST),
         b.sequence(b.optional(NON_WILDCARD_TYPE_ARGUMENTS), b.firstOf(CLASS_TYPE, BASIC_TYPE), ARRAY_CREATOR_REST)));
-    b.rule(CREATED_NAME).is(IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), b.zeroOrMore(DOT, IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS)));
+    b.rule(CREATED_NAME).is(b.zeroOrMore(ANNOTATION), IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS)));
     b.rule(INNER_CREATOR).is(IDENTIFIER, CLASS_CREATOR_REST);
-    b.rule(ARRAY_CREATOR_REST).is(LBRK, b.firstOf(
+    b.rule(ARRAY_CREATOR_REST).is(b.zeroOrMore(ANNOTATION), LBRK, b.firstOf(
         b.sequence(RBRK, b.zeroOrMore(DIM), ARRAY_INITIALIZER),
-        b.sequence(EXPRESSION, RBRK, b.zeroOrMore(DIM_EXPR), b.zeroOrMore(DIM))));
+        b.sequence(EXPRESSION, RBRK, b.zeroOrMore(DIM_EXPR), b.zeroOrMore(b.zeroOrMore(ANNOTATION), DIM))));
     b.rule(CLASS_CREATOR_REST).is(b.optional(b.firstOf(DIAMOND, TYPE_ARGUMENTS)), ARGUMENTS, b.optional(CLASS_BODY));
     b.rule(DIAMOND).is(LT, GT);
     b.rule(ARRAY_INITIALIZER).is(LWING, b.optional(VARIABLE_INITIALIZER, b.zeroOrMore(COMMA, VARIABLE_INITIALIZER)), b.optional(COMMA), RWING);
     b.rule(VARIABLE_INITIALIZER).is(b.firstOf(ARRAY_INITIALIZER, EXPRESSION));
     b.rule(PAR_EXPRESSION).is(LPAR, EXPRESSION, RPAR);
-    b.rule(QUALIFIED_IDENTIFIER).is(IDENTIFIER, b.zeroOrMore(DOT, IDENTIFIER));
+    b.rule(QUALIFIED_IDENTIFIER).is(b.zeroOrMore(ANNOTATION), IDENTIFIER, b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), IDENTIFIER));
     b.rule(QUALIFIED_IDENTIFIER_LIST).is(QUALIFIED_IDENTIFIER, b.zeroOrMore(COMMA, QUALIFIED_IDENTIFIER));
     b.rule(DIM).is(LBRK, RBRK);
-    b.rule(DIM_EXPR).is(LBRK, EXPRESSION, RBRK);
+    b.rule(DIM_EXPR).is(b.zeroOrMore(ANNOTATION), LBRK, EXPRESSION, RBRK);
+
+    //Java 8 lambda expressions.
+    b.rule(LAMBDA_EXPRESSION).is(LAMBDA_PARAMETERS, ARROW, LAMBDA_BODY);
+    b.rule(LAMBDA_PARAMETERS).is(b.firstOf(
+     b.sequence(LPAR, b.optional(IDENTIFIER, b.zeroOrMore(COMMA, IDENTIFIER)), RPAR),
+     FORMAL_PARAMETERS,
+     IDENTIFIER
+    ));
+    b.rule(LAMBDA_BODY).is(b.firstOf(BLOCK, EXPRESSION));
+
   }
 
   private final String internalName;

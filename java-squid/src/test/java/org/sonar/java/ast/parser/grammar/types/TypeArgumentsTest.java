@@ -31,11 +31,11 @@ public class TypeArgumentsTest {
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.TYPE_ARGUMENT).mock();
-
     assertThat(g.rule(JavaGrammar.TYPE_ARGUMENTS))
         .matches("< typeArgument >")
-        .matches("< typeArgument , typeArgument >");
+        .matches("< typeArgument , typeArgument >")
+        .matches("< @Foo typeArgument , @Foo typeArgument >")
+    ;
   }
 
 }

@@ -29,7 +29,7 @@ public class JavaPunctuatorTest {
 
   @Test
   public void test() {
-    assertThat(JavaPunctuator.values()).hasSize(50);
+    assertThat(JavaPunctuator.values()).hasSize(52);
 
     AstNode astNode = mock(AstNode.class);
     for (JavaPunctuator punctuator : JavaPunctuator.values()) {

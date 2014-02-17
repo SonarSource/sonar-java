@@ -47,17 +47,6 @@ public class ThrowsFromFinallyCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isInFinally(AstNode node) {
-    return getFirstAncestor(node, JavaGrammar.FINALLY_, JavaGrammar.CLASS_BODY_DECLARATION).is(JavaGrammar.FINALLY_);
+    return node.getFirstAncestor(JavaGrammar.FINALLY_, JavaGrammar.CLASS_BODY_DECLARATION, JavaGrammar.INTERFACE_BODY_DECLARATION).is(JavaGrammar.FINALLY_);
   }
-
-  private static AstNode getFirstAncestor(AstNode node, AstNodeType type1, AstNodeType type2) {
-    AstNode result = node.getParent();
-
-    while (result != null && !result.is(type1, type2)) {
-      result = result.getParent();
-    }
-
-    return result;
-  }
-
 }

@@ -34,6 +34,7 @@ public enum Modifier {
   VOLATILE,
   SYNCHRONIZED,
   NATIVE,
+  DEFAULT,
   STRICTFP;
 
 }

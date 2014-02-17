@@ -399,6 +399,17 @@ public class ExpressionVisitorTest {
   }
 
   @Test
+  public void lambda_expression() {
+    b.setRootRule(JavaGrammar.PRIMARY);
+
+    // FIXME implement
+    assertThat(typeOf("a -> a+1")).isSameAs(symbols.unknownType);
+  }
+
+
+
+
+  @Test
   public void assignment_expression() {
     b.setRootRule(JavaGrammar.ASSIGNMENT_EXPRESSION);
 

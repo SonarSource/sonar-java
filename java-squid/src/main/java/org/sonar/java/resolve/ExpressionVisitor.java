@@ -229,6 +229,9 @@ public class ExpressionVisitor extends JavaAstVisitor {
     } else if (firstChildNode.is(JavaKeyword.VOID)) {
       // void.class
       result = symbols.classType;
+    } else if (firstChildNode.is(JavaGrammar.LAMBDA_EXPRESSION)) {
+      //TODO implement symbol for lambda
+      result = symbols.unknownType;
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + firstChildNode.getType());
     }

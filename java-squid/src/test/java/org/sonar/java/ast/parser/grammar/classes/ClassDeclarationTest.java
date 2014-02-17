@@ -46,7 +46,11 @@ public class ClassDeclarationTest {
   @Test
   public void realLife() {
     assertThat(g.rule(JavaGrammar.CLASS_DECLARATION))
-        .matches("class HelloWorld { }");
+        .matches("class HelloWorld { }")
+        .matches("class HelloWorld<@Foo T> { }")
+        .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>{}")
+        .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>  extends java.util. @Foo HashMap implements @Foo Serializable, InterfaceTest{}")
+    ;
   }
 
 }

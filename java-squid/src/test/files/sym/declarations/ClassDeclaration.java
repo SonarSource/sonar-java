@@ -6,7 +6,7 @@ package declarations;
 @SuppressWarnings("all")
 class ClassDeclaration {
 
-  private class Declaration extends Superclass implements FirstInterface, SecondInterface {
+  private class Declaration extends @TypeAnnotation Superclass implements FirstInterface, SecondInterface {
   }
 
   private class Superclass {

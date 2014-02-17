@@ -46,6 +46,7 @@ import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -1505,4 +1506,18 @@ public class JavaTreeMakerTest {
     assertThat(tree.expression()).isNotNull();
   }
 
+
+  @Test
+  public void method_reference_expression_should_not_break_AST() throws Exception {
+    AstNode astNode = p.parse("class T { public void meth(){IntStream.range(1,12).map(new MethodReferences()::square).forEach(System.out::println);}}").getFirstDescendant(JavaGrammar.EXPRESSION);
+    ExpressionTree expressionTree = maker.expression(astNode);
+    assertThat(expressionTree).isNotNull();
+  }
+
+  @Test
+  public void lambda_expressions_should_not_break_AST(){
+    AstNode astNode = p.parse("class T { public void meth(){IntStream.range(1,12).map(x->x*x).map((int a)-> {return a*a;});}}").getFirstDescendant(JavaGrammar.EXPRESSION);
+    ExpressionTree expressionTree = maker.expression(astNode);
+    assertThat(expressionTree).isNotNull();
+  }
 }

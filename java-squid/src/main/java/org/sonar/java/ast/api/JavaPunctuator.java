@@ -33,6 +33,7 @@ public enum JavaPunctuator implements TokenType, GrammarRuleKey {
   BSR(">>>"),
   BSREQU(">>>="),
   COLON(":"),
+  DBLECOLON("::"),
   COMMA(","),
   DEC("--"),
   DIV("/"),
@@ -75,7 +76,10 @@ public enum JavaPunctuator implements TokenType, GrammarRuleKey {
   TILDA("~"),
 
   LPOINT("<"),
-  RPOINT(">");
+  RPOINT(">"),
+
+  ARROW("->"),
+  ;
 
   private final String value;
 

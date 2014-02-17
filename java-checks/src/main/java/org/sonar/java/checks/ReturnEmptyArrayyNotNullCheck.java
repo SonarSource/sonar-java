@@ -109,23 +109,20 @@ public class ReturnEmptyArrayyNotNullCheck extends SquidCheck<LexerlessGrammar> 
   }
 
   private static AstNode getMethod(AstNode node) {
-    AstNode result = node.getParent();
-
-    while (result != null && !result.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.CLASS_BODY_DECLARATION)) {
-      result = result.getParent();
-    }
-
-    return result;
+    return node.getFirstAncestor(JavaGrammar.METHOD_DECLARATOR_REST,
+        JavaGrammar.CLASS_BODY_DECLARATION,
+        JavaGrammar.INTERFACE_METHOD_OR_FIELD_REST,
+        JavaGrammar.INTERFACE_GENERIC_METHOD_DECL);
   }
 
   private static boolean isReturningArray(AstNode node) {
-    AstNode type = node.getParent().getFirstChild(JavaGrammar.TYPE);
+    AstNode type = getType(node);
     return node.hasDirectChildren(JavaGrammar.DIM) ||
       type != null && type.hasDirectChildren(JavaGrammar.DIM);
   }
 
   private static boolean isReturningCollection(AstNode node) {
-    AstNode type = node.getParent().getFirstChild(JavaGrammar.TYPE);
+    AstNode type = getType(node);
     if (type == null) {
       return false;
     }
@@ -139,6 +136,14 @@ public class ReturnEmptyArrayyNotNullCheck extends SquidCheck<LexerlessGrammar> 
     String lastIdentifierValue = identifiers.get(identifiers.size() - 1).getTokenOriginalValue();
 
     return COLLECTION_TYPES.contains(lastIdentifierValue);
+  }
+
+  private static AstNode getType(AstNode node) {
+    AstNode type = node.getParent().getFirstChild(JavaGrammar.TYPE);
+    if(node.is(JavaGrammar.INTERFACE_GENERIC_METHOD_DECL)){
+      type = node.getFirstChild(JavaGrammar.TYPE);
+    }
+    return type;
   }
 
 }

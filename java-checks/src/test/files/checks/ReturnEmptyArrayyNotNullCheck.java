@@ -66,3 +66,29 @@ class A {
   }
 
 }
+
+public interface B{
+  default int[] a(){
+    return null;
+  }
+
+  default int[] b(){
+    return new int[4];
+  }
+
+  default List<String> c(){
+    return null;
+  }
+
+  default List<String> d(){
+    return new ArrayList<String>();
+  }
+
+  default <T> int[] e(){
+    return null;
+  }
+
+  default <T> int[] f(){
+    return new int[4];
+  }
+}

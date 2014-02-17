@@ -50,7 +50,9 @@ public class TypeDeclarationTest {
   @Test
   public void realLife() {
     assertThat(g.rule(JavaGrammar.TYPE_DECLARATION))
-        .matches("public static final class HelloWorld { }");
+        .matches("public static final class HelloWorld { }")
+        .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>  extends java.util. @Foo HashMap implements @Foo Serializable, InterfaceTest{}")
+    ;
   }
 
 }

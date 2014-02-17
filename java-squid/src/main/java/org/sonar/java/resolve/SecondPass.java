@@ -150,8 +150,12 @@ public class SecondPass implements Symbol.Completer {
       if (typeNode.is(JavaPunctuator.ELLIPSIS)) {
         // vararg
         typeNode = typeNode.getPreviousAstNode();
+        while(typeNode.is(JavaGrammar.ANNOTATION)){
+          typeNode = typeNode.getPreviousAstNode();
+        }
       }
-      Preconditions.checkState(typeNode.is(JavaGrammar.TYPE, JavaGrammar.CLASS_TYPE, JavaGrammar.CATCH_TYPE));
+      Preconditions.checkState(typeNode.is(JavaGrammar.TYPE, JavaGrammar.CLASS_TYPE, JavaGrammar.CATCH_TYPE), "Type node error at line "+typeNode.getTokenLine()
+          +" column "+typeNode.getToken().getColumn());
     } else if (identifierNode.getParent().is(JavaGrammar.ENUM_CONSTANT)) {
       // Type of enum constant is enum
       semanticModel.getEnv(symbol).enclosingClass();

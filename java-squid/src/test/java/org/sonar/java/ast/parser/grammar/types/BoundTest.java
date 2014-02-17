@@ -31,11 +31,11 @@ public class BoundTest {
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.CLASS_TYPE).mock();
-
     assertThat(g.rule(JavaGrammar.BOUND))
         .matches("classType")
-        .matches("classType & classType");
+        .matches("classType & classType")
+        .matches("@Foo classType & @Foo classType")
+    ;
   }
 
 }

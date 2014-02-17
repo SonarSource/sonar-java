@@ -578,7 +578,12 @@ public interface Tree {
      * {@link ModifiersTree}
      *
      */
-    MODIFIERS(ModifiersTree.class);
+    MODIFIERS(ModifiersTree.class),
+    /**
+     *An implementation-reserved node.
+     */
+    OTHER(Tree.class);
+
 
     final Class<? extends Tree> associatedInterface;
 

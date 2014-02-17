@@ -44,7 +44,11 @@ public class ReturnEmptyArrayyNotNullCheckTest {
         .next().atLine(48)
         .next().atLine(53).withMessage("Return an empty collection instead of null.")
         .next().atLine(57).withMessage("Return an empty array instead of null.")
-        .next().atLine(61);
+        .next().atLine(61)
+        .next().atLine(72)
+        .next().atLine(80)
+        .next().atLine(88)
+    ;
   }
 
 }

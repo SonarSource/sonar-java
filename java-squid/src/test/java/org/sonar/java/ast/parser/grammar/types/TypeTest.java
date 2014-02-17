@@ -31,16 +31,16 @@ public class TypeTest {
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.BASIC_TYPE).mock();
-    g.rule(JavaGrammar.CLASS_TYPE).mock();
-
     assertThat(g.rule(JavaGrammar.TYPE))
-        .matches("basicType")
+        .matches("int")
         .matches("classType")
-        .matches("basicType []")
+        .matches("int []")
         .matches("classType []")
-        .matches("basicType [] []")
-        .matches("classType [] []");
+        .matches("int [] []")
+        .matches("classType [] []")
+        .matches("classType @Foo [] @Bar []")
+        .matches("int @Foo [] @Bar []")
+    ;
   }
 
 }

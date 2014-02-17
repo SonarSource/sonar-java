@@ -35,6 +35,11 @@ class ScopesAndSymbols {
       int localVariable;
       System.out.println("class method");
     }
+
+    void method(int @Foo @Bar ... varArg) throws Exception {
+      int localVariable;
+      System.out.println("class method");
+    }
   }
 
   static enum T2 {

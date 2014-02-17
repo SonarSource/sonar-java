@@ -29,3 +29,9 @@ class A {
     throw new IllegalAccessError();
   }
 }
+
+public interface B {
+  public default void f() {
+    throw new IllegalAccessError();
+  }
+}

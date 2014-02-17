@@ -44,7 +44,10 @@ public class InterfaceDeclarationTest {
   @Test
   public void realLife() {
     assertThat(g.rule(JavaGrammar.INTERFACE_DECLARATION))
-        .matches("interface HelloWorld { }");
+        .matches("interface HelloWorld { }")
+        .matches("interface HelloWorld { int method() @Foo [];}")
+        .matches("interface HelloWorld { default int method(){} default void methodVoid(){} default <T> Map<K,V>  methodGeneric(T t){} }")
+    ;
   }
 
 }

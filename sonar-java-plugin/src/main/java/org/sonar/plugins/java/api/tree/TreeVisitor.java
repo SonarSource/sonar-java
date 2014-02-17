@@ -118,4 +118,6 @@ public interface TreeVisitor {
   void visitModifier(ModifiersTree modifiersTree);
 
   void visitAnnotation(AnnotationTree annotationTree);
+
+  void visitOther(Tree tree);
 }

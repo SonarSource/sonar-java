@@ -109,7 +109,7 @@ public class JavaTreeMaker {
 
   private ExpressionTree classType(AstNode astNode) {
     checkType(astNode, JavaGrammar.CLASS_TYPE, JavaGrammar.CREATED_NAME);
-    AstNode child = astNode.getFirstChild();
+    AstNode child = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
     ExpressionTree result = identifier(child);
     for (int i = 1; i < astNode.getNumberOfChildren(); i++) {
       child = astNode.getChild(i);
@@ -119,8 +119,8 @@ public class JavaTreeMaker {
         result = new JavaTree.ParameterizedTypeTreeImpl(child, result, typeArguments(child));
       } else if (child.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
         result = new JavaTree.ParameterizedTypeTreeImpl(child, result, nonWildcardTypeArguments(child));
-      } else if (!child.is(JavaPunctuator.DOT)) {
-        throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString());
+      } else if (!(child.is(JavaPunctuator.DOT) || child.is(JavaGrammar.ANNOTATION))) {
+        throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString()+" at line "+astNode.getTokenLine()+" column "+astNode.getToken().getColumn());
       }
     }
     return result;
@@ -131,9 +131,9 @@ public class JavaTreeMaker {
     checkType(astNode, JavaGrammar.TYPE_ARGUMENTS);
     ImmutableList.Builder<Tree> result = ImmutableList.builder();
     for (AstNode child : astNode.getChildren(JavaGrammar.TYPE_ARGUMENT)) {
-      AstNode referenceTypeNode = child.getFirstChild(JavaGrammar.REFERENCE_TYPE);
+      AstNode referenceTypeNode = child.getFirstChild(JavaGrammar.TYPE);
       Tree typeArgument = referenceTypeNode != null ? referenceType(referenceTypeNode) : null;
-      if (child.getFirstChild().is(JavaPunctuator.QUERY)) {
+      if (child.hasDirectChildren(JavaPunctuator.QUERY)) {
         final Tree.Kind kind;
         if (child.hasDirectChildren(JavaKeyword.EXTENDS)) {
           kind = Tree.Kind.EXTENDS_WILDCARD;
@@ -152,7 +152,7 @@ public class JavaTreeMaker {
   private List<Tree> nonWildcardTypeArguments(AstNode astNode) {
     checkType(astNode, JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS);
     ImmutableList.Builder<Tree> result = ImmutableList.builder();
-    for (AstNode child : astNode.getChildren(JavaGrammar.REFERENCE_TYPE)) {
+    for (AstNode child : astNode.getChildren(JavaGrammar.TYPE)) {
       result.add(referenceType(child));
     }
     return result.build();
@@ -160,7 +160,7 @@ public class JavaTreeMaker {
 
   @VisibleForTesting
   ExpressionTree referenceType(AstNode astNode) {
-    checkType(astNode, JavaGrammar.REFERENCE_TYPE, JavaGrammar.TYPE);
+    checkType(astNode, JavaGrammar.TYPE);
     ExpressionTree result = astNode.getFirstChild().is(JavaGrammar.BASIC_TYPE) ? basicType(astNode.getFirstChild()) : classType(astNode.getFirstChild());
     return applyDim(result, astNode.getChildren(JavaGrammar.DIM).size());
   }
@@ -456,7 +456,11 @@ public class JavaTreeMaker {
     ImmutableList.Builder<VariableTree> result = ImmutableList.builder();
     for (AstNode variableDeclaratorIdNode : astNode.getDescendants(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
       AstNode typeNode = variableDeclaratorIdNode.getPreviousAstNode();
-      Tree type = typeNode.is(JavaPunctuator.ELLIPSIS) ? new JavaTree.ArrayTypeTreeImpl(typeNode, referenceType(typeNode.getPreviousAstNode())) : referenceType(typeNode);
+      AstNode referenceTypeNode  = typeNode.getPreviousAstNode();
+      while(referenceTypeNode.is(JavaGrammar.ANNOTATION)){
+        referenceTypeNode = referenceTypeNode.getPreviousAstNode();
+      }
+      Tree type = typeNode.is(JavaPunctuator.ELLIPSIS) ? new JavaTree.ArrayTypeTreeImpl(typeNode, referenceType(referenceTypeNode)) : referenceType(typeNode);
       result.add(new JavaTree.VariableTreeImpl(
           variableDeclaratorIdNode,
           JavaTree.ModifiersTreeImpl.EMPTY,
@@ -1014,6 +1018,8 @@ public class JavaTreeMaker {
       return assignmentExpression(astNode);
     } else if (astNode.is(JavaGrammar.UNARY_EXPRESSION)) {
       return unaryExpression(astNode);
+    } else if (astNode.is(JavaGrammar.METHOD_REFERENCE)) {
+      return new JavaTree.NotImplementedTreeImpl(astNode, "METHOD REFERENCE");
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType().toString());
     }
@@ -1153,7 +1159,9 @@ public class JavaTreeMaker {
           astNode,
           applyDim(basicType(firstChildNode), astNode.getChildren(JavaGrammar.DIM).size()),
           identifier(astNode.getFirstChild(JavaKeyword.CLASS)));
-    } else {
+    } else if(firstChildNode.is(JavaGrammar.LAMBDA_EXPRESSION)) {
+      return new JavaTree.NotImplementedTreeImpl(astNode, "LAMBDA_EXPRESSION");
+    }else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + firstChildNode.getType());
     }
   }
@@ -1252,7 +1260,7 @@ public class JavaTreeMaker {
       return new JavaTree.InstanceOfTreeImpl(
           astNode,
           expression(astNode.getFirstChild()),
-          referenceType(astNode.getFirstChild(JavaGrammar.REFERENCE_TYPE)));
+          referenceType(astNode.getFirstChild(JavaGrammar.TYPE)));
     }
 
     ExpressionTree expression = expression(astNode.getLastChild());

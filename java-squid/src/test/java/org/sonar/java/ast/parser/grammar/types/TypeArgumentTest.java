@@ -31,13 +31,15 @@ public class TypeArgumentTest {
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.REFERENCE_TYPE).mock();
-
     assertThat(g.rule(JavaGrammar.TYPE_ARGUMENT))
         .matches("referenceType")
         .matches("?")
         .matches("? extends referenceType")
-        .matches("? super referenceType");
+        .matches("? super referenceType")
+        .matches("@Foo referenceType")
+        .matches("@Foo ?")
+        .matches("@Foo ? extends @Foo referenceType")
+        .matches("@Foo ? super @Foo referenceType");
   }
 
 }
