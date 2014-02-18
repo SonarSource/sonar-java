@@ -35,7 +35,6 @@ public final class JavaPlugin extends SonarPlugin {
       JavaSettings.class,
       JavaSettings.property(),
       Java.class,
-      JavaSourceImporter.class,
       CommonRulesSonarWayProfile.class,
       CommonRulesSonarWayWithFindbugsProfile.class);
   }
