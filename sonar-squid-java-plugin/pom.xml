@@ -54,13 +54,6 @@
       <artifactId>sonar-plugin-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>sonar-surefire-plugin</artifactId>
-      <type>sonar-plugin</type>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
 
     <dependency>
       <groupId>com.google.collections</groupId>
