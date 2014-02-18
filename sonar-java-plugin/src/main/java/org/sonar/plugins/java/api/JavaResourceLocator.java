@@ -26,6 +26,6 @@ import org.sonar.api.resources.Resource;
 @Beta
 public interface JavaResourceLocator extends BatchExtension {
 
-  Resource findResourceByClassName(String name);
+  Resource findResourceByClassName(String className);
 
 }

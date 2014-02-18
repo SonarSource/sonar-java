@@ -80,7 +80,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
 
       return builder.build();
     } else {
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     }
   }
 

@@ -42,7 +42,7 @@ import java.util.Set;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
 
-  private Set<String> pendingLoopCounters = Collections.EMPTY_SET;
+  private Set<String> pendingLoopCounters = Collections.emptySet();
   private final Set<String> loopCounters = Sets.newHashSet();
 
   @Override
@@ -64,7 +64,7 @@ public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
       pendingLoopCounters = getLoopCounters(node);
     } else if (node.is(JavaGrammar.STATEMENT) && node.getParent().is(JavaGrammar.FOR_STATEMENT)) {
       loopCounters.addAll(pendingLoopCounters);
-      pendingLoopCounters = Collections.EMPTY_SET;
+      pendingLoopCounters = Collections.emptySet();
     } else if (!loopCounters.isEmpty()) {
       if (node.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
         for (int i = 0; i < node.getNumberOfChildren() - 1; i++) {
@@ -111,7 +111,7 @@ public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
 
       result = builder.build();
     } else {
-      result = Collections.EMPTY_SET;
+      result = Collections.emptySet();
     }
 
     return result;

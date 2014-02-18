@@ -48,12 +48,12 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   }
 
   @Override
-  public Resource findResourceByClassName(String name) {
+  public Resource findResourceByClassName(String className) {
     Preconditions.checkState(squidIndex != null, "SquidIndex can't be null");
-    name = name.replace('.', '/');
+    String name = className.replace('.', '/');
     SourceCode sourceCode = squidIndex.search(name);
     if (sourceCode == null) {
-      LOG.debug("Class not found in SquidIndex: {}", name);
+      LOG.debug("Class not found in SquidIndex: {}", className);
       return null;
     }
     Preconditions.checkState(sourceCode instanceof SourceClass, "Expected SourceClass, got %s for %s", sourceCode.getClass().getSimpleName(), name);
