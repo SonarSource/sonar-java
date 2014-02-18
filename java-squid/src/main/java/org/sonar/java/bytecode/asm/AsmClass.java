@@ -19,11 +19,10 @@
  */
 package org.sonar.java.bytecode.asm;
 
+import com.google.common.collect.Maps;
 import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,10 +31,8 @@ public class AsmClass extends AsmResource {
   private final String internalName;
   private DETAIL_LEVEL level;
   private AsmClass superClass;
-  private Set<AsmClass> children;
-  private final Map<String, AsmMethod> methods = new HashMap<String, AsmMethod>();
-  private final Map<String, AsmField> fields = new HashMap<String, AsmField>();
-  private int noc = 0;
+  private final Map<String, AsmMethod> methods = Maps.newHashMap();
+  private final Map<String, AsmField> fields = Maps.newHashMap();
 
   public AsmClass(String internalName, DETAIL_LEVEL level) {
     this.internalName = internalName;
@@ -109,18 +106,7 @@ public class AsmClass extends AsmResource {
 
   void setSuperClass(AsmClass superClass) {
     this.superClass = superClass;
-    superClass.addChildren(this);
     addEdge(new AsmEdge(this, superClass, SourceCodeEdgeUsage.EXTENDS));
-  }
-
-  private void addChildren(AsmClass asmClass) {
-    if ("java/lang/Object".equals(getInternalName())) {
-      return;
-    }
-    if (children == null) {
-      children = new HashSet<AsmClass>();
-    }
-    children.add(asmClass);
   }
 
   public AsmClass getSuperClass() {
@@ -128,7 +114,6 @@ public class AsmClass extends AsmResource {
   }
 
   void addInterface(AsmClass implementedInterface) {
-    implementedInterface.addChildren(this);
     addEdge(new AsmEdge(this, implementedInterface, SourceCodeEdgeUsage.IMPLEMENTS));
   }
 
@@ -150,15 +135,6 @@ public class AsmClass extends AsmResource {
   @Override
   public int hashCode() {
     return internalName.hashCode();
-  }
-
-  public int getNumberOfChildren() {
-    if (children != null && noc == 0) {
-      for (AsmClass child : children) {
-        noc += child.getNumberOfChildren() + 1;
-      }
-    }
-    return noc;
   }
 
 }
