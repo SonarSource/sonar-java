@@ -22,14 +22,11 @@ package org.sonar.plugins.java.bridges;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.PersistenceMode;
 import org.sonar.api.measures.RangeDistributionBuilder;
-import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourcePackage;
-import org.sonar.squid.api.SourceProject;
 import org.sonar.squid.measures.Metric;
 import org.sonar.squid.measures.MetricDef;
 

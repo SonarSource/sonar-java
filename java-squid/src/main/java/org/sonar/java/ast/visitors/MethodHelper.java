@@ -101,7 +101,7 @@ public class MethodHelper {
   }
 
   public boolean hasParameters() {
-    return getParameters().size() > 0;
+    return !getParameters().isEmpty();
   }
 
   public List<AstNode> getStatements() {
