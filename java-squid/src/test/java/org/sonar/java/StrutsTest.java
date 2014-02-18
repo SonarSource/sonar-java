@@ -53,27 +53,18 @@ public class StrutsTest {
     project = (SourceProject) index.search(new QueryByType(SourceProject.class)).iterator().next();
   }
 
-  // FIXME compare with previous values
   @Test
   public void measures_on_project() throws Exception {
     assertThat(project.getInt(JavaMetric.FILES)).isEqualTo(134);
-    // TODO assertEquals(37, project.getInt(Metric.ANONYMOUS_INNER_CLASSES));
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(146);
-    // TODO assertEquals(27, project.getInt(Metric.INTERFACES));
-    // TODO assertEquals(33, project.getInt(Metric.ABSTRACT_CLASSES));
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(1437 + 48);
     assertThat(project.getInt(Metric.ACCESSORS)).isEqualTo(48);
     assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(1437);
     assertThat(project.getInt(JavaMetric.LINES)).isEqualTo(32878);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(14007);
-    // TODO assertEquals(6426, project.getInt(Metric.BLANK_LINES));
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(6403);
     assertThat(project.getInt(JavaMetric.COMPLEXITY)).isEqualTo(3957 - 145 /* SONAR-3793 */- 1 /* SONAR-3794 */);
-    // TODO assertEquals(4668, project.getInt(Metric.BRANCHES));
-    // assertThat(project.getInt(JavaMetric.COMMENT_LINES)).isEqualTo(9573);
-    // assertThat(project.getInt(JavaMetric.COMMENT_BLANK_LINES)).isEqualTo(4682);
     assertThat(project.getInt(JavaMetric.COMMENT_LINES_WITHOUT_HEADER)).isEqualTo(7605);
-    // TODO assertEquals(0.40, project.getDouble(Metric.COMMENT_LINES_DENSITY), 0.01);
     assertThat(project.getInt(Metric.PUBLIC_API)).isEqualTo(1348);
     assertThat(project.getInt(Metric.PUBLIC_DOC_API)).isEqualTo(842);
     assertThat(project.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY)).isEqualTo(0.62, Delta.delta(0.01));

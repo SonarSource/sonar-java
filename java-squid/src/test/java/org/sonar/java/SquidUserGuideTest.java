@@ -58,23 +58,15 @@ public class SquidUserGuideTest {
   @Test
   public void measures_on_project() throws Exception {
     assertThat(project.getInt(JavaMetric.FILES)).isEqualTo(273);
-    // TODO assertEquals(37, project.getInt(Metric.ANONYMOUS_INNER_CLASSES));
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(412);
-    // TODO assertEquals(27, project.getInt(Metric.INTERFACES));
-    // TODO assertEquals(33, project.getInt(Metric.ABSTRACT_CLASSES));
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(3805 + 69);
     assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(3805);
     assertThat(project.getInt(Metric.ACCESSORS)).isEqualTo(69);
     assertThat(project.getInt(JavaMetric.LINES)).isEqualTo(64125);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(26323);
-    // TODO assertEquals(6426, project.getInt(Metric.BLANK_LINES));
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(12047);
     assertThat(project.getInt(JavaMetric.COMPLEXITY)).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);
-    // TODO assertEquals(4668, project.getInt(Metric.BRANCHES));
-    // assertThat(project.getInt(JavaMetric.COMMENT_LINES)).isEqualTo(21184);
-    // assertThat(project.getInt(JavaMetric.COMMENT_BLANK_LINES)).isEqualTo(9995);
     assertThat(project.getInt(JavaMetric.COMMENT_LINES_WITHOUT_HEADER)).isEqualTo(17908);
-    // TODO assertEquals(0.40, project.getDouble(Metric.COMMENT_LINES_DENSITY), 0.01);
     assertThat(project.getInt(Metric.PUBLIC_API)).isEqualTo(3257);
     assertThat(project.getInt(Metric.PUBLIC_DOC_API)).isEqualTo(2008);
     assertThat(project.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY)).isEqualTo(0.62, Delta.delta(0.01));
