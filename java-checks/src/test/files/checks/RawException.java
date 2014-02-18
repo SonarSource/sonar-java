@@ -54,4 +54,8 @@ public class Example {
   public void throws_Exception() throws Exception { //Compliant because of overrides
 
   }
+
+  @Deprecated
+  public void throws_Exception() throws Exception {
+  }
 }

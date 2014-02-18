@@ -36,6 +36,7 @@ public class BadMethodName_S00100_CheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadMethodName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(5).withMessage("Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.")
+        .next().atLine(16)
         .noMore();
   }
 

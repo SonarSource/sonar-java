@@ -10,6 +10,10 @@ class BadMethodName {
 
   @Override
   void BadButOverrides(){
-
   }
+
+  @Deprecated
+  void Bad2() {
+  }
+
 }

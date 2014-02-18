@@ -44,6 +44,7 @@ public class RawException_S00112_CheckTest {
         .next().atLine(45)
         .next().atLine(46)
         .next().atLine(48)
+        .next().atLine(59)
         .noMore();
   }
 
