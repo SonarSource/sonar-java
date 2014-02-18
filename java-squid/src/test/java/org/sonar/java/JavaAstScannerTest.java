@@ -94,17 +94,6 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void packages() {
-    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new SemanticModelVisitor());
-    File baseDir = new File("src/test/files/metrics");
-    List<InputFile> inputFiles = InputFileUtils.create(baseDir,
-      ImmutableList.of(new File("src/test/files/metrics/Packages.java")));
-    scanner.scan(inputFiles);
-    SourceProject project = (SourceProject) scanner.getIndex().search(new QueryByType(SourceProject.class)).iterator().next();
-    assertThat(project.getInt(JavaMetric.PACKAGES)).isEqualTo(1);
-  }
-
-  @Test
   public void accessors() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Accessors.java"));
     assertThat(file.getInt(Metric.ACCESSORS)).isEqualTo(3);

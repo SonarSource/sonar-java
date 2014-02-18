@@ -32,7 +32,6 @@ public enum JavaMetric implements MetricDef {
   COMPLEXITY,
   METHODS,
   CLASSES,
-  PACKAGES,
   TESTS;
 
   private boolean aggregateIfThereIsAlreadyAValue = true;

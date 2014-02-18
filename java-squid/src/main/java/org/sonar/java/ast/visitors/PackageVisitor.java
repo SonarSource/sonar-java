@@ -33,7 +33,6 @@ public class PackageVisitor extends JavaAstVisitor {
   public void visitFile(AstNode astNode) {
     SourceProject sourceProject = (SourceProject) getContext().peekSourceCode();
     SourcePackage sourcePackage = findOrCreateSourcePackage(sourceProject, getPackageKey(astNode));
-    sourcePackage.setMeasure(JavaMetric.PACKAGES, 1);
     getContext().addSourceCode(sourcePackage);
   }
 

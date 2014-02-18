@@ -56,7 +56,6 @@ public class StrutsTest {
   // FIXME compare with previous values
   @Test
   public void measures_on_project() throws Exception {
-    assertThat(project.getInt(JavaMetric.PACKAGES)).isEqualTo(15);
     assertThat(project.getInt(JavaMetric.FILES)).isEqualTo(134);
     // TODO assertEquals(37, project.getInt(Metric.ANONYMOUS_INNER_CLASSES));
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(146);

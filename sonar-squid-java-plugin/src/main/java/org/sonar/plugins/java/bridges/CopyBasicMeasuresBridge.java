@@ -38,16 +38,6 @@ public final class CopyBasicMeasuresBridge extends Bridge {
   private static final Number[] LIMITS = {0, 5, 10, 20, 30, 60, 90};
 
   @Override
-  public void onProject(SourceProject squidProject, Project sonarProject) {
-    context.saveMeasure(sonarProject, CoreMetrics.PACKAGES, squidProject.getDouble(JavaMetric.PACKAGES));
-  }
-
-  @Override
-  public void onPackage(SourcePackage squidPackage, Resource sonarPackage) {
-    context.saveMeasure(sonarPackage, CoreMetrics.PACKAGES, squidPackage.getDouble(JavaMetric.PACKAGES));
-  }
-
-  @Override
   public void onFile(SourceFile squidFile, Resource sonarResource) {
     copy(squidFile, sonarResource, JavaMetric.LINES_OF_CODE, CoreMetrics.NCLOC);
     copy(squidFile, sonarResource, JavaMetric.LINES, CoreMetrics.LINES);
