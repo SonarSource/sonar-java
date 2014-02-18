@@ -81,7 +81,4 @@ public class SonarComponents implements BatchExtension {
     return resourcePerspectives.as(Highlightable.class, resourceFromIOFile(file));
   }
 
-  public Issuable issuableFor(File file) {
-    return resourcePerspectives.as(Issuable.class, resourceFromIOFile(file));
-  }
 }

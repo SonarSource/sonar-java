@@ -23,6 +23,7 @@ import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.checks.NoSonarFilter;
+import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaSquid;
@@ -48,7 +49,7 @@ public class Bridges {
     this.squid = squid;
   }
 
-  public void save(SensorContext context, Project project, CheckFactory checkFactory, NoSonarFilter noSonarFilter) {
+  public void save(SensorContext context, Project project, CheckFactory checkFactory, NoSonarFilter noSonarFilter, RulesProfile profile) {
     boolean skipPackageDesignAnalysis = project.getConfiguration().getBoolean(
         CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY,
         CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_DEFAULT_VALUE);
@@ -61,7 +62,8 @@ public class Bridges {
         checkFactory,
         resourceIndex,
         squid,
-        noSonarFilter);
+        noSonarFilter,
+        profile);
     saveProject(resourceIndex, bridges);
     savePackages(resourceIndex, bridges);
     saveFiles(resourceIndex, bridges);

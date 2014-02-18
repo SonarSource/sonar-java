@@ -87,7 +87,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
       astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
       astScanner.accept(new SonarSymbolTableVisitor(sonarComponents, semanticModelVisitor));
 
-      VisitorsBridge visitorsBridge = new VisitorsBridge(sonarComponents, Iterables.concat(
+      VisitorsBridge visitorsBridge = new VisitorsBridge(Iterables.concat(
         sonarComponents.createJavaFileScanners(),
         Arrays.asList(visitors)
         ));

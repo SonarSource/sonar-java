@@ -23,11 +23,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.api.issue.Issuable;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.SemanticModelProvider;
 import org.sonar.java.SemanticModelProviderAwareVisitor;
-import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -42,9 +40,6 @@ import java.util.List;
 
 public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProviderAwareVisitor {
 
-  @Nullable
-  private final SonarComponents sonarComponents;
-
   private final JavaTreeMaker treeMaker = new JavaTreeMaker();
   private final List<JavaFileScanner> scanners;
 
@@ -52,11 +47,10 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
-    this(null, Arrays.asList(visitor));
+    this(Arrays.asList(visitor));
   }
 
-  public VisitorsBridge(@Nullable SonarComponents sonarComponents, Iterable visitors) {
-    this.sonarComponents = sonarComponents;
+  public VisitorsBridge(Iterable visitors) {
     ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
@@ -76,8 +70,7 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
     if (astNode != null) {
       CompilationUnitTree tree = treeMaker.compilationUnit(astNode);
 
-      Issuable issuable = sonarComponents == null ? null : sonarComponents.issuableFor(getContext().getFile());
-      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), issuable, semanticModelProvider);
+      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), semanticModelProvider);
       for (JavaFileScanner scanner : scanners) {
         scanner.scanFile(context);
       }
@@ -87,13 +80,11 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
   private static class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     private final CompilationUnitTree tree;
     private final SourceFile sourceFile;
-    private final Issuable issuable;
     private final SemanticModelProvider semanticModelProvider;
 
-    public DefaultJavaFileScannerContext(CompilationUnitTree tree, SourceFile sourceFile, @Nullable Issuable issuable, SemanticModelProvider semanticModelProvider) {
+    public DefaultJavaFileScannerContext(CompilationUnitTree tree, SourceFile sourceFile, SemanticModelProvider semanticModelProvider) {
       this.tree = tree;
       this.sourceFile = sourceFile;
-      this.issuable = issuable;
       this.semanticModelProvider = semanticModelProvider;
     }
 
@@ -108,13 +99,9 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
       Preconditions.checkNotNull(message);
       int line = ((JavaTree) tree).getLine();
 
-      if (issuable == null) {
-        CheckMessage checkMessage = new CheckMessage(ruleKey, message);
-        checkMessage.setLine(line);
-        sourceFile.log(checkMessage);
-      } else {
-        issuable.addIssue(issuable.newIssueBuilder().ruleKey(ruleKey).line(line).message(message).build());
-      }
+      CheckMessage checkMessage = new CheckMessage(ruleKey, message);
+      checkMessage.setLine(line);
+      sourceFile.log(checkMessage);
     }
 
     @Override

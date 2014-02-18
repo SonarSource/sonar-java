@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.bridges;
 
 import org.sonar.api.resources.Resource;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Violation;
 import org.sonar.squid.api.CheckMessage;
@@ -35,7 +36,15 @@ public class ChecksBridge extends Bridge {
     Set<CheckMessage> messages = squidFile.getCheckMessages();
     if (messages != null) {
       for (CheckMessage checkMessage : messages) {
-        ActiveRule rule = checkFactory.getActiveRule(checkMessage.getCheck());
+        final ActiveRule rule;
+        Object check = checkMessage.getCheck();
+        if (check instanceof RuleKey) {
+          // VisitorsBridge uses RuleKey
+          RuleKey ruleKey = (RuleKey) check;
+          rule = profile.getActiveRule(ruleKey.repository(), ruleKey.rule());
+        } else {
+          rule = checkFactory.getActiveRule(checkMessage.getCheck());
+        }
         Violation violation = Violation.create(rule, sonarFile);
         violation.setLineId(checkMessage.getLine());
         violation.setMessage(checkMessage.getText(Locale.ENGLISH));

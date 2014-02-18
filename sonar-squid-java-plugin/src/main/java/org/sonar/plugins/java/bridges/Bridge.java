@@ -21,6 +21,7 @@ package org.sonar.plugins.java.bridges;
 
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
+import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaSquid;
@@ -37,6 +38,7 @@ public abstract class Bridge {
   ResourceIndex resourceIndex;
   SensorContext context;
   CheckFactory checkFactory;
+  RulesProfile profile;
 
   public boolean needsBytecode() {
     return false;
@@ -48,6 +50,10 @@ public abstract class Bridge {
 
   protected final void setCheckFactory(CheckFactory checkFactory) {
     this.checkFactory = checkFactory;
+  }
+
+  public void setProfile(RulesProfile profile) {
+    this.profile = profile;
   }
 
   protected final void setResourceIndex(ResourceIndex resourceIndex) {

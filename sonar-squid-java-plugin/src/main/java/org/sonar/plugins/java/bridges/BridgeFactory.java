@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.checks.NoSonarFilter;
+import org.sonar.api.profiles.RulesProfile;
 import org.sonar.java.JavaSquid;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public final class BridgeFactory {
   }
 
   public static List<Bridge> create(boolean bytecodeScanned, boolean skipPackageDesignAnalysis, SensorContext context, CheckFactory checkFactory,
-      ResourceIndex resourceIndex, JavaSquid squid, NoSonarFilter noSonarFilter) {
+                                    ResourceIndex resourceIndex, JavaSquid squid, NoSonarFilter noSonarFilter, RulesProfile profile) {
     List<Bridge> result = new ArrayList<Bridge>();
     for (Bridge bridge : create(noSonarFilter, skipPackageDesignAnalysis)) {
       bridge.setCheckFactory(checkFactory);
@@ -55,6 +56,7 @@ public final class BridgeFactory {
         bridge.setContext(context);
         bridge.setSquid(squid);
         bridge.setResourceIndex(resourceIndex);
+        bridge.setProfile(profile);
         result.add(bridge);
       }
     }
