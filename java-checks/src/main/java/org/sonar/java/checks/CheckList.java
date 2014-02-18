@@ -160,6 +160,7 @@ public final class CheckList {
       CollectionsEmptyConstantsCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
+      DITCheck.class,
       ArchitectureCheck.class,
       CallToDeprecatedMethodCheck.class,
       CallToFileDeleteOnExitMethodCheck.class,

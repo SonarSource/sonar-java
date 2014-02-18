@@ -82,6 +82,16 @@ public class BytecodeVisitorsTest {
   }
 
   @Test
+  public void dit() {
+    assertThat(index.search("tags/SourceFile").getInt(Metric.DIT)).isEqualTo(3);
+    assertThat(index.search("tags/File").getInt(Metric.DIT)).isEqualTo(2);
+    assertThat(index.search("tags/Content").getInt(Metric.DIT)).isEqualTo(1);
+    assertThat(index.search("tags/TagException").getInt(Metric.DIT)).isEqualTo(3);
+    assertThat(index.search("tags/Comment").getInt(Metric.DIT)).isEqualTo(0);
+    assertThat(index.search("tags/Tag").getInt(Metric.DIT)).isEqualTo(1);
+  }
+
+  @Test
   public void testExtendsRelationShips() {
     assertThat(graph.getEdge(sourceFile, file).getUsage()).isEqualTo(SourceCodeEdgeUsage.EXTENDS);
   }
