@@ -42,6 +42,8 @@ public class ChecksBridge extends Bridge {
         violation.setCost(checkMessage.getCost());
         context.saveViolation(violation, checkMessage.isBypassExclusion());
       }
+      // Remove from memory:
+      messages.clear();
     }
   }
 
