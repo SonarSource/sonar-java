@@ -45,6 +45,10 @@ public class ChecksBridge extends Bridge {
         } else {
           rule = checkFactory.getActiveRule(checkMessage.getCheck());
         }
+        if (rule == null) {
+          // rule not active
+          continue;
+        }
         Violation violation = Violation.create(rule, sonarFile);
         violation.setLineId(checkMessage.getLine());
         violation.setMessage(checkMessage.getText(Locale.ENGLISH));
