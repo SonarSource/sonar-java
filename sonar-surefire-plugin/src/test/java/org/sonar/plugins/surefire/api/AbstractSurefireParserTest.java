@@ -169,7 +169,7 @@ public class AbstractSurefireParserTest {
   private AbstractSurefireParser newParser() {
     return new AbstractSurefireParser() {
       @Override
-      protected Resource<?> getUnitTestResource(String classKey) {
+      protected Resource getUnitTestResource(String classKey) {
         return new File(classKey);
       }
     };

@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.sonar.api.platform.ServerFileSystem;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.XMLRuleParser;
-import org.sonar.test.i18n.RuleRepositoryTestHelper;
 
 import java.util.List;
 
@@ -51,11 +50,4 @@ public class FindbugsRuleRepositoryTest {
     }
   }
 
-  @Test
-  public void should_provide_a_name_and_description_for_each_rule() {
-    List<Rule> rules = RuleRepositoryTestHelper.createRulesWithNameAndDescription("findbugs", repository);
-
-    assertThat(rules).onProperty("name").excludes(null, "");
-    assertThat(rules).onProperty("description").excludes(null, "");
-  }
 }

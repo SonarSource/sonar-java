@@ -30,7 +30,7 @@ import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.scan.filesystem.SimpleModuleFileSystem;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.utils.SonarException;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -49,7 +49,7 @@ public class FindbugsConfigurationTest {
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
-  private SimpleModuleFileSystem fs;
+  private ModuleFileSystem fs;
   private Settings settings;
   private File baseDir;
   private FindbugsConfiguration conf;
@@ -57,9 +57,13 @@ public class FindbugsConfigurationTest {
   private JavaResourceLocator javaResourceLocator;
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
     baseDir = temp.newFolder("findbugs");
-    fs = new SimpleModuleFileSystem(baseDir);
+
+    fs = mock(ModuleFileSystem.class);
+    when(fs.workingDir()).thenReturn(temp.newFolder());
+    when(fs.baseDir()).thenReturn(baseDir);
+
     settings = new Settings(new PropertyDefinitions().addComponents(FindbugsConfiguration.getPropertyDefinitions()));
     classpath = mock(ProjectClasspath.class);
     javaResourceLocator = mock(JavaResourceLocator.class);
@@ -111,7 +115,6 @@ public class FindbugsConfigurationTest {
     thrown.expect(SonarException.class);
     thrown.expectMessage("Findbugs needs sources to be compiled");
 
-    assertThat(fs.binaryDirs()).isEmpty();
     conf.getFindbugsProject();
   }
 
