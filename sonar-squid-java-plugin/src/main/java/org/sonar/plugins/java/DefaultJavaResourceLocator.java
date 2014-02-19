@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourceCode;
@@ -35,7 +34,6 @@ import org.sonar.squid.indexer.SquidIndex;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 
 public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
@@ -52,11 +50,15 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     this.squidIndex = Preconditions.checkNotNull(squidIndex);
   }
 
+  private SquidIndex getSquidIndex() {
+    Preconditions.checkState(squidIndex != null, "SquidIndex can't be null");
+    return squidIndex;
+  }
+
   @Override
   public Resource findResourceByClassName(String className) {
-    Preconditions.checkState(squidIndex != null, "SquidIndex can't be null");
     String name = className.replace('.', '/');
-    SourceCode sourceCode = squidIndex.search(name);
+    SourceCode sourceCode = getSquidIndex().search(name);
     if (sourceCode == null) {
       LOG.debug("Class not found in SquidIndex: {}", className);
       return null;
@@ -68,9 +70,8 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   @Override
   public Collection<File> classFilesToAnalyze() {
-    Preconditions.checkState(squidIndex != null, "SquidIndex can't be null");
     ImmutableList.Builder<File> result = ImmutableList.builder();
-    Collection<SourceCode> sourceClasses = squidIndex.search(new QueryByType(SourceClass.class));
+    Collection<SourceCode> sourceClasses = getSquidIndex().search(new QueryByType(SourceClass.class));
 
     for (SourceCode sourceClass : sourceClasses) {
       String filePath = sourceClass.getKey() + ".class";

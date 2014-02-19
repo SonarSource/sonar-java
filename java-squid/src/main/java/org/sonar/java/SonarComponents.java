@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.issue.Issuable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.resources.Project;
