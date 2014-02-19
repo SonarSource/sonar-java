@@ -34,15 +34,16 @@ import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Qualifiers;
-import org.sonar.api.scan.filesystem.FileQuery;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.utils.SonarException;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -53,13 +54,16 @@ public class FindbugsConfiguration implements BatchExtension {
   private final RulesProfile profile;
   private final FindbugsProfileExporter exporter;
   private final ProjectClasspath projectClasspath;
+  private final JavaResourceLocator javaResourceLocator;
 
-  public FindbugsConfiguration(ModuleFileSystem fileSystem, Settings settings, RulesProfile profile, FindbugsProfileExporter exporter, ProjectClasspath classpath) {
+  public FindbugsConfiguration(ModuleFileSystem fileSystem, Settings settings, RulesProfile profile, FindbugsProfileExporter exporter, ProjectClasspath classpath,
+                               JavaResourceLocator javaResourceLocator) {
     this.fileSystem = fileSystem;
     this.settings = settings;
     this.profile = profile;
     this.exporter = exporter;
     this.projectClasspath = classpath;
+    this.javaResourceLocator = javaResourceLocator;
   }
 
   public File getTargetXMLReport() {
@@ -72,16 +76,12 @@ public class FindbugsConfiguration implements BatchExtension {
       findbugsProject.addSourceDir(dir.getAbsolutePath());
     }
 
-    List<File> classesToAnalyze = new FindbugsSourceBinaryMatcher(
-      fileSystem.sourceDirs(),
-      fileSystem.binaryDirs())
-      .classesToAnalyze(fileSystem.files(FileQuery.onSource()));
-
-    for (File classToAnalyze : classesToAnalyze) {
+    Collection<File> classFilesToAnalyze = javaResourceLocator.classFilesToAnalyze();
+    for (File classToAnalyze : classFilesToAnalyze) {
       findbugsProject.addFile(classToAnalyze.getCanonicalPath());
     }
 
-    if (classesToAnalyze.isEmpty()) {
+    if (classFilesToAnalyze.isEmpty()) {
       throw new SonarException("Findbugs needs sources to be compiled. "
         + "Please build project before executing sonar and check the location of compiled classes.");
     }

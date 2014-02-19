@@ -29,6 +29,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * @deprecated use {@link org.sonar.plugins.java.api.JavaResourceLocator#classFilesToAnalyze()} instead
+ */
+@Deprecated
 public class FindbugsSourceBinaryMatcher {
 
   private final PathResolver pathResolver = new PathResolver();

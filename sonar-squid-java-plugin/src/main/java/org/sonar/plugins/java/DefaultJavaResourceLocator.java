@@ -20,17 +20,22 @@
 package org.sonar.plugins.java;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
+import org.sonar.squid.indexer.QueryByType;
 import org.sonar.squid.indexer.SquidIndex;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.List;
 
 public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
@@ -59,6 +64,23 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     Preconditions.checkState(sourceCode instanceof SourceClass, "Expected SourceClass, got %s for %s", sourceCode.getClass().getSimpleName(), name);
     String filePath = sourceCode.getParent(SourceFile.class).getName();
     return org.sonar.api.resources.File.fromIOFile(new File(filePath), project);
+  }
+
+  @Override
+  public Collection<File> classFilesToAnalyze() {
+    Preconditions.checkState(squidIndex != null, "SquidIndex can't be null");
+    ImmutableList.Builder<File> result = ImmutableList.builder();
+    Collection<SourceCode> sourceClasses = squidIndex.search(new QueryByType(SourceClass.class));
+
+    for (SourceCode sourceClass : sourceClasses) {
+      String filePath = sourceClass.getKey() + ".class";
+      // TODO can be several build directories
+      File classFile = new File(project.getFileSystem().getBuildOutputDir(), filePath);
+      if (classFile.isFile()) {
+        result.add(classFile);
+      }
+    }
+    return result.build();
   }
 
 }

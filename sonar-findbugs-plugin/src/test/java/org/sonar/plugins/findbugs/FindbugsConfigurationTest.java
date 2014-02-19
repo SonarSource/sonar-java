@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.findbugs;
 
+import com.google.common.collect.ImmutableList;
 import edu.umd.cs.findbugs.Project;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,12 +32,14 @@ import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.scan.filesystem.SimpleModuleFileSystem;
 import org.sonar.api.utils.SonarException;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FindbugsConfigurationTest {
 
@@ -51,6 +54,7 @@ public class FindbugsConfigurationTest {
   private File baseDir;
   private FindbugsConfiguration conf;
   private ProjectClasspath classpath;
+  private JavaResourceLocator javaResourceLocator;
 
   @Before
   public void setUp() {
@@ -58,7 +62,8 @@ public class FindbugsConfigurationTest {
     fs = new SimpleModuleFileSystem(baseDir);
     settings = new Settings(new PropertyDefinitions().addComponents(FindbugsConfiguration.getPropertyDefinitions()));
     classpath = mock(ProjectClasspath.class);
-    conf = new FindbugsConfiguration(fs, settings, RulesProfile.create(), new FindbugsProfileExporter(), classpath);
+    javaResourceLocator = mock(JavaResourceLocator.class);
+    conf = new FindbugsConfiguration(fs, settings, RulesProfile.create(), new FindbugsProfileExporter(), classpath, javaResourceLocator);
   }
 
   @Test
@@ -102,7 +107,7 @@ public class FindbugsConfigurationTest {
   }
 
   @Test
-  public void should_fail_if_no_binary_dirs() throws IOException {
+  public void should_fail_if_no_class_files() throws IOException {
     thrown.expect(SonarException.class);
     thrown.expectMessage("Findbugs needs sources to be compiled");
 
@@ -111,24 +116,12 @@ public class FindbugsConfigurationTest {
   }
 
   @Test
-  public void should_support_multiple_binary_dirs() throws IOException {
-    File binaryDir1 = temp.newFolder("binary1");
-    File binaryFile11 = temp.newFile("binary1/MyClass11.class");
-    temp.newFolder("binary1/sub");
-    File binaryFile12 = temp.newFile("binary1/sub/MyClass12.class");
-    temp.newFile("binary1/Fake.txt");
-    File binaryDir2 = temp.newFolder("binary2");
-    File binaryFile21 = temp.newFile("binary2/MyClass21.class");
-
-    fs.addBinaryDir(binaryDir1);
-    fs.addBinaryDir(binaryDir2);
-
+  public void should_set_class_files() throws IOException {
+    File file = temp.newFile("MyClass.class");
+    when(javaResourceLocator.classFilesToAnalyze()).thenReturn(ImmutableList.of(file));
     Project findbugsProject = conf.getFindbugsProject();
 
-    assertThat(findbugsProject.getFileList()).containsOnly(
-      binaryFile11.getCanonicalPath(),
-      binaryFile12.getCanonicalPath(),
-      binaryFile21.getCanonicalPath());
+    assertThat(findbugsProject.getFileList()).containsOnly(file.getCanonicalPath());
   }
 
   @Test

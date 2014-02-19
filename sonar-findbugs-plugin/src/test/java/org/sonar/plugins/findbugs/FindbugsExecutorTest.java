@@ -89,7 +89,7 @@ public class FindbugsExecutorTest {
     ModuleFileSystem fs = mock(ModuleFileSystem.class);
     Settings settings = new Settings();
     settings.setProperty(CoreProperties.CORE_VIOLATION_LOCALE_PROPERTY, Locale.getDefault().getDisplayName());
-    FindbugsConfiguration conf = new FindbugsConfiguration(fs, settings, null, null, null);
+    FindbugsConfiguration conf = new FindbugsConfiguration(fs, settings, null, null, null, null);
 
     new FindbugsExecutor(conf).execute();
   }
