@@ -67,7 +67,7 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>3.6</sonar.version>
+    <sonar.version>4.2-M13</sonar.version>
     <sslr.version>1.19.2</sslr.version>
     <jacoco.version>0.6.4.201312101107</jacoco.version>
   </properties>
@@ -92,6 +92,11 @@
       <dependency>
         <groupId>org.codehaus.sonar</groupId>
         <artifactId>sonar-squid</artifactId>
+        <version>${sonar.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.sonar</groupId>
+        <artifactId>sonar-deprecated</artifactId>
         <version>${sonar.version}</version>
       </dependency>
 

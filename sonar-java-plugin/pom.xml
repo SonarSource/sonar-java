@@ -33,6 +33,14 @@
       <version>1.2</version>
     </dependency>
 
+    <!-- TODO remove after upgrade from SonarQube 4.2-M13: -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>2.0.3</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- unit tests -->
     <dependency>
       <groupId>junit</groupId>
@@ -47,6 +55,11 @@
     <dependency>
       <groupId>org.easytesting</groupId>
       <artifactId>fest-assert</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.sonar</groupId>
+      <artifactId>sonar-deprecated</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

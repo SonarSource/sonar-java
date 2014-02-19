@@ -60,6 +60,15 @@
       <type>sonar-plugin</type>
       <scope>provided</scope>
     </dependency>
+
+    <!-- TODO remove after upgrade from SonarQube 4.2-M13: -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>2.0.3</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Would be provided by environment -->
     <dependency>
       <groupId>org.apache.ant</groupId>
@@ -92,6 +101,12 @@
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-project</artifactId>
       <version>2.0.7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.sonar</groupId>
+      <artifactId>sonar-deprecated</artifactId>
+      <version>${sonar.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

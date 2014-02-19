@@ -29,13 +29,10 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.resources.Scopes;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
-import org.sonar.api.test.IsResource;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
@@ -150,8 +147,7 @@ public class JaCoCoSensorTest {
     MutableTestPlan testPlan = mock(MutableTestPlan.class);
     when(testPlan.testCasesByName("test")).thenReturn(newArrayList(testCase));
 
-    when(perspectives.as(eq(MutableTestPlan.class), argThat(new IsResource(Scopes.FILE, Qualifiers.CLASS, "org.example.App"))))
-        .thenReturn(testPlan);
+    when(perspectives.as(eq(MutableTestPlan.class), any(Resource.class))).thenReturn(testPlan);
 
     sensor.analyse(project, context);
 
