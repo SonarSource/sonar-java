@@ -3784,11 +3784,11 @@
         <rule-key>MaximumInheritanceDepth</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>constant_issue</txt>
+          <txt>linear</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
-          <val>4.0</val>
+          <val>1.0</val>
           <txt>h</txt>
         </prop>
         <prop>
