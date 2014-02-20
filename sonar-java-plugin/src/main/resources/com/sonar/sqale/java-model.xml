@@ -9880,7 +9880,7 @@
         <rule-key>FailedUnitTests</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>constant_issue</txt>
+          <txt>linear</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
