@@ -33,7 +33,8 @@ import java.util.List;
 
 @Rule(
   key = "S1194",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ErrorClassExtendedCheck extends SquidCheck<LexerlessGrammar> {
 

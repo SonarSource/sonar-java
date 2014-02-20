@@ -38,7 +38,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(
   key = UnusedPrivateFieldCheck.RULE_KEY,
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"unused-code"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class UnusedPrivateFieldCheck extends BaseTreeVisitor implements JavaFileScanner {
 

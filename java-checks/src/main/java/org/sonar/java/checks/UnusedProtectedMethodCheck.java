@@ -28,7 +28,8 @@ import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourceMethod;
 
-@Rule(key = UnusedProtectedMethodCheck.RULE_KEY, priority = Priority.MAJOR)
+@Rule(key = UnusedProtectedMethodCheck.RULE_KEY, priority = Priority.MAJOR,
+  tags={"unused-code"})
 public class UnusedProtectedMethodCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "UnusedProtectedMethod";

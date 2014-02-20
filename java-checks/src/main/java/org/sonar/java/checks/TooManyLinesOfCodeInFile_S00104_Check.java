@@ -30,7 +30,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S00104",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"size"})
 public class TooManyLinesOfCodeInFile_S00104_Check extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private static final int DEFAULT_MAXIMUM = 1000;

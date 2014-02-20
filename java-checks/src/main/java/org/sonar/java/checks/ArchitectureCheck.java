@@ -36,7 +36,9 @@ import org.sonar.squid.api.SourceMethod;
 
 import java.util.Map;
 
-@Rule(key = ArchitectureCheck.RULE_KEY, cardinality = Cardinality.MULTIPLE, priority = Priority.MAJOR)
+@Rule(key = ArchitectureCheck.RULE_KEY, 
+  cardinality = Cardinality.MULTIPLE, 
+  priority = Priority.MAJOR)
 public class ArchitectureCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "ArchitecturalConstraint";

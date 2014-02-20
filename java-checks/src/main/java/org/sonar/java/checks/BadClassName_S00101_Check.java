@@ -34,7 +34,8 @@ import java.util.regex.Pattern;
 
 @Rule(
   key = BadClassName_S00101_Check.RULE_KEY,
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"naming"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class BadClassName_S00101_Check extends BaseTreeVisitor implements JavaFileScanner {
 

@@ -33,7 +33,8 @@ import java.util.Set;
 
 @Rule(
   key = "RightCurlyBraceSameLineAsNextBlockCheck",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class RightCurlyBraceSameLineAsNextBlockCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 

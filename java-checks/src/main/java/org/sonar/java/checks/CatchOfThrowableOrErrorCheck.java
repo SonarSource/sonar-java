@@ -36,7 +36,8 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 
 @Rule(
   key = CatchOfThrowableOrErrorCheck.RULE_KEY,
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags={"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
 public class CatchOfThrowableOrErrorCheck extends BaseTreeVisitor implements JavaFileScanner {
 

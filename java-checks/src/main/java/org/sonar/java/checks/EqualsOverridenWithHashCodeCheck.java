@@ -32,7 +32,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
   key = EqualsOverridenWithHashCodeCheck.KEY,
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags={"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
 public class EqualsOverridenWithHashCodeCheck extends BaseTreeVisitor implements JavaFileScanner {
 

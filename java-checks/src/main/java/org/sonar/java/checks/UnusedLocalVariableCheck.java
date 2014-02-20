@@ -40,7 +40,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(
   key = UnusedLocalVariableCheck.RULE_KEY,
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"unused-code"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class UnusedLocalVariableCheck extends BaseTreeVisitor implements JavaFileScanner {
 

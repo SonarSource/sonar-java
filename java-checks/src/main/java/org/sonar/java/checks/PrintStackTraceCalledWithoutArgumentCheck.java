@@ -29,7 +29,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1148",
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags={"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class PrintStackTraceCalledWithoutArgumentCheck extends SquidCheck<LexerlessGrammar> {
 

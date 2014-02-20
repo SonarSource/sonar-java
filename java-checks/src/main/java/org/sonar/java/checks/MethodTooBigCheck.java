@@ -30,7 +30,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S138",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"size"})
 public class MethodTooBigCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final int DEFAULT_MAX = 100;

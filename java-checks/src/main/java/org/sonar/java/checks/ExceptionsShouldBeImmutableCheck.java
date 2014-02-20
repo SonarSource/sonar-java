@@ -31,7 +31,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1165",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ExceptionsShouldBeImmutableCheck extends SquidCheck<LexerlessGrammar> {
 

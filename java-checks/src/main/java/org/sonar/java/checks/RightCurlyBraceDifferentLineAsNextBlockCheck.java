@@ -32,7 +32,8 @@ import java.util.Set;
 
 @Rule(
   key = "RightCurlyBraceDifferentLineAsNextBlockCheck",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"convention"})
 public class RightCurlyBraceDifferentLineAsNextBlockCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private static final Set<String> NEXT_BLOCKS = ImmutableSet.of(

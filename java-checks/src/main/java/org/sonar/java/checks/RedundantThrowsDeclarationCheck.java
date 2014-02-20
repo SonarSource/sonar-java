@@ -33,7 +33,8 @@ import org.sonar.squid.api.SourceMethod;
 import java.util.List;
 import java.util.Set;
 
-@Rule(key = RedundantThrowsDeclarationCheck.RULE_KEY, priority = Priority.MAJOR)
+@Rule(key = RedundantThrowsDeclarationCheck.RULE_KEY, priority = Priority.MAJOR,
+  tags={"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
 

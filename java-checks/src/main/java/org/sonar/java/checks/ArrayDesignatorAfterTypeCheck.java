@@ -29,7 +29,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1195",
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class ArrayDesignatorAfterTypeCheck extends SquidCheck<LexerlessGrammar> {
 

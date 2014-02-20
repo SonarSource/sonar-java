@@ -30,7 +30,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1143",
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags={"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
 public class ReturnInFinallyCheck extends SquidCheck<LexerlessGrammar> {
 

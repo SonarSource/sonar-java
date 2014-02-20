@@ -31,7 +31,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "RightCurlyBraceStartLineCheck",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class RightCurlyBraceStartLineCheck extends SquidCheck<LexerlessGrammar> {
 

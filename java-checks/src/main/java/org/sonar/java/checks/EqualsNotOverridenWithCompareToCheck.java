@@ -30,7 +30,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1210",
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags={"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class EqualsNotOverridenWithCompareToCheck extends SquidCheck<LexerlessGrammar> {
 

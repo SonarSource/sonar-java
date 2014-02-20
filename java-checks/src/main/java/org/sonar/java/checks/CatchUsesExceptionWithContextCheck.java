@@ -49,7 +49,8 @@ import java.util.Set;
 
 @Rule(
   key = CatchUsesExceptionWithContextCheck.RULE_KEY,
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implements JavaFileScanner {
 

@@ -29,7 +29,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "LeftCurlyBraceStartLineCheck",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"convention"})
 public class LeftCurlyBraceStartLineCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override

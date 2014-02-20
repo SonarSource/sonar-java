@@ -35,7 +35,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 import java.util.Collections;
 import java.util.List;
 
-@Rule(key = "CommentedOutCodeLine", priority = Priority.MAJOR)
+@Rule(key = "CommentedOutCodeLine", priority = Priority.MAJOR,
+  tags={"unused-code"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class CommentedOutCodeLineCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
