@@ -22,7 +22,7 @@
         <rule-key>SE_NO_SERIALVERSIONID</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -40,7 +40,7 @@
         <rule-key>NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -58,7 +58,7 @@
         <rule-key>NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -76,7 +76,7 @@
         <rule-key>S1190</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -94,7 +94,7 @@
         <rule-key>S1191</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -116,7 +116,7 @@
         <rule-key>DMI_HARDCODED_ABSOLUTE_FILENAME</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -138,7 +138,7 @@
         <rule-key>DM_CONVERT_CASE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -160,7 +160,7 @@
         <rule-key>RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -178,7 +178,7 @@
         <rule-key>DM_DEFAULT_ENCODING</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -196,7 +196,7 @@
         <rule-key>S00113</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -218,7 +218,7 @@
         <rule-key>LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -236,7 +236,7 @@
         <rule-key>XFB_XML_FACTORY_BYPASS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -254,7 +254,7 @@
         <rule-key>CallToDeprecatedMethod</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -284,7 +284,7 @@
         <rule-key>NM_METHOD_NAMING_CONVENTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -302,7 +302,7 @@
         <rule-key>NM_CLASS_NAMING_CONVENTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -320,7 +320,7 @@
         <rule-key>SKIPPED_CLASS_TOO_BIG</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -338,7 +338,7 @@
         <rule-key>NM_FIELD_NAMING_CONVENTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -356,7 +356,7 @@
         <rule-key>UCF_USELESS_CONTROL_FLOW</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -374,7 +374,7 @@
         <rule-key>DMI_ARGUMENTS_WRONG_ORDER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -392,7 +392,7 @@
         <rule-key>S00118</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -410,7 +410,7 @@
         <rule-key>S00101</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -428,7 +428,7 @@
         <rule-key>S00115</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -446,7 +446,7 @@
         <rule-key>S00116</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -464,7 +464,7 @@
         <rule-key>S00121</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -482,7 +482,7 @@
         <rule-key>S00114</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -500,7 +500,7 @@
         <rule-key>S00117</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -518,7 +518,7 @@
         <rule-key>S00100</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -536,7 +536,7 @@
         <rule-key>S00120</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -554,7 +554,7 @@
         <rule-key>S00119</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -572,7 +572,7 @@
         <rule-key>ModifiersOrderCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -590,7 +590,7 @@
         <rule-key>TrailingCommentCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -608,7 +608,7 @@
         <rule-key>UselessImportCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -626,7 +626,7 @@
         <rule-key>LowerCaseLongSuffixCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -644,7 +644,7 @@
         <rule-key>LeftCurlyBraceStartLineCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -662,7 +662,7 @@
         <rule-key>LeftCurlyBraceEndLineCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -680,7 +680,7 @@
         <rule-key>RightCurlyBraceSameLineAsNextBlockCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -698,7 +698,7 @@
         <rule-key>RightCurlyBraceDifferentLineAsNextBlockCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -716,7 +716,7 @@
         <rule-key>RightCurlyBraceStartLineCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -734,7 +734,7 @@
         <rule-key>UselessParenthesesCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -752,7 +752,7 @@
         <rule-key>S1155</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -770,7 +770,7 @@
         <rule-key>S1126</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -788,7 +788,7 @@
         <rule-key>S1157</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -806,7 +806,7 @@
         <rule-key>S1141</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -824,7 +824,7 @@
         <rule-key>S1188</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -842,7 +842,7 @@
         <rule-key>S1195</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -860,7 +860,7 @@
         <rule-key>S1197</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -878,7 +878,7 @@
         <rule-key>S1066</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -896,7 +896,7 @@
         <rule-key>S1150</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -914,7 +914,7 @@
         <rule-key>S1153</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -932,7 +932,7 @@
         <rule-key>S1151</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -950,7 +950,7 @@
         <rule-key>S1301</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -968,7 +968,7 @@
         <rule-key>S1219</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -986,7 +986,7 @@
         <rule-key>S1231</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1004,7 +1004,7 @@
         <rule-key>S00103</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1022,7 +1022,7 @@
         <rule-key>S00122</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1040,7 +1040,7 @@
         <rule-key>IndentationCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1058,7 +1058,7 @@
         <rule-key>S00104</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1080,7 +1080,7 @@
         <rule-key>UPM_UNCALLED_PRIVATE_METHOD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1098,7 +1098,7 @@
         <rule-key>UUF_UNUSED_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1116,7 +1116,7 @@
         <rule-key>SS_SHOULD_BE_STATIC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1134,7 +1134,7 @@
         <rule-key>URF_UNREAD_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1152,7 +1152,7 @@
         <rule-key>CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1170,7 +1170,7 @@
         <rule-key>CN_IDIOM</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1188,7 +1188,7 @@
         <rule-key>NM_CLASS_NOT_EXCEPTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1206,7 +1206,7 @@
         <rule-key>NM_SAME_SIMPLE_NAME_AS_INTERFACE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1224,7 +1224,7 @@
         <rule-key>NM_SAME_SIMPLE_NAME_AS_SUPERCLASS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1242,7 +1242,7 @@
         <rule-key>NM_CONFUSING</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1260,7 +1260,7 @@
         <rule-key>FI_EMPTY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1278,7 +1278,7 @@
         <rule-key>FI_USELESS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1296,7 +1296,7 @@
         <rule-key>FI_FINALIZER_NULLS_FIELDS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1314,7 +1314,7 @@
         <rule-key>FI_FINALIZER_ONLY_NULLS_FIELDS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1332,7 +1332,7 @@
         <rule-key>NM_WRONG_PACKAGE_INTENTIONAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1350,7 +1350,7 @@
         <rule-key>ISC_INSTANTIATE_STATIC_CLASS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1368,7 +1368,7 @@
         <rule-key>GC_UNCHECKED_TYPE_IN_GENERIC_CALL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1386,7 +1386,7 @@
         <rule-key>NM_VERY_CONFUSING_INTENTIONAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1404,7 +1404,7 @@
         <rule-key>SE_NONSTATIC_SERIALVERSIONID</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1422,7 +1422,7 @@
         <rule-key>SE_NONLONG_SERIALVERSIONID</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1440,7 +1440,7 @@
         <rule-key>SE_NONFINAL_SERIALVERSIONID</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1458,7 +1458,7 @@
         <rule-key>NP_NULL_INSTANCEOF</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1476,7 +1476,7 @@
         <rule-key>EC_NULL_ARG</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1494,7 +1494,7 @@
         <rule-key>EQ_SELF_USE_OBJECT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1512,7 +1512,7 @@
         <rule-key>EQ_DONT_DEFINE_EQUALS_FOR_ENUM</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1530,7 +1530,7 @@
         <rule-key>DLS_DEAD_STORE_OF_CLASS_LITERAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1548,7 +1548,7 @@
         <rule-key>SA_FIELD_DOUBLE_ASSIGNMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1566,7 +1566,7 @@
         <rule-key>DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1584,7 +1584,7 @@
         <rule-key>UWF_NULL_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1602,7 +1602,7 @@
         <rule-key>NP_NULL_PARAM_DEREF</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1620,7 +1620,7 @@
         <rule-key>NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1638,7 +1638,7 @@
         <rule-key>NP_NONNULL_PARAM_VIOLATION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1656,7 +1656,7 @@
         <rule-key>RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1674,7 +1674,7 @@
         <rule-key>UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1692,7 +1692,7 @@
         <rule-key>SIO_SUPERFLUOUS_INSTANCEOF</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1710,7 +1710,7 @@
         <rule-key>STI_INTERRUPTED_ON_CURRENTTHREAD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1728,7 +1728,7 @@
         <rule-key>UWF_UNWRITTEN_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1746,7 +1746,7 @@
         <rule-key>DLS_DEAD_LOCAL_STORE_IN_RETURN</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1764,7 +1764,7 @@
         <rule-key>UCF_USELESS_CONTROL_FLOW_NEXT_LINE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1782,7 +1782,7 @@
         <rule-key>RI_REDUNDANT_INTERFACES</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1800,7 +1800,7 @@
         <rule-key>CI_CONFUSED_INHERITANCE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1818,7 +1818,7 @@
         <rule-key>DLS_DEAD_LOCAL_STORE_OF_NULL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1836,7 +1836,7 @@
         <rule-key>DLS_DEAD_LOCAL_STORE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1854,7 +1854,7 @@
         <rule-key>REC_CATCH_EXCEPTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1872,7 +1872,7 @@
         <rule-key>NP_LOAD_OF_KNOWN_NULL_VALUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1890,7 +1890,7 @@
         <rule-key>RV_CHECK_FOR_POSITIVE_INDEXOF</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1908,7 +1908,7 @@
         <rule-key>RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1926,7 +1926,7 @@
         <rule-key>RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1944,7 +1944,7 @@
         <rule-key>RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1962,7 +1962,7 @@
         <rule-key>RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1980,7 +1980,7 @@
         <rule-key>BC_UNCONFIRMED_CAST</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -1998,7 +1998,7 @@
         <rule-key>NM_VERY_CONFUSING</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2016,7 +2016,7 @@
         <rule-key>DMI_USELESS_SUBSTRING</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2034,7 +2034,7 @@
         <rule-key>INT_VACUOUS_BIT_OPERATION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2052,7 +2052,7 @@
         <rule-key>INT_VACUOUS_COMPARISON</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2070,7 +2070,7 @@
         <rule-key>SE_PRIVATE_READ_RESOLVE_NOT_INHERITED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2088,7 +2088,7 @@
         <rule-key>USM_USELESS_SUBCLASS_METHOD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2106,7 +2106,7 @@
         <rule-key>UndocumentedApi</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2124,7 +2124,7 @@
         <rule-key>UnusedPrivateMethod</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2142,7 +2142,7 @@
         <rule-key>UnusedProtectedMethod</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2160,7 +2160,7 @@
         <rule-key>IJU_NO_TESTS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2178,7 +2178,7 @@
         <rule-key>IJU_SUITE_NOT_STATIC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2196,7 +2196,7 @@
         <rule-key>IJU_BAD_SUITE_METHOD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2232,7 +2232,7 @@
         <rule-key>CommentedOutCodeLine</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2250,7 +2250,7 @@
         <rule-key>FB_MISSING_EXPECTED_WARNING</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2268,7 +2268,7 @@
         <rule-key>FB_UNEXPECTED_WARNING</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2286,7 +2286,7 @@
         <rule-key>LabelsShouldNotBeUsedCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2304,7 +2304,7 @@
         <rule-key>S1118</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2322,7 +2322,7 @@
         <rule-key>MissingDeprecatedCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2340,7 +2340,7 @@
         <rule-key>RedundantThrowsDeclarationCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2358,7 +2358,7 @@
         <rule-key>S1125</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2376,7 +2376,7 @@
         <rule-key>S1133</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2394,7 +2394,7 @@
         <rule-key>S1145</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2412,7 +2412,7 @@
         <rule-key>S1171</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2430,7 +2430,7 @@
         <rule-key>S1135</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2448,7 +2448,7 @@
         <rule-key>S1193</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2466,7 +2466,7 @@
         <rule-key>S135</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2484,7 +2484,7 @@
         <rule-key>S138</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2502,7 +2502,7 @@
         <rule-key>S1199</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2520,7 +2520,7 @@
         <rule-key>S1185</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2538,7 +2538,7 @@
         <rule-key>S1315</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2556,7 +2556,7 @@
         <rule-key>S1312</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2574,7 +2574,7 @@
         <rule-key>S1310</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2592,7 +2592,7 @@
         <rule-key>S1068</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2610,7 +2610,7 @@
         <rule-key>S1481</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2636,7 +2636,7 @@
         <rule-key>MS_CANNOT_BE_FINAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2654,7 +2654,7 @@
         <rule-key>MS_MUTABLE_ARRAY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2672,7 +2672,7 @@
         <rule-key>MS_MUTABLE_HASHTABLE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2690,7 +2690,7 @@
         <rule-key>MS_OOI_PKGPROTECT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2708,7 +2708,7 @@
         <rule-key>MS_PKGPROTECT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2726,7 +2726,7 @@
         <rule-key>FI_PUBLIC_SHOULD_BE_PROTECTED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2744,7 +2744,7 @@
         <rule-key>MS_FINAL_PKGPROTECT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2762,7 +2762,7 @@
         <rule-key>MS_SHOULD_BE_FINAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2780,7 +2780,7 @@
         <rule-key>NoSonar</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2802,7 +2802,7 @@
         <rule-key>S106</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2824,7 +2824,7 @@
         <rule-key>MS_EXPOSE_REP</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2842,7 +2842,7 @@
         <rule-key>EI_EXPOSE_STATIC_REP2</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2860,7 +2860,7 @@
         <rule-key>EI_EXPOSE_REP</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2878,7 +2878,7 @@
         <rule-key>EI_EXPOSE_REP2</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2896,7 +2896,7 @@
         <rule-key>SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2914,7 +2914,7 @@
         <rule-key>HRS_REQUEST_PARAMETER_TO_HTTP_HEADER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2932,7 +2932,7 @@
         <rule-key>HRS_REQUEST_PARAMETER_TO_COOKIE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2950,7 +2950,7 @@
         <rule-key>XSS_REQUEST_PARAMETER_TO_JSP_WRITER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2968,7 +2968,7 @@
         <rule-key>SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -2986,7 +2986,7 @@
         <rule-key>XSS_REQUEST_PARAMETER_TO_SEND_ERROR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3004,7 +3004,7 @@
         <rule-key>XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3026,7 +3026,7 @@
         <rule-key>DMI_EMPTY_DB_PASSWORD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3044,7 +3044,7 @@
         <rule-key>DMI_CONSTANT_DB_PASSWORD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3062,7 +3062,7 @@
         <rule-key>DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3080,7 +3080,7 @@
         <rule-key>DP_DO_INSIDE_DO_PRIVILEGED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3098,7 +3098,7 @@
         <rule-key>DM_EXIT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3116,7 +3116,7 @@
         <rule-key>DM_RUN_FINALIZERS_ON_EXIT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3134,7 +3134,7 @@
         <rule-key>DMI_RANDOM_USED_ONLY_ONCE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3152,7 +3152,7 @@
         <rule-key>PT_ABSOLUTE_PATH_TRAVERSAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3170,7 +3170,7 @@
         <rule-key>PT_RELATIVE_PATH_TRAVERSAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3188,7 +3188,7 @@
         <rule-key>S1451</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3214,7 +3214,7 @@
         <rule-key>HSC_HUGE_SHARED_STRING_CONSTANT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3232,7 +3232,7 @@
         <rule-key>DM_NEW_FOR_GETCLASS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3250,7 +3250,7 @@
         <rule-key>DM_BOXED_PRIMITIVE_TOSTRING</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3268,7 +3268,7 @@
         <rule-key>SIC_INNER_SHOULD_BE_STATIC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3286,7 +3286,7 @@
         <rule-key>CallToFileDeleteOnExitMethod</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3304,7 +3304,7 @@
         <rule-key>S1170</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3326,7 +3326,7 @@
         <rule-key>SIC_INNER_SHOULD_BE_STATIC_ANON</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3344,7 +3344,7 @@
         <rule-key>SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3362,7 +3362,7 @@
         <rule-key>WMI_WRONG_MAP_ITERATOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3380,7 +3380,7 @@
         <rule-key>DMI_COLLECTION_OF_URLS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3398,7 +3398,7 @@
         <rule-key>UM_UNNECESSARY_MATH</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3416,7 +3416,7 @@
         <rule-key>SBSC_USE_STRINGBUFFER_CONCATENATION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3434,7 +3434,7 @@
         <rule-key>DM_BOOLEAN_CTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3452,7 +3452,7 @@
         <rule-key>DM_NUMBER_CTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3470,7 +3470,7 @@
         <rule-key>DM_FP_NUMBER_CTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3488,7 +3488,7 @@
         <rule-key>DM_STRING_VOID_CTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3506,7 +3506,7 @@
         <rule-key>DM_STRING_CTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3524,7 +3524,7 @@
         <rule-key>DM_STRING_TOSTRING</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3542,7 +3542,7 @@
         <rule-key>ITA_INEFFICIENT_TO_ARRAY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3560,7 +3560,7 @@
         <rule-key>BX_BOXING_IMMEDIATELY_UNBOXED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3578,7 +3578,7 @@
         <rule-key>BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3596,7 +3596,7 @@
         <rule-key>DMI_BLOCKING_METHODS_ON_URL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3614,7 +3614,7 @@
         <rule-key>DM_NEXTINT_VIA_NEXTDOUBLE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3632,7 +3632,7 @@
         <rule-key>BX_UNBOXING_IMMEDIATELY_REBOXED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3650,7 +3650,7 @@
         <rule-key>S1149</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3668,7 +3668,7 @@
         <rule-key>S1158</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3694,7 +3694,7 @@
         <rule-key>JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3712,7 +3712,7 @@
         <rule-key>IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3730,7 +3730,7 @@
         <rule-key>MF_CLASS_MASKS_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3748,7 +3748,7 @@
         <rule-key>IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3766,7 +3766,7 @@
         <rule-key>ArchitecturalConstraint</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3784,7 +3784,7 @@
         <rule-key>MaximumInheritanceDepth</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3802,7 +3802,7 @@
         <rule-key>USM_USELESS_ABSTRACT_METHOD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3820,7 +3820,7 @@
         <rule-key>CD_CIRCULAR_DEPENDENCY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3838,7 +3838,7 @@
         <rule-key>CycleBetweenPackages</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3856,7 +3856,7 @@
         <rule-key>ClassVariableVisibilityCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3874,7 +3874,7 @@
         <rule-key>S1214</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3892,7 +3892,7 @@
         <rule-key>S1220</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3910,7 +3910,7 @@
         <rule-key>S1200</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3928,7 +3928,7 @@
         <rule-key>S1313</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3946,7 +3946,7 @@
         <rule-key>S1319</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -3990,7 +3990,7 @@
         <rule-key>IMA_INEFFICIENT_MEMBER_ACCESS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4008,7 +4008,7 @@
         <rule-key>S134</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4034,7 +4034,7 @@
         <rule-key>SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4052,7 +4052,7 @@
         <rule-key>SE_NO_SUITABLE_CONSTRUCTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4070,7 +4070,7 @@
         <rule-key>SE_BAD_FIELD_INNER_CLASS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4088,7 +4088,7 @@
         <rule-key>SE_BAD_FIELD_STORE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4106,7 +4106,7 @@
         <rule-key>SE_INNER_CLASS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4124,7 +4124,7 @@
         <rule-key>J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4142,7 +4142,7 @@
         <rule-key>UI_INHERITANCE_UNSAFE_GETRESOURCE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4160,7 +4160,7 @@
         <rule-key>CN_IDIOM_NO_SUPER_CALL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4178,7 +4178,7 @@
         <rule-key>EQ_GETCLASS_AND_CLASS_CONSTANT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4196,7 +4196,7 @@
         <rule-key>NM_BAD_EQUAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4214,7 +4214,7 @@
         <rule-key>NM_LCASE_HASHCODE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4232,7 +4232,7 @@
         <rule-key>NM_LCASE_TOSTRING</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4250,7 +4250,7 @@
         <rule-key>NM_METHOD_CONSTRUCTOR_CONFUSION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4268,7 +4268,7 @@
         <rule-key>EC_UNRELATED_CLASS_AND_INTERFACE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4286,7 +4286,7 @@
         <rule-key>EC_UNRELATED_TYPES</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4304,7 +4304,7 @@
         <rule-key>EC_UNRELATED_INTERFACES</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4322,7 +4322,7 @@
         <rule-key>BOA_BADLY_OVERRIDDEN_ADAPTER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4340,7 +4340,7 @@
         <rule-key>DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4358,7 +4358,7 @@
         <rule-key>SIC_THREADLOCAL_DEADLY_EMBRACE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4376,7 +4376,7 @@
         <rule-key>NM_WRONG_PACKAGE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4394,7 +4394,7 @@
         <rule-key>SE_METHOD_MUST_BE_PRIVATE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4412,7 +4412,7 @@
         <rule-key>GC_UNRELATED_TYPES</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4430,7 +4430,7 @@
         <rule-key>SE_READ_RESOLVE_IS_STATIC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4448,7 +4448,7 @@
         <rule-key>HE_USE_OF_UNHASHABLE_CLASS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4466,7 +4466,7 @@
         <rule-key>EQ_OTHER_USE_OBJECT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4484,7 +4484,7 @@
         <rule-key>EQ_OTHER_NO_OBJECT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4502,7 +4502,7 @@
         <rule-key>EQ_DOESNT_OVERRIDE_EQUALS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4520,7 +4520,7 @@
         <rule-key>IC_INIT_CIRCULARITY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4538,7 +4538,7 @@
         <rule-key>DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4556,7 +4556,7 @@
         <rule-key>SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4574,7 +4574,7 @@
         <rule-key>ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4592,7 +4592,7 @@
         <rule-key>IJU_SETUP_NO_SUPER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4610,7 +4610,7 @@
         <rule-key>IJU_TEARDOWN_NO_SUPER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4628,7 +4628,7 @@
         <rule-key>ObjectFinalizeCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4646,7 +4646,7 @@
         <rule-key>ObjectFinalizeOverridenCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4664,7 +4664,7 @@
         <rule-key>S1168</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4682,7 +4682,7 @@
         <rule-key>S1147</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4700,7 +4700,7 @@
         <rule-key>S1201</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4718,7 +4718,7 @@
         <rule-key>S1186</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4736,7 +4736,7 @@
         <rule-key>S1221</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4754,7 +4754,7 @@
         <rule-key>S1175</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4772,7 +4772,7 @@
         <rule-key>S1174</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4790,7 +4790,7 @@
         <rule-key>S1182</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4808,7 +4808,7 @@
         <rule-key>S1206</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4826,7 +4826,7 @@
         <rule-key>S1226</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4844,7 +4844,7 @@
         <rule-key>S1223</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4862,7 +4862,7 @@
         <rule-key>S1210</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4880,7 +4880,7 @@
         <rule-key>S1452</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4902,7 +4902,7 @@
         <rule-key>VO_VOLATILE_REFERENCE_TO_ARRAY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4920,7 +4920,7 @@
         <rule-key>SE_BAD_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4938,7 +4938,7 @@
         <rule-key>BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4956,7 +4956,7 @@
         <rule-key>FI_EXPLICIT_INVOCATION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4974,7 +4974,7 @@
         <rule-key>SI_INSTANCE_BEFORE_FINALS_ASSIGNED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -4992,7 +4992,7 @@
         <rule-key>SE_TRANSIENT_FIELD_NOT_RESTORED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5010,7 +5010,7 @@
         <rule-key>RE_POSSIBLE_UNINTENDED_PATTERN</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5028,7 +5028,7 @@
         <rule-key>UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5046,7 +5046,7 @@
         <rule-key>MF_METHOD_MASKS_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5064,7 +5064,7 @@
         <rule-key>NP_ARGUMENT_MIGHT_BE_NULL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5082,7 +5082,7 @@
         <rule-key>NP_NONNULL_RETURN_VIOLATION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5100,7 +5100,7 @@
         <rule-key>FL_MATH_USING_FLOAT_PRECISION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5118,7 +5118,7 @@
         <rule-key>NP_NULL_PARAM_DEREF_NONVIRTUAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5136,7 +5136,7 @@
         <rule-key>NP_STORE_INTO_NONNULL_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5154,7 +5154,7 @@
         <rule-key>UR_UNINIT_READ</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5172,7 +5172,7 @@
         <rule-key>UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5190,7 +5190,7 @@
         <rule-key>MTIA_SUSPECT_SERVLET_INSTANCE_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5208,7 +5208,7 @@
         <rule-key>MTIA_SUSPECT_STRUTS_INSTANCE_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5226,7 +5226,7 @@
         <rule-key>NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5244,7 +5244,7 @@
         <rule-key>VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5262,7 +5262,7 @@
         <rule-key>BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5280,7 +5280,7 @@
         <rule-key>TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5298,7 +5298,7 @@
         <rule-key>TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5316,7 +5316,7 @@
         <rule-key>HiddenFieldCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5334,7 +5334,7 @@
         <rule-key>S1192</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5352,7 +5352,7 @@
         <rule-key>S1314</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5370,7 +5370,7 @@
         <rule-key>S1444</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5392,7 +5392,7 @@
         <rule-key>IMSE_DONT_CATCH_IMSE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5410,7 +5410,7 @@
         <rule-key>ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5428,7 +5428,7 @@
         <rule-key>OS_OPEN_STREAM_EXCEPTION_PATH</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5446,7 +5446,7 @@
         <rule-key>DE_MIGHT_IGNORE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5464,7 +5464,7 @@
         <rule-key>DE_MIGHT_DROP</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5482,7 +5482,7 @@
         <rule-key>RV_EXCEPTION_NOT_THROWN</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5500,7 +5500,7 @@
         <rule-key>OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5518,7 +5518,7 @@
         <rule-key>S00112</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5536,7 +5536,7 @@
         <rule-key>S1163</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5554,7 +5554,7 @@
         <rule-key>S1194</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5572,7 +5572,7 @@
         <rule-key>S1165</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5590,7 +5590,7 @@
         <rule-key>S1166</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5608,7 +5608,7 @@
         <rule-key>S1181</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5626,7 +5626,7 @@
         <rule-key>S1148</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5652,7 +5652,7 @@
         <rule-key>DM_USELESS_THREAD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5670,7 +5670,7 @@
         <rule-key>DM_GC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5688,7 +5688,7 @@
         <rule-key>CO_ABSTRACT_SELF</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5706,7 +5706,7 @@
         <rule-key>EQ_ABSTRACT_SELF</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5724,7 +5724,7 @@
         <rule-key>BIT_SIGNED_CHECK</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5742,7 +5742,7 @@
         <rule-key>EQ_COMPARETO_USE_OBJECT_EQUALS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5760,7 +5760,7 @@
         <rule-key>HE_EQUALS_USE_HASHCODE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5778,7 +5778,7 @@
         <rule-key>HE_EQUALS_NO_HASHCODE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5796,7 +5796,7 @@
         <rule-key>HE_HASHCODE_USE_OBJECT_EQUALS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5814,7 +5814,7 @@
         <rule-key>HE_HASHCODE_NO_EQUALS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5832,7 +5832,7 @@
         <rule-key>HE_INHERITS_EQUALS_USE_HASHCODE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5850,7 +5850,7 @@
         <rule-key>NP_CLONE_COULD_RETURN_NULL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5868,7 +5868,7 @@
         <rule-key>SE_COMPARATOR_SHOULD_BE_SERIALIZABLE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5886,7 +5886,7 @@
         <rule-key>ES_COMPARING_STRINGS_WITH_EQ</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5904,7 +5904,7 @@
         <rule-key>ES_COMPARING_PARAMETER_STRING_WITH_EQ</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5922,7 +5922,7 @@
         <rule-key>EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5940,7 +5940,7 @@
         <rule-key>RR_NOT_CHECKED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5958,7 +5958,7 @@
         <rule-key>SR_NOT_CHECKED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5976,7 +5976,7 @@
         <rule-key>RC_REF_COMPARISON</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -5994,7 +5994,7 @@
         <rule-key>SE_READ_RESOLVE_MUST_RETURN_OBJECT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6012,7 +6012,7 @@
         <rule-key>RV_ABSOLUTE_VALUE_OF_HASHCODE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6030,7 +6030,7 @@
         <rule-key>RV_ABSOLUTE_VALUE_OF_RANDOM_INT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6048,7 +6048,7 @@
         <rule-key>INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6066,7 +6066,7 @@
         <rule-key>INT_BAD_COMPARISON_WITH_SIGNED_BYTE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6084,7 +6084,7 @@
         <rule-key>DMI_BAD_MONTH</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6102,7 +6102,7 @@
         <rule-key>DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6120,7 +6120,7 @@
         <rule-key>DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6138,7 +6138,7 @@
         <rule-key>IO_APPENDING_TO_OBJECT_OUTPUT_STREAM</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6156,7 +6156,7 @@
         <rule-key>FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6174,7 +6174,7 @@
         <rule-key>VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6192,7 +6192,7 @@
         <rule-key>DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6210,7 +6210,7 @@
         <rule-key>VA_FORMAT_STRING_BAD_ARGUMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6228,7 +6228,7 @@
         <rule-key>VA_FORMAT_STRING_MISSING_ARGUMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6246,7 +6246,7 @@
         <rule-key>VA_FORMAT_STRING_ILLEGAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6264,7 +6264,7 @@
         <rule-key>BC_IMPOSSIBLE_CAST</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6282,7 +6282,7 @@
         <rule-key>BC_IMPOSSIBLE_DOWNCAST</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6300,7 +6300,7 @@
         <rule-key>BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6318,7 +6318,7 @@
         <rule-key>BIT_AND</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6336,7 +6336,7 @@
         <rule-key>BIT_IOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6354,7 +6354,7 @@
         <rule-key>IM_MULTIPLYING_RESULT_OF_IREM</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6372,7 +6372,7 @@
         <rule-key>INT_BAD_REM_BY_1</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6390,7 +6390,7 @@
         <rule-key>ICAST_BAD_SHIFT_AMOUNT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6408,7 +6408,7 @@
         <rule-key>RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6426,7 +6426,7 @@
         <rule-key>EC_BAD_ARRAY_COMPARE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6444,7 +6444,7 @@
         <rule-key>DMI_INVOKING_HASHCODE_ON_ARRAY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6462,7 +6462,7 @@
         <rule-key>DMI_INVOKING_TOSTRING_ON_ARRAY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6480,7 +6480,7 @@
         <rule-key>DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6498,7 +6498,7 @@
         <rule-key>IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6516,7 +6516,7 @@
         <rule-key>VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6534,7 +6534,7 @@
         <rule-key>QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6552,7 +6552,7 @@
         <rule-key>SQL_BAD_PREPARED_STATEMENT_ACCESS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6570,7 +6570,7 @@
         <rule-key>SQL_BAD_RESULTSET_ACCESS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6588,7 +6588,7 @@
         <rule-key>RV_RETURN_VALUE_IGNORED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6606,7 +6606,7 @@
         <rule-key>RV_RETURN_VALUE_IGNORED2</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6624,7 +6624,7 @@
         <rule-key>VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6642,7 +6642,7 @@
         <rule-key>VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6660,7 +6660,7 @@
         <rule-key>DLS_OVERWRITTEN_INCREMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6678,7 +6678,7 @@
         <rule-key>RV_01_TO_INT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6696,7 +6696,7 @@
         <rule-key>RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6714,7 +6714,7 @@
         <rule-key>RC_REF_COMPARISON_BAD_PRACTICE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6732,7 +6732,7 @@
         <rule-key>VA_FORMAT_STRING_BAD_CONVERSION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6750,7 +6750,7 @@
         <rule-key>EC_UNRELATED_TYPES_USING_POINTER_EQUALITY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6768,7 +6768,7 @@
         <rule-key>DMI_VACUOUS_SELF_COLLECTION_CALL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6786,7 +6786,7 @@
         <rule-key>NP_CLOSING_NULL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6804,7 +6804,7 @@
         <rule-key>EC_ARRAY_AND_NONARRAY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6822,7 +6822,7 @@
         <rule-key>EC_INCOMPATIBLE_ARRAY_COMPARE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6840,7 +6840,7 @@
         <rule-key>ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6858,7 +6858,7 @@
         <rule-key>ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6876,7 +6876,7 @@
         <rule-key>DMI_UNSUPPORTED_METHOD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6894,7 +6894,7 @@
         <rule-key>IM_BAD_CHECK_FOR_ODD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6912,7 +6912,7 @@
         <rule-key>PZLA_PREFER_ZERO_LENGTH_ARRAYS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6930,7 +6930,7 @@
         <rule-key>VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6948,7 +6948,7 @@
         <rule-key>DMI_NONSERIALIZABLE_OBJECT_WRITTEN</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6966,7 +6966,7 @@
         <rule-key>NS_NON_SHORT_CIRCUIT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -6984,7 +6984,7 @@
         <rule-key>BC_BAD_CAST_TO_CONCRETE_COLLECTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7002,7 +7002,7 @@
         <rule-key>BC_BAD_CAST_TO_ABSTRACT_COLLECTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7020,7 +7020,7 @@
         <rule-key>RV_REM_OF_HASHCODE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7038,7 +7038,7 @@
         <rule-key>ICAST_INTEGER_MULTIPLY_CAST_TO_LONG</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7056,7 +7056,7 @@
         <rule-key>FE_FLOATING_POINT_EQUALITY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7074,7 +7074,7 @@
         <rule-key>ICAST_IDIV_CAST_TO_DOUBLE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7092,7 +7092,7 @@
         <rule-key>RV_REM_OF_RANDOM_INT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7110,7 +7110,7 @@
         <rule-key>UOE_USE_OBJECT_EQUALS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7128,7 +7128,7 @@
         <rule-key>DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7146,7 +7146,7 @@
         <rule-key>VO_VOLATILE_INCREMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7164,7 +7164,7 @@
         <rule-key>INT_BAD_COMPARISON_WITH_INT_VALUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7182,7 +7182,7 @@
         <rule-key>DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7200,7 +7200,7 @@
         <rule-key>CO_COMPARETO_RESULTS_MIN_VALUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7218,7 +7218,7 @@
         <rule-key>DMI_DOH</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7236,7 +7236,7 @@
         <rule-key>PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7254,7 +7254,7 @@
         <rule-key>RV_NEGATING_RESULT_OF_COMPARETO</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7272,7 +7272,7 @@
         <rule-key>AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7290,7 +7290,7 @@
         <rule-key>TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7308,7 +7308,7 @@
         <rule-key>MS_SHOULD_BE_REFACTORED_TO_BE_FINAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7326,7 +7326,7 @@
         <rule-key>EmptyStatementUsageCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7344,7 +7344,7 @@
         <rule-key>AssignmentInSubExpressionCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7362,7 +7362,7 @@
         <rule-key>StringEqualityComparisonCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7380,7 +7380,7 @@
         <rule-key>ObjectFinalizeOverridenCallsSuperFinalizeCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7398,7 +7398,7 @@
         <rule-key>S1134</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7416,7 +7416,7 @@
         <rule-key>S1143</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7434,7 +7434,7 @@
         <rule-key>S1132</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7452,7 +7452,7 @@
         <rule-key>S1215</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7470,7 +7470,7 @@
         <rule-key>S1318</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7488,7 +7488,7 @@
         <rule-key>S1217</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7506,7 +7506,7 @@
         <rule-key>S1317</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7528,7 +7528,7 @@
         <rule-key>SF_SWITCH_NO_DEFAULT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7546,7 +7546,7 @@
         <rule-key>SF_SWITCH_FALLTHROUGH</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7564,7 +7564,7 @@
         <rule-key>AM_CREATES_EMPTY_JAR_FILE_ENTRY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7582,7 +7582,7 @@
         <rule-key>AM_CREATES_EMPTY_ZIP_FILE_ENTRY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7600,7 +7600,7 @@
         <rule-key>EQ_SELF_NO_OBJECT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7618,7 +7618,7 @@
         <rule-key>CO_SELF_NO_OBJECT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7636,7 +7636,7 @@
         <rule-key>FI_MISSING_SUPER_CALL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7654,7 +7654,7 @@
         <rule-key>FI_NULLIFY_SUPER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7672,7 +7672,7 @@
         <rule-key>IT_NO_SUCH_ELEMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7690,7 +7690,7 @@
         <rule-key>RV_RETURN_VALUE_IGNORED_BAD_PRACTICE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7708,7 +7708,7 @@
         <rule-key>ODR_OPEN_DATABASE_RESOURCE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7726,7 +7726,7 @@
         <rule-key>OS_OPEN_STREAM</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7744,7 +7744,7 @@
         <rule-key>NP_BOOLEAN_RETURN_NULL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7762,7 +7762,7 @@
         <rule-key>NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7780,7 +7780,7 @@
         <rule-key>NP_TOSTRING_COULD_RETURN_NULL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7798,7 +7798,7 @@
         <rule-key>IL_CONTAINER_ADDED_TO_ITSELF</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7816,7 +7816,7 @@
         <rule-key>IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7834,7 +7834,7 @@
         <rule-key>IL_INFINITE_LOOP</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7852,7 +7852,7 @@
         <rule-key>IL_INFINITE_RECURSIVE_LOOP</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7870,7 +7870,7 @@
         <rule-key>BIT_IOR_OF_SIGNED_BYTE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7888,7 +7888,7 @@
         <rule-key>BIT_ADD_OF_SIGNED_BYTE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7906,7 +7906,7 @@
         <rule-key>BIT_SIGNED_CHECK_HIGH_BIT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7924,7 +7924,7 @@
         <rule-key>BIT_AND_ZZ</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7942,7 +7942,7 @@
         <rule-key>TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7960,7 +7960,7 @@
         <rule-key>TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7978,7 +7978,7 @@
         <rule-key>DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -7996,7 +7996,7 @@
         <rule-key>SA_FIELD_SELF_COMPUTATION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8014,7 +8014,7 @@
         <rule-key>SA_LOCAL_SELF_COMPUTATION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8032,7 +8032,7 @@
         <rule-key>NP_GUARANTEED_DEREF</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8050,7 +8050,7 @@
         <rule-key>NP_ALWAYS_NULL_EXCEPTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8068,7 +8068,7 @@
         <rule-key>NP_ALWAYS_NULL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8086,7 +8086,7 @@
         <rule-key>VA_FORMAT_STRING_ARG_MISMATCH</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8104,7 +8104,7 @@
         <rule-key>NP_NULL_ON_SOME_PATH</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8122,7 +8122,7 @@
         <rule-key>NP_NULL_ON_SOME_PATH_EXCEPTION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8140,7 +8140,7 @@
         <rule-key>NP_UNWRITTEN_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8158,7 +8158,7 @@
         <rule-key>RpC_REPEATED_CONDITIONAL_TEST</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8176,7 +8176,7 @@
         <rule-key>SA_LOCAL_SELF_COMPARISON</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8194,7 +8194,7 @@
         <rule-key>SA_FIELD_SELF_COMPARISON</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8212,7 +8212,7 @@
         <rule-key>SA_FIELD_SELF_ASSIGNMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8230,7 +8230,7 @@
         <rule-key>RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8248,7 +8248,7 @@
         <rule-key>HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8266,7 +8266,7 @@
         <rule-key>STI_INTERRUPTED_ON_UNKNOWNTHREAD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8284,7 +8284,7 @@
         <rule-key>TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8302,7 +8302,7 @@
         <rule-key>TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8320,7 +8320,7 @@
         <rule-key>NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8338,7 +8338,7 @@
         <rule-key>EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8356,7 +8356,7 @@
         <rule-key>EQ_COMPARING_CLASS_NAMES</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8374,7 +8374,7 @@
         <rule-key>EQ_ALWAYS_TRUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8392,7 +8392,7 @@
         <rule-key>EQ_ALWAYS_FALSE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8410,7 +8410,7 @@
         <rule-key>DMI_CALLING_NEXT_FROM_HASNEXT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8428,7 +8428,7 @@
         <rule-key>BC_IMPOSSIBLE_INSTANCEOF</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8446,7 +8446,7 @@
         <rule-key>SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8464,7 +8464,7 @@
         <rule-key>QF_QUESTIONABLE_FOR_LOOP</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8482,7 +8482,7 @@
         <rule-key>IM_AVERAGE_COMPUTATION_COULD_OVERFLOW</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8500,7 +8500,7 @@
         <rule-key>NP_DEREFERENCE_OF_READLINE_VALUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8518,7 +8518,7 @@
         <rule-key>SA_LOCAL_DOUBLE_ASSIGNMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8536,7 +8536,7 @@
         <rule-key>NP_IMMEDIATE_DEREFERENCE_OF_READLINE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8554,7 +8554,7 @@
         <rule-key>RV_DONT_JUST_NULL_CHECK_READLINE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8572,7 +8572,7 @@
         <rule-key>DB_DUPLICATE_BRANCHES</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8590,7 +8590,7 @@
         <rule-key>DB_DUPLICATE_SWITCH_CLAUSES</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8608,7 +8608,7 @@
         <rule-key>NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8626,7 +8626,7 @@
         <rule-key>NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8644,7 +8644,7 @@
         <rule-key>NS_DANGEROUS_NON_SHORT_CIRCUIT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8662,7 +8662,7 @@
         <rule-key>SA_LOCAL_SELF_ASSIGNMENT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8680,7 +8680,7 @@
         <rule-key>BC_VACUOUS_INSTANCEOF</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8698,7 +8698,7 @@
         <rule-key>SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8716,7 +8716,7 @@
         <rule-key>ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8734,7 +8734,7 @@
         <rule-key>EQ_UNUSUAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8752,7 +8752,7 @@
         <rule-key>BAC_BAD_APPLET_CONSTRUCTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8770,7 +8770,7 @@
         <rule-key>OBL_UNSATISFIED_OBLIGATION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8788,7 +8788,7 @@
         <rule-key>RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8806,7 +8806,7 @@
         <rule-key>DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8824,7 +8824,7 @@
         <rule-key>ICAST_INT_2_LONG_AS_INSTANT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8842,7 +8842,7 @@
         <rule-key>RV_RETURN_VALUE_IGNORED_INFERRED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8860,7 +8860,7 @@
         <rule-key>NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8878,7 +8878,7 @@
         <rule-key>SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8896,7 +8896,7 @@
         <rule-key>URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8914,7 +8914,7 @@
         <rule-key>UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8932,7 +8932,7 @@
         <rule-key>UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8950,7 +8950,7 @@
         <rule-key>S00108</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8968,7 +8968,7 @@
         <rule-key>NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -8986,7 +8986,7 @@
         <rule-key>BC_UNCONFIRMED_CAST_OF_RETURN_VALUE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9004,7 +9004,7 @@
         <rule-key>SwitchLastCaseIsDefaultCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9022,7 +9022,7 @@
         <rule-key>ForLoopCounterChangedCheck</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9040,7 +9040,7 @@
         <rule-key>S128</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9058,7 +9058,7 @@
         <rule-key>S881</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9084,7 +9084,7 @@
         <rule-key>STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9102,7 +9102,7 @@
         <rule-key>STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9120,7 +9120,7 @@
         <rule-key>RS_READOBJECT_SYNC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9138,7 +9138,7 @@
         <rule-key>WS_WRITEOBJECT_SYNC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9156,7 +9156,7 @@
         <rule-key>WA_AWAIT_NOT_IN_LOOP</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9174,7 +9174,7 @@
         <rule-key>SC_START_IN_CTOR</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9192,7 +9192,7 @@
         <rule-key>ESync_EMPTY_SYNC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9210,7 +9210,7 @@
         <rule-key>IS_FIELD_NOT_GUARDED</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9228,7 +9228,7 @@
         <rule-key>IS2_INCONSISTENT_SYNC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9246,7 +9246,7 @@
         <rule-key>IS_INCONSISTENT_SYNC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9264,7 +9264,7 @@
         <rule-key>LI_LAZY_INIT_UPDATE_STATIC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9282,7 +9282,7 @@
         <rule-key>LI_LAZY_INIT_STATIC</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9300,7 +9300,7 @@
         <rule-key>RU_INVOKE_RUN</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9318,7 +9318,7 @@
         <rule-key>SWL_SLEEP_WITH_LOCK_HELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9336,7 +9336,7 @@
         <rule-key>UL_UNRELEASED_LOCK_EXCEPTION_PATH</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9354,7 +9354,7 @@
         <rule-key>UL_UNRELEASED_LOCK</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9372,7 +9372,7 @@
         <rule-key>SP_SPIN_ON_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9390,7 +9390,7 @@
         <rule-key>ML_SYNC_ON_UPDATED_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9408,7 +9408,7 @@
         <rule-key>MWN_MISMATCHED_NOTIFY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9426,7 +9426,7 @@
         <rule-key>MWN_MISMATCHED_WAIT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9444,7 +9444,7 @@
         <rule-key>DM_MONITOR_WAIT_ON_CONDITION</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9462,7 +9462,7 @@
         <rule-key>MSF_MUTABLE_SERVLET_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9480,7 +9480,7 @@
         <rule-key>NN_NAKED_NOTIFY</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9498,7 +9498,7 @@
         <rule-key>DC_DOUBLECHECK</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9516,7 +9516,7 @@
         <rule-key>STCAL_STATIC_CALENDAR_INSTANCE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9534,7 +9534,7 @@
         <rule-key>STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9552,7 +9552,7 @@
         <rule-key>WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9570,7 +9570,7 @@
         <rule-key>TLW_TWO_LOCK_WAIT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9588,7 +9588,7 @@
         <rule-key>WA_NOT_IN_LOOP</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9606,7 +9606,7 @@
         <rule-key>NO_NOTIFY_NOT_NOTIFYALL</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9624,7 +9624,7 @@
         <rule-key>UG_SYNC_SET_UNSYNC_GET</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9642,7 +9642,7 @@
         <rule-key>UW_UNCOND_WAIT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9660,7 +9660,7 @@
         <rule-key>NP_SYNC_AND_NULL_CHECK_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9678,7 +9678,7 @@
         <rule-key>JLM_JSR166_LOCK_MONITORENTER</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9696,7 +9696,7 @@
         <rule-key>DL_SYNCHRONIZATION_ON_SHARED_CONSTANT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9714,7 +9714,7 @@
         <rule-key>ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9732,7 +9732,7 @@
         <rule-key>DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9750,7 +9750,7 @@
         <rule-key>DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9768,7 +9768,7 @@
         <rule-key>DL_SYNCHRONIZATION_ON_BOOLEAN</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9786,7 +9786,7 @@
         <rule-key>SW_SWING_METHODS_INVOKED_IN_SWING_THREAD</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9804,7 +9804,7 @@
         <rule-key>PS_PUBLIC_SEMAPHORES</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9822,7 +9822,7 @@
         <rule-key>JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9880,7 +9880,7 @@
         <rule-key>FailedUnitTests</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9910,7 +9910,7 @@
         <rule-key>ClassCyclomaticComplexity</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9928,7 +9928,7 @@
         <rule-key>MethodCyclomaticComplexity</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9946,7 +9946,7 @@
         <rule-key>S00107</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9964,7 +9964,7 @@
         <rule-key>S1067</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -9982,7 +9982,7 @@
         <rule-key>S1142</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -10000,7 +10000,7 @@
         <rule-key>S1160</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
@@ -10018,7 +10018,7 @@
         <rule-key>SkippedUnitTests</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>linear</txt>
+          <txt>constant_issue</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
