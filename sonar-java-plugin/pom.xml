@@ -33,14 +33,6 @@
       <version>1.2</version>
     </dependency>
 
-    <!-- TODO remove after upgrade from SonarQube 4.2-M13: -->
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
-      <version>2.0.3</version>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- unit tests -->
     <dependency>
       <groupId>junit</groupId>
