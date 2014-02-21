@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourceCode;
@@ -40,10 +41,12 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   private static final Logger LOG = LoggerFactory.getLogger(JavaResourceLocator.class);
 
   private final Project project;
+  private final ModuleFileSystem fileSystem;
   private SquidIndex squidIndex;
 
-  public DefaultJavaResourceLocator(Project project) {
+  public DefaultJavaResourceLocator(Project project, ModuleFileSystem fileSystem) {
     this.project = project;
+    this.fileSystem = fileSystem;
   }
 
   public void setSquidIndex(SquidIndex squidIndex) {
@@ -75,10 +78,12 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
     for (SourceCode sourceClass : sourceClasses) {
       String filePath = sourceClass.getKey() + ".class";
-      // TODO can be several build directories
-      File classFile = new File(project.getFileSystem().getBuildOutputDir(), filePath);
-      if (classFile.isFile()) {
-        result.add(classFile);
+      for (File binaryDir : fileSystem.binaryDirs()) {
+        File classFile = new File(binaryDir, filePath);
+        if (classFile.isFile()) {
+          result.add(classFile);
+          break;
+        }
       }
     }
     return result.build();
