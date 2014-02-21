@@ -50,7 +50,7 @@ public class ExpressionTest {
         .matches("SomeClass.<T>method(arguments)")
         .matches("this.<T>method(arguments)")
         .matches("super.<T>method(arguments)")
-
+        .matches("oc.new innerClass<String>()")
         // constructor call
         .matches("<T>this(arguments)")
         .matches("<T>super(arguments)");
