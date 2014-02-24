@@ -1656,14 +1656,12 @@ public abstract class JavaTree implements Tree {
 
   public static class LambdaExpressionTreeImpl extends JavaTree implements LambdaExpressionTree {
 
-    private final List<? extends VariableTree> parameters;
-    private final BodyKind bodyKind;
+    private final List<VariableTree> parameters;
     private final Tree body;
 
-    public LambdaExpressionTreeImpl(AstNode astNode, List<? extends VariableTree> parameters, BodyKind bodyKind, Tree body) {
+    public LambdaExpressionTreeImpl(AstNode astNode, List<VariableTree> parameters, Tree body) {
       super(astNode);
       this.parameters = parameters;
-      this.bodyKind = bodyKind;
       this.body = body;
     }
 
@@ -1673,18 +1671,13 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<? extends VariableTree> getParameters() {
+    public List<VariableTree> parameters() {
       return parameters;
     }
 
     @Override
-    public Tree getBody() {
+    public Tree body() {
       return body;
-    }
-
-    @Override
-    public BodyKind getBodyKind() {
-      return bodyKind;
     }
 
     @Override

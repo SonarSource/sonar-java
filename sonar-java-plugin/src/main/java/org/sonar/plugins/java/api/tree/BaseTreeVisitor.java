@@ -322,8 +322,8 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    scan(lambdaExpressionTree.getParameters());
-    scan(lambdaExpressionTree.getBody());
+    scan(lambdaExpressionTree.parameters());
+    scan(lambdaExpressionTree.body());
   }
 
   @Override

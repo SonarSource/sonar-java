@@ -19,10 +19,12 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import com.google.common.annotations.Beta;
+
 import java.util.List;
 
 /**
- * A tree node for a lambda expression.
+ * lambda expression.
  *
  * For example:
  * <pre>{@code
@@ -30,21 +32,13 @@ import java.util.List;
  *   (List<String> ls)->ls.size()
  *   (x,y)-> { return x + y; }
  * }</pre>
+ *
+ * @since Java 1.8
  */
+@Beta
 public interface LambdaExpressionTree extends ExpressionTree {
 
-  /**
-   * Lambda expressions come in two forms: (i) expression lambdas, whose body
-   * is an expression, and (ii) statement lambdas, whose body is a block
-   */
-  public enum BodyKind {
-    /** enum constant for expression lambdas */
-    EXPRESSION,
-    /** enum constant for statement lambdas */
-    STATEMENT;
-  }
 
-  List<? extends VariableTree> getParameters();
-  Tree getBody();
-  BodyKind getBodyKind();
+  List<VariableTree> parameters();
+  Tree body();
 }

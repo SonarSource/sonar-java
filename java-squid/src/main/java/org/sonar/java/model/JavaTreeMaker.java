@@ -1029,19 +1029,15 @@ public class JavaTreeMaker {
   }
 
   private ExpressionTree lambdaExpression(AstNode astNode) {
-    AstNode parameters = astNode.getFirstChild(JavaGrammar.LAMBDA_PARAMETERS);
     AstNode body = astNode.getFirstChild(JavaGrammar.LAMBDA_BODY);
-    LambdaExpressionTree.BodyKind kind = LambdaExpressionTree.BodyKind.EXPRESSION;
     Tree bodyTree;
     if (body.hasDirectChildren(JavaGrammar.BLOCK)) {
-      kind = LambdaExpressionTree.BodyKind.STATEMENT;
       bodyTree = block(body.getFirstChild(JavaGrammar.BLOCK));
     }else{
       bodyTree = expression(body.getFirstChild());
     }
-
-    List<? extends VariableTree> params = Lists.newArrayList();
-    return new JavaTree.LambdaExpressionTreeImpl(astNode, params, kind, bodyTree);
+    List<VariableTree> params = Lists.newArrayList();
+    return new JavaTree.LambdaExpressionTreeImpl(astNode, params, bodyTree);
   }
 
   /**

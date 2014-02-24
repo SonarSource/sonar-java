@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.annotations.Beta;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
@@ -28,11 +29,13 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
     key = LambdaSingleExpressionCheck.RULE_KEY,
     priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@Beta
 public class LambdaSingleExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1602";
@@ -49,13 +52,13 @@ public class LambdaSingleExpressionCheck extends BaseTreeVisitor implements Java
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
     if (isBlockWithOneStatement(lambdaExpressionTree)) {
-      context.addIssue(lambdaExpressionTree.getBody(), RULE, "Replace this block containing only one return statement with the expression being returned");
+      context.addIssue(lambdaExpressionTree.body(), RULE, "Replace this block containing only one return statement with the expression being returned");
     }
     super.visitLambdaExpression(lambdaExpressionTree);
   }
 
   private boolean isBlockWithOneStatement(LambdaExpressionTree lambdaExpressionTree) {
-    return LambdaExpressionTree.BodyKind.STATEMENT.equals(lambdaExpressionTree.getBodyKind()) && ((BlockTree) lambdaExpressionTree.getBody()).body().size() == 1;
+    return lambdaExpressionTree.body().is(Tree.Kind.BLOCK) && ((BlockTree) lambdaExpressionTree.body()).body().size() == 1;
   }
 
 
