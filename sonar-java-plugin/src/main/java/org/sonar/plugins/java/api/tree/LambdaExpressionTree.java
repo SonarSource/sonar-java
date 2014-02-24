@@ -19,15 +19,32 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+/**
+ * A tree node for a lambda expression.
+ *
+ * For example:
+ * <pre>{@code
+ *   ()->{}
+ *   (List<String> ls)->ls.size()
+ *   (x,y)-> { return x + y; }
+ * }</pre>
+ */
+public interface LambdaExpressionTree extends ExpressionTree {
 
-public class TreeTest {
-
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(98);
+  /**
+   * Lambda expressions come in two forms: (i) expression lambdas, whose body
+   * is an expression, and (ii) statement lambdas, whose body is a block
+   */
+  public enum BodyKind {
+    /** enum constant for expression lambdas */
+    EXPRESSION,
+    /** enum constant for statement lambdas */
+    STATEMENT;
   }
 
+  List<? extends VariableTree> getParameters();
+  Tree getBody();
+  BodyKind getBodyKind();
 }

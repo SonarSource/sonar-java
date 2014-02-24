@@ -49,6 +49,7 @@ import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -1653,8 +1654,46 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class NotImplementedTreeImpl extends JavaTree implements ExpressionTree{
+  public static class LambdaExpressionTreeImpl extends JavaTree implements LambdaExpressionTree {
 
+    private final List<? extends VariableTree> parameters;
+    private final BodyKind bodyKind;
+    private final Tree body;
+
+    public LambdaExpressionTreeImpl(AstNode astNode, List<? extends VariableTree> parameters, BodyKind bodyKind, Tree body) {
+      super(astNode);
+      this.parameters = parameters;
+      this.bodyKind = bodyKind;
+      this.body = body;
+    }
+
+    @Override
+    public Kind getKind() {
+      return Kind.LAMBDA_EXPRESSION;
+    }
+
+    @Override
+    public List<? extends VariableTree> getParameters() {
+      return parameters;
+    }
+
+    @Override
+    public Tree getBody() {
+      return body;
+    }
+
+    @Override
+    public BodyKind getBodyKind() {
+      return bodyKind;
+    }
+
+    @Override
+    public void accept(TreeVisitor visitor) {
+      visitor.visitLambdaExpression(this);
+    }
+  }
+
+  public static class NotImplementedTreeImpl extends JavaTree implements ExpressionTree{
     private String name;
 
     public NotImplementedTreeImpl(AstNode astNode, String name) {

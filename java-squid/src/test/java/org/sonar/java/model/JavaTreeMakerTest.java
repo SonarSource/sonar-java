@@ -1519,5 +1519,6 @@ public class JavaTreeMakerTest {
     AstNode astNode = p.parse("class T { public void meth(){IntStream.range(1,12).map(x->x*x).map((int a)-> {return a*a;});}}").getFirstDescendant(JavaGrammar.EXPRESSION);
     ExpressionTree expressionTree = maker.expression(astNode);
     assertThat(expressionTree).isNotNull();
+
   }
 }

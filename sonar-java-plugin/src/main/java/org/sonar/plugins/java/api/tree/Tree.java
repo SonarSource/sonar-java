@@ -580,7 +580,14 @@ public interface Tree {
      */
     MODIFIERS(ModifiersTree.class),
     /**
+     * {@link LambdaExpressionTree}
+     *
+     * @since Java 1.8
+     */
+    LAMBDA_EXPRESSION(LambdaExpressionTree.class),
+    /**
      *An implementation-reserved node.
+     *
      */
     OTHER(Tree.class);
 

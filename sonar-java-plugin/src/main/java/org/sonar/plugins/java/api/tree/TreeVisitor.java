@@ -119,5 +119,7 @@ public interface TreeVisitor {
 
   void visitAnnotation(AnnotationTree annotationTree);
 
+  void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree);
+
   void visitOther(Tree tree);
 }

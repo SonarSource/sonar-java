@@ -169,7 +169,8 @@ public final class CheckList {
       RedundantThrowsDeclarationCheck.class,
       ThrowsSeveralCheckedExceptionCheck.class,
       ThreadRunCheck.class,
-      ImmediatelyReturnedVariableCheck.class
+      ImmediatelyReturnedVariableCheck.class,
+      LambdaSingleExpressionCheck.class
       );
   }
 

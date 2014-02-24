@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -52,6 +53,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+import java.beans.Expression;
 import java.util.List;
 
 public class JavaTreeMaker {
@@ -73,9 +75,9 @@ public class JavaTreeMaker {
     ExpressionTree result = identifier(identifierNodes.get(0));
     for (int i = 1; i < identifierNodes.size(); i++) {
       result = new JavaTree.MemberSelectExpressionTreeImpl(
-        identifierNodes.get(i),
-        result,
-        identifier(identifierNodes.get(i))
+          identifierNodes.get(i),
+          result,
+          identifier(identifierNodes.get(i))
       );
     }
     return result;
@@ -120,7 +122,7 @@ public class JavaTreeMaker {
       } else if (child.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
         result = new JavaTree.ParameterizedTypeTreeImpl(child, result, nonWildcardTypeArguments(child));
       } else if (!(child.is(JavaPunctuator.DOT) || child.is(JavaGrammar.ANNOTATION))) {
-        throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString()+" at line "+astNode.getTokenLine()+" column "+astNode.getToken().getColumn());
+        throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString() + " at line " + astNode.getTokenLine() + " column " + astNode.getToken().getColumn());
       }
     }
     return result;
@@ -259,9 +261,9 @@ public class JavaTreeMaker {
     for (AstNode importNode : astNode.getChildren(JavaGrammar.IMPORT_DECLARATION)) {
       // TODO star import?
       imports.add(new JavaTree.ImportTreeImpl(
-        importNode,
-        importNode.hasDirectChildren(JavaKeyword.STATIC),
-        qualifiedIdentifier(importNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER))
+          importNode,
+          importNode.hasDirectChildren(JavaKeyword.STATIC),
+          qualifiedIdentifier(importNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER))
       ));
     }
     ImmutableList.Builder<Tree> types = ImmutableList.builder();
@@ -287,12 +289,12 @@ public class JavaTreeMaker {
       }
     }
     return new JavaTree.CompilationUnitTreeImpl(
-      astNode,
-      packageDeclaration,
-      imports.build(),
-      types.build(),
-      packageAnnotations.build()
-     );
+        astNode,
+        packageDeclaration,
+        imports.build(),
+        types.build(),
+        packageAnnotations.build()
+    );
   }
 
   private ClassTree typeDeclaration(ModifiersTree modifiers, AstNode astNode) {
@@ -388,10 +390,10 @@ public class JavaTreeMaker {
     if (declaration != null) {
       // TODO TYPE_PARAMETERS
       return methodDeclarator(
-        modifiers,
+          modifiers,
         /* type */declaration.getFirstChild(JavaGrammar.TYPE, JavaKeyword.VOID),
         /* name */declaration.getFirstChild(JavaTokenType.IDENTIFIER),
-        declaration.getFirstChild(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST));
+          declaration.getFirstChild(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST));
     }
     declaration = astNode.getFirstChild(
         JavaGrammar.METHOD_DECLARATOR_REST,
@@ -400,10 +402,10 @@ public class JavaTreeMaker {
     );
     if (declaration != null) {
       return methodDeclarator(
-        modifiers,
+          modifiers,
         /* type */astNode.getFirstChild(JavaGrammar.TYPE, JavaKeyword.VOID),
         /* name */astNode.getFirstChild(JavaTokenType.IDENTIFIER),
-        declaration);
+          declaration);
     }
     throw new IllegalStateException();
   }
@@ -1025,6 +1027,22 @@ public class JavaTreeMaker {
     }
   }
 
+  private ExpressionTree lambdaExpression(AstNode astNode) {
+    AstNode parameters = astNode.getFirstChild(JavaGrammar.LAMBDA_PARAMETERS);
+    AstNode body = astNode.getFirstChild(JavaGrammar.LAMBDA_BODY);
+    LambdaExpressionTree.BodyKind kind = LambdaExpressionTree.BodyKind.EXPRESSION;
+    Tree bodyTree;
+    if (body.hasDirectChildren(JavaGrammar.BLOCK)) {
+      kind = LambdaExpressionTree.BodyKind.STATEMENT;
+      bodyTree = block(body.getFirstChild(JavaGrammar.BLOCK));
+    }else{
+      bodyTree = expression(body.getFirstChild());
+    }
+
+    List<? extends VariableTree> params = Lists.newArrayList();
+    return new JavaTree.LambdaExpressionTreeImpl(astNode, params, kind, bodyTree);
+  }
+
   /**
    * 15.11. Field Access Expressions
    * 15.12. Method Invocation Expressions
@@ -1160,7 +1178,7 @@ public class JavaTreeMaker {
           applyDim(basicType(firstChildNode), astNode.getChildren(JavaGrammar.DIM).size()),
           identifier(astNode.getFirstChild(JavaKeyword.CLASS)));
     } else if(firstChildNode.is(JavaGrammar.LAMBDA_EXPRESSION)) {
-      return new JavaTree.NotImplementedTreeImpl(astNode, "LAMBDA_EXPRESSION");
+      return lambdaExpression(firstChildNode);
     }else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + firstChildNode.getType());
     }
