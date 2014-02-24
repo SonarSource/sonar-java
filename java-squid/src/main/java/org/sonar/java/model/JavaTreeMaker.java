@@ -122,7 +122,8 @@ public class JavaTreeMaker {
       } else if (child.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
         result = new JavaTree.ParameterizedTypeTreeImpl(child, result, nonWildcardTypeArguments(child));
       } else if (!(child.is(JavaPunctuator.DOT) || child.is(JavaGrammar.ANNOTATION))) {
-        throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString() + " at line " + astNode.getTokenLine() + " column " + astNode.getToken().getColumn());
+        throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString()
+            + " at line " + astNode.getTokenLine() + " column " + astNode.getToken().getColumn());
       }
     }
     return result;
