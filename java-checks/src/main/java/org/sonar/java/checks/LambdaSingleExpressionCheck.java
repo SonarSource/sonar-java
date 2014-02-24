@@ -48,11 +48,15 @@ public class LambdaSingleExpressionCheck extends BaseTreeVisitor implements Java
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    if(LambdaExpressionTree.BodyKind.STATEMENT.equals(lambdaExpressionTree.getBodyKind()) && ((BlockTree)lambdaExpressionTree.getBody()).body().size()==1){
-       context.addIssue(lambdaExpressionTree.getBody(), RULE, "Replace this block containing only one return statement with the expression being returned");
+    if (isBlockWithOneStatement(lambdaExpressionTree)) {
+      context.addIssue(lambdaExpressionTree.getBody(), RULE, "Replace this block containing only one return statement with the expression being returned");
     }
     super.visitLambdaExpression(lambdaExpressionTree);
   }
-  
-  
+
+  private boolean isBlockWithOneStatement(LambdaExpressionTree lambdaExpressionTree) {
+    return LambdaExpressionTree.BodyKind.STATEMENT.equals(lambdaExpressionTree.getBodyKind()) && ((BlockTree) lambdaExpressionTree.getBody()).body().size() == 1;
+  }
+
+
 }
