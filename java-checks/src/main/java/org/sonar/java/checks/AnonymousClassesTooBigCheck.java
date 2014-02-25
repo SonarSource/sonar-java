@@ -20,45 +20,73 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(
-  key = "S1188",
-  priority = Priority.MAJOR,
-  tags={"size"})
+    key = AnonymousClassesTooBigCheck.RULE_KEY,
+    priority = Priority.MAJOR,
+    tags = {"size"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class AnonymousClassesTooBigCheck extends SquidCheck<LexerlessGrammar> {
+public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  public static final String RULE_KEY = "S1188";
+  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final int DEFAULT_MAX = 20;
 
   @RuleProperty(defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
+  private JavaFileScannerContext context;
+
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_CREATOR_REST);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    AstNode classBody = node.getFirstChild(JavaGrammar.CLASS_BODY);
+  public void visitNewClass(NewClassTree tree) {
+    if (tree.classBody() != null) {
 
-    if (classBody != null) {
-      int lines = getNumberOfLines(classBody);
-
+      int lines = getNumberOfLines(tree.classBody());
       if (lines > max) {
-        getContext().createLineViolation(this, "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.", node);
+        context.addIssue(tree, RULE, "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.");
       }
     }
+    super.visitNewClass(tree);
   }
 
-  private static int getNumberOfLines(AstNode node) {
+
+  @Override
+  public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+    int lines = getNumberOfLines(((JavaTree) lambdaExpressionTree.body()).getAstNode());
+    if (lines > max) {
+      context.addIssue(lambdaExpressionTree, RULE, "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".");
+    }
+    super.visitLambdaExpression(lambdaExpressionTree);
+  }
+
+  private int getNumberOfLines(ClassTree classTree) {
+    AstNode node = ((JavaTree) classTree).getAstNode();
+    if(!node.is(JavaGrammar.CLASS_BODY)){
+      node = node.getFirstChild(JavaGrammar.CLASS_BODY);
+    }
+    return getNumberOfLines(node);
+  }
+
+  private int getNumberOfLines(AstNode node) {
     return node.getLastChild().getTokenLine() - node.getTokenLine() + 1;
   }
 

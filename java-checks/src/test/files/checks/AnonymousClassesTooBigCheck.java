@@ -38,5 +38,30 @@ class A {
       }
 
     };
+
+    Callable<Integer> c0 = ()-> {
+      return 1;
+    };
+    Callable<Integer> c1 = ()-> {
+      System.out.println();
+      System.out.println();
+      System.out.println();
+      System.out.println();
+      System.out.println();
+      return 1;
+    };
+
+    Callable<Integer> c1 = ()-> 1 + 2;
+    Callable<Integer> c1 = ()-> 1 + 2+
+        2 +
+        3 * 4 +
+        5+
+        3+
+        1+
+        1;
+
+
+
+
   }
 }
