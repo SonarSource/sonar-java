@@ -49,7 +49,7 @@ public class ToStringUsingBoxingCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.UNARY_EXPRESSION);
+    subscribeTo(JavaGrammar.UNARY_EXPRESSION, JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS);
   }
 
   @Override

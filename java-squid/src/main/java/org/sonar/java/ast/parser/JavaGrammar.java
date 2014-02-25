@@ -326,7 +326,9 @@ public enum JavaGrammar implements GrammarRuleKey {
   LAMBDA_EXPRESSION,
   LAMBDA_PARAMETERS,
   LAMBDA_BODY,
-  ARROW;
+  ARROW,
+  UNARY_EXPRESSION_NOT_PLUS_MINUS,
+  CAST_EXPRESSION;
 
   public static LexerlessGrammar createGrammar() {
     return createGrammarBuilder().build();
@@ -826,11 +828,20 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(SHIFT_EXPRESSION).is(ADDITIVE_EXPRESSION, b.zeroOrMore(b.firstOf(SL, BSR, SR), ADDITIVE_EXPRESSION)).skipIfOneChild();
     b.rule(ADDITIVE_EXPRESSION).is(MULTIPLICATIVE_EXPRESSION, b.zeroOrMore(b.firstOf(PLUS, MINUS), MULTIPLICATIVE_EXPRESSION)).skipIfOneChild();
     b.rule(MULTIPLICATIVE_EXPRESSION).is(UNARY_EXPRESSION, b.zeroOrMore(b.firstOf(STAR, DIV, MOD), UNARY_EXPRESSION)).skipIfOneChild();
-    b.rule(UNARY_EXPRESSION).is(b.firstOf(
+    b.rule(UNARY_EXPRESSION_NOT_PLUS_MINUS).is(b.firstOf(
+        CAST_EXPRESSION,
         METHOD_REFERENCE,
+        b.sequence(PRIMARY, b.zeroOrMore(SELECTOR), b.zeroOrMore(POST_FIX_OP)),
+        b.sequence(TILDA, UNARY_EXPRESSION),
+        b.sequence(BANG, UNARY_EXPRESSION)
+    )).skipIfOneChild();
+    b.rule(CAST_EXPRESSION).is(LPAR, b.firstOf(
+      b.sequence(BASIC_TYPE, RPAR, UNARY_EXPRESSION),
+      b.sequence(TYPE, b.zeroOrMore(AND, CLASS_TYPE), RPAR, UNARY_EXPRESSION_NOT_PLUS_MINUS)
+    ));
+    b.rule(UNARY_EXPRESSION).is(b.firstOf(
         b.sequence(PREFIX_OP, UNARY_EXPRESSION),
-        b.sequence(LPAR, TYPE, RPAR, UNARY_EXPRESSION),
-        b.sequence(PRIMARY, b.zeroOrMore(SELECTOR), b.zeroOrMore(POST_FIX_OP))
+        UNARY_EXPRESSION_NOT_PLUS_MINUS
     )).skipIfOneChild();
     b.rule(PRIMARY).is(b.firstOf(
         LAMBDA_EXPRESSION,
@@ -869,8 +880,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(PREFIX_OP).is(b.firstOf(
         INC,
         DEC,
-        BANG,
-        TILDA,
         PLUS,
         MINUS));
     b.rule(POST_FIX_OP).is(b.firstOf(

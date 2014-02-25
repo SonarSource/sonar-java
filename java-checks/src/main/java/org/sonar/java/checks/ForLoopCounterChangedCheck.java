@@ -50,6 +50,7 @@ public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
     subscribeTo(JavaGrammar.FOR_STATEMENT);
     subscribeTo(JavaGrammar.ASSIGNMENT_EXPRESSION);
     subscribeTo(JavaGrammar.UNARY_EXPRESSION);
+    subscribeTo(JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS);
     subscribeTo(JavaGrammar.STATEMENT);
   }
 
@@ -86,7 +87,7 @@ public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isIncrementOrDecrementExpression(AstNode node) {
-    return node.is(JavaGrammar.UNARY_EXPRESSION) &&
+    return node.is(JavaGrammar.UNARY_EXPRESSION, JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS) &&
       node.select()
           .children(JavaGrammar.PREFIX_OP, JavaGrammar.POST_FIX_OP)
           .children(JavaPunctuator.INC, JavaPunctuator.DEC)

@@ -71,6 +71,7 @@ public class ExpressionTest {
         .matches("List::size")
         .matches("int[]::clone")
         .matches("T::size")
+        .matches("(Cast) T::size")
         .matches("Arrays::<String>sort")
         .matches("(foo?list.map(String::length):Collections.emptyList()) :: iterator")
 
@@ -80,7 +81,16 @@ public class ExpressionTest {
         .matches("a->a*a")
         .matches("(int a)->a*a")
         .matches("(a)->a*a")
+
+        //Java 8 : Cast expression with bounds
+        .matches("(Comparator<Map.Entry<K, V>> & Serializable) foo")
+        .matches("(Callable[] & Serializable) foo")
+        .matches("(Callable<Integer[]>[] & Serializable) foo")
+        .matches("(Comparator<Map.Entry<K, V>>[] & Serializable) foo")
+        .matches("(a & b) - c")
     ;
+
+
   }
 
 }

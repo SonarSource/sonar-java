@@ -40,7 +40,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -53,7 +52,6 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-import java.beans.Expression;
 import java.util.List;
 
 public class JavaTreeMaker {
@@ -1019,7 +1017,7 @@ public class JavaTreeMaker {
       return conditionalExpression(astNode);
     } else if (astNode.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
       return assignmentExpression(astNode);
-    } else if (astNode.is(JavaGrammar.UNARY_EXPRESSION)) {
+    } else if (astNode.is(JavaGrammar.UNARY_EXPRESSION, JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS, JavaGrammar.CAST_EXPRESSION)) {
       return unaryExpression(astNode);
     } else if (astNode.is(JavaGrammar.METHOD_REFERENCE)) {
       return new JavaTree.NotImplementedTreeImpl(astNode, "METHOD REFERENCE");
@@ -1229,15 +1227,27 @@ public class JavaTreeMaker {
    * 15.16. Cast Expressions
    */
   private ExpressionTree unaryExpression(AstNode astNode) {
-    if (astNode.hasDirectChildren(JavaGrammar.TYPE)) {
+    if (astNode.is(JavaGrammar.CAST_EXPRESSION)) {
       // 15.16. Cast Expressions
+      AstNode typeNode = astNode.getFirstChild(JavaPunctuator.LPAR).getNextSibling();
+      Tree type;
+      if(typeNode.is(JavaGrammar.BASIC_TYPE)){
+        type = basicType(typeNode);
+      }else{
+        type = referenceType(typeNode);
+      }
       return new JavaTree.TypeCastExpressionTreeImpl(
           astNode,
-          referenceType(astNode.getFirstChild(JavaGrammar.TYPE)),
-          expression(astNode.getChild(3)));
-    } else if (astNode.hasDirectChildren(JavaGrammar.PREFIX_OP)) {
+          type,
+          expression(astNode.getFirstChild(JavaPunctuator.RPAR).getNextSibling()));
+    } else if (astNode.hasDirectChildren(JavaGrammar.PREFIX_OP, JavaPunctuator.TILDA, JavaPunctuator.BANG)) {
       // 15.15. Unary Operators
-      JavaPunctuator punctuator = (JavaPunctuator) astNode.getFirstChild(JavaGrammar.PREFIX_OP).getFirstChild().getType();
+      JavaPunctuator punctuator;
+      if(astNode.hasDirectChildren(JavaPunctuator.TILDA, JavaPunctuator.BANG)){
+        punctuator = (JavaPunctuator) astNode.getFirstChild(JavaPunctuator.TILDA, JavaPunctuator.BANG).getType();
+      }else{
+        punctuator = (JavaPunctuator) astNode.getFirstChild(JavaGrammar.PREFIX_OP, JavaPunctuator.TILDA, JavaPunctuator.BANG).getFirstChild().getType();
+      }
       Tree.Kind kind = kindMaps.getPrefixOperator(punctuator);
       return new JavaTree.UnaryExpressionTreeImpl(
           astNode,

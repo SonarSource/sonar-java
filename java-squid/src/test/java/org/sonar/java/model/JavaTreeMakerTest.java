@@ -1262,12 +1262,12 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void postfix_expression() {
-    AstNode astNode = p.parse("class T { void m() { i++; } }").getFirstDescendant(JavaGrammar.UNARY_EXPRESSION);
+    AstNode astNode = p.parse("class T { void m() { i++; } }").getFirstDescendant(JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS);
     UnaryExpressionTree tree = (UnaryExpressionTree) maker.expression(astNode);
     assertThat(tree.is(Tree.Kind.POSTFIX_INCREMENT)).isTrue();
     assertThat(tree.expression()).isNotNull();
 
-    astNode = p.parse("class T { void m() { i--; } }").getFirstDescendant(JavaGrammar.UNARY_EXPRESSION);
+    astNode = p.parse("class T { void m() { i--; } }").getFirstDescendant(JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS);
     tree = (UnaryExpressionTree) maker.expression(astNode);
     assertThat(tree.is(Tree.Kind.POSTFIX_DECREMENT)).isTrue();
     assertThat(tree.expression()).isNotNull();
@@ -1294,11 +1294,18 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void type_cast() {
-    AstNode astNode = p.parse("class T { boolean m() { return (Boolean) true; } }").getFirstDescendant(JavaGrammar.UNARY_EXPRESSION);
+    AstNode astNode = p.parse("class T { boolean m() { return (Boolean) true; } }").getFirstDescendant(JavaGrammar.CAST_EXPRESSION);
     TypeCastTree tree = (TypeCastTree) maker.expression(astNode);
     assertThat(tree.is(Tree.Kind.TYPE_CAST)).isTrue();
     assertThat(tree.type()).isNotNull();
     assertThat(tree.expression()).isNotNull();
+
+    astNode = p.parse("class T { boolean m() { return (Foo<T> & Bar) true; } }").getFirstDescendant(JavaGrammar.CAST_EXPRESSION);
+    tree = (TypeCastTree) maker.expression(astNode);
+    assertThat(tree.is(Tree.Kind.TYPE_CAST)).isTrue();
+    assertThat(tree.type()).isNotNull();
+    assertThat(tree.expression()).isNotNull();
+
   }
 
   /**

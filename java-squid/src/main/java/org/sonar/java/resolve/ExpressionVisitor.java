@@ -84,6 +84,8 @@ public class ExpressionVisitor extends JavaAstVisitor {
       JavaGrammar.EXPRESSION,
       JavaGrammar.PRIMARY,
       JavaGrammar.UNARY_EXPRESSION,
+      JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS,
+      JavaGrammar.CAST_EXPRESSION,
       JavaGrammar.LITERAL,
       JavaGrammar.TYPE);
     subscribeTo(binaryOperatorAstNodeTypes);
@@ -111,10 +113,40 @@ public class ExpressionVisitor extends JavaAstVisitor {
       type = visitConditionalExpression();
     } else if (astNode.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
       type = visitAssignmentExpression(astNode);
+    } else if(astNode.is(JavaGrammar.CAST_EXPRESSION)) {
+      type = visitCastExpression(env, astNode);
+    } else if(astNode.is(JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS)) {
+      type = visitUnaryNotPlusMinusExpression(env, astNode);
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
     }
     types.put(astNode, type);
+  }
+
+  private Type visitUnaryNotPlusMinusExpression(Resolve.Env env, AstNode astNode) {
+    Type result;
+    AstNode grandChild = astNode.getFirstChild();
+    if (grandChild.is(JavaGrammar.PRIMARY)) {
+      Type type = getType(grandChild);
+      for (AstNode selectorNode : astNode.getChildren(JavaGrammar.SELECTOR)) {
+        type = applySelector(env, type, selectorNode);
+      }
+      result = type;
+    } else {
+      result = getType(astNode.getFirstChild(JavaPunctuator.BANG, JavaPunctuator.TILDA).getNextSibling());
+    }
+    return result;
+  }
+
+  private Type visitCastExpression(Resolve.Env env,  AstNode astNode) {
+    Type result;
+    AstNode type = astNode.getFirstChild(JavaPunctuator.LPAR).getNextSibling();
+    if(type.is(JavaGrammar.BASIC_TYPE)) {
+      result = resolve.findIdent(env, type.getTokenValue(), Symbol.TYP).type;
+    } else {
+      result = getType(astNode.getFirstChild(JavaGrammar.TYPE));
+    }
+    return result;
   }
 
   /**
@@ -270,18 +302,14 @@ public class ExpressionVisitor extends JavaAstVisitor {
   private Type visitUnaryExpression(Resolve.Env env, AstNode astNode) {
     final Type result;
     AstNode firstChildNode = astNode.getFirstChild();
-    if (firstChildNode.is(JavaPunctuator.LPAR)) {
+    if (firstChildNode.is(JavaGrammar.CAST_EXPRESSION)) {
       // type cast
-      result = getType(astNode.getFirstChild(JavaGrammar.TYPE));
-    } else if (firstChildNode.is(JavaGrammar.PRIMARY)) {
-      Type type = getType(firstChildNode);
-      for (AstNode selectorNode : astNode.getChildren(JavaGrammar.SELECTOR)) {
-        type = applySelector(env, type, selectorNode);
-      }
-      result = type;
-    } else if (astNode.getFirstChild().is(JavaGrammar.PREFIX_OP)) {
-      result = getType(astNode.getFirstChild().getNextSibling());
-    } else {
+      result = getType(firstChildNode);
+    } else if (firstChildNode.is(JavaGrammar.PREFIX_OP)) {
+      result = getType(firstChildNode.getNextSibling());
+    } else if(firstChildNode.is(JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS)){
+      result = getType(firstChildNode);
+    }else{
       throw new IllegalArgumentException("Unexpected AstNodeType: " + firstChildNode.getType());
     }
     return result;

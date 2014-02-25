@@ -37,6 +37,7 @@ public class GarbageCollectorCalledCheck extends SquidCheck<LexerlessGrammar> {
   public void init() {
     subscribeTo(JavaGrammar.PRIMARY);
     subscribeTo(JavaGrammar.UNARY_EXPRESSION);
+    subscribeTo(JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS);
   }
 
   @Override
