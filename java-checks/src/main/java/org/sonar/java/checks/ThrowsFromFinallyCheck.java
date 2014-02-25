@@ -19,33 +19,66 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 @Rule(
-  key = "S1163",
-  priority = Priority.MAJOR)
+    key = ThrowsFromFinallyCheck.RULE,
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ThrowsFromFinallyCheck extends SquidCheck<LexerlessGrammar> {
+public class ThrowsFromFinallyCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE = "S1163";
+  private static final RuleKey RULEKEY = RuleKey.of(CheckList.REPOSITORY_KEY, RULE);
+  private JavaFileScannerContext context;
+
+  private int finallyLevel = 0;
+  private boolean isInMethodWithinFinally;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.THROW_STATEMENT);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isInFinally(node)) {
-      getContext().createLineViolation(this, "Refactor this code to not throw exceptions in finally blocks.", node);
+  public void visitTryStatement(TryStatementTree tree) {
+    scan(tree.resources());
+    scan(tree.block());
+    scan(tree.catches());
+    finallyLevel++;
+    scan(tree.finallyBlock());
+    finallyLevel--;
+  }
+
+  @Override
+  public void visitThrowStatement(ThrowStatementTree tree) {
+    if(isInFinally() && !isInMethodWithinFinally){
+      context.addIssue(tree, RULEKEY, "Refactor this code to not throw exceptions in finally blocks.");
     }
+    super.visitThrowStatement(tree);
   }
 
-  private static boolean isInFinally(AstNode node) {
-    return node.getFirstAncestor(JavaGrammar.FINALLY_, JavaGrammar.CLASS_BODY_DECLARATION, JavaGrammar.INTERFACE_BODY_DECLARATION).is(JavaGrammar.FINALLY_);
+  @Override
+  public void visitMethod(MethodTree tree) {
+    isInMethodWithinFinally = isInFinally();
+    super.visitMethod(tree);
+    isInMethodWithinFinally = false;
   }
+
+  private boolean isInFinally(){
+    return finallyLevel>0;
+  }
+
 }

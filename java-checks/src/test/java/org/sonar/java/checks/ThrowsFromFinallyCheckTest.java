@@ -23,6 +23,7 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -34,10 +35,12 @@ public class ThrowsFromFinallyCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThrowsFromFinallyCheck.java"), new ThrowsFromFinallyCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThrowsFromFinallyCheck.java"), new VisitorsBridge(new ThrowsFromFinallyCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(10).withMessage("Refactor this code to not throw exceptions in finally blocks.")
-        .next().atLine(13);
+        .next().atLine(13)
+        .next().atLine(26)
+    ;
   }
 
 }

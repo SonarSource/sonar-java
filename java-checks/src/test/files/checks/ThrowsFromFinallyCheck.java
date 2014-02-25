@@ -18,6 +18,12 @@ class A {
           throw new IllegalAccessError();
         }
       };
+      try{
+
+      }catch (Exception e){
+
+      }
+      throw new IllegalAccessError();
     }
   }
 
