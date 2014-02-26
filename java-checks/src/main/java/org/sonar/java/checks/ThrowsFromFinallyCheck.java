@@ -30,9 +30,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-
 @Rule(
     key = ThrowsFromFinallyCheck.RULE,
     priority = Priority.MAJOR)
