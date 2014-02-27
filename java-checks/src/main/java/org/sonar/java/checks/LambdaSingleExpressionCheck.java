@@ -33,7 +33,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
     key = LambdaSingleExpressionCheck.RULE_KEY,
-    priority = Priority.MAJOR)
+    priority = Priority.MAJOR,
+    tags={"java8"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 @Beta
 public class LambdaSingleExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -52,13 +53,21 @@ public class LambdaSingleExpressionCheck extends BaseTreeVisitor implements Java
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
     if (isBlockWithOneStatement(lambdaExpressionTree)) {
-      context.addIssue(lambdaExpressionTree.body(), RULE, "Replace this block containing only one return statement with the expression being returned");
+      String message = "Remove useless curly braces around statement";
+      if(singleStatementIsReturn(lambdaExpressionTree)){
+        message += " and then remove useless return keyword";
+      }
+      context.addIssue(lambdaExpressionTree.body(), RULE, message);
     }
     super.visitLambdaExpression(lambdaExpressionTree);
   }
 
   private boolean isBlockWithOneStatement(LambdaExpressionTree lambdaExpressionTree) {
     return lambdaExpressionTree.body().is(Tree.Kind.BLOCK) && ((BlockTree) lambdaExpressionTree.body()).body().size() == 1;
+  }
+
+  private boolean singleStatementIsReturn(LambdaExpressionTree lambdaExpressionTree) {
+    return ((BlockTree) lambdaExpressionTree.body()).body().get(0).is(Tree.Kind.RETURN_STATEMENT);
   }
 
 

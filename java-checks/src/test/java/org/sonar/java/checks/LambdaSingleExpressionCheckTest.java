@@ -38,8 +38,8 @@ public class LambdaSingleExpressionCheckTest {
     SourceFile file = JavaAstScanner
       .scanSingleFile(new File("src/test/files/checks/LambdaSingleExpressionCheck.java"), new VisitorsBridge(new LambdaSingleExpressionCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Replace this block containing only one return statement with the expression being returned")
-      .next().atLine(5).withMessage("Replace this block containing only one return statement with the expression being returned")
+      .next().atLine(4).withMessage("Remove useless curly braces around statement and then remove useless return keyword")
+      .next().atLine(5).withMessage("Remove useless curly braces around statement")
       .noMore();
   }
 
