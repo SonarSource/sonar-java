@@ -19,15 +19,30 @@
  */
 package org.sonar.plugins.java;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.sonar.api.Properties;
+import org.sonar.api.Property;
+import org.sonar.api.config.Settings;
 import org.sonar.api.resources.AbstractLanguage;
+
+import java.util.List;
 
 /**
  * Java language implementation
  *
  * @since 1.3
  */
+@Properties({
+    @Property(
+        key = Java.FILE_SUFFIXES_KEY,
+        defaultValue = Java.DEFAULT_FILE_SUFFIXES,
+        name = "File suffixes",
+        description = "Comma-separated list of suffixes for files to analyze. To not filter, leave the list empty.",
+        global = true,
+        project = true)
+})
 public class Java extends AbstractLanguage {
 
   /**
@@ -40,16 +55,28 @@ public class Java extends AbstractLanguage {
    */
   public static final String NAME = "Java";
 
+
   /**
-   * Java files knows suffixes
+   * Key of the file suffix parameter
    */
-  private static final String[] SUFFIXES = {".java", ".jav"};
+  public static final String FILE_SUFFIXES_KEY = "sonar.java.file.suffixes";
+
+  /**
+   * Default Java files knows suffixes
+   */
+  public static final String DEFAULT_FILE_SUFFIXES = ".java,.jav";
+
+  /**
+   * Settings of the plugin.
+   */
+  private final Settings settings;
 
   /**
    * Default constructor
    */
-  public Java() {
+  public Java(Settings settings) {
     super(KEY, NAME);
+    this.settings = settings;
   }
 
   /**
@@ -58,12 +85,21 @@ public class Java extends AbstractLanguage {
    * @see org.sonar.api.resources.AbstractLanguage#getFileSuffixes()
    */
   public String[] getFileSuffixes() {
-    return (String[]) ArrayUtils.clone(SUFFIXES);
+    String[] suffixes = filterEmptyStrings(settings.getStringArray(Java.FILE_SUFFIXES_KEY));
+    if (suffixes.length == 0) {
+      suffixes = StringUtils.split(DEFAULT_FILE_SUFFIXES, ",");
+    }
+    return suffixes;
   }
 
-  public static boolean isJavaFile(java.io.File file) {
-    String suffix = "." + StringUtils.substringAfterLast(file.getName(), ".");
-    return ArrayUtils.contains(SUFFIXES, suffix);
+  private String[] filterEmptyStrings(String[] stringArray) {
+    List<String> nonEmptyStrings = Lists.newArrayList();
+    for (String string : stringArray) {
+      if (StringUtils.isNotBlank(string.trim())) {
+        nonEmptyStrings.add(string.trim());
+      }
+    }
+    return nonEmptyStrings.toArray(new String[nonEmptyStrings.size()]);
   }
 
 }
