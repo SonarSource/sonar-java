@@ -52,7 +52,7 @@ public class JavaSettings implements BatchExtension, ServerExtension {
       .defaultValue("jacoco")
       .category("java")
       .subCategory("General")
-      .name("Code coverage plugin")
+      .name("Code Coverage Plugin")
       .description("Key of the code coverage plugin to use for unit tests.")
       .onQualifiers(Qualifiers.PROJECT)
       .build();
