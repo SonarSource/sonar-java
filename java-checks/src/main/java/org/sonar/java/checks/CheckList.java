@@ -170,7 +170,8 @@ public final class CheckList {
       ThrowsSeveralCheckedExceptionCheck.class,
       ThreadRunCheck.class,
       ImmediatelyReturnedVariableCheck.class,
-      LambdaSingleExpressionCheck.class
+      LambdaSingleExpressionCheck.class,
+      LambdaOptionalParenthesisCheck.class
       );
   }
 
