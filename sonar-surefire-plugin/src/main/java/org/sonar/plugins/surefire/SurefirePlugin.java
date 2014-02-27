@@ -34,8 +34,8 @@ public final class SurefirePlugin extends SonarPlugin {
   public List getExtensions() {
     return ImmutableList.of(
       PropertyDefinition.builder(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)
-        .name("Report path")
-        .description("Path (absolute or relative) to XML report files.")
+        .name("JUnit Reports")
+        .description("Path to the directory containing all the *.xml JUnit report files. The path may be absolute or relative to the project base directory.")
         .onlyOnQualifiers(Qualifiers.PROJECT)
         .category(CoreProperties.CATEGORY_JAVA)
         .build(),

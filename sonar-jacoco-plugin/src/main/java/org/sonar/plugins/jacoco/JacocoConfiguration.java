@@ -106,8 +106,8 @@ public class JacocoConfiguration implements BatchExtension {
             .defaultValue(JacocoConfiguration.REPORT_PATH_DEFAULT_VALUE)
             .category(CoreProperties.CATEGORY_JAVA)
             .subCategory(subCategory)
-            .name("File with execution data")
-            .description("Path (absolute or relative) to the file with execution data.")
+            .name("UT JaCoCo Report")
+            .description("Path to the JaCoCo report file containing coverage data by unit tests. The path may be absolute or relative to the project base directory.")
             .onlyOnQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
             .build(),
         PropertyDefinition.builder(JacocoConfiguration.INCLUDES_PROPERTY)
@@ -133,7 +133,7 @@ public class JacocoConfiguration implements BatchExtension {
             .multiValues(true)
             .category(CoreProperties.CATEGORY_JAVA)
             .subCategory(subCategory)
-            .name("Excluded class loaders")
+            .name("Excluded Class Loaders")
             .description("A list of class loader names that should be excluded from execution analysis (see wildcards)." +
               " This option might be required in case of special frameworks that conflict with JaCoCo code" +
               " instrumentation, in particular class loaders that do not have access to the Java runtime classes.")
@@ -143,8 +143,8 @@ public class JacocoConfiguration implements BatchExtension {
             .defaultValue(JacocoConfiguration.IT_REPORT_PATH_DEFAULT_VALUE)
             .category(CoreProperties.CATEGORY_JAVA)
             .subCategory(subCategory)
-            .name("File with execution data for integration tests")
-            .description("Path (absolute or relative) to the file with execution data.")
+            .name("IT JaCoCo Report")
+            .description("Path to the JaCoCo report file containing coverage data by integration tests. The path may be absolute or relative to the project base directory.")
             .onlyOnQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
             .build());
   }

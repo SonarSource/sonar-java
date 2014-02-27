@@ -44,8 +44,8 @@ public class JavaSquidPlugin extends SonarPlugin {
         .defaultValue(JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE + "")
         .category(JAVA_CATEGORY)
         .subCategory(GENERAL_SUBCATEGORY)
-        .name("Separate accessors")
-        .description("Flag whether Squid should separate accessors (getters/setters) from methods. " +
+        .name("Separate Accessors")
+        .description("Flag whether SonarQube should separate accessors (getters/setters) from methods. " +
           "In that case, accessors are not counted in metrics such as complexity or API documentation.")
         .type(PropertyType.BOOLEAN)
         .onQualifiers(Qualifiers.PROJECT)
