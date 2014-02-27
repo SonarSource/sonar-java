@@ -65,7 +65,7 @@ public abstract class FindbugsTests {
 
   protected RulesProfile createRulesProfileWithActiveRules() {
     RulesProfile profile = RulesProfile.create();
-    profile.setName(RulesProfile.SONAR_WAY_FINDBUGS_NAME);
+    profile.setName("Sonar way with Findbugs");
     profile.setLanguage(Java.KEY);
     ServerFileSystem sfs = mock(ServerFileSystem.class);
     for (Rule rule : new FindbugsRuleRepository(sfs, new XMLRuleParser()).createRules()) {

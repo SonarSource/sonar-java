@@ -29,6 +29,7 @@ import java.io.Reader;
 
 public class SonarWayWithFindbugsProfile extends ProfileDefinition {
 
+  private static final String SONAR_WAY_FINDBUGS_NAME = "Sonar way with Findbugs";
   private final FindbugsProfileImporter importer;
 
   public SonarWayWithFindbugsProfile(FindbugsProfileImporter importer) {
@@ -41,7 +42,7 @@ public class SonarWayWithFindbugsProfile extends ProfileDefinition {
       "/org/sonar/plugins/findbugs/profile-sonar-way-findbugs.xml"));
     RulesProfile profile = importer.importProfile(pmdSonarWayProfile, messages);
     profile.setLanguage(Java.KEY);
-    profile.setName(RulesProfile.SONAR_WAY_FINDBUGS_NAME);
+    profile.setName(SONAR_WAY_FINDBUGS_NAME);
     return profile;
   }
 

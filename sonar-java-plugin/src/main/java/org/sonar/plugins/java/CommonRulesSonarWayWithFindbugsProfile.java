@@ -25,6 +25,7 @@ import org.sonar.api.utils.ValidationMessages;
 
 public class CommonRulesSonarWayWithFindbugsProfile extends ProfileDefinition {
 
+  private static final String SONAR_WAY_FINDBUGS_NAME = "Sonar way with Findbugs";
   private final CommonRulesSonarWayProfile sonarWay;
 
   public CommonRulesSonarWayWithFindbugsProfile(CommonRulesSonarWayProfile sonarWay) {
@@ -34,7 +35,7 @@ public class CommonRulesSonarWayWithFindbugsProfile extends ProfileDefinition {
   @Override
   public RulesProfile createProfile(ValidationMessages validationMessages) {
     RulesProfile profile = sonarWay.createProfile(validationMessages);
-    profile.setName(RulesProfile.SONAR_WAY_FINDBUGS_NAME);
+    profile.setName(SONAR_WAY_FINDBUGS_NAME);
     return profile;
   }
 
