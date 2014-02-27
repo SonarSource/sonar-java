@@ -21,9 +21,9 @@ package org.sonar.plugins.findbugs;
 
 public final class FindbugsConstants {
 
-  public static final String REPOSITORY_NAME = "Findbugs";
+  public static final String REPOSITORY_NAME = "FindBugs";
   public static final String PLUGIN_KEY = "findbugs";
-  public static final String PLUGIN_NAME = "Findbugs";
+  public static final String PLUGIN_NAME = "FindBugs";
   public static final String REPOSITORY_KEY = PLUGIN_KEY;
 
   public static final String EFFORT_PROPERTY = "sonar.findbugs.effort";
