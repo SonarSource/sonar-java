@@ -1,5 +1,4 @@
-<p>There are two ways to write a lambda that simply returns the result of an expression, but one is definitely more compact and readable than the other.</p>
-
+<p>There are two ways to write lambdas that contain single statement, but one is definitely more compact and readable than the other.</p>
 <h2>Noncompliant Code Example</h2>
 
 <pre>
@@ -10,6 +9,6 @@
 <h2>Compliant Solution</h2>
 
 <pre>
- x -> {System.out.println(x+1);}
+ x -> System.out.println(x+1)
 (a, b) -> a + b
 </pre>
