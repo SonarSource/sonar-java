@@ -32,7 +32,7 @@ import org.sonar.squid.api.SourceMethod;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(key = "MethodCyclomaticComplexity", priority = Priority.MAJOR,
-  tags={"size"})
+  tags={"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class MethodComplexityCheck extends SquidCheck<LexerlessGrammar> {
 

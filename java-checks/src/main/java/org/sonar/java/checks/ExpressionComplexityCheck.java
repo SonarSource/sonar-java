@@ -35,7 +35,7 @@ import java.util.Stack;
 @Rule(
   key = "S1067",
   priority = Priority.MAJOR,
-  tags={"size"})
+  tags={"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ExpressionComplexityCheck extends SquidCheck<LexerlessGrammar> {
 

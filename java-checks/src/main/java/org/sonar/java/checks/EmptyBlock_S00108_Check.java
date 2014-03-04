@@ -30,7 +30,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S00108",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class EmptyBlock_S00108_Check extends SquidCheck<LexerlessGrammar> {
 

@@ -31,7 +31,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @Rule(
   key = "S1151",
   priority = Priority.MAJOR,
-  tags={"size"})
+  tags={"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> {
 

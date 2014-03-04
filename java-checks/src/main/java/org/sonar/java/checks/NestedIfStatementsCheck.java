@@ -39,7 +39,8 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 @Rule(
   key = NestedIfStatementsCheck.KEY,
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags={"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFileScanner {
 

@@ -31,7 +31,8 @@ import java.util.Stack;
 
 @Rule(
   key = "S1142",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"brain-overload"})
 public class MethodWithExcessiveReturnsCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final int DEFAULT_MAX = 3;

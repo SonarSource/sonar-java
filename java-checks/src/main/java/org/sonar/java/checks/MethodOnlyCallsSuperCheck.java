@@ -36,7 +36,8 @@ import java.util.List;
 
 @Rule(
   key = "S1185",
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags={"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class MethodOnlyCallsSuperCheck extends SquidCheck<LexerlessGrammar> {
 

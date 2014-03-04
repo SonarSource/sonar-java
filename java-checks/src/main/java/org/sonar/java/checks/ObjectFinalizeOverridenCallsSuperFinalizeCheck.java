@@ -32,7 +32,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck",
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags={"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
 public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<LexerlessGrammar> {
 

@@ -38,7 +38,8 @@ import java.util.Set;
 
 @Rule(
   key = "ForLoopCounterChangedCheck",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
 

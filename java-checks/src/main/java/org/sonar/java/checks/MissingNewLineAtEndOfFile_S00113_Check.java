@@ -30,7 +30,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-@Rule(key = "S00113", priority = Priority.MINOR)
+@Rule(key = "S00113", priority = Priority.MINOR,tags={"convention"})
 public class MissingNewLineAtEndOfFile_S00113_Check extends SquidCheck<LexerlessGrammar> {
 
   @Override

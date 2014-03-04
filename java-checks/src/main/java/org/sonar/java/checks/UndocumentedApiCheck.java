@@ -38,7 +38,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 import java.util.List;
 
 @Rule(key = "UndocumentedApi", priority = Priority.MAJOR,
-tags={"comment"})
+tags={"convention"})
 public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final String DEFAULT_FOR_CLASSES = "**";

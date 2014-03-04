@@ -36,7 +36,8 @@ import java.util.List;
 
 @Rule(
   key = "S1451",
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags={"convention"})
 public class FileHeaderCheck extends SquidCheck<LexerlessGrammar> implements CharsetAwareVisitor {
 
   private static final String DEFAULT_HEADER_FORMAT = "";

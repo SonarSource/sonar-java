@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 @Rule(
   key = TooManyParameters_S00107_Check.RULE_KEY,
   priority = Priority.MAJOR,
-  tags={"size"})
+  tags={"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements JavaFileScanner {
 

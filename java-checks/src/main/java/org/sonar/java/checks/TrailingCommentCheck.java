@@ -37,7 +37,8 @@ import java.util.regex.Pattern;
 
 @Rule(
   key = "TrailingCommentCheck",
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class TrailingCommentCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 

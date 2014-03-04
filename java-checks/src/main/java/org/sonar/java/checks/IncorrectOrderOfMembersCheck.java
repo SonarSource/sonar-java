@@ -31,7 +31,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
   key = IncorrectOrderOfMembersCheck.RULE_KEY,
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements JavaFileScanner {
 

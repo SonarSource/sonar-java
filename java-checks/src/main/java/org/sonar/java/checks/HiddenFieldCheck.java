@@ -38,7 +38,8 @@ import java.util.Stack;
 
 @Rule(
   key = "HiddenFieldCheck",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class HiddenFieldCheck extends SquidCheck<LexerlessGrammar> {
 

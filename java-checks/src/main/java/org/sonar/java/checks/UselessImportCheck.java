@@ -44,7 +44,8 @@ import java.util.Set;
 
 @Rule(
   key = "UselessImportCheck",
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags={"unused"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 

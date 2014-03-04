@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 @Rule(
   key = "S00119",
   priority = Priority.MAJOR,
-  tags={"naming"})
+  tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class BadTypeParameterName_S00119_Check extends SquidCheck<LexerlessGrammar> {
 

@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "CommentedOutCodeLine", priority = Priority.MAJOR,
-  tags={"unused-code"})
+  tags={"unused"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class CommentedOutCodeLineCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 

@@ -32,7 +32,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
   key = MethodNameSameAsClassCheck.RULE_KEY,
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class MethodNameSameAsClassCheck extends BaseTreeVisitor implements JavaFileScanner {
 

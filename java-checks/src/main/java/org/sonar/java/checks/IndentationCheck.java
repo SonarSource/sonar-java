@@ -31,7 +31,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "IndentationCheck",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"convention"})
 public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final AstNodeType[] BLOCK_TYPES = new AstNodeType[] {

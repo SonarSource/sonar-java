@@ -31,7 +31,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
   key = OctalValuesCheck.RULE_KEY,
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner {
 

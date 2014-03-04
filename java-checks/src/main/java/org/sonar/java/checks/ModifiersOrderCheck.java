@@ -34,7 +34,8 @@ import java.util.List;
 
 @Rule(
   key = "ModifiersOrderCheck",
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class ModifiersOrderCheck extends SquidCheck<LexerlessGrammar> {
 

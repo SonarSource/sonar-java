@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 @Rule(
   key = BadAbstractClassName_S00118_Check.RULE_KEY,
   priority = Priority.MAJOR,
-  tags={"naming"})
+  tags={"convention"})
 public class BadAbstractClassName_S00118_Check extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S00118";

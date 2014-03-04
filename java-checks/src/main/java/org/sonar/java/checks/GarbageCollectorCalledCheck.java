@@ -29,7 +29,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1215",
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags={"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class GarbageCollectorCalledCheck extends SquidCheck<LexerlessGrammar> {
 

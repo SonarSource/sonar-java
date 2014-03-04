@@ -37,7 +37,8 @@ import java.util.regex.Pattern;
 
 @Rule(
   key = LoggersDeclarationCheck.KEY,
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFileScanner {
 

@@ -34,7 +34,7 @@ import org.sonar.squid.api.SourceMethod;
 import java.util.Collections;
 import java.util.List;
 
-@Rule(key = ThrowsSeveralCheckedExceptionCheck.RULE_KEY, priority = Priority.MAJOR)
+@Rule(key = ThrowsSeveralCheckedExceptionCheck.RULE_KEY, priority = Priority.MAJOR, tags={"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
 

@@ -31,7 +31,8 @@ import java.util.Stack;
 
 @Rule(
   key = "S135",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags={"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class SeveralBreakOrContinuePerLoopCheck extends SquidCheck<LexerlessGrammar> {
 

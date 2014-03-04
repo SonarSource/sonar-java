@@ -32,7 +32,8 @@ import java.util.List;
 
 @Rule(
   key = "S1201",
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags={"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class MethodNamedEqualsCheck extends SquidCheck<LexerlessGrammar> {
 

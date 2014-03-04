@@ -30,7 +30,7 @@ import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourceMethod;
 
 @Rule(key = UnusedPrivateMethodCheck.RULE_KEY, priority = Priority.MAJOR,
-  tags={"unused-code"})
+  tags={"unused"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 

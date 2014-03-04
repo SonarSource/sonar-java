@@ -35,7 +35,7 @@ import java.util.Stack;
 @Rule(
   key = "S1200",
   priority = Priority.MAJOR,
-  tags={"size"})
+  tags={"brain-overload"})
 public class ClassCouplingCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final int DEFAULT_MAX = 20;

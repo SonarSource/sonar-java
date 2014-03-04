@@ -35,7 +35,8 @@ import java.util.List;
 
 @Rule(
   key = "S00105",
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class TabCharacter_S00105_Check extends SquidCheck<LexerlessGrammar> implements CharsetAwareVisitor {
 

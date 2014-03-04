@@ -32,7 +32,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "ObjectFinalizeCheck",
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags={"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class ObjectFinalizeCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 

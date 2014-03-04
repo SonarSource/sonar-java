@@ -39,7 +39,8 @@ import java.util.Deque;
 
 @Rule(
   key = SwitchCaseWithoutBreakCheck.RULE_KEY,
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags={"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements JavaFileScanner {
 

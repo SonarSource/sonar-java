@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 @Rule(
     key = AnonymousClassesTooBigCheck.RULE_KEY,
     priority = Priority.MAJOR,
-    tags = {"size"})
+    tags = {"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements JavaFileScanner {
 
