@@ -21,6 +21,8 @@ package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.SonarPlugin;
+import org.sonar.api.config.PropertyDefinition;
+import org.sonar.api.resources.Qualifiers;
 import org.sonar.plugins.java.api.JavaSettings;
 
 import java.util.List;
@@ -30,13 +32,21 @@ public final class JavaPlugin extends SonarPlugin {
   @Override
   public List getExtensions() {
     return ImmutableList.of(
-      JavaCommonRulesEngine.class,
-      JavaCommonRulesDecorator.class,
-      JavaSettings.class,
-      JavaSettings.property(),
-      Java.class,
-      CommonRulesSonarWayProfile.class,
-      CommonRulesSonarWayWithFindbugsProfile.class);
+        JavaCommonRulesEngine.class,
+        JavaCommonRulesDecorator.class,
+        JavaSettings.class,
+        JavaSettings.property(),
+        Java.class,
+        CommonRulesSonarWayProfile.class,
+        CommonRulesSonarWayWithFindbugsProfile.class,
+        PropertyDefinition.builder(Java.FILE_SUFFIXES_KEY)
+            .defaultValue(Java.DEFAULT_FILE_SUFFIXES)
+            .name("File suffixes")
+            .description("Comma-separated list of suffixes for files to analyze. To not filter, leave the list empty.")
+            .subCategory("General")
+            .onQualifiers(Qualifiers.PROJECT)
+            .build()
+    );
   }
 
 }

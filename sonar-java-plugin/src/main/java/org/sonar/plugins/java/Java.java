@@ -20,10 +20,7 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.AbstractLanguage;
 
@@ -34,15 +31,6 @@ import java.util.List;
  *
  * @since 1.3
  */
-@Properties({
-    @Property(
-        key = Java.FILE_SUFFIXES_KEY,
-        defaultValue = Java.DEFAULT_FILE_SUFFIXES,
-        name = "File suffixes",
-        description = "Comma-separated list of suffixes for files to analyze. To not filter, leave the list empty.",
-        global = true,
-        project = true)
-})
 public class Java extends AbstractLanguage {
 
   /**
