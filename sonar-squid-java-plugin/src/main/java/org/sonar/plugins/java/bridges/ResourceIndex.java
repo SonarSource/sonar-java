@@ -19,6 +19,9 @@
  */
 package org.sonar.plugins.java.bridges;
 
+import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
@@ -33,10 +36,13 @@ import org.sonar.squid.indexer.SquidIndex;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 public final class ResourceIndex extends HashMap<SourceCode, Resource> {
 
   private static final long serialVersionUID = -918346378374943773L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(ResourceIndex.class);
 
   public ResourceIndex loadSquidResources(JavaSquid squid, SensorContext context, Project project) {
     loadSquidProject(squid.getIndex(), project);
@@ -53,17 +59,27 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
    * @see org.sonar.java.ast.visitors.PackageVisitor
    */
   private void loadSquidFilesAndPackages(SquidIndex squid, SensorContext context, Project project) {
+    Map<Resource, SourceCode> directoryReverseMap = Maps.newHashMap();
+
     Collection<SourceCode> files = squid.search(new QueryByType(SourceFile.class));
     for (SourceCode squidFile : files) {
       String filePath = squidFile.getName();
 
-      Resource sonarFile = org.sonar.api.resources.File.fromIOFile(new File(filePath), project);
+      File file = new File(filePath);
+      Resource sonarFile = org.sonar.api.resources.File.fromIOFile(file, project);
       // resource is reloaded to get the id:
       put(squidFile, context.getResource(sonarFile));
 
       SourceCode squidPackage = squidFile.getParent(SourcePackage.class);
-      Resource sonarDirectory = sonarFile.getParent();
-      put(squidPackage, context.getResource(sonarDirectory));
+      Resource sonarDirectory = context.getResource(sonarFile.getParent());
+
+      SourceCode previousDirectoryMapping = directoryReverseMap.get(sonarDirectory);
+      if (previousDirectoryMapping == null) {
+        directoryReverseMap.put(sonarDirectory, squidPackage);
+        put(squidPackage, sonarDirectory);
+      } else if (!previousDirectoryMapping.equals(squidPackage)) {
+        LOG.warn("Directory contains files belonging to different packages - some metrics could be reported incorrectly: {}", file.getParentFile());
+      }
     }
   }
 

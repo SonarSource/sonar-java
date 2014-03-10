@@ -81,8 +81,10 @@ public class Bridges {
     Collection<SourceCode> packages = squid.search(new QueryByType(SourcePackage.class));
     for (SourceCode squidPackage : packages) {
       Resource sonarPackage = resourceIndex.get(squidPackage);
-      for (Bridge bridge : bridges) {
-        bridge.onPackage((SourcePackage) squidPackage, sonarPackage);
+      if (sonarPackage != null) {
+        for (Bridge bridge : bridges) {
+          bridge.onPackage((SourcePackage) squidPackage, sonarPackage);
+        }
       }
     }
   }
@@ -93,8 +95,10 @@ public class Bridges {
       /* excluding test files: */ new QueryByMeasure(JavaMetric.TESTS, QueryByMeasure.Operator.LESS_THAN, 1));
     for (SourceCode squidFile : squidFiles) {
       Resource sonarFile = resourceIndex.get(squidFile);
-      for (Bridge bridge : bridges) {
-        bridge.onFile((SourceFile) squidFile, sonarFile);
+      if (sonarFile != null) {
+        for (Bridge bridge : bridges) {
+          bridge.onFile((SourceFile) squidFile, sonarFile);
+        }
       }
     }
   }
