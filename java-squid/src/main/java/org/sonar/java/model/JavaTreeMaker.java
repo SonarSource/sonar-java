@@ -195,17 +195,18 @@ public class JavaTreeMaker {
         arguments.add(elementValue(annotationRest.getFirstChild(JavaGrammar.ELEMENT_VALUE)));
       } else if (annotationRest.is(JavaGrammar.NORMAL_ANNOTATION_REST)) {
         AstNode elementValuePairs = annotationRest.getFirstChild(JavaGrammar.ELEMENT_VALUE_PAIRS);
-        List<AstNode> values = elementValuePairs.getChildren(JavaGrammar.ELEMENT_VALUE_PAIR);
-        for (AstNode value : values) {
-          AstNode identifier = value.getFirstChild(JavaTokenType.IDENTIFIER);
-          arguments.add(new JavaTree.AssignmentExpressionTreeImpl(
-              value,
-              identifier(identifier),
-              kindMaps.getAssignmentOperator(JavaPunctuator.EQU),
-              elementValue(value.getFirstChild(JavaGrammar.ELEMENT_VALUE))
-          ));
+        if (elementValuePairs != null) {
+          List<AstNode> values = elementValuePairs.getChildren(JavaGrammar.ELEMENT_VALUE_PAIR);
+          for (AstNode value : values) {
+            AstNode identifier = value.getFirstChild(JavaTokenType.IDENTIFIER);
+            arguments.add(new JavaTree.AssignmentExpressionTreeImpl(
+                value,
+                identifier(identifier),
+                kindMaps.getAssignmentOperator(JavaPunctuator.EQU),
+                elementValue(value.getFirstChild(JavaGrammar.ELEMENT_VALUE))
+            ));
+          }
         }
-
       }
     }
     return new JavaTree.AnnotationTreeImpl(astNode, annotationType, arguments.build());

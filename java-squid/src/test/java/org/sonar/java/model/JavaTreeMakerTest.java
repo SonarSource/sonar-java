@@ -273,6 +273,13 @@ public class JavaTreeMakerTest {
     assertThat(annotation.arguments()).hasSize(1);
     assertThat(annotation.arguments().get(0).is(Tree.Kind.STRING_LITERAL)).isTrue();
 
+    astNode = p.parse("@Target( ) class U {}");
+    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    annotations = tree.modifiers().annotations();
+    assertThat(annotations).hasSize(1);
+    annotation = annotations.get(0);
+    assertThat(annotation.arguments()).hasSize(0);
+
     astNode = p.parse("@Target({ElementType.METHOD}) class U {}");
     tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     annotations = tree.modifiers().annotations();
