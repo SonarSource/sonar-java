@@ -33,6 +33,7 @@ import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
 import org.sonar.api.scan.filesystem.FileQuery;
+import org.sonar.api.scan.filesystem.FileType;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
@@ -72,19 +73,14 @@ public class JavaSquidSensor implements Sensor {
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    return !moduleFileSystem.files(FileQuery.onSource().onLanguage(Java.KEY)).isEmpty();
+    return !moduleFileSystem.files(FileQuery.on(FileType.values()).onLanguage(Java.KEY)).isEmpty();
   }
 
   public void analyse(Project project, SensorContext context) {
-    List<InputFile> sourceFiles = getSourceFiles(project);
-    if (sourceFiles.isEmpty()) {
-      return;
-    }
-
     Collection<CodeVisitor> checks = annotationCheckFactory.getChecks();
 
     JavaSquid squid = new JavaSquid(createConfiguration(project), sonarComponents, checks.toArray(new CodeVisitor[checks.size()]));
-    squid.scan(sourceFiles, getTestFiles(project), getBytecodeFiles(project));
+    squid.scan(getSourceFiles(project), getTestFiles(project), getBytecodeFiles(project));
 
     javaResourceLocator.setSquidIndex(squid.getIndex());
 

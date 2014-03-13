@@ -64,7 +64,7 @@ public class JacocoConfiguration implements BatchExtension {
   }
 
   public boolean isEnabled(Project project) {
-    return !project.getFileSystem().mainFiles(Java.KEY).isEmpty() &&
+    return (!project.getFileSystem().mainFiles(Java.KEY).isEmpty() || !project.getFileSystem().testFiles(Java.KEY).isEmpty()) &&
       project.getAnalysisType().isDynamic(true) &&
       JaCoCoUtils.PLUGIN_KEY.equals(javaSettings.getEnabledCoveragePlugin());
   }
