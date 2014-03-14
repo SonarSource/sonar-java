@@ -1080,12 +1080,12 @@
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
+          <val>2.0</val>
           <txt>mn</txt>
-        </prop>
+        </prop>        
         <prop>
           <key>remediationFactor</key>
-          <val>2.0</val>
+          <val>0.0</val>
           <txt>mn</txt>
         </prop>
       </chc>
@@ -1098,12 +1098,12 @@
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
+          <val>5.0</val>
           <txt>mn</txt>
-        </prop>
+        </prop>        
         <prop>
           <key>remediationFactor</key>
-          <val>5.0</val>
+          <val>0.0</val>
           <txt>mn</txt>
         </prop>
       </chc>
@@ -1116,12 +1116,12 @@
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
+          <val>2.0</val>
           <txt>mn</txt>
-        </prop>
+        </prop>        
         <prop>
           <key>remediationFactor</key>
-          <val>2.0</val>
+          <val>0.0</val>
           <txt>mn</txt>
         </prop>
       </chc>
@@ -1134,12 +1134,12 @@
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
+          <val>2.0</val>
           <txt>mn</txt>
-        </prop>
+        </prop>        
         <prop>
           <key>remediationFactor</key>
-          <val>2.0</val>
+          <val>0.0</val>
           <txt>mn</txt>
         </prop>
       </chc>
@@ -1152,12 +1152,12 @@
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
+          <val>2.0</val>
           <txt>mn</txt>
-        </prop>
+        </prop>        
         <prop>
           <key>remediationFactor</key>
-          <val>2.0</val>
+          <val>0.0</val>
           <txt>mn</txt>
         </prop>
       </chc>
