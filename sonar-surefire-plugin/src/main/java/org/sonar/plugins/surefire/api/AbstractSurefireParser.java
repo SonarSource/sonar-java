@@ -35,8 +35,8 @@ import org.sonar.plugins.surefire.data.SurefireStaxHandler;
 import org.sonar.plugins.surefire.data.UnitTestClassReport;
 import org.sonar.plugins.surefire.data.UnitTestIndex;
 
+import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Map;
@@ -149,6 +149,10 @@ public abstract class AbstractSurefireParser {
     context.saveMeasure(resource, new Measure(CoreMetrics.TEST_DATA, report.toXml()));
   }
 
+  /**
+   * @return null if not found
+   */
+  @CheckForNull
   protected abstract Resource getUnitTestResource(String classKey);
 
 }

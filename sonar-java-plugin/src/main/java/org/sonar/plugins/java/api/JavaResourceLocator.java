@@ -23,12 +23,17 @@ import com.google.common.annotations.Beta;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.resources.Resource;
 
+import javax.annotation.CheckForNull;
 import java.io.File;
 import java.util.Collection;
 
 @Beta
 public interface JavaResourceLocator extends BatchExtension {
 
+  /**
+   * @return null if not found
+   */
+  @CheckForNull
   Resource findResourceByClassName(String className);
 
   Collection<File> classFilesToAnalyze();
