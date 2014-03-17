@@ -119,7 +119,11 @@ public abstract class AbstractSurefireParser {
       UnitTestClassReport report = entry.getValue();
       if (report.getTests() > 0) {
         Resource resource = getUnitTestResource(entry.getKey());
-        save(entry.getValue(), resource, context);
+        if (resource != null) {
+          save(entry.getValue(), resource, context);
+        } else {
+          LOGGER.warn("Resource not found: {}", entry.getKey());
+        }
       }
     }
   }
