@@ -30,7 +30,6 @@ public final class JaCoCoUtils {
   private JaCoCoUtils() {
   }
 
-  public static final String PLUGIN_KEY = "jacoco";
   public static final Logger LOG = LoggerFactory.getLogger(JaCoCoPlugin.class.getName());
 
 }

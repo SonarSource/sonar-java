@@ -34,9 +34,6 @@ public class JaCoCoPlugin extends SonarPlugin {
     extensions.add(
       JacocoConfiguration.class,
       JaCoCoAgentDownloader.class,
-      // Maven
-      JacocoMavenInitializer.class,
-      JaCoCoMavenPluginHandler.class,
       // Unit tests
       JaCoCoSensor.class,
       // Integration tests

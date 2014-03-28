@@ -47,52 +47,37 @@ public class JacocoConfigurationTest {
     when(downloader.getAgentJarFile()).thenReturn(new File("jacocoagent.jar"));
     javaSettings = mock(JavaSettings.class);
     settings = new Settings(new PropertyDefinitions().addComponents(JacocoConfiguration.getPropertyDefinitions()));
-    jacocoSettings = new JacocoConfiguration(settings, downloader, javaSettings);
+    jacocoSettings = new JacocoConfiguration(settings, downloader);
   }
 
   @Test
   public void should_be_enabled() {
     Project project = mockProject("java");
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
-    when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JaCoCoUtils.PLUGIN_KEY);
+    when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JacocoConfiguration.PLUGIN_KEY);
 
-    assertThat(jacocoSettings.isEnabled(project)).isTrue();
+    assertThat(jacocoSettings.isEnabled()).isTrue();
   }
 
   @Test
   public void should_be_enabled_if_reuse_report() {
     Project project = mockProject("java");
     when(project.getAnalysisType()).thenReturn(Project.AnalysisType.REUSE_REPORTS);
-    when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JaCoCoUtils.PLUGIN_KEY);
+    when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JacocoConfiguration.PLUGIN_KEY);
 
-    assertThat(jacocoSettings.isEnabled(project)).isTrue();
+    assertThat(jacocoSettings.isEnabled()).isTrue();
   }
 
   @Test
-  public void should_be_enabled_if_static_analysis_only() {
-    Project project = mockProject("java");
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.STATIC);
-    when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JaCoCoUtils.PLUGIN_KEY);
-
-    assertThat(jacocoSettings.isEnabled(project)).isFalse();
-  }
-
-  @Test
-  public void plugin_should_be_disabled() {
-    Project project = mockProject("java");
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
-    when(javaSettings.getEnabledCoveragePlugin()).thenReturn("cobertura");
-
-    assertThat(jacocoSettings.isEnabled(project)).isFalse();
-  }
-
-  @Test
-  public void should_be_disabled_if_not_java() {
-    Project project = mockProject("javascript");
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
-    when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JaCoCoUtils.PLUGIN_KEY);
-
-    assertThat(jacocoSettings.isEnabled(project)).isFalse();
+  public void should_be_disabled_if_both_path_are_empty() {
+    settings.setProperty(JacocoConfiguration.IT_REPORT_PATH_PROPERTY, "");
+    settings.setProperty(JacocoConfiguration.REPORT_PATH_PROPERTY, "");
+    assertThat(jacocoSettings.isEnabled()).isFalse();
+    settings.setProperty(JacocoConfiguration.IT_REPORT_PATH_PROPERTY, "somePath");
+    settings.setProperty(JacocoConfiguration.REPORT_PATH_PROPERTY, "");
+    assertThat(jacocoSettings.isEnabled()).isTrue();
+    settings.setProperty(JacocoConfiguration.IT_REPORT_PATH_PROPERTY, "");
+    settings.setProperty(JacocoConfiguration.REPORT_PATH_PROPERTY, "SomePath");
+    assertThat(jacocoSettings.isEnabled()).isTrue();
   }
 
   @Test

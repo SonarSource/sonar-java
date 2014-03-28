@@ -98,10 +98,10 @@ public class JaCoCoSensorTest {
   public void should_execute_if_enabled() {
     Project project = mock(Project.class);
 
-    when(configuration.isEnabled(project)).thenReturn(true);
+    when(configuration.isEnabled()).thenReturn(true);
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();;
 
-    when(configuration.isEnabled(project)).thenReturn(false);
+    when(configuration.isEnabled()).thenReturn(false);
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 

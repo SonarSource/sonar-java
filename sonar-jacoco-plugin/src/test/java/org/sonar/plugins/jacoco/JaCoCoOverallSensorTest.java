@@ -74,7 +74,7 @@ public class JaCoCoOverallSensorTest {
   public void should_execute_if_report_path_is_set() {
     Project project = mock(Project.class);
     when(configuration.getItReportPath()).thenReturn("target/it-jacoco.exec");
-    when(configuration.isEnabled(project)).thenReturn(true);
+    when(configuration.isEnabled()).thenReturn(true);
 
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
   }

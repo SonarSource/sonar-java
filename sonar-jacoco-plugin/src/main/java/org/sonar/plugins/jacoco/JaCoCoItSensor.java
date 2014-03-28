@@ -50,7 +50,7 @@ public class JaCoCoItSensor implements Sensor {
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    return configuration.isEnabled(project) && StringUtils.isNotBlank(configuration.getItReportPath());
+    return configuration.isEnabled() && StringUtils.isNotBlank(configuration.getItReportPath());
   }
 
   public void analyse(Project project, SensorContext context) {

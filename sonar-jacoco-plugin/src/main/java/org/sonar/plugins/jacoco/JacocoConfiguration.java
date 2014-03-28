@@ -52,21 +52,18 @@ public class JacocoConfiguration implements BatchExtension {
    */
   public static final String EXCLUDES_DEFAULT_VALUE = "*_javassist_*";
   public static final String EXCLCLASSLOADER_PROPERTY = "sonar.jacoco.exclclassloader";
+  public static final String PLUGIN_KEY = "jacoco";
 
   private final Settings settings;
-  private final JavaSettings javaSettings;
   private final JaCoCoAgentDownloader downloader;
 
-  public JacocoConfiguration(Settings settings, JaCoCoAgentDownloader downloader, JavaSettings javaSettings) {
+  public JacocoConfiguration(Settings settings, JaCoCoAgentDownloader downloader) {
     this.settings = settings;
     this.downloader = downloader;
-    this.javaSettings = javaSettings;
   }
 
-  public boolean isEnabled(Project project) {
-    return (!project.getFileSystem().mainFiles(Java.KEY).isEmpty() || !project.getFileSystem().testFiles(Java.KEY).isEmpty()) &&
-      project.getAnalysisType().isDynamic(true) &&
-      JaCoCoUtils.PLUGIN_KEY.equals(javaSettings.getEnabledCoveragePlugin());
+  public boolean isEnabled() {
+    return StringUtils.isNotEmpty(getItReportPath()) || StringUtils.isNotEmpty(getReportPath());
   }
 
   public String getReportPath() {

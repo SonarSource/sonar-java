@@ -62,7 +62,7 @@ public class JaCoCoSensor implements Sensor {
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    return configuration.isEnabled(project);
+    return configuration.isEnabled();
   }
 
   class UnitTestsAnalyzer extends AbstractAnalyzer {

@@ -97,7 +97,7 @@ public class JaCoCoItSensorTest {
     Project project = mock(Project.class);
     when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC).thenReturn(AnalysisType.REUSE_REPORTS);
     when(configuration.getItReportPath()).thenReturn("target/it-jacoco.exec");
-    when(configuration.isEnabled(project)).thenReturn(true);
+    when(configuration.isEnabled()).thenReturn(true);
 
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
   }
@@ -107,7 +107,7 @@ public class JaCoCoItSensorTest {
     Project project = mock(Project.class);
     when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC).thenReturn(AnalysisType.REUSE_REPORTS);
     when(configuration.getItReportPath()).thenReturn(null);
-    when(configuration.isEnabled(project)).thenReturn(true);
+    when(configuration.isEnabled()).thenReturn(true);
 
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
