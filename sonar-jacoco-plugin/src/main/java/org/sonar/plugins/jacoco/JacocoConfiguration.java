@@ -27,10 +27,7 @@ import org.sonar.api.BatchExtension;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Java;
-import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Qualifiers;
-import org.sonar.plugins.java.api.JavaSettings;
 
 import java.util.List;
 
