@@ -1,8 +1,11 @@
-Sonar Java - Custom build, supports Java 8 projects (29/04/2014)
-================================================================
+Sonar Java - Custom build
+=========================
 
-Compile Findbugs 3.0.0-dev-20140323-8036a5d9
---------------------------------------------
+Supports Java 8 projects (29/04/2014)
+-------------------------------------
+
+### Compile Findbugs 3.0.0-dev-20140323-8036a5d9
+
 ~~~
 git clone https://code.google.com/p/findbugs
 ant
@@ -10,11 +13,11 @@ ant
 
 --> this will put libs into `u:\src\findbugs\findbugs\lib\`
 
-set FINDBUGS_HOME=u:\src\findbugs\findbugs
+set `FINDBUGS_HOME=u:\src\findbugs\findbugs`
 
 
-Compile Sonar Java Ecosystem 2.2-SNAPSHOT
------------------------------------------
+### Compile Sonar Java Ecosystem 2.2-SNAPSHOT
+
 Original source at: https://github.com/SonarSource/sonar-java
 
 Did some changes to make it work with Jacoco, Findbugs, etc. So here it is:
@@ -40,8 +43,7 @@ sonar-surefire-plugin-2.2-SNAPSHOT.jar
 ~~~
 
 
-Compile SonarQube 4.3-SNAPSHOT (optional)
------------------------------------------
+### Compile SonarQube 4.3-SNAPSHOT (optional)
 
 ~~~
 git clone https://github.com/SonarSource/sonarqube.git
@@ -68,8 +70,7 @@ mvn package -Dmaven.test.failure.ignore=true
 --> find package in: `./sonar-application/target`
 
 
-Customize package (optional)
-----------------------------
+### Customize package (optional)
 
 Open `.\sonar-application\target\sonarqube-4.3-SNAPSHOT.zip` and add plugins to
 `sonarqube-4.3-SNAPSHOT\extensions\plugins`
@@ -150,8 +151,7 @@ ln -s /home/sonar/sonar/bin/linux-x86-64/sonar.sh sonar
 ~~~
 
 
-Start Sonar & upgrade database
-------------------------------
+### Start Sonar & upgrade database
 
 ~~~html
 <form action="/setup/setup_database" method="POST">
@@ -174,12 +174,11 @@ Automate and check with:
 
 ~~~
 curl -s -o /dev/null --data "Upgrade=Upgrade" http://localhost:9000/sonar/setup/setup_database
-curl -sL -w "%{http_code}" "http://localhost:9000/sonar/" -o /dev/null --max-redirs 0
+sleep 30; test `curl -sL -w "%{http_code}" "http://localhost:9000/sonar/" -o /dev/null --max-redirs 0` != 200
 ~~~
 
 
-Known problems
---------------
+### Known problems
 
 * Sonar does not work on JDK8 (fails on 'configure widgets') something with Ruby
 
@@ -187,9 +186,9 @@ Known problems
 
 --> disable in config.
 
-
 * Plugins are bundled:
 
+~~~
 [root@lobot plugins]# ll /home/sonar/sonar/lib/bundled-plugins
 total 6424
 -rw-r--r-- 1 sonar sonar 4807365 Mar 29 18:26 sonar-findbugs-plugin-2.1.jar
@@ -197,14 +196,19 @@ total 6424
 -rw-r--r-- 1 sonar sonar   75122 Mar 29 18:26 sonar-java-plugin-2.1.jar
 -rw-r--r-- 1 sonar sonar 1143689 Mar 29 18:26 sonar-squid-java-plugin-2.1.jar
 -rw-r--r-- 1 sonar sonar   20857 Mar 29 18:26 sonar-surefire-plugin-2.1.jar
+~~~
 
 --> should be deleted.
 
-* Caused by: java.lang.NullPointerException
+* java.lang.NullPointerException
+
+~~~
+Caused by: java.lang.NullPointerException
     at org.apache.commons.io.IOUtils.copyLarge(IOUtils.java:1792)
     at org.apache.commons.io.IOUtils.copyLarge(IOUtils.java:1769)
     at org.apache.commons.io.IOUtils.copy(IOUtils.java:1744)
     at org.apache.commons.io.FileUtils.copyInputStreamToFile(FileUtils.java:1512)
+~~~
 
 --> you get this when a jar is missing in one of the sonar plugins, for example
     `annotations.jar` in the sonar-findbugs-plugin.
