@@ -16,6 +16,7 @@
 
   <properties>
     <findbugs.version>3.0.0-dev-20140323-8036a5d9</findbugs.version>
+    <bcel.version>6.0-dev-20131203-r1535952</bcel.version>
   </properties>
 
   <dependencies>
@@ -29,12 +30,20 @@
       <artifactId>findbugs</artifactId>
       <version>${findbugs.version}</version>
 
-      <!-- Tests fail if you don't specify this, Package excludes jar if you do...
+      <!--
       <scope>system</scope>
       <systemPath>${FINDBUGS_HOME}/lib/findbugs.jar</systemPath>
       -->
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.bcel</groupId>
+      <artifactId>bcel</artifactId>
+      <version>${bcel.version}</version>
+      <!--
+      <scope>system</scope>
+      <systemPath>${FINDBUGS_HOME}/lib/bcel-6.0-SNAPSHOT.jar</systemPath>
+      -->
+    </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>annotations</artifactId>
@@ -46,14 +55,9 @@
       <version>5.0</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.bcel</groupId>
-      <artifactId>bcel</artifactId>
-      <version>5.2</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
+      <groupId>jdepend</groupId>
+      <artifactId>jdepend</artifactId>
+      <version>2.9.1</version>
     </dependency>
     <dependency>
       <groupId>dom4j</groupId>
@@ -68,11 +72,6 @@
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jFormatString</artifactId>
-      <version>2.0.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
       <version>2.0.2</version>
     </dependency>
 
