@@ -20,12 +20,12 @@
 package org.sonar.java.bytecode.asm;
 
 import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.EmptyVisitor;
 import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
 
-public class AsmMethodVisitor extends EmptyVisitor {
+public class AsmMethodVisitor extends MethodVisitor {
 
   private final AsmMethod method;
   private final AsmClassProvider asmClassProvider;
@@ -33,6 +33,7 @@ public class AsmMethodVisitor extends EmptyVisitor {
   private boolean emptyMethod = true;
 
   public AsmMethodVisitor(AsmMethod method, AsmClassProvider asmClassProvider) {
+      super(Opcodes.ASM4);
     this.method = method;
     this.asmClassProvider = asmClassProvider;
     emptyMethod = true;

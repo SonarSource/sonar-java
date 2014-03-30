@@ -15,7 +15,7 @@
   <description>FindBugs is a program that uses static analysis to look for bugs in Java code. It can detect a variety of common coding mistakes, including thread synchronization problems, misuse of API methods.</description>
 
   <properties>
-    <findbugs.version>2.0.3</findbugs.version>
+    <findbugs.version>3.0.0-dev-20140323-8036a5d9</findbugs.version>
   </properties>
 
   <dependencies>
@@ -28,41 +28,52 @@
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>findbugs</artifactId>
       <version>${findbugs.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>jdom</groupId>
-          <artifactId>jdom</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xom</groupId>
-          <artifactId>xom</artifactId>
-        </exclusion>
-        <exclusion>
-          <!-- For some reasons appeared as a transitive dependency of FindBugs 2.0.3, but not presented/used in zip-distribution -->
-          <groupId>com.apple</groupId>
-          <artifactId>AppleJavaExtensions</artifactId>
-        </exclusion>
-        <exclusion>
-          <!-- For some reasons appeared as a transitive dependency of FindBugs 2.0.3 -->
-          <groupId>net.jcip</groupId>
-          <artifactId>jcip-annotations</artifactId>
-        </exclusion>
-      </exclusions>
+
+      <!-- Tests fail if you don't specify this, Package excludes jar if you do...
+      <scope>system</scope>
+      <systemPath>${FINDBUGS_HOME}/lib/findbugs.jar</systemPath>
+      -->
     </dependency>
 
     <dependency>
-      <!-- For some reasons was not deployed with FindBugs 2.0.3 and not transitive dependency anymore -->
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>annotations</artifactId>
-      <version>2.0.1</version>
+      <version>2.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-debug-all</artifactId>
+      <version>5.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.bcel</groupId>
+      <artifactId>bcel</artifactId>
+      <version>5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <version>1.1.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jFormatString</artifactId>
+      <version>2.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>2.0.2</version>
     </dependency>
 
     <dependency>
@@ -186,7 +197,7 @@
               <rules>
                 <requireFilesSize>
                   <maxsize>4900000</maxsize>
-                  <minsize>4700000</minsize>
+                  <minsize>6000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
@@ -198,5 +209,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

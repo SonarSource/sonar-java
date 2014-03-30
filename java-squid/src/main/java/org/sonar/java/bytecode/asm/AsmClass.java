@@ -19,12 +19,13 @@
  */
 package org.sonar.java.bytecode.asm;
 
-import com.google.common.collect.Maps;
-import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+
+import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
+
+import com.google.common.collect.Maps;
 
 public class AsmClass extends AsmResource {
 

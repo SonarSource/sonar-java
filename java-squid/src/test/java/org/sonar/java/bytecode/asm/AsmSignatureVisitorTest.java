@@ -19,11 +19,11 @@
  */
 package org.sonar.java.bytecode.asm;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.objectweb.asm.signature.SignatureReader;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class AsmSignatureVisitorTest {
 

@@ -19,18 +19,20 @@
  */
 package org.sonar.java.bytecode.asm;
 
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.commons.EmptyVisitor;
+import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
 
-public class AsmClassVisitor extends EmptyVisitor {
+public class AsmClassVisitor extends ClassVisitor {
 
   private final AsmClassProvider asmClassProvider;
   private final DETAIL_LEVEL level;
   private final AsmClass asmClass;
 
   public AsmClassVisitor(AsmClassProvider asmClassProvider, AsmClass asmClass, DETAIL_LEVEL level) {
+    super(Opcodes.ASM4);
     this.asmClassProvider = asmClassProvider;
     this.level = level;
     this.asmClass = asmClass;
