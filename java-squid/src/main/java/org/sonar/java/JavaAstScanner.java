@@ -42,6 +42,7 @@ import org.sonar.java.ast.visitors.MethodVisitor;
 import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.java.ast.visitors.PublicApiVisitor;
 import org.sonar.java.ast.visitors.SemanticModelVisitor;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.indexer.QueryByType;
@@ -87,8 +88,7 @@ public final class JavaAstScanner {
 
     AstScanner builder = new AstScanner(parser);
 
-    builder.withSquidAstVisitor(semanticModelVisitor);
-
+    builder.withSquidAstVisitor(new VisitorsBridge(semanticModelVisitor));
     /* Packages */
     builder.withSquidAstVisitor(new PackageVisitor());
 

@@ -23,32 +23,19 @@ import com.sonar.sslr.api.AstNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.SemanticModelProvider;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 
 import javax.annotation.Nullable;
 
-public class SemanticModelVisitor extends JavaAstVisitor implements SemanticModelProvider {
+public class SemanticModelVisitor extends BaseTreeVisitor implements SemanticModelProvider, JavaFileScanner {
 
   private static final Logger LOG = LoggerFactory.getLogger(SemanticModelVisitor.class);
 
   private SemanticModel semanticModel;
-
-  @Override
-  public void visitFile(AstNode astNode) {
-    if (astNode == null) {
-      // parse error
-      semanticModel = null;
-      return;
-    }
-
-    try {
-      semanticModel = SemanticModel.createFor(astNode);
-    } catch (Exception e) {
-      LOG.error("Unable to create symbol table for " + getContext().getFile(), e);
-      semanticModel = null;
-      return;
-    }
-  }
 
   @Override
   @Nullable
@@ -56,4 +43,17 @@ public class SemanticModelVisitor extends JavaAstVisitor implements SemanticMode
     return semanticModel;
   }
 
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    try {
+      AstNode astNode = ((JavaTree.CompilationUnitTreeImpl) context.getTree()).getAstNode();
+      semanticModel = SemanticModel.createFor(astNode);
+    } catch (Exception e) {
+      LOG.error("Unable to create symbol table", e);
+      semanticModel = null;
+      return;
+    }
+
+
+  }
 }
