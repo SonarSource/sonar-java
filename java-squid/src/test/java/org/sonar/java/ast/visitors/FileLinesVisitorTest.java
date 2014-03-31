@@ -48,7 +48,7 @@ public class FileLinesVisitorTest {
     FileLinesContext context = mock(FileLinesContext.class);
     when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
 
-    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new SemanticModelVisitor(), new FileLinesVisitor(sonarComponents, Charsets.UTF_8));
+    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new FileLinesVisitor(sonarComponents, Charsets.UTF_8));
     File baseDir = new File("src/test/files/metrics");
     List<InputFile> inputFiles = InputFileUtils.create(baseDir, ImmutableList.of(new File("src/test/files/metrics/LinesOfCode.java")));
     scanner.scan(inputFiles);
@@ -69,7 +69,7 @@ public class FileLinesVisitorTest {
     FileLinesContext context = mock(FileLinesContext.class);
     when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
 
-    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new SemanticModelVisitor(), new FileLinesVisitor(sonarComponents, Charsets.UTF_8));
+    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new FileLinesVisitor(sonarComponents, Charsets.UTF_8));
     File baseDir = new File("src/test/files/metrics");
     List<InputFile> inputFiles = InputFileUtils.create(baseDir, ImmutableList.of(new File("src/test/files/metrics/Comments.java")));
     scanner.scan(inputFiles);
