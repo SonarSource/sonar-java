@@ -1,6 +1,7 @@
 Sonar Java - Custom build
 =========================
 
+Compiled against SonarQube 4.2
 Supports Java 8 projects (29/04/2014)
 
 ### Compile Findbugs 3.0.0-dev-20140323-8036a5d9
@@ -10,7 +11,8 @@ git clone https://code.google.com/p/findbugs
 ant
 ~~~
 
---> this will put libs into `u:\src\findbugs\findbugs\lib\`
+--> this will put libs into `u:\src\findbugs\findbugs\lib\`. You need the
+`findbugs.jar` and `bcel-6.0-SNAPSHOT.jar` (this one, and not other!).
 
 set `FINDBUGS_HOME=u:\src\findbugs\findbugs`
 
@@ -26,10 +28,6 @@ git clone git@github.com:tischda/sonar-java.git
 cd sonar-java
 mvn package -DskipTests
 ~~~
-
-Compile with `skipTests` because tests won't find the findbugs dependency. You
-can fix the `pom.xml` to run the tests (but then package fails to add the
-required `findbugs.jar` dependency).
 
 Search for `sonar-*SHOT.jar` and pick:
 
@@ -152,24 +150,11 @@ ln -s /home/sonar/sonar/bin/linux-x86-64/sonar.sh sonar
 
 ### Start Sonar & upgrade database
 
-~~~html
-<form action="/setup/setup_database" method="POST">
-<div class="admin migration">
-  <h1 class="marginbottom10">Upgrade database</h1>
-  <br/>
-  <h3>Important</h3>
-  <ul>
-    <li>The database upgrade can take several minutes.</li>
-    <li>It is recommended to <b>back up database</b> before upgrading.</li>
-    <li><b>Copy the directory /extensions</b> from previous version before upgrading.</li>
-  </ul>
-  <br/>
-    <input  type="submit" value="Upgrade">
-</div>
-</form>
+~~~
+service sonar start
 ~~~
 
-Automate and check with:
+Automate and check DB upgrade with:
 
 ~~~
 curl -s -o /dev/null --data "Upgrade=Upgrade" http://localhost:9000/sonar/setup/setup_database
@@ -179,13 +164,15 @@ sleep 30; test `curl -sL -w "%{http_code}" "http://localhost:9000/sonar/" -o /de
 
 ### Known problems
 
-* Sonar does not work on JDK8 (fails on 'configure widgets') something with Ruby
+* SonarQube does not run on JDK8 (fails on 'configure widgets'), it's something
+  to do with (j)Ruby.
 
-* Sonar update center overwrites our custom built plugins
+* Sonar "update center" overwrites our custom built plugins (maybe setting
+  plugin versions differently would help?).
 
 --> disable in config.
 
-* Plugins are bundled:
+* Old plugins are bundled:
 
 ~~~
 [root@lobot plugins]# ll /home/sonar/sonar/lib/bundled-plugins
@@ -197,7 +184,7 @@ total 6424
 -rw-r--r-- 1 sonar sonar   20857 Mar 29 18:26 sonar-surefire-plugin-2.1.jar
 ~~~
 
---> should be deleted.
+--> must be deleted, so they don't overwrite our plugins.
 
 * java.lang.NullPointerException
 
