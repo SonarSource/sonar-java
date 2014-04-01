@@ -35,10 +35,13 @@ public class BadConstantName_S00115_CheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadConstantName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("Rename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.")
+        .next().atLine(9).withMessage("Rename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.")
         .next().atLine(12)
-        .next().atLine(19)
-        .next().atLine(24)
+        .next().atLine(13)
+        .next().atLine(14)
+        .next().atLine(18)
+        .next().atLine(25)
+        .next().atLine(30)
         .noMore();
   }
 
@@ -47,6 +50,20 @@ public class BadConstantName_S00115_CheckTest {
     check.format = "^[a-zA-Z0-9_]*$";
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadConstantName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
+        .noMore();
+  }
+
+  @Test
+  public void test3() {
+    check.immutable = true;
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadConstantName.java"), new VisitorsBridge(check));
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(9).withMessage("Rename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.")
+        .next().atLine(13)
+        .next().atLine(14)
+        .next().atLine(18)
+        .next().atLine(25)
+        .next().atLine(30)
         .noMore();
   }
 

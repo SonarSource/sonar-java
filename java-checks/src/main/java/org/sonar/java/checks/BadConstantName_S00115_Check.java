@@ -45,11 +45,17 @@ public class BadConstantName_S00115_Check extends BaseTreeVisitor implements Jav
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$";
+  private static final boolean DEFAULT_IMMUTABLE = false;
 
   @RuleProperty(
     key = "format",
     defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
+
+  @RuleProperty(
+    key = "immutable",
+    defaultValue = "" + DEFAULT_IMMUTABLE)
+  public boolean immutable = DEFAULT_IMMUTABLE;
 
   private Pattern pattern = null;
   private JavaFileScannerContext context;
@@ -81,10 +87,15 @@ public class BadConstantName_S00115_Check extends BaseTreeVisitor implements Jav
   }
 
   private void checkName(VariableTree variableTree) {
-    if (!SerializableContract.SERIAL_VERSION_UID_FIELD.equals(variableTree.simpleName()) && !pattern.matcher(variableTree.simpleName()).matches()) {
-      context.addIssue(variableTree, ruleKey, "Rename this constant name to match the regular expression '" + format + "'.");
+    if (!SerializableContract.SERIAL_VERSION_UID_FIELD.equals(variableTree.simpleName())) {
+      if (!pattern.matcher(variableTree.simpleName()).matches()) {
+        if (!immutable || ImmutableContract.isImmutable(variableTree)) {
+          context.addIssue(variableTree, ruleKey, "Rename this constant name to match the regular expression '" + format + "'.");
+        }
+      }
     }
   }
+
 
   private boolean isStaticFinal(VariableTree variableTree) {
     boolean isStatic = false;
