@@ -26,7 +26,6 @@ import org.sonar.api.config.Settings;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
-import org.sonar.plugins.java.api.JavaSettings;
 
 import java.io.File;
 import java.util.Collections;
@@ -39,32 +38,13 @@ public class JacocoConfigurationTest {
 
   private Settings settings;
   private JacocoConfiguration jacocoSettings;
-  private JavaSettings javaSettings;
 
   @Before
   public void setUp() {
     JaCoCoAgentDownloader downloader = mock(JaCoCoAgentDownloader.class);
     when(downloader.getAgentJarFile()).thenReturn(new File("jacocoagent.jar"));
-    javaSettings = mock(JavaSettings.class);
     settings = new Settings(new PropertyDefinitions().addComponents(JacocoConfiguration.getPropertyDefinitions()));
     jacocoSettings = new JacocoConfiguration(settings, downloader);
-  }
-
-  @Test
-  public void should_be_enabled() {
-    Project project = mockProject("java");
-    when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JacocoConfiguration.PLUGIN_KEY);
-
-    assertThat(jacocoSettings.isEnabled()).isTrue();
-  }
-
-  @Test
-  public void should_be_enabled_if_reuse_report() {
-    Project project = mockProject("java");
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.REUSE_REPORTS);
-    when(javaSettings.getEnabledCoveragePlugin()).thenReturn(JacocoConfiguration.PLUGIN_KEY);
-
-    assertThat(jacocoSettings.isEnabled()).isTrue();
   }
 
   @Test

@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.SonarPlugin;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
-import org.sonar.plugins.java.api.JavaSettings;
 
 import java.util.List;
 
@@ -34,8 +33,6 @@ public final class JavaPlugin extends SonarPlugin {
     return ImmutableList.of(
         JavaCommonRulesEngine.class,
         JavaCommonRulesDecorator.class,
-        JavaSettings.class,
-        JavaSettings.property(),
         Java.class,
         CommonRulesSonarWayProfile.class,
         CommonRulesSonarWayWithFindbugsProfile.class,

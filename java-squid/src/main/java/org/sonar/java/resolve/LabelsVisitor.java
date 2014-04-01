@@ -19,54 +19,63 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.Maps;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.visitors.JavaAstVisitor;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.ContinueStatementTree;
+import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 
-public class LabelsVisitor extends JavaAstVisitor {
+import java.util.Map;
+
+public class LabelsVisitor extends BaseTreeVisitor {
 
   private final SemanticModel semanticModel;
+  private final Map<String, LabeledStatementTree> labelTrees;
+
 
   public LabelsVisitor(SemanticModel semanticModel) {
     this.semanticModel = semanticModel;
+    this.labelTrees = Maps.newHashMap();
   }
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.LABELED_STATEMENT, JavaGrammar.BREAK_STATEMENT, JavaGrammar.CONTINUE_STATEMENT);
-  }
-
-  @Override
-  public void visitNode(AstNode astNode) {
-    if (astNode.is(JavaGrammar.LABELED_STATEMENT)) {
-      visitLabeledStatement(astNode);
-    } else if (astNode.is(JavaGrammar.BREAK_STATEMENT, JavaGrammar.CONTINUE_STATEMENT)) {
-      visitBreakOrContinueStatement(astNode);
-    } else {
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
-    }
-  }
-
-  private void visitLabeledStatement(AstNode astNode) {
-    AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-    // JLS7 6.2: in fact labelled statement is not a symbol
+  public void visitLabeledStatement(LabeledStatementTree tree) {
+    AstNode identifierNode = getAstNodeFromLabelStatement(tree);
     semanticModel.associateSymbol(identifierNode, new Symbol(0, 0, identifierNode.getTokenValue(), null));
+    labelTrees.put(tree.label(), tree);
+    super.visitLabeledStatement(tree);
   }
 
-  private void visitBreakOrContinueStatement(AstNode astNode) {
-    // idea: associate break and continue with jump target like in IntelliJ IDEA
-    AstNode identifier = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-    if (identifier != null) {
-      String label = identifier.getTokenValue();
-      AstNode labelledStatement = astNode.getFirstAncestor(JavaGrammar.LABELED_STATEMENT);
-      while (labelledStatement != null && !label.equals(labelledStatement.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue())) {
-        labelledStatement = labelledStatement.getFirstAncestor(JavaGrammar.LABELED_STATEMENT);
-      }
-      if (labelledStatement != null) {
-        semanticModel.associateReference(identifier, semanticModel.getSymbol(labelledStatement.getFirstChild(JavaTokenType.IDENTIFIER)));
+  private AstNode getAstNodeFromLabelStatement(LabeledStatementTree tree) {
+    return ((JavaTree.LabeledStatementTreeImpl) tree).getAstNode().getFirstChild(JavaTokenType.IDENTIFIER);
+  }
+
+  @Override
+  public void visitBreakStatement(BreakStatementTree tree) {
+    String label = tree.label();
+    AstNode identifier = ((JavaTree.BreakStatementTreeImpl) tree).getAstNode().getFirstChild(JavaTokenType.IDENTIFIER);
+    if (label != null) {
+      LabeledStatementTree labelTree = labelTrees.get(label);
+      if (labelTree != null) {
+        semanticModel.associateReference(identifier, semanticModel.getSymbol(getAstNodeFromLabelStatement(labelTree)));
       }
     }
+    super.visitBreakStatement(tree);
   }
 
+  @Override
+  public void visitContinueStatement(ContinueStatementTree tree) {
+    String label = tree.label();
+    AstNode identifier = ((JavaTree.ContinueStatementTreeImpl) tree).getAstNode().getFirstChild(JavaTokenType.IDENTIFIER);
+    if (label != null) {
+      LabeledStatementTree labelTree = labelTrees.get(label);
+      if (labelTree != null) {
+        semanticModel.associateReference(identifier, semanticModel.getSymbol(getAstNodeFromLabelStatement(labelTree)));
+      }
+    }
+    super.visitContinueStatement(tree);
+  }
 }

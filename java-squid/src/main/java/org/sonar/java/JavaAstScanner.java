@@ -41,7 +41,6 @@ import org.sonar.java.ast.visitors.LinesVisitor;
 import org.sonar.java.ast.visitors.MethodVisitor;
 import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.java.ast.visitors.PublicApiVisitor;
-import org.sonar.java.ast.visitors.SemanticModelVisitor;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.indexer.QueryByType;
@@ -72,7 +71,7 @@ public final class JavaAstScanner {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
-    org.sonar.java.ast.AstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), new SemanticModelVisitor(), visitors);
+    org.sonar.java.ast.AstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitors);
     InputFile inputFile = InputFileUtils.create(parentFile, file);
     scanner.scan(Collections.singleton(inputFile));
     Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));
@@ -82,12 +81,10 @@ public final class JavaAstScanner {
     return (SourceFile) sources.iterator().next();
   }
 
-  public static AstScanner create(JavaConfiguration conf, SemanticModelVisitor semanticModelVisitor, SquidAstVisitor<LexerlessGrammar>... visitors) {
+  public static AstScanner create(JavaConfiguration conf, SquidAstVisitor<LexerlessGrammar>... visitors) {
     final Parser<LexerlessGrammar> parser = new ParserAdapter<LexerlessGrammar>(conf.getCharset(), JavaGrammar.createGrammar());
 
     AstScanner builder = new AstScanner(parser);
-
-    builder.withSquidAstVisitor(semanticModelVisitor);
 
     /* Packages */
     builder.withSquidAstVisitor(new PackageVisitor());
@@ -167,9 +164,6 @@ public final class JavaAstScanner {
     for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
       if (visitor instanceof CharsetAwareVisitor) {
         ((CharsetAwareVisitor) visitor).setCharset(conf.getCharset());
-      }
-      if (visitor instanceof SemanticModelProviderAwareVisitor) {
-        ((SemanticModelProviderAwareVisitor) visitor).setSemanticModelProvider(semanticModelVisitor);
       }
       builder.withSquidAstVisitor(visitor);
     }

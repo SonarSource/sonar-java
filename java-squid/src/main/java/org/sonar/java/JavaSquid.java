@@ -36,7 +36,6 @@ import org.sonar.java.ast.visitors.ClassVisitor;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.FileVisitor;
 import org.sonar.java.ast.visitors.PackageVisitor;
-import org.sonar.java.ast.visitors.SemanticModelVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.ast.visitors.TestVisitor;
@@ -78,21 +77,23 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
   }
 
   public JavaSquid(JavaConfiguration conf, @Nullable SonarComponents sonarComponents, CodeVisitor... visitors) {
-    SemanticModelVisitor semanticModelVisitor = new SemanticModelVisitor();
 
-    astScanner = JavaAstScanner.create(conf, semanticModelVisitor);
+    astScanner = JavaAstScanner.create(conf);
+
+    Iterable<CodeVisitor> visitorsToBridge = Arrays.asList(visitors);
+    if (sonarComponents != null) {
+      visitorsToBridge = Iterables.concat(
+          sonarComponents.createJavaFileScanners(),
+          visitorsToBridge
+      );
+    }
+    VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge);
+    astScanner.accept(visitorsBridge);
 
     if (sonarComponents != null) {
       astScanner.accept(new FileLinesVisitor(sonarComponents, conf.getCharset()));
       astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
-      astScanner.accept(new SonarSymbolTableVisitor(sonarComponents, semanticModelVisitor));
-
-      VisitorsBridge visitorsBridge = new VisitorsBridge(Iterables.concat(
-        sonarComponents.createJavaFileScanners(),
-        Arrays.asList(visitors)
-        ));
-      visitorsBridge.setSemanticModelProvider(semanticModelVisitor);
-      astScanner.accept(visitorsBridge);
+      astScanner.accept(new SonarSymbolTableVisitor(sonarComponents, visitorsBridge));
     }
 
     // TODO unchecked cast
@@ -108,7 +109,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
         ((CharsetAwareVisitor) visitor).setCharset(conf.getCharset());
       }
       if (visitor instanceof SemanticModelProviderAwareVisitor) {
-        ((SemanticModelProviderAwareVisitor) visitor).setSemanticModelProvider(semanticModelVisitor);
+        ((SemanticModelProviderAwareVisitor) visitor).setSemanticModelProvider(visitorsBridge);
       }
       astScanner.accept(visitor);
       bytecodeScanner.accept(visitor);
@@ -125,7 +126,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
   public void scanDirectories(Collection<File> sourceDirectories, Collection<File> bytecodeFilesOrDirectories) {
     List<InputFile> sourceFiles = Lists.newArrayList();
     for (File dir : sourceDirectories) {
-      sourceFiles.addAll(InputFileUtils.create(dir, FileUtils.listFiles(dir, new String[] {"java"}, true)));
+      sourceFiles.addAll(InputFileUtils.create(dir, FileUtils.listFiles(dir, new String[]{"java"}, true)));
     }
     scan(sourceFiles, Collections.<InputFile>emptyList(), bytecodeFilesOrDirectories);
   }
@@ -167,8 +168,8 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     }
     for (File bytecodeFilesOrDirectory : bytecodeFilesOrDirectories) {
       if (bytecodeFilesOrDirectory.exists() &&
-        (bytecodeFilesOrDirectory.isFile() ||
-        !FileUtils.listFiles(bytecodeFilesOrDirectory, new String[] {"class"}, true).isEmpty())) {
+          (bytecodeFilesOrDirectory.isFile() ||
+              !FileUtils.listFiles(bytecodeFilesOrDirectory, new String[]{"class"}, true).isEmpty())) {
         return true;
       }
     }

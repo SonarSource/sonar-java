@@ -26,7 +26,6 @@ import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.java.ast.visitors.SemanticModelVisitor;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourceProject;
 import org.sonar.squid.indexer.QueryByType;
@@ -41,10 +40,10 @@ public class JavaAstScannerTest {
 
   @Test
   public void files() {
-    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new SemanticModelVisitor());
+    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8));
     File baseDir = new File("src/test/files/metrics");
     List<InputFile> inputFiles = InputFileUtils.create(baseDir,
-      ImmutableList.of(new File("src/test/files/metrics/Lines.java"), new File("src/test/files/metrics/LinesOfCode.java")));
+        ImmutableList.of(new File("src/test/files/metrics/Lines.java"), new File("src/test/files/metrics/LinesOfCode.java")));
     scanner.scan(inputFiles);
     SourceProject project = (SourceProject) scanner.getIndex().search(new QueryByType(SourceProject.class)).iterator().next();
     assertThat(project.getInt(JavaMetric.FILES)).isEqualTo(2);

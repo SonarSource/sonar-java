@@ -24,6 +24,7 @@ import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
@@ -48,7 +49,7 @@ public class SafetyNetTest {
     for (String dir : dirs) {
       for (File file : FileUtils.listFiles(new File(dir), new String[]{"java"}, true)) {
         try {
-          SemanticModel.createFor(parser.parse(file));
+          SemanticModel.createFor(new JavaTreeMaker().compilationUnit(parser.parse(file)));
         } catch (Exception e) {
           throw new RuntimeException("Unable to process file " + file, e);
         }
