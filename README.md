@@ -1,8 +1,7 @@
 Sonar Java - Custom build
 =========================
 
-Compiled against SonarQube 4.2
-Supports Java 8 projects (29/04/2014)
+Compiled against SonarQube 4.2 - Supports Java 8 projects (01/04/2014)
 
 ### Compile Findbugs 3.0.0-dev-20140323-8036a5d9
 
