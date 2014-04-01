@@ -22,7 +22,6 @@ package org.sonar.java.resolve;
 import com.google.common.collect.Maps;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
