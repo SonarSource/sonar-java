@@ -11,7 +11,7 @@ ant
 ~~~
 
 --> this will put libs into `u:\src\findbugs\findbugs\lib\`. You need the
-`findbugs.jar` and `bcel-6.0-SNAPSHOT.jar` (this one, and not other!).
+`findbugs.jar` and `bcel-6.0-SNAPSHOT.jar` (this one, and no other!).
 
 set `FINDBUGS_HOME=u:\src\findbugs\findbugs`
 
@@ -161,7 +161,7 @@ sleep 30; test `curl -sL -w "%{http_code}" "http://localhost:9000/sonar/" -o /de
 ~~~
 
 
-### Known problems
+### Known issues
 
 * SonarQube does not run on JDK8 (fails on 'configure widgets'), it's something
   to do with (j)Ruby.
