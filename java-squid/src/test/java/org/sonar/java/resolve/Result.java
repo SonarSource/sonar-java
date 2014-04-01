@@ -23,6 +23,7 @@ import com.google.common.base.Charsets;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
@@ -37,7 +38,7 @@ class Result {
   public static Result createForJavaFile(String filePath) {
     File file = new File(filePath + ".java");
     AstNode astNode = parser.parse(file);
-    return new Result(SemanticModel.createFor(astNode));
+    return new Result(SemanticModel.createFor(new JavaTreeMaker().compilationUnit(astNode)));
   }
 
   private static final LexerlessGrammar grammar = JavaGrammar.createGrammar();

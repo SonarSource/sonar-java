@@ -30,6 +30,8 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.ast.AstWalker;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -43,12 +45,18 @@ public class SemanticModel {
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final Map<AstNode, Resolve.Env> envs = Maps.newHashMap();
 
-  public static SemanticModel createFor(AstNode astNode) {
+  private static SemanticModel createFor(AstNode astNode) {
     SemanticModel semanticModel = new SemanticModel();
     Resolve resolve = new Resolve();
     Symbols symbols = new Symbols();
     visit(astNode, new FirstPass(semanticModel, resolve));
-    visit(astNode, new ExpressionVisitor(semanticModel, symbols, resolve), new LabelsVisitor(semanticModel));
+    visit(astNode, new ExpressionVisitor(semanticModel, symbols, resolve));
+    return semanticModel;
+  }
+
+  public static SemanticModel createFor(CompilationUnitTree tree) {
+    SemanticModel semanticModel = createFor(((JavaTree.CompilationUnitTreeImpl) tree).getAstNode());
+    new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
     return semanticModel;
   }
 

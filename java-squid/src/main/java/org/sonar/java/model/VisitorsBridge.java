@@ -69,7 +69,7 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
     if (astNode != null) {
       CompilationUnitTree tree = treeMaker.compilationUnit(astNode);
       try {
-        semanticModel = SemanticModel.createFor(astNode);
+        semanticModel = SemanticModel.createFor(tree);
       } catch (Exception e) {
         LOG.error("Unable to create symbol table for : " + getContext().getFile().getName(), e);
         semanticModel = null;
