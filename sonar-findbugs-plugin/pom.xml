@@ -29,20 +29,11 @@
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>findbugs</artifactId>
       <version>${findbugs.version}</version>
-
-      <!--
-      <scope>system</scope>
-      <systemPath>${FINDBUGS_HOME}/lib/findbugs.jar</systemPath>
-      -->
     </dependency>
     <dependency>
       <groupId>org.apache.bcel</groupId>
       <artifactId>bcel</artifactId>
       <version>${bcel.version}</version>
-      <!--
-      <scope>system</scope>
-      <systemPath>${FINDBUGS_HOME}/lib/bcel-6.0-SNAPSHOT.jar</systemPath>
-      -->
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
@@ -195,8 +186,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>4900000</maxsize>
-                  <minsize>6000000</minsize>
+                  <minsize>4900000</minsize>
+                  <maxsize>6000000</maxsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
