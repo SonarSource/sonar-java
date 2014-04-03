@@ -19,457 +19,324 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.base.Preconditions;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.visitors.JavaAstVisitor;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.InstanceOfTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-import java.util.List;
 import java.util.Map;
 
 /**
  * Computes types of expressions.
  * TODO compute type of method calls
  */
-public class ExpressionVisitor extends JavaAstVisitor {
+public class ExpressionVisitor extends BaseTreeVisitor {
 
-  private final Map<AstNodeType, Type> typesOfLiterals = Maps.newHashMap();
-
-  private final AstNodeType[] binaryOperatorAstNodeTypes;
+  private final Map<Tree.Kind, Type> typesOfLiterals = Maps.newHashMap();
 
   private final SemanticModel semanticModel;
   private final Symbols symbols;
   private final Resolve resolve;
 
-  private final Map<AstNode, Type> types = Maps.newHashMap();
+  private final Map<Tree, Type> types = Maps.newHashMap();
 
   public ExpressionVisitor(SemanticModel semanticModel, Symbols symbols, Resolve resolve) {
     this.semanticModel = semanticModel;
     this.symbols = symbols;
     this.resolve = resolve;
-
-    typesOfLiterals.put(JavaKeyword.TRUE, symbols.booleanType);
-    typesOfLiterals.put(JavaKeyword.FALSE, symbols.booleanType);
-    typesOfLiterals.put(JavaKeyword.NULL, symbols.nullType);
-    typesOfLiterals.put(JavaTokenType.CHARACTER_LITERAL, symbols.charType);
-    typesOfLiterals.put(JavaTokenType.LITERAL, symbols.stringType);
-    typesOfLiterals.put(JavaTokenType.FLOAT_LITERAL, symbols.floatType);
-    typesOfLiterals.put(JavaTokenType.DOUBLE_LITERAL, symbols.doubleType);
-    typesOfLiterals.put(JavaTokenType.LONG_LITERAL, symbols.longType);
-    typesOfLiterals.put(JavaTokenType.INTEGER_LITERAL, symbols.intType);
-
-    binaryOperatorAstNodeTypes = new AstNodeType[]{
-      JavaGrammar.MULTIPLICATIVE_EXPRESSION,
-      JavaGrammar.ADDITIVE_EXPRESSION,
-      JavaGrammar.SHIFT_EXPRESSION,
-      JavaGrammar.RELATIONAL_EXPRESSION,
-      JavaGrammar.EQUALITY_EXPRESSION,
-      JavaGrammar.AND_EXPRESSION,
-      JavaGrammar.EXCLUSIVE_OR_EXPRESSION,
-      JavaGrammar.INCLUSIVE_OR_EXPRESSION,
-      JavaGrammar.CONDITIONAL_AND_EXPRESSION,
-      JavaGrammar.CONDITIONAL_OR_EXPRESSION
-    };
+    typesOfLiterals.put(Tree.Kind.BOOLEAN_LITERAL, symbols.booleanType);
+    typesOfLiterals.put(Tree.Kind.NULL_LITERAL, symbols.nullType);
+    typesOfLiterals.put(Tree.Kind.CHAR_LITERAL, symbols.charType);
+    typesOfLiterals.put(Tree.Kind.STRING_LITERAL, symbols.stringType);
+    typesOfLiterals.put(Tree.Kind.FLOAT_LITERAL, symbols.floatType);
+    typesOfLiterals.put(Tree.Kind.DOUBLE_LITERAL, symbols.doubleType);
+    typesOfLiterals.put(Tree.Kind.LONG_LITERAL, symbols.longType);
+    typesOfLiterals.put(Tree.Kind.INT_LITERAL, symbols.intType);
   }
 
   @Override
-  public void init() {
-    subscribeTo(
-      JavaGrammar.EXPRESSION,
-      JavaGrammar.PRIMARY,
-      JavaGrammar.UNARY_EXPRESSION,
-      JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS,
-      JavaGrammar.CAST_EXPRESSION,
-      JavaGrammar.LITERAL,
-      JavaGrammar.TYPE);
-    subscribeTo(binaryOperatorAstNodeTypes);
-    subscribeTo(JavaGrammar.CONDITIONAL_EXPRESSION);
-    subscribeTo(JavaGrammar.ASSIGNMENT_EXPRESSION);
+  public void visitExpressionStatement(ExpressionStatementTree tree) {
+    super.visitExpressionStatement(tree);
+    types.put(tree, getType(tree.expression()));
   }
 
   @Override
-  public void leaveNode(AstNode astNode) {
-    Resolve.Env env = semanticModel.getEnv(astNode);
-    final Type type;
-    if (astNode.is(JavaGrammar.EXPRESSION)) {
-      type = visitExpression(astNode);
-    } else if (astNode.is(JavaGrammar.PRIMARY)) {
-      type = visitPrimary(env, astNode);
-    } else if (astNode.is(JavaGrammar.UNARY_EXPRESSION)) {
-      type = visitUnaryExpression(env, astNode);
-    } else if (astNode.is(JavaGrammar.LITERAL)) {
-      type = visitLiteral(astNode);
-    } else if (astNode.is(JavaGrammar.TYPE)) {
-      type = visitType(env, astNode);
-    } else if (astNode.is(binaryOperatorAstNodeTypes)) {
-      type = visitBinaryOperation(env, astNode);
-    } else if (astNode.is(JavaGrammar.CONDITIONAL_EXPRESSION)) {
-      type = visitConditionalExpression();
-    } else if (astNode.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
-      type = visitAssignmentExpression(astNode);
-    } else if(astNode.is(JavaGrammar.CAST_EXPRESSION)) {
-      type = visitCastExpression(env, astNode);
-    } else if(astNode.is(JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS)) {
-      type = visitUnaryNotPlusMinusExpression(env, astNode);
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    super.visitMethodInvocation(tree);
+    Tree methodSelect = tree.methodSelect();
+    Resolve.Env env = semanticModel.getEnv(tree);
+    IdentifierTree identifier;
+    Type type;
+    String name;
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
+      type = getType(mset.expression());
+      identifier = mset.identifier();
+    } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
+      type = env.enclosingClass.type;
+      identifier = (IdentifierTree) methodSelect;
     } else {
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
+      throw new IllegalStateException("Method select in method invocation is not of the expected type " + methodSelect);
     }
-    types.put(astNode, type);
+    name = identifier.name();
+    if (type == null) {
+      type = symbols.unknownType;
+    }
+    Symbol symbol = resolve.findMethod(env, type.symbol, name, ImmutableList.<Type>of());
+    associateReference(identifier, symbol);
+    type = getTypeOfSymbol(symbol);
+    if (type == null) {
+      type = symbols.unknownType;
+    }
+    types.put(tree, type);
   }
 
-  private Type visitUnaryNotPlusMinusExpression(Resolve.Env env, AstNode astNode) {
-    Type result;
-    AstNode grandChild = astNode.getFirstChild();
-    if (grandChild.is(JavaGrammar.PRIMARY)) {
-      Type type = getType(grandChild);
-      for (AstNode selectorNode : astNode.getChildren(JavaGrammar.SELECTOR)) {
-        type = applySelector(env, type, selectorNode);
-      }
-      result = type;
+  @Override
+  public void visitInstanceOf(InstanceOfTree tree) {
+    super.visitInstanceOf(tree);
+    types.put(tree, symbols.booleanType);
+  }
+
+  @Override
+  public void visitParameterizedType(ParameterizedTypeTree tree) {
+    super.visitParameterizedType(tree);
+    types.put(tree, symbols.unknownType);
+  }
+
+  @Override
+  public void visitConditionalExpression(ConditionalExpressionTree tree) {
+    super.visitConditionalExpression(tree);
+    types.put(tree, symbols.unknownType);
+  }
+
+  @Override
+  public void visitLambdaExpression(LambdaExpressionTree tree) {
+    super.visitLambdaExpression(tree);
+    types.put(tree, symbols.unknownType);
+  }
+
+  @Override
+  public void visitNewArray(NewArrayTree tree) {
+    super.visitNewArray(tree);
+    Type type = getType(tree.type());
+    int dimensions = tree.dimensions().size();
+    type = new Type.ArrayType(type, symbols.arrayClass); // TODO why?
+    for (int i = 1; i < dimensions; i++) {
+      type = new Type.ArrayType(type, symbols.arrayClass);
+    }
+    types.put(tree, type);
+  }
+
+  @Override
+  public void visitParenthesized(ParenthesizedTree tree) {
+    super.visitParenthesized(tree);
+    types.put(tree, getType(tree.expression()));
+  }
+
+  @Override
+  public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
+    super.visitArrayAccessExpression(tree);
+    Type type = getType(tree.expression());
+    if (type!=null && type.tag == Type.ARRAY) {
+      types.put(tree, ((Type.ArrayType) type).elementType);
     } else {
-      result = getType(astNode.getFirstChild(JavaPunctuator.BANG, JavaPunctuator.TILDA).getNextSibling());
+      types.put(tree, symbols.unknownType);
     }
-    return result;
   }
 
-  private Type visitCastExpression(Resolve.Env env,  AstNode astNode) {
-    Type result;
-    AstNode type = astNode.getFirstChild(JavaPunctuator.LPAR).getNextSibling();
-    if(type.is(JavaGrammar.BASIC_TYPE)) {
-      result = resolve.findIdent(env, type.getTokenValue(), Symbol.TYP).type;
+  @Override
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    super.visitBinaryExpression(tree);
+    Resolve.Env env = semanticModel.getEnv(tree);
+    Type left = getType(tree.leftOperand());
+    AstNode astNode = ((JavaTree) tree).getAstNode();
+    AstNode opNode = astNode.getFirstChild().getNextSibling();
+    Type right = getType(tree.rightOperand());
+    // TODO avoid nulls
+    if (left == null || right == null) {
+      types.put(tree, symbols.unknownType);
+      return;
+    }
+    Symbol symbol = resolve.findMethod(env, opNode.getTokenValue(), ImmutableList.of(left, right));
+    if (symbol.kind != Symbol.MTH) {
+      // not found
+      types.put(tree, symbols.unknownType);
+      return;
+    }
+    types.put(tree, ((Type.MethodType) symbol.type).resultType);
+  }
+
+  @Override
+  public void visitNewClass(NewClassTree tree) {
+    super.visitNewClass(tree);
+    if (tree.classBody() != null) {
+      types.put(tree, symbols.unknownType);
     } else {
-      result = getType(astNode.getFirstChild(JavaGrammar.TYPE));
+      types.put(tree, getType(tree.identifier()));
     }
-    return result;
   }
 
-  /**
-   * Computes type of literal.
-   */
-  private Type visitLiteral(AstNode astNode) {
-    astNode = astNode.getFirstChild();
-    Type result = typesOfLiterals.get(astNode.getType());
-    return Preconditions.checkNotNull(result, "Unexpected AstNodeType: " + astNode.getType());
-  }
-
-  private Type visitType(Resolve.Env env, AstNode astNode) {
-    final Type result;
-    AstNode firstChildNode = astNode.getFirstChild();
-    if (firstChildNode.is(JavaGrammar.BASIC_TYPE)) {
-      result = resolve.findIdent(env, firstChildNode.getFirstChild().getTokenValue(), Symbol.TYP).type;
-    } else if (firstChildNode.is(JavaGrammar.CLASS_TYPE)) {
-      result = resolveType(env, firstChildNode);
-    } else {
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + firstChildNode.getType());
-    }
-    return result;
-  }
-
-  /**
-   * Computes type of primary.
-   */
-  private Type visitPrimary(Resolve.Env env, AstNode astNode) {
-    final Type result;
-    AstNode firstChildNode = astNode.getFirstChild();
-    if (firstChildNode.is(JavaGrammar.LITERAL)) {
-      result = getType(firstChildNode);
-    } else if (firstChildNode.is(JavaKeyword.THIS)) {
-      if (astNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
-        // this(arguments)
-        result = symbols.unknownType;
-      } else {
-        // this
-        result = getTypeOfSymbol(resolve.findIdent(env, "this", Symbol.VAR));
-      }
-    } else if (firstChildNode.is(JavaKeyword.SUPER)) {
-      AstNode superSuffixNode = astNode.getFirstChild(JavaGrammar.SUPER_SUFFIX);
-      if (superSuffixNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
-        // super(arguments)
-        // super.method(arguments)
-        // super.<T>method(arguments)
-        result = symbols.unknownType;
-      } else {
-        // super.field
-        Type type = getTypeOfSymbol(resolve.findIdent(env, "super", Symbol.VAR));
-        AstNode identifierNode = superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER);
-        Symbol symbol = resolve.findIdentInType(env, type.symbol, identifierNode.getTokenValue(), Symbol.VAR);
-        associateReference(identifierNode, symbol);
-        result = getTypeOfSymbol(symbol);
-      }
-    } else if (firstChildNode.is(JavaGrammar.PAR_EXPRESSION)) {
-      // (expression)
-      result = getType(firstChildNode.getFirstChild(JavaGrammar.EXPRESSION));
-    } else if (firstChildNode.is(JavaKeyword.NEW)) {
-      // new...
-      result = visitCreator(env, astNode.getFirstChild(JavaGrammar.CREATOR));
-    } else if (firstChildNode.is(JavaGrammar.QUALIFIED_IDENTIFIER)) {
-      AstNode identifierSuffixNode = astNode.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
-      if (identifierSuffixNode == null) {
-        // id
-        result = resolveQualifiedIdentifier(env, firstChildNode);
-      } else {
-        if (identifierSuffixNode.getFirstChild().is(JavaPunctuator.LBRK)) {
-          if (identifierSuffixNode.hasDirectChildren(JavaKeyword.CLASS)) {
-            // id[].class
-            // resolve qualified identifier, but discard result
-            resolveQualifiedIdentifier(env, firstChildNode);
-            result = symbols.classType;
-          } else {
-            // id[expression]
-            Type type = resolveQualifiedIdentifier(env, firstChildNode);
-            // TODO get rid of "instanceof"
-            // if not array, then return errorType instead of unknownType
-            result = type instanceof Type.ArrayType ? ((Type.ArrayType) type).elementType : symbols.unknownType;
-          }
-        } else if (identifierSuffixNode.getFirstChild().is(JavaGrammar.ARGUMENTS)) {
-          // id(arguments)
-          result = resolveMethod(env, astNode);
-        } else if (identifierSuffixNode.getFirstChild().is(JavaPunctuator.DOT)) {
-          Type type = resolveQualifiedIdentifier(env, firstChildNode);
-          if (identifierSuffixNode.hasDirectChildren(JavaKeyword.CLASS)) {
-            // id.class
-            result = symbols.classType;
-          } else if (identifierSuffixNode.hasDirectChildren(JavaGrammar.EXPLICIT_GENERIC_INVOCATION)) {
-            // id.<...>...
-            result = symbols.unknownType;
-          } else if (identifierSuffixNode.hasDirectChildren(JavaKeyword.THIS)) {
-            // id.this
-            result = type;
-          } else if (identifierSuffixNode.hasDirectChildren(JavaKeyword.SUPER)) {
-            // id.super(arguments)
-            result = symbols.unknownType;
-          } else if (identifierSuffixNode.hasDirectChildren(JavaKeyword.NEW)) {
-            // id.new...
-            result = symbols.unknownType;
-          } else {
-            throw new IllegalArgumentException("Unexpected AstNodeType: " + identifierSuffixNode.getChild(1));
-          }
-        } else {
-          throw new IllegalArgumentException("Unexpected AstNodeType: " + identifierSuffixNode.getFirstChild());
-        }
-      }
-    } else if (firstChildNode.is(JavaGrammar.BASIC_TYPE)) {
-      // int.class
-      // int[].class
-      result = symbols.classType;
-    } else if (firstChildNode.is(JavaKeyword.VOID)) {
-      // void.class
-      result = symbols.classType;
-    } else if (firstChildNode.is(JavaGrammar.LAMBDA_EXPRESSION)) {
-      //TODO implement symbol for lambda
-      result = symbols.unknownType;
-    } else {
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + firstChildNode.getType());
-    }
-    return result;
-  }
-
-  private Type visitCreator(Resolve.Env env, AstNode astNode) {
-    // TODO handle NON_WILDCARD_TYPE_ARGUMENTS
-    final Type result;
-    if (astNode.hasDirectChildren(JavaGrammar.ARRAY_CREATOR_REST)) {
-      Type type = getType(astNode.getFirstChild(JavaGrammar.CLASS_TYPE, JavaGrammar.BASIC_TYPE));
-      astNode = astNode.getFirstChild(JavaGrammar.ARRAY_CREATOR_REST);
-      int dimensions = astNode.getChildren(JavaPunctuator.LBRK, JavaGrammar.DIM, JavaGrammar.DIM_EXPR).size();
-      for (int i = 0; i < dimensions; i++) {
-        type = new Type.ArrayType(type, symbols.arrayClass);
-      }
-      result = type;
-    } else if (astNode.hasDirectChildren(JavaGrammar.CLASS_CREATOR_REST)) {
-      if (astNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST).hasDirectChildren(JavaGrammar.CLASS_BODY)) {
-        // Anonymous Class
-        // TODO type of anonymous class can be obtained from symbol, which is stored in semanticModel
-        result = symbols.unknownType;
-      } else {
-        astNode = astNode.getFirstChild(JavaGrammar.CREATED_NAME);
-        result = resolveType(env, astNode);
-      }
-    } else {
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
-    }
-    return result;
-  }
-
-  /**
-   * Computes type of unary expression.
-   */
-  private Type visitUnaryExpression(Resolve.Env env, AstNode astNode) {
-    final Type result;
-    AstNode firstChildNode = astNode.getFirstChild();
-    if (firstChildNode.is(JavaGrammar.CAST_EXPRESSION)) {
-      // type cast
-      result = getType(firstChildNode);
-    } else if (firstChildNode.is(JavaGrammar.PREFIX_OP)) {
-      result = getType(firstChildNode.getNextSibling());
-    } else if(firstChildNode.is(JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS)){
-      result = getType(firstChildNode);
-    }else{
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + firstChildNode.getType());
-    }
-    return result;
-  }
-
-  private Type applySelector(Resolve.Env env, Type type, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.SELECTOR));
-    final Type result;
-    if (type == symbols.unknownType || /* TODO avoid null */ type == null) {
-      return symbols.unknownType;
-    } else if (astNode.getFirstChild().is(JavaGrammar.DIM_EXPR)) {
-      // array access
-      // TODO get rid of "instanceof"
-      // if not array, then return errorType instead of unknownType
-      result = type instanceof Type.ArrayType ? ((Type.ArrayType) type).elementType : symbols.unknownType;
-    } else if (astNode.hasDirectChildren(JavaTokenType.IDENTIFIER)) {
-      if (astNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
-        // method call
-        result = symbols.unknownType;
-      } else {
-        // field access
-        AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-        Symbol symbol = resolve.findIdentInType(env, type.symbol, identifierNode.getTokenValue(), Symbol.VAR);
-        associateReference(identifierNode, symbol);
-        result = getTypeOfSymbol(symbol);
-      }
-    } else {
-      result = symbols.unknownType;
-    }
-    return result;
-  }
-
-  /**
-   * Computes type of a binary operation.
-   */
-  private Type visitBinaryOperation(Resolve.Env env, AstNode astNode) {
-    Type left = getType(astNode.getFirstChild());
-    for (int i = 1; i < astNode.getNumberOfChildren(); i += 2) {
-      AstNode opNode = astNode.getChild(i);
-      if (opNode.is(JavaKeyword.INSTANCEOF)) {
-        left = symbols.booleanType;
-      } else {
-        Type right = getType(astNode.getChild(i + 1));
-        // TODO avoid nulls
-        if (left == null || right == null) {
-          return symbols.unknownType;
-        }
-        Symbol symbol = resolve.findMethod(env, opNode.getTokenValue(), ImmutableList.of(left, right));
-        if (symbol.kind != Symbol.MTH) {
-          // not found
-          return symbols.unknownType;
-        }
-        left = ((Type.MethodType) symbol.type).resultType;
-      }
-    }
-    return left;
-  }
-
-  /**
-   * Computes type of a conditional expression.
-   */
-  private Type visitConditionalExpression() {
-    return symbols.unknownType;
+  @Override
+  public void visitPrimitiveType(PrimitiveTypeTree tree) {
+    super.visitPrimitiveType(tree);
+    AstNode astNode = ((JavaTree) tree).getAstNode();
+    Type type = resolve.findIdent(semanticModel.getEnv(tree), astNode.getLastChild().getTokenValue(), Symbol.TYP).type;
+    types.put(tree, type);
   }
 
   /**
    * Computes type of an assignment expression. Which is always a type of lvalue.
    * For example in case of {@code double d; int i; res = d = i;} type of assignment expression {@code d = i} is double.
    */
-  private Type visitAssignmentExpression(AstNode astNode) {
-    return getType(astNode.getFirstChild());
+  @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    super.visitAssignmentExpression(tree);
+    types.put(tree, getType(tree.variable()));
   }
 
-  /**
-   * Computes type of an expression.
-   * In grammar expression defined as an assignment expression, so simply returns its type.
-   */
-  private Type visitExpression(AstNode astNode) {
-    return getType(astNode.getFirstChild());
+  @Override
+  public void visitLiteral(LiteralTree tree) {
+    super.visitLiteral(tree);
+    Type type = typesOfLiterals.get(((JavaTree) tree).getKind());
+    types.put(tree, type);
   }
 
-  private Type resolveMethod(Resolve.Env env, AstNode astNode) {
-    AstNode qualifiedIdentifierNode = astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-    final Type type;
-    if (qualifiedIdentifierNode.getNumberOfChildren() > 1) {
-      type = resolveQualifiedIdentifier(env, qualifiedIdentifierNode, true);
-    } else {
-      type = env.enclosingClass.type;
-    }
-    // TODO avoid null, which may come from resolveQualifiedIdentifier
-    if (type == null) {
-      return symbols.unknownType;
-    }
-    final AstNode identifierNode = qualifiedIdentifierNode.getLastChild();
-
-    Symbol symbol = resolve.findMethod(env, type.symbol, identifierNode.getTokenValue(), ImmutableList.<Type>of());
-    associateReference(identifierNode, symbol);
-    return getTypeOfSymbol(symbol);
+  @Override
+  public void visitUnaryExpression(UnaryExpressionTree tree) {
+    super.visitUnaryExpression(tree);
+    types.put(tree, getType(tree.expression()));
   }
 
-  private Type resolveQualifiedIdentifier(Resolve.Env env, AstNode astNode) {
-    return resolveQualifiedIdentifier(env, astNode, false);
+  @Override
+  public void visitArrayType(ArrayTypeTree tree) {
+    super.visitArrayType(tree);
+    types.put(tree, new Type.ArrayType(getType(tree.type()), symbols.arrayClass));
   }
 
-  private Type resolveQualifiedIdentifier(Resolve.Env env, AstNode astNode, boolean method) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.QUALIFIED_IDENTIFIER), "Unexpected AstNodeType: " + astNode.getType());
+  @Override
+  public void visitTypeCast(TypeCastTree tree) {
+    super.visitTypeCast(tree);
+    types.put(tree, getType(tree.type()));
+  }
 
-    List<AstNode> identifiers = astNode.getChildren(JavaTokenType.IDENTIFIER);
+  @Override
+  public void visitIdentifier(IdentifierTree tree) {
+    resolveQualifiedIdentifier(tree);
+  }
 
-    Symbol site = resolve.findIdent(env, identifiers.get(0).getTokenValue(), Symbol.VAR | Symbol.TYP | Symbol.PCK);
-    associateReference(identifiers.get(0), site);
-    for (AstNode identifierNode : identifiers.subList(1, identifiers.size() - (method ? 1 : 0))) {
-      if (site.kind >= Symbol.ERRONEOUS) {
-        return symbols.unknownType;
-      }
-      String name = identifierNode.getTokenValue();
-      if (site.kind == Symbol.VAR) {
-        Type type = ((Symbol.VariableSymbol) site).type;
-        // TODO avoid null
-        if (type == null) {
-          return symbols.unknownType;
+  @Override
+  public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+    resolveQualifiedIdentifier(tree);
+  }
+
+  @Override
+  public void visitAnnotation(AnnotationTree tree) {
+    super.visitAnnotation(tree);
+    types.put(tree, symbols.unknownType);
+  }
+
+  private Type resolveQualifiedIdentifier(Tree tree) {
+    final Resolve.Env env = semanticModel.getEnv(tree);
+    class FQV extends BaseTreeVisitor {
+      private Symbol site;
+      private Type type;
+
+      @Override
+      public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+        scan(tree.expression());
+        String name = tree.identifier().name();
+        if (JavaKeyword.CLASS.name().toLowerCase().equals(name)) {
+          type = symbols.classType;
+          types.put(tree, type);
+          return;
         }
-        site = resolve.findIdentInType(env, type.symbol, name, Symbol.VAR | Symbol.TYP);
-      } else if (site.kind == Symbol.TYP) {
-        site = resolve.findIdentInType(env, (Symbol.TypeSymbol) site, name, Symbol.VAR | Symbol.TYP);
-      } else if (site.kind == Symbol.PCK) {
-        site = resolve.findIdentInPackage(env, site, name, Symbol.VAR | Symbol.PCK);
-      } else {
-        throw new IllegalStateException();
+        if (site.kind >= Symbol.ERRONEOUS) {
+          type = symbols.unknownType;
+          types.put(tree, type);
+          return;
+        }
+        if (site.kind == Symbol.VAR) {
+          Type type = ((Symbol.VariableSymbol) site).type;
+          // TODO avoid null
+          if (type == null) {
+            this.type = symbols.unknownType;
+            return;
+          }
+          site = resolve.findIdentInType(env, type.symbol, name, Symbol.VAR | Symbol.TYP);
+        } else if (site.kind == Symbol.TYP) {
+          site = resolve.findIdentInType(env, (Symbol.TypeSymbol) site, name, Symbol.VAR | Symbol.TYP);
+        } else if (site.kind == Symbol.PCK) {
+          site = resolve.findIdentInPackage(env, site, name, Symbol.VAR | Symbol.PCK);
+        } else {
+          throw new IllegalStateException();
+        }
+        associateReference(tree.identifier(), site);
+        type = getTypeOfSymbol(site);
+        types.put(tree, type);
       }
-      associateReference(identifierNode, site);
-    }
-    return getTypeOfSymbol(site);
-  }
 
-  /**
-   * TODO duplication of {@link org.sonar.java.resolve.SecondPass#resolveType(org.sonar.java.resolve.Resolve.Env, com.sonar.sslr.api.AstNode)}
-   */
-  private Type resolveType(Resolve.Env env, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE, JavaGrammar.CREATED_NAME));
+      @Override
+      public void visitArrayType(ArrayTypeTree tree) {
+        super.visitArrayType(tree);
+        type = new Type.ArrayType(getType(tree.type()), symbols.arrayClass);
+        types.put(tree, type);
+      }
 
-    env = env.dup();
-    List<AstNode> identifiers = astNode.getChildren(JavaTokenType.IDENTIFIER);
-    Symbol site = resolve.findIdent(env, identifiers.get(0).getTokenValue(), Symbol.TYP | Symbol.PCK);
-    associateReference(identifiers.get(0), site);
-    for (AstNode identifierNode : identifiers.subList(1, identifiers.size())) {
-      if (site.kind >= Symbol.ERRONEOUS) {
-        return symbols.unknownType;
+      @Override
+      public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
+        super.visitArrayAccessExpression(tree);
+        Type type = getType(tree.expression());
+        if (type!=null && type.tag == Type.ARRAY) {
+        site = type.symbol;
+        types.put(tree, ((Type.ArrayType) type).elementType);
+        } else {
+          types.put(tree, symbols.unknownType);
+        }
       }
-      String name = identifierNode.getTokenValue();
-      if (site.kind == Symbol.PCK) {
-        env.packge = (Symbol.PackageSymbol) site;
-        site = resolve.findIdentInPackage(env, site, name, Symbol.TYP | Symbol.PCK);
-      } else {
-        env.enclosingClass = (Symbol.TypeSymbol) site;
-        site = resolve.findMemberType(env, (Symbol.TypeSymbol) site, name, (Symbol.TypeSymbol) site);
+
+      @Override
+      public void visitIdentifier(IdentifierTree tree) {
+        site = resolve.findIdent(env, tree.name(), Symbol.VAR | Symbol.TYP | Symbol.PCK);
+        associateReference(tree, site);
+        type = getTypeOfSymbol(site);
+        types.put(tree, type);
       }
-      associateReference(identifierNode, site);
+
+      @Override
+      public void visitLiteral(LiteralTree tree) {
+        super.visitLiteral(tree);
+        Type type = typesOfLiterals.get(((JavaTree) tree).getKind());
+        site = type.symbol;
+        types.put(tree, type);
+      }
     }
-    return getTypeOfSymbol(site);
+    FQV visitor = new FQV();
+    tree.accept(visitor);
+    return visitor.type;
   }
 
   private Type getTypeOfSymbol(Symbol symbol) {
@@ -480,14 +347,13 @@ public class ExpressionVisitor extends JavaAstVisitor {
     }
   }
 
-  /**
-   * Returns type associated with given AST node.
-   */
-  public Type getType(AstNode astNode) {
-    return types.get(astNode);
+  @VisibleForTesting
+  Type getType(Tree tree) {
+    return types.get(tree);
   }
 
-  private void associateReference(AstNode astNode, Symbol symbol) {
+  private void associateReference(Tree tree, Symbol symbol) {
+    AstNode astNode = ((JavaTree) tree).getAstNode();
     if (symbol.kind < Symbol.ERRONEOUS && semanticModel.getAstNode(symbol) != null) {
       // symbol exists in current compilation unit
       semanticModel.associateReference(astNode, symbol);

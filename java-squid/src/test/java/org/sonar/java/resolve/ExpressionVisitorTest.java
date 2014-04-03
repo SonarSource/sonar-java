@@ -22,11 +22,15 @@ package org.sonar.java.resolve;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.impl.ast.AstWalker;
 import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
@@ -67,7 +71,6 @@ public class ExpressionVisitorTest {
     classType.interfaces = ImmutableList.of();
     classSymbol.members = new Scope(classSymbol);
     p.members.enter(classSymbol);
-
     // int[][] var;
     variableSymbol = new Symbol.VariableSymbol(0, "var", classSymbol);
     variableSymbol.type = new Type.ArrayType(new Type.ArrayType(symbols.intType, symbols.arrayClass), symbols.arrayClass);
@@ -101,8 +104,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void primary_literal() {
-    b.setRootRule(JavaGrammar.PRIMARY);
-
     assertThat(typeOf("false")).isSameAs(symbols.booleanType);
     assertThat(typeOf("true")).isSameAs(symbols.booleanType);
     assertThat(typeOf("null")).isSameAs(symbols.nullType);
@@ -116,8 +117,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void primary_this() {
-    b.setRootRule(JavaGrammar.PRIMARY);
-
     assertThat(typeOf("this")).isSameAs(classType);
 
     // constructor call
@@ -126,8 +125,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void primary_super() {
-    b.setRootRule(JavaGrammar.PRIMARY);
-
     // constructor call
     assertThat(typeOf("super(arguments)")).isSameAs(symbols.unknownType);
 
@@ -140,16 +137,12 @@ public class ExpressionVisitorTest {
 
   @Test
   public void primary_par_expression() {
-    b.setRootRule(JavaGrammar.PRIMARY);
-
     // (expression)
     assertThat(typeOf("((int) 42L)")).isSameAs(symbols.intType);
   }
 
   @Test
   public void primary_new() {
-    b.setRootRule(JavaGrammar.PRIMARY);
-
     assertThat(typeOf("new MyClass()")).isSameAs(classType);
     assertThat(typeOf("new MyClass() {}")).isSameAs(symbols.unknownType);
 
@@ -161,7 +154,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void primary_qualified_identifier() {
-    b.setRootRule(JavaGrammar.PRIMARY);
+    
 
     // qualified_identifier
     assertThat(typeOf("var")).isSameAs(variableSymbol.type);
@@ -191,8 +184,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void primary_basic_type() {
-    b.setRootRule(JavaGrammar.PRIMARY);
-
     assertThat(typeOf("int.class")).isSameAs(symbols.classType);
     assertThat(typeOf("int[].class")).isSameAs(symbols.classType);
     assertThat(typeOf("int[][].class")).isSameAs(symbols.classType);
@@ -200,15 +191,11 @@ public class ExpressionVisitorTest {
 
   @Test
   public void primary_void() {
-    b.setRootRule(JavaGrammar.PRIMARY);
-
     assertThat(typeOf("void.class")).isSameAs(symbols.classType);
   }
 
   @Test
   public void type_cast() {
-    b.setRootRule(JavaGrammar.UNARY_EXPRESSION);
-
     // (basic_type) expression
     assertThat(typeOf("(byte) 42L")).isSameAs(symbols.byteType);
     assertThat(typeOf("(char) 42")).isSameAs(symbols.charType);
@@ -225,7 +212,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void prefix_op() {
-    b.setRootRule(JavaGrammar.UNARY_EXPRESSION);
+    
 
     for (String op : Arrays.asList("++", "--", "!", "~", "+", "-")) {
       assertThat(typeOf(op + INT)).as(op + INT).isSameAs(symbols.intType);
@@ -234,7 +221,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void postfix_op() {
-    b.setRootRule(JavaGrammar.UNARY_EXPRESSION);
+    
 
     for (String op : Arrays.asList("++", "--")) {
       assertThat(typeOf(INT + op)).as(INT + op).isSameAs(symbols.intType);
@@ -243,10 +230,8 @@ public class ExpressionVisitorTest {
 
   @Test
   public void selector() {
-    b.setRootRule(JavaGrammar.UNARY_EXPRESSION);
-
     // method call
-    assertThat(typeOf("this.method(arguments)")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("this.method(arguments)")).isInstanceOf(Type.MethodType.class);//isSameAs(symbols.unknownType);
     assertThat(typeOf("var[42].clone()")).isSameAs(symbols.unknownType);
 
     // field access
@@ -259,8 +244,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void multiplicative_and_additive_expression() {
-    b.setRootRule(JavaGrammar.ADDITIVE_EXPRESSION);
-
     for (String op : Arrays.asList("*", "/", "%", "+", "-")) {
       for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
         for (String o2 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
@@ -293,7 +276,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void shift_expression() {
-    b.setRootRule(JavaGrammar.SHIFT_EXPRESSION);
+    
 
     for (String op : Arrays.asList("<<", ">>", ">>>")) {
       assertThatTypeOf(INT, op, INT).isSameAs(symbols.intType);
@@ -305,7 +288,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void relational_expression() {
-    b.setRootRule(JavaGrammar.RELATIONAL_EXPRESSION);
+    
 
     for (String op : Arrays.asList("<", ">", ">=", "<=")) {
       for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)) {
@@ -320,7 +303,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void equality_expression() {
-    b.setRootRule(JavaGrammar.EQUALITY_EXPRESSION);
+    
 
     // TODO object, object = boolean
     for (String op : Arrays.asList("==", "!=")) {
@@ -335,7 +318,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void and_expression() {
-    b.setRootRule(JavaGrammar.AND_EXPRESSION);
+    
 
     assertThatTypeOf(BOOLEAN, "&", BOOLEAN).isSameAs(symbols.booleanType);
     for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
@@ -348,7 +331,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void exclusive_or_expression() {
-    b.setRootRule(JavaGrammar.EXCLUSIVE_OR_EXPRESSION);
+    
 
     assertThatTypeOf(BOOLEAN, "^", BOOLEAN).isSameAs(symbols.booleanType);
     for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
@@ -361,7 +344,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void inclusive_or_expression() {
-    b.setRootRule(JavaGrammar.INCLUSIVE_OR_EXPRESSION);
+    
 
     assertThatTypeOf(BOOLEAN, "|", BOOLEAN).isSameAs(symbols.booleanType);
     for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
@@ -374,14 +357,14 @@ public class ExpressionVisitorTest {
 
   @Test
   public void conditional_and_expression() {
-    b.setRootRule(JavaGrammar.CONDITIONAL_AND_EXPRESSION);
+    
 
     assertThatTypeOf(BOOLEAN, "&&", BOOLEAN).isSameAs(symbols.booleanType);
   }
 
   @Test
   public void conditional_or_expression() {
-    b.setRootRule(JavaGrammar.CONDITIONAL_OR_EXPRESSION);
+    
 
     assertThatTypeOf(BOOLEAN, "||", BOOLEAN).isSameAs(symbols.booleanType);
   }
@@ -392,7 +375,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void conditional_expression() {
-    b.setRootRule(JavaGrammar.CONDITIONAL_EXPRESSION);
+    
 
     // FIXME implement
     assertThat(typeOf("42 ? 42 : 42")).isSameAs(symbols.unknownType);
@@ -400,7 +383,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void lambda_expression() {
-    b.setRootRule(JavaGrammar.PRIMARY);
+    
 
     // FIXME implement
     assertThat(typeOf("a -> a+1")).isSameAs(symbols.unknownType);
@@ -411,8 +394,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void assignment_expression() {
-    b.setRootRule(JavaGrammar.ASSIGNMENT_EXPRESSION);
-
     assertThat(typeOf("var = 1")).isSameAs(variableSymbol.type);
   }
 
@@ -428,17 +409,30 @@ public class ExpressionVisitorTest {
   private static final String STRING = "\"string\"";
 
   private Type typeOf(String input) {
-    AstNode astNode = new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, b.build()).parse(input);
-
-    AstWalker astWalker = new AstWalker();
     SemanticModel semanticModel = mock(SemanticModel.class);
-    when(semanticModel.getEnv(any(AstNode.class))).thenReturn(env);
+    when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
     ExpressionVisitor visitor = new ExpressionVisitor(semanticModel, symbols, new Resolve());
-    visitor.init();
-    astWalker.addVisitor(visitor);
-    astWalker.walkAndVisit(astNode);
 
-    return visitor.getType(astNode);
+    b.setRootRule(JavaGrammar.COMPILATION_UNIT);
+    String p = "class Test { void wrapperMethod() { " + input + "; } }";
+    AstNode node = new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, b.build()).parse(p);
+    CompilationUnitTree tree = new JavaTreeMaker().compilationUnit(node);
+    tree.accept(visitor);
+
+    TestedNodeExtractor testedNodeExtractor = new TestedNodeExtractor();
+    testedNodeExtractor.visitCompilationUnit(tree);
+    return visitor.getType(testedNodeExtractor.testedNode);
   }
 
+  private static class TestedNodeExtractor extends BaseTreeVisitor {
+    private Tree testedNode;
+
+    @Override
+    public void visitMethod(MethodTree tree) {
+      super.visitMethod(tree);
+      if("wrapperMethod".equals(tree.simpleName())){
+        testedNode = tree.block().body().get(0);
+      }
+    }
+  }
 }

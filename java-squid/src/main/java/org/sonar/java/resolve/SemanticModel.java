@@ -32,6 +32,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,17 +46,17 @@ public class SemanticModel {
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final Map<AstNode, Resolve.Env> envs = Maps.newHashMap();
 
-  private static SemanticModel createFor(AstNode astNode) {
+  private static SemanticModel createFor(AstNode astNode, Resolve resolve) {
     SemanticModel semanticModel = new SemanticModel();
-    Resolve resolve = new Resolve();
-    Symbols symbols = new Symbols();
     visit(astNode, new FirstPass(semanticModel, resolve));
-    visit(astNode, new ExpressionVisitor(semanticModel, symbols, resolve));
     return semanticModel;
   }
 
   public static SemanticModel createFor(CompilationUnitTree tree) {
-    SemanticModel semanticModel = createFor(((JavaTree.CompilationUnitTreeImpl) tree).getAstNode());
+    Symbols symbols = new Symbols();
+    Resolve resolve = new Resolve();
+    SemanticModel semanticModel = createFor(((JavaTree.CompilationUnitTreeImpl) tree).getAstNode(), resolve);
+    new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);
     new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
     return semanticModel;
   }
@@ -88,7 +89,8 @@ public class SemanticModel {
     envs.put(astNode, env);
   }
 
-  public Resolve.Env getEnv(AstNode astNode) {
+  public Resolve.Env getEnv(Tree tree) {
+    AstNode astNode = ((JavaTree)tree).getAstNode();
     Resolve.Env result = null;
     while (result == null && astNode != null) {
       result = envs.get(astNode);

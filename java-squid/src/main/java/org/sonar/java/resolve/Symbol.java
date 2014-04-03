@@ -153,6 +153,10 @@ public class Symbol {
       return members;
     }
 
+    @Override
+    public String toString() {
+      return name;
+    }
   }
 
   /**
