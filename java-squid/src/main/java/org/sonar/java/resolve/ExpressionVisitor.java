@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
@@ -241,6 +242,17 @@ public class ExpressionVisitor extends BaseTreeVisitor {
   public void visitTypeCast(TypeCastTree tree) {
     super.visitTypeCast(tree);
     types.put(tree, getType(tree.type()));
+  }
+
+  @Override
+  public void visitEnumConstant(EnumConstantTree tree) {
+    scan(tree.modifiers());
+    NewClassTree newClassTree = ((NewClassTree) tree.initializer());
+    scan(newClassTree.enclosingExpression());
+    // skip identifier
+    scan(newClassTree.typeArguments());
+    scan(newClassTree.arguments());
+    scan(newClassTree.classBody());
   }
 
   @Override
