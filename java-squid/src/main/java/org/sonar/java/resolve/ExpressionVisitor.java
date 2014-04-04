@@ -256,7 +256,9 @@ public class ExpressionVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
-    resolveQualifiedIdentifier(tree);
+    Symbol symbol = resolve.findIdent(semanticModel.getEnv(tree), tree.name(), Symbol.VAR | Symbol.TYP | Symbol.PCK);
+    associateReference(tree, symbol);
+    types.put(tree, getTypeOfSymbol(symbol));
   }
 
   @Override
@@ -270,32 +272,28 @@ public class ExpressionVisitor extends BaseTreeVisitor {
     types.put(tree, symbols.unknownType);
   }
 
-  private Type resolveQualifiedIdentifier(Tree tree) {
+  private void resolveQualifiedIdentifier(Tree tree) {
     final Resolve.Env env = semanticModel.getEnv(tree);
     class FQV extends BaseTreeVisitor {
       private Symbol site;
-      private Type type;
 
       @Override
       public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
         scan(tree.expression());
         String name = tree.identifier().name();
         if (JavaKeyword.CLASS.name().toLowerCase().equals(name)) {
-          type = symbols.classType;
-          types.put(tree, type);
+          types.put(tree, symbols.classType);
           return;
         }
         if (site.kind >= Symbol.ERRONEOUS) {
-          type = symbols.unknownType;
-          types.put(tree, type);
+          types.put(tree, symbols.unknownType);
           return;
         }
         if (site.kind == Symbol.VAR) {
           Type siteType = ((Symbol.VariableSymbol) site).type;
           // TODO avoid null
           if (siteType == null) {
-            type = symbols.unknownType;
-            types.put(tree, type);
+            types.put(tree, symbols.unknownType);
             return;
           }
           site = resolve.findIdentInType(env, siteType.symbol, name, Symbol.VAR | Symbol.TYP);
@@ -307,15 +305,13 @@ public class ExpressionVisitor extends BaseTreeVisitor {
           throw new IllegalStateException();
         }
         associateReference(tree.identifier(), site);
-        type = getTypeOfSymbol(site);
-        types.put(tree, type);
+        types.put(tree, getTypeOfSymbol(site));
       }
 
       @Override
       public void visitArrayType(ArrayTypeTree tree) {
         super.visitArrayType(tree);
-        type = new Type.ArrayType(getType(tree.type()), symbols.arrayClass);
-        types.put(tree, type);
+        types.put(tree, new Type.ArrayType(getType(tree.type()), symbols.arrayClass));
       }
 
       @Override
@@ -331,11 +327,11 @@ public class ExpressionVisitor extends BaseTreeVisitor {
       }
 
       @Override
+
       public void visitIdentifier(IdentifierTree tree) {
-        site = resolve.findIdent(env, tree.name(), Symbol.VAR | Symbol.TYP | Symbol.PCK);
+        site = resolve.findIdent(semanticModel.getEnv(tree), tree.name(), Symbol.VAR | Symbol.TYP | Symbol.PCK);
         associateReference(tree, site);
-        type = getTypeOfSymbol(site);
-        types.put(tree, type);
+        types.put(tree, getTypeOfSymbol(site));
       }
 
       @Override
@@ -354,7 +350,6 @@ public class ExpressionVisitor extends BaseTreeVisitor {
     }
     FQV visitor = new FQV();
     tree.accept(visitor);
-    return visitor.type;
   }
 
   private Type getTypeOfSymbol(Symbol symbol) {
