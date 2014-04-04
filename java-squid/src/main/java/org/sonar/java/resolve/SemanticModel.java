@@ -27,9 +27,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.impl.ast.AstWalker;
 import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -58,15 +56,6 @@ public class SemanticModel {
 
   @VisibleForTesting
   SemanticModel() {
-  }
-
-  private static void visit(AstNode astNode, JavaAstVisitor... visitors) {
-    AstWalker astWalker = new AstWalker();
-    for (JavaAstVisitor visitor : visitors) {
-      visitor.init();
-      astWalker.addVisitor(visitor);
-    }
-    astWalker.walkAndVisit(astNode);
   }
 
   public void saveEnv(Symbol symbol, Resolve.Env env) {
