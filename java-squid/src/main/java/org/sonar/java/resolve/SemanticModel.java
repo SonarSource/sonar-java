@@ -46,16 +46,11 @@ public class SemanticModel {
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final Map<AstNode, Resolve.Env> envs = Maps.newHashMap();
 
-  private static SemanticModel createFor(AstNode astNode, Resolve resolve) {
-    SemanticModel semanticModel = new SemanticModel();
-    visit(astNode, new FirstPass(semanticModel, resolve));
-    return semanticModel;
-  }
-
   public static SemanticModel createFor(CompilationUnitTree tree) {
     Symbols symbols = new Symbols();
     Resolve resolve = new Resolve(symbols);
-    SemanticModel semanticModel = createFor(((JavaTree.CompilationUnitTreeImpl) tree).getAstNode(), resolve);
+    SemanticModel semanticModel = new SemanticModel();
+    new FirstPass(semanticModel, resolve).visitCompilationUnit(tree);
     new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);
     new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
     return semanticModel;

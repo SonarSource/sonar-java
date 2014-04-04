@@ -22,23 +22,30 @@ package org.sonar.java.resolve;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.java.ast.visitors.MethodHelper;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.EnumConstantTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
 /**
  * Defines scopes and symbols.
  */
-public class FirstPass extends JavaAstVisitor {
-
-  private final AstNodeType[] scopeAndSymbolAstNodeTypes;
-  private final AstNodeType[] scopeAstNodeTypes;
-  private final AstNodeType[] symbolAstNodeTypes;
+public class FirstPass extends BaseTreeVisitor {
 
   private final SemanticModel semanticModel;
 
@@ -54,99 +61,10 @@ public class FirstPass extends JavaAstVisitor {
   public FirstPass(SemanticModel semanticModel, Resolve resolve) {
     this.semanticModel = semanticModel;
     this.completer = new SecondPass(semanticModel, resolve);
-    scopeAndSymbolAstNodeTypes = new AstNodeType[]{
-      JavaGrammar.COMPILATION_UNIT,
-      JavaGrammar.CLASS_DECLARATION,
-      JavaGrammar.INTERFACE_DECLARATION,
-      JavaGrammar.ENUM_DECLARATION,
-      JavaGrammar.ANNOTATION_TYPE_DECLARATION,
-      JavaGrammar.CLASS_CREATOR_REST,
-      JavaGrammar.ENUM_CONSTANT,
-      // Method or constructor
-      JavaGrammar.METHOD_DECLARATOR_REST,
-      JavaGrammar.VOID_METHOD_DECLARATOR_REST,
-      JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
-      JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
-      JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-      JavaGrammar.ANNOTATION_METHOD_REST};
-    scopeAstNodeTypes = new AstNodeType[]{
-      JavaGrammar.BLOCK,
-      JavaGrammar.FOR_STATEMENT};
-    symbolAstNodeTypes = new AstNodeType[]{
-      JavaGrammar.FIELD_DECLARATION,
-      JavaGrammar.CONSTANT_DECLARATOR_REST,
-      JavaGrammar.FORMAL_PARAMETERS_DECLS_REST,
-      JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
-      JavaGrammar.FOR_INIT,
-      JavaGrammar.FORMAL_PARAMETER,
-      JavaGrammar.CATCH_FORMAL_PARAMETER,
-      JavaGrammar.RESOURCE,
-    };
   }
 
-  @Override
-  public void init() {
-    subscribeTo(scopeAndSymbolAstNodeTypes);
-    subscribeTo(scopeAstNodeTypes);
-    subscribeTo(symbolAstNodeTypes);
-  }
-
-  @Override
-  public void visitNode(AstNode astNode) {
-    if (astNode.is(JavaGrammar.COMPILATION_UNIT)) {
-      visitCompilationUnit(astNode);
-    } else if (astNode.is(JavaGrammar.CLASS_DECLARATION, JavaGrammar.INTERFACE_DECLARATION, JavaGrammar.ENUM_DECLARATION, JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
-      visitClassDeclaration(astNode);
-    } else if (astNode.is(JavaGrammar.CLASS_CREATOR_REST)) {
-      visitClassCreatorRest(astNode);
-    } else if (astNode.is(
-      JavaGrammar.METHOD_DECLARATOR_REST,
-      JavaGrammar.VOID_METHOD_DECLARATOR_REST,
-      JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
-      JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
-      JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-      JavaGrammar.ANNOTATION_METHOD_REST)) {
-      visitMethodDeclaration(astNode);
-    } else if (astNode.is(JavaGrammar.ENUM_CONSTANT)) {
-      visitEnumConstant(astNode);
-    } else if (astNode.is(JavaGrammar.FIELD_DECLARATION)) {
-      visitFieldDeclaration(astNode);
-    } else if (astNode.is(JavaGrammar.CONSTANT_DECLARATOR_REST)) {
-      visitConstantDeclaration(astNode);
-    } else if (astNode.is(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST)) {
-      visitMethodParameter(astNode);
-    } else if (astNode.is(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)) {
-      visitLocalVariableDeclarationStatement(astNode);
-    } else if (astNode.is(JavaGrammar.FOR_INIT)) {
-      visitForInit(astNode);
-    } else if (astNode.is(JavaGrammar.FORMAL_PARAMETER)) {
-      visitForFormalParameter(astNode);
-    } else if (astNode.is(JavaGrammar.CATCH_FORMAL_PARAMETER)) {
-      visitCatchFormalParameter(astNode);
-    } else if (astNode.is(JavaGrammar.RESOURCE)) {
-      visitResource(astNode);
-    } else if (astNode.is(JavaGrammar.BLOCK)) {
-      visitBlockStatement(astNode);
-    } else if (astNode.is(JavaGrammar.FOR_STATEMENT)) {
-      visitForStatement(astNode);
-    } else {
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
-    }
-  }
-
-  @Override
-  public void leaveNode(AstNode astNode) {
-    if (astNode.is(scopeAndSymbolAstNodeTypes)) {
-      if (astNode.isNot(JavaGrammar.CLASS_CREATOR_REST, JavaGrammar.ENUM_CONSTANT) || astNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
-        restoreEnvironment(astNode);
-      }
-    } else if (astNode.is(scopeAstNodeTypes)) {
-      restoreEnvironment(astNode);
-    } else if (astNode.is(symbolAstNodeTypes)) {
-      // nop
-    } else {
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
-    }
+  private void restoreEnvironment(Tree tree) {
+    restoreEnvironment(getNode(tree));
   }
 
   private void restoreEnvironment(AstNode astNode) {
@@ -158,15 +76,19 @@ public class FirstPass extends JavaAstVisitor {
     }
   }
 
-  @Override
-  public void leaveFile(AstNode astNode) {
+  public void completeSymbols() {
     for (Symbol symbol : uncompleted) {
       symbol.complete();
     }
     uncompleted.clear();
   }
 
-  private void visitCompilationUnit(AstNode astNode) {
+  private AstNode getNode(Tree tree) {
+    return ((JavaTree) tree).getAstNode();
+  }
+
+  @Override
+  public void visitCompilationUnit(CompilationUnitTree tree) {
     // TODO package and imports
     Symbol.PackageSymbol symbol = new Symbol.PackageSymbol(null, null);
     symbol.members = new Scope(symbol);
@@ -174,14 +96,29 @@ public class FirstPass extends JavaAstVisitor {
     env = new Resolve.Env();
     env.packge = symbol;
     env.scope = symbol.members;
-    semanticModel.associateEnv(astNode, env);
+    semanticModel.associateEnv(getNode(tree), env);
+    super.visitCompilationUnit(tree);
+    restoreEnvironment(tree);
+    completeSymbols();
   }
 
-  private void visitClassDeclaration(AstNode astNode) {
-    AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-    String name = identifierNode.getTokenValue();
-    Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(computeClassFlags(astNode), name, env.scope.owner);
-    enterSymbol(identifierNode, symbol);
+  @Override
+  public void visitClass(ClassTree tree) {
+    String name = tree.simpleName();
+    int flag = 0;
+    AstNode astNode = getNode(tree);
+    AstNode toAssociate = astNode;
+    boolean anonymousClass = StringUtils.isEmpty(name);
+    if (anonymousClass) {
+      name = "";
+      toAssociate = astNode.getFirstChild(JavaGrammar.CLASS_BODY);
+    } else {
+      flag = computeClassFlags(astNode);
+    }
+    Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
+    if (!anonymousClass) {
+      enterSymbol(astNode.getFirstChild(JavaTokenType.IDENTIFIER), symbol);
+    }
     symbol.members = new Scope(symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
@@ -194,28 +131,10 @@ public class FirstPass extends JavaAstVisitor {
     classEnv.enclosingClass = symbol;
     classEnv.scope = symbol.members;
     env = classEnv;
-    semanticModel.associateEnv(astNode, env);
-  }
 
-  private void visitClassCreatorRest(AstNode astNode) {
-    if (astNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
-      // Anonymous Class Declaration
-      Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(0, "", env.scope.owner);
-
-      symbol.members = new Scope(symbol);
-      symbol.completer = completer;
-      uncompleted.add(symbol);
-
-      // Save current environment to be able to complete class later
-      semanticModel.saveEnv(symbol, env);
-
-      Resolve.Env classEnv = env.dup();
-      classEnv.outer = env;
-      classEnv.enclosingClass = symbol;
-      classEnv.scope = symbol.members;
-      env = classEnv;
-      semanticModel.associateEnv(astNode.getFirstChild(JavaGrammar.CLASS_BODY), env);
-    }
+    semanticModel.associateEnv(toAssociate, env);
+    super.visitClass(tree);
+    restoreEnvironment(astNode); //TODO should we avoid restoring env for enum constants ?
   }
 
   private int computeModifierFlag(AstNode astNode) {
@@ -260,6 +179,13 @@ public class FirstPass extends JavaAstVisitor {
     return flags;
   }
 
+  @Override
+  public void visitMethod(MethodTree tree) {
+    visitMethodDeclaration(getNode(tree));
+    super.visitMethod(tree);
+    restoreEnvironment(tree);
+  }
+
   private void visitMethodDeclaration(AstNode astNode) {
     MethodHelper methodHelper = new MethodHelper(astNode);
     AstNode identifierNode = methodHelper.getName();
@@ -293,53 +219,31 @@ public class FirstPass extends JavaAstVisitor {
     }
   }
 
-  private void visitEnumConstant(AstNode astNode) {
-    declareVariable(Flags.PUBLIC | Flags.ENUM, astNode.getFirstChild(JavaTokenType.IDENTIFIER));
-    if (astNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
-      visitClassCreatorRest(astNode);
+  @Override
+  public void visitEnumConstant(EnumConstantTree tree) {
+    declareVariable(Flags.PUBLIC | Flags.ENUM, getNode(tree).getFirstChild(JavaTokenType.IDENTIFIER));
+    super.visitEnumConstant(tree);
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    AstNode astNode = getNode(tree);
+    AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
+    if (astNode.is(JavaGrammar.CONSTANT_DECLARATOR_REST)) {
+      identifierNode = astNode.getPreviousAstNode();
+    } else if (astNode.is(JavaGrammar.FORMAL_PARAMETER, JavaGrammar.CATCH_FORMAL_PARAMETER, JavaGrammar.RESOURCE)) {
+      identifierNode = astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER);
     }
-  }
-
-  private void visitFieldDeclaration(AstNode astNode) {
-    int flags = computeFlags(astNode);
-    for (AstNode variableDeclaratorNode : astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-      declareVariable(flags, variableDeclaratorNode.getFirstChild(JavaTokenType.IDENTIFIER));
+    if (identifierNode == null) {
+      throw new IllegalStateException("could not get identifier from node " + astNode.getType());
     }
+    declareVariable(computeFlags(tree.modifiers()), identifierNode);
+    super.visitVariable(tree);
   }
 
-  private void visitConstantDeclaration(AstNode astNode) {
-    // JLS7 6.6.1: All members of interfaces are implicitly public.
-    declareVariable(Flags.PUBLIC, astNode.getPreviousAstNode());
-  }
-
-  private void visitMethodParameter(AstNode astNode) {
-    declareVariable(0, astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER));
-  }
-
-  private void visitLocalVariableDeclarationStatement(AstNode astNode) {
-    for (AstNode variableDeclaratorNode : astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-      declareVariable(0, variableDeclaratorNode.getFirstChild(JavaTokenType.IDENTIFIER));
-    }
-  }
-
-  private void visitForInit(AstNode astNode) {
-    if (astNode.hasDirectChildren(JavaGrammar.VARIABLE_DECLARATORS)) {
-      for (AstNode variableDeclaratorNode : astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-        declareVariable(0, variableDeclaratorNode.getFirstChild(JavaTokenType.IDENTIFIER));
-      }
-    }
-  }
-
-  private void visitForFormalParameter(AstNode astNode) {
-    declareVariable(0, astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER));
-  }
-
-  private void visitCatchFormalParameter(AstNode astNode) {
-    declareVariable(0, astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER));
-  }
-
-  private void visitResource(AstNode astNode) {
-    declareVariable(0, astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER));
+  private int computeFlags(ModifiersTree modifiers) {
+    //TODO  JLS7 6.6.1: All members of interfaces are implicitly public. but we should use modifiers to compute flags.
+    return 1;
   }
 
   private void declareVariable(int flags, AstNode identifierNode) {
@@ -355,24 +259,36 @@ public class FirstPass extends JavaAstVisitor {
     semanticModel.saveEnv(symbol, env);
   }
 
-  private void visitBlockStatement(AstNode astNode) {
-    Scope scope = new Scope(env.scope);
-
+  @Override
+  public void visitBlock(BlockTree tree) {
     // Create new environment - this is required, because block can declare types
-    Resolve.Env blockEnv = env.dup();
-    blockEnv.scope = scope;
-    env = blockEnv;
-    semanticModel.associateEnv(astNode, env);
+    createNewEnvironment(tree);
+    super.visitBlock(tree);
+    restoreEnvironment(tree);
   }
 
-  private void visitForStatement(AstNode astNode) {
-    Scope scope = new Scope(env.scope);
-
+  @Override
+  public void visitForStatement(ForStatementTree tree) {
     // Create new environment - this is required, because new scope is created
-    Resolve.Env forEnv = env.dup();
-    forEnv.scope = scope;
-    env = forEnv;
-    semanticModel.associateEnv(astNode, env);
+    createNewEnvironment(tree);
+    super.visitForStatement(tree);
+    restoreEnvironment(tree);
+  }
+
+  @Override
+  public void visitForEachStatement(ForEachStatement tree) {
+    // Create new environment - this is required, because new scope is created
+    createNewEnvironment(tree);
+    super.visitForEachStatement(tree);
+    restoreEnvironment(tree);
+  }
+
+  private void createNewEnvironment(Tree tree) {
+    Scope scope = new Scope(env.scope);
+    Resolve.Env newEnv = env.dup();
+    newEnv.scope = scope;
+    env = newEnv;
+    semanticModel.associateEnv(getNode(tree), env);
   }
 
   private void enterSymbol(AstNode astNode, Symbol symbol) {
