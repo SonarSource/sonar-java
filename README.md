@@ -1,5 +1,5 @@
-Sonar Java - Custom build
-=========================
+Sonar Java
+==========
 
 Compiled against SonarQube 4.2
 
@@ -13,8 +13,8 @@ cd findbugs
 ant
 ~~~
 
---> this will put libs into `findbugs/findbugs/lib`. You need the
-`findbugs.jar` and `bcel-6.0-SNAPSHOT.jar` (this one, and no other!).
+This will put libs into `findbugs/findbugs/lib`. You need the `findbugs.jar` and
+`bcel-6.0-SNAPSHOT.jar` (this one, and no other!).
 
 ### Compile Sonar Java Ecosystem 2.2-SNAPSHOT
 
