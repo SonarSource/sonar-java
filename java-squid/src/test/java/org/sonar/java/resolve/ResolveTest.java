@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 
 public class ResolveTest {
 
-  private Resolve resolve = new Resolve();
+  private Resolve resolve = new Resolve(new Symbols());
 
   private Resolve.Env env = mock(Resolve.Env.class);
 

@@ -54,7 +54,7 @@ public class SemanticModel {
 
   public static SemanticModel createFor(CompilationUnitTree tree) {
     Symbols symbols = new Symbols();
-    Resolve resolve = new Resolve();
+    Resolve resolve = new Resolve(symbols);
     SemanticModel semanticModel = createFor(((JavaTree.CompilationUnitTreeImpl) tree).getAstNode(), resolve);
     new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);
     new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
@@ -90,7 +90,7 @@ public class SemanticModel {
   }
 
   public Resolve.Env getEnv(Tree tree) {
-    AstNode astNode = ((JavaTree)tree).getAstNode();
+    AstNode astNode = ((JavaTree) tree).getAstNode();
     Resolve.Env result = null;
     while (result == null && astNode != null) {
       result = envs.get(astNode);

@@ -154,7 +154,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void primary_qualified_identifier() {
-    
+
 
     // qualified_identifier
     assertThat(typeOf("var")).isSameAs(variableSymbol.type);
@@ -212,8 +212,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void prefix_op() {
-    
-
     for (String op : Arrays.asList("++", "--", "!", "~", "+", "-")) {
       assertThat(typeOf(op + INT)).as(op + INT).isSameAs(symbols.intType);
     }
@@ -221,8 +219,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void postfix_op() {
-    
-
     for (String op : Arrays.asList("++", "--")) {
       assertThat(typeOf(INT + op)).as(INT + op).isSameAs(symbols.intType);
     }
@@ -276,8 +272,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void shift_expression() {
-    
-
     for (String op : Arrays.asList("<<", ">>", ">>>")) {
       assertThatTypeOf(INT, op, INT).isSameAs(symbols.intType);
       assertThatTypeOf(INT, op, LONG).isSameAs(symbols.intType);
@@ -288,8 +282,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void relational_expression() {
-    
-
     for (String op : Arrays.asList("<", ">", ">=", "<=")) {
       for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)) {
         for (String o2 : Arrays.asList(CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)) {
@@ -303,8 +295,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void equality_expression() {
-    
-
     // TODO object, object = boolean
     for (String op : Arrays.asList("==", "!=")) {
       for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)) {
@@ -318,8 +308,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void and_expression() {
-    
-
     assertThatTypeOf(BOOLEAN, "&", BOOLEAN).isSameAs(symbols.booleanType);
     for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
       for (String o2 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
@@ -331,8 +319,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void exclusive_or_expression() {
-    
-
     assertThatTypeOf(BOOLEAN, "^", BOOLEAN).isSameAs(symbols.booleanType);
     for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
       for (String o2 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
@@ -344,8 +330,6 @@ public class ExpressionVisitorTest {
 
   @Test
   public void inclusive_or_expression() {
-    
-
     assertThatTypeOf(BOOLEAN, "|", BOOLEAN).isSameAs(symbols.booleanType);
     for (String o1 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
       for (String o2 : Arrays.asList(CHAR, BYTE, SHORT, INT)) {
@@ -357,15 +341,11 @@ public class ExpressionVisitorTest {
 
   @Test
   public void conditional_and_expression() {
-    
-
     assertThatTypeOf(BOOLEAN, "&&", BOOLEAN).isSameAs(symbols.booleanType);
   }
 
   @Test
   public void conditional_or_expression() {
-    
-
     assertThatTypeOf(BOOLEAN, "||", BOOLEAN).isSameAs(symbols.booleanType);
   }
 
@@ -375,7 +355,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void conditional_expression() {
-    
+
 
     // FIXME implement
     assertThat(typeOf("42 ? 42 : 42")).isSameAs(symbols.unknownType);
@@ -383,14 +363,9 @@ public class ExpressionVisitorTest {
 
   @Test
   public void lambda_expression() {
-    
-
     // FIXME implement
     assertThat(typeOf("a -> a+1")).isSameAs(symbols.unknownType);
   }
-
-
-
 
   @Test
   public void assignment_expression() {
@@ -411,7 +386,7 @@ public class ExpressionVisitorTest {
   private Type typeOf(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
     when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
-    ExpressionVisitor visitor = new ExpressionVisitor(semanticModel, symbols, new Resolve());
+    ExpressionVisitor visitor = new ExpressionVisitor(semanticModel, symbols, new Resolve(symbols));
 
     b.setRootRule(JavaGrammar.COMPILATION_UNIT);
     String p = "class Test { void wrapperMethod() { " + input + "; } }";
@@ -430,7 +405,7 @@ public class ExpressionVisitorTest {
     @Override
     public void visitMethod(MethodTree tree) {
       super.visitMethod(tree);
-      if("wrapperMethod".equals(tree.simpleName())){
+      if ("wrapperMethod".equals(tree.simpleName())) {
         testedNode = tree.block().body().get(0);
       }
     }

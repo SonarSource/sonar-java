@@ -162,7 +162,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
     super.visitArrayAccessExpression(tree);
     Type type = getType(tree.expression());
-    if (type!=null && type.tag == Type.ARRAY) {
+    if (type != null && type.tag == Type.ARRAY) {
       types.put(tree, ((Type.ArrayType) type).elementType);
     } else {
       types.put(tree, symbols.unknownType);
@@ -203,7 +203,6 @@ public class ExpressionVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
-    super.visitPrimitiveType(tree);
     AstNode astNode = ((JavaTree) tree).getAstNode();
     Type type = resolve.findIdent(semanticModel.getEnv(tree), astNode.getLastChild().getTokenValue(), Symbol.TYP).type;
     types.put(tree, type);
@@ -247,7 +246,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
     scan(tree.modifiers());
-    NewClassTree newClassTree = ((NewClassTree) tree.initializer());
+    NewClassTree newClassTree = (NewClassTree) tree.initializer();
     scan(newClassTree.enclosingExpression());
     // skip identifier
     scan(newClassTree.typeArguments());
@@ -292,13 +291,14 @@ public class ExpressionVisitor extends BaseTreeVisitor {
           return;
         }
         if (site.kind == Symbol.VAR) {
-          Type type = ((Symbol.VariableSymbol) site).type;
+          Type siteType = ((Symbol.VariableSymbol) site).type;
           // TODO avoid null
-          if (type == null) {
-            this.type = symbols.unknownType;
+          if (siteType == null) {
+            type = symbols.unknownType;
+            types.put(tree, type);
             return;
           }
-          site = resolve.findIdentInType(env, type.symbol, name, Symbol.VAR | Symbol.TYP);
+          site = resolve.findIdentInType(env, siteType.symbol, name, Symbol.VAR | Symbol.TYP);
         } else if (site.kind == Symbol.TYP) {
           site = resolve.findIdentInType(env, (Symbol.TypeSymbol) site, name, Symbol.VAR | Symbol.TYP);
         } else if (site.kind == Symbol.PCK) {
@@ -321,10 +321,10 @@ public class ExpressionVisitor extends BaseTreeVisitor {
       @Override
       public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
         super.visitArrayAccessExpression(tree);
-        Type type = getType(tree.expression());
-        if (type!=null && type.tag == Type.ARRAY) {
-        site = type.symbol;
-        types.put(tree, ((Type.ArrayType) type).elementType);
+        Type arrayType = getType(tree.expression());
+        if (arrayType != null && arrayType.tag == Type.ARRAY) {
+          site = arrayType.symbol;
+          types.put(tree, ((Type.ArrayType) arrayType).elementType);
         } else {
           types.put(tree, symbols.unknownType);
         }
@@ -340,10 +340,16 @@ public class ExpressionVisitor extends BaseTreeVisitor {
 
       @Override
       public void visitLiteral(LiteralTree tree) {
-        super.visitLiteral(tree);
-        Type type = typesOfLiterals.get(((JavaTree) tree).getKind());
-        site = type.symbol;
-        types.put(tree, type);
+        Type literalType = typesOfLiterals.get(((JavaTree) tree).getKind());
+        site = literalType.symbol;
+        types.put(tree, literalType);
+      }
+
+      @Override
+      public void visitPrimitiveType(PrimitiveTypeTree tree) {
+        AstNode astNode = ((JavaTree) tree).getAstNode();
+        site = resolve.findIdent(semanticModel.getEnv(tree), astNode.getLastChild().getTokenValue(), Symbol.TYP);
+        types.put(tree, site.type);
       }
     }
     FQV visitor = new FQV();

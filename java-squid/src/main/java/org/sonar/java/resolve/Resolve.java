@@ -40,6 +40,11 @@ public class Resolve {
   private final SymbolNotFound symbolNotFound = new SymbolNotFound();
 
   private final Types types = new Types();
+  private final Symbols symbols;
+
+  public Resolve(Symbols symbols) {
+    this.symbols = symbols;
+  }
 
   static class Env {
     /**
@@ -93,8 +98,8 @@ public class Resolve {
     for (Symbol symbol : c.members().lookup(name)) {
       if (symbol.kind == Symbol.VAR) {
         return isAccessible(env, site, symbol)
-          ? symbol
-          : new AccessErrorSymbol(symbol);
+            ? symbol
+            : new AccessErrorSymbol(symbol);
       }
     }
     Symbol symbol;
@@ -149,8 +154,8 @@ public class Resolve {
     for (Symbol symbol : c.members().lookup(name)) {
       if (symbol.kind == Symbol.TYP) {
         return isAccessible(env, site, symbol)
-          ? symbol
-          : new AccessErrorSymbol(symbol);
+            ? symbol
+            : new AccessErrorSymbol(symbol);
       }
     }
     if (c.getSuperclass() != null) {
@@ -187,6 +192,12 @@ public class Resolve {
       } else if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
       }
+    }
+
+    //checks predefined types
+    Symbol predefinedSymbol = findField(env, symbols.predefClass, name, symbols.predefClass);
+    if (predefinedSymbol.kind < bestSoFar.kind) {
+      return predefinedSymbol;
     }
 
     // TODO imports
@@ -312,7 +323,7 @@ public class Resolve {
   }
 
   /**
-   * @param symbol candidate
+   * @param symbol    candidate
    * @param bestSoFar previously found best match
    */
   private Symbol selectBest(Env env, Symbol.TypeSymbol site, List<Type> argTypes, Symbol symbol, Symbol bestSoFar) {
@@ -335,7 +346,7 @@ public class Resolve {
 
   /**
    * @param argTypes types of arguments
-   * @param formals types of formal parameters of method
+   * @param formals  types of formal parameters of method
    */
   private boolean isArgumentsAcceptable(List<Type> argTypes, List<Type> formals) {
     // TODO varargs
@@ -454,19 +465,19 @@ public class Resolve {
       case Flags.PRIVATE:
         // no check of overriding, because private members cannot be overridden
         return (env.enclosingClass().outermostClass() == symbol.owner().outermostClass())
-          && isInheritedIn(symbol, site);
+            && isInheritedIn(symbol, site);
       case 0:
         return (env.packge() == symbol.packge())
-          && isAccessible(env, site)
-          && isInheritedIn(symbol, site)
-          && notOverriddenIn(site, symbol);
+            && isAccessible(env, site)
+            && isInheritedIn(symbol, site)
+            && notOverriddenIn(site, symbol);
       case Flags.PUBLIC:
         return isAccessible(env, site)
-          && notOverriddenIn(site, symbol);
+            && notOverriddenIn(site, symbol);
       case Flags.PROTECTED:
         return ((env.packge() == symbol.packge()) || isProtectedAccessible(symbol, env.enclosingClass, site))
-          && isAccessible(env, site)
-          && notOverriddenIn(site, symbol);
+            && isAccessible(env, site)
+            && notOverriddenIn(site, symbol);
       default:
         throw new IllegalStateException();
     }
