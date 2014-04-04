@@ -79,6 +79,10 @@ public class Type {
       this.elementType = elementType;
     }
 
+    @Override
+    public String toString() {
+      return elementType.toString()+"[]";
+    }
   }
 
   public static class MethodType extends Type {
@@ -94,6 +98,14 @@ public class Type {
       this.thrown = thrown;
     }
 
+    @Override
+    public String toString() {
+      return "returns "+resultType.toString();
+    }
   }
 
+  @Override
+  public String toString() {
+    return symbol==null ? "" : symbol.toString();
+  }
 }
