@@ -30,6 +30,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collection;
@@ -38,8 +39,11 @@ import java.util.Map;
 
 public class SemanticModel {
 
+  @Deprecated
   private final BiMap<AstNode, Symbol> symbols = HashBiMap.create();
+  private final BiMap<Tree, Symbol> symbolsTree = HashBiMap.create();
   private final Multimap<Symbol, AstNode> usages = HashMultimap.create();
+  private Multimap<Symbol, IdentifierTree> usagesTree = HashMultimap.create();
 
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final Map<AstNode, Resolve.Env> envs = Maps.newHashMap();
@@ -66,11 +70,9 @@ public class SemanticModel {
     return symbolEnvs.get(symbol);
   }
 
-  /**
-   * Associates given AstNode with given environment.
-   */
-  public void associateEnv(AstNode astNode, Resolve.Env env) {
-    envs.put(astNode, env);
+  public void associateEnv(Tree tree, Resolve.Env env) {
+    //TODO associate the tree directly but how can we navigate up in the hierarchy to retrieve env ??
+    envs.put(((JavaTree) tree).getAstNode(), env);
   }
 
   public Resolve.Env getEnv(Tree tree) {
@@ -86,21 +88,44 @@ public class SemanticModel {
   /**
    * Associates given AstNode with given Symbol.
    */
+  @Deprecated
   public void associateSymbol(AstNode astNode, Symbol symbol) {
     Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
     Preconditions.checkNotNull(symbol);
     symbols.put(astNode, symbol);
   }
 
+  @Deprecated
   public Symbol getSymbol(AstNode astNode) {
     Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
     return symbols.get(astNode);
   }
 
+  @Deprecated
   public AstNode getAstNode(Symbol symbol) {
     return symbols.inverse().get(symbol);
   }
 
+  public void associateSymbol(Tree tree, Symbol symbol) {
+    Preconditions.checkNotNull(symbol);
+    symbolsTree.put(tree, symbol);
+  }
+
+  public Symbol getSymbol(Tree tree) {
+    return symbolsTree.get(tree);
+  }
+
+  public Tree getTree(Symbol symbol) {
+    return symbolsTree.inverse().get(symbol);
+  }
+
+
+  public void associateReference(IdentifierTree tree, Symbol symbol) {
+    usages.put(symbol, ((JavaTree) tree).getAstNode());
+    usagesTree.put(symbol, tree);
+  }
+
+  @Deprecated
   public void associateReference(AstNode astNode, Symbol symbol) {
     Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
     Preconditions.checkNotNull(symbol);

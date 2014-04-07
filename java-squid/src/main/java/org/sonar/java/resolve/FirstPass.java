@@ -96,7 +96,7 @@ public class FirstPass extends BaseTreeVisitor {
     env = new Resolve.Env();
     env.packge = symbol;
     env.scope = symbol.members;
-    semanticModel.associateEnv(getNode(tree), env);
+    semanticModel.associateEnv(tree, env);
     super.visitCompilationUnit(tree);
     restoreEnvironment(tree);
     completeSymbols();
@@ -107,17 +107,15 @@ public class FirstPass extends BaseTreeVisitor {
     String name = tree.simpleName();
     int flag = 0;
     AstNode astNode = getNode(tree);
-    AstNode toAssociate = astNode;
     boolean anonymousClass = StringUtils.isEmpty(name);
     if (anonymousClass) {
       name = "";
-      toAssociate = astNode.getFirstChild(JavaGrammar.CLASS_BODY);
     } else {
       flag = computeClassFlags(astNode);
     }
     Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
     if (!anonymousClass) {
-      enterSymbol(astNode.getFirstChild(JavaTokenType.IDENTIFIER), symbol);
+      enterSymbol(astNode.getFirstChild(JavaTokenType.IDENTIFIER), tree, symbol);
     }
     symbol.members = new Scope(symbol);
     symbol.completer = completer;
@@ -132,7 +130,7 @@ public class FirstPass extends BaseTreeVisitor {
     classEnv.scope = symbol.members;
     env = classEnv;
 
-    semanticModel.associateEnv(toAssociate, env);
+    semanticModel.associateEnv(tree, env);
     super.visitClass(tree);
     restoreEnvironment(astNode); //TODO should we avoid restoring env for enum constants ?
   }
@@ -181,17 +179,17 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    visitMethodDeclaration(getNode(tree));
+    visitMethodDeclaration(getNode(tree), tree);
     super.visitMethod(tree);
     restoreEnvironment(tree);
   }
 
-  private void visitMethodDeclaration(AstNode astNode) {
+  private void visitMethodDeclaration(AstNode astNode, MethodTree tree) {
     MethodHelper methodHelper = new MethodHelper(astNode);
     AstNode identifierNode = methodHelper.getName();
     String name = methodHelper.isConstructor() ? "<init>" : identifierNode.getTokenValue();
     Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeMethodFlags(astNode), name, env.scope.owner);
-    enterSymbol(identifierNode, symbol);
+    enterSymbol(identifierNode, tree, symbol);
     symbol.parameters = new Scope(symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
@@ -221,7 +219,7 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
-    declareVariable(Flags.PUBLIC | Flags.ENUM, getNode(tree).getFirstChild(JavaTokenType.IDENTIFIER));
+    declareVariable(Flags.PUBLIC | Flags.ENUM, getNode(tree).getFirstChild(JavaTokenType.IDENTIFIER), tree);
     super.visitEnumConstant(tree);
   }
 
@@ -237,7 +235,7 @@ public class FirstPass extends BaseTreeVisitor {
     if (identifierNode == null) {
       throw new IllegalStateException("could not get identifier from node " + astNode.getType());
     }
-    declareVariable(computeFlags(tree.modifiers()), identifierNode);
+    declareVariable(computeFlags(tree.modifiers()), identifierNode, tree);
     super.visitVariable(tree);
   }
 
@@ -246,12 +244,11 @@ public class FirstPass extends BaseTreeVisitor {
     return 1;
   }
 
-  private void declareVariable(int flags, AstNode identifierNode) {
+  private void declareVariable(int flags, AstNode identifierNode, Tree tree) {
     Preconditions.checkArgument(identifierNode.is(JavaTokenType.IDENTIFIER));
-
     String name = identifierNode.getTokenValue();
     Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, env.scope.owner);
-    enterSymbol(identifierNode, symbol);
+    enterSymbol(identifierNode, tree, symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
 
@@ -288,12 +285,13 @@ public class FirstPass extends BaseTreeVisitor {
     Resolve.Env newEnv = env.dup();
     newEnv.scope = scope;
     env = newEnv;
-    semanticModel.associateEnv(getNode(tree), env);
+    semanticModel.associateEnv(tree, env);
   }
 
-  private void enterSymbol(AstNode astNode, Symbol symbol) {
+  private void enterSymbol(AstNode astNode, Tree tree, Symbol symbol) {
     env.scope.enter(symbol);
     semanticModel.associateSymbol(astNode, symbol);
+    semanticModel.associateSymbol(tree, symbol);
   }
 
 }

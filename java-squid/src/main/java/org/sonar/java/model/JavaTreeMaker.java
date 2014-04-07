@@ -110,11 +110,14 @@ public class JavaTreeMaker {
   private ExpressionTree classType(AstNode astNode) {
     checkType(astNode, JavaGrammar.CLASS_TYPE, JavaGrammar.CREATED_NAME);
     AstNode child = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
+    AstNode firstIdentifier = child;
     ExpressionTree result = identifier(child);
     for (int i = 1; i < astNode.getNumberOfChildren(); i++) {
       child = astNode.getChild(i);
       if (child.is(JavaTokenType.IDENTIFIER)) {
-        result = new JavaTree.MemberSelectExpressionTreeImpl(child, result, identifier(child));
+        if(!child.equals(firstIdentifier)) {
+          result = new JavaTree.MemberSelectExpressionTreeImpl(child, result, identifier(child));
+        }
       } else if (child.is(JavaGrammar.TYPE_ARGUMENTS)) {
         result = new JavaTree.ParameterizedTypeTreeImpl(child, result, typeArguments(child));
       } else if (child.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
