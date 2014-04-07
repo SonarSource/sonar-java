@@ -115,7 +115,7 @@ public class FirstPass extends BaseTreeVisitor {
     }
     Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
     if (!anonymousClass) {
-      enterSymbol(astNode.getFirstChild(JavaTokenType.IDENTIFIER), tree, symbol);
+      enterSymbol(tree, symbol);
     }
     symbol.members = new Scope(symbol);
     symbol.completer = completer;
@@ -189,7 +189,7 @@ public class FirstPass extends BaseTreeVisitor {
     AstNode identifierNode = methodHelper.getName();
     String name = methodHelper.isConstructor() ? "<init>" : identifierNode.getTokenValue();
     Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeMethodFlags(astNode), name, env.scope.owner);
-    enterSymbol(identifierNode, tree, symbol);
+    enterSymbol(tree, symbol);
     symbol.parameters = new Scope(symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
@@ -248,7 +248,7 @@ public class FirstPass extends BaseTreeVisitor {
     Preconditions.checkArgument(identifierNode.is(JavaTokenType.IDENTIFIER));
     String name = identifierNode.getTokenValue();
     Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, env.scope.owner);
-    enterSymbol(identifierNode, tree, symbol);
+    enterSymbol(tree, symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
 
@@ -288,9 +288,8 @@ public class FirstPass extends BaseTreeVisitor {
     semanticModel.associateEnv(tree, env);
   }
 
-  private void enterSymbol(AstNode astNode, Tree tree, Symbol symbol) {
+  private void enterSymbol(Tree tree, Symbol symbol) {
     env.scope.enter(symbol);
-    semanticModel.associateSymbol(astNode, symbol);
     semanticModel.associateSymbol(tree, symbol);
   }
 

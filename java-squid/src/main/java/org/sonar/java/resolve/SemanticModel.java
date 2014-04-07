@@ -27,7 +27,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -39,10 +38,7 @@ import java.util.Map;
 
 public class SemanticModel {
 
-  @Deprecated
-  private final BiMap<AstNode, Symbol> symbols = HashBiMap.create();
   private final BiMap<Tree, Symbol> symbolsTree = HashBiMap.create();
-  private final Multimap<Symbol, AstNode> usages = HashMultimap.create();
   private Multimap<Symbol, IdentifierTree> usagesTree = HashMultimap.create();
 
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
@@ -85,27 +81,8 @@ public class SemanticModel {
     return result;
   }
 
-  /**
-   * Associates given AstNode with given Symbol.
-   */
-  @Deprecated
-  public void associateSymbol(AstNode astNode, Symbol symbol) {
-    Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
-    Preconditions.checkNotNull(symbol);
-    symbols.put(astNode, symbol);
-  }
-
-  @Deprecated
-  public Symbol getSymbol(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
-    return symbols.get(astNode);
-  }
-
-  @Deprecated
-  public AstNode getAstNode(Symbol symbol) {
-    return symbols.inverse().get(symbol);
-  }
-
+  //FIXME we should have an IdentifierTree and not a Tree here.
+  // This is not the case because VariableTree EnumConstantTree ClassTree, etc. use simple name and not identifiers.
   public void associateSymbol(Tree tree, Symbol symbol) {
     Preconditions.checkNotNull(symbol);
     symbolsTree.put(tree, symbol);
@@ -121,29 +98,11 @@ public class SemanticModel {
 
 
   public void associateReference(IdentifierTree tree, Symbol symbol) {
-    usages.put(symbol, ((JavaTree) tree).getAstNode());
     usagesTree.put(symbol, tree);
-  }
-
-  @Deprecated
-  public void associateReference(AstNode astNode, Symbol symbol) {
-    Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
-    Preconditions.checkNotNull(symbol);
-    usages.put(symbol, astNode);
-  }
-
-  @Deprecated
-  public Map<AstNode, Symbol> getSymbols() {
-    return Collections.unmodifiableMap(symbols);
   }
 
   public Map<Tree, Symbol> getSymbolsTree() {
     return Collections.unmodifiableMap(symbolsTree);
-  }
-
-  @Deprecated
-  public Collection<AstNode> getUsages(Symbol symbol) {
-    return Collections.unmodifiableCollection(usages.get(symbol));
   }
 
   public Collection<IdentifierTree> getUsagesTree(Symbol symbol) {

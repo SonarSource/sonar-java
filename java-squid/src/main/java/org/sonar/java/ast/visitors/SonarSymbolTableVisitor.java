@@ -23,8 +23,11 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.java.SemanticModelProvider;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Map;
 
@@ -49,11 +52,11 @@ public class SonarSymbolTableVisitor extends JavaAstVisitor {
     Symbolizable symbolizable = sonarComponents.symbolizableFor(getContext().getFile());
     Symbolizable.SymbolTableBuilder symbolTableBuilder = symbolizable.newSymbolTableBuilder();
 
-    for (Map.Entry<AstNode, Symbol> entry : semanticModel.getSymbols().entrySet()) {
-      AstNode declaration = entry.getKey();
+    for (Map.Entry<Tree, Symbol> entry : semanticModel.getSymbolsTree().entrySet()) {
+      Tree declaration = entry.getKey();
       org.sonar.api.source.Symbol symbol = symbolTableBuilder.newSymbol(startOffsetFor(declaration), endOffsetFor(declaration));
 
-      for (AstNode usage : semanticModel.getUsages(entry.getValue())) {
+      for (IdentifierTree usage : semanticModel.getUsagesTree(entry.getValue())) {
         symbolTableBuilder.newReference(symbol, startOffsetFor(usage));
       }
     }
@@ -61,11 +64,13 @@ public class SonarSymbolTableVisitor extends JavaAstVisitor {
     symbolizable.setSymbolTable(symbolTableBuilder.build());
   }
 
-  private static int startOffsetFor(AstNode astNode) {
+  private static int startOffsetFor(Tree tree) {
+    AstNode astNode = ((JavaTree) tree).getAstNode();
     return astNode.getFromIndex();
   }
 
-  private static int endOffsetFor(AstNode astNode) {
+  private static int endOffsetFor(Tree tree) {
+    AstNode astNode = ((JavaTree) tree).getAstNode();
     return astNode.getFromIndex() + astNode.getTokenValue().length();
   }
 
