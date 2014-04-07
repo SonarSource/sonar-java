@@ -43,14 +43,12 @@ public class LabelsVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitLabeledStatement(LabeledStatementTree tree) {
-    AstNode identifierNode = getAstNodeFromLabelStatement(tree);
-    semanticModel.associateSymbol(identifierNode, new Symbol(0, 0, identifierNode.getTokenValue(), null));
+    AstNode identifierNode = ((JavaTree.LabeledStatementTreeImpl) tree).getAstNode().getFirstChild(JavaTokenType.IDENTIFIER);
+    Symbol symbol = new Symbol(0, 0, identifierNode.getTokenValue(), null);
+    semanticModel.associateSymbol(identifierNode, symbol);
+    semanticModel.associateSymbol(tree, symbol);
     labelTrees.put(tree.label(), tree);
     super.visitLabeledStatement(tree);
-  }
-
-  private AstNode getAstNodeFromLabelStatement(LabeledStatementTree tree) {
-    return ((JavaTree.LabeledStatementTreeImpl) tree).getAstNode().getFirstChild(JavaTokenType.IDENTIFIER);
   }
 
   @Override
@@ -60,7 +58,7 @@ public class LabelsVisitor extends BaseTreeVisitor {
     if (label != null) {
       LabeledStatementTree labelTree = labelTrees.get(label);
       if (labelTree != null) {
-        semanticModel.associateReference(identifier, semanticModel.getSymbol(getAstNodeFromLabelStatement(labelTree)));
+        semanticModel.associateReference(identifier, semanticModel.getSymbol(labelTree));
       }
     }
     super.visitBreakStatement(tree);
@@ -73,7 +71,7 @@ public class LabelsVisitor extends BaseTreeVisitor {
     if (label != null) {
       LabeledStatementTree labelTree = labelTrees.get(label);
       if (labelTree != null) {
-        semanticModel.associateReference(identifier, semanticModel.getSymbol(getAstNodeFromLabelStatement(labelTree)));
+        semanticModel.associateReference(identifier, semanticModel.getSymbol(labelTree));
       }
     }
     super.visitContinueStatement(tree);

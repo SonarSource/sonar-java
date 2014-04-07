@@ -19,13 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -70,12 +67,10 @@ public class UnusedPrivateFieldCheck extends BaseTreeVisitor implements JavaFile
 
   public void checkIfUnused(VariableTree tree) {
     if (tree.modifiers().modifiers().contains(Modifier.PRIVATE) && !"serialVersionUID".equals(tree.simpleName())) {
-      AstNode identifierAstNode = ((JavaTree) tree).getAstNode().getFirstChild(JavaTokenType.IDENTIFIER);
-
       SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
-      Symbol symbol = semanticModel.getSymbol(identifierAstNode);
+      Symbol symbol = semanticModel.getSymbol(tree);
 
-      if (symbol != null && semanticModel.getUsages(symbol).isEmpty()) {
+      if (symbol != null && semanticModel.getUsagesTree(symbol).isEmpty()) {
         context.addIssue(tree, ruleKey, "Remove this unused \"" + tree.simpleName() + "\" private field.");
       }
     }

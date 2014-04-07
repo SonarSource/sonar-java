@@ -132,12 +132,18 @@ public class SemanticModel {
     usages.put(symbol, astNode);
   }
 
+  @Deprecated
   public Map<AstNode, Symbol> getSymbols() {
     return Collections.unmodifiableMap(symbols);
   }
 
+  @Deprecated
   public Collection<AstNode> getUsages(Symbol symbol) {
     return Collections.unmodifiableCollection(usages.get(symbol));
+  }
+
+  public Collection<IdentifierTree> getUsagesTree(Symbol symbol) {
+    return Collections.unmodifiableCollection(usagesTree.get(symbol));
   }
 
 }
