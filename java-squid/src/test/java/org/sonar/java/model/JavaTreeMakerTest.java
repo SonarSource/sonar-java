@@ -699,7 +699,7 @@ public class JavaTreeMakerTest {
     AstNode astNode = p.parse("class T { void m() { label: ; } }").getFirstDescendant(JavaGrammar.STATEMENT);
     LabeledStatementTree tree = (LabeledStatementTree) maker.statement(astNode);
     assertThat(tree.is(Tree.Kind.LABELED_STATEMENT)).isTrue();
-    assertThat(tree.label()).isEqualTo("label");
+    assertThat(tree.label().name()).isEqualTo("label");
     assertThat(tree.statement()).isNotNull();
   }
 
@@ -864,7 +864,7 @@ public class JavaTreeMakerTest {
     astNode = p.parse("class T { void m() { break label ; } }").getFirstDescendant(JavaGrammar.STATEMENT);
     tree = (BreakStatementTree) maker.statement(astNode);
     assertThat(tree.is(Tree.Kind.BREAK_STATEMENT)).isTrue();
-    assertThat(tree.label()).isEqualTo("label");
+    assertThat(tree.label().name()).isEqualTo("label");
   }
 
   /**
@@ -880,7 +880,7 @@ public class JavaTreeMakerTest {
     astNode = p.parse("class T { void m() { continue label ; } }").getFirstDescendant(JavaGrammar.STATEMENT);
     tree = (ContinueStatementTree) maker.statement(astNode);
     assertThat(tree.is(Tree.Kind.CONTINUE_STATEMENT)).isTrue();
-    assertThat(tree.label()).isEqualTo("label");
+    assertThat(tree.label().name()).isEqualTo("label");
   }
 
   /**

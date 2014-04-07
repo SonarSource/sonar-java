@@ -23,7 +23,9 @@ import com.google.common.base.Charsets;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
@@ -52,7 +54,7 @@ class Result {
 
   public Symbol symbol(String name) {
     Symbol result = null;
-    for (Symbol symbol : semanticModel.getSymbols().values()) {
+    for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
       if (name.equals(symbol.name)) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");
@@ -68,8 +70,8 @@ class Result {
 
   public Symbol symbol(String name, int line) {
     Symbol result = null;
-    for (Symbol symbol : semanticModel.getSymbols().values()) {
-      if (name.equals(symbol.name) && semanticModel.getAstNode(symbol).getTokenLine() == line) {
+    for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
+      if (name.equals(symbol.name) && ((JavaTree)semanticModel.getTree(symbol)).getAstNode().getTokenLine() == line) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");
         }
@@ -85,9 +87,9 @@ class Result {
   public Symbol reference(int line, int column) {
     // In SSLR column starts at 0, but here we want consistency with IDE, so we start from 1:
     column -= 1;
-    for (Symbol symbol : semanticModel.getSymbols().values()) {
-      for (AstNode usage : semanticModel.getUsages(symbol)) {
-        Token token = usage.getToken();
+    for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
+      for (IdentifierTree usage : semanticModel.getUsagesTree(symbol)) {
+        Token token = ((JavaTree) usage).getAstNode().getToken();
         if (token.getLine() == line && token.getColumn() == column) {
           return symbol;
         }

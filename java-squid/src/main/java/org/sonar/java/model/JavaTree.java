@@ -744,9 +744,9 @@ public abstract class JavaTree implements Tree {
 
   public static class BreakStatementTreeImpl extends JavaTree implements BreakStatementTree {
     @Nullable
-    private final String label;
+    private final IdentifierTree label;
 
-    public BreakStatementTreeImpl(AstNode astNode, @Nullable String label) {
+    public BreakStatementTreeImpl(AstNode astNode, @Nullable IdentifierTree label) {
       super(astNode);
       this.label = label;
     }
@@ -758,7 +758,7 @@ public abstract class JavaTree implements Tree {
 
     @Nullable
     @Override
-    public String label() {
+    public IdentifierTree label() {
       return label;
     }
 
@@ -770,9 +770,9 @@ public abstract class JavaTree implements Tree {
 
   public static class ContinueStatementTreeImpl extends JavaTree implements ContinueStatementTree {
     @Nullable
-    private final String label;
+    private final IdentifierTree label;
 
-    public ContinueStatementTreeImpl(AstNode astNode, @Nullable String label) {
+    public ContinueStatementTreeImpl(AstNode astNode, @Nullable IdentifierTree label) {
       super(astNode);
       this.label = label;
     }
@@ -784,7 +784,7 @@ public abstract class JavaTree implements Tree {
 
     @Nullable
     @Override
-    public String label() {
+    public IdentifierTree label() {
       return label;
     }
 
@@ -954,10 +954,10 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class LabeledStatementTreeImpl extends JavaTree implements LabeledStatementTree {
-    private final String label;
+    private final IdentifierTree label;
     private final StatementTree statement;
 
-    public LabeledStatementTreeImpl(AstNode astNode, String label, StatementTree statement) {
+    public LabeledStatementTreeImpl(AstNode astNode, IdentifierTree label, StatementTree statement) {
       super(astNode);
       this.label = Preconditions.checkNotNull(label);
       this.statement = Preconditions.checkNotNull(statement);
@@ -969,7 +969,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public String label() {
+    public IdentifierTree label() {
       return label;
     }
 

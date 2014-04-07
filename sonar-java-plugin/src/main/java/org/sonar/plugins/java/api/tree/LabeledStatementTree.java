@@ -35,7 +35,7 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface LabeledStatementTree extends StatementTree {
 
-  String label();
+  IdentifierTree label();
 
   StatementTree statement();
 

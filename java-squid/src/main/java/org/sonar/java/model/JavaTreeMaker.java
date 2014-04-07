@@ -747,7 +747,7 @@ public class JavaTreeMaker {
         // 14.7. Labeled Statement
         result = new JavaTree.LabeledStatementTreeImpl(
             statementNode,
-            statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+            identifier(statementNode.getFirstChild(JavaTokenType.IDENTIFIER)),
             statement(statementNode.getFirstChild(JavaGrammar.STATEMENT))
         );
         break;
@@ -803,14 +803,14 @@ public class JavaTreeMaker {
         // 14.15. The break Statement
         result = new JavaTree.BreakStatementTreeImpl(
             statementNode,
-            statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue() : null
+            statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? identifier(statementNode.getFirstChild(JavaTokenType.IDENTIFIER)) : null
         );
         break;
       case CONTINUE_STATEMENT:
         // 14.16. The continue Statement
         result = new JavaTree.ContinueStatementTreeImpl(
             statementNode,
-            statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue() : null
+            statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? identifier(statementNode.getFirstChild(JavaTokenType.IDENTIFIER)) : null
         );
         break;
       case RETURN_STATEMENT:

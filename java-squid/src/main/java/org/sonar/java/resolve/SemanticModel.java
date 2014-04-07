@@ -137,6 +137,10 @@ public class SemanticModel {
     return Collections.unmodifiableMap(symbols);
   }
 
+  public Map<Tree, Symbol> getSymbolsTree() {
+    return Collections.unmodifiableMap(symbolsTree);
+  }
+
   @Deprecated
   public Collection<AstNode> getUsages(Symbol symbol) {
     return Collections.unmodifiableCollection(usages.get(symbol));

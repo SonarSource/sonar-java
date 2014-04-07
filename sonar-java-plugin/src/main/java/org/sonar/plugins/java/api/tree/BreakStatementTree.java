@@ -39,6 +39,6 @@ import javax.annotation.Nullable;
 public interface BreakStatementTree extends StatementTree {
 
   @Nullable
-  String label();
+  IdentifierTree label();
 
 }
