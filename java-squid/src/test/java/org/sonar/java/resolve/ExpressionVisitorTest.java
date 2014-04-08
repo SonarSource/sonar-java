@@ -405,7 +405,7 @@ public class ExpressionVisitorTest {
     @Override
     public void visitMethod(MethodTree tree) {
       super.visitMethod(tree);
-      if ("wrapperMethod".equals(tree.simpleName())) {
+      if ("wrapperMethod".equals(tree.simpleName().name())) {
         testedNode = tree.block().body().get(0);
       }
     }

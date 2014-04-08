@@ -56,7 +56,7 @@ public interface MethodTree extends Tree {
   @Nullable
   Tree returnType();
 
-  String simpleName();
+  IdentifierTree simpleName();
 
   List<VariableTree> parameters();
 

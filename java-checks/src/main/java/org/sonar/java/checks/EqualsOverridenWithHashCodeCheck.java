@@ -79,11 +79,11 @@ public class EqualsOverridenWithHashCodeCheck extends BaseTreeVisitor implements
   }
 
   private static boolean isEquals(MethodTree methodTree) {
-    return EQUALS.equals(methodTree.simpleName()) && methodTree.parameters().size() == 1;
+    return EQUALS.equals(methodTree.simpleName().name()) && methodTree.parameters().size() == 1;
   }
 
   private static boolean isHashCode(MethodTree methodTree) {
-    return HASHCODE.equals(methodTree.simpleName()) && methodTree.parameters().isEmpty();
+    return HASHCODE.equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty();
   }
 
   private static String classTreeType(ClassTree tree) {

@@ -65,7 +65,7 @@ public class BadMethodName_S00100_Check extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitMethod(MethodTree tree) {
-    if (!isConstructor(tree) && !isOverride(tree) && !pattern.matcher(tree.simpleName()).matches()) {
+    if (!isConstructor(tree) && !isOverride(tree) && !pattern.matcher(tree.simpleName().name()).matches()) {
       context.addIssue(tree, ruleKey, "Rename this method name to match the regular expression '" + format + "'.");
     }
 

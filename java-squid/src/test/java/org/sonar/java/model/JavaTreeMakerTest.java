@@ -329,7 +329,7 @@ public class JavaTreeMakerTest {
     MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.CONSTRUCTOR)).isTrue();
     assertThat(tree.returnType()).isNull();
-    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.parameters()).hasSize(2);
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
@@ -369,7 +369,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.returnType()).isNotNull();
-    assertThat(tree.simpleName()).isEqualTo("m");
+    assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(2);
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
@@ -383,7 +383,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.returnType()).isNotNull();
-    assertThat(tree.simpleName()).isEqualTo("m");
+    assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(1);
     assertThat(tree.throwsClauses()).hasSize(2);
     assertThat(tree.block()).isNotNull();
@@ -461,7 +461,7 @@ public class JavaTreeMakerTest {
     MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.CONSTRUCTOR)).isTrue();
     assertThat(tree.returnType()).isNull();
-    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.parameters()).hasSize(2);
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
@@ -476,7 +476,7 @@ public class JavaTreeMakerTest {
     MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
-    assertThat(tree.simpleName()).isEqualTo("m");
+    assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(2);
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
@@ -489,7 +489,7 @@ public class JavaTreeMakerTest {
     tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
-    assertThat(tree.simpleName()).isEqualTo("m");
+    assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(1);
     assertThat(tree.throwsClauses()).hasSize(2);
     assertThat(tree.block()).isNull();
@@ -546,7 +546,7 @@ public class JavaTreeMakerTest {
     MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
-    assertThat(tree.simpleName()).isEqualTo("m");
+    assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(2);
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
@@ -559,7 +559,7 @@ public class JavaTreeMakerTest {
     tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
-    assertThat(tree.simpleName()).isEqualTo("m");
+    assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(1);
     assertThat(tree.throwsClauses()).hasSize(2);
     assertThat(tree.block()).isNull();
@@ -587,7 +587,7 @@ public class JavaTreeMakerTest {
     MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
-    assertThat(tree.simpleName()).isEqualTo("m");
+    assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).isEmpty();
     assertThat(tree.throwsClauses()).isEmpty();
     assertThat(tree.block()).isNull();
