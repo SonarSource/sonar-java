@@ -81,8 +81,6 @@ public class SemanticModel {
     return result;
   }
 
-  //FIXME we should have an IdentifierTree and not a Tree here.
-  // This is not the case because VariableTree EnumConstantTree ClassTree, etc. use simple name and not identifiers.
   public void associateSymbol(Tree tree, Symbol symbol) {
     Preconditions.checkNotNull(symbol);
     symbolsTree.put(tree, symbol);
