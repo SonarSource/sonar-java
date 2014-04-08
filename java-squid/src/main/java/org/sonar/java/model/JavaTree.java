@@ -222,13 +222,13 @@ public abstract class JavaTree implements Tree {
   public static class ClassTreeImpl extends JavaTree implements ClassTree {
     private final Kind kind;
     private final ModifiersTree modifiers;
-    private final String simpleName;
+    private final IdentifierTree simpleName;
     @Nullable
     private final Tree superClass;
     private final List<Tree> superInterfaces;
     private final List<Tree> members;
 
-    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable String simpleName, @Nullable Tree superClass, List<Tree> superInterfaces,
+    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable IdentifierTree simpleName, @Nullable Tree superClass, List<Tree> superInterfaces,
                          List<Tree> members) {
       super(astNode);
       this.kind = Preconditions.checkNotNull(kind);
@@ -251,7 +251,7 @@ public abstract class JavaTree implements Tree {
 
     @Nullable
     @Override
-    public String simpleName() {
+    public IdentifierTree simpleName() {
       return simpleName;
     }
 

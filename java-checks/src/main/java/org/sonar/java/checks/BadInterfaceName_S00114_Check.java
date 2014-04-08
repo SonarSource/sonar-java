@@ -63,7 +63,7 @@ public class BadInterfaceName_S00114_Check extends BaseTreeVisitor implements Ja
 
   @Override
   public void visitClass(ClassTree tree) {
-    if (tree.is(Tree.Kind.INTERFACE) && !pattern.matcher(tree.simpleName()).matches()) {
+    if (tree.is(Tree.Kind.INTERFACE) && !pattern.matcher(tree.simpleName().name()).matches()) {
       context.addIssue(tree, ruleKey, "Rename this interface name to match the regular expression '" + format + "'.");
     }
 

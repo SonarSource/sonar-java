@@ -243,7 +243,7 @@ public class JavaTreeMakerTest {
     ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
-    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNotNull();
     assertThat(tree.superInterfaces()).hasSize(2);
 
@@ -251,7 +251,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     assertThat(tree.modifiers().modifiers()).hasSize(1);
-    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).isEmpty();
 
@@ -400,7 +400,7 @@ public class JavaTreeMakerTest {
     ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
-    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).hasSize(2);
 
@@ -408,7 +408,7 @@ public class JavaTreeMakerTest {
     tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
-    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).isEmpty();
   }
@@ -506,7 +506,7 @@ public class JavaTreeMakerTest {
     ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
-    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).hasSize(2);
 
@@ -514,7 +514,7 @@ public class JavaTreeMakerTest {
     tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
-    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).isEmpty();
   }
@@ -576,7 +576,7 @@ public class JavaTreeMakerTest {
     ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.ANNOTATION_TYPE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
-    assertThat(tree.simpleName()).isEqualTo("T");
+    assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).isEmpty();
   }

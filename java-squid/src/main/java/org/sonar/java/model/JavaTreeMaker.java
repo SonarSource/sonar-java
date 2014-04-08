@@ -323,7 +323,7 @@ public class JavaTreeMaker {
    */
   private ClassTree classDeclaration(ModifiersTree modifiers, AstNode astNode) {
     checkType(astNode, JavaGrammar.CLASS_DECLARATION);
-    String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
+    IdentifierTree simpleName = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
     Tree superClass = extendsNode != null ? classType(extendsNode.getNextSibling()) : null;
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
@@ -517,7 +517,7 @@ public class JavaTreeMaker {
     }
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
     List<Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType.name(), /* super class: */null, superInterfaces, members.build());
+    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType, /* super class: */null, superInterfaces, members.build());
   }
 
   /*
@@ -529,7 +529,7 @@ public class JavaTreeMaker {
    */
   private ClassTree interfaceDeclaration(ModifiersTree modifiers, AstNode astNode) {
     checkType(astNode, JavaGrammar.INTERFACE_DECLARATION);
-    String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
+    IdentifierTree simpleName = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode interfaceBodyDeclarationNode : astNode.getFirstChild(JavaGrammar.INTERFACE_BODY).getChildren(JavaGrammar.INTERFACE_BODY_DECLARATION)) {
       ModifiersTree memberModifiers = modifiers(interfaceBodyDeclarationNode.getChildren(JavaGrammar.MODIFIER));
@@ -620,7 +620,7 @@ public class JavaTreeMaker {
    */
   private ClassTree annotationTypeDeclaration(ModifiersTree modifiers, AstNode astNode) {
     checkType(astNode, JavaGrammar.ANNOTATION_TYPE_DECLARATION);
-    String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
+    IdentifierTree simpleName = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode annotationTypeElementDeclarationNode : astNode.getFirstChild(JavaGrammar.ANNOTATION_TYPE_BODY).getChildren(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)) {
       AstNode annotationTypeElementRestNode = annotationTypeElementDeclarationNode.getFirstChild(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST);

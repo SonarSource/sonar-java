@@ -59,7 +59,7 @@ import java.util.List;
 public interface ClassTree extends StatementTree {
 
   @Nullable
-  String simpleName();
+  IdentifierTree simpleName();
 
   List<Tree> typeParameters();
 

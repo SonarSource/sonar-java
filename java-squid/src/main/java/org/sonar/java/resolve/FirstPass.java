@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -104,14 +105,12 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitClass(ClassTree tree) {
-    String name = tree.simpleName();
     int flag = 0;
-    AstNode astNode = getNode(tree);
-    boolean anonymousClass = StringUtils.isEmpty(name);
-    if (anonymousClass) {
-      name = "";
-    } else {
-      flag = computeClassFlags(astNode);
+    boolean anonymousClass = tree.simpleName()==null;
+    String name = "";
+    if (!anonymousClass) {
+      name = tree.simpleName().name();
+      flag = computeClassFlags(tree);
     }
     Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
     if (!anonymousClass) {
@@ -132,7 +131,7 @@ public class FirstPass extends BaseTreeVisitor {
 
     semanticModel.associateEnv(tree, env);
     super.visitClass(tree);
-    restoreEnvironment(astNode); //TODO should we avoid restoring env for enum constants ?
+    restoreEnvironment(getNode(tree)); //TODO should we avoid restoring env for enum constants ?
   }
 
   private int computeModifierFlag(AstNode astNode) {
@@ -161,7 +160,8 @@ public class FirstPass extends BaseTreeVisitor {
     return flags;
   }
 
-  private int computeClassFlags(AstNode astNode) {
+  private int computeClassFlags(ClassTree tree) {
+    AstNode astNode = getNode(tree);
     int flags = computeFlags(astNode);
     if (astNode.is(JavaGrammar.INTERFACE_DECLARATION)) {
       flags |= Flags.INTERFACE;
