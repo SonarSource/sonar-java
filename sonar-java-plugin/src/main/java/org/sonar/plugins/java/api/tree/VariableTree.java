@@ -41,7 +41,7 @@ public interface VariableTree extends StatementTree {
 
   Tree type();
 
-  String simpleName();
+  IdentifierTree simpleName();
 
   @Nullable
   ExpressionTree initializer();

@@ -140,6 +140,11 @@ public abstract class JavaTree implements Tree {
     public void accept(TreeVisitor visitor) {
       visitor.visitIdentifier(this);
     }
+
+    @Override
+    public String toString() {
+      return name;
+    }
   }
 
   public static class CompilationUnitTreeImpl extends JavaTree implements CompilationUnitTree {
@@ -985,7 +990,7 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConstantTree {
-    public EnumConstantTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, String simpleName, ExpressionTree initializer) {
+    public EnumConstantTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, ExpressionTree initializer) {
       super(astNode, modifiers, type, simpleName, Preconditions.checkNotNull(initializer));
     }
 
@@ -1003,11 +1008,11 @@ public abstract class JavaTree implements Tree {
   public static class VariableTreeImpl extends JavaTree implements VariableTree {
     private final ModifiersTree modifiers;
     private final Tree type;
-    private final String simpleName;
+    private final IdentifierTree simpleName;
     @Nullable
     private final ExpressionTree initializer;
 
-    public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, String simpleName, @Nullable ExpressionTree initializer) {
+    public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
       super(astNode);
       this.modifiers = Preconditions.checkNotNull(modifiers);
       this.type = Preconditions.checkNotNull(type);
@@ -1031,7 +1036,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public String simpleName() {
+    public IdentifierTree simpleName() {
       return simpleName;
     }
 

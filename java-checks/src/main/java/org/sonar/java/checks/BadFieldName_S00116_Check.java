@@ -68,7 +68,7 @@ public class BadFieldName_S00116_Check extends BaseTreeVisitor implements JavaFi
     for (Tree member : tree.members()) {
       if ((tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) && member.is(Tree.Kind.VARIABLE)) {
         VariableTree field = (VariableTree) member;
-        if (isNotStatic(field) && !pattern.matcher(field.simpleName()).matches()) {
+        if (isNotStatic(field) && !pattern.matcher(field.simpleName().name()).matches()) {
           context.addIssue(field, ruleKey, "Rename this field name to match the regular expression '" + format + "'.");
         }
       }

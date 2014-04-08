@@ -241,7 +241,7 @@ public class JavaTreeMaker {
         astNode,
         modifiers,
         applyDim(type, astNode.getChildren(JavaGrammar.DIM).size()),
-        astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+        identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER)),
         astNode.hasDirectChildren(JavaGrammar.VARIABLE_INITIALIZER) ? variableInitializer(astNode.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER)) : null);
   }
 
@@ -470,7 +470,7 @@ public class JavaTreeMaker {
           variableDeclaratorIdNode,
           JavaTree.ModifiersTreeImpl.EMPTY,
           type,
-          variableDeclaratorIdNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+          identifier(variableDeclaratorIdNode.getFirstChild(JavaTokenType.IDENTIFIER)),
           null
       ));
     }
@@ -495,7 +495,7 @@ public class JavaTreeMaker {
             enumConstantNode,
             JavaTree.ModifiersTreeImpl.EMPTY,
             enumType,
-            enumIdentifier.name(),
+            enumIdentifier,
             new JavaTree.NewClassTreeImpl(
                 enumConstantNode,
             /* enclosing expression: */null,
@@ -609,7 +609,7 @@ public class JavaTreeMaker {
           constantDeclaratorRestNode,
           modifiers,
           applyDim(type, constantDeclaratorRestNode.getChildren(JavaGrammar.DIM).size()),
-          identifierNode.getTokenValue(),
+          identifier(identifierNode),
           variableInitializer(constantDeclaratorRestNode.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER))
       ));
     }
@@ -910,7 +910,7 @@ public class JavaTreeMaker {
               JavaTree.ModifiersTreeImpl.EMPTY,
               // TODO dim
               referenceType(formalParameterNode.getFirstChild(JavaGrammar.TYPE)),
-              formalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+              identifier(formalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER)),
           /* initializer: */null
           ),
           expression(astNode.getFirstChild(JavaGrammar.EXPRESSION)),
@@ -945,7 +945,7 @@ public class JavaTreeMaker {
               JavaTree.ModifiersTreeImpl.EMPTY,
               catchType(catchFormalParameterNode.getFirstChild(JavaGrammar.CATCH_TYPE)),
               // TODO WTF why VARIABLE_DECLARATOR_ID in grammar?
-              catchFormalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+              identifier(catchFormalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER)),
           /* initializer: */null
           ),
           block(catchNode.getFirstChild(JavaGrammar.BLOCK))
@@ -987,7 +987,7 @@ public class JavaTreeMaker {
           // TODO modifiers:
           JavaTree.ModifiersTreeImpl.EMPTY,
           classType(resourceNode.getFirstChild(JavaGrammar.CLASS_TYPE)),
-          resourceNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+          identifier(resourceNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER)),
           expression(resourceNode.getFirstChild(JavaGrammar.EXPRESSION))
       ));
     }

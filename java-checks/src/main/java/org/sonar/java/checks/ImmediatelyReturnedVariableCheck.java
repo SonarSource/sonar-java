@@ -100,7 +100,7 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
   private String getVariableDeclarationIdentifier(StatementTree butLastSatement) {
     String result = null;
     if (butLastSatement.is(Kind.VARIABLE)) {
-      result = ((VariableTree) butLastSatement).simpleName();
+      result = ((VariableTree) butLastSatement).simpleName().name();
     }
     return result;
   }

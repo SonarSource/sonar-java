@@ -81,7 +81,7 @@ public class BadConstantName_S00115_Check extends BaseTreeVisitor implements Jav
   }
 
   private void checkName(VariableTree variableTree) {
-    if (!SerializableContract.SERIAL_VERSION_UID_FIELD.equals(variableTree.simpleName()) && !pattern.matcher(variableTree.simpleName()).matches()) {
+    if (!SerializableContract.SERIAL_VERSION_UID_FIELD.equals(variableTree.simpleName().name()) && !pattern.matcher(variableTree.simpleName().name()).matches()) {
       context.addIssue(variableTree, ruleKey, "Rename this constant name to match the regular expression '" + format + "'.");
     }
   }

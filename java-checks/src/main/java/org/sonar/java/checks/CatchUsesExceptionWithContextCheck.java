@@ -137,7 +137,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     while (it.hasNext()) {
       CatchTree tree = it.next();
 
-      if (exceptionName.equals(tree.parameter().simpleName())) {
+      if (exceptionName.equals(tree.parameter().simpleName().name())) {
         it.remove();
       }
     }

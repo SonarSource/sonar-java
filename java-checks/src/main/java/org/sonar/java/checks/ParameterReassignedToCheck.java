@@ -62,19 +62,19 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
   @Override
   public void visitMethod(MethodTree tree) {
     for (VariableTree parameterTree : tree.parameters()) {
-      variables.add(parameterTree.simpleName());
+      variables.add(parameterTree.simpleName().name());
     }
     super.visitMethod(tree);
     for (VariableTree parameterTree : tree.parameters()) {
-      variables.remove(parameterTree.simpleName());
+      variables.remove(parameterTree.simpleName().name());
     }
   }
 
   @Override
   public void visitCatch(CatchTree tree) {
-    variables.add(tree.parameter().simpleName());
+    variables.add(tree.parameter().simpleName().name());
     super.visitCatch(tree);
-    variables.remove(tree.parameter().simpleName());
+    variables.remove(tree.parameter().simpleName().name());
   }
 
   @Override

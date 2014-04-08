@@ -33,7 +33,7 @@ public interface EnumConstantTree extends Tree {
 
   ModifiersTree modifiers();
 
-  String simpleName();
+  IdentifierTree simpleName();
 
   ExpressionTree initializer();
 
