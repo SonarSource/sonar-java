@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.surefire;
 
+import java.io.File;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.CoverageExtension;
@@ -27,11 +29,9 @@ import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
+import org.sonar.plugins.java.Java;
 import org.sonar.plugins.surefire.api.SurefireUtils;
-
-import java.io.File;
 
 @DependedUpon("surefire-java")
 public class SurefireSensor implements Sensor {

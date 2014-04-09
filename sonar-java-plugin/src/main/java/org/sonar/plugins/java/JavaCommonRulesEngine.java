@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java;
 
-import org.sonar.api.resources.Java;
+import org.sonar.plugins.java.Java;
 import org.sonar.commonrules.api.CommonRulesEngine;
 import org.sonar.commonrules.api.CommonRulesRepository;
 

@@ -67,10 +67,20 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>4.2-RC1</sonar.version>
+    <sonar.version>4.2</sonar.version>
     <sslr.version>1.19.2</sslr.version>
-    <jacoco.version>0.6.4.201312101107</jacoco.version>
+    <jacoco.version>0.7.0.201403182114</jacoco.version>
   </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.3</version>
+      </plugin>
+    </plugins>
+  </build>
 
   <dependencyManagement>
     <dependencies>
@@ -214,5 +224,4 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
 </project>

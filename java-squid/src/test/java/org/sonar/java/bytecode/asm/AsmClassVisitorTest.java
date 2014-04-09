@@ -19,12 +19,12 @@
  */
 package org.sonar.java.bytecode.asm;
 
-import org.junit.Test;
-import org.sonar.java.bytecode.ClassLoaderBuilder;
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.File;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.junit.Test;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
 
 public class AsmClassVisitorTest {
 

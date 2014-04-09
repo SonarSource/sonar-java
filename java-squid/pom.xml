@@ -30,9 +30,9 @@
     </dependency>
 
     <dependency>
-      <groupId>asm</groupId>
+      <groupId>org.ow2.asm</groupId>
       <artifactId>asm-all</artifactId>
-      <version>3.2</version>
+      <version>5.0.1</version>
     </dependency>
 
     <dependency>
@@ -107,5 +107,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
