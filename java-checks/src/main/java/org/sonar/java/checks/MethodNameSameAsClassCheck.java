@@ -53,7 +53,7 @@ public class MethodNameSameAsClassCheck extends BaseTreeVisitor implements JavaF
     for (Tree member : tree.members()) {
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree method = (MethodTree) member;
-        if (method.simpleName().equals(tree.simpleName())) {
+        if (tree.simpleName()!=null && method.simpleName().equals(tree.simpleName().name())) {
           context.addIssue(method, ruleKey, "Rename this method to prevent any misunderstanding or make it a constructor.");
         }
       }

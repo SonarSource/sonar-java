@@ -81,6 +81,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitLabeledStatement(LabeledStatementTree tree) {
+    scan(tree.label());
     scan(tree.statement());
   }
 
@@ -148,12 +149,12 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitBreakStatement(BreakStatementTree tree) {
-    // no subtrees
+    scan(tree.label());
   }
 
   @Override
   public void visitContinueStatement(ContinueStatementTree tree) {
-    // no subtrees
+    scan(tree.label());
   }
 
   @Override

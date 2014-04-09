@@ -22,13 +22,19 @@ package org.sonar.java.resolve;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -72,23 +78,20 @@ public class SecondPass implements Symbol.Completer {
       return;
     }
 
-    AstNode astNode = semanticModel.getAstNode(symbol).getParent();
-
-    AstNode superclassNode = astNode.getFirstChild(JavaGrammar.CLASS_TYPE);
-    if (superclassNode != null) {
-      ((Type.ClassType) symbol.type).supertype = resolveType(env, superclassNode).type;
+    ClassTree tree = (ClassTree) semanticModel.getTree(symbol);
+    Tree superClassTree = tree.superClass();
+    if (superClassTree != null && (superClassTree.is(Tree.Kind.MEMBER_SELECT) || superClassTree.is(Tree.Kind.IDENTIFIER))) {
+      ((Type.ClassType) symbol.type).supertype = resolveType(env, superClassTree).type;
       checkHierarchyCycles(symbol.type);
     } else {
       // TODO superclass is java.lang.Object or java.lang.Enum
     }
 
     ImmutableList.Builder<Type> interfaces = ImmutableList.builder();
-    if (astNode.hasDirectChildren(JavaGrammar.CLASS_TYPE_LIST)) {
-      for (AstNode interfaceNode : astNode.getFirstChild(JavaGrammar.CLASS_TYPE_LIST).getChildren(JavaGrammar.CLASS_TYPE)) {
-        Type interfaceType = castToTypeIfPossible(resolveType(env, interfaceNode));
-        if (interfaceType != null) {
-          interfaces.add(interfaceType);
-        }
+    for (Tree interfaceTree : tree.superInterfaces()) {
+      Type interfaceType = castToTypeIfPossible(resolveType(env, interfaceTree));
+      if (interfaceType != null) {
+        interfaces.add(interfaceType);
       }
     }
     // TODO interface of AnnotationType is java.lang.annotation.Annotation
@@ -100,24 +103,21 @@ public class SecondPass implements Symbol.Completer {
     Type.ClassType type = (Type.ClassType) baseType;
     while (type != null) {
       if (!types.add(type)) {
-        throw new IllegalStateException("Cycling class hierarchy detected with symbol : "+baseType.symbol.name+".");
+        throw new IllegalStateException("Cycling class hierarchy detected with symbol : " + baseType.symbol.name + ".");
       }
       type = (Type.ClassType) type.symbol.getSuperclass();
     }
   }
 
   public void complete(Symbol.MethodSymbol symbol) {
-    AstNode identifierNode = semanticModel.getAstNode(symbol);
+    MethodTree methodTree = (MethodTree) semanticModel.getTree(symbol);
     Resolve.Env env = semanticModel.getEnv(symbol);
 
-    AstNode throwsNode = identifierNode.getNextAstNode().getFirstChild(JavaKeyword.THROWS);
     ImmutableList.Builder<Symbol.TypeSymbol> thrown = ImmutableList.builder();
-    if (throwsNode != null) {
-      for (AstNode qualifiedIdentifier : throwsNode.getNextAstNode().getChildren(JavaGrammar.QUALIFIED_IDENTIFIER)) {
-        Type thrownType = castToTypeIfPossible(resolveType(env, qualifiedIdentifier));
-        if (thrownType != null) {
-          thrown.add(((Type.ClassType) thrownType).symbol);
-        }
+    for (ExpressionTree throwClause : methodTree.throwsClauses()) {
+      Type thrownType = castToTypeIfPossible(resolveType(env, throwClause));
+      if (thrownType != null) {
+        thrown.add(((Type.ClassType) thrownType).symbol);
       }
     }
     symbol.thrown = thrown.build();
@@ -126,104 +126,91 @@ public class SecondPass implements Symbol.Completer {
       // no return type for constructor
       return;
     }
-    AstNode typeNode = identifierNode.getPreviousAstNode();
-    Preconditions.checkState(typeNode.is(JavaKeyword.VOID, JavaGrammar.TYPE));
-    AstNode classTypeNode = typeNode.getFirstChild(JavaGrammar.CLASS_TYPE);
-    if (classTypeNode == null) {
-      // TODO JavaGrammar.BASIC_TYPE
-      return;
-    }
-    Type type = castToTypeIfPossible(resolveType(env, classTypeNode));
+    Type type = castToTypeIfPossible(resolveType(env, methodTree.returnType()));
     if (type != null) {
       symbol.type = ((Type.ClassType) type).symbol;
     }
   }
 
   public void complete(Symbol.VariableSymbol symbol) {
-    AstNode identifierNode = semanticModel.getAstNode(symbol);
-    AstNode typeNode;
-    if (identifierNode.getParent().is(JavaGrammar.VARIABLE_DECLARATOR)) {
-      typeNode = identifierNode.getFirstAncestor(JavaGrammar.VARIABLE_DECLARATORS).getPreviousAstNode();
-      Preconditions.checkState(typeNode.is(JavaGrammar.TYPE));
-    } else if (identifierNode.getParent().is(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
-      typeNode = identifierNode.getParent().getPreviousAstNode();
-      if (typeNode.is(JavaPunctuator.ELLIPSIS)) {
-        // vararg
-        typeNode = typeNode.getPreviousAstNode();
-        while(typeNode.is(JavaGrammar.ANNOTATION)){
-          typeNode = typeNode.getPreviousAstNode();
-        }
-      }
-      Preconditions.checkState(typeNode.is(JavaGrammar.TYPE, JavaGrammar.CLASS_TYPE, JavaGrammar.CATCH_TYPE), "Type node error at line "+typeNode.getTokenLine()
-          +" column "+typeNode.getToken().getColumn());
-    } else if (identifierNode.getParent().is(JavaGrammar.ENUM_CONSTANT)) {
-      // Type of enum constant is enum
-      semanticModel.getEnv(symbol).enclosingClass();
-      return;
-    } else if (identifierNode.getParent().is(JavaGrammar.CONSTANT_DECLARATOR)) {
-      typeNode = identifierNode.getFirstAncestor(JavaGrammar.CONSTANT_DECLARATORS_REST).getPreviousAstNode().getPreviousAstNode();
-      Preconditions.checkState(typeNode.is(JavaGrammar.TYPE));
-    } else if (identifierNode.getParent().is(JavaGrammar.INTERFACE_METHOD_OR_FIELD_DECL, JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST)) {
-      typeNode = identifierNode.getPreviousAstNode();
-      Preconditions.checkState(typeNode.is(JavaGrammar.TYPE));
-    } else {
-      throw new IllegalStateException();
-    }
-    resolveVariableType(symbol, typeNode);
-  }
-
-  private void resolveVariableType(Symbol.VariableSymbol symbol, AstNode typeNode) {
-    if (typeNode.is(JavaGrammar.TYPE)) {
-      typeNode = typeNode.getFirstChild(JavaGrammar.CLASS_TYPE);
-      if (typeNode == null) {
-        // TODO
-        return;
-      }
-    } else if (typeNode.is(JavaGrammar.CLASS_TYPE)) {
-      // nop
-    } else if (typeNode.is(JavaGrammar.CATCH_TYPE)) {
-      // TODO
-      return;
-    } else {
-      throw new IllegalArgumentException();
-    }
-
+    VariableTree variableTree = (VariableTree) semanticModel.getTree(symbol);
     Resolve.Env env = semanticModel.getEnv(symbol);
-    symbol.type = castToTypeIfPossible(resolveType(env, typeNode));
+    if (variableTree.is(Tree.Kind.ENUM_CONSTANT)) {
+      symbol.type = env.enclosingClass().type;
+    } else {
+      symbol.type = castToTypeIfPossible(resolveType(env, variableTree.type()));
+    }
   }
 
-  private Symbol resolveType(Resolve.Env env, AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE, JavaGrammar.QUALIFIED_IDENTIFIER));
+  private Symbol resolveType(Resolve.Env env, Tree tree) {
+    Preconditions.checkArgument(
+        tree.is(Tree.Kind.MEMBER_SELECT) ||
+            tree.is(Tree.Kind.IDENTIFIER) ||
+            tree.is(Tree.Kind.PARAMETERIZED_TYPE) ||
+            tree.is(Tree.Kind.ARRAY_TYPE) ||
+            tree.is(Tree.Kind.UNION_TYPE) ||
+            tree instanceof PrimitiveTypeTree
+        , "Kind of tree unexpected " + ((JavaTree) tree).getKind());
+    class FQV extends BaseTreeVisitor {
+      private final Resolve.Env env;
+      private Symbol site;
 
-    env = env.dup();
-    List<AstNode> identifiers = astNode.getChildren(JavaTokenType.IDENTIFIER);
-    Symbol site = resolve.findIdent(env, identifiers.get(0).getTokenValue(), Symbol.TYP | Symbol.PCK);
-    associateReference(identifiers.get(0), site);
-    for (AstNode identifierNode : identifiers.subList(1, identifiers.size())) {
-      if (site.kind >= Symbol.ERRONEOUS) {
-        return site;
+      public FQV(Resolve.Env env) {
+        this.env = env;
       }
-      String name = identifierNode.getTokenValue();
-      if (site.kind == Symbol.PCK) {
-        env.packge = (Symbol.PackageSymbol) site;
-        site = resolve.findIdentInPackage(env, site, name, Symbol.TYP | Symbol.PCK);
-      } else {
-        env.enclosingClass = (Symbol.TypeSymbol) site;
-        site = resolve.findMemberType(env, (Symbol.TypeSymbol) site, name, (Symbol.TypeSymbol) site);
+
+      @Override
+      public void visitParameterizedType(ParameterizedTypeTree tree) {
+        //Scan only the type, the generic arguments are not yet handled
+        scan(tree.type());
       }
-      associateReference(identifierNode, site);
+
+      @Override
+      public void visitArrayType(ArrayTypeTree tree) {
+        super.visitArrayType(tree);
+        //TODO handle arrays type (for methods).
+      }
+
+      @Override
+      public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+        scan(tree.expression());
+        if (site.kind >= Symbol.ERRONEOUS) {
+          return;
+        }
+        String name = tree.identifier().name();
+        if (site.kind == Symbol.PCK) {
+          env.packge = (Symbol.PackageSymbol) site;
+          site = resolve.findIdentInPackage(env, site, name, Symbol.TYP | Symbol.PCK);
+        } else {
+          env.enclosingClass = (Symbol.TypeSymbol) site;
+          site = resolve.findMemberType(env, (Symbol.TypeSymbol) site, name, (Symbol.TypeSymbol) site);
+        }
+        associateReference(tree.identifier(), site);
+      }
+
+      @Override
+      public void visitIdentifier(IdentifierTree tree) {
+        site = resolve.findIdent(env, tree.name(), Symbol.TYP | Symbol.PCK);
+        associateReference(tree, site);
+      }
+
+      @Override
+      public void visitPrimitiveType(PrimitiveTypeTree tree) {
+        site = resolve.findIdent(semanticModel.getEnv(tree), ((JavaTree) tree).getAstNode().getLastChild().getTokenValue(), Symbol.TYP);
+      }
     }
-    return site;
+    FQV fqv = new FQV(env.dup());
+    tree.accept(fqv);
+    return fqv.site;
   }
 
   private Type castToTypeIfPossible(Symbol symbol) {
     return symbol instanceof Symbol.TypeSymbol ? ((Symbol.TypeSymbol) symbol).type : null;
   }
 
-  private void associateReference(AstNode astNode, Symbol symbol) {
-    if (symbol.kind < Symbol.ERRONEOUS && semanticModel.getAstNode(symbol) != null) {
-      // symbol exists in current compilation unit
-      semanticModel.associateReference(astNode, symbol);
+  private void associateReference(IdentifierTree tree, Symbol symbol) {
+    if (symbol.kind < Symbol.ERRONEOUS && semanticModel.getTree(symbol) != null) {
+      semanticModel.associateReference(tree, symbol);
     }
   }
 

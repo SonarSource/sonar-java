@@ -26,6 +26,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 
 import java.util.Map;
@@ -43,39 +44,29 @@ public class LabelsVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitLabeledStatement(LabeledStatementTree tree) {
-    AstNode identifierNode = getAstNodeFromLabelStatement(tree);
-    semanticModel.associateSymbol(identifierNode, new Symbol(0, 0, identifierNode.getTokenValue(), null));
-    labelTrees.put(tree.label(), tree);
+    semanticModel.associateSymbol(tree.label(), new Symbol(0, 0, tree.label().name(), null));
+    labelTrees.put(tree.label().name(), tree);
     super.visitLabeledStatement(tree);
-  }
-
-  private AstNode getAstNodeFromLabelStatement(LabeledStatementTree tree) {
-    return ((JavaTree.LabeledStatementTreeImpl) tree).getAstNode().getFirstChild(JavaTokenType.IDENTIFIER);
   }
 
   @Override
   public void visitBreakStatement(BreakStatementTree tree) {
-    String label = tree.label();
-    AstNode identifier = ((JavaTree.BreakStatementTreeImpl) tree).getAstNode().getFirstChild(JavaTokenType.IDENTIFIER);
-    if (label != null) {
-      LabeledStatementTree labelTree = labelTrees.get(label);
-      if (labelTree != null) {
-        semanticModel.associateReference(identifier, semanticModel.getSymbol(getAstNodeFromLabelStatement(labelTree)));
-      }
-    }
+    associateLabel(tree.label());
     super.visitBreakStatement(tree);
   }
 
   @Override
   public void visitContinueStatement(ContinueStatementTree tree) {
-    String label = tree.label();
-    AstNode identifier = ((JavaTree.ContinueStatementTreeImpl) tree).getAstNode().getFirstChild(JavaTokenType.IDENTIFIER);
+    associateLabel(tree.label());
+    super.visitContinueStatement(tree);
+  }
+
+  private void associateLabel(IdentifierTree label) {
     if (label != null) {
-      LabeledStatementTree labelTree = labelTrees.get(label);
+      LabeledStatementTree labelTree = labelTrees.get(label.name());
       if (labelTree != null) {
-        semanticModel.associateReference(identifier, semanticModel.getSymbol(getAstNodeFromLabelStatement(labelTree)));
+        semanticModel.associateReference(label, semanticModel.getSymbol(labelTree.label()));
       }
     }
-    super.visitContinueStatement(tree);
   }
 }

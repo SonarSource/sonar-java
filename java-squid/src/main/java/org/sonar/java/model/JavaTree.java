@@ -222,13 +222,13 @@ public abstract class JavaTree implements Tree {
   public static class ClassTreeImpl extends JavaTree implements ClassTree {
     private final Kind kind;
     private final ModifiersTree modifiers;
-    private final String simpleName;
+    private final IdentifierTree simpleName;
     @Nullable
     private final Tree superClass;
     private final List<Tree> superInterfaces;
     private final List<Tree> members;
 
-    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable String simpleName, @Nullable Tree superClass, List<Tree> superInterfaces,
+    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable IdentifierTree simpleName, @Nullable Tree superClass, List<Tree> superInterfaces,
                          List<Tree> members) {
       super(astNode);
       this.kind = Preconditions.checkNotNull(kind);
@@ -251,7 +251,7 @@ public abstract class JavaTree implements Tree {
 
     @Nullable
     @Override
-    public String simpleName() {
+    public IdentifierTree simpleName() {
       return simpleName;
     }
 
@@ -744,9 +744,9 @@ public abstract class JavaTree implements Tree {
 
   public static class BreakStatementTreeImpl extends JavaTree implements BreakStatementTree {
     @Nullable
-    private final String label;
+    private final IdentifierTree label;
 
-    public BreakStatementTreeImpl(AstNode astNode, @Nullable String label) {
+    public BreakStatementTreeImpl(AstNode astNode, @Nullable IdentifierTree label) {
       super(astNode);
       this.label = label;
     }
@@ -758,7 +758,7 @@ public abstract class JavaTree implements Tree {
 
     @Nullable
     @Override
-    public String label() {
+    public IdentifierTree label() {
       return label;
     }
 
@@ -770,9 +770,9 @@ public abstract class JavaTree implements Tree {
 
   public static class ContinueStatementTreeImpl extends JavaTree implements ContinueStatementTree {
     @Nullable
-    private final String label;
+    private final IdentifierTree label;
 
-    public ContinueStatementTreeImpl(AstNode astNode, @Nullable String label) {
+    public ContinueStatementTreeImpl(AstNode astNode, @Nullable IdentifierTree label) {
       super(astNode);
       this.label = label;
     }
@@ -784,7 +784,7 @@ public abstract class JavaTree implements Tree {
 
     @Nullable
     @Override
-    public String label() {
+    public IdentifierTree label() {
       return label;
     }
 
@@ -954,10 +954,10 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class LabeledStatementTreeImpl extends JavaTree implements LabeledStatementTree {
-    private final String label;
+    private final IdentifierTree label;
     private final StatementTree statement;
 
-    public LabeledStatementTreeImpl(AstNode astNode, String label, StatementTree statement) {
+    public LabeledStatementTreeImpl(AstNode astNode, IdentifierTree label, StatementTree statement) {
       super(astNode);
       this.label = Preconditions.checkNotNull(label);
       this.statement = Preconditions.checkNotNull(statement);
@@ -969,7 +969,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public String label() {
+    public IdentifierTree label() {
       return label;
     }
 

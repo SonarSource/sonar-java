@@ -27,11 +27,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.impl.ast.AstWalker;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collection;
@@ -40,22 +38,17 @@ import java.util.Map;
 
 public class SemanticModel {
 
-  private final BiMap<AstNode, Symbol> symbols = HashBiMap.create();
-  private final Multimap<Symbol, AstNode> usages = HashMultimap.create();
+  private final BiMap<Tree, Symbol> symbolsTree = HashBiMap.create();
+  private Multimap<Symbol, IdentifierTree> usagesTree = HashMultimap.create();
 
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final Map<AstNode, Resolve.Env> envs = Maps.newHashMap();
 
-  private static SemanticModel createFor(AstNode astNode, Resolve resolve) {
-    SemanticModel semanticModel = new SemanticModel();
-    visit(astNode, new FirstPass(semanticModel, resolve));
-    return semanticModel;
-  }
-
   public static SemanticModel createFor(CompilationUnitTree tree) {
     Symbols symbols = new Symbols();
     Resolve resolve = new Resolve(symbols);
-    SemanticModel semanticModel = createFor(((JavaTree.CompilationUnitTreeImpl) tree).getAstNode(), resolve);
+    SemanticModel semanticModel = new SemanticModel();
+    new FirstPass(semanticModel, resolve).visitCompilationUnit(tree);
     new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);
     new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
     return semanticModel;
@@ -63,15 +56,6 @@ public class SemanticModel {
 
   @VisibleForTesting
   SemanticModel() {
-  }
-
-  private static void visit(AstNode astNode, JavaAstVisitor... visitors) {
-    AstWalker astWalker = new AstWalker();
-    for (JavaAstVisitor visitor : visitors) {
-      visitor.init();
-      astWalker.addVisitor(visitor);
-    }
-    astWalker.walkAndVisit(astNode);
   }
 
   public void saveEnv(Symbol symbol, Resolve.Env env) {
@@ -82,11 +66,9 @@ public class SemanticModel {
     return symbolEnvs.get(symbol);
   }
 
-  /**
-   * Associates given AstNode with given environment.
-   */
-  public void associateEnv(AstNode astNode, Resolve.Env env) {
-    envs.put(astNode, env);
+  public void associateEnv(Tree tree, Resolve.Env env) {
+    //TODO associate the tree directly but how can we navigate up in the hierarchy to retrieve env ??
+    envs.put(((JavaTree) tree).getAstNode(), env);
   }
 
   public Resolve.Env getEnv(Tree tree) {
@@ -99,36 +81,32 @@ public class SemanticModel {
     return result;
   }
 
-  /**
-   * Associates given AstNode with given Symbol.
-   */
-  public void associateSymbol(AstNode astNode, Symbol symbol) {
-    Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
+  //FIXME we should have an IdentifierTree and not a Tree here.
+  // This is not the case because VariableTree EnumConstantTree ClassTree, etc. use simple name and not identifiers.
+  public void associateSymbol(Tree tree, Symbol symbol) {
     Preconditions.checkNotNull(symbol);
-    symbols.put(astNode, symbol);
+    symbolsTree.put(tree, symbol);
   }
 
-  public Symbol getSymbol(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
-    return symbols.get(astNode);
+  public Symbol getSymbol(Tree tree) {
+    return symbolsTree.get(tree);
   }
 
-  public AstNode getAstNode(Symbol symbol) {
-    return symbols.inverse().get(symbol);
+  public Tree getTree(Symbol symbol) {
+    return symbolsTree.inverse().get(symbol);
   }
 
-  public void associateReference(AstNode astNode, Symbol symbol) {
-    Preconditions.checkArgument(astNode.is(JavaTokenType.IDENTIFIER), "Expected AST node with identifier, got: %s", astNode);
-    Preconditions.checkNotNull(symbol);
-    usages.put(symbol, astNode);
+
+  public void associateReference(IdentifierTree tree, Symbol symbol) {
+    usagesTree.put(symbol, tree);
   }
 
-  public Map<AstNode, Symbol> getSymbols() {
-    return Collections.unmodifiableMap(symbols);
+  public Map<Tree, Symbol> getSymbolsTree() {
+    return Collections.unmodifiableMap(symbolsTree);
   }
 
-  public Collection<AstNode> getUsages(Symbol symbol) {
-    return Collections.unmodifiableCollection(usages.get(symbol));
+  public Collection<IdentifierTree> getUsagesTree(Symbol symbol) {
+    return Collections.unmodifiableCollection(usagesTree.get(symbol));
   }
 
 }

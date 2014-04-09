@@ -19,14 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -92,20 +88,10 @@ public class UnusedLocalVariableCheck extends BaseTreeVisitor implements JavaFil
   @Override
   public void visitVariable(VariableTree tree) {
     super.visitVariable(tree);
-
-    AstNode astNode = ((JavaTree) tree).getAstNode();
-    AstNode variableAstNode;
-    if (astNode.is(JavaGrammar.RESOURCE) || astNode.is(JavaGrammar.FORMAL_PARAMETER)) {
-      variableAstNode = astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR, JavaGrammar.VARIABLE_DECLARATOR_ID);
-    } else {
-      variableAstNode = astNode;
-    }
-    AstNode identifierAstNode = variableAstNode.getFirstChild(JavaTokenType.IDENTIFIER);
-
     SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
-    Symbol symbol = semanticModel.getSymbol(identifierAstNode);
+    Symbol symbol = semanticModel.getSymbol(tree);
 
-    if (symbol != null && semanticModel.getUsages(symbol).isEmpty()) {
+    if (symbol != null && semanticModel.getUsagesTree(symbol).isEmpty()) {
       context.addIssue(tree, ruleKey, "Remove this unused \"" + tree.simpleName() + "\" local variable.");
     }
   }

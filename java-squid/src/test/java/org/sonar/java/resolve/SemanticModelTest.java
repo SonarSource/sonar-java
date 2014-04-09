@@ -19,11 +19,8 @@
  */
 package org.sonar.java.resolve;
 
-import com.sonar.sslr.api.AstNode;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.sonar.java.ast.parser.JavaGrammar;
 
 public class SemanticModelTest {
 
@@ -32,28 +29,5 @@ public class SemanticModelTest {
 
   private SemanticModel semanticModel = new SemanticModel();
 
-  @Test
-  public void symbol_can_be_associated_only_with_identifier() {
-    AstNode astNode = new AstNode(JavaGrammar.TYPE, "", null);
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("Expected AST node with identifier, got: " + astNode);
-    semanticModel.associateSymbol(astNode, null);
-  }
-
-  @Test
-  public void symbol_associated_only_with_identifier() {
-    AstNode astNode = new AstNode(JavaGrammar.TYPE, "", null);
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("Expected AST node with identifier, got: " + astNode);
-    semanticModel.getSymbol(astNode);
-  }
-
-  @Test
-  public void reference_can_be_associated_only_with_identifier() {
-    AstNode astNode = new AstNode(JavaGrammar.TYPE, "", null);
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("Expected AST node with identifier, got: " + astNode);
-    semanticModel.associateReference(astNode, null);
-  }
 
 }

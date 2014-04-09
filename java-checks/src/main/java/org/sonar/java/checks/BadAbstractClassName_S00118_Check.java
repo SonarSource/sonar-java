@@ -63,7 +63,7 @@ public class BadAbstractClassName_S00118_Check extends BaseTreeVisitor implement
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
-      if (pattern.matcher(tree.simpleName()).matches()) {
+      if (pattern.matcher(tree.simpleName().name()).matches()) {
         if (!isAbstract(tree)) {
           context.addIssue(tree, ruleKey, "Make this class abstract or rename it, since it matches the regular expression '" + format + "'.");
         }

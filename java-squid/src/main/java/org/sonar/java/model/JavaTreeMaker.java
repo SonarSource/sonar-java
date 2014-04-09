@@ -110,11 +110,14 @@ public class JavaTreeMaker {
   private ExpressionTree classType(AstNode astNode) {
     checkType(astNode, JavaGrammar.CLASS_TYPE, JavaGrammar.CREATED_NAME);
     AstNode child = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
+    AstNode firstIdentifier = child;
     ExpressionTree result = identifier(child);
     for (int i = 1; i < astNode.getNumberOfChildren(); i++) {
       child = astNode.getChild(i);
       if (child.is(JavaTokenType.IDENTIFIER)) {
-        result = new JavaTree.MemberSelectExpressionTreeImpl(child, result, identifier(child));
+        if(!child.equals(firstIdentifier)) {
+          result = new JavaTree.MemberSelectExpressionTreeImpl(child, result, identifier(child));
+        }
       } else if (child.is(JavaGrammar.TYPE_ARGUMENTS)) {
         result = new JavaTree.ParameterizedTypeTreeImpl(child, result, typeArguments(child));
       } else if (child.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
@@ -320,7 +323,7 @@ public class JavaTreeMaker {
    */
   private ClassTree classDeclaration(ModifiersTree modifiers, AstNode astNode) {
     checkType(astNode, JavaGrammar.CLASS_DECLARATION);
-    String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
+    IdentifierTree simpleName = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
     Tree superClass = extendsNode != null ? classType(extendsNode.getNextSibling()) : null;
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
@@ -514,7 +517,7 @@ public class JavaTreeMaker {
     }
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
     List<Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType.name(), /* super class: */null, superInterfaces, members.build());
+    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType, /* super class: */null, superInterfaces, members.build());
   }
 
   /*
@@ -526,7 +529,7 @@ public class JavaTreeMaker {
    */
   private ClassTree interfaceDeclaration(ModifiersTree modifiers, AstNode astNode) {
     checkType(astNode, JavaGrammar.INTERFACE_DECLARATION);
-    String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
+    IdentifierTree simpleName = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode interfaceBodyDeclarationNode : astNode.getFirstChild(JavaGrammar.INTERFACE_BODY).getChildren(JavaGrammar.INTERFACE_BODY_DECLARATION)) {
       ModifiersTree memberModifiers = modifiers(interfaceBodyDeclarationNode.getChildren(JavaGrammar.MODIFIER));
@@ -617,7 +620,7 @@ public class JavaTreeMaker {
    */
   private ClassTree annotationTypeDeclaration(ModifiersTree modifiers, AstNode astNode) {
     checkType(astNode, JavaGrammar.ANNOTATION_TYPE_DECLARATION);
-    String simpleName = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
+    IdentifierTree simpleName = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode annotationTypeElementDeclarationNode : astNode.getFirstChild(JavaGrammar.ANNOTATION_TYPE_BODY).getChildren(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)) {
       AstNode annotationTypeElementRestNode = annotationTypeElementDeclarationNode.getFirstChild(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST);
@@ -744,7 +747,7 @@ public class JavaTreeMaker {
         // 14.7. Labeled Statement
         result = new JavaTree.LabeledStatementTreeImpl(
             statementNode,
-            statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+            identifier(statementNode.getFirstChild(JavaTokenType.IDENTIFIER)),
             statement(statementNode.getFirstChild(JavaGrammar.STATEMENT))
         );
         break;
@@ -800,14 +803,14 @@ public class JavaTreeMaker {
         // 14.15. The break Statement
         result = new JavaTree.BreakStatementTreeImpl(
             statementNode,
-            statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue() : null
+            statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? identifier(statementNode.getFirstChild(JavaTokenType.IDENTIFIER)) : null
         );
         break;
       case CONTINUE_STATEMENT:
         // 14.16. The continue Statement
         result = new JavaTree.ContinueStatementTreeImpl(
             statementNode,
-            statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? statementNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue() : null
+            statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? identifier(statementNode.getFirstChild(JavaTokenType.IDENTIFIER)) : null
         );
         break;
       case RETURN_STATEMENT:

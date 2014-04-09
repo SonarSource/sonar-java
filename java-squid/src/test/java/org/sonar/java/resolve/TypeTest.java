@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -39,4 +40,10 @@ public class TypeTest {
     assertThat(Type.CLASS).isLessThan(Type.ARRAY);
   }
 
+  @Test
+  public void to_string_on_type() throws Exception {
+    assertThat(new Type(Type.VOID, null).toString()).isEmpty();
+    String methodToString  = new Type.MethodType(ImmutableList.<Type>of(), new Symbols().intType, ImmutableList.<Type>of(), null).toString();
+    assertThat(methodToString).isEqualTo("returns int");
+  }
 }
