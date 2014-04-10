@@ -20,56 +20,93 @@
 package org.sonar.java.ast.visitors;
 
 import com.sonar.sslr.api.AstNode;
+import org.sonar.api.source.Symbol;
 import org.sonar.api.source.Symbolizable;
-import org.sonar.java.SemanticModelProvider;
-import org.sonar.java.SonarComponents;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ContinueStatementTree;
+import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LabeledStatementTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Map;
+public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
-public class SonarSymbolTableVisitor extends JavaAstVisitor {
+  private SemanticModel semanticModel;
+  private Symbolizable symbolizable;
+  private Symbolizable.SymbolTableBuilder symbolTableBuilder;
+  private CompilationUnitTree outerClass;
 
-  private final SemanticModelProvider semanticModelProvider;
-  private final SonarComponents sonarComponents;
 
-  public SonarSymbolTableVisitor(SonarComponents sonarComponents, SemanticModelProvider semanticModelProvider) {
-    this.sonarComponents = sonarComponents;
-    this.semanticModelProvider = semanticModelProvider;
+  public SonarSymbolTableVisitor(Symbolizable symbolizable, SemanticModel semanticModel) {
+    this.symbolizable = symbolizable;
+    this.semanticModel = semanticModel;
+    this.symbolTableBuilder = symbolizable.newSymbolTableBuilder();
   }
 
   @Override
-  public void visitFile(AstNode astNode) {
-    SemanticModel semanticModel = semanticModelProvider.semanticModel();
-    if (semanticModel == null) {
-      // parse or semantic error
-      return;
+  public void visitCompilationUnit(CompilationUnitTree tree) {
+    if (outerClass == null) {
+      outerClass = tree;
     }
+    super.visitCompilationUnit(tree);
 
-    Symbolizable symbolizable = sonarComponents.symbolizableFor(getContext().getFile());
-    Symbolizable.SymbolTableBuilder symbolTableBuilder = symbolizable.newSymbolTableBuilder();
-
-    for (Map.Entry<Tree, Symbol> entry : semanticModel.getSymbolsTree().entrySet()) {
-      Tree declaration = entry.getKey();
-      org.sonar.api.source.Symbol symbol = symbolTableBuilder.newSymbol(startOffsetFor(declaration), endOffsetFor(declaration));
-
-      for (IdentifierTree usage : semanticModel.getUsagesTree(entry.getValue())) {
-        symbolTableBuilder.newReference(symbol, startOffsetFor(usage));
-      }
+    if (tree.equals(outerClass)) {
+      symbolizable.setSymbolTable(symbolTableBuilder.build());
     }
-
-    symbolizable.setSymbolTable(symbolTableBuilder.build());
   }
 
-  private static int startOffsetFor(Tree tree) {
+  @Override
+  public void visitClass(ClassTree tree) {
+    if(tree.simpleName() != null) {
+      createSymbol(tree, tree.simpleName());
+    }
+    super.visitClass(tree);
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    createSymbol(tree, tree.simpleName());
+    super.visitVariable(tree);
+  }
+
+  @Override
+  public void visitEnumConstant(EnumConstantTree tree) {
+    createSymbol(tree, tree.simpleName());
+    super.visitEnumConstant(tree);
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    createSymbol(tree, tree.simpleName());
+    super.visitMethod(tree);
+  }
+
+  @Override
+  public void visitLabeledStatement(LabeledStatementTree tree) {
+    createSymbol(tree, tree.label());
+    super.visitLabeledStatement(tree);
+  }
+
+  private void createSymbol(Tree tree, IdentifierTree identifier) {
+    Symbol symbol = symbolTableBuilder.newSymbol(startOffsetFor(identifier), endOffsetFor(identifier));
+    for (IdentifierTree usage : semanticModel.getUsages(semanticModel.getSymbol(tree))) {
+      symbolTableBuilder.newReference(symbol, startOffsetFor(usage));
+    }
+  }
+
+  private int startOffsetFor(IdentifierTree tree) {
     AstNode astNode = ((JavaTree) tree).getAstNode();
     return astNode.getFromIndex();
   }
 
-  private static int endOffsetFor(Tree tree) {
+  private int endOffsetFor(IdentifierTree tree) {
     AstNode astNode = ((JavaTree) tree).getAstNode();
     return astNode.getFromIndex() + astNode.getTokenValue().length();
   }

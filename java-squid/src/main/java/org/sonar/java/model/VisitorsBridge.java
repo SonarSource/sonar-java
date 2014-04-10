@@ -26,8 +26,11 @@ import com.sonar.sslr.api.AstNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.source.Symbolizable;
 import org.sonar.java.SemanticModelProvider;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
+import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -48,13 +51,14 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
   private final List<JavaFileScanner> scanners;
 
   private SemanticModel semanticModel;
+  private SonarComponents sonarComponents;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
-    this(Arrays.asList(visitor));
+    this(Arrays.asList(visitor), null);
   }
 
-  public VisitorsBridge(Iterable visitors) {
+  public VisitorsBridge(Iterable visitors, @Nullable SonarComponents sonarComponents) {
     ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
@@ -62,6 +66,7 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
       }
     }
     this.scanners = scannersBuilder.build();
+    this.sonarComponents = sonarComponents;
   }
 
   @Override
@@ -75,10 +80,20 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
         semanticModel = null;
         return;
       }
+
+      createSonarSymbolTable(tree);
+
       JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), semanticModel);
       for (JavaFileScanner scanner : scanners) {
         scanner.scanFile(context);
       }
+    }
+  }
+
+  private void createSonarSymbolTable(CompilationUnitTree tree) {
+    if(sonarComponents != null) {
+      SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(getContext().getFile()) , semanticModel);
+      symVisitor.visitCompilationUnit(tree);
     }
   }
 

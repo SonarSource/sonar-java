@@ -91,7 +91,7 @@ public class UnusedLocalVariableCheck extends BaseTreeVisitor implements JavaFil
     SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
     Symbol symbol = semanticModel.getSymbol(tree);
 
-    if (symbol != null && semanticModel.getUsagesTree(symbol).isEmpty()) {
+    if (symbol != null && semanticModel.getUsages(symbol).isEmpty()) {
       context.addIssue(tree, ruleKey, "Remove this unused \"" + tree.simpleName() + "\" local variable.");
     }
   }

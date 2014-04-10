@@ -87,13 +87,12 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
           visitorsToBridge
       );
     }
-    VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge, sonarComponents);
     astScanner.accept(visitorsBridge);
 
     if (sonarComponents != null) {
       astScanner.accept(new FileLinesVisitor(sonarComponents, conf.getCharset()));
       astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
-      astScanner.accept(new SonarSymbolTableVisitor(sonarComponents, visitorsBridge));
     }
 
     // TODO unchecked cast

@@ -103,7 +103,7 @@ public class SemanticModel {
     return Collections.unmodifiableMap(symbolsTree);
   }
 
-  public Collection<IdentifierTree> getUsagesTree(Symbol symbol) {
+  public Collection<IdentifierTree> getUsages(Symbol symbol) {
     return Collections.unmodifiableCollection(usagesTree.get(symbol));
   }
 
