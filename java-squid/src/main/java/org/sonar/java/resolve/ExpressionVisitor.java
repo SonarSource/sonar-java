@@ -281,7 +281,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
       public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
         scan(tree.expression());
         String name = tree.identifier().name();
-        if (JavaKeyword.CLASS.name().toLowerCase().equals(name)) {
+        if (JavaKeyword.CLASS.getValue().equals(name)) {
           types.put(tree, symbols.classType);
           return;
         }

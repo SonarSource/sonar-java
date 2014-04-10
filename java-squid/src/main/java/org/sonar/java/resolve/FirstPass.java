@@ -129,7 +129,7 @@ public class FirstPass extends BaseTreeVisitor {
 
     semanticModel.associateEnv(tree, env);
     super.visitClass(tree);
-    restoreEnvironment(getNode(tree)); //TODO should we avoid restoring env for enum constants ?
+    restoreEnvironment(getNode(tree));
   }
 
   private int computeModifierFlag(AstNode astNode) {

@@ -143,65 +143,19 @@ public class SecondPass implements Symbol.Completer {
   }
 
   private Symbol resolveType(Resolve.Env env, Tree tree) {
-    Preconditions.checkArgument(
-        tree.is(Tree.Kind.MEMBER_SELECT) ||
-            tree.is(Tree.Kind.IDENTIFIER) ||
-            tree.is(Tree.Kind.PARAMETERIZED_TYPE) ||
-            tree.is(Tree.Kind.ARRAY_TYPE) ||
-            tree.is(Tree.Kind.UNION_TYPE) ||
-            tree instanceof PrimitiveTypeTree
-        , "Kind of tree unexpected " + ((JavaTree) tree).getKind());
-    class FQV extends BaseTreeVisitor {
-      private final Resolve.Env env;
-      private Symbol site;
+    Preconditions.checkArgument(checkTypeOfTree(tree), "Kind of tree unexpected " + ((JavaTree) tree).getKind());
+    TypeResolverVisitor typeResolverVisitor = new TypeResolverVisitor(env.dup());
+    tree.accept(typeResolverVisitor);
+    return typeResolverVisitor.site;
+  }
 
-      public FQV(Resolve.Env env) {
-        this.env = env;
-      }
-
-      @Override
-      public void visitParameterizedType(ParameterizedTypeTree tree) {
-        //Scan only the type, the generic arguments are not yet handled
-        scan(tree.type());
-      }
-
-      @Override
-      public void visitArrayType(ArrayTypeTree tree) {
-        super.visitArrayType(tree);
-        //TODO handle arrays type (for methods).
-      }
-
-      @Override
-      public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-        scan(tree.expression());
-        if (site.kind >= Symbol.ERRONEOUS) {
-          return;
-        }
-        String name = tree.identifier().name();
-        if (site.kind == Symbol.PCK) {
-          env.packge = (Symbol.PackageSymbol) site;
-          site = resolve.findIdentInPackage(env, site, name, Symbol.TYP | Symbol.PCK);
-        } else {
-          env.enclosingClass = (Symbol.TypeSymbol) site;
-          site = resolve.findMemberType(env, (Symbol.TypeSymbol) site, name, (Symbol.TypeSymbol) site);
-        }
-        associateReference(tree.identifier(), site);
-      }
-
-      @Override
-      public void visitIdentifier(IdentifierTree tree) {
-        site = resolve.findIdent(env, tree.name(), Symbol.TYP | Symbol.PCK);
-        associateReference(tree, site);
-      }
-
-      @Override
-      public void visitPrimitiveType(PrimitiveTypeTree tree) {
-        site = resolve.findIdent(semanticModel.getEnv(tree), ((JavaTree) tree).getAstNode().getLastChild().getTokenValue(), Symbol.TYP);
-      }
-    }
-    FQV fqv = new FQV(env.dup());
-    tree.accept(fqv);
-    return fqv.site;
+  private boolean checkTypeOfTree(Tree tree) {
+    return tree.is(Tree.Kind.MEMBER_SELECT) ||
+        tree.is(Tree.Kind.IDENTIFIER) ||
+        tree.is(Tree.Kind.PARAMETERIZED_TYPE) ||
+        tree.is(Tree.Kind.ARRAY_TYPE) ||
+        tree.is(Tree.Kind.UNION_TYPE) ||
+        tree instanceof PrimitiveTypeTree;
   }
 
   private Type castToTypeIfPossible(Symbol symbol) {
@@ -211,6 +165,55 @@ public class SecondPass implements Symbol.Completer {
   private void associateReference(IdentifierTree tree, Symbol symbol) {
     if (symbol.kind < Symbol.ERRONEOUS && semanticModel.getTree(symbol) != null) {
       semanticModel.associateReference(tree, symbol);
+    }
+  }
+
+  private class TypeResolverVisitor extends BaseTreeVisitor {
+    private final Resolve.Env env;
+    private Symbol site;
+
+    public TypeResolverVisitor(Resolve.Env env) {
+      this.env = env;
+    }
+
+    @Override
+    public void visitParameterizedType(ParameterizedTypeTree tree) {
+      //Scan only the type, the generic arguments are not yet handled
+      scan(tree.type());
+    }
+
+    @Override
+    public void visitArrayType(ArrayTypeTree tree) {
+      super.visitArrayType(tree);
+      //TODO handle arrays type (for methods).
+    }
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      scan(tree.expression());
+      if (site.kind >= Symbol.ERRONEOUS) {
+        return;
+      }
+      String name = tree.identifier().name();
+      if (site.kind == Symbol.PCK) {
+        env.packge = (Symbol.PackageSymbol) site;
+        site = resolve.findIdentInPackage(env, site, name, Symbol.TYP | Symbol.PCK);
+      } else {
+        env.enclosingClass = (Symbol.TypeSymbol) site;
+        site = resolve.findMemberType(env, (Symbol.TypeSymbol) site, name, (Symbol.TypeSymbol) site);
+      }
+      associateReference(tree.identifier(), site);
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      site = resolve.findIdent(env, tree.name(), Symbol.TYP | Symbol.PCK);
+      associateReference(tree, site);
+    }
+
+    @Override
+    public void visitPrimitiveType(PrimitiveTypeTree tree) {
+      site = resolve.findIdent(semanticModel.getEnv(tree), ((JavaTree) tree).getAstNode().getLastChild().getTokenValue(), Symbol.TYP);
     }
   }
 
