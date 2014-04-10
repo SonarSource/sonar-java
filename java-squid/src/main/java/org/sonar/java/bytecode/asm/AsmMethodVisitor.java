@@ -57,16 +57,6 @@ public class AsmMethodVisitor extends MethodVisitor {
     emptyMethod = false;
   }
 
-//  @Override
-//  public void visitMethodInsn(int opcode, String owner, String methodName, String methodDescription) {
-//    if (isNotCallToJavaArrayMethod(owner)) {
-//      AsmClass targetClass = asmClassProvider.getClass(owner, DETAIL_LEVEL.STRUCTURE);
-//      AsmMethod targetMethod = targetClass.getMethodOrCreateIt(methodName + methodDescription);
-//      method.addEdge(new AsmEdge(method, targetMethod, SourceCodeEdgeUsage.CALLS_METHOD, lineNumber));
-//    }
-//    emptyMethod = false;
-//  }
-
   private boolean isNotCallToJavaArrayMethod(String internalName) {
     return internalName.charAt(0) != '[';
   }
