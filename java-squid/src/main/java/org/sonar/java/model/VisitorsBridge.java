@@ -26,7 +26,6 @@ import com.sonar.sslr.api.AstNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.source.Symbolizable;
 import org.sonar.java.SemanticModelProvider;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
@@ -91,8 +90,8 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
   }
 
   private void createSonarSymbolTable(CompilationUnitTree tree) {
-    if(sonarComponents != null) {
-      SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(getContext().getFile()) , semanticModel);
+    if (sonarComponents != null) {
+      SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(getContext().getFile()), semanticModel);
       symVisitor.visitCompilationUnit(tree);
     }
   }

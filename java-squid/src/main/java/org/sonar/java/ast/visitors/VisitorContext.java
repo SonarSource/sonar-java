@@ -23,7 +23,6 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.CommentAnalyser;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.SquidAstVisitorContext;
-import org.sonar.api.resources.InputFile;
 import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.CodeCheck;
 import org.sonar.squid.api.SourceCode;

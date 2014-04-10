@@ -22,7 +22,6 @@ package org.sonar.java.resolve;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
-import org.apache.commons.lang.StringUtils;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
@@ -35,7 +34,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -106,7 +104,7 @@ public class FirstPass extends BaseTreeVisitor {
   @Override
   public void visitClass(ClassTree tree) {
     int flag = 0;
-    boolean anonymousClass = tree.simpleName()==null;
+    boolean anonymousClass = tree.simpleName() == null;
     String name = "";
     if (!anonymousClass) {
       name = tree.simpleName().name();

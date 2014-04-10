@@ -19,7 +19,11 @@
  */
 package org.sonar.java.bytecode;
 
-import org.sonar.java.bytecode.asm.*;
+import org.sonar.java.bytecode.asm.AsmClass;
+import org.sonar.java.bytecode.asm.AsmEdge;
+import org.sonar.java.bytecode.asm.AsmField;
+import org.sonar.java.bytecode.asm.AsmMethod;
+import org.sonar.java.bytecode.asm.AsmResource;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.squid.indexer.SquidIndex;
 
