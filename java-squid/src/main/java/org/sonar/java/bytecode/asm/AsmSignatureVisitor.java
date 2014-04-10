@@ -19,14 +19,20 @@
  */
 package org.sonar.java.bytecode.asm;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureVisitor;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class AsmSignatureVisitor implements SignatureVisitor {
+public class AsmSignatureVisitor extends SignatureVisitor {
 
   private final Set<String> internalNames = new HashSet<String>();
+
+
+  public AsmSignatureVisitor() {
+    super(Opcodes.ASM5);
+  }
 
   public Set<String> getInternalNames() {
     return internalNames;

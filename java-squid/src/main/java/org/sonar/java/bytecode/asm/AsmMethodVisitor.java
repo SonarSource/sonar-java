@@ -20,12 +20,12 @@
 package org.sonar.java.bytecode.asm;
 
 import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.EmptyVisitor;
 import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
 
-public class AsmMethodVisitor extends EmptyVisitor {
+public class AsmMethodVisitor extends MethodVisitor {
 
   private final AsmMethod method;
   private final AsmClassProvider asmClassProvider;
@@ -33,6 +33,7 @@ public class AsmMethodVisitor extends EmptyVisitor {
   private boolean emptyMethod = true;
 
   public AsmMethodVisitor(AsmMethod method, AsmClassProvider asmClassProvider) {
+    super(Opcodes.ASM5);
     this.method = method;
     this.asmClassProvider = asmClassProvider;
     emptyMethod = true;
@@ -47,14 +48,24 @@ public class AsmMethodVisitor extends EmptyVisitor {
   }
 
   @Override
-  public void visitMethodInsn(int opcode, String owner, String methodName, String methodDescription) {
+  public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
     if (isNotCallToJavaArrayMethod(owner)) {
       AsmClass targetClass = asmClassProvider.getClass(owner, DETAIL_LEVEL.STRUCTURE);
-      AsmMethod targetMethod = targetClass.getMethodOrCreateIt(methodName + methodDescription);
+      AsmMethod targetMethod = targetClass.getMethodOrCreateIt(name + desc);
       method.addEdge(new AsmEdge(method, targetMethod, SourceCodeEdgeUsage.CALLS_METHOD, lineNumber));
     }
     emptyMethod = false;
   }
+
+//  @Override
+//  public void visitMethodInsn(int opcode, String owner, String methodName, String methodDescription) {
+//    if (isNotCallToJavaArrayMethod(owner)) {
+//      AsmClass targetClass = asmClassProvider.getClass(owner, DETAIL_LEVEL.STRUCTURE);
+//      AsmMethod targetMethod = targetClass.getMethodOrCreateIt(methodName + methodDescription);
+//      method.addEdge(new AsmEdge(method, targetMethod, SourceCodeEdgeUsage.CALLS_METHOD, lineNumber));
+//    }
+//    emptyMethod = false;
+//  }
 
   private boolean isNotCallToJavaArrayMethod(String internalName) {
     return internalName.charAt(0) != '[';
