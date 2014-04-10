@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -63,13 +64,9 @@ public class FirstPass extends BaseTreeVisitor {
   }
 
   private void restoreEnvironment(Tree tree) {
-    restoreEnvironment(getNode(tree));
-  }
-
-  private void restoreEnvironment(AstNode astNode) {
     if (env.next == null) {
       // Invariant: env.next == null for CompilationUnit
-      Preconditions.checkState(astNode.is(JavaGrammar.COMPILATION_UNIT));
+      Preconditions.checkState(tree.is(Tree.Kind.COMPILATION_UNIT));
     } else {
       env = env.next;
     }
@@ -80,10 +77,6 @@ public class FirstPass extends BaseTreeVisitor {
       symbol.complete();
     }
     uncompleted.clear();
-  }
-
-  private AstNode getNode(Tree tree) {
-    return ((JavaTree) tree).getAstNode();
   }
 
   @Override
@@ -129,7 +122,7 @@ public class FirstPass extends BaseTreeVisitor {
 
     semanticModel.associateEnv(tree, env);
     super.visitClass(tree);
-    restoreEnvironment(getNode(tree));
+    restoreEnvironment(tree);
   }
 
   private int computeModifierFlag(AstNode astNode) {
@@ -159,7 +152,7 @@ public class FirstPass extends BaseTreeVisitor {
   }
 
   private int computeClassFlags(ClassTree tree) {
-    AstNode astNode = getNode(tree);
+    AstNode astNode =  ((JavaTree) tree).getAstNode();
     int flags = computeFlags(astNode);
     if (astNode.is(JavaGrammar.INTERFACE_DECLARATION)) {
       flags |= Flags.INTERFACE;
@@ -177,16 +170,14 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    visitMethodDeclaration(getNode(tree), tree);
+    visitMethodDeclaration(tree);
     super.visitMethod(tree);
     restoreEnvironment(tree);
   }
 
-  private void visitMethodDeclaration(AstNode astNode, MethodTree tree) {
-    MethodHelper methodHelper = new MethodHelper(astNode);
-    AstNode identifierNode = methodHelper.getName();
-    String name = methodHelper.isConstructor() ? "<init>" : identifierNode.getTokenValue();
-    Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeMethodFlags(astNode), name, env.scope.owner);
+  private void visitMethodDeclaration(MethodTree tree) {
+    String name = tree.returnType()==null ? "<init>" : tree.simpleName().name();
+    Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeMethodFlags(tree), name, env.scope.owner);
     enterSymbol(tree, symbol);
     symbol.parameters = new Scope(symbol);
     symbol.completer = completer;
@@ -201,7 +192,8 @@ public class FirstPass extends BaseTreeVisitor {
     env = methodEnv;
   }
 
-  private int computeMethodFlags(AstNode astNode) {
+  private int computeMethodFlags(MethodTree tree) {
+    AstNode astNode =  ((JavaTree) tree).getAstNode();
     if (astNode.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
       return computeFlags(astNode.getFirstAncestor(JavaGrammar.MEMBER_DECL));
     } else if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST, JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST)) {
@@ -217,23 +209,13 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
-    declareVariable(Flags.PUBLIC | Flags.ENUM, getNode(tree).getFirstChild(JavaTokenType.IDENTIFIER), tree);
+    declareVariable(Flags.PUBLIC | Flags.ENUM, tree.simpleName(), tree);
     super.visitEnumConstant(tree);
   }
 
   @Override
   public void visitVariable(VariableTree tree) {
-    AstNode astNode = getNode(tree);
-    AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-    if (astNode.is(JavaGrammar.CONSTANT_DECLARATOR_REST)) {
-      identifierNode = astNode.getPreviousAstNode();
-    } else if (astNode.is(JavaGrammar.FORMAL_PARAMETER, JavaGrammar.CATCH_FORMAL_PARAMETER, JavaGrammar.RESOURCE)) {
-      identifierNode = astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER);
-    }
-    if (identifierNode == null) {
-      throw new IllegalStateException("could not get identifier from node " + astNode.getType());
-    }
-    declareVariable(computeFlags(tree.modifiers()), identifierNode, tree);
+    declareVariable(computeFlags(tree.modifiers()), tree.simpleName(), tree);
     super.visitVariable(tree);
   }
 
@@ -242,10 +224,8 @@ public class FirstPass extends BaseTreeVisitor {
     return 1;
   }
 
-  private void declareVariable(int flags, AstNode identifierNode, Tree tree) {
-    Preconditions.checkArgument(identifierNode.is(JavaTokenType.IDENTIFIER));
-    String name = identifierNode.getTokenValue();
-    Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, env.scope.owner);
+  private void declareVariable(int flags, IdentifierTree identifierTree, Tree tree) {
+    Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, identifierTree.name(), env.scope.owner);
     enterSymbol(tree, symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
