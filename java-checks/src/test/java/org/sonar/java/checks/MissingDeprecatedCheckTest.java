@@ -42,7 +42,9 @@ public class MissingDeprecatedCheckTest {
         .next().atLine(28)
         .next().atLine(38)
         .next().atLine(45)
-        .next().atLine(61);
+        .next().atLine(61)
+        .next().atLine(69)
+        .next().atLine(87);
   }
 
 }

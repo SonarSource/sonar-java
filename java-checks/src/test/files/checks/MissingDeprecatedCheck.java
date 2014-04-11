@@ -62,3 +62,28 @@ interface Bar {
   int foo();
 
 }
+
+/**
+ * @deprecated
+ */
+class Qix  {
+
+  /**
+   * @deprecated
+   */
+  public void foo() {} // Compliant class is deprecated
+
+  public void foo1() {} // Compliant
+
+  @Deprecated
+  public void foo1() {} // Compliant class is deprecated
+}
+
+@Deprecated
+interface Plop {
+  /**
+   * @deprecated
+   */
+  public void foo(); // Compliant interface is deprecated
+
+}

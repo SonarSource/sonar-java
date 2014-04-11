@@ -23,6 +23,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.parser.JavaGrammar;
 
 @Rule(
   key = "MissingDeprecatedCheck",
@@ -30,15 +31,28 @@ import org.sonar.check.Rule;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
+  private boolean classOrInterfaceIsDeprecated = false;
+
+  @Override
+  public void init() {
+    super.init();
+    subscribeTo(JavaGrammar.CLASS_DECLARATION, JavaGrammar.INTERFACE_DECLARATION);
+  }
+
   @Override
   public void visitNode(AstNode node) {
     boolean hasDeprecatedAnnotation = hasDeprecatedAnnotationExcludingLocalVariables(node);
     boolean hasJavadocDeprecatedTag = hasJavadocDeprecatedTag(node);
-
-    if (hasDeprecatedAnnotation && !hasJavadocDeprecatedTag) {
-      getContext().createLineViolation(this, "Add the missing @deprecated Javadoc tag.", node);
-    } else if (hasJavadocDeprecatedTag && !hasDeprecatedAnnotation) {
-      getContext().createLineViolation(this, "Add the missing @Deprecated annotation.", node);
+    if(node.is(JavaGrammar.CLASS_DECLARATION, JavaGrammar.INTERFACE_DECLARATION)) {
+      classOrInterfaceIsDeprecated = hasDeprecatedAnnotation || hasJavadocDeprecatedTag;
+      return;
+    }
+    if(!classOrInterfaceIsDeprecated) {
+      if (hasDeprecatedAnnotation && !hasJavadocDeprecatedTag) {
+        getContext().createLineViolation(this, "Add the missing @deprecated Javadoc tag.", node);
+      } else if (hasJavadocDeprecatedTag && !hasDeprecatedAnnotation) {
+        getContext().createLineViolation(this, "Add the missing @Deprecated annotation.", node);
+      }
     }
   }
 
