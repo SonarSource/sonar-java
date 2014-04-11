@@ -19,83 +19,70 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Maps;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import com.google.common.collect.Multiset;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.check.RuleProperty;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Map;
 
 @Rule(
-  key = "S1192",
+  key = StringLiteralDuplicatedCheck.RULE_KEY,
   priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class StringLiteralDuplicatedCheck extends SquidCheck<LexerlessGrammar> {
+public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1192";
+  private static final int DEFAULT_THRESHOLD = 3;
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final Integer MINIMAL_LITERAL_LENGTH = 7;
+  @RuleProperty(
+      key = "threshold",
+      defaultValue = "" + DEFAULT_THRESHOLD)
+  public int threshold = DEFAULT_THRESHOLD;
 
-  private final Map<String, Integer> firstOccurrence = Maps.newHashMap();
-  private final Map<String, Integer> literalsOccurrences = Maps.newHashMap();
-
-  private boolean inAnnotation;
-
-  @Override
-  public void init() {
-    subscribeTo(JavaGrammar.ANNOTATION_REST);
-    subscribeTo(JavaTokenType.LITERAL);
-  }
+  private final Map<String, LiteralTree> firstOccurrence = Maps.newHashMap();
+  private final Multiset<String> occurences = HashMultiset.create();
 
   @Override
-  public void visitFile(AstNode node) {
-    inAnnotation = false;
+  public void scanFile(JavaFileScannerContext context) {
     firstOccurrence.clear();
-    literalsOccurrences.clear();
-  }
-
-  @Override
-  public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.ANNOTATION_REST)) {
-      inAnnotation = true;
-    } else if (!inAnnotation) {
-      visitOccurence(node.getTokenOriginalValue(), node.getTokenLine());
-    }
-  }
-
-  @Override
-  public void leaveNode(AstNode node) {
-    if (node.is(JavaGrammar.ANNOTATION_REST)) {
-      inAnnotation = false;
-    }
-  }
-
-  @Override
-  public void leaveFile(AstNode node) {
-    for (Map.Entry<String, Integer> literalOccurences : literalsOccurrences.entrySet()) {
-      Integer occurences = literalOccurences.getValue();
-
-      if (occurences > 1) {
-        String literal = literalOccurences.getKey();
-
-        getContext().createLineViolation(this, "Define a constant instead of duplicating this literal " + literal + " " + occurences + " times.", firstOccurrence.get(literal));
+    occurences.clear();
+    scan(context.getTree());
+    for (String literal : occurences.elementSet()) {
+      int literalOccurence = occurences.count(literal);
+      if (literalOccurence >= threshold) {
+        context.addIssue(firstOccurrence.get(literal), ruleKey, "Define a constant instead of duplicating this literal " + literal + " " + literalOccurence + " times.");
       }
     }
   }
 
-  private void visitOccurence(String literal, int line) {
-    if (literal.length() >= MINIMAL_LITERAL_LENGTH) {
-      if (!firstOccurrence.containsKey(literal)) {
-        firstOccurrence.put(literal, line);
-        literalsOccurrences.put(literal, 1);
-      } else {
-        int occurences = literalsOccurrences.get(literal);
-        literalsOccurrences.put(literal, occurences + 1);
+  @Override
+  public void visitLiteral(LiteralTree tree) {
+    if(tree.is(Tree.Kind.STRING_LITERAL))  {
+      String literal =tree.value();
+      if (literal.length() >= MINIMAL_LITERAL_LENGTH) {
+        if (!firstOccurrence.containsKey(literal)) {
+          firstOccurrence.put(literal, tree);
+        }
+        occurences.add(literal);
       }
     }
   }
 
+  @Override
+  public void visitAnnotation(AnnotationTree annotationTree) {
+    //Ignore literals within annotation
+  }
 }

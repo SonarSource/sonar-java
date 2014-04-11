@@ -93,8 +93,8 @@ public class BaseTreeVisitor implements TreeVisitor {
   @Override
   public void visitIfStatement(IfStatementTree tree) {
     scan(tree.condition());
-    scan(tree.elseStatement());
     scan(tree.thenStatement());
+    scan(tree.elseStatement());
   }
 
   @Override

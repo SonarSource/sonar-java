@@ -5,7 +5,7 @@ class A {
   @SupressWarnings("aaaaa")
   public void f() {
     System.out.println("aaaaa"); // Compliant
-    System.out.println("bbbbb"); // Non-Compliant
+    System.out.println("bbbbb"); // Compliant because less than threshold
     System.out.println("bbbbb");
     System.out.println("ccccc"); // Non-Compliant
     System.out.println("ccccc");

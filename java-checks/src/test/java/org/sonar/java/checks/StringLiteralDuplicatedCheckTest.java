@@ -23,6 +23,7 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -34,7 +35,16 @@ public class StringLiteralDuplicatedCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringLiteralDuplicatedCheck.java"), new StringLiteralDuplicatedCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringLiteralDuplicatedCheck.java"), new VisitorsBridge(new StringLiteralDuplicatedCheck()));
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(10).withMessage("Define a constant instead of duplicating this literal \"ccccc\" 3 times.");
+  }
+
+  @Test
+  public void threshold_at_two() {
+    StringLiteralDuplicatedCheck visitor = new StringLiteralDuplicatedCheck();
+    visitor.threshold = 2;
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringLiteralDuplicatedCheck.java"), new VisitorsBridge(visitor));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(8).withMessage("Define a constant instead of duplicating this literal \"bbbbb\" 2 times.")
         .next().atLine(10).withMessage("Define a constant instead of duplicating this literal \"ccccc\" 3 times.");
