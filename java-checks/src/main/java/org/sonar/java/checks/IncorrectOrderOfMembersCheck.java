@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1231";
+  public static final String RULE_KEY = "S1213";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String[] NAMES = {"variable", "constructor", "method"};
