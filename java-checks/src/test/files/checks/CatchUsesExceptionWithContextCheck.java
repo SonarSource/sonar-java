@@ -2,7 +2,7 @@ class A {
   private void f() {
     try {
     } catch (Exception e) {                     // Noncompliant
-    } catch (Exception e) {                     // Noncompliant
+    } catch (Exception e) {                     // Compliant
       System.out.println(e);
     } catch (Exception e) {                     // Noncompliant
       System.out.println("foo", e.getMessage());
@@ -141,6 +141,12 @@ class A {
       throw wrapHttpException ? handleHttpException(e) : null;
     } catch (Exception e) {                       // Compliant
       throw wrapHttpException ? null : e;
+    }
+    catch (Exception e) {                     // Compliant
+      try {
+      } catch (Exception f) {                   // Noncompliant
+       System.out.println("", e.getCause());
+      }
     }
   }
 }

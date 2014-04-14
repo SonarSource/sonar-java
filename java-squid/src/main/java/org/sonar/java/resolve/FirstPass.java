@@ -27,6 +27,7 @@ import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
@@ -150,7 +151,7 @@ public class FirstPass extends BaseTreeVisitor {
   }
 
   private int computeClassFlags(ClassTree tree) {
-    AstNode astNode =  ((JavaTree) tree).getAstNode();
+    AstNode astNode = ((JavaTree) tree).getAstNode();
     int flags = computeFlags(astNode);
     if (astNode.is(JavaGrammar.INTERFACE_DECLARATION)) {
       flags |= Flags.INTERFACE;
@@ -174,7 +175,7 @@ public class FirstPass extends BaseTreeVisitor {
   }
 
   private void visitMethodDeclaration(MethodTree tree) {
-    String name = tree.returnType()==null ? "<init>" : tree.simpleName().name();
+    String name = tree.returnType() == null ? "<init>" : tree.simpleName().name();
     Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeMethodFlags(tree), name, env.scope.owner);
     enterSymbol(tree, symbol);
     symbol.parameters = new Scope(symbol);
@@ -191,7 +192,7 @@ public class FirstPass extends BaseTreeVisitor {
   }
 
   private int computeMethodFlags(MethodTree tree) {
-    AstNode astNode =  ((JavaTree) tree).getAstNode();
+    AstNode astNode = ((JavaTree) tree).getAstNode();
     if (astNode.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
       return computeFlags(astNode.getFirstAncestor(JavaGrammar.MEMBER_DECL));
     } else if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST, JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST)) {
@@ -253,6 +254,14 @@ public class FirstPass extends BaseTreeVisitor {
     // Create new environment - this is required, because new scope is created
     createNewEnvironment(tree);
     super.visitForEachStatement(tree);
+    restoreEnvironment(tree);
+  }
+
+  @Override
+  public void visitCatch(CatchTree tree) {
+    // Create new environment - this is required, because new scope is created
+    createNewEnvironment(tree);
+    super.visitCatch(tree);
     restoreEnvironment(tree);
   }
 

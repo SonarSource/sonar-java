@@ -35,8 +35,7 @@ public class CatchUsesExceptionWithContextCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchUsesExceptionWithContextCheck.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Either log or rethrow this exception along with some contextual information.")
-      .next().atLine(5)
+      .next().atLine(4).withMessage("Either log or rethrow this exception.")
       .next().atLine(7)
       .next().atLine(11)
       .next().atLine(18)
@@ -52,6 +51,8 @@ public class CatchUsesExceptionWithContextCheckTest {
       .next().atLine(130)
       .next().atLine(131)
       .next().atLine(132)
+      .next().atLine(145)
+      .next().atLine(147)
       .noMore();
   }
 
