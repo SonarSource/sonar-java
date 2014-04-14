@@ -69,4 +69,13 @@ public class RedundantThrowsDeclarationCheck {
   public class MyRuntimeException extends RuntimeException {
   }
 
+  static interface MyInterface<T> {
+     public T plop() throws IllegalStateException; // Non-Compliant
+  }
+
+  static class MyClass implements MyInterface<String> {
+    public String plop() {
+      return "";
+    }
+  }
 }

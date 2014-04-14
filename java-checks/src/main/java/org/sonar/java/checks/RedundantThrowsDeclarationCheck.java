@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 @Rule(key = RedundantThrowsDeclarationCheck.RULE_KEY, priority = Priority.MAJOR,
-  tags={"error-handling"})
+    tags = {"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
 
@@ -48,33 +48,33 @@ public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
 
   @Override
   public void visitMethod(AsmMethod asmMethod) {
-    Set<String> reportedExceptions = Sets.newHashSet();
+    SourceMethod sourceMethod = getSourceMethod(asmMethod);
+    if (sourceMethod != null) {
+      Set<String> reportedExceptions = Sets.newHashSet();
 
-    List<AsmClass> thrownClasses = asmMethod.getThrows();
-    for (AsmClass thrownClass : thrownClasses) {
-      String thrownClassName = thrownClass.getDisplayName();
+      List<AsmClass> thrownClasses = asmMethod.getThrows();
+      for (AsmClass thrownClass : thrownClasses) {
+        String thrownClassName = thrownClass.getDisplayName();
 
-      if (!reportedExceptions.contains(thrownClassName)) {
-        String issueMessage = null;
+        if (!reportedExceptions.contains(thrownClassName)) {
+          String issueMessage = null;
 
-        if (isSubClassOfAny(thrownClass, thrownClasses)) {
-          issueMessage = "Remove the declaration of thrown exception '" + thrownClassName + "' which is a subclass of another one.";
-        } else if (isSubClassOfRuntimeException(thrownClass)) {
-          issueMessage = "Remove the declaration of thrown exception '" + thrownClassName + "' which is a runtime exception.";
-        } else if (isDeclaredMoreThanOnce(thrownClass, thrownClasses)) {
-          issueMessage = "Remove the redundant '" + thrownClassName + "' thrown exception declaration(s).";
-        }
-
-        if (issueMessage != null) {
-          reportedExceptions.add(thrownClassName);
-
-          CheckMessage message = new CheckMessage(this, issueMessage);
-          SourceMethod sourceMethod = getSourceMethod(asmMethod);
-          if (sourceMethod != null) {
-            message.setLine(sourceMethod.getStartAtLine());
+          if (isSubClassOfAny(thrownClass, thrownClasses)) {
+            issueMessage = "Remove the declaration of thrown exception '" + thrownClassName + "' which is a subclass of another one.";
+          } else if (isSubClassOfRuntimeException(thrownClass)) {
+            issueMessage = "Remove the declaration of thrown exception '" + thrownClassName + "' which is a runtime exception.";
+          } else if (isDeclaredMoreThanOnce(thrownClass, thrownClasses)) {
+            issueMessage = "Remove the redundant '" + thrownClassName + "' thrown exception declaration(s).";
           }
-          SourceFile file = getSourceFile(asmClass);
-          file.log(message);
+
+          if (issueMessage != null) {
+            reportedExceptions.add(thrownClassName);
+
+            CheckMessage message = new CheckMessage(this, issueMessage);
+            message.setLine(sourceMethod.getStartAtLine());
+            SourceFile file = getSourceFile(asmClass);
+            file.log(message);
+          }
         }
       }
     }
