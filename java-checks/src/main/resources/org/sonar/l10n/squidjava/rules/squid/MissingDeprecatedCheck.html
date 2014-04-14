@@ -1,30 +1,66 @@
-<p>
-Deprecation should be made using both the <code>@Deprecated</code> Java language annotation and <code>@deprecated</code> Javadoc tag.
-The annotation enables tools such as IDEs to warn about referencing deprecated elements,
-and the tag can be used to explain when it was deprecated, why, and how references should be refactored.
-</p>
+<p>Deprecation should be marked with both the <code>@Deprecated</code> annotation and @deprecated Javadoc tag. The annotation enables tools such as IDEs to warn about referencing deprecated elements, and the tag can be used to explain when it was deprecated, why, and how references should be refactored.</p>
 
 <p>The following code illustrates this rule:</p>
 
+<h2>Noncompliant Code Sample</h2>
 <pre>
 class MyClass {
 
-  @Deprecated             // Non-Compliant
-  public void foo1() {
-  }
+@Deprecated
+public void foo1() {
+}
 
-  /**
-    * @deprecated
-    */
-  public void foo2() {    // Non-Compliant
-  }
+/**
+* @deprecated
+*/
+public void foo2() {    // Non-Compliant
+}
 
-  /**
-    * @deprecated
-    */
-  @Deprecated
-  public void foo3() {    // Compliant
-  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+class MyClass {
+
+/**
+* @deprecated (when, why, refactoring advice...)
+*/
+@Deprecated
+public void foo1() {
+}
+
+/**
+* @deprecated (when, why, refactoring advice...)
+*/
+@Deprecated
+public void foo2() {    // Non-Compliant
+}
+
+}
+</pre>
+
+<h2>Exceptions</h2>
+<p>The members and methods of a deprecated class or interface are ignored by this rule. The classes and interfaces themselves are still subject to it.</p>
+
+<pre>
+/**
+* @deprecated (when, why, &etc...)
+*/
+@Deprecated
+class Qix  {
+
+public void foo() {} // Compliant; class is deprecated
+
+}
+
+/**
+* @deprecated (when, why, &etc...)
+*/
+@Deprecated
+interface Plop {
+
+void bar();
 
 }
 </pre>
