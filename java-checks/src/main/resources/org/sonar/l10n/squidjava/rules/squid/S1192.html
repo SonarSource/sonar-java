@@ -1,9 +1,9 @@
 <p>
-Duplicated string literals are error-prone to refactor, as one must pay attention to update all occurrences.
-Constants can be referenced from many places, but there value is updated in a single place.
+  Duplicated string literals make the process of refactoring error-prone, since you must be sure to update all occurrences.
+  On the other hand, constants can be referenced from many places, but only need to be updated in a single place.
 </p>
 
-<p>The following code:</p>
+<h2>Non Compliant Code Example</h2>
 
 <pre>
 public void run() {
@@ -13,9 +13,9 @@ public void run() {
 }
 
 @SuppressWarning("all")                            // Compliant - annotations are excluded
-private void method1(} { /* ... */ }
+private void method1() { /* ... */ }
 @SuppressWarning("all")
-private void method2(} { /* ... */ }
+private void method2() { /* ... */ }
 
 public String method3(String a) {
   System.out.println("'" + a + "'");               // Compliant - literal "'" has less than 5 characters and is excluded
@@ -23,7 +23,7 @@ public String method3(String a) {
 }
 </pre>
 
-<p>should be refactored into:</p>
+<h2>Compliant Code Example</h2>
 
 <pre>
 private static final String ACTION_1 = "action1";  // Compliant
@@ -34,3 +34,6 @@ public void run() {
   release(ACTION_1);
 }
 </pre>
+
+<h2>Exceptions</h2>
+<p>To prevent generating some false-positives, literals having less than 5 characters are excluded.</p>
