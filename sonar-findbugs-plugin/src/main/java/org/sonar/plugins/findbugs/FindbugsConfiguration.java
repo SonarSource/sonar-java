@@ -150,8 +150,12 @@ public class FindbugsConfiguration implements BatchExtension {
    * Invoked by PicoContainer to remove temporary files.
    */
   public void stop() {
-    jsr305Lib.delete();
-    annotationsLib.delete();
+    if (jsr305Lib != null) {
+      jsr305Lib.delete();
+    }
+    if (annotationsLib != null) {
+      annotationsLib.delete();
+    }
   }
 
   private File copyLib(String name) {
