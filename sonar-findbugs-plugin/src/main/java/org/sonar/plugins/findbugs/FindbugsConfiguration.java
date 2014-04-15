@@ -83,12 +83,13 @@ public class FindbugsConfiguration implements BatchExtension {
 
     if (classFilesToAnalyze.isEmpty()) {
       throw new SonarException("Findbugs needs sources to be compiled. "
-        + "Please build project before executing sonar and check the location of compiled classes.");
+          + "Please build project before executing sonar and check the location of compiled classes.");
     }
 
     for (File file : projectClasspath.getElements()) {
       findbugsProject.addAuxClasspathEntry(file.getAbsolutePath());
     }
+    copyLibs();
     if (annotationsLib != null) {
       // Findbugs dependencies are packaged by Maven. They are not available during execution of unit tests.
       findbugsProject.addAuxClasspathEntry(annotationsLib.getAbsolutePath());
@@ -136,12 +137,13 @@ public class FindbugsConfiguration implements BatchExtension {
   private File jsr305Lib;
   private File annotationsLib;
 
-  /**
-   * Invoked by PicoContainer to extract additional FindBugs libraries into temporary files.
-   */
-  public void start() {
-    jsr305Lib = copyLib("/jsr305.jar");
-    annotationsLib = copyLib("/annotations.jar");
+  public void copyLibs() {
+    if (jsr305Lib == null) {
+      jsr305Lib = copyLib("/jsr305.jar");
+    }
+    if (annotationsLib == null) {
+      annotationsLib = copyLib("/annotations.jar");
+    }
   }
 
   /**
@@ -171,43 +173,43 @@ public class FindbugsConfiguration implements BatchExtension {
   public static List<PropertyDefinition> getPropertyDefinitions() {
     String subCategory = "FindBugs";
     return ImmutableList.of(
-      PropertyDefinition.builder(FindbugsConstants.EFFORT_PROPERTY)
-        .defaultValue(FindbugsConstants.EFFORT_DEFAULT_VALUE)
-        .category(CoreProperties.CATEGORY_JAVA)
-        .subCategory(subCategory)
-        .name("Effort")
-        .description("Effort of the bug finders. Valid values are Min, Default and Max. Setting 'Max' increases precision but also increases " +
-          "memory consumption.")
-        .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
-        .build(),
-      PropertyDefinition.builder(FindbugsConstants.TIMEOUT_PROPERTY)
-        .defaultValue(FindbugsConstants.TIMEOUT_DEFAULT_VALUE + "")
-        .category(CoreProperties.CATEGORY_JAVA)
-        .subCategory(subCategory)
-        .name("Timeout")
-        .description("Specifies the amount of time, in milliseconds, that FindBugs may run before it is assumed to be hung and is terminated. " +
-          "The default is 600,000 milliseconds, which is ten minutes.")
-        .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
-        .type(PropertyType.INTEGER)
-        .build(),
-      PropertyDefinition.builder(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY)
-        .category(CoreProperties.CATEGORY_JAVA)
-        .subCategory(subCategory)
-        .name("Excludes Filters")
-        .description("Paths to findbugs filter-files with exclusions.")
-        .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
-        .multiValues(true)
-        .build(),
-      PropertyDefinition.builder(FindbugsConstants.CONFIDENCE_LEVEL_PROPERTY)
-        .defaultValue(FindbugsConstants.CONFIDENCE_LEVEL_DEFAULT_VALUE)
-        .category(CoreProperties.CATEGORY_JAVA)
-        .subCategory(subCategory)
-        .name("Confidence Level")
-        .description("Specifies the confidence threshold (previously called \"priority\") for reporting issues. If set to \"low\", confidence is not used to filter bugs. " +
-          "If set to \"medium\" (the default), low confidence issues are supressed. If set to \"high\", only high confidence bugs are reported. ")
-        .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
-        .build()
-      );
+        PropertyDefinition.builder(FindbugsConstants.EFFORT_PROPERTY)
+            .defaultValue(FindbugsConstants.EFFORT_DEFAULT_VALUE)
+            .category(CoreProperties.CATEGORY_JAVA)
+            .subCategory(subCategory)
+            .name("Effort")
+            .description("Effort of the bug finders. Valid values are Min, Default and Max. Setting 'Max' increases precision but also increases " +
+                "memory consumption.")
+            .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
+            .build(),
+        PropertyDefinition.builder(FindbugsConstants.TIMEOUT_PROPERTY)
+            .defaultValue(FindbugsConstants.TIMEOUT_DEFAULT_VALUE + "")
+            .category(CoreProperties.CATEGORY_JAVA)
+            .subCategory(subCategory)
+            .name("Timeout")
+            .description("Specifies the amount of time, in milliseconds, that FindBugs may run before it is assumed to be hung and is terminated. " +
+                "The default is 600,000 milliseconds, which is ten minutes.")
+            .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
+            .type(PropertyType.INTEGER)
+            .build(),
+        PropertyDefinition.builder(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY)
+            .category(CoreProperties.CATEGORY_JAVA)
+            .subCategory(subCategory)
+            .name("Excludes Filters")
+            .description("Paths to findbugs filter-files with exclusions.")
+            .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
+            .multiValues(true)
+            .build(),
+        PropertyDefinition.builder(FindbugsConstants.CONFIDENCE_LEVEL_PROPERTY)
+            .defaultValue(FindbugsConstants.CONFIDENCE_LEVEL_DEFAULT_VALUE)
+            .category(CoreProperties.CATEGORY_JAVA)
+            .subCategory(subCategory)
+            .name("Confidence Level")
+            .description("Specifies the confidence threshold (previously called \"priority\") for reporting issues. If set to \"low\", confidence is not used to filter bugs. " +
+                "If set to \"medium\" (the default), low confidence issues are supressed. If set to \"high\", only high confidence bugs are reported. ")
+            .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
+            .build()
+    );
   }
 
 }

@@ -125,18 +125,19 @@ public class FindbugsConfigurationTest {
     Project findbugsProject = conf.getFindbugsProject();
 
     assertThat(findbugsProject.getFileList()).containsOnly(file.getCanonicalPath());
+    conf.stop();
   }
 
   @Test
   public void should_copy_lib_in_working_dir() throws IOException {
-    String jsr205 = "findbugs/jsr305.jar";
+    String jsr305 = "findbugs/jsr305.jar";
     String annotations = "findbugs/annotations.jar";
 
-    conf.start();
-    assertThat(new File(fs.workingDir(), jsr205)).isFile();
+    conf.copyLibs();
+    assertThat(new File(fs.workingDir(), jsr305)).isFile();
     assertThat(new File(fs.workingDir(), annotations)).isFile();
     conf.stop();
-    assertThat(new File(fs.workingDir(), jsr205)).doesNotExist();
+    assertThat(new File(fs.workingDir(), jsr305)).doesNotExist();
     assertThat(new File(fs.workingDir(), annotations)).doesNotExist();
   }
 
