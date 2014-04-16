@@ -1,0 +1,23 @@
+<p>With Java 8's "default method" feature, any abstract class without direct or inherited field should be converted into an interface.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public abstract class Car {
+  public abstract void start(Environment c);
+
+  public void stop(Environment c) {
+    c.freeze(this);
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public interface Car {
+  public void start(Environment c);
+
+  public default void stop(Environment c) {
+    c.freeze(this);
+  }
+}
+</pre>

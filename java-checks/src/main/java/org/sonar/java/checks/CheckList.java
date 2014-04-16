@@ -172,8 +172,9 @@ public final class CheckList {
       ImmediatelyReturnedVariableCheck.class,
       LambdaSingleExpressionCheck.class,
       LambdaOptionalParenthesisCheck.class,
-      AnonymousClassShouldBeLambdaCheck.class
-      );
+      AnonymousClassShouldBeLambdaCheck.class,
+      AbstractClassNoFieldShouldBeInterfaceCheck.class
+    );
   }
 
 }
