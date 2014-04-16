@@ -54,7 +54,7 @@ public class Bridges {
         CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY,
         CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_DEFAULT_VALUE);
 
-    ResourceIndex resourceIndex = new ResourceIndex().loadSquidResources(squid, context, project);
+    ResourceIndex resourceIndex = new ResourceIndex(skipPackageDesignAnalysis).loadSquidResources(squid, context, project);
     List<Bridge> bridges = BridgeFactory.create(
         squid.isBytecodeScanned(),
         skipPackageDesignAnalysis,

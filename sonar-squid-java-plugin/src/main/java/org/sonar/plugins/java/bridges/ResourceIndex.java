@@ -22,9 +22,11 @@ package org.sonar.plugins.java.bridges;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
+import org.sonar.api.utils.SonarException;
 import org.sonar.java.JavaSquid;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
@@ -43,6 +45,11 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
   private static final long serialVersionUID = -918346378374943773L;
 
   private static final Logger LOG = LoggerFactory.getLogger(ResourceIndex.class);
+  private final boolean skipPackageDesignAnalysis;
+
+  public ResourceIndex(boolean skipPackageDesignAnalysis) {
+    this.skipPackageDesignAnalysis = skipPackageDesignAnalysis;
+  }
 
   public ResourceIndex loadSquidResources(JavaSquid squid, SensorContext context, Project project) {
     loadSquidProject(squid.getIndex(), project);
@@ -78,7 +85,12 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
         directoryReverseMap.put(sonarDirectory, squidPackage);
         put(squidPackage, sonarDirectory);
       } else if (!previousDirectoryMapping.equals(squidPackage)) {
-        LOG.warn("Directory contains files belonging to different packages - some metrics could be reported incorrectly: {}", file.getParentFile());
+        if (skipPackageDesignAnalysis) {
+          LOG.warn("Directory contains files belonging to different packages - some metrics could be reported incorrectly: {}", file.getParentFile());
+        } else {
+          LOG.error("Directory contains files belonging to different packages - some metrics could be reported incorrectly: {}", file.getParentFile());
+          throw new SonarException("Directory contains files belonging to different packages : "+file.getParentFile()+" Please fix your source code or use "+ CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY+"=true to continue the analysis." );
+        }
       }
     }
   }
