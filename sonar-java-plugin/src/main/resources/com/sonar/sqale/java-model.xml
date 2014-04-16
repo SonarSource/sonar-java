@@ -281,24 +281,6 @@
       <name>Readability</name>
       <chc>
         <rule-repo>squid</rule-repo>
-        <rule-key>S1612</rule-key>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>constant_issue</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>2.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-      </chc>
-      <chc>
-        <rule-repo>squid</rule-repo>
         <rule-key>S1604</rule-key>
         <prop>
           <key>remediationFunction</key>
@@ -1201,60 +1183,6 @@
     <chc>
       <key>UNDERSTANDABILITY</key>
       <name>Understandability</name>
-      <chc>
-        <rule-repo>squid</rule-repo>
-        <rule-key>S1172</rule-key>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>constant_issue</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-      </chc>
-      <chc>
-        <rule-repo>squid</rule-repo>
-        <rule-key>S1598</rule-key>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>constant_issue</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-      </chc>
-      <chc>
-        <rule-repo>squid</rule-repo>
-        <rule-key>S1609</rule-key>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>constant_issue</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>2.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-      </chc>
       <chc>
         <rule-repo>findbugs</rule-repo>
         <rule-key>UPM_UNCALLED_PRIVATE_METHOD</rule-key>
@@ -3390,25 +3318,6 @@
       <key>MEMORY_EFFICIENCY</key>
       <name>Memory use</name>
       <chc>
-        <rule-repo>squid</rule-repo>
-        <rule-key>S1643</rule-key>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>constant_issue</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-      </chc>
-      
-      <chc>
         <rule-repo>findbugs</rule-repo>
         <rule-key>HSC_HUGE_SHARED_STRING_CONSTANT</rule-key>
         <prop>
@@ -4168,26 +4077,6 @@
     <chc>
       <key>DATA_CHANGEABILITY</key>
       <name>Data</name>
-      <chc>
-        <rule-repo>squid</rule-repo>
-        <rule-key>S109</rule-key>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>constant_issue</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-      </chc>
-      
-      
     </chc>
     <chc>
       <key>LOGIC_CHANGEABILITY</key>
@@ -5122,24 +5011,6 @@
     <chc>
       <key>DATA_RELIABILITY</key>
       <name>Data</name>
-      <chc>
-        <rule-repo>squid</rule-repo>
-        <rule-key>S1656</rule-key>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>constant_issue</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>3.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-      </chc>
       <chc>
         <rule-repo>findbugs</rule-repo>
         <rule-key>VO_VOLATILE_REFERENCE_TO_ARRAY</rule-key>
