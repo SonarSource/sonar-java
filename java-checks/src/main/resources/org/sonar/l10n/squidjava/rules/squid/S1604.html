@@ -5,9 +5,9 @@
 <h2>Noncompliant Code Example</h2>
 <pre>
 myCollection.map(new Mapper<String,String>() {
-public String map(String input) {
-return new StringBuilder(input).reverse().toString();
-}
+  public String map(String input) {
+    return new StringBuilder(input).reverse().toString();
+  }
 });
 </pre>
 
