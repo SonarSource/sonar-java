@@ -19,10 +19,8 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
-import org.jacoco.core.runtime.AgentOptions;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.config.PropertyDefinition;
@@ -37,7 +35,6 @@ public class JacocoConfiguration implements BatchExtension {
   public static final String REPORT_PATH_DEFAULT_VALUE = "target/jacoco.exec";
   public static final String IT_REPORT_PATH_PROPERTY = "sonar.jacoco.itReportPath";
   public static final String IT_REPORT_PATH_DEFAULT_VALUE = "target/jacoco-it.exec";
-  public static final String INCLUDES_PROPERTY = "sonar.jacoco.includes";
   public static final String EXCLUDES_PROPERTY = "sonar.jacoco.excludes";
 
   /**
@@ -48,15 +45,11 @@ public class JacocoConfiguration implements BatchExtension {
    * </pre>
    */
   public static final String EXCLUDES_DEFAULT_VALUE = "*_javassist_*";
-  public static final String EXCLCLASSLOADER_PROPERTY = "sonar.jacoco.exclclassloader";
-  public static final String PLUGIN_KEY = "jacoco";
 
   private final Settings settings;
-  private final JaCoCoAgentDownloader downloader;
 
-  public JacocoConfiguration(Settings settings, JaCoCoAgentDownloader downloader) {
+  public JacocoConfiguration(Settings settings) {
     this.settings = settings;
-    this.downloader = downloader;
   }
 
   public boolean isEnabled() {
@@ -69,24 +62,6 @@ public class JacocoConfiguration implements BatchExtension {
 
   public String getItReportPath() {
     return settings.getString(IT_REPORT_PATH_PROPERTY);
-  }
-
-  public String getJvmArgument() {
-    AgentOptions options = new AgentOptions();
-    options.setDestfile(getReportPath());
-    String includes = Joiner.on(':').join(settings.getStringArray(INCLUDES_PROPERTY));
-    if (StringUtils.isNotBlank(includes)) {
-      options.setIncludes(includes);
-    }
-    String excludes = Joiner.on(':').join(settings.getStringArray(EXCLUDES_PROPERTY));
-    if (StringUtils.isNotBlank(excludes)) {
-      options.setExcludes(excludes);
-    }
-    String exclclassloader = Joiner.on(':').join(settings.getStringArray(EXCLCLASSLOADER_PROPERTY));
-    if (StringUtils.isNotBlank(exclclassloader)) {
-      options.setExclClassloader(exclclassloader);
-    }
-    return options.getQuotedVMArgument(downloader.getAgentJarFile());
   }
 
   public String getExcludes() {
@@ -104,15 +79,6 @@ public class JacocoConfiguration implements BatchExtension {
             .description("Path to the JaCoCo report file containing coverage data by unit tests. The path may be absolute or relative to the project base directory.")
             .onlyOnQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
             .build(),
-        PropertyDefinition.builder(JacocoConfiguration.INCLUDES_PROPERTY)
-            .multiValues(true)
-            .category(CoreProperties.CATEGORY_JAVA)
-            .subCategory(subCategory)
-            .name("Includes")
-            .description("A list of class names that should be included in execution analysis (see wildcards)." +
-              " Except for performance optimization or technical corner cases this option is normally not required.")
-            .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
-            .build(),
         PropertyDefinition.builder(JacocoConfiguration.EXCLUDES_PROPERTY)
             .defaultValue(JacocoConfiguration.EXCLUDES_DEFAULT_VALUE)
             .multiValues(true)
@@ -120,17 +86,7 @@ public class JacocoConfiguration implements BatchExtension {
             .subCategory(subCategory)
             .name("Excludes")
             .description("A list of class names that should be excluded from execution analysis (see wildcards)." +
-              " Except for performance optimization or technical corner cases this option is normally not required.")
-            .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
-            .build(),
-        PropertyDefinition.builder(JacocoConfiguration.EXCLCLASSLOADER_PROPERTY)
-            .multiValues(true)
-            .category(CoreProperties.CATEGORY_JAVA)
-            .subCategory(subCategory)
-            .name("Excluded Class Loaders")
-            .description("A list of class loader names that should be excluded from execution analysis (see wildcards)." +
-              " This option might be required in case of special frameworks that conflict with JaCoCo code" +
-              " instrumentation, in particular class loaders that do not have access to the Java runtime classes.")
+                " Except for performance optimization or technical corner cases this option is normally not required.")
             .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
             .build(),
         PropertyDefinition.builder(JacocoConfiguration.IT_REPORT_PATH_PROPERTY)

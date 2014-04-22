@@ -23,16 +23,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.InputFile;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
-
-import java.io.File;
-import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class JacocoConfigurationTest {
 
@@ -41,10 +33,8 @@ public class JacocoConfigurationTest {
 
   @Before
   public void setUp() {
-    JaCoCoAgentDownloader downloader = mock(JaCoCoAgentDownloader.class);
-    when(downloader.getAgentJarFile()).thenReturn(new File("jacocoagent.jar"));
     settings = new Settings(new PropertyDefinitions().addComponents(JacocoConfiguration.getPropertyDefinitions()));
-    jacocoSettings = new JacocoConfiguration(settings, downloader);
+    jacocoSettings = new JacocoConfiguration(settings);
   }
 
   @Test
@@ -63,7 +53,6 @@ public class JacocoConfigurationTest {
   @Test
   public void defaults() {
     assertThat(jacocoSettings.getReportPath()).isEqualTo("target/jacoco.exec");
-    assertThat(jacocoSettings.getJvmArgument()).isEqualTo("-javaagent:jacocoagent.jar=destfile=target/jacoco.exec,excludes=*_javassist_*");
 
     assertThat(jacocoSettings.getItReportPath()).isEqualTo("target/jacoco-it.exec");
   }
@@ -80,7 +69,6 @@ public class JacocoConfigurationTest {
     settings.setProperty(JacocoConfiguration.REPORT_PATH_PROPERTY, "jacoco.exec");
 
     assertThat(jacocoSettings.getReportPath()).isEqualTo("jacoco.exec");
-    assertThat(jacocoSettings.getJvmArgument()).isEqualTo("-javaagent:jacocoagent.jar=destfile=jacoco.exec,excludes=*_javassist_*");
   }
 
   @Test
@@ -88,26 +76,12 @@ public class JacocoConfigurationTest {
     settings.setProperty(JacocoConfiguration.REPORT_PATH_PROPERTY, "folder spaced/jacoco.exec");
 
     assertThat(jacocoSettings.getReportPath()).isEqualTo("folder spaced/jacoco.exec");
-    assertThat(jacocoSettings.getJvmArgument()).isEqualTo("\"-javaagent:jacocoagent.jar=destfile=folder spaced/jacoco.exec,excludes=*_javassist_*\"");
   }
 
   @Test
-  public void shouldSetIncludesAndExcludes() {
-    settings.setProperty(JacocoConfiguration.INCLUDES_PROPERTY, "org.sonar.*");
+  public void should_set_excludes() {
     settings.setProperty(JacocoConfiguration.EXCLUDES_PROPERTY, "org.sonar.api.*");
-    settings.setProperty(JacocoConfiguration.EXCLCLASSLOADER_PROPERTY, "sun.reflect.DelegatingClassLoader");
-
-    assertThat(jacocoSettings.getJvmArgument()).isEqualTo(
-        "-javaagent:jacocoagent.jar=destfile=target/jacoco.exec,includes=org.sonar.*,excludes=org.sonar.api.*,exclclassloader=sun.reflect.DelegatingClassLoader"
-        );
-  }
-
-  private static Project mockProject(String language) {
-    Project project = mock(Project.class);
-    ProjectFileSystem fileSystem = mock(ProjectFileSystem.class);
-    when(fileSystem.mainFiles(language)).thenReturn(Collections.singletonList(mock(InputFile.class)));
-    when(project.getFileSystem()).thenReturn(fileSystem);
-    return project;
+    assertThat(jacocoSettings.getExcludes()).isEqualTo("org.sonar.api.*");
   }
 
 }
