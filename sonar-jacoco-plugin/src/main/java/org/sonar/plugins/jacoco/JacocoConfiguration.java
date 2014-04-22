@@ -77,7 +77,7 @@ public class JacocoConfiguration implements BatchExtension {
             .subCategory(subCategory)
             .name("UT JaCoCo Report")
             .description("Path to the JaCoCo report file containing coverage data by unit tests. The path may be absolute or relative to the project base directory.")
-            .onlyOnQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
+            .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
             .build(),
         PropertyDefinition.builder(JacocoConfiguration.EXCLUDES_PROPERTY)
             .defaultValue(JacocoConfiguration.EXCLUDES_DEFAULT_VALUE)
@@ -95,7 +95,7 @@ public class JacocoConfiguration implements BatchExtension {
             .subCategory(subCategory)
             .name("IT JaCoCo Report")
             .description("Path to the JaCoCo report file containing coverage data by integration tests. The path may be absolute or relative to the project base directory.")
-            .onlyOnQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
+            .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
             .build());
   }
 

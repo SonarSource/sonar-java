@@ -36,7 +36,7 @@ public final class SurefirePlugin extends SonarPlugin {
       PropertyDefinition.builder(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)
         .name("JUnit Reports")
         .description("Path to the directory containing all the *.xml JUnit report files. The path may be absolute or relative to the project base directory.")
-        .onlyOnQualifiers(Qualifiers.PROJECT)
+        .onQualifiers(Qualifiers.PROJECT)
         .category(CoreProperties.CATEGORY_JAVA)
         .subCategory("JUnit")
         .build(),
