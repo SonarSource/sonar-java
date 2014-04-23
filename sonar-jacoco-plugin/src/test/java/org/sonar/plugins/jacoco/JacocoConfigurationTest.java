@@ -78,10 +78,4 @@ public class JacocoConfigurationTest {
     assertThat(jacocoSettings.getReportPath()).isEqualTo("folder spaced/jacoco.exec");
   }
 
-  @Test
-  public void should_set_excludes() {
-    settings.setProperty(JacocoConfiguration.EXCLUDES_PROPERTY, "org.sonar.api.*");
-    assertThat(jacocoSettings.getExcludes()).isEqualTo("org.sonar.api.*");
-  }
-
 }
