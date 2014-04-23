@@ -145,7 +145,8 @@ public class ExpressionVisitor extends BaseTreeVisitor {
     super.visitNewArray(tree);
     Type type = getType(tree.type());
     int dimensions = tree.dimensions().size();
-    type = new Type.ArrayType(type, symbols.arrayClass); // TODO why?
+    // TODO why?
+    type = new Type.ArrayType(type, symbols.arrayClass);
     for (int i = 1; i < dimensions; i++) {
       type = new Type.ArrayType(type, symbols.arrayClass);
     }

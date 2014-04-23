@@ -85,11 +85,12 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
         directoryReverseMap.put(sonarDirectory, squidPackage);
         put(squidPackage, sonarDirectory);
       } else if (!previousDirectoryMapping.equals(squidPackage)) {
+        String message = "Directory contains files belonging to different packages";
         if (skipPackageDesignAnalysis) {
-          LOG.warn("Directory contains files belonging to different packages - some metrics could be reported incorrectly: {}", file.getParentFile());
+          LOG.warn(message + " - some metrics could be reported incorrectly: {}", file.getParentFile());
         } else {
-          LOG.error("Directory contains files belonging to different packages - some metrics could be reported incorrectly: {}", file.getParentFile());
-          throw new SonarException("Directory contains files belonging to different packages : "+file.getParentFile()+" Please fix your source code or use "+ CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY+"=true to continue the analysis." );
+          LOG.error(message + " - some metrics could be reported incorrectly: {}", file.getParentFile());
+          throw new SonarException(message + " : " + file.getParentFile() + " Please fix your source code or use " + CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY + "=true to continue the analysis.");
         }
       }
     }
