@@ -95,13 +95,14 @@ public class JaCoCoSensorTest {
   }
 
   @Test
-  public void should_execute_if_enabled() {
+  public void should_execute_if_report_exists() {
     Project project = mock(Project.class);
+    File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
+    when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
+    when(configuration.getReportPath()).thenReturn("ut.exec");
 
-    when(configuration.isEnabled()).thenReturn(true);
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();;
-
-    when(configuration.isEnabled()).thenReturn(false);
+    when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.not.found.exec"));
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 

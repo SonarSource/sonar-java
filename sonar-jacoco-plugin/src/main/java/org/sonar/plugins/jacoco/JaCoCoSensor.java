@@ -30,6 +30,7 @@ import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
+import java.io.File;
 import java.util.Collection;
 
 public class JaCoCoSensor implements Sensor {
@@ -62,7 +63,12 @@ public class JaCoCoSensor implements Sensor {
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    return configuration.isEnabled();
+    File report = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
+    boolean shouldExecute = report.exists() && report.isFile();
+    if(!shouldExecute) {
+      JaCoCoUtils.LOG.info("JaCoCo report not found.");
+    }
+    return shouldExecute;
   }
 
   class UnitTestsAnalyzer extends AbstractAnalyzer {

@@ -38,19 +38,6 @@ public class JacocoConfigurationTest {
   }
 
   @Test
-  public void should_be_disabled_if_both_path_are_empty() {
-    settings.setProperty(JacocoConfiguration.IT_REPORT_PATH_PROPERTY, "");
-    settings.setProperty(JacocoConfiguration.REPORT_PATH_PROPERTY, "");
-    assertThat(jacocoSettings.isEnabled()).isFalse();
-    settings.setProperty(JacocoConfiguration.IT_REPORT_PATH_PROPERTY, "somePath");
-    settings.setProperty(JacocoConfiguration.REPORT_PATH_PROPERTY, "");
-    assertThat(jacocoSettings.isEnabled()).isTrue();
-    settings.setProperty(JacocoConfiguration.IT_REPORT_PATH_PROPERTY, "");
-    settings.setProperty(JacocoConfiguration.REPORT_PATH_PROPERTY, "SomePath");
-    assertThat(jacocoSettings.isEnabled()).isTrue();
-  }
-
-  @Test
   public void defaults() {
     assertThat(jacocoSettings.getReportPath()).isEqualTo("target/jacoco.exec");
 

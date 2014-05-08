@@ -20,7 +20,6 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.io.Closeables;
-import org.apache.commons.lang.StringUtils;
 import org.jacoco.core.data.ExecutionDataReader;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.ExecutionDataWriter;
@@ -66,7 +65,13 @@ public class JaCoCoOverallSensor implements Sensor {
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    return configuration.isEnabled() && StringUtils.isNotBlank(configuration.getItReportPath());
+    File reportUTs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
+    File reportITs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
+    boolean foundBothReports = reportUTs.exists() && reportITs.exists();
+    if (!foundBothReports) {
+      JaCoCoUtils.LOG.info("JaCoCo reports not found.");
+    }
+    return foundBothReports;
   }
 
   public void analyse(Project project, SensorContext context) {

@@ -30,7 +30,6 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Project.AnalysisType;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
@@ -85,30 +84,14 @@ public class JaCoCoItSensorTest {
   }
 
   @Test
-  public void doNotExecuteWhenReportPathNotSpecified() {
-    Project project = mock(Project.class);
-    when(configuration.getItReportPath()).thenReturn("");
-
-    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
-  }
-
-  @Test
   public void shouldExecuteIfReportPathIsDefined() {
     Project project = mock(Project.class);
-    when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC).thenReturn(AnalysisType.REUSE_REPORTS);
-    when(configuration.getItReportPath()).thenReturn("target/it-jacoco.exec");
-    when(configuration.isEnabled()).thenReturn(true);
-
+    File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
+    when(configuration.getItReportPath()).thenReturn("it.exec");
+    when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
-  }
 
-  @Test
-  public void shouldNotExecuteIfReportPathIsNotDefined() {
-    Project project = mock(Project.class);
-    when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC).thenReturn(AnalysisType.REUSE_REPORTS);
-    when(configuration.getItReportPath()).thenReturn(null);
-    when(configuration.isEnabled()).thenReturn(true);
-
+    when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.not.found.exec"));
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 

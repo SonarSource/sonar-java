@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.jacoco;
 
-import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
@@ -31,6 +30,7 @@ import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
+import java.io.File;
 import java.util.Collection;
 
 public class JaCoCoItSensor implements Sensor {
@@ -50,7 +50,12 @@ public class JaCoCoItSensor implements Sensor {
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    return configuration.isEnabled() && StringUtils.isNotBlank(configuration.getItReportPath());
+    File report = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
+    boolean shouldExecute = report.exists() && report.isFile();
+    if(!shouldExecute) {
+      JaCoCoUtils.LOG.info("JaCoCo IT report not found.");
+    }
+    return shouldExecute;
   }
 
   public void analyse(Project project, SensorContext context) {

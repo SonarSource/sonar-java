@@ -71,19 +71,36 @@ public class JaCoCoOverallSensorTest {
   }
 
   @Test
-  public void should_execute_if_report_path_is_set() {
+  public void should_execute_if_both_report_exists() {
     Project project = mock(Project.class);
-    when(configuration.getItReportPath()).thenReturn("target/it-jacoco.exec");
-    when(configuration.isEnabled()).thenReturn(true);
+    File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
+    when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
+    when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
+    when(configuration.getItReportPath()).thenReturn("it.exec");
+    when(configuration.getReportPath()).thenReturn("ut.exec");
 
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
   }
 
   @Test
-  public void do_not_execute_when_report_path_not_specified() {
+  public void do_not_execute_when_it_report_does_not_exists() {
     Project project = mock(Project.class);
-    when(configuration.getItReportPath()).thenReturn("");
+    File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
+    when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
+    when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.not.found.exec"));
+    when(configuration.getItReportPath()).thenReturn("it.exec");
+    when(configuration.getReportPath()).thenReturn("ut.exec");
+    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
+  }
 
+  @Test
+  public void do_not_execute_when_ut_report_does_not_exists() {
+    Project project = mock(Project.class);
+    File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
+    when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.not.found.exec"));
+    when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
+    when(configuration.getItReportPath()).thenReturn("it.exec");
+    when(configuration.getReportPath()).thenReturn("ut.exec");
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 

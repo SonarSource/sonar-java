@@ -20,7 +20,6 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.StringUtils;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.config.PropertyDefinition;
@@ -40,10 +39,6 @@ public class JacocoConfiguration implements BatchExtension {
 
   public JacocoConfiguration(Settings settings) {
     this.settings = settings;
-  }
-
-  public boolean isEnabled() {
-    return StringUtils.isNotEmpty(getItReportPath()) || StringUtils.isNotEmpty(getReportPath());
   }
 
   public String getReportPath() {

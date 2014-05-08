@@ -96,7 +96,7 @@ public abstract class AbstractAnalyzer {
 
   public final void analyse(Project project, SensorContext context) {
     if (!atLeastOneBinaryDirectoryExists()) {
-      JaCoCoUtils.LOG.info("Project coverage is set to 0% since there is no directories with classes.");
+      JaCoCoUtils.LOG.info("No JaCoCo analysis of project coverage can be done since there is no directories with classes.");
       return;
     }
     String path = getReportPath(project);
