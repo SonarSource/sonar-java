@@ -22,7 +22,6 @@ package org.sonar.plugins.jacoco;
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.CoreProperties;
-import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
@@ -47,7 +46,7 @@ public class JacocoConfiguration implements BatchExtension {
   }
 
   public boolean hasJavaFiles(){
-    return fileSystem.hasFiles(FilePredicates.hasLanguage(Java.KEY));
+    return fileSystem.hasFiles(fileSystem.predicates().hasLanguage(Java.KEY));
   }
 
   public String getReportPath() {

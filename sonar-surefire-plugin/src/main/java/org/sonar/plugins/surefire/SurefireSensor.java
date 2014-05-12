@@ -27,7 +27,6 @@ import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
@@ -54,7 +53,7 @@ public class SurefireSensor implements Sensor {
   @Override
   public boolean shouldExecuteOnProject(Project project) {
     return project.getAnalysisType().isDynamic(true)
-      && (!project.getFileSystem().mainFiles(Java.KEY).isEmpty() || !project.getFileSystem().testFiles(Java.KEY).isEmpty());
+        && (!project.getFileSystem().mainFiles("java").isEmpty() || !project.getFileSystem().testFiles("java").isEmpty());
   }
 
   @Override

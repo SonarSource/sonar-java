@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import org.sonar.api.resources.Java;
 import org.sonar.commonrules.api.CommonRulesEngine;
 import org.sonar.commonrules.api.CommonRulesRepository;
 
@@ -32,13 +31,13 @@ public class JavaCommonRulesEngine extends CommonRulesEngine {
   @Override
   protected void doEnableRules(CommonRulesRepository repository) {
     repository
-      .enableDuplicatedBlocksRule()
-      .enableSkippedUnitTestsRule()
-      .enableFailedUnitTestsRule()
+        .enableDuplicatedBlocksRule()
+        .enableSkippedUnitTestsRule()
+        .enableFailedUnitTestsRule()
 
-        // null parameters -> keep default values as hardcoded in sonar-common-rules
-      .enableInsufficientBranchCoverageRule(null)
-      .enableInsufficientCommentDensityRule(null)
-      .enableInsufficientLineCoverageRule(null);
+            // null parameters -> keep default values as hardcoded in sonar-common-rules
+        .enableInsufficientBranchCoverageRule(null)
+        .enableInsufficientCommentDensityRule(null)
+        .enableInsufficientLineCoverageRule(null);
   }
 }
