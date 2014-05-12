@@ -27,7 +27,7 @@ public class JaCoCoPluginTest {
 
   @Test
   public void testExtensions() {
-    assertThat(new JaCoCoPlugin().getExtensions().size()).isEqualTo(7);
+    assertThat(new JaCoCoPlugin().getExtensions().size()).isEqualTo(8);
   }
 
 }

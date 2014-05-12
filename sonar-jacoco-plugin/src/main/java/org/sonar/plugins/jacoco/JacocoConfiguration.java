@@ -22,6 +22,7 @@ package org.sonar.plugins.jacoco;
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.CoreProperties;
+import org.sonar.api.PropertyType;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
@@ -36,6 +37,8 @@ public class JacocoConfiguration implements BatchExtension {
   public static final String REPORT_PATH_DEFAULT_VALUE = "target/jacoco.exec";
   public static final String IT_REPORT_PATH_PROPERTY = "sonar.jacoco.itReportPath";
   public static final String IT_REPORT_PATH_DEFAULT_VALUE = "target/jacoco-it.exec";
+  public static final String NO_REPORT_SET_COVERAGE_TO_ZERO = "sonar.jacoco.noreports.coverage.zero";
+  public static final boolean NO_REPORT_SET_COVERAGE_TO_ZERO_DEFAULT_VALUE = false;
 
   private final Settings settings;
   private final FileSystem fileSystem;
@@ -45,7 +48,11 @@ public class JacocoConfiguration implements BatchExtension {
     this.fileSystem = fileSystem;
   }
 
-  public boolean hasJavaFiles(){
+  public boolean shouldExecuteOnProject(boolean reportFound) {
+    return hasJavaFiles() && (reportFound || isCoverageToZeroWhenNoReport());
+  }
+
+  private boolean hasJavaFiles() {
     return fileSystem.hasFiles(fileSystem.predicates().hasLanguage(Java.KEY));
   }
 
@@ -55,6 +62,10 @@ public class JacocoConfiguration implements BatchExtension {
 
   public String getItReportPath() {
     return settings.getString(IT_REPORT_PATH_PROPERTY);
+  }
+
+  private boolean isCoverageToZeroWhenNoReport() {
+    return settings.getBoolean(NO_REPORT_SET_COVERAGE_TO_ZERO);
   }
 
   public static List<PropertyDefinition> getPropertyDefinitions() {
@@ -75,7 +86,15 @@ public class JacocoConfiguration implements BatchExtension {
             .name("IT JaCoCo Report")
             .description("Path to the JaCoCo report file containing coverage data by integration tests. The path may be absolute or relative to the project base directory.")
             .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
-            .build());
+            .build(),
+        PropertyDefinition.builder(JacocoConfiguration.NO_REPORT_SET_COVERAGE_TO_ZERO)
+            .defaultValue(JacocoConfiguration.NO_REPORT_SET_COVERAGE_TO_ZERO_DEFAULT_VALUE + "")
+            .name("Coverage zero if no reports")
+            .description("Set coverage to 0% if no JaCoCo reports are found during analysis.")
+            .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
+            .type(PropertyType.BOOLEAN)
+            .build()
+    );
   }
 
 }

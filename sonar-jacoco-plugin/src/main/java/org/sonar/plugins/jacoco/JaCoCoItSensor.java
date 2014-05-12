@@ -55,7 +55,7 @@ public class JaCoCoItSensor implements Sensor {
     if(!foundReport) {
       JaCoCoUtils.LOG.info("JaCoCo IT report not found.");
     }
-    return configuration.hasJavaFiles() && foundReport;
+    return configuration.shouldExecuteOnProject(foundReport);
   }
 
   public void analyse(Project project, SensorContext context) {

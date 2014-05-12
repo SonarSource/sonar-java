@@ -64,11 +64,11 @@ public class JaCoCoSensor implements Sensor {
 
   public boolean shouldExecuteOnProject(Project project) {
     File report = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
-    boolean shouldExecute = report.exists() && report.isFile();
-    if(!shouldExecute) {
+    boolean foundReport = report.exists() && report.isFile();
+    if(!foundReport) {
       JaCoCoUtils.LOG.info("JaCoCo report not found.");
     }
-    return configuration.hasJavaFiles() && shouldExecute;
+    return configuration.shouldExecuteOnProject(foundReport);
   }
 
   class UnitTestsAnalyzer extends AbstractAnalyzer {

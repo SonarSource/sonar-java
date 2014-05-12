@@ -42,16 +42,22 @@ public class JacocoConfigurationTest {
   }
 
   @Test
-  public void hasJavaFile() throws Exception {
-    assertThat(jacocoSettings.hasJavaFiles()).isFalse();
+  public void shouldExecuteOnProject() throws Exception {
+    assertThat(jacocoSettings.shouldExecuteOnProject(true)).isFalse();
+    assertThat(jacocoSettings.shouldExecuteOnProject(false)).isFalse();
     DefaultInputFile phpFile = new DefaultInputFile("src/foo/bar.php");
     phpFile.setLanguage("php");
     fileSystem.add(phpFile);
-    assertThat(jacocoSettings.hasJavaFiles()).isFalse();
+    assertThat(jacocoSettings.shouldExecuteOnProject(true)).isFalse();
+    assertThat(jacocoSettings.shouldExecuteOnProject(false)).isFalse();
     DefaultInputFile javaFile = new DefaultInputFile("src/foo/bar.java");
     javaFile.setLanguage("java");
     fileSystem.add(javaFile);
-    assertThat(jacocoSettings.hasJavaFiles()).isTrue();
+    assertThat(jacocoSettings.shouldExecuteOnProject(true)).isTrue();
+    assertThat(jacocoSettings.shouldExecuteOnProject(false)).isFalse();
+    settings.setProperty(JacocoConfiguration.NO_REPORT_SET_COVERAGE_TO_ZERO, true);
+    assertThat(jacocoSettings.shouldExecuteOnProject(true)).isTrue();
+    assertThat(jacocoSettings.shouldExecuteOnProject(false)).isTrue();
   }
 
   @Test
