@@ -2218,8 +2218,8 @@
         </prop>
         <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>h</txt>
+          <val>30</val>
+          <txt>mn</txt>
         </prop>
         <prop>
           <key>remediationFactor</key>
