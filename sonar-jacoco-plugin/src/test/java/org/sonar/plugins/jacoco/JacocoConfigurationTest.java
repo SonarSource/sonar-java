@@ -21,6 +21,8 @@ package org.sonar.plugins.jacoco;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
 
@@ -30,17 +32,31 @@ public class JacocoConfigurationTest {
 
   private Settings settings;
   private JacocoConfiguration jacocoSettings;
+  private DefaultFileSystem fileSystem;
 
   @Before
   public void setUp() {
     settings = new Settings(new PropertyDefinitions().addComponents(JacocoConfiguration.getPropertyDefinitions()));
-    jacocoSettings = new JacocoConfiguration(settings);
+    fileSystem = new DefaultFileSystem();
+    jacocoSettings = new JacocoConfiguration(settings, fileSystem);
+  }
+
+  @Test
+  public void hasJavaFile() throws Exception {
+    assertThat(jacocoSettings.hasJavaFiles()).isFalse();
+    DefaultInputFile phpFile = new DefaultInputFile("src/foo/bar.php");
+    phpFile.setLanguage("php");
+    fileSystem.add(phpFile);
+    assertThat(jacocoSettings.hasJavaFiles()).isFalse();
+    DefaultInputFile javaFile = new DefaultInputFile("src/foo/bar.java");
+    javaFile.setLanguage("java");
+    fileSystem.add(javaFile);
+    assertThat(jacocoSettings.hasJavaFiles()).isTrue();
   }
 
   @Test
   public void defaults() {
     assertThat(jacocoSettings.getReportPath()).isEqualTo("target/jacoco.exec");
-
     assertThat(jacocoSettings.getItReportPath()).isEqualTo("target/jacoco-it.exec");
   }
 

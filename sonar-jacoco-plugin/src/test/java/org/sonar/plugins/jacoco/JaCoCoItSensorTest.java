@@ -87,12 +87,24 @@ public class JaCoCoItSensorTest {
   public void shouldExecuteIfReportPathIsDefined() {
     Project project = mock(Project.class);
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
+    when(configuration.hasJavaFiles()).thenReturn(true);
     when(configuration.getItReportPath()).thenReturn("it.exec");
     when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
 
     when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.not.found.exec"));
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
+  }
+
+  @Test
+  public void when_no_java_file_should_not_execute() {
+    Project project = mock(Project.class);
+    when(configuration.hasJavaFiles()).thenReturn(false);
+    File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
+    when(configuration.getItReportPath()).thenReturn("it.exec");
+    when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
+    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
+
   }
 
   @Test

@@ -60,7 +60,7 @@ public class JaCoCoOverallSensorTest {
   private JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
 
   @Before
-  public void before(){
+  public void before() {
     configuration = mock(JacocoConfiguration.class);
     context = mock(SensorContext.class);
     fileSystem = mock(ModuleFileSystem.class);
@@ -76,10 +76,23 @@ public class JaCoCoOverallSensorTest {
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
     when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
     when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
+    when(configuration.hasJavaFiles()).thenReturn(true);
     when(configuration.getItReportPath()).thenReturn("it.exec");
     when(configuration.getReportPath()).thenReturn("ut.exec");
 
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
+  }
+
+  @Test
+  public void do_not_execute_when_no_java_files() {
+    Project project = mock(Project.class);
+    File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
+    when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
+    when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
+    when(configuration.getItReportPath()).thenReturn("it.exec");
+    when(configuration.getReportPath()).thenReturn("ut.exec");
+    when(configuration.hasJavaFiles()).thenReturn(false);
+    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 
   @Test

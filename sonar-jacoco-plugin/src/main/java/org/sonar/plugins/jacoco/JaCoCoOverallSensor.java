@@ -71,7 +71,7 @@ public class JaCoCoOverallSensor implements Sensor {
     if (!foundBothReports) {
       JaCoCoUtils.LOG.info("JaCoCo reports not found.");
     }
-    return foundBothReports;
+    return configuration.hasJavaFiles() && foundBothReports;
   }
 
   public void analyse(Project project, SensorContext context) {

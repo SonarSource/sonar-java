@@ -100,10 +100,22 @@ public class JaCoCoSensorTest {
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
     when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
     when(configuration.getReportPath()).thenReturn("ut.exec");
-
-    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();;
+    when(configuration.hasJavaFiles()).thenReturn(true);
+    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
     when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.not.found.exec"));
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
+  }
+
+
+  @Test
+  public void should_not_execute_with_no_java_file() throws Exception {
+    Project project = mock(Project.class);
+    File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
+    when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
+    when(configuration.getReportPath()).thenReturn("ut.exec");
+    when(configuration.hasJavaFiles()).thenReturn(false);
+    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
+
   }
 
   @Test

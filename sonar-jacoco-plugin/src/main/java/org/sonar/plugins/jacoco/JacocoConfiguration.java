@@ -22,9 +22,12 @@ package org.sonar.plugins.jacoco;
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.CoreProperties;
+import org.sonar.api.batch.fs.FilePredicates;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.plugins.java.Java;
 
 import java.util.List;
 
@@ -36,9 +39,15 @@ public class JacocoConfiguration implements BatchExtension {
   public static final String IT_REPORT_PATH_DEFAULT_VALUE = "target/jacoco-it.exec";
 
   private final Settings settings;
+  private final FileSystem fileSystem;
 
-  public JacocoConfiguration(Settings settings) {
+  public JacocoConfiguration(Settings settings, FileSystem fileSystem) {
     this.settings = settings;
+    this.fileSystem = fileSystem;
+  }
+
+  public boolean hasJavaFiles(){
+    return fileSystem.hasFiles(FilePredicates.hasLanguage(Java.KEY));
   }
 
   public String getReportPath() {

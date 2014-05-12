@@ -51,11 +51,11 @@ public class JaCoCoItSensor implements Sensor {
 
   public boolean shouldExecuteOnProject(Project project) {
     File report = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
-    boolean shouldExecute = report.exists() && report.isFile();
-    if(!shouldExecute) {
+    boolean foundReport = report.exists() && report.isFile();
+    if(!foundReport) {
       JaCoCoUtils.LOG.info("JaCoCo IT report not found.");
     }
-    return shouldExecute;
+    return configuration.hasJavaFiles() && foundReport;
   }
 
   public void analyse(Project project, SensorContext context) {

@@ -68,7 +68,7 @@ public class JaCoCoSensor implements Sensor {
     if(!shouldExecute) {
       JaCoCoUtils.LOG.info("JaCoCo report not found.");
     }
-    return shouldExecute;
+    return configuration.hasJavaFiles() && shouldExecute;
   }
 
   class UnitTestsAnalyzer extends AbstractAnalyzer {
