@@ -55,7 +55,7 @@ public class JacocoConfigurationTest {
     fileSystem.add(javaFile);
     assertThat(jacocoSettings.shouldExecuteOnProject(true)).isTrue();
     assertThat(jacocoSettings.shouldExecuteOnProject(false)).isFalse();
-    settings.setProperty(JacocoConfiguration.NO_REPORT_SET_COVERAGE_TO_ZERO, true);
+    settings.setProperty(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO, true);
     assertThat(jacocoSettings.shouldExecuteOnProject(true)).isTrue();
     assertThat(jacocoSettings.shouldExecuteOnProject(false)).isTrue();
   }

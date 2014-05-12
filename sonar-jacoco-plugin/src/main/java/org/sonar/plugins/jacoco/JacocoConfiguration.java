@@ -37,8 +37,8 @@ public class JacocoConfiguration implements BatchExtension {
   public static final String REPORT_PATH_DEFAULT_VALUE = "target/jacoco.exec";
   public static final String IT_REPORT_PATH_PROPERTY = "sonar.jacoco.itReportPath";
   public static final String IT_REPORT_PATH_DEFAULT_VALUE = "target/jacoco-it.exec";
-  public static final String NO_REPORT_SET_COVERAGE_TO_ZERO = "sonar.jacoco.noreports.coverage.zero";
-  public static final boolean NO_REPORT_SET_COVERAGE_TO_ZERO_DEFAULT_VALUE = false;
+  public static final String REPORT_MISSING_FORCE_ZERO = "sonar.jacoco.reportMissing.force.zero";
+  public static final boolean REPORT_MISSING_FORCE_ZERO_DEFAULT_VALUE = false;
 
   private final Settings settings;
   private final FileSystem fileSystem;
@@ -65,7 +65,7 @@ public class JacocoConfiguration implements BatchExtension {
   }
 
   private boolean isCoverageToZeroWhenNoReport() {
-    return settings.getBoolean(NO_REPORT_SET_COVERAGE_TO_ZERO);
+    return settings.getBoolean(REPORT_MISSING_FORCE_ZERO);
   }
 
   public static List<PropertyDefinition> getPropertyDefinitions() {
@@ -87,10 +87,10 @@ public class JacocoConfiguration implements BatchExtension {
             .description("Path to the JaCoCo report file containing coverage data by integration tests. The path may be absolute or relative to the project base directory.")
             .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
             .build(),
-        PropertyDefinition.builder(JacocoConfiguration.NO_REPORT_SET_COVERAGE_TO_ZERO)
-            .defaultValue(JacocoConfiguration.NO_REPORT_SET_COVERAGE_TO_ZERO_DEFAULT_VALUE + "")
-            .name("Coverage zero if no reports")
-            .description("Set coverage to 0% if no JaCoCo reports are found during analysis.")
+        PropertyDefinition.builder(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO)
+            .defaultValue(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO_DEFAULT_VALUE + "")
+            .name("Force zero coverage")
+            .description("Force coverage to 0% if no JaCoCo reports are found during analysis.")
             .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
             .type(PropertyType.BOOLEAN)
             .build()
