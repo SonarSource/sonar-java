@@ -1,9 +1,11 @@
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @SuppressWarnings("all")
 class TypesOfDeclarations {
 
-  interface Interface1 {
+  interface Interface1 extends List{
   }
 
   interface Interface2 extends Interface1 {
@@ -12,7 +14,7 @@ class TypesOfDeclarations {
   enum Enum implements Interface1, Interface2 {
   }
 
-  static class Class1 {
+  static class Class1 extends Collection {
     Interface1 field;
 
     Interface1 method(Interface2 param) {

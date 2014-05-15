@@ -51,6 +51,11 @@ public class BaseTreeVisitor implements TreeVisitor {
   }
 
   @Override
+  public void visitImport(ImportTree tree) {
+    scan(tree.qualifiedIdentifier());
+  }
+
+  @Override
   public void visitClass(ClassTree tree) {
     scan(tree.modifiers());
     scan(tree.typeParameters());

@@ -34,6 +34,8 @@ import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -80,17 +82,38 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    // TODO package and imports
+    // TODO package
     Symbol.PackageSymbol symbol = new Symbol.PackageSymbol(null, null);
     symbol.members = new Scope(symbol);
 
     env = new Resolve.Env();
     env.packge = symbol;
     env.scope = symbol.members;
+    env.namedImports = new Scope(symbol);
     semanticModel.associateEnv(tree, env);
+
     super.visitCompilationUnit(tree);
     restoreEnvironment(tree);
     completeSymbols();
+  }
+
+  @Override
+  public void visitImport(ImportTree tree) {
+    //TODO star imports (on demand)
+    if (tree.isStatic()) {
+      //TODO static import (method or variable?)
+
+    } else {
+      String name = ((MemberSelectExpressionTree) tree.qualifiedIdentifier()).identifier().name();
+      Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(Flags.PUBLIC, name, env.packge());
+      symbol.members = new Scope(symbol);
+      env.namedImports.enter(symbol);
+      semanticModel.associateSymbol(tree, symbol);
+      //TODO : bytecode completer. This completer should be in charge to put a default value in interfaces.
+      ((Type.ClassType) symbol.type).interfaces = Lists.newArrayList();
+      uncompleted.add(symbol);
+    }
+    super.visitImport(tree);
   }
 
   @Override

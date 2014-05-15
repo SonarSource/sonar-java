@@ -271,7 +271,16 @@ public class SymbolTableTest {
 
   @Test
   public void TypesOfDeclarations() {
-    Result.createFor("TypesOfDeclarations");
+    Result result = Result.createFor("TypesOfDeclarations");
+    assertThat(result.symbol("Class2").kind == Symbol.TYP);
+    Symbol.TypeSymbol class1 =(Symbol.TypeSymbol)result.symbol("Class1");
+    Symbol.TypeSymbol class2 =(Symbol.TypeSymbol)result.symbol("Class2");
+    assertThat(class2.getSuperclass().symbol).isEqualTo(class1);
+    assertThat(class1.getSuperclass()).isNotNull();
+    assertThat(class1.getSuperclass().symbol.name).isEqualTo("Collection");
+    Symbol.TypeSymbol interface1 =(Symbol.TypeSymbol)result.symbol("Interface1");
+    assertThat(interface1.getInterfaces()).isNotEmpty();
+    assertThat(interface1.getInterfaces().get(0).symbol.name).isEqualTo("List");
   }
 
   @Test

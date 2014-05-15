@@ -29,6 +29,8 @@ public interface TreeVisitor {
 
   void visitCompilationUnit(CompilationUnitTree tree);
 
+  void visitImport(ImportTree tree);
+
   void visitClass(ClassTree tree);
 
   void visitMethod(MethodTree tree);

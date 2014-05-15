@@ -221,6 +221,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public void accept(TreeVisitor visitor) {
+      visitor.visitImport(this);
     }
   }
 

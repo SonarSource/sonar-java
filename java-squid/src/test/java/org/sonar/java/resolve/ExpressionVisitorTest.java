@@ -95,6 +95,7 @@ public class ExpressionVisitorTest {
     compilationUnitEnv.packge = p;
     compilationUnitEnv.scope = p.members;
     compilationUnitEnv.enclosingClass = symbols.predefClass;
+    compilationUnitEnv.namedImports = new Scope(p);
 
     env = compilationUnitEnv.dup();
     env.outer = compilationUnitEnv;

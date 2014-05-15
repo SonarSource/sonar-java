@@ -62,6 +62,7 @@ public class Resolve {
     Symbol.TypeSymbol enclosingClass;
 
     Scope scope;
+    Scope namedImports;
 
     Env outer() {
       return outer;
@@ -75,6 +76,10 @@ public class Resolve {
       return packge;
     }
 
+    Scope namedImports() {
+      return namedImports;
+    }
+
     Scope scope() {
       return scope;
     }
@@ -86,6 +91,7 @@ public class Resolve {
       env.packge = this.packge;
       env.enclosingClass = this.enclosingClass;
       env.scope = this.scope;
+      env.namedImports = this.namedImports;
       return env;
     }
   }
@@ -200,12 +206,20 @@ public class Resolve {
       return predefinedSymbol;
     }
 
-    // TODO imports
+    //named imports
+    for (Symbol symbol : env.namedImports().lookup(name)) {
+      if (symbol.kind < bestSoFar.kind) {
+        return symbol;
+      }
+    }
+    //package types
     for (Symbol symbol : env.packge().members.lookup(name)) {
       if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
       }
     }
+
+    //TODO on demand imports
 
     return bestSoFar;
   }
