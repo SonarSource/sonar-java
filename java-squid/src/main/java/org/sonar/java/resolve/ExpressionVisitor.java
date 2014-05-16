@@ -302,6 +302,9 @@ public class ExpressionVisitor extends BaseTreeVisitor {
           site = resolve.findIdentInType(env, (Symbol.TypeSymbol) site, name, Symbol.VAR | Symbol.TYP);
         } else if (site.kind == Symbol.PCK) {
           site = resolve.findIdentInPackage(env, site, name, Symbol.VAR | Symbol.PCK);
+        } else if(site.kind == (Symbol.VAR | Symbol.MTH | Symbol.TYP)) {
+          //TODO this case should be resolved earlier, such symbol should be specialized before reaching this resolution.
+          site = resolve.findIdentInPackage(env, site, name, Symbol.VAR | Symbol.MTH | Symbol.TYP);
         } else {
           throw new IllegalStateException();
         }

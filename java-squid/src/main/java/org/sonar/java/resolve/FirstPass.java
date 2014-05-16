@@ -80,16 +80,20 @@ public class FirstPass extends BaseTreeVisitor {
     uncompleted.clear();
   }
 
+  private Symbol.PackageSymbol defaultPackage;
+
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    // TODO package
-    Symbol.PackageSymbol symbol = new Symbol.PackageSymbol(null, null);
-    symbol.members = new Scope(symbol);
+    //Default package
+    //TODO default package name is null or empty ?
+    Symbol.PackageSymbol compilationUnitPackage = new Symbol.PackageSymbol(null, null);
+    compilationUnitPackage.members = new Scope(compilationUnitPackage);
+    defaultPackage = compilationUnitPackage;
 
     env = new Resolve.Env();
-    env.packge = symbol;
-    env.scope = symbol.members;
-    env.namedImports = new Scope(symbol);
+    env.packge = compilationUnitPackage;
+    env.scope = compilationUnitPackage.members;
+    env.namedImports = new Scope(compilationUnitPackage);
     semanticModel.associateEnv(tree, env);
 
     super.visitCompilationUnit(tree);
@@ -99,21 +103,46 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitImport(ImportTree tree) {
-    //TODO star imports (on demand)
-    if (tree.isStatic()) {
-      //TODO static import (method or variable?)
-
-    } else {
-      String name = ((MemberSelectExpressionTree) tree.qualifiedIdentifier()).identifier().name();
-      Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(Flags.PUBLIC, name, env.packge());
-      symbol.members = new Scope(symbol);
-      env.namedImports.enter(symbol);
-      semanticModel.associateSymbol(tree, symbol);
-      //TODO : bytecode completer. This completer should be in charge to put a default value in interfaces.
-      ((Type.ClassType) symbol.type).interfaces = Lists.newArrayList();
-      uncompleted.add(symbol);
-    }
+    ImportVisitor importVisitor = new ImportVisitor(defaultPackage, tree.isStatic());
+    tree.accept(importVisitor);
+    Symbol importSymbol = importVisitor.currentSymbol;
+    semanticModel.associateSymbol(tree, importSymbol);
     super.visitImport(tree);
+  }
+
+  private class ImportVisitor extends BaseTreeVisitor {
+    private final boolean isStatic;
+    private Symbol currentSymbol;
+
+    public ImportVisitor(Symbol.PackageSymbol defaultPackage, boolean isStatic) {
+      currentSymbol = defaultPackage;
+      this.isStatic = isStatic;
+    }
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      scan(tree.expression());
+      //Handle last identifier of import
+      Symbol symbol;
+      if(isStatic) {
+        //static identifier is a static member and can be Method Variable or Type. So at this point symbol kind is ambiguous
+        symbol =  new Symbol(Symbol.AMBIGUOUS, Flags.PUBLIC, tree.identifier().name(), currentSymbol);
+      }else{
+        symbol =  new Symbol.TypeSymbol(Flags.PUBLIC, tree.identifier().name(), currentSymbol);
+        ((Symbol.TypeSymbol) symbol).members = new Scope(symbol);
+        //TODO : bytecode completer. This completer should be in charge to put a default value in interfaces.
+        ((Type.ClassType) symbol.type).interfaces = Lists.newArrayList();
+      }
+      currentSymbol = symbol;
+      env.namedImports.enter(currentSymbol);
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      //each part of the qualified identifier of an import is either a package or a type symbol
+      Symbol symbol =  new Symbol(Symbol.PCK | Symbol.TYP, Flags.PUBLIC, tree.name(), currentSymbol);
+      currentSymbol = symbol;
+    }
   }
 
   @Override

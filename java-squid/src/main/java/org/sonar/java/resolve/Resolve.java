@@ -206,6 +206,7 @@ public class Resolve {
       return predefinedSymbol;
     }
 
+    //Shadowing rules : http://docs.oracle.com/javase/specs/jls/se8/html/jls-6.html#jls-6.4.1
     //named imports
     for (Symbol symbol : env.namedImports().lookup(name)) {
       if (symbol.kind < bestSoFar.kind) {
