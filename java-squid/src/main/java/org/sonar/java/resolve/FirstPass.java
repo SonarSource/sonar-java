@@ -52,6 +52,8 @@ public class FirstPass extends BaseTreeVisitor {
 
   private final List<Symbol> uncompleted = Lists.newArrayList();
   private final SecondPass completer;
+  private Symbol.PackageSymbol defaultPackage;
+  private Resolve resolve;
 
   /**
    * Environment.
@@ -61,6 +63,7 @@ public class FirstPass extends BaseTreeVisitor {
 
   public FirstPass(SemanticModel semanticModel, Resolve resolve) {
     this.semanticModel = semanticModel;
+    this.resolve = resolve;
     this.completer = new SecondPass(semanticModel, resolve);
   }
 
@@ -80,12 +83,11 @@ public class FirstPass extends BaseTreeVisitor {
     uncompleted.clear();
   }
 
-  private Symbol.PackageSymbol defaultPackage;
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
     //Default package
-    //TODO default package name is null or empty ?
+    //TODO default package name is null or empty as in openJDK?
     Symbol.PackageSymbol compilationUnitPackage = new Symbol.PackageSymbol(null, null);
     compilationUnitPackage.members = new Scope(compilationUnitPackage);
     defaultPackage = compilationUnitPackage;
@@ -103,45 +105,69 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitImport(ImportTree tree) {
-    ImportVisitor importVisitor = new ImportVisitor(defaultPackage, tree.isStatic());
-    tree.accept(importVisitor);
-    Symbol importSymbol = importVisitor.currentSymbol;
-    semanticModel.associateSymbol(tree, importSymbol);
+    Preconditions.checkArgument(tree.qualifiedIdentifier().is(Tree.Kind.MEMBER_SELECT));
+    //an import is always of the form : TypeName/PackName.Identifier
+    Tree typeToResolve = tree.qualifiedIdentifier();
+    if (tree.isStatic()) {
+      typeToResolve = ((MemberSelectExpressionTree) tree.qualifiedIdentifier()).expression();
+    }
+    ImportTypeVisitor importTypeVisitor = new ImportTypeVisitor(defaultPackage);
+    typeToResolve.accept(importTypeVisitor);
+    Symbol resolvedSymbol = importTypeVisitor.resolvedType;
+    if (tree.isStatic()) {
+      //static identifier is a static member and can be Method Variable or Type. So at this point symbol kind is ambiguous
+      String name = ((MemberSelectExpressionTree) tree.qualifiedIdentifier()).identifier().name();
+      List<Symbol> symbols = importTypeVisitor.resolvedType.members().lookup(name);
+      if (symbols.isEmpty()) {
+        //TODO : To be removed when lookup on resolvedType member is ok..
+        semanticModel.associateSymbol(tree, new Symbol(Symbol.AMBIGUOUS, Flags.PUBLIC, name, importTypeVisitor.resolvedType));
+      } else {
+        //associate first symbol found
+        //TODO associate all symbols found
+        semanticModel.associateSymbol(tree, symbols.get(0));
+      }
+    } else {
+      //named import is associated with the import tree.
+      semanticModel.associateSymbol(tree, resolvedSymbol);
+    }
     super.visitImport(tree);
   }
 
-  private class ImportVisitor extends BaseTreeVisitor {
-    private final boolean isStatic;
+  private class ImportTypeVisitor extends BaseTreeVisitor {
     private Symbol currentSymbol;
+    private Symbol.TypeSymbol resolvedType;
+    private int level;
 
-    public ImportVisitor(Symbol.PackageSymbol defaultPackage, boolean isStatic) {
+    public ImportTypeVisitor(Symbol.PackageSymbol defaultPackage) {
       currentSymbol = defaultPackage;
-      this.isStatic = isStatic;
+      level = -1;
     }
 
     @Override
     public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      scan(tree.expression());
-      //Handle last identifier of import
-      Symbol symbol;
-      if(isStatic) {
-        //static identifier is a static member and can be Method Variable or Type. So at this point symbol kind is ambiguous
-        symbol =  new Symbol(Symbol.AMBIGUOUS, Flags.PUBLIC, tree.identifier().name(), currentSymbol);
-      }else{
-        symbol =  new Symbol.TypeSymbol(Flags.PUBLIC, tree.identifier().name(), currentSymbol);
-        ((Symbol.TypeSymbol) symbol).members = new Scope(symbol);
-        //TODO : bytecode completer. This completer should be in charge to put a default value in interfaces.
-        ((Type.ClassType) symbol.type).interfaces = Lists.newArrayList();
-      }
-      currentSymbol = symbol;
-      env.namedImports.enter(currentSymbol);
+      level++;
+      super.visitMemberSelectExpression(tree);
+      level--;
     }
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      //each part of the qualified identifier of an import is either a package or a type symbol
-      Symbol symbol =  new Symbol(Symbol.PCK | Symbol.TYP, Flags.PUBLIC, tree.name(), currentSymbol);
-      currentSymbol = symbol;
+      //Handle last identifier of import
+      if (level == 0) {
+        resolvedType = new Symbol.TypeSymbol(Flags.PUBLIC, tree.name(), currentSymbol);
+        resolvedType.members = new Scope(resolvedType);
+        //TODO : bytecode completer. This completer should be in charge to put a default value in interfaces.
+        ((Type.ClassType) resolvedType.type).interfaces = Lists.newArrayList();
+        env.namedImports.enter(resolvedType);
+      } else {
+        //each part of the qualified identifier of an import is either a package or a type symbol
+        Symbol symbol = resolve.findIdentInPackage(env, currentSymbol, tree.name(), Symbol.PCK | Symbol.TYP);
+        if(symbol.kind > Symbol.ERRONEOUS) {
+          //TODO ambiguity on package or type should be resolved by defining package symbols using bytecode completer.
+          symbol = new Symbol(Symbol.PCK | Symbol.TYP, Flags.PUBLIC, tree.name(), currentSymbol);
+        }
+        currentSymbol = symbol;
+      }
     }
   }
 
