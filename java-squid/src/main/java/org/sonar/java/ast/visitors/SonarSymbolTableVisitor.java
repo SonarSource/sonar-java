@@ -29,7 +29,9 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -90,6 +92,18 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   public void visitLabeledStatement(LabeledStatementTree tree) {
     createSymbol(tree, tree.label());
     super.visitLabeledStatement(tree);
+  }
+
+  @Override
+  public void visitImport(ImportTree tree) {
+    IdentifierTree identifierTree;
+    if(tree.qualifiedIdentifier().is(Tree.Kind.IDENTIFIER)) {
+      identifierTree = (IdentifierTree) tree.qualifiedIdentifier();
+    } else {
+      identifierTree = ((MemberSelectExpressionTree) tree.qualifiedIdentifier()).identifier();
+    }
+    createSymbol(tree, identifierTree);
+    super.visitImport(tree);
   }
 
   private void createSymbol(Tree tree, IdentifierTree identifier) {
