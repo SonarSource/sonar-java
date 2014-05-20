@@ -21,7 +21,9 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Routines for name resolution.
@@ -39,8 +41,10 @@ public class Resolve {
 
   private final SymbolNotFound symbolNotFound = new SymbolNotFound();
 
+  private final BytecodeCompleter bytecodeCompleter = new BytecodeCompleter();
   private final Types types = new Types();
   private final Symbols symbols;
+  private Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
 
   public Resolve(Symbols symbols) {
     this.symbols = symbols;
@@ -206,7 +210,7 @@ public class Resolve {
       return predefinedSymbol;
     }
 
-    //Shadowing rules : http://docs.oracle.com/javase/specs/jls/se8/html/jls-6.html#jls-6.4.1
+    //JLS8 6.4.1 Shadowing rules
     //named imports
     for (Symbol symbol : env.namedImports().lookup(name)) {
       if (symbol.kind < bestSoFar.kind) {
@@ -259,8 +263,55 @@ public class Resolve {
    * @param kind subset of {@link Symbol#TYP}, {@link Symbol#PCK}
    */
   public Symbol findIdentInPackage(Env env, Symbol site, String name, int kind) {
-    // TODO implement me
-    return symbolNotFound;
+    String fullname = formFullName(name, site);
+    Symbol bestSoFar = symbolNotFound;
+    Symbol.PackageSymbol pack =null;
+    //Check if we already have resolved this package.
+    if ((kind & Symbol.PCK) != 0) {
+      pack = packages.get(fullname);
+      if(pack!=null) {
+        return pack;
+      }
+    }
+    //Try to find a type matching the name.
+    if ((kind & Symbol.TYP) != 0) {
+      Symbol sym = bytecodeCompleter.loadClass(env, site, fullname, name);
+      if (sym.kind < bestSoFar.kind) {
+        bestSoFar = sym;
+      }
+    }
+    //We did not find the class so identifier must be a package.
+    if ((kind & Symbol.PCK) != 0 && bestSoFar.kind >= symbolNotFound.kind) {
+      pack = getPackageSymbol(fullname, name);
+    }
+    return (pack != null) ? pack : bestSoFar;
+  }
+
+  private String formFullName(String name, Symbol site) {
+    String result = name;
+    Symbol owner = site;
+    while(owner!=null && owner.name!=null) {
+      result = owner.name +"."+ result;
+      owner = owner.owner();
+    }
+    return result;
+  }
+
+  private Symbol.PackageSymbol getPackageSymbol(String fullname, String name) {
+    Symbol.PackageSymbol result = packages.get(fullname);
+    if(result==null) {
+      System.out.println("Creating package "+fullname);
+      String packageOwner;
+      if(fullname.contains(".")) {
+        packageOwner = fullname.substring(0, fullname.lastIndexOf('.'));
+      }else {
+        packageOwner = fullname.substring(0, fullname.lastIndexOf(name));
+      }
+      result = new Symbol.PackageSymbol(name, packages.get(packageOwner));
+      result.completer = bytecodeCompleter;
+      packages.put(fullname, result);
+    }
+    return result;
   }
 
   /**

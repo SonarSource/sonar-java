@@ -19,9 +19,12 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.Lists;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -37,6 +40,8 @@ public class ImportResolutionTest {
 
   @Test
   public void extends_should_point_to_correct_symbol() {
+    File bytecodeFile = new File("target/test-classes/");
+    BytecodeCompleter.PROJECT_CLASSPATH = Lists.newArrayList(bytecodeFile);
     assertThat(result.symbol("Class2").kind == Symbol.TYP);
     Symbol.TypeSymbol class1 =(Symbol.TypeSymbol) result.symbol("Class1");
     Symbol.TypeSymbol class2 =(Symbol.TypeSymbol) result.symbol("Class2");

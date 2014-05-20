@@ -115,10 +115,10 @@ public class FirstPass extends BaseTreeVisitor {
     typeToResolve.accept(importTypeVisitor);
     Symbol resolvedSymbol = importTypeVisitor.resolvedType;
     if (tree.isStatic()) {
-      //static identifier is a static member and can be Method Variable or Type. So at this point symbol kind is ambiguous
       String name = ((MemberSelectExpressionTree) tree.qualifiedIdentifier()).identifier().name();
       List<Symbol> symbols = importTypeVisitor.resolvedType.members().lookup(name);
       if (symbols.isEmpty()) {
+        //static identifier is a static member and can be Method Variable or Type. So at this point symbol kind is ambiguous
         //TODO : To be removed when lookup on resolvedType member is ok..
         semanticModel.associateSymbol(tree, new Symbol(Symbol.AMBIGUOUS, Flags.PUBLIC, name, importTypeVisitor.resolvedType));
       } else {
@@ -158,6 +158,7 @@ public class FirstPass extends BaseTreeVisitor {
         resolvedType.members = new Scope(resolvedType);
         //TODO : bytecode completer. This completer should be in charge to put a default value in interfaces.
         ((Type.ClassType) resolvedType.type).interfaces = Lists.newArrayList();
+        resolvedType.completer = new BytecodeCompleter();
         env.namedImports.enter(resolvedType);
       } else {
         //each part of the qualified identifier of an import is either a package or a type symbol
