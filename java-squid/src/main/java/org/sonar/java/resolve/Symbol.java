@@ -35,11 +35,11 @@ public class Symbol {
 
   final int kind;
 
-  private final int flags;
+  int flags;
 
-  final String name;
+  String name;
 
-  private final Symbol owner;
+  Symbol owner;
 
   Completer completer;
 

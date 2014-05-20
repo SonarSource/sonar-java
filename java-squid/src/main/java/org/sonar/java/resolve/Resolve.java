@@ -263,7 +263,7 @@ public class Resolve {
    * @param kind subset of {@link Symbol#TYP}, {@link Symbol#PCK}
    */
   public Symbol findIdentInPackage(Env env, Symbol site, String name, int kind) {
-    String fullname = formFullName(name, site);
+    String fullname = bytecodeCompleter.formFullName(name, site);
     Symbol bestSoFar = symbolNotFound;
     Symbol.PackageSymbol pack =null;
     //Check if we already have resolved this package.
@@ -282,37 +282,11 @@ public class Resolve {
     }
     //We did not find the class so identifier must be a package.
     if ((kind & Symbol.PCK) != 0 && bestSoFar.kind >= symbolNotFound.kind) {
-      pack = getPackageSymbol(fullname, name);
+      pack = bytecodeCompleter.enterPackage(fullname, name);
     }
     return (pack != null) ? pack : bestSoFar;
   }
 
-  private String formFullName(String name, Symbol site) {
-    String result = name;
-    Symbol owner = site;
-    while(owner!=null && owner.name!=null) {
-      result = owner.name +"."+ result;
-      owner = owner.owner();
-    }
-    return result;
-  }
-
-  private Symbol.PackageSymbol getPackageSymbol(String fullname, String name) {
-    Symbol.PackageSymbol result = packages.get(fullname);
-    if(result==null) {
-      System.out.println("Creating package "+fullname);
-      String packageOwner;
-      if(fullname.contains(".")) {
-        packageOwner = fullname.substring(0, fullname.lastIndexOf('.'));
-      }else {
-        packageOwner = fullname.substring(0, fullname.lastIndexOf(name));
-      }
-      result = new Symbol.PackageSymbol(name, packages.get(packageOwner));
-      result.completer = bytecodeCompleter;
-      packages.put(fullname, result);
-    }
-    return result;
-  }
 
   /**
    * @param kind subset of {@link Symbol#VAR}, {@link Symbol#TYP}
