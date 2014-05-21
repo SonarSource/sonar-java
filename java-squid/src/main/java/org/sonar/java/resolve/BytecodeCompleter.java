@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
+import org.apache.commons.lang.StringUtils;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -72,13 +73,14 @@ public class BytecodeCompleter implements Symbol.Completer{
     if(classLoader == null ) {
       classLoader = ClassLoaderBuilder.create(PROJECT_CLASSPATH);
     }
-    return classLoader.getResourceAsStream(fullname.replace('.', '/') + ".class");
+    return classLoader.getResourceAsStream(Convert.bytecodeName(fullname) + ".class");
   }
 
   public String formFullName(String name, Symbol site) {
     String result = name;
     Symbol owner = site;
     while(owner!=null && owner.name!=null) {
+      //TODO inner classes
       result = owner.name +"."+ result;
       owner = owner.owner();
     }
@@ -86,17 +88,15 @@ public class BytecodeCompleter implements Symbol.Completer{
   }
 
   public Symbol.TypeSymbol getClassSymbol(String bytecodeName) {
-    Symbol.TypeSymbol symbol = classes.get(bytecodeName);
+    String flatName = Convert.flatName(bytecodeName);
+    Symbol.TypeSymbol symbol = classes.get(flatName);
     if (symbol == null) {
       // flags not specified
       //TODO handle innerClasses
-      String packageFullName = bytecodeName.substring(0, bytecodeName.lastIndexOf('/')).replace('/', '.');
-      String className = bytecodeName.substring(bytecodeName.lastIndexOf('/')+1);
-
-      symbol = new Symbol.TypeSymbol(0, className, enterPackage(packageFullName));
+      symbol = new Symbol.TypeSymbol(0, Convert.shortName(flatName), enterPackage(Convert.packagePart(flatName)));
       symbol.members = new Scope(symbol);
       symbol.completer = this;
-      classes.put(bytecodeName, symbol);
+      classes.put(flatName, symbol);
     }
     return symbol;
   }
@@ -120,19 +120,12 @@ public class BytecodeCompleter implements Symbol.Completer{
   }
 
   public Symbol.PackageSymbol enterPackage(String fullname) {
-    if(fullname == null || fullname.isEmpty()) {
+    if(StringUtils.isBlank(fullname)) {
       return defaultPackage;
     }
-    String name = fullname.substring(fullname.lastIndexOf('.')+1);
     Symbol.PackageSymbol result = packages.get(fullname);
     if(result==null) {
-      String packageOwner;
-      if(fullname.contains(".")) {
-        packageOwner = fullname.substring(0, fullname.lastIndexOf('.'));
-      }else {
-        packageOwner = fullname.substring(0, fullname.lastIndexOf(name));
-      }
-      result = new Symbol.PackageSymbol(name, enterPackage(packageOwner));
+      result = new Symbol.PackageSymbol(Convert.shortName(fullname), enterPackage(Convert.packagePart(fullname)));
       result.completer = this;
       packages.put(fullname, result);
     }
@@ -166,6 +159,7 @@ public class BytecodeCompleter implements Symbol.Completer{
       } else {
         ((Type.ClassType)classSymbol.type).supertype = getCompletedClassSymbol(superName).type;
       }
+      //Todo handle interfaces properly
       ((Type.ClassType)classSymbol.type).interfaces = Lists.newArrayList();//getCompletedClassSymbols(interfaces).t;
     }
 
