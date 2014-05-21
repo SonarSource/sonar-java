@@ -59,4 +59,15 @@ public class ConvertTest {
     assertThat(Convert.bytecodeName("org.example.MyClass$InnerClass")).isEqualTo("org/example/MyClass$InnerClass");
   }
 
+  @Test
+  public void enclosingClassName() throws Exception {
+    assertThat(Convert.enclosingClassName("MyClass")).isEqualTo("");
+    assertThat(Convert.enclosingClassName("MyClass$InnerClass")).isEqualTo("MyClass");
+  }
+
+  @Test
+  public void innerClassName() throws Exception {
+    assertThat(Convert.innerClassName("MyClass")).isEqualTo("MyClass");
+    assertThat(Convert.innerClassName("MyClass$InnerClass")).isEqualTo("InnerClass");
+  }
 }

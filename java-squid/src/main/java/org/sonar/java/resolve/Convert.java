@@ -41,4 +41,12 @@ public class Convert {
     return fullName.replace('.', '/');
   }
 
+  public static String enclosingClassName(String shortName) {
+    int lastDollar = shortName.lastIndexOf('$');
+    return lastDollar < 0 ? "" : shortName.substring(0, lastDollar);
+  }
+
+  public static String innerClassName(String shortName) {
+    return shortName.substring(shortName.lastIndexOf('$') +1);
+  }
 }

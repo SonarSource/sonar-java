@@ -80,8 +80,13 @@ public class BytecodeCompleter implements Symbol.Completer{
     String result = name;
     Symbol owner = site;
     while(owner!=null && owner.name!=null) {
-      //TODO inner classes
-      result = owner.name +"."+ result;
+      //Handle inner classes, if owner is a type, separate by $
+      String separator = ".";
+      if(owner.kind == Symbol.TYP) {
+        separator = "$";
+      }
+      result = owner.name +separator+ result;
+
       owner = owner.owner();
     }
     return result;
@@ -92,8 +97,15 @@ public class BytecodeCompleter implements Symbol.Completer{
     Symbol.TypeSymbol symbol = classes.get(flatName);
     if (symbol == null) {
       // flags not specified
-      //TODO handle innerClasses
-      symbol = new Symbol.TypeSymbol(0, Convert.shortName(flatName), enterPackage(Convert.packagePart(flatName)));
+      String shortName = Convert.shortName(flatName);
+      String packageName = Convert.packagePart(flatName);
+      String enclosingClassName = Convert.enclosingClassName(shortName);
+      if(StringUtils.isNotEmpty(enclosingClassName)) {
+        //handle innerClasses
+        symbol = new Symbol.TypeSymbol(0, Convert.innerClassName(shortName), getClassSymbol(Convert.bytecodeName(packageName+"."+enclosingClassName)));
+      }else{
+        symbol = new Symbol.TypeSymbol(0, shortName, enterPackage(packageName));
+      }
       symbol.members = new Scope(symbol);
       symbol.completer = this;
       classes.put(flatName, symbol);
@@ -201,7 +213,7 @@ public class BytecodeCompleter implements Symbol.Completer{
      */
     private void defineInnerClass(String bytecodeName) {
       Symbol.TypeSymbol innerClass = getCompletedClassSymbol(bytecodeName);
-      innerClass.owner = classSymbol;
+      Preconditions.checkState(innerClass.owner == classSymbol);
     }
 
     /**

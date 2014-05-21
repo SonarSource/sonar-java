@@ -23,23 +23,26 @@ import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class BytecodeCompleterTest {
 
+  //Used to check symbol for inner class
+  public static class InnerClass extends ArrayList {
+    public int myField;
+  }
+
   @Test
   public void completing_symbol_ArrayList() throws Exception {
     BytecodeCompleter bytecodeCompleter = new BytecodeCompleter();
     BytecodeCompleter.PROJECT_CLASSPATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
-    Symbol.PackageSymbol  util = bytecodeCompleter.enterPackage("java.util");
-    Symbol.TypeSymbol arrayList = new Symbol.TypeSymbol(Flags.PUBLIC, "ArrayList", util);
-    bytecodeCompleter.complete(arrayList);
+    Symbol.TypeSymbol arrayList = bytecodeCompleter.getClassSymbol("java/util/ArrayList");
     //Check supertype
     assertThat(arrayList.getSuperclass().symbol.name).isEqualTo("AbstractList");
-    assertThat(arrayList.getSuperclass().symbol.owner().name).isEqualTo(util.name);
-    assertThat(arrayList.getSuperclass().symbol.owner()).isEqualTo(util);
+    assertThat(arrayList.getSuperclass().symbol.owner().name).isEqualTo("util");
 
     //Check interfaces
     assertThat(arrayList.getInterfaces()).hasSize(4);
@@ -51,4 +54,16 @@ public class BytecodeCompleterTest {
     assertThat(interfacesName).contains("List", "RandomAccess", "Cloneable", "Serializable");
   }
 
+  @Test
+  public void inner_classes_should_be_completed() throws Exception {
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter();
+    BytecodeCompleter.PROJECT_CLASSPATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
+    Symbol.TypeSymbol thisTest = bytecodeCompleter.getClassSymbol(Convert.bytecodeName(getClass().getName()));
+    List<Symbol> symbols = thisTest.members().lookup("InnerClass");
+    assertThat(symbols).hasSize(1);
+    Symbol.TypeSymbol innerClass = (Symbol.TypeSymbol) symbols.get(0);
+    assertThat(innerClass.getSuperclass().symbol.name).isEqualTo("ArrayList");
+
+
+  }
 }
