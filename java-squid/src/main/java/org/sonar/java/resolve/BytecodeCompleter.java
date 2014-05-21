@@ -58,8 +58,8 @@ public class BytecodeCompleter implements Symbol.Completer{
     try {
       inputStream = inputStreamFor(bytecodeName);
       ClassReader classReader = new ClassReader(inputStream);
-//      Symbol.TypeSymbol classSymbol = getClassSymbol(bytecodeName);
-//      Preconditions.checkState(classSymbol == symbol);
+      Symbol.TypeSymbol classSymbol = getClassSymbol(bytecodeName);
+      Preconditions.checkState(classSymbol == symbol);
       classReader.accept(new BytecodeVisitor((Symbol.TypeSymbol) symbol), 0);
     } catch (Exception e) {
       ((Type.ClassType) symbol.type).interfaces = Lists.newArrayList();
@@ -121,8 +121,9 @@ public class BytecodeCompleter implements Symbol.Completer{
    */
   public Symbol loadClass(Resolve.Env env, Symbol owner, String fullname, String name) {
     try {
+      //This calls to bytecode is done only to check if name exists as a type.
       ClassReader asmReader = new ClassReader(inputStreamFor(fullname));
-      Symbol.TypeSymbol type = new Symbol.TypeSymbol(Flags.PUBLIC, name, owner);
+      Symbol.TypeSymbol type = getClassSymbol(Convert.bytecodeName(fullname));
       type.members = new Scope(type);
       type.completer = this;
       return type;

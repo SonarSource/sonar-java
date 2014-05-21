@@ -66,6 +66,7 @@ public class ImportResolutionTest {
   }
 
   @Test
+  @Ignore
   public void import_static_var_should_be_resolved() throws Exception {
     assertThat(result.symbol("HTTP_OK").owner().name).isEqualTo("HttpURLConnection");
     assertThat(result.symbol("HTTP_OK").owner().type.symbol.name).isEqualTo("HttpURLConnection");
