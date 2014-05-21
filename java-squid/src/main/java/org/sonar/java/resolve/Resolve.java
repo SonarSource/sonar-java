@@ -41,13 +41,14 @@ public class Resolve {
 
   private final SymbolNotFound symbolNotFound = new SymbolNotFound();
 
-  private final BytecodeCompleter bytecodeCompleter = new BytecodeCompleter();
+  private final BytecodeCompleter bytecodeCompleter;
   private final Types types = new Types();
   private final Symbols symbols;
   private Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
 
   public Resolve(Symbols symbols) {
     this.symbols = symbols;
+    this.bytecodeCompleter = new BytecodeCompleter();
   }
 
   static class Env {

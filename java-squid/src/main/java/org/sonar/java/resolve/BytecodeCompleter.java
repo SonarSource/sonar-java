@@ -29,6 +29,7 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -226,6 +227,22 @@ public class BytecodeCompleter implements Symbol.Completer{
       classSymbol.name = innerName;
       classSymbol.owner = outerClassSymbol;
       outerClassSymbol.members.enter(classSymbol);
+    }
+
+    @Override
+    public FieldVisitor visitField(int flags, String name, String desc, String signature, Object value) {
+      if (!isSynthetic(flags)) {
+        Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, classSymbol);
+        if (org.objectweb.asm.Type.getType(desc).getSort() == org.objectweb.asm.Type.OBJECT) {
+          symbol.type = getCompletedClassSymbol(org.objectweb.asm.Type.getType(desc).getInternalName()).type;
+        } else {
+          // FIXME
+        }
+        classSymbol.members.enter(symbol);
+      }
+
+      // TODO implement FieldVisitor?
+      return null;
     }
 
     //TODO fields and methods

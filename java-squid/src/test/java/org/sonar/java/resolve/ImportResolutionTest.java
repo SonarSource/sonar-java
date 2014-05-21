@@ -66,12 +66,13 @@ public class ImportResolutionTest {
   }
 
   @Test
-  @Ignore
   public void import_static_var_should_be_resolved() throws Exception {
-    assertThat(result.symbol("HTTP_OK").owner().name).isEqualTo("HttpURLConnection");
-    assertThat(result.symbol("HTTP_OK").owner().type.symbol.name).isEqualTo("HttpURLConnection");
-    //TODO : be able to determine which kind of symbol is this static import.
-    assertThat(result.symbol("HTTP_OK").kind).isEqualTo(Symbol.AMBIGUOUS);
+    Symbol http_ok = result.symbol("HTTP_OK");
+    assertThat(http_ok.owner().name).isEqualTo("HttpURLConnection");
+    assertThat(http_ok.owner().type.symbol.name).isEqualTo("HttpURLConnection");
+    assertThat(http_ok.kind).isEqualTo(Symbol.VAR);
+    //TODO correctly handle the primitive types for variables.
+    assertThat(http_ok.type).isNull();
 
   }
 
