@@ -109,8 +109,13 @@ public class FirstPass extends BaseTreeVisitor {
     Symbol resolvedSymbol = importResolverVisitor.currentSymbol;
     //Associate symbol only if found.
     if (resolvedSymbol.kind < Symbol.ERRONEOUS) {
-      semanticModel.associateSymbol(tree, resolvedSymbol);
-      env.namedImports.enter(resolvedSymbol);
+      try {
+        semanticModel.associateSymbol(tree, resolvedSymbol);
+        env.namedImports.enter(resolvedSymbol);
+      }catch (IllegalArgumentException ex) {
+        //Exception is raised because we associate the resolved symbol to different trees.
+        //TODO handle correctly on demand import so java.util.List and java.util.List.* are not resolved to the same symbol!
+      }
     }
     super.visitImport(tree);
   }
@@ -138,6 +143,7 @@ public class FirstPass extends BaseTreeVisitor {
         //Site symbol is not found so we won't be able to resolve the import.
       }
     }
+
   }
 
   @Override

@@ -5,6 +5,7 @@ import org.sonar.java.model.JavaTree.AnnotationTreeImpl;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import static java.util.List.*;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 @SuppressWarnings("all")
