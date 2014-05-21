@@ -282,7 +282,7 @@ public class Resolve {
     }
     //We did not find the class so identifier must be a package.
     if ((kind & Symbol.PCK) != 0 && bestSoFar.kind >= symbolNotFound.kind) {
-      pack = bytecodeCompleter.enterPackage(fullname, name);
+      pack = bytecodeCompleter.enterPackage(fullname);
     }
     return (pack != null) ? pack : bestSoFar;
   }

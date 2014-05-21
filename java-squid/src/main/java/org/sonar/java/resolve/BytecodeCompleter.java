@@ -44,13 +44,14 @@ public class BytecodeCompleter implements Symbol.Completer{
 
   private static final Logger LOG = LoggerFactory.getLogger(BytecodeCompleter.class);
   public static List<File> PROJECT_CLASSPATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
+  public static Symbol.PackageSymbol defaultPackage = new Symbol.PackageSymbol(null, null);
   private ClassLoader classLoader;
   private Map<String, Symbol.TypeSymbol> classes = new HashMap<String, Symbol.TypeSymbol>();
   private Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
 
   @Override
   public void complete(Symbol symbol) {
-    LOG.info("Completing symbol : " + symbol.name);
+    LOG.debug("Completing symbol : " + symbol.name);
     String bytecodeName = formFullName(symbol.name, symbol.owner);
     InputStream inputStream = null;
     try {
@@ -60,7 +61,6 @@ public class BytecodeCompleter implements Symbol.Completer{
 //      Preconditions.checkState(classSymbol == symbol);
       classReader.accept(new BytecodeVisitor((Symbol.TypeSymbol) symbol), 0);
     } catch (Exception e) {
-      //TODO
       ((Type.ClassType) symbol.type).interfaces = Lists.newArrayList();
       LOG.error("Cannot complete type : " + bytecodeName + "  " + e.getMessage());
     } finally {
@@ -88,9 +88,12 @@ public class BytecodeCompleter implements Symbol.Completer{
   public Symbol.TypeSymbol getClassSymbol(String bytecodeName) {
     Symbol.TypeSymbol symbol = classes.get(bytecodeName);
     if (symbol == null) {
-      // !!! be careful: owner and flags not specified, name is in format as it appears in bytecode !!!
-      //TODO why owner is null ? InnerClasses ? should be deduced from bytecodeName.
-      symbol = new Symbol.TypeSymbol(0, bytecodeName, null);
+      // flags not specified
+      //TODO handle innerClasses
+      String packageFullName = bytecodeName.substring(0, bytecodeName.lastIndexOf('/')).replace('/', '.');
+      String className = bytecodeName.substring(bytecodeName.lastIndexOf('/')+1);
+
+      symbol = new Symbol.TypeSymbol(0, className, enterPackage(packageFullName));
       symbol.members = new Scope(symbol);
       symbol.completer = this;
       classes.put(bytecodeName, symbol);
@@ -116,7 +119,11 @@ public class BytecodeCompleter implements Symbol.Completer{
     }
   }
 
-  public Symbol.PackageSymbol enterPackage(String fullname, String name) {
+  public Symbol.PackageSymbol enterPackage(String fullname) {
+    if(fullname == null || fullname.isEmpty()) {
+      return defaultPackage;
+    }
+    String name = fullname.substring(fullname.lastIndexOf('.')+1);
     Symbol.PackageSymbol result = packages.get(fullname);
     if(result==null) {
       String packageOwner;
@@ -125,7 +132,7 @@ public class BytecodeCompleter implements Symbol.Completer{
       }else {
         packageOwner = fullname.substring(0, fullname.lastIndexOf(name));
       }
-      result = new Symbol.PackageSymbol(name, packages.get(packageOwner));
+      result = new Symbol.PackageSymbol(name, enterPackage(packageOwner));
       result.completer = this;
       packages.put(fullname, result);
     }
@@ -229,7 +236,7 @@ public class BytecodeCompleter implements Symbol.Completer{
       if (classSymbol.owner == null) {
         String flatName = className.replace('/', '.');
         classSymbol.name = flatName.substring(flatName.lastIndexOf('.') + 1);
-        classSymbol.owner = enterPackage(flatName, flatName.substring(flatName.lastIndexOf('.') + 1));
+        classSymbol.owner = enterPackage(flatName);
         Symbol.PackageSymbol owner = (Symbol.PackageSymbol) classSymbol.owner;
         if (owner.members == null) {
           // package was without classes so far
