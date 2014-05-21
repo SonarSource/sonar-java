@@ -20,24 +20,35 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
-import org.fest.assertions.Assertions;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.List;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class BytecodeCompleterTest {
 
   @Test
-  public void completing_symbol() throws Exception {
+  public void completing_symbol_ArrayList() throws Exception {
     BytecodeCompleter bytecodeCompleter = new BytecodeCompleter();
     BytecodeCompleter.PROJECT_CLASSPATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
     Symbol.PackageSymbol  util = bytecodeCompleter.enterPackage("java.util");
     Symbol.TypeSymbol arrayList = new Symbol.TypeSymbol(Flags.PUBLIC, "ArrayList", util);
     bytecodeCompleter.complete(arrayList);
-    Assertions.assertThat(arrayList.getSuperclass().symbol.name).isEqualTo("AbstractList");
-    Assertions.assertThat(arrayList.getSuperclass().symbol.owner().name).isEqualTo(util.name);
-    Assertions.assertThat(arrayList.getSuperclass().symbol.owner()).isEqualTo(util);
+    //Check supertype
+    assertThat(arrayList.getSuperclass().symbol.name).isEqualTo("AbstractList");
+    assertThat(arrayList.getSuperclass().symbol.owner().name).isEqualTo(util.name);
+    assertThat(arrayList.getSuperclass().symbol.owner()).isEqualTo(util);
 
+    //Check interfaces
+    assertThat(arrayList.getInterfaces()).hasSize(4);
+    List<String> interfacesName = Lists.newArrayList();
+    for(Type interfaceType : arrayList.getInterfaces()) {
+      interfacesName.add(interfaceType.symbol.name);
+    }
+    assertThat(interfacesName).hasSize(4);
+    assertThat(interfacesName).contains("List", "RandomAccess", "Cloneable", "Serializable");
   }
 
 }

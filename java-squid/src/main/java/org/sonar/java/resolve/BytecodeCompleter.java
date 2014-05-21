@@ -149,7 +149,6 @@ public class BytecodeCompleter implements Symbol.Completer{
     @Override
     public void visit(int version, int flags, String name, String signature, String superName, String[] interfaces) {
       Preconditions.checkState(name.endsWith(classSymbol.name));
-//      Preconditions.checkState(classSymbol.owner == null);
       className = name;
       classSymbol.flags = flags;
       classSymbol.members = new Scope(classSymbol);
@@ -159,8 +158,7 @@ public class BytecodeCompleter implements Symbol.Completer{
       } else {
         ((Type.ClassType)classSymbol.type).supertype = getCompletedClassSymbol(superName).type;
       }
-      //Todo handle interfaces properly
-      ((Type.ClassType)classSymbol.type).interfaces = Lists.newArrayList();//getCompletedClassSymbols(interfaces).t;
+      ((Type.ClassType)classSymbol.type).interfaces = getCompletedClassSymbolsType(interfaces);
     }
 
     @Override
@@ -204,7 +202,6 @@ public class BytecodeCompleter implements Symbol.Completer{
     private void defineInnerClass(String bytecodeName) {
       Symbol.TypeSymbol innerClass = getCompletedClassSymbol(bytecodeName);
       innerClass.owner = classSymbol;
-//      Preconditions.checkState(innerClass.owner == classSymbol);
     }
 
     /**
@@ -246,12 +243,17 @@ public class BytecodeCompleter implements Symbol.Completer{
       return symbol;
     }
 
-    private List<Symbol.TypeSymbol> getCompletedClassSymbols(String[] bytecodeNames) {
-      ImmutableList.Builder<Symbol.TypeSymbol> symbols = ImmutableList.builder();
+    /**
+     * Used to complete types of interfaces.
+     * @param bytecodeNames bytecodeNames of interfaces to complete.
+     * @return List of the types of those interfaces.
+     */
+    private List<Type> getCompletedClassSymbolsType(String[] bytecodeNames) {
+      ImmutableList.Builder<Type> types = ImmutableList.builder();
       for (String bytecodeName : bytecodeNames) {
-        symbols.add(getCompletedClassSymbol(bytecodeName));
+        types.add(getCompletedClassSymbol(bytecodeName).type);
       }
-      return symbols.build();
+      return types.build();
     }
 
   }
