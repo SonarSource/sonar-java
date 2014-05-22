@@ -89,6 +89,8 @@ public class ImportResolutionTest {
     assertThat(sort.owner().type.symbol.name).isEqualTo("Collections");
     assertThat(sort.kind).isEqualTo(Symbol.MTH);
     assertThat(sort.type.tag).isEqualTo(Type.METHOD);
+    assertThat(result.reference(39,7)).isEqualTo(sort);
+    assertThat(result.reference(40,7)).isEqualTo(sort);
   }
 
   @Test

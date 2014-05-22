@@ -129,7 +129,7 @@ public class FirstPass extends BaseTreeVisitor {
           for (Symbol symbol : resolved) {
             //add only static fields
             //TODO accessibility should be checked : package/public
-            if((symbol.flags & Flags.STATIC) != 0){
+            if ((symbol.flags & Flags.STATIC) != 0) {
               //TODO only the first symbol found will be associated with the tree.
               enterSymbol(symbol, tree);
             }
@@ -139,12 +139,13 @@ public class FirstPass extends BaseTreeVisitor {
     }
 
     private void enterSymbol(Symbol symbol, ImportTree tree) {
-      try {
+      env.namedImports.enter(symbol);
+      //FIXME We add all symbols to named Imports for static methods, but only the first one will be resolved as we don't handle arguments.
+      //FIXME That is why we only add the first symbol so we resolve references at best for now.
+      //add to semantic model only the first symbol.
+      if (semanticModel.getSymbol(tree) == null && semanticModel.getTree(symbol) == null) {
+        //TODO handle correctly on demand import so java.util.List and java.util.List.* are not resolved to the same symbol and we won't need check : semanticModel.getTree(symbol)==null
         semanticModel.associateSymbol(tree, symbol);
-        env.namedImports.enter(symbol);
-      } catch (IllegalArgumentException ex) {
-        //Exception is raised because we associate the resolved symbol to different trees.
-        //TODO handle correctly on demand import so java.util.List and java.util.List.* are not resolved to the same symbol!
       }
     }
 
@@ -154,8 +155,8 @@ public class FirstPass extends BaseTreeVisitor {
         currentSymbol = resolve.findIdentInPackage(env, currentSymbol, tree.name(), Symbol.PCK | Symbol.TYP);
         resolved = Collections.emptyList();
       } else if (currentSymbol.kind == Symbol.TYP) {
-         resolved = ((Symbol.TypeSymbol) currentSymbol).members().lookup(tree.name());
-         currentSymbol = resolve.findIdentInType(env, (Symbol.TypeSymbol) currentSymbol, tree.name(), Symbol.TYP);
+        resolved = ((Symbol.TypeSymbol) currentSymbol).members().lookup(tree.name());
+        currentSymbol = resolve.findIdentInType(env, (Symbol.TypeSymbol) currentSymbol, tree.name(), Symbol.TYP);
       } else {
         //Site symbol is not found so we won't be able to resolve the import.
         currentSymbol = new Resolve.SymbolNotFound();
