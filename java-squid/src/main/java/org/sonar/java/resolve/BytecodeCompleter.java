@@ -30,6 +30,7 @@ import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,7 @@ public class BytecodeCompleter implements Symbol.Completer{
       classReader.accept(new BytecodeVisitor((Symbol.TypeSymbol) symbol), 0);
     } catch (Exception e) {
       ((Type.ClassType) symbol.type).interfaces = Lists.newArrayList();
-      LOG.error("Cannot complete type : " + bytecodeName + "  " + e.getMessage());
+      LOG.error("Cannot complete type : " + bytecodeName + "  " + e.getMessage(), e);
     } finally {
       Closeables.closeQuietly(inputStream);
     }
@@ -239,46 +240,67 @@ public class BytecodeCompleter implements Symbol.Completer{
     public FieldVisitor visitField(int flags, String name, String desc, String signature, Object value) {
       if (!isSynthetic(flags)) {
         // TODO(Godin): there is no guarantee that bytecode flags can be mapped one-to-one into our flags
-        Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, classSymbol);
-        org.objectweb.asm.Type asmType = org.objectweb.asm.Type.getType(desc);
-        switch (asmType.getSort()) {
-          case org.objectweb.asm.Type.OBJECT:
-            symbol.type = getCompletedClassSymbol(asmType.getInternalName()).type;
-            break;
-          case org.objectweb.asm.Type.BYTE:
-            symbol.type = symbols.byteType;
-            break;
-          case org.objectweb.asm.Type.CHAR:
-            symbol.type = symbols.charType;
-            break;
-          case org.objectweb.asm.Type.SHORT:
-            symbol.type = symbols.shortType;
-            break;
-          case org.objectweb.asm.Type.INT:
-            symbol.type = symbols.intType;
-            break;
-          case org.objectweb.asm.Type.LONG:
-            symbol.type = symbols.longType;
-            break;
-          case org.objectweb.asm.Type.FLOAT:
-            symbol.type = symbols.floatType;
-            break;
-          case org.objectweb.asm.Type.DOUBLE:
-            symbol.type = symbols.doubleType;
-            break;
-          case org.objectweb.asm.Type.BOOLEAN:
-            symbol.type = symbols.booleanType;
-            break;
-          case org.objectweb.asm.Type.VOID:
-          default:
-            // FIXME
-            break;
-        }
+        Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
         classSymbol.members.enter(symbol);
       }
-
       // TODO implement FieldVisitor?
       return null;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int flags, String name, String desc, String signature, String[] exceptions) {
+      if (!isSynthetic(flags)) {
+        Type.MethodType type = new Type.MethodType(
+          // TODO parameters, exceptions
+          ImmutableList.<Type>of(),
+          convertAsmType(org.objectweb.asm.Type.getReturnType(desc)),
+          ImmutableList.<Type>of(),
+          classSymbol
+        );
+        Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(flags, name, type, classSymbol);
+        classSymbol.members.enter(methodSymbol);
+      }
+      // TODO implement MethodVisitor?
+      return null;
+    }
+
+    private Type convertAsmType(org.objectweb.asm.Type asmType) {
+      Type result;
+      switch (asmType.getSort()) {
+        case org.objectweb.asm.Type.OBJECT:
+          result = getCompletedClassSymbol(asmType.getInternalName()).type;
+          break;
+        case org.objectweb.asm.Type.BYTE:
+          result = symbols.byteType;
+          break;
+        case org.objectweb.asm.Type.CHAR:
+          result = symbols.charType;
+          break;
+        case org.objectweb.asm.Type.SHORT:
+          result = symbols.shortType;
+          break;
+        case org.objectweb.asm.Type.INT:
+          result = symbols.intType;
+          break;
+        case org.objectweb.asm.Type.LONG:
+          result = symbols.longType;
+          break;
+        case org.objectweb.asm.Type.FLOAT:
+          result = symbols.floatType;
+          break;
+        case org.objectweb.asm.Type.DOUBLE:
+          result = symbols.doubleType;
+          break;
+        case org.objectweb.asm.Type.BOOLEAN:
+          result = symbols.booleanType;
+          break;
+        case org.objectweb.asm.Type.VOID:
+        default:
+          // FIXME
+          result = null;
+          break;
+      }
+      return result;
     }
 
     /**
