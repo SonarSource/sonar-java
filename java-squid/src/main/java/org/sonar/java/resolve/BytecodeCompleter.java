@@ -45,6 +45,7 @@ import java.util.Map;
 public class BytecodeCompleter implements Symbol.Completer{
 
   private static final Logger LOG = LoggerFactory.getLogger(BytecodeCompleter.class);
+
   public static List<File> PROJECT_CLASSPATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
   public static Symbol.PackageSymbol defaultPackage = new Symbol.PackageSymbol(null, null);
   private ClassLoader classLoader;
@@ -61,15 +62,16 @@ public class BytecodeCompleter implements Symbol.Completer{
   public void complete(Symbol symbol) {
     LOG.debug("Completing symbol : " + symbol.name);
     String bytecodeName = formFullName(symbol.name, symbol.owner);
+    Symbol.TypeSymbol classSymbol = getClassSymbol(bytecodeName);
+    Preconditions.checkState(classSymbol == symbol);
     InputStream inputStream = null;
     try {
       inputStream = inputStreamFor(bytecodeName);
       ClassReader classReader = new ClassReader(inputStream);
-      Symbol.TypeSymbol classSymbol = getClassSymbol(bytecodeName);
-      Preconditions.checkState(classSymbol == symbol);
-      classReader.accept(new BytecodeVisitor((Symbol.TypeSymbol) symbol), 0);
+      classReader.accept(new BytecodeVisitor((Symbol.TypeSymbol) symbol), ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
     } catch (Exception e) {
-      ((Type.ClassType) symbol.type).interfaces = Lists.newArrayList();
+      // TODO(Godin): why only interfaces, but not supertype for example?
+      ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
       LOG.error("Cannot complete type : " + bytecodeName + "  " + e.getMessage(), e);
     } finally {
       Closeables.closeQuietly(inputStream);
@@ -77,7 +79,7 @@ public class BytecodeCompleter implements Symbol.Completer{
   }
 
   private InputStream inputStreamFor(String fullname) {
-    if(classLoader == null ) {
+    if (classLoader == null) {
       classLoader = ClassLoaderBuilder.create(PROJECT_CLASSPATH);
     }
     return classLoader.getResourceAsStream(Convert.bytecodeName(fullname) + ".class");
