@@ -32,8 +32,10 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class SemanticModel {
@@ -44,9 +46,9 @@ public class SemanticModel {
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final Map<AstNode, Resolve.Env> envs = Maps.newHashMap();
 
-  public static SemanticModel createFor(CompilationUnitTree tree) {
+  public static SemanticModel createFor(CompilationUnitTree tree, List<File> projectClasspath) {
     Symbols symbols = new Symbols();
-    Resolve resolve = new Resolve(symbols);
+    Resolve resolve = new Resolve(symbols, projectClasspath);
     SemanticModel semanticModel = new SemanticModel();
     new FirstPass(semanticModel, symbols, resolve).visitCompilationUnit(tree);
     new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);

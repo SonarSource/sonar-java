@@ -40,7 +40,6 @@ import org.sonar.java.JavaSquid;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.api.JavaUtils;
 import org.sonar.java.checks.CheckList;
-import org.sonar.java.resolve.BytecodeCompleter;
 import org.sonar.squid.api.CodeVisitor;
 
 import java.io.File;
@@ -109,8 +108,6 @@ public class JavaSquidSensor implements Sensor {
         JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE);
     Charset charset = moduleFileSystem.sourceCharset();
     JavaConfiguration conf = new JavaConfiguration(charset);
-    //FIXME ugly hack to get access to project classpath from bytecodeCompleter
-    BytecodeCompleter.PROJECT_CLASSPATH = projectClasspath.getElements();
     conf.setAnalyzePropertyAccessors(analyzePropertyAccessors);
     return conf;
   }

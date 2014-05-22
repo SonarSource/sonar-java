@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +47,9 @@ public class Resolve {
   private final Symbols symbols;
   private Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
 
-  public Resolve(Symbols symbols) {
+  public Resolve(Symbols symbols, List<File> projectClasspath) {
     this.symbols = symbols;
-    this.bytecodeCompleter = new BytecodeCompleter(symbols);
+    this.bytecodeCompleter = new BytecodeCompleter(symbols, projectClasspath);
   }
 
   static class Env {
@@ -266,11 +267,11 @@ public class Resolve {
   public Symbol findIdentInPackage(Env env, Symbol site, String name, int kind) {
     String fullname = bytecodeCompleter.formFullName(name, site);
     Symbol bestSoFar = symbolNotFound;
-    Symbol.PackageSymbol pack =null;
+    Symbol.PackageSymbol pack = null;
     //Check if we already have resolved this package.
     if ((kind & Symbol.PCK) != 0) {
       pack = packages.get(fullname);
-      if(pack!=null) {
+      if (pack != null) {
         return pack;
       }
     }

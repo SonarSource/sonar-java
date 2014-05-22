@@ -20,7 +20,10 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.junit.Test;
+
+import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -28,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 public class ResolveTest {
 
-  private Resolve resolve = new Resolve(new Symbols());
+  private Resolve resolve = new Resolve(new Symbols(), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
 
   private Resolve.Env env = mock(Resolve.Env.class);
 

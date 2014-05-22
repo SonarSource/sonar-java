@@ -21,7 +21,9 @@ package org.sonar.java;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.api.BatchExtension;
+import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -34,23 +36,27 @@ import org.sonar.plugins.java.api.JavaFileScannersFactory;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.List;
 
 public class SonarComponents implements BatchExtension {
 
   private final FileLinesContextFactory fileLinesContextFactory;
   private final ResourcePerspectives resourcePerspectives;
   private final JavaFileScannersFactory[] fileScannersFactories;
+  private final ProjectClasspath projectClasspath;
   private final Project project;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project) {
-    this(fileLinesContextFactory, resourcePerspectives, project, null);
+    this(fileLinesContextFactory, resourcePerspectives, project, null, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
+                         @Nullable ProjectClasspath projectClasspath,
                          @Nullable JavaFileScannersFactory[] fileScannersFactories) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
     this.project = project;
+    this.projectClasspath = projectClasspath;
     this.fileScannersFactories = fileScannersFactories;
   }
 
@@ -80,4 +86,10 @@ public class SonarComponents implements BatchExtension {
     return resourcePerspectives.as(Highlightable.class, resourceFromIOFile(file));
   }
 
+  public List<File> getProjectClasspath() {
+    if (projectClasspath == null) {
+      return Lists.newArrayList();
+    }
+    return projectClasspath.getElements();
+  }
 }

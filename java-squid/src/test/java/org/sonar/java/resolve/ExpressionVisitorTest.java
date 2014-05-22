@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
@@ -35,6 +36,7 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
+import java.io.File;
 import java.util.Arrays;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -387,7 +389,7 @@ public class ExpressionVisitorTest {
   private Type typeOf(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
     when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
-    ExpressionVisitor visitor = new ExpressionVisitor(semanticModel, symbols, new Resolve(symbols));
+    ExpressionVisitor visitor = new ExpressionVisitor(semanticModel, symbols, new Resolve(symbols, Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
 
     b.setRootRule(JavaGrammar.COMPILATION_UNIT);
     String p = "class Test { void wrapperMethod() { " + input + "; } }";

@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,7 @@ import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.SourceFile;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -73,20 +75,26 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
     if (astNode != null) {
       CompilationUnitTree tree = treeMaker.compilationUnit(astNode);
       try {
-        semanticModel = SemanticModel.createFor(tree);
+        semanticModel = SemanticModel.createFor(tree, getProjectClasspath());
       } catch (Exception e) {
         LOG.error("Unable to create symbol table for : " + getContext().getFile().getName(), e);
         semanticModel = null;
         return;
       }
-
       createSonarSymbolTable(tree);
-
       JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), semanticModel);
       for (JavaFileScanner scanner : scanners) {
         scanner.scanFile(context);
       }
     }
+  }
+
+  private List<File> getProjectClasspath() {
+    List<File> projectClasspath = Lists.newArrayList();
+    if(sonarComponents != null) {
+      projectClasspath = sonarComponents.getProjectClasspath();
+    }
+    return projectClasspath;
   }
 
   private void createSonarSymbolTable(CompilationUnitTree tree) {

@@ -21,7 +21,6 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 import org.apache.commons.lang.StringUtils;
 import org.objectweb.asm.AnnotationVisitor;
@@ -42,19 +41,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BytecodeCompleter implements Symbol.Completer{
+public class BytecodeCompleter implements Symbol.Completer {
 
   private static final Logger LOG = LoggerFactory.getLogger(BytecodeCompleter.class);
 
-  public static List<File> PROJECT_CLASSPATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
+  private List<File> projectClasspath;
   private ClassLoader classLoader;
   private Map<String, Symbol.TypeSymbol> classes = new HashMap<String, Symbol.TypeSymbol>();
   private Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
 
   private final Symbols symbols;
 
-  public BytecodeCompleter(Symbols symbols) {
+  public BytecodeCompleter(Symbols symbols, List<File> projectClasspath) {
     this.symbols = symbols;
+    this.projectClasspath = projectClasspath;
   }
 
   @Override
@@ -79,7 +79,7 @@ public class BytecodeCompleter implements Symbol.Completer{
 
   private InputStream inputStreamFor(String fullname) {
     if (classLoader == null) {
-      classLoader = ClassLoaderBuilder.create(PROJECT_CLASSPATH);
+      classLoader = ClassLoaderBuilder.create(projectClasspath);
     }
     return classLoader.getResourceAsStream(Convert.bytecodeName(fullname) + ".class");
   }
@@ -87,13 +87,13 @@ public class BytecodeCompleter implements Symbol.Completer{
   public String formFullName(String name, Symbol site) {
     String result = name;
     Symbol owner = site;
-    while(owner!=symbols.defaultPackage) {
+    while (owner != symbols.defaultPackage) {
       //Handle inner classes, if owner is a type, separate by $
       String separator = ".";
-      if(owner.kind == Symbol.TYP) {
+      if (owner.kind == Symbol.TYP) {
         separator = "$";
       }
-      result = owner.name +separator+ result;
+      result = owner.name + separator + result;
       owner = owner.owner();
     }
     return result;
@@ -107,10 +107,10 @@ public class BytecodeCompleter implements Symbol.Completer{
       String shortName = Convert.shortName(flatName);
       String packageName = Convert.packagePart(flatName);
       String enclosingClassName = Convert.enclosingClassName(shortName);
-      if(StringUtils.isNotEmpty(enclosingClassName)) {
+      if (StringUtils.isNotEmpty(enclosingClassName)) {
         //handle innerClasses
-        symbol = new Symbol.TypeSymbol(0, Convert.innerClassName(shortName), getClassSymbol(Convert.bytecodeName(packageName+"."+enclosingClassName)));
-      }else{
+        symbol = new Symbol.TypeSymbol(0, Convert.innerClassName(shortName), getClassSymbol(Convert.bytecodeName(packageName + "." + enclosingClassName)));
+      } else {
         symbol = new Symbol.TypeSymbol(0, shortName, enterPackage(packageName));
       }
       symbol.members = new Scope(symbol);
@@ -122,6 +122,7 @@ public class BytecodeCompleter implements Symbol.Completer{
 
   /**
    * Load a class from bytecode.
+   *
    * @param env
    * @param fullname class name.
    * @return symbolNotFound if the class was not resolved.
@@ -136,11 +137,11 @@ public class BytecodeCompleter implements Symbol.Completer{
   }
 
   public Symbol.PackageSymbol enterPackage(String fullname) {
-    if(StringUtils.isBlank(fullname)) {
+    if (StringUtils.isBlank(fullname)) {
       return symbols.defaultPackage;
     }
     Symbol.PackageSymbol result = packages.get(fullname);
-    if(result==null) {
+    if (result == null) {
       result = new Symbol.PackageSymbol(Convert.shortName(fullname), enterPackage(Convert.packagePart(fullname)));
       result.completer = this;
       packages.put(fullname, result);
@@ -171,9 +172,9 @@ public class BytecodeCompleter implements Symbol.Completer{
       if (superName == null) {
         Preconditions.checkState("java/lang/Object".equals(className));
       } else {
-        ((Type.ClassType)classSymbol.type).supertype = getCompletedClassSymbol(superName).type;
+        ((Type.ClassType) classSymbol.type).supertype = getCompletedClassSymbol(superName).type;
       }
-      ((Type.ClassType)classSymbol.type).interfaces = getCompletedClassSymbolsType(interfaces);
+      ((Type.ClassType) classSymbol.type).interfaces = getCompletedClassSymbolsType(interfaces);
     }
 
     @Override
@@ -245,10 +246,10 @@ public class BytecodeCompleter implements Symbol.Completer{
     public MethodVisitor visitMethod(int flags, String name, String desc, @Nullable String signature, @Nullable String[] exceptions) {
       if (!isSynthetic(flags)) {
         Type.MethodType type = new Type.MethodType(
-          convertAsmTypes(org.objectweb.asm.Type.getArgumentTypes(desc)),
-          convertAsmType(org.objectweb.asm.Type.getReturnType(desc)),
-          exceptions == null ? ImmutableList.<Type>of() : getCompletedClassSymbolsType(exceptions),
-          classSymbol
+            convertAsmTypes(org.objectweb.asm.Type.getArgumentTypes(desc)),
+            convertAsmType(org.objectweb.asm.Type.getReturnType(desc)),
+            exceptions == null ? ImmutableList.<Type>of() : getCompletedClassSymbolsType(exceptions),
+            classSymbol
         );
         Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(flags, name, type, classSymbol);
         classSymbol.members.enter(methodSymbol);
@@ -344,6 +345,7 @@ public class BytecodeCompleter implements Symbol.Completer{
 
     /**
      * Used to complete types of interfaces.
+     *
      * @param bytecodeNames bytecodeNames of interfaces to complete.
      * @return List of the types of those interfaces.
      */

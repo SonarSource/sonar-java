@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
 import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class SafetyNetTest {
     for (String dir : dirs) {
       for (File file : FileUtils.listFiles(new File(dir), new String[]{"java"}, true)) {
         try {
-          SemanticModel.createFor(new JavaTreeMaker().compilationUnit(parser.parse(file)));
+          SemanticModel.createFor(new JavaTreeMaker().compilationUnit(parser.parse(file)), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
         } catch (Exception e) {
           throw new RuntimeException("Unable to process file " + file, e);
         }

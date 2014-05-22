@@ -37,8 +37,7 @@ public class BytecodeCompleterTest {
 
   @Test
   public void completing_symbol_ArrayList() throws Exception {
-    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(new Symbols());
-    BytecodeCompleter.PROJECT_CLASSPATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(new Symbols(), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     Symbol.TypeSymbol arrayList = bytecodeCompleter.getClassSymbol("java/util/ArrayList");
     //Check supertype
     assertThat(arrayList.getSuperclass().symbol.name).isEqualTo("AbstractList");
@@ -56,8 +55,7 @@ public class BytecodeCompleterTest {
 
   @Test
   public void inner_classes_should_be_completed() throws Exception {
-    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(new Symbols());
-    BytecodeCompleter.PROJECT_CLASSPATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(new Symbols(), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     Symbol.TypeSymbol thisTest = bytecodeCompleter.getClassSymbol(Convert.bytecodeName(getClass().getName()));
     List<Symbol> symbols = thisTest.members().lookup("InnerClass");
     assertThat(symbols).hasSize(1);
