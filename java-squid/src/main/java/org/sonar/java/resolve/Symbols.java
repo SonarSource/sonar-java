@@ -29,6 +29,7 @@ import java.util.Arrays;
 public class Symbols {
 
   final Symbol.PackageSymbol rootPackage;
+  final Symbol.PackageSymbol defaultPackage;
 
   /**
    * Owns all predefined symbols (builtin types, operators).
@@ -66,6 +67,7 @@ public class Symbols {
 
   public Symbols() {
     rootPackage = new Symbol.PackageSymbol("", null);
+    defaultPackage = new Symbol.PackageSymbol("", rootPackage);
 
     predefClass = new Symbol.TypeSymbol(Flags.PUBLIC, "", rootPackage);
     predefClass.members = new Scope(predefClass);

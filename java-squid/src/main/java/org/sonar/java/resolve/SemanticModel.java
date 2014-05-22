@@ -48,7 +48,7 @@ public class SemanticModel {
     Symbols symbols = new Symbols();
     Resolve resolve = new Resolve(symbols);
     SemanticModel semanticModel = new SemanticModel();
-    new FirstPass(semanticModel, resolve).visitCompilationUnit(tree);
+    new FirstPass(semanticModel, symbols, resolve).visitCompilationUnit(tree);
     new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);
     new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
     return semanticModel;

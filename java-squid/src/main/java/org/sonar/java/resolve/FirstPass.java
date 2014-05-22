@@ -52,6 +52,7 @@ public class FirstPass extends BaseTreeVisitor {
 
   private final List<Symbol> uncompleted = Lists.newArrayList();
   private final SecondPass completer;
+  private final Symbols symbols;
   private Resolve resolve;
 
   /**
@@ -60,10 +61,11 @@ public class FirstPass extends BaseTreeVisitor {
    */
   private Resolve.Env env;
 
-  public FirstPass(SemanticModel semanticModel, Resolve resolve) {
+  public FirstPass(SemanticModel semanticModel, Symbols symbols, Resolve resolve) {
     this.semanticModel = semanticModel;
     this.resolve = resolve;
     this.completer = new SecondPass(semanticModel, resolve);
+    this.symbols = symbols;
   }
 
   private void restoreEnvironment(Tree tree) {
@@ -87,7 +89,7 @@ public class FirstPass extends BaseTreeVisitor {
   public void visitCompilationUnit(CompilationUnitTree tree) {
     //Default package
     //TODO default package name is null or empty as in openJDK?
-    Symbol.PackageSymbol compilationUnitPackage = new Symbol.PackageSymbol(null, null);
+    Symbol.PackageSymbol compilationUnitPackage = symbols.defaultPackage;
     compilationUnitPackage.members = new Scope(compilationUnitPackage);
 
     env = new Resolve.Env();
@@ -115,7 +117,7 @@ public class FirstPass extends BaseTreeVisitor {
     private List<Symbol> resolved;
 
     public ImportResolverVisitor() {
-      currentSymbol = BytecodeCompleter.defaultPackage;
+      currentSymbol = symbols.defaultPackage;
     }
 
     @Override

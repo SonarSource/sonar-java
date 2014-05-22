@@ -47,7 +47,6 @@ public class BytecodeCompleter implements Symbol.Completer{
   private static final Logger LOG = LoggerFactory.getLogger(BytecodeCompleter.class);
 
   public static List<File> PROJECT_CLASSPATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
-  public static Symbol.PackageSymbol defaultPackage = new Symbol.PackageSymbol(null, null);
   private ClassLoader classLoader;
   private Map<String, Symbol.TypeSymbol> classes = new HashMap<String, Symbol.TypeSymbol>();
   private Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
@@ -88,14 +87,13 @@ public class BytecodeCompleter implements Symbol.Completer{
   public String formFullName(String name, Symbol site) {
     String result = name;
     Symbol owner = site;
-    while(owner!=null && owner.name!=null) {
+    while(owner!=symbols.defaultPackage) {
       //Handle inner classes, if owner is a type, separate by $
       String separator = ".";
       if(owner.kind == Symbol.TYP) {
         separator = "$";
       }
       result = owner.name +separator+ result;
-
       owner = owner.owner();
     }
     return result;
@@ -139,7 +137,7 @@ public class BytecodeCompleter implements Symbol.Completer{
 
   public Symbol.PackageSymbol enterPackage(String fullname) {
     if(StringUtils.isBlank(fullname)) {
-      return defaultPackage;
+      return symbols.defaultPackage;
     }
     Symbol.PackageSymbol result = packages.get(fullname);
     if(result==null) {
