@@ -2,11 +2,15 @@ package sym;
 
 import org.sonar.java.model.JavaTree.AnnotationTreeImpl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import static java.util.List.*;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.util.Collections.reverse;
+import static java.util.Collections.sort;
 
 @SuppressWarnings("all")
 class ImportResolution {
@@ -30,6 +34,15 @@ class ImportResolution {
       }
       if(HTTP_OK==200){
       }
+      List<String> list = new ArrayList<String>();
+      reverse(list);
+      sort(list);
+      sort(list, new Comparator<String>() {
+        @Override
+        public int compare(String s, String s2) {
+          return s2.compareTo(s);
+        }
+      });
       return null;
     }
   }

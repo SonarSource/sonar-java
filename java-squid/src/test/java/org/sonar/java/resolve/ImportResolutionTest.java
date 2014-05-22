@@ -72,7 +72,23 @@ public class ImportResolutionTest {
     assertThat(http_ok.owner().type.symbol.name).isEqualTo("HttpURLConnection");
     assertThat(http_ok.kind).isEqualTo(Symbol.VAR);
     assertThat(http_ok.type.tag).isEqualTo(Type.INT);
+  }
 
+  @Test
+  public void import_static_method_should_be_resolved() throws Exception {
+    Symbol reverse = result.symbol("reverse");
+    assertThat(reverse.owner().name).isEqualTo("Collections");
+    assertThat(reverse.owner().type.symbol.name).isEqualTo("Collections");
+    assertThat(reverse.kind).isEqualTo(Symbol.MTH);
+  }
+
+  @Test
+  public void import_static_method_should_be_resolved_when_refering_to_multiple_symbols() throws Exception {
+    Symbol sort = result.symbol("sort");
+    assertThat(sort.owner().name).isEqualTo("Collections");
+    assertThat(sort.owner().type.symbol.name).isEqualTo("Collections");
+    assertThat(sort.kind).isEqualTo(Symbol.MTH);
+    assertThat(sort.type.tag).isEqualTo(Type.METHOD);
   }
 
   @Test

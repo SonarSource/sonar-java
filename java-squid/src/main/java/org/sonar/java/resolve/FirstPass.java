@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -105,42 +106,60 @@ public class FirstPass extends BaseTreeVisitor {
     //an import is always of the form : TypeName/PackName.Identifier
     Preconditions.checkArgument(tree.qualifiedIdentifier().is(Tree.Kind.MEMBER_SELECT));
     ImportResolverVisitor importResolverVisitor = new ImportResolverVisitor();
-    tree.qualifiedIdentifier().accept(importResolverVisitor);
-    Symbol resolvedSymbol = importResolverVisitor.currentSymbol;
-    //Associate symbol only if found.
-    if (resolvedSymbol.kind < Symbol.ERRONEOUS) {
-      try {
-        semanticModel.associateSymbol(tree, resolvedSymbol);
-        env.namedImports.enter(resolvedSymbol);
-      }catch (IllegalArgumentException ex) {
-        //Exception is raised because we associate the resolved symbol to different trees.
-        //TODO handle correctly on demand import so java.util.List and java.util.List.* are not resolved to the same symbol!
-      }
-    }
+    tree.accept(importResolverVisitor);
     super.visitImport(tree);
   }
 
   private class ImportResolverVisitor extends BaseTreeVisitor {
     private Symbol currentSymbol;
+    private List<Symbol> resolved;
 
     public ImportResolverVisitor() {
       currentSymbol = BytecodeCompleter.defaultPackage;
     }
 
     @Override
+    public void visitImport(ImportTree tree) {
+      super.visitImport(tree);
+      //Associate symbol only if found.
+      if (currentSymbol.kind < Symbol.ERRONEOUS) {
+        enterSymbol(currentSymbol, tree);
+      } else {
+        if (tree.isStatic()) {
+          for (Symbol symbol : resolved) {
+            //add only static fields
+            //TODO accessibility should be checked : package/public
+            if((symbol.flags & Flags.STATIC) != 0){
+              //TODO only the first symbol found will be associated with the tree.
+              enterSymbol(symbol, tree);
+            }
+          }
+        }
+      }
+    }
+
+    private void enterSymbol(Symbol symbol, ImportTree tree) {
+      try {
+        semanticModel.associateSymbol(tree, symbol);
+        env.namedImports.enter(symbol);
+      } catch (IllegalArgumentException ex) {
+        //Exception is raised because we associate the resolved symbol to different trees.
+        //TODO handle correctly on demand import so java.util.List and java.util.List.* are not resolved to the same symbol!
+      }
+    }
+
+    @Override
     public void visitIdentifier(IdentifierTree tree) {
       if (currentSymbol.kind == Symbol.PCK) {
         currentSymbol = resolve.findIdentInPackage(env, currentSymbol, tree.name(), Symbol.PCK | Symbol.TYP);
+        resolved = Collections.emptyList();
       } else if (currentSymbol.kind == Symbol.TYP) {
-        //current symbol is a type. Find Variable or InnerClass :
-        Symbol resolvedId = resolve.findIdentInType(env, (Symbol.TypeSymbol) currentSymbol, tree.name(), Symbol.TYP | Symbol.VAR);
-        if (resolvedId.kind >= Symbol.ERRONEOUS) {
-          //TODO what to do with arguments in this specific case.
-          resolvedId = resolve.findMethod(env, (Symbol.TypeSymbol) currentSymbol, tree.name(), Lists.<Type>newArrayList());
-        }
-        currentSymbol = resolvedId;
+         resolved = ((Symbol.TypeSymbol) currentSymbol).members().lookup(tree.name());
+         currentSymbol = resolve.findIdentInType(env, (Symbol.TypeSymbol) currentSymbol, tree.name(), Symbol.TYP);
       } else {
         //Site symbol is not found so we won't be able to resolve the import.
+        currentSymbol = new Resolve.SymbolNotFound();
+        resolved = Collections.emptyList();
       }
     }
 

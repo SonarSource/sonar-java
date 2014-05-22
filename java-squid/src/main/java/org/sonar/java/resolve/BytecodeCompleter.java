@@ -339,6 +339,14 @@ public class BytecodeCompleter implements Symbol.Completer{
       return symbol;
     }
 
+    private List<Symbol.TypeSymbol> getCompletedClassSymbols(String[] bytecodeNames) {
+      ImmutableList.Builder<Symbol.TypeSymbol> symbols = ImmutableList.builder();
+      for (String bytecodeName : bytecodeNames) {
+        symbols.add(getCompletedClassSymbol(bytecodeName));
+      }
+      return symbols.build();
+    }
+
     /**
      * Used to complete types of interfaces.
      * @param bytecodeNames bytecodeNames of interfaces to complete.
