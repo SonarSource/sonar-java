@@ -71,8 +71,7 @@ public class ImportResolutionTest {
     assertThat(http_ok.owner().name).isEqualTo("HttpURLConnection");
     assertThat(http_ok.owner().type.symbol.name).isEqualTo("HttpURLConnection");
     assertThat(http_ok.kind).isEqualTo(Symbol.VAR);
-    //TODO correctly handle the primitive types for variables.
-    assertThat(http_ok.type).isNull();
+    assertThat(http_ok.type.tag).isEqualTo(Type.INT);
 
   }
 

@@ -48,7 +48,7 @@ public class Resolve {
 
   public Resolve(Symbols symbols) {
     this.symbols = symbols;
-    this.bytecodeCompleter = new BytecodeCompleter();
+    this.bytecodeCompleter = new BytecodeCompleter(symbols);
   }
 
   static class Env {

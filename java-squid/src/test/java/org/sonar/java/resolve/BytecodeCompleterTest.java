@@ -37,7 +37,7 @@ public class BytecodeCompleterTest {
 
   @Test
   public void completing_symbol_ArrayList() throws Exception {
-    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter();
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(new Symbols());
     BytecodeCompleter.PROJECT_CLASSPATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
     Symbol.TypeSymbol arrayList = bytecodeCompleter.getClassSymbol("java/util/ArrayList");
     //Check supertype
@@ -56,7 +56,7 @@ public class BytecodeCompleterTest {
 
   @Test
   public void inner_classes_should_be_completed() throws Exception {
-    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter();
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(new Symbols());
     BytecodeCompleter.PROJECT_CLASSPATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
     Symbol.TypeSymbol thisTest = bytecodeCompleter.getClassSymbol(Convert.bytecodeName(getClass().getName()));
     List<Symbol> symbols = thisTest.members().lookup("InnerClass");

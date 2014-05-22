@@ -51,6 +51,12 @@ public class BytecodeCompleter implements Symbol.Completer{
   private Map<String, Symbol.TypeSymbol> classes = new HashMap<String, Symbol.TypeSymbol>();
   private Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
 
+  private final Symbols symbols;
+
+  public BytecodeCompleter(Symbols symbols) {
+    this.symbols = symbols;
+  }
+
   @Override
   public void complete(Symbol symbol) {
     LOG.debug("Completing symbol : " + symbol.name);
@@ -232,11 +238,41 @@ public class BytecodeCompleter implements Symbol.Completer{
     @Override
     public FieldVisitor visitField(int flags, String name, String desc, String signature, Object value) {
       if (!isSynthetic(flags)) {
+        // TODO(Godin): there is no guarantee that bytecode flags can be mapped one-to-one into our flags
         Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, classSymbol);
-        if (org.objectweb.asm.Type.getType(desc).getSort() == org.objectweb.asm.Type.OBJECT) {
-          symbol.type = getCompletedClassSymbol(org.objectweb.asm.Type.getType(desc).getInternalName()).type;
-        } else {
-          // FIXME
+        org.objectweb.asm.Type asmType = org.objectweb.asm.Type.getType(desc);
+        switch (asmType.getSort()) {
+          case org.objectweb.asm.Type.OBJECT:
+            symbol.type = getCompletedClassSymbol(asmType.getInternalName()).type;
+            break;
+          case org.objectweb.asm.Type.BYTE:
+            symbol.type = symbols.byteType;
+            break;
+          case org.objectweb.asm.Type.CHAR:
+            symbol.type = symbols.charType;
+            break;
+          case org.objectweb.asm.Type.SHORT:
+            symbol.type = symbols.shortType;
+            break;
+          case org.objectweb.asm.Type.INT:
+            symbol.type = symbols.intType;
+            break;
+          case org.objectweb.asm.Type.LONG:
+            symbol.type = symbols.longType;
+            break;
+          case org.objectweb.asm.Type.FLOAT:
+            symbol.type = symbols.floatType;
+            break;
+          case org.objectweb.asm.Type.DOUBLE:
+            symbol.type = symbols.doubleType;
+            break;
+          case org.objectweb.asm.Type.BOOLEAN:
+            symbol.type = symbols.booleanType;
+            break;
+          case org.objectweb.asm.Type.VOID:
+          default:
+            // FIXME
+            break;
         }
         classSymbol.members.enter(symbol);
       }
@@ -244,8 +280,6 @@ public class BytecodeCompleter implements Symbol.Completer{
       // TODO implement FieldVisitor?
       return null;
     }
-
-    //TODO fields and methods
 
     /**
      * If at this point there is no owner of current class, then this is a top-level class,
