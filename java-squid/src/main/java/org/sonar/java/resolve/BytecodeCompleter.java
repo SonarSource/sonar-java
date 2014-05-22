@@ -37,7 +37,6 @@ import org.sonar.java.bytecode.ClassLoaderBuilder;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -128,16 +127,12 @@ public class BytecodeCompleter implements Symbol.Completer{
    * @return symbolNotFound if the class was not resolved.
    */
   public Symbol loadClass(Resolve.Env env, Symbol owner, String fullname, String name) {
-    try {
-      //This calls to bytecode is done only to check if name exists as a type.
-      ClassReader asmReader = new ClassReader(inputStreamFor(fullname));
-      Symbol.TypeSymbol type = getClassSymbol(Convert.bytecodeName(fullname));
-      type.members = new Scope(type);
-      type.completer = this;
-      return type;
-    } catch (IOException e) {
+    InputStream inputStream = inputStreamFor(fullname);
+    if (inputStream == null) {
       return new Resolve.SymbolNotFound();
     }
+    Closeables.closeQuietly(inputStream);
+    return getClassSymbol(Convert.bytecodeName(fullname));
   }
 
   public Symbol.PackageSymbol enterPackage(String fullname) {
