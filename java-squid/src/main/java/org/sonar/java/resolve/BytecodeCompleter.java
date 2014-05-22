@@ -175,7 +175,6 @@ public class BytecodeCompleter implements Symbol.Completer{
       classSymbol.flags = flags;
       classSymbol.members = new Scope(classSymbol);
       if (superName == null) {
-        // TODO superName == null only for java/lang/Object?
         Preconditions.checkState("java/lang/Object".equals(className));
       } else {
         ((Type.ClassType)classSymbol.type).supertype = getCompletedClassSymbol(superName).type;
