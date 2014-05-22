@@ -19,7 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -251,10 +250,9 @@ public class BytecodeCompleter implements Symbol.Completer{
     public MethodVisitor visitMethod(int flags, String name, String desc, @Nullable String signature, @Nullable String[] exceptions) {
       if (!isSynthetic(flags)) {
         Type.MethodType type = new Type.MethodType(
-          // TODO parameters, exceptions
-          ImmutableList.<Type>of(),
+          convertAsmTypes(org.objectweb.asm.Type.getArgumentTypes(desc)),
           convertAsmType(org.objectweb.asm.Type.getReturnType(desc)),
-          ImmutableList.<Type>of(),
+          exceptions == null ? ImmutableList.<Type>of() : getCompletedClassSymbolsType(exceptions),
           classSymbol
         );
         Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(flags, name, type, classSymbol);
@@ -262,6 +260,14 @@ public class BytecodeCompleter implements Symbol.Completer{
       }
       // TODO implement MethodVisitor?
       return null;
+    }
+
+    private List<Type> convertAsmTypes(org.objectweb.asm.Type[] asmTypes) {
+      ImmutableList.Builder<Type> result = ImmutableList.builder();
+      for (org.objectweb.asm.Type asmType : asmTypes) {
+        result.add(convertAsmType(asmType));
+      }
+      return result.build();
     }
 
     private Type convertAsmType(org.objectweb.asm.Type asmType) {
@@ -294,11 +300,15 @@ public class BytecodeCompleter implements Symbol.Completer{
         case org.objectweb.asm.Type.BOOLEAN:
           result = symbols.booleanType;
           break;
+        case org.objectweb.asm.Type.ARRAY:
+          result = new Type.ArrayType(convertAsmType(asmType.getElementType()), symbols.arrayClass);
+          break;
         case org.objectweb.asm.Type.VOID:
-        default:
           // FIXME
           result = null;
           break;
+        default:
+          throw new IllegalArgumentException(asmType.toString());
       }
       return result;
     }
