@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -168,7 +169,7 @@ public class BytecodeCompleter implements Symbol.Completer{
     }
 
     @Override
-    public void visit(int version, int flags, String name, String signature, String superName, String[] interfaces) {
+    public void visit(int version, int flags, String name, @Nullable String signature, @Nullable String superName, @Nullable String[] interfaces) {
       Preconditions.checkState(name.endsWith(classSymbol.name));
       className = name;
       classSymbol.flags = flags;
@@ -183,7 +184,7 @@ public class BytecodeCompleter implements Symbol.Completer{
     }
 
     @Override
-    public void visitSource(String source, String debug) {
+    public void visitSource(@Nullable String source, @Nullable String debug) {
       // nop
     }
 
@@ -203,7 +204,7 @@ public class BytecodeCompleter implements Symbol.Completer{
     }
 
     @Override
-    public void visitInnerClass(String name, String outerName, String innerName, int flags) {
+    public void visitInnerClass(String name, @Nullable String outerName, @Nullable String innerName, int flags) {
       if (!isSynthetic(flags)) {
         // TODO what about flags?
         if (className.equals(outerName)) {
@@ -237,7 +238,7 @@ public class BytecodeCompleter implements Symbol.Completer{
     }
 
     @Override
-    public FieldVisitor visitField(int flags, String name, String desc, String signature, Object value) {
+    public FieldVisitor visitField(int flags, String name, String desc, @Nullable String signature, @Nullable Object value) {
       if (!isSynthetic(flags)) {
         // TODO(Godin): there is no guarantee that bytecode flags can be mapped one-to-one into our flags
         Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
@@ -248,7 +249,7 @@ public class BytecodeCompleter implements Symbol.Completer{
     }
 
     @Override
-    public MethodVisitor visitMethod(int flags, String name, String desc, String signature, String[] exceptions) {
+    public MethodVisitor visitMethod(int flags, String name, String desc, @Nullable String signature, @Nullable String[] exceptions) {
       if (!isSynthetic(flags)) {
         Type.MethodType type = new Type.MethodType(
           // TODO parameters, exceptions
