@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 
 import javax.annotation.Nullable;
+import java.io.Closeable;
 import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -149,6 +150,12 @@ public class BytecodeCompleter implements Symbol.Completer {
       packages.put(fullname, result);
     }
     return result;
+  }
+
+  public void done() {
+    if(classLoader!=null && classLoader instanceof Closeable) {
+      Closeables.closeQuietly((Closeable) classLoader);
+    }
   }
 
   private class BytecodeVisitor extends ClassVisitor {

@@ -53,6 +53,7 @@ public class SemanticModel {
     new FirstPass(semanticModel, symbols, resolve).visitCompilationUnit(tree);
     new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);
     new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
+    resolve.done();
     return semanticModel;
   }
 

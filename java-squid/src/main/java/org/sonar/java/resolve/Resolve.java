@@ -52,6 +52,10 @@ public class Resolve {
     this.bytecodeCompleter = new BytecodeCompleter(symbols, projectClasspath);
   }
 
+  public void done() {
+    bytecodeCompleter.done();
+  }
+
   static class Env {
     /**
      * The next enclosing environment.
