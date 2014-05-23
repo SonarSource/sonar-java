@@ -30,6 +30,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.TypePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
@@ -237,12 +238,19 @@ public class BytecodeCompleter implements Symbol.Completer {
 
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-      throw new UnsupportedOperationException();
+      // (Godin): can return AnnotationVisitor to read annotations
+      return null;
+    }
+
+    @Override
+    public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String desc, boolean visible) {
+      // (Godin): can return AnnotationVisitor to read annotations
+      return null;
     }
 
     @Override
     public void visitAttribute(Attribute attr) {
-      throw new UnsupportedOperationException();
+      // skip non standard attributes
     }
 
     @Override

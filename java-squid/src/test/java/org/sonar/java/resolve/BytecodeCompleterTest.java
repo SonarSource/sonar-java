@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.java.resolve.targets.Annotations;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,6 +49,11 @@ public class BytecodeCompleterTest {
   public void setUp() throws Exception {
     bytecodeCompleter = new BytecodeCompleter(new Symbols(), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
 
+  }
+
+  @Test
+  public void annotations() throws Exception {
+    bytecodeCompleter.getClassSymbol(Annotations.class.getName().replace('.', '/')).complete();
   }
 
   @Test
