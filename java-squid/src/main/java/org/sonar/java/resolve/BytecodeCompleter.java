@@ -51,13 +51,13 @@ public class BytecodeCompleter implements Symbol.Completer {
     Flags.STATIC | Flags.FINAL | Flags.SYNCHRONIZED | Flags.VOLATILE | Flags.TRANSIENT | Flags.NATIVE |
     Flags.ABSTRACT | Flags.STRICTFP;
 
-  private List<File> projectClasspath;
-  private ClassLoader classLoader;
-  private Map<String, Symbol.TypeSymbol> classes = new HashMap<String, Symbol.TypeSymbol>();
-  private Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
-  private PackageCompleter packageCompleter;
-
   private final Symbols symbols;
+  private final List<File> projectClasspath;
+  private final PackageCompleter packageCompleter;
+  private final Map<String, Symbol.TypeSymbol> classes = new HashMap<String, Symbol.TypeSymbol>();
+  private final Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
+
+  private ClassLoader classLoader;
 
   public BytecodeCompleter(Symbols symbols, List<File> projectClasspath) {
     this.symbols = symbols;
@@ -78,6 +78,9 @@ public class BytecodeCompleter implements Symbol.Completer {
       classReader.accept(new BytecodeVisitor((Symbol.TypeSymbol) symbol), ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
     } catch (Exception e) {
       // TODO(Godin): why only interfaces, but not supertype for example?
+      // In fact the only exception, which we forced to catch - IOException, which indicates corrupted class file.
+      // The others indicate incorrect implementation on our side.
+      // And thus it might make sense to propagate it in any case.
       ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
       LOG.error("Cannot complete type : " + bytecodeName + "  " + e.getMessage(), e);
     } finally {
@@ -216,14 +219,14 @@ public class BytecodeCompleter implements Symbol.Completer {
 
     @Override
     public void visitSource(@Nullable String source, @Nullable String debug) {
-      // nop
+      throw new IllegalStateException();
     }
 
     /**
      * {@inheritDoc}
      * <p/>
-     * In other words should be called only for anonymous classes or named classes declared within methods,
-     * which should not be processed by {@link BytecodeCompleter}, therefore this method always throws {@link java.lang.IllegalStateException}.
+     * In other words must be called only for anonymous classes or named classes declared within methods,
+     * which must not be processed by {@link BytecodeCompleter}, therefore this method always throws {@link java.lang.IllegalStateException}.
      *
      * @throws java.lang.IllegalStateException always
      */
@@ -254,6 +257,7 @@ public class BytecodeCompleter implements Symbol.Completer {
         } else if (className.equals(outerName)) {
           defineInnerClass(name, flags);
         } else if (className.equals(name)) {
+          // TODO(Godin): most probably this path and next one are never used on practice, because Resolve must trigger completion of outer classes prior to the access to inner
           defineOuterClass(outerName, innerName, flags);
         } else {
           // FIXME(Godin): for example if loading started from "C1.C2.C3" in case of
@@ -268,6 +272,7 @@ public class BytecodeCompleter implements Symbol.Completer {
      * Completes inner class.
      */
     private void defineInnerClass(String bytecodeName, int flags) {
+      // TODO(Godin): most probably next call will always result in cache miss, because Resolve must trigger completion of outer classes prior to the access to inner
       Symbol.TypeSymbol innerClass = getClassSymbol(bytecodeName, flags);
       Preconditions.checkState(innerClass.owner == classSymbol);
       classSymbol.members.enter(innerClass);
@@ -286,6 +291,8 @@ public class BytecodeCompleter implements Symbol.Completer {
 
     @Override
     public FieldVisitor visitField(int flags, String name, String desc, @Nullable String signature, @Nullable Object value) {
+      Preconditions.checkNotNull(name);
+      Preconditions.checkNotNull(desc);
       if (!isSynthetic(flags)) {
         //Flags from asm lib are defined in Opcodes class and map to flags defined in Flags class
         Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(filterBytecodeFlags(flags), name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
@@ -297,6 +304,8 @@ public class BytecodeCompleter implements Symbol.Completer {
 
     @Override
     public MethodVisitor visitMethod(int flags, String name, String desc, @Nullable String signature, @Nullable String[] exceptions) {
+      Preconditions.checkNotNull(name);
+      Preconditions.checkNotNull(desc);
       if (!isSynthetic(flags)) {
         Type.MethodType type = new Type.MethodType(
             convertAsmTypes(org.objectweb.asm.Type.getArgumentTypes(desc)),
@@ -382,12 +391,6 @@ public class BytecodeCompleter implements Symbol.Completer {
       }
     }
 
-    /**
-     * Used to complete types of interfaces.
-     *
-     * @param bytecodeNames bytecodeNames of interfaces to complete.
-     * @return List of the types of those interfaces.
-     */
     private List<Type> getCompletedClassSymbolsType(@Nullable String[] bytecodeNames) {
       if (bytecodeNames == null) {
         return ImmutableList.of();
