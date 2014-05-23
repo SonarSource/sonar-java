@@ -207,7 +207,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       classSymbol.flags = filterBytecodeFlags(flags);
       classSymbol.members = new Scope(classSymbol);
       if (superName == null) {
-        Preconditions.checkState("java/lang/Object".equals(className));
+        Preconditions.checkState("java/lang/Object".equals(className), "superName must be null only for java/lang/Object, but not for " + className);
       } else {
         ((Type.ClassType) classSymbol.type).supertype = getClassSymbol(superName).type;
       }
@@ -219,9 +219,17 @@ public class BytecodeCompleter implements Symbol.Completer {
       // nop
     }
 
+    /**
+     * {@inheritDoc}
+     * <p/>
+     * In other words should be called only for anonymous classes or named classes declared within methods,
+     * which should not be processed by {@link BytecodeCompleter}, therefore this method always throws {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException always
+     */
     @Override
     public void visitOuterClass(String owner, String name, String desc) {
-      throw new UnsupportedOperationException();
+      throw new IllegalStateException();
     }
 
     @Override
@@ -238,12 +246,20 @@ public class BytecodeCompleter implements Symbol.Completer {
     public void visitInnerClass(String name, @Nullable String outerName, @Nullable String innerName, int flags) {
       if (!isSynthetic(flags)) {
         // TODO what about flags?
-        if (className.equals(outerName)) {
+        if (innerName == null) {
+          // anonymous class
+          throw new IllegalStateException();
+        } else if (outerName == null) {
+          // named class declared within method
+          throw new IllegalStateException();
+        } else if (className.equals(outerName)) {
           defineInnerClass(name, flags);
         } else if (className.equals(name)) {
           defineOuterClass(outerName, innerName, flags);
         } else {
-          // TODO wtf?
+          // FIXME(Godin): for example if loading started from "C1.C2.C3" in case of
+          // class C1 { class C2 { class C3 { } } }
+          // then name="C1$C2", outerName="C1" and innerName="C3"
         }
       }
     }
@@ -276,7 +292,7 @@ public class BytecodeCompleter implements Symbol.Completer {
         Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(filterBytecodeFlags(flags), name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
         classSymbol.members.enter(symbol);
       }
-      // (Godin) can return FieldVisitor to read annotations
+      // (Godin): can return FieldVisitor to read annotations
       return null;
     }
 
