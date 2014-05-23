@@ -46,6 +46,11 @@ public class BytecodeCompleter implements Symbol.Completer {
 
   private static final Logger LOG = LoggerFactory.getLogger(BytecodeCompleter.class);
 
+  private static final int ACCEPTABLE_BYTECODE_FLAGS = Flags.ACCESS_FLAGS |
+    Flags.INTERFACE | Flags.ANNOTATION | Flags.ENUM |
+    Flags.STATIC | Flags.FINAL | Flags.SYNCHRONIZED | Flags.VOLATILE | Flags.TRANSIENT | Flags.NATIVE |
+    Flags.ABSTRACT | Flags.STRICTFP;
+
   private List<File> projectClasspath;
   private ClassLoader classLoader;
   private Map<String, Symbol.TypeSymbol> classes = new HashMap<String, Symbol.TypeSymbol>();
@@ -118,7 +123,6 @@ public class BytecodeCompleter implements Symbol.Completer {
     }
   }
 
-
   public Symbol.TypeSymbol getClassSymbol(String bytecodeName) {
     return getClassSymbol(bytecodeName, 0);
   }
@@ -132,15 +136,19 @@ public class BytecodeCompleter implements Symbol.Completer {
       String enclosingClassName = Convert.enclosingClassName(shortName);
       if (StringUtils.isNotEmpty(enclosingClassName)) {
         //handle innerClasses
-        symbol = new Symbol.TypeSymbol(flags, Convert.innerClassName(shortName), getClassSymbol(packageName + "." + enclosingClassName));
+        symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), Convert.innerClassName(shortName), getClassSymbol(packageName + "." + enclosingClassName));
       } else {
-        symbol = new Symbol.TypeSymbol(flags, shortName, enterPackage(packageName));
+        symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), shortName, enterPackage(packageName));
       }
       symbol.members = new Scope(symbol);
       symbol.completer = this;
       classes.put(flatName, symbol);
     }
     return symbol;
+  }
+
+  private int filterBytecodeFlags(int flags) {
+    return flags & ACCEPTABLE_BYTECODE_FLAGS;
   }
 
   /**
@@ -196,7 +204,7 @@ public class BytecodeCompleter implements Symbol.Completer {
     public void visit(int version, int flags, String name, @Nullable String signature, @Nullable String superName, @Nullable String[] interfaces) {
       Preconditions.checkState(name.endsWith(classSymbol.name));
       className = name;
-      classSymbol.flags = flags;
+      classSymbol.flags = filterBytecodeFlags(flags);
       classSymbol.members = new Scope(classSymbol);
       if (superName == null) {
         Preconditions.checkState("java/lang/Object".equals(className));
@@ -265,10 +273,10 @@ public class BytecodeCompleter implements Symbol.Completer {
     public FieldVisitor visitField(int flags, String name, String desc, @Nullable String signature, @Nullable Object value) {
       if (!isSynthetic(flags)) {
         //Flags from asm lib are defined in Opcodes class and map to flags defined in Flags class
-        Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
+        Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(filterBytecodeFlags(flags), name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
         classSymbol.members.enter(symbol);
       }
-      // TODO implement FieldVisitor?
+      // (Godin) can return FieldVisitor to read annotations
       return null;
     }
 
@@ -278,13 +286,13 @@ public class BytecodeCompleter implements Symbol.Completer {
         Type.MethodType type = new Type.MethodType(
             convertAsmTypes(org.objectweb.asm.Type.getArgumentTypes(desc)),
             convertAsmType(org.objectweb.asm.Type.getReturnType(desc)),
-            exceptions == null ? ImmutableList.<Type>of() : getCompletedClassSymbolsType(exceptions),
+            getCompletedClassSymbolsType(exceptions),
             classSymbol
         );
-        Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(flags, name, type, classSymbol);
+        Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(filterBytecodeFlags(flags), name, type, classSymbol);
         classSymbol.members.enter(methodSymbol);
       }
-      // TODO implement MethodVisitor?
+      // (Godin): can return MethodVisitor to read annotations
       return null;
     }
 
@@ -331,7 +339,7 @@ public class BytecodeCompleter implements Symbol.Completer {
           break;
         case org.objectweb.asm.Type.VOID:
           // FIXME
-          result = null;
+          result = symbols.unknownType;
           break;
         default:
           throw new IllegalArgumentException(asmType.toString());
@@ -365,7 +373,10 @@ public class BytecodeCompleter implements Symbol.Completer {
      * @param bytecodeNames bytecodeNames of interfaces to complete.
      * @return List of the types of those interfaces.
      */
-    private List<Type> getCompletedClassSymbolsType(String[] bytecodeNames) {
+    private List<Type> getCompletedClassSymbolsType(@Nullable String[] bytecodeNames) {
+      if (bytecodeNames == null) {
+        return ImmutableList.of();
+      }
       ImmutableList.Builder<Type> types = ImmutableList.builder();
       for (String bytecodeName : bytecodeNames) {
         types.add(getClassSymbol(bytecodeName).type);
