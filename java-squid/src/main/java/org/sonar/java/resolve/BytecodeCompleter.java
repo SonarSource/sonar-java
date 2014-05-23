@@ -50,18 +50,20 @@ public class BytecodeCompleter implements Symbol.Completer {
   private ClassLoader classLoader;
   private Map<String, Symbol.TypeSymbol> classes = new HashMap<String, Symbol.TypeSymbol>();
   private Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
+  private PackageCompleter packageCompleter;
 
   private final Symbols symbols;
 
   public BytecodeCompleter(Symbols symbols, List<File> projectClasspath) {
     this.symbols = symbols;
     this.projectClasspath = projectClasspath;
+    this.packageCompleter = new PackageCompleter();
   }
 
   @Override
   public void complete(Symbol symbol) {
     LOG.debug("Completing symbol : " + symbol.name);
-    String bytecodeName = formFullName(symbol.name, symbol.owner);
+    String bytecodeName = formFullName(symbol);
     Symbol.TypeSymbol classSymbol = getClassSymbol(bytecodeName);
     Preconditions.checkState(classSymbol == symbol);
     InputStream inputStream = null;
@@ -79,10 +81,18 @@ public class BytecodeCompleter implements Symbol.Completer {
   }
 
   private InputStream inputStreamFor(String fullname) {
+    return getClassLoader().getResourceAsStream(Convert.bytecodeName(fullname) + ".class");
+  }
+
+  private ClassLoader getClassLoader() {
     if (classLoader == null) {
       classLoader = ClassLoaderBuilder.create(projectClasspath);
     }
-    return classLoader.getResourceAsStream(Convert.bytecodeName(fullname) + ".class");
+    return classLoader;
+  }
+
+  public String formFullName(Symbol symbol) {
+    return formFullName(symbol.name, symbol.owner);
   }
 
   public String formFullName(String name, Symbol site) {
@@ -99,6 +109,16 @@ public class BytecodeCompleter implements Symbol.Completer {
     }
     return result;
   }
+
+  private class PackageCompleter implements Symbol.Completer {
+    @Override
+    public void complete(Symbol symbol) {
+        //FIXME need work on class loader to be able to list .class files especially from FileSystemLoader but also from JarLoader
+        //won't find any resource as it is expecting a file name.
+    }
+  }
+
+
   public Symbol.TypeSymbol getClassSymbol(String bytecodeName) {
     return getClassSymbol(bytecodeName, 0);
   }
@@ -112,7 +132,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       String enclosingClassName = Convert.enclosingClassName(shortName);
       if (StringUtils.isNotEmpty(enclosingClassName)) {
         //handle innerClasses
-        symbol = new Symbol.TypeSymbol(flags, Convert.innerClassName(shortName), getClassSymbol(Convert.bytecodeName(packageName + "." + enclosingClassName)));
+        symbol = new Symbol.TypeSymbol(flags, Convert.innerClassName(shortName), getClassSymbol(packageName + "." + enclosingClassName));
       } else {
         symbol = new Symbol.TypeSymbol(flags, shortName, enterPackage(packageName));
       }
@@ -136,7 +156,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       return new Resolve.SymbolNotFound();
     }
     Closeables.closeQuietly(inputStream);
-    return getClassSymbol(Convert.bytecodeName(fullname));
+    return getClassSymbol(fullname);
   }
 
   public Symbol.PackageSymbol enterPackage(String fullname) {
@@ -146,14 +166,14 @@ public class BytecodeCompleter implements Symbol.Completer {
     Symbol.PackageSymbol result = packages.get(fullname);
     if (result == null) {
       result = new Symbol.PackageSymbol(Convert.shortName(fullname), enterPackage(Convert.packagePart(fullname)));
-      result.completer = this;
+      result.completer = packageCompleter;
       packages.put(fullname, result);
     }
     return result;
   }
 
   public void done() {
-    if(classLoader!=null && classLoader instanceof Closeable) {
+    if (classLoader != null && classLoader instanceof Closeable) {
       Closeables.closeQuietly((Closeable) classLoader);
     }
   }

@@ -87,9 +87,13 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    //Default package
-    //TODO default package name is null or empty as in openJDK?
     Symbol.PackageSymbol compilationUnitPackage = symbols.defaultPackage;
+    if(tree.packageName() != null) {
+      PackageResolverVisitor packageResolver = new PackageResolverVisitor();
+      tree.packageName().accept(packageResolver);
+      compilationUnitPackage = packageResolver.currentPackage;
+      semanticModel.associateSymbol(tree.packageName(), compilationUnitPackage);
+    }
     compilationUnitPackage.members = new Scope(compilationUnitPackage);
 
     env = new Resolve.Env();
@@ -101,6 +105,20 @@ public class FirstPass extends BaseTreeVisitor {
     super.visitCompilationUnit(tree);
     restoreEnvironment(tree);
     completeSymbols();
+  }
+
+  private class PackageResolverVisitor extends BaseTreeVisitor {
+    private Symbol.PackageSymbol currentPackage;
+
+    public PackageResolverVisitor(){
+      currentPackage = symbols.defaultPackage;
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      currentPackage = (Symbol.PackageSymbol) resolve.findIdentInPackage(env, currentPackage, tree.name(), Symbol.PCK);
+    }
+
   }
 
   @Override

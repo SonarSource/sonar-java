@@ -124,6 +124,11 @@ public class Symbol {
       super(PCK, 0, name, owner);
     }
 
+    Scope members() {
+      complete();
+      return members;
+    }
+
   }
 
   /**

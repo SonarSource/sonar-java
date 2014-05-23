@@ -20,8 +20,9 @@
 package org.sonar.java.resolve;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -83,13 +84,24 @@ public class ImportResolutionTest {
   }
 
   @Test
-  @Ignore
   public void package_should_be_resolved() {
     assertThat(result.symbol("sym")).isNotNull();
     assertThat(result.symbol("sym").kind).isEqualTo(Symbol.PCK);
     assertThat(result.symbol("sym").owner().kind).isEqualTo(Symbol.PCK);
-    //default package name is null
-    assertThat(result.symbol("sym").owner().name).isNull();
+    //default package name is empty
+    assertThat(result.symbol("sym").owner().name).isEmpty();
+  }
+
+  @Test
+  public void types_from_same_package_should_be_resolved() throws Exception {
+    Result result1 = Result.createForJavaFile("src/test/java/org/sonar/java/resolve/BytecodeCompleterTest");
+    Symbol.TypeSymbol thisTest = (Symbol.TypeSymbol) result1.symbol("BytecodeCompleterTest");
+    List<Symbol> symbols = thisTest.members().lookup("bytecodeCompleterPackageVisibility");
+    assertThat(symbols).hasSize(1);
+    //TODO symbol should be resolved : need work on classloaders
+//    Symbol.VariableSymbol symbol = (Symbol.VariableSymbol) symbols.get(0);
+//    assertThat(symbol.type.symbol.name).isEqualTo("BytecodeCompleterPackageVisibility");
+//    assertThat(symbol.type.symbol.owner().name).isEqualTo(thisTest.owner().name);
 
   }
 }

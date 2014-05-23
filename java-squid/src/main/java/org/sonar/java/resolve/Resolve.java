@@ -224,7 +224,7 @@ public class Resolve {
       }
     }
     //package types
-    for (Symbol symbol : env.packge().members.lookup(name)) {
+    for (Symbol symbol : env.packge().members().lookup(name)) {
       if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
       }

@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -30,14 +31,27 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class BytecodeCompleterTest {
 
+  private BytecodeCompleter bytecodeCompleter;
+  //used to load classes in same package
+  public BytecodeCompleterPackageVisibility bytecodeCompleterPackageVisibility = new BytecodeCompleterPackageVisibility();
+
   //Used to check symbol for inner class
   public static class InnerClass extends ArrayList {
     public int myField;
   }
 
+  private void accessPackageVisibility(){
+    bytecodeCompleterPackageVisibility.add(1, 2);
+  }
+
+  @Before
+  public void setUp() throws Exception {
+    bytecodeCompleter = new BytecodeCompleter(new Symbols(), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+
+  }
+
   @Test
   public void completing_symbol_ArrayList() throws Exception {
-    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(new Symbols(), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     Symbol.TypeSymbol arrayList = bytecodeCompleter.getClassSymbol("java/util/ArrayList");
     //Check supertype
     assertThat(arrayList.getSuperclass().symbol.name).isEqualTo("AbstractList");
@@ -55,13 +69,20 @@ public class BytecodeCompleterTest {
 
   @Test
   public void inner_classes_should_be_completed() throws Exception {
-    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(new Symbols(), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     Symbol.TypeSymbol thisTest = bytecodeCompleter.getClassSymbol(Convert.bytecodeName(getClass().getName()));
     List<Symbol> symbols = thisTest.members().lookup("InnerClass");
     assertThat(symbols).hasSize(1);
     Symbol.TypeSymbol innerClass = (Symbol.TypeSymbol) symbols.get(0);
     assertThat(innerClass.getSuperclass().symbol.name).isEqualTo("ArrayList");
+  }
 
-
+  @Test
+  public void symbol_type_in_same_package_should_be_resolved() throws Exception {
+    Symbol.TypeSymbol thisTest = bytecodeCompleter.getClassSymbol(Convert.bytecodeName(getClass().getName()));
+    List<Symbol> symbols = thisTest.members().lookup("bytecodeCompleterPackageVisibility");
+    assertThat(symbols).hasSize(1);
+    Symbol.VariableSymbol symbol = (Symbol.VariableSymbol) symbols.get(0);
+    assertThat(symbol.type.symbol.name).isEqualTo("BytecodeCompleterPackageVisibility");
+    assertThat(symbol.type.symbol.owner().name).isEqualTo(thisTest.owner().name);
   }
 }
