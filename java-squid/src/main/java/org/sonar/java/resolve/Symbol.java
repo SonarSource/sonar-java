@@ -66,9 +66,6 @@ public class Symbol {
     return owner;
   }
 
-  static void Completer() {
-  }
-
   interface Completer {
     void complete(Symbol symbol);
   }
