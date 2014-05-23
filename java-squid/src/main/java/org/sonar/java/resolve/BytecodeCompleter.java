@@ -248,7 +248,6 @@ public class BytecodeCompleter implements Symbol.Completer {
         // TODO what about flags?
         if (innerName == null) {
           // anonymous class
-          throw new IllegalStateException();
         } else if (outerName == null) {
           // named class declared within method
           throw new IllegalStateException();
