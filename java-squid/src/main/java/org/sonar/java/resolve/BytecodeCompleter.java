@@ -98,20 +98,22 @@ public class BytecodeCompleter implements Symbol.Completer {
     }
     return result;
   }
-
   public Symbol.TypeSymbol getClassSymbol(String bytecodeName) {
+    return getClassSymbol(bytecodeName, 0);
+  }
+
+  public Symbol.TypeSymbol getClassSymbol(String bytecodeName, int flags) {
     String flatName = Convert.flatName(bytecodeName);
     Symbol.TypeSymbol symbol = classes.get(flatName);
     if (symbol == null) {
-      // flags not specified
       String shortName = Convert.shortName(flatName);
       String packageName = Convert.packagePart(flatName);
       String enclosingClassName = Convert.enclosingClassName(shortName);
       if (StringUtils.isNotEmpty(enclosingClassName)) {
         //handle innerClasses
-        symbol = new Symbol.TypeSymbol(0, Convert.innerClassName(shortName), getClassSymbol(Convert.bytecodeName(packageName + "." + enclosingClassName)));
+        symbol = new Symbol.TypeSymbol(flags, Convert.innerClassName(shortName), getClassSymbol(Convert.bytecodeName(packageName + "." + enclosingClassName)));
       } else {
-        symbol = new Symbol.TypeSymbol(0, shortName, enterPackage(packageName));
+        symbol = new Symbol.TypeSymbol(flags, shortName, enterPackage(packageName));
       }
       symbol.members = new Scope(symbol);
       symbol.completer = this;
@@ -172,7 +174,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       if (superName == null) {
         Preconditions.checkState("java/lang/Object".equals(className));
       } else {
-        ((Type.ClassType) classSymbol.type).supertype = getCompletedClassSymbol(superName).type;
+        ((Type.ClassType) classSymbol.type).supertype = getClassSymbol(superName).type;
       }
       ((Type.ClassType) classSymbol.type).interfaces = getCompletedClassSymbolsType(interfaces);
     }
@@ -202,9 +204,9 @@ public class BytecodeCompleter implements Symbol.Completer {
       if (!isSynthetic(flags)) {
         // TODO what about flags?
         if (className.equals(outerName)) {
-          defineInnerClass(name);
+          defineInnerClass(name, flags);
         } else if (className.equals(name)) {
-          defineOuterClass(outerName, innerName);
+          defineOuterClass(outerName, innerName, flags);
         } else {
           // TODO wtf?
         }
@@ -215,17 +217,18 @@ public class BytecodeCompleter implements Symbol.Completer {
      * Invoked when current class classified as outer class of some inner class.
      * Completes inner class.
      */
-    private void defineInnerClass(String bytecodeName) {
-      Symbol.TypeSymbol innerClass = getCompletedClassSymbol(bytecodeName);
+    private void defineInnerClass(String bytecodeName, int flags) {
+      Symbol.TypeSymbol innerClass = getClassSymbol(bytecodeName, flags);
       Preconditions.checkState(innerClass.owner == classSymbol);
+      classSymbol.members.enter(innerClass);
     }
 
     /**
      * Invoked when current class classified as inner class.
      * Completes outer class. Owner of inner classes - is an outer class.
      */
-    private void defineOuterClass(String outerName, String innerName) {
-      Symbol.TypeSymbol outerClassSymbol = getCompletedClassSymbol(outerName);
+    private void defineOuterClass(String outerName, String innerName, int flags) {
+      Symbol.TypeSymbol outerClassSymbol = getClassSymbol(outerName, flags);
       classSymbol.name = innerName;
       classSymbol.owner = outerClassSymbol;
       outerClassSymbol.members.enter(classSymbol);
@@ -234,7 +237,7 @@ public class BytecodeCompleter implements Symbol.Completer {
     @Override
     public FieldVisitor visitField(int flags, String name, String desc, @Nullable String signature, @Nullable Object value) {
       if (!isSynthetic(flags)) {
-        // TODO(Godin): there is no guarantee that bytecode flags can be mapped one-to-one into our flags
+        //Flags from asm lib are defined in Opcodes class and map to flags defined in Flags class
         Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
         classSymbol.members.enter(symbol);
       }
@@ -270,7 +273,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       Type result;
       switch (asmType.getSort()) {
         case org.objectweb.asm.Type.OBJECT:
-          result = getCompletedClassSymbol(asmType.getInternalName()).type;
+          result = getClassSymbol(asmType.getInternalName()).type;
           break;
         case org.objectweb.asm.Type.BYTE:
           result = symbols.byteType;
@@ -311,7 +314,7 @@ public class BytecodeCompleter implements Symbol.Completer {
 
     /**
      * If at this point there is no owner of current class, then this is a top-level class,
-     * because outer classes always will be completed before inner classes - see {@link #defineOuterClass(String, String)}.
+     * because outer classes always will be completed before inner classes - see {@link #defineOuterClass(String, String, int)}.
      * Owner of top-level classes - is a package.
      */
     @Override
@@ -329,20 +332,6 @@ public class BytecodeCompleter implements Symbol.Completer {
       }
     }
 
-    private Symbol.TypeSymbol getCompletedClassSymbol(String bytecodeName) {
-      Symbol.TypeSymbol symbol = getClassSymbol(bytecodeName);
-      symbol.complete();
-      return symbol;
-    }
-
-    private List<Symbol.TypeSymbol> getCompletedClassSymbols(String[] bytecodeNames) {
-      ImmutableList.Builder<Symbol.TypeSymbol> symbols = ImmutableList.builder();
-      for (String bytecodeName : bytecodeNames) {
-        symbols.add(getCompletedClassSymbol(bytecodeName));
-      }
-      return symbols.build();
-    }
-
     /**
      * Used to complete types of interfaces.
      *
@@ -352,7 +341,7 @@ public class BytecodeCompleter implements Symbol.Completer {
     private List<Type> getCompletedClassSymbolsType(String[] bytecodeNames) {
       ImmutableList.Builder<Type> types = ImmutableList.builder();
       for (String bytecodeName : bytecodeNames) {
-        types.add(getCompletedClassSymbol(bytecodeName).type);
+        types.add(getClassSymbol(bytecodeName).type);
       }
       return types.build();
     }

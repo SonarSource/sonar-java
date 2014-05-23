@@ -55,12 +55,6 @@ public class ImportResolutionTest {
   }
 
   @Test
-  public void resolution_of_inner_class_type_symbol() throws Exception {
-    assertThat(result.symbol("annotationTree").type.symbol.name).isEqualTo("AnnotationTreeImpl");
-
-  }
-
-  @Test
   public void import_static_var_should_be_resolved() throws Exception {
     Symbol http_ok = result.symbol("HTTP_OK");
     assertThat(http_ok.owner().name).isEqualTo("HttpURLConnection");
