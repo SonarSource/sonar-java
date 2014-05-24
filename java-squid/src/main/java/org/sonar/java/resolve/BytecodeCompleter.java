@@ -277,7 +277,6 @@ public class BytecodeCompleter implements Symbol.Completer {
           // anonymous class
         } else if (outerName == null) {
           // named class declared within method
-          throw new IllegalStateException();
         } else if (className.equals(outerName)) {
           defineInnerClass(name, flags);
         } else if (className.equals(name)) {

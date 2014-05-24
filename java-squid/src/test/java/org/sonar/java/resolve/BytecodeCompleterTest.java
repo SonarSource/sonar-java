@@ -23,6 +23,8 @@ import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.resolve.targets.Annotations;
+import org.sonar.java.resolve.targets.AnonymousClass;
+import org.sonar.java.resolve.targets.NamedClassWithinMethod;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,6 +56,16 @@ public class BytecodeCompleterTest {
   @Test
   public void annotations() throws Exception {
     bytecodeCompleter.getClassSymbol(Annotations.class.getName().replace('.', '/')).complete();
+  }
+
+  @Test
+  public void anonymous_class() {
+    bytecodeCompleter.getClassSymbol(AnonymousClass.class.getName().replace('.', '/')).complete();
+  }
+
+  @Test
+  public void named_class_within_method() {
+    bytecodeCompleter.getClassSymbol(NamedClassWithinMethod.class.getName().replace('.', '/')).complete();
   }
 
   @Test
