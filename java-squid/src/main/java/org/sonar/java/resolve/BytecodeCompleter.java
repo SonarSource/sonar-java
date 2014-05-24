@@ -280,7 +280,6 @@ public class BytecodeCompleter implements Symbol.Completer {
         } else if (className.equals(outerName)) {
           defineInnerClass(name, flags);
         } else if (className.equals(name)) {
-          // TODO(Godin): most probably this path and next one are never used on practice, because Resolve must trigger completion of outer classes prior to the access to inner
           defineOuterClass(outerName, innerName, flags);
         } else {
           // FIXME(Godin): for example if loading started from "C1.C2.C3" in case of
@@ -292,10 +291,9 @@ public class BytecodeCompleter implements Symbol.Completer {
 
     /**
      * Invoked when current class classified as outer class of some inner class.
-     * Completes inner class.
+     * Adds inner class as member.
      */
     private void defineInnerClass(String bytecodeName, int flags) {
-      // TODO(Godin): most probably next call will always result in cache miss, because Resolve must trigger completion of outer classes prior to the access to inner
       Symbol.TypeSymbol innerClass = getClassSymbol(bytecodeName, flags);
       Preconditions.checkState(innerClass.owner == classSymbol);
       classSymbol.members.enter(innerClass);
@@ -303,13 +301,15 @@ public class BytecodeCompleter implements Symbol.Completer {
 
     /**
      * Invoked when current class classified as inner class.
-     * Completes outer class. Owner of inner classes - is an outer class.
+     * Owner of inner classes - is some outer class,
+     * which is either already completed, and thus already has this inner class as member,
+     * either will be completed by {@link BytecodeCompleter}, and thus will have this inner class as member (see {@link #defineInnerClass(String, int)}).
      */
     private void defineOuterClass(String outerName, String innerName, int flags) {
       Symbol.TypeSymbol outerClassSymbol = getClassSymbol(outerName, flags);
+      Preconditions.checkState(outerClassSymbol.completer == null || outerClassSymbol.completer instanceof BytecodeCompleter);
       classSymbol.name = innerName;
       classSymbol.owner = outerClassSymbol;
-      outerClassSymbol.members.enter(classSymbol);
     }
 
     @Override

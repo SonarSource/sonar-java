@@ -24,10 +24,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.resolve.targets.Annotations;
 import org.sonar.java.resolve.targets.AnonymousClass;
+import org.sonar.java.resolve.targets.HasInnerClass;
+import org.sonar.java.resolve.targets.InnerClassBeforeOuter;
 import org.sonar.java.resolve.targets.NamedClassWithinMethod;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -37,11 +38,6 @@ public class BytecodeCompleterTest {
   private BytecodeCompleter bytecodeCompleter;
   //used to load classes in same package
   public BytecodeCompleterPackageVisibility bytecodeCompleterPackageVisibility = new BytecodeCompleterPackageVisibility();
-
-  //Used to check symbol for inner class
-  public static class InnerClass extends ArrayList {
-    public int myField;
-  }
 
   private void accessPackageVisibility(){
     bytecodeCompleterPackageVisibility.add(1, 2);
@@ -69,6 +65,20 @@ public class BytecodeCompleterTest {
   }
 
   @Test
+  public void inner_class_before_outer() {
+    Symbol.TypeSymbol symbol = bytecodeCompleter.getClassSymbol(InnerClassBeforeOuter.class.getName());
+    Symbol.TypeSymbol innerClass = symbol.getSuperclass().symbol;
+    Symbol.TypeSymbol outerClass = (Symbol.TypeSymbol) innerClass.owner();
+    assertThat(outerClass.members().lookup(HasInnerClass.InnerClass.class.getSimpleName())).containsExactly(innerClass);
+  }
+
+  @Test
+  public void outer_class_before_inner() {
+    Symbol.TypeSymbol outerClass = bytecodeCompleter.getClassSymbol(HasInnerClass.class.getName());
+    assertThat(outerClass.members().lookup(HasInnerClass.InnerClass.class.getSimpleName())).hasSize(1);
+  }
+
+  @Test
   public void completing_symbol_ArrayList() throws Exception {
     Symbol.TypeSymbol arrayList = bytecodeCompleter.getClassSymbol("java/util/ArrayList");
     //Check supertype
@@ -83,15 +93,6 @@ public class BytecodeCompleterTest {
     }
     assertThat(interfacesName).hasSize(4);
     assertThat(interfacesName).contains("List", "RandomAccess", "Cloneable", "Serializable");
-  }
-
-  @Test
-  public void inner_classes_should_be_completed() throws Exception {
-    Symbol.TypeSymbol thisTest = bytecodeCompleter.getClassSymbol(Convert.bytecodeName(getClass().getName()));
-    List<Symbol> symbols = thisTest.members().lookup("InnerClass");
-    assertThat(symbols).hasSize(1);
-    Symbol.TypeSymbol innerClass = (Symbol.TypeSymbol) symbols.get(0);
-    assertThat(innerClass.getSuperclass().symbol.name).isEqualTo("ArrayList");
   }
 
   @Test
