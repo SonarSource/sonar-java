@@ -207,6 +207,7 @@ public class BytecodeCompleter implements Symbol.Completer {
     @Override
     public void visit(int version, int flags, String name, @Nullable String signature, @Nullable String superName, @Nullable String[] interfaces) {
       Preconditions.checkState(name.endsWith(classSymbol.name));
+      Preconditions.checkState(!isSynthetic(flags));
       className = name;
       classSymbol.flags = filterBytecodeFlags(flags);
       classSymbol.members = new Scope(classSymbol);
@@ -315,6 +316,8 @@ public class BytecodeCompleter implements Symbol.Completer {
       Preconditions.checkNotNull(name);
       Preconditions.checkNotNull(desc);
       if (!isSynthetic(flags)) {
+        Preconditions.checkState((flags & Opcodes.ACC_BRIDGE) == 0, "bridge method not marked as synthetic in class " + className);
+        // TODO(Godin): according to JVMS 4.7.24 - parameter can be marked as synthetic
         Type.MethodType type = new Type.MethodType(
             convertAsmTypes(org.objectweb.asm.Type.getArgumentTypes(desc)),
             convertAsmType(org.objectweb.asm.Type.getReturnType(desc)),
@@ -412,9 +415,11 @@ public class BytecodeCompleter implements Symbol.Completer {
 
   }
 
+  /**
+   * Compiler marks all artifacts not presented in the source code as {@link Flags#SYNTHETIC}.
+   */
   static boolean isSynthetic(int flags) {
-    // TODO Flags.BRIDGE
-    return (flags & Flags.SYNTHETIC) == Flags.SYNTHETIC;
+    return (flags & Flags.SYNTHETIC) != 0;
   }
 
 }
