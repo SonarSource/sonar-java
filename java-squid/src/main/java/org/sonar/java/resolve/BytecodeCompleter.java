@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Closeables;
@@ -55,6 +56,10 @@ public class BytecodeCompleter implements Symbol.Completer {
   private final Symbols symbols;
   private final List<File> projectClasspath;
   private final PackageCompleter packageCompleter;
+
+  /**
+   * Indexed by flat name.
+   */
   private final Map<String, Symbol.TypeSymbol> classes = new HashMap<String, Symbol.TypeSymbol>();
   private final Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
 
@@ -127,11 +132,13 @@ public class BytecodeCompleter implements Symbol.Completer {
     }
   }
 
-  public Symbol.TypeSymbol getClassSymbol(String bytecodeName) {
+  @VisibleForTesting
+  Symbol.TypeSymbol getClassSymbol(String bytecodeName) {
     return getClassSymbol(bytecodeName, 0);
   }
 
-  public Symbol.TypeSymbol getClassSymbol(String bytecodeName, int flags) {
+  // FIXME(Godin): or parameter must be renamed, or should not receive flat name
+  private Symbol.TypeSymbol getClassSymbol(String bytecodeName, int flags) {
     String flatName = Convert.flatName(bytecodeName);
     Symbol.TypeSymbol symbol = classes.get(flatName);
     if (symbol == null) {
@@ -202,6 +209,14 @@ public class BytecodeCompleter implements Symbol.Completer {
     private BytecodeVisitor(Symbol.TypeSymbol classSymbol) {
       super(Opcodes.ASM5);
       this.classSymbol = classSymbol;
+    }
+
+    private Symbol.TypeSymbol getClassSymbol(String bytecodeName) {
+      return BytecodeCompleter.this.getClassSymbol(Convert.flatName(bytecodeName));
+    }
+
+    private Symbol.TypeSymbol getClassSymbol(String bytecodeName, int flags) {
+      return BytecodeCompleter.this.getClassSymbol(Convert.flatName(bytecodeName), flags);
     }
 
     @Override
