@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Closeables;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +40,7 @@ import org.sonar.java.bytecode.ClassLoaderBuilder;
 import javax.annotation.Nullable;
 import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -77,20 +79,19 @@ public class BytecodeCompleter implements Symbol.Completer {
     String bytecodeName = formFullName(symbol);
     Symbol.TypeSymbol classSymbol = getClassSymbol(bytecodeName);
     Preconditions.checkState(classSymbol == symbol);
+
     InputStream inputStream = null;
+    ClassReader classReader = null;
     try {
       inputStream = inputStreamFor(bytecodeName);
-      ClassReader classReader = new ClassReader(inputStream);
-      classReader.accept(new BytecodeVisitor((Symbol.TypeSymbol) symbol), ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
-    } catch (Exception e) {
-      // TODO(Godin): why only interfaces, but not supertype for example?
-      // In fact the only exception, which we forced to catch - IOException, which indicates corrupted class file.
-      // The others indicate incorrect implementation on our side.
-      // And thus it might make sense to propagate it in any case.
-      ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
-      LOG.error("Cannot complete type : " + bytecodeName + "  " + e.getMessage(), e);
+      classReader = new ClassReader(inputStream);
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
     } finally {
       Closeables.closeQuietly(inputStream);
+    }
+    if (classReader != null) {
+      classReader.accept(new BytecodeVisitor((Symbol.TypeSymbol) symbol), ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
     }
   }
 
@@ -137,7 +138,7 @@ public class BytecodeCompleter implements Symbol.Completer {
     return getClassSymbol(bytecodeName, 0);
   }
 
-  // FIXME(Godin): or parameter must be renamed, or should not receive flat name
+  // FIXME(Godin): or parameter must be renamed, or should not receive flat name, in a former case - first transformation in this method seems useless
   private Symbol.TypeSymbol getClassSymbol(String bytecodeName, int flags) {
     String flatName = Convert.flatName(bytecodeName);
     Symbol.TypeSymbol symbol = classes.get(flatName);
@@ -152,7 +153,16 @@ public class BytecodeCompleter implements Symbol.Completer {
         symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), shortName, enterPackage(packageName));
       }
       symbol.members = new Scope(symbol);
-      symbol.completer = this;
+
+      // (Godin): IOException will happen without this condition in case of missing class:
+      if (getClassLoader().getResource(Convert.bytecodeName(flatName) + ".class") != null) {
+        symbol.completer = this;
+      } else {
+        LOG.error("Class not found: " + bytecodeName);
+        // TODO(Godin): why only interfaces, but not supertype for example?
+        ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
+      }
+
       classes.put(flatName, symbol);
     }
     return symbol;
