@@ -194,19 +194,20 @@ public class Resolve {
    */
   private Symbol findType(Env env, String name) {
     Symbol bestSoFar = symbolNotFound;
-
-    for (Env env1 = env; env1.outer() != null; env1 = env1.outer()) {
+    for (Env env1 = env; env1 != null; env1 = env1.outer()) {
       for (Symbol symbol : env1.scope().lookup(name)) {
         if (symbol.kind == Symbol.TYP) {
           return symbol;
         }
       }
-      Symbol symbol = findMemberType(env1, env1.enclosingClass(), name, env1.enclosingClass());
-      if (symbol.kind < Symbol.ERRONEOUS) {
-        // symbol exists
-        return symbol;
-      } else if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+      if (env1.outer != null) {
+        Symbol symbol = findMemberType(env1, env1.enclosingClass(), name, env1.enclosingClass());
+        if (symbol.kind < Symbol.ERRONEOUS) {
+          // symbol exists
+          return symbol;
+        } else if (symbol.kind < bestSoFar.kind) {
+          bestSoFar = symbol;
+        }
       }
     }
 
@@ -224,10 +225,9 @@ public class Resolve {
       }
     }
     //package types
-    for (Symbol symbol : env.packge().members().lookup(name)) {
-      if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
-      }
+    Symbol symbol = findIdentInPackage(env, env.packge(), name, Symbol.TYP);
+    if (symbol.kind < bestSoFar.kind) {
+      bestSoFar = symbol;
     }
 
     //TODO on demand imports
@@ -281,7 +281,7 @@ public class Resolve {
     }
     //Try to find a type matching the name.
     if ((kind & Symbol.TYP) != 0) {
-      Symbol sym = bytecodeCompleter.loadClass(env, site, fullname, name);
+      Symbol sym = bytecodeCompleter.loadClass(fullname);
       if (sym.kind < bestSoFar.kind) {
         bestSoFar = sym;
       }

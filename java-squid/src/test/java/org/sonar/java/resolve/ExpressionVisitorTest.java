@@ -63,7 +63,7 @@ public class ExpressionVisitorTest {
    */
   @Before
   public void setUp() {
-    Symbol.PackageSymbol p = new Symbol.PackageSymbol(null, null);
+    Symbol.PackageSymbol p = symbols.defaultPackage;
     p.members = new Scope(p);
 
     // class MyClass
@@ -91,6 +91,7 @@ public class ExpressionVisitorTest {
 
     // FIXME figure out why top is mandatory
     Resolve.Env top = new Resolve.Env();
+    top.scope = new Scope((Symbol) null);
 
     Resolve.Env compilationUnitEnv = new Resolve.Env();
     compilationUnitEnv.outer = top;

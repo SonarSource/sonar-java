@@ -91,7 +91,7 @@ public class FirstPass extends BaseTreeVisitor {
     if(tree.packageName() != null) {
       PackageResolverVisitor packageResolver = new PackageResolverVisitor();
       tree.packageName().accept(packageResolver);
-      compilationUnitPackage = packageResolver.currentPackage;
+      compilationUnitPackage = (Symbol.PackageSymbol) resolve.findIdentInPackage(env, compilationUnitPackage, packageResolver.packageName, Symbol.PCK);
       semanticModel.associateSymbol(tree.packageName(), compilationUnitPackage);
     }
     compilationUnitPackage.members = new Scope(compilationUnitPackage);
@@ -108,15 +108,17 @@ public class FirstPass extends BaseTreeVisitor {
   }
 
   private class PackageResolverVisitor extends BaseTreeVisitor {
-    private Symbol.PackageSymbol currentPackage;
-
+    private String packageName;
     public PackageResolverVisitor(){
-      currentPackage = symbols.defaultPackage;
+      packageName = "";
     }
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      currentPackage = (Symbol.PackageSymbol) resolve.findIdentInPackage(env, currentPackage, tree.name(), Symbol.PCK);
+      if(!packageName.isEmpty()) {
+        packageName += ".";
+      }
+      packageName += tree.name();
     }
 
   }

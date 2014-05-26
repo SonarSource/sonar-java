@@ -164,12 +164,10 @@ public class BytecodeCompleter implements Symbol.Completer {
 
   /**
    * Load a class from bytecode.
-   *
-   * @param env
    * @param fullname class name.
    * @return symbolNotFound if the class was not resolved.
    */
-  public Symbol loadClass(Resolve.Env env, Symbol owner, String fullname, String name) {
+  public Symbol loadClass(String fullname) {
     InputStream inputStream = inputStreamFor(fullname);
     if (inputStream == null) {
       return new Resolve.SymbolNotFound();
@@ -184,7 +182,7 @@ public class BytecodeCompleter implements Symbol.Completer {
     }
     Symbol.PackageSymbol result = packages.get(fullname);
     if (result == null) {
-      result = new Symbol.PackageSymbol(Convert.shortName(fullname), enterPackage(Convert.packagePart(fullname)));
+      result = new Symbol.PackageSymbol(fullname, symbols.defaultPackage);
       packages.put(fullname, result);
     }
     return result;

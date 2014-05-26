@@ -83,7 +83,7 @@ public class BytecodeCompleterTest {
     Symbol.TypeSymbol arrayList = bytecodeCompleter.getClassSymbol("java/util/ArrayList");
     //Check supertype
     assertThat(arrayList.getSuperclass().symbol.name).isEqualTo("AbstractList");
-    assertThat(arrayList.getSuperclass().symbol.owner().name).isEqualTo("util");
+    assertThat(arrayList.getSuperclass().symbol.owner().name).isEqualTo("java.util");
 
     //Check interfaces
     assertThat(arrayList.getInterfaces()).hasSize(4);
