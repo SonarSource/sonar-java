@@ -98,10 +98,8 @@ public class ImportResolutionTest {
     Symbol.TypeSymbol thisTest = (Symbol.TypeSymbol) result1.symbol("BytecodeCompleterTest");
     List<Symbol> symbols = thisTest.members().lookup("bytecodeCompleterPackageVisibility");
     assertThat(symbols).hasSize(1);
-    //TODO symbol should be resolved : need work on classloaders
-//    Symbol.VariableSymbol symbol = (Symbol.VariableSymbol) symbols.get(0);
-//    assertThat(symbol.type.symbol.name).isEqualTo("BytecodeCompleterPackageVisibility");
-//    assertThat(symbol.type.symbol.owner().name).isEqualTo(thisTest.owner().name);
-
+    Symbol.VariableSymbol symbol = (Symbol.VariableSymbol) symbols.get(0);
+    assertThat(symbol.type.symbol.name).isEqualTo("BytecodeCompleterPackageVisibility");
+    assertThat(symbol.type.symbol.owner().name).isEqualTo(thisTest.owner().name);
   }
 }

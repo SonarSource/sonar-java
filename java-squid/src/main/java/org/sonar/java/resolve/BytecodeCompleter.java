@@ -40,6 +40,7 @@ import org.sonar.java.bytecode.ClassLoaderBuilder;
 import javax.annotation.Nullable;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -51,9 +52,9 @@ public class BytecodeCompleter implements Symbol.Completer {
   private static final Logger LOG = LoggerFactory.getLogger(BytecodeCompleter.class);
 
   private static final int ACCEPTABLE_BYTECODE_FLAGS = Flags.ACCESS_FLAGS |
-    Flags.INTERFACE | Flags.ANNOTATION | Flags.ENUM |
-    Flags.STATIC | Flags.FINAL | Flags.SYNCHRONIZED | Flags.VOLATILE | Flags.TRANSIENT | Flags.NATIVE |
-    Flags.ABSTRACT | Flags.STRICTFP;
+      Flags.INTERFACE | Flags.ANNOTATION | Flags.ENUM |
+      Flags.STATIC | Flags.FINAL | Flags.SYNCHRONIZED | Flags.VOLATILE | Flags.TRANSIENT | Flags.NATIVE |
+      Flags.ABSTRACT | Flags.STRICTFP;
 
   private final Symbols symbols;
   private final List<File> projectClasspath;
@@ -128,8 +129,28 @@ public class BytecodeCompleter implements Symbol.Completer {
   private class PackageCompleter implements Symbol.Completer {
     @Override
     public void complete(Symbol symbol) {
-        //FIXME need work on class loader to be able to list .class files especially from FileSystemLoader but also from JarLoader
-        //won't find any resource as it is expecting a file name.
+      Preconditions.checkArgument(symbol.kind == Symbol.PCK);
+      Symbol.PackageSymbol packageSymbol = (Symbol.PackageSymbol) symbol;
+      String packagePath = Convert.bytecodeName(formFullName(packageSymbol));
+      for (File baseDir : projectClasspath) {
+        //TODO Handle case of packages in jar files.
+        File pck = new File(baseDir, packagePath);
+        if (pck.exists()) {
+          FilenameFilter filter = new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+              //if class name contains $ it is an inner class and should be completed by bytecode visitors
+              //Handle only .class files, ignore subpackages or other resources.
+              return !s.contains("$") && s.endsWith(".class");
+            }
+          };
+          for (String classFileName : pck.list(filter)) {
+            String className = Convert.packagePart(classFileName);
+            Symbol classSymbol = getClassSymbol(packagePath + "/" + className);
+            packageSymbol.members.enter(classSymbol);
+          }
+        }
+      }
     }
   }
 
