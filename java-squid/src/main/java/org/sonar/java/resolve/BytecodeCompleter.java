@@ -40,7 +40,6 @@ import org.sonar.java.bytecode.ClassLoaderBuilder;
 import javax.annotation.Nullable;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -58,7 +57,6 @@ public class BytecodeCompleter implements Symbol.Completer {
 
   private final Symbols symbols;
   private final List<File> projectClasspath;
-  private final PackageCompleter packageCompleter;
 
   /**
    * Indexed by flat name.
@@ -71,7 +69,6 @@ public class BytecodeCompleter implements Symbol.Completer {
   public BytecodeCompleter(Symbols symbols, List<File> projectClasspath) {
     this.symbols = symbols;
     this.projectClasspath = projectClasspath;
-    this.packageCompleter = new PackageCompleter();
   }
 
   @Override
@@ -124,34 +121,6 @@ public class BytecodeCompleter implements Symbol.Completer {
       owner = owner.owner();
     }
     return result;
-  }
-
-  private class PackageCompleter implements Symbol.Completer {
-    @Override
-    public void complete(Symbol symbol) {
-      Preconditions.checkArgument(symbol.kind == Symbol.PCK);
-      Symbol.PackageSymbol packageSymbol = (Symbol.PackageSymbol) symbol;
-      String packagePath = Convert.bytecodeName(formFullName(packageSymbol));
-      for (File baseDir : projectClasspath) {
-        //TODO Handle case of packages in jar files.
-        File pck = new File(baseDir, packagePath);
-        if (pck.exists()) {
-          FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-              //if class name contains $ it is an inner class and should be completed by bytecode visitors
-              //Handle only .class files, ignore subpackages or other resources.
-              return !s.contains("$") && s.endsWith(".class");
-            }
-          };
-          for (String classFileName : pck.list(filter)) {
-            String className = Convert.packagePart(classFileName);
-            Symbol classSymbol = getClassSymbol(packagePath + "/" + className);
-            packageSymbol.members.enter(classSymbol);
-          }
-        }
-      }
-    }
   }
 
   @VisibleForTesting
@@ -216,7 +185,6 @@ public class BytecodeCompleter implements Symbol.Completer {
     Symbol.PackageSymbol result = packages.get(fullname);
     if (result == null) {
       result = new Symbol.PackageSymbol(Convert.shortName(fullname), enterPackage(Convert.packagePart(fullname)));
-      result.completer = packageCompleter;
       packages.put(fullname, result);
     }
     return result;
