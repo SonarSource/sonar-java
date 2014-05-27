@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -88,7 +89,7 @@ public class FirstPass extends BaseTreeVisitor {
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
     Symbol.PackageSymbol compilationUnitPackage = symbols.defaultPackage;
-    if(tree.packageName() != null) {
+    if (tree.packageName() != null) {
       PackageResolverVisitor packageResolver = new PackageResolverVisitor();
       tree.packageName().accept(packageResolver);
       compilationUnitPackage = (Symbol.PackageSymbol) resolve.findIdentInPackage(env, compilationUnitPackage, packageResolver.packageName, Symbol.PCK);
@@ -100,6 +101,7 @@ public class FirstPass extends BaseTreeVisitor {
     env.packge = compilationUnitPackage;
     env.scope = compilationUnitPackage.members;
     env.namedImports = new Scope(compilationUnitPackage);
+    env.starImports = resolve.createStarImportScope(compilationUnitPackage);
     semanticModel.associateEnv(tree, env);
 
     super.visitCompilationUnit(tree);
@@ -109,13 +111,14 @@ public class FirstPass extends BaseTreeVisitor {
 
   private class PackageResolverVisitor extends BaseTreeVisitor {
     private String packageName;
-    public PackageResolverVisitor(){
+
+    public PackageResolverVisitor() {
       packageName = "";
     }
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      if(!packageName.isEmpty()) {
+      if (!packageName.isEmpty()) {
         packageName += ".";
       }
       packageName += tree.name();
@@ -165,24 +168,31 @@ public class FirstPass extends BaseTreeVisitor {
       //FIXME We add all symbols to named Imports for static methods, but only the first one will be resolved as we don't handle arguments.
       //FIXME That is why we only add the first symbol so we resolve references at best for now.
       //add to semantic model only the first symbol.
-      if (semanticModel.getSymbol(tree) == null && semanticModel.getTree(symbol) == null) {
-        //TODO handle correctly on demand import so java.util.List and java.util.List.* are not resolved to the same symbol and we won't need check : semanticModel.getTree(symbol)==null
+      //twice the same import : ignore the duplication JLS8 7.5.1.
+      if (semanticModel.getSymbol(tree) == null && semanticModel.getTree(symbol)==null) {
         semanticModel.associateSymbol(tree, symbol);
       }
     }
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      if (currentSymbol.kind == Symbol.PCK) {
-        currentSymbol = resolve.findIdentInPackage(env, currentSymbol, tree.name(), Symbol.PCK | Symbol.TYP);
-        resolved = Collections.emptyList();
-      } else if (currentSymbol.kind == Symbol.TYP) {
-        resolved = ((Symbol.TypeSymbol) currentSymbol).members().lookup(tree.name());
-        currentSymbol = resolve.findIdentInType(env, (Symbol.TypeSymbol) currentSymbol, tree.name(), Symbol.TYP);
-      } else {
-        //Site symbol is not found so we won't be able to resolve the import.
+      if (JavaPunctuator.STAR.getValue().equals(tree.name())) {
+        //star import : we save the current symbol
+        env.starImports.enter(currentSymbol);
+        //FIXME : we set current symbol to not found to do not put it in named import scope.
         currentSymbol = new Resolve.SymbolNotFound();
-        resolved = Collections.emptyList();
+      } else {
+        if (currentSymbol.kind == Symbol.PCK) {
+          currentSymbol = resolve.findIdentInPackage(env, currentSymbol, tree.name(), Symbol.PCK | Symbol.TYP);
+          resolved = Collections.emptyList();
+        } else if (currentSymbol.kind == Symbol.TYP) {
+          resolved = ((Symbol.TypeSymbol) currentSymbol).members().lookup(tree.name());
+          currentSymbol = resolve.findIdentInType(env, (Symbol.TypeSymbol) currentSymbol, tree.name(), Symbol.TYP);
+        } else {
+          //Site symbol is not found so we won't be able to resolve the import.
+          currentSymbol = new Resolve.SymbolNotFound();
+          resolved = Collections.emptyList();
+        }
       }
     }
 

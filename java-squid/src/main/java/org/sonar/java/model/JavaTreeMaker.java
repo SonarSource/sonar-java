@@ -262,11 +262,21 @@ public class JavaTreeMaker {
     checkType(astNode, JavaGrammar.COMPILATION_UNIT);
     ImmutableList.Builder<ImportTree> imports = ImmutableList.builder();
     for (AstNode importNode : astNode.getChildren(JavaGrammar.IMPORT_DECLARATION)) {
-      // TODO star import?
+      AstNode astNodeQualifiedIdentifier = importNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
+      ExpressionTree qualifiedIdentifier = qualifiedIdentifier(astNodeQualifiedIdentifier);
+      //star import : if there is a star then add it as an identifier.
+      if(astNodeQualifiedIdentifier.getNextSibling().is(JavaPunctuator.DOT) && astNodeQualifiedIdentifier.getNextSibling().getNextSibling().is(JavaPunctuator.STAR)) {
+        qualifiedIdentifier = new JavaTree.MemberSelectExpressionTreeImpl(
+            astNodeQualifiedIdentifier.getNextSibling().getNextSibling(),
+            qualifiedIdentifier,
+            new JavaTree.IdentifierTreeImpl(astNodeQualifiedIdentifier.getNextSibling().getNextSibling(), JavaPunctuator.STAR.getValue())
+        );
+      }
+
       imports.add(new JavaTree.ImportTreeImpl(
           importNode,
           importNode.hasDirectChildren(JavaKeyword.STATIC),
-          qualifiedIdentifier(importNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER))
+          qualifiedIdentifier
       ));
     }
     ImmutableList.Builder<Tree> types = ImmutableList.builder();

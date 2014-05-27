@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class Scope {
   final Symbol owner;
   final Scope next;
 
-  private ArrayListMultimap<String, Symbol> symbols = ArrayListMultimap.create();
+  protected ArrayListMultimap<String, Symbol> symbols = ArrayListMultimap.create();
 
   public Scope(Symbol owner) {
     this.owner = owner;
@@ -54,6 +55,28 @@ public class Scope {
       scope = scope.next;
     }
     return scope == null ? ImmutableList.<Symbol>of() : scope.symbols.get(name);
+  }
+
+  public static class StarImportScope extends Scope{
+
+    private final BytecodeCompleter bytecodeCompleter;
+
+    public StarImportScope(Symbol owner, BytecodeCompleter bytecodeCompleter) {
+      super(owner);
+      this.bytecodeCompleter = bytecodeCompleter;
+    }
+
+    @Override
+    public List<Symbol> lookup(String name) {
+      List<Symbol> symbolsList = Lists.newArrayList();
+      for(String packageName : symbols.keySet()) {
+        Symbol symbol = bytecodeCompleter.loadClass(packageName+"."+name);
+        if(symbol.kind < Symbol.ERRONEOUS) {
+          symbolsList.add(symbol);
+        }
+      }
+      return symbolsList;
+    }
   }
 
 }

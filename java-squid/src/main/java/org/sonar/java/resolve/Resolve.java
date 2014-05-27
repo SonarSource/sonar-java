@@ -56,6 +56,10 @@ public class Resolve {
     bytecodeCompleter.done();
   }
 
+  public Scope createStarImportScope(Symbol owner) {
+    return new Scope.StarImportScope(owner, bytecodeCompleter);
+  }
+
   static class Env {
     /**
      * The next enclosing environment.
@@ -73,6 +77,7 @@ public class Resolve {
 
     Scope scope;
     Scope namedImports;
+    Scope starImports;
 
     Env outer() {
       return outer;
@@ -90,6 +95,10 @@ public class Resolve {
       return namedImports;
     }
 
+    Scope starImports() {
+      return starImports;
+    }
+
     Scope scope() {
       return scope;
     }
@@ -102,6 +111,7 @@ public class Resolve {
       env.enclosingClass = this.enclosingClass;
       env.scope = this.scope;
       env.namedImports = this.namedImports;
+      env.starImports = this.starImports;
       return env;
     }
   }
@@ -225,13 +235,17 @@ public class Resolve {
       }
     }
     //package types
-    Symbol symbol = findIdentInPackage(env, env.packge(), name, Symbol.TYP);
-    if (symbol.kind < bestSoFar.kind) {
-      bestSoFar = symbol;
+    Symbol sym = findIdentInPackage(env, env.packge(), name, Symbol.TYP);
+    if (sym.kind < bestSoFar.kind) {
+      return sym;
     }
 
-    //TODO on demand imports
-
+    //on demand imports
+    for (Symbol symbol : env.starImports().lookup(name)) {
+      if (symbol.kind < bestSoFar.kind) {
+        bestSoFar = symbol;
+      }
+    }
     return bestSoFar;
   }
 

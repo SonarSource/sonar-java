@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.io.*;
+import java.util.ArrayList; //Twice the same import should be ignored
 import static java.util.List.*;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Collections.reverse;
@@ -43,6 +45,7 @@ class ImportResolution {
           return s2.compareTo(s);
         }
       });
+      File file = new File("file");
       return null;
     }
   }

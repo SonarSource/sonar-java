@@ -79,8 +79,10 @@ public class ImportResolutionTest {
     assertThat(sort.owner().type.symbol.name).isEqualTo("Collections");
     assertThat(sort.kind).isEqualTo(Symbol.MTH);
     assertThat(sort.type.tag).isEqualTo(Type.METHOD);
-    assertThat(result.reference(39,7)).isEqualTo(sort);
-    assertThat(result.reference(40,7)).isEqualTo(sort);
+    assertThat(result.reference(41,7).name).isEqualTo("sort");
+    assertThat(result.reference(41,7)).isEqualTo(sort);
+    assertThat(result.reference(42,7).name).isEqualTo("sort");
+    assertThat(result.reference(42,7)).isEqualTo(sort);
   }
 
   @Test
@@ -101,5 +103,12 @@ public class ImportResolutionTest {
     Symbol.VariableSymbol symbol = (Symbol.VariableSymbol) symbols.get(0);
     assertThat(symbol.type.symbol.name).isEqualTo("BytecodeCompleterPackageVisibility");
     assertThat(symbol.type.symbol.owner().name).isEqualTo(thisTest.owner().name);
+  }
+
+  @Test
+  public void star_imports_should_be_resolved() throws Exception {
+    Symbol sort = result.symbol("file");
+    assertThat(sort.type.symbol.name).isEqualTo("File");
+    assertThat(sort.type.symbol.owner().name).isEqualTo("java.io");
   }
 }
