@@ -69,8 +69,8 @@ public class Scope {
     @Override
     public List<Symbol> lookup(String name) {
       List<Symbol> symbolsList = Lists.newArrayList();
-      for(String packageName : symbols.keySet()) {
-        Symbol symbol = bytecodeCompleter.loadClass(packageName+"."+name);
+      for(Symbol site : symbols.values()) {
+        Symbol symbol = bytecodeCompleter.loadClass(bytecodeCompleter.formFullName(name, site));
         if(symbol.kind < Symbol.ERRONEOUS) {
           symbolsList.add(symbol);
         }

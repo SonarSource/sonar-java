@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sonar.java.test.ImportsResolutionCases.*;
 
 import java.util.List;
 
@@ -30,10 +31,12 @@ public class ImportResolutionTest {
 
 
   private static Result result;
-
+  //test inner imports
+  private ImportInnerClass importInnerClass;
   @BeforeClass
   public static void setUp() throws Exception {
     result = Result.createFor("ImportResolution");
+
   }
 
   @Test
@@ -95,7 +98,7 @@ public class ImportResolutionTest {
   }
 
   @Test
-  public void types_from_same_package_should_be_resolved() throws Exception {
+  public void types_from_same_package_should_be_resolved() {
     Result result1 = Result.createForJavaFile("src/test/java/org/sonar/java/resolve/BytecodeCompleterTest");
     Symbol.TypeSymbol thisTest = (Symbol.TypeSymbol) result1.symbol("BytecodeCompleterTest");
     List<Symbol> symbols = thisTest.members().lookup("bytecodeCompleterPackageVisibility");
@@ -106,9 +109,18 @@ public class ImportResolutionTest {
   }
 
   @Test
-  public void star_imports_should_be_resolved() throws Exception {
+  public void star_imports_should_be_resolved() {
     Symbol sort = result.symbol("file");
     assertThat(sort.type.symbol.name).isEqualTo("File");
     assertThat(sort.type.symbol.owner().name).isEqualTo("java.io");
+  }
+
+  @Test
+  public void star_imports_on_type_should_be_resolved() {
+    Result result1 = Result.createForJavaFile("src/test/java/org/sonar/java/resolve/ImportResolutionTest");
+    Symbol importInnerClassSymbol = result1.symbol("importInnerClass");
+    assertThat(importInnerClassSymbol.type.symbol.name).isEqualTo("ImportInnerClass");
+    assertThat(importInnerClassSymbol.type.symbol.owner().name).isEqualTo("ImportsResolutionCases");
+    assertThat(importInnerClassSymbol.type.symbol.owner().owner().name).isEqualTo("org.sonar.java.test");
   }
 }
