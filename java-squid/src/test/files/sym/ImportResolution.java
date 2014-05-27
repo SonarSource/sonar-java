@@ -9,7 +9,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.io.*;
 import java.util.ArrayList; //Twice the same import should be ignored
+
 import static java.util.List.*;
+import static java.net.HttpURLConnection.*;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Collections.reverse;
 import static java.util.Collections.sort;
@@ -35,6 +37,8 @@ class ImportResolution {
       for (Interface1 forLoopVariable : Collections.<Interface1>emptyList()) {
       }
       if(HTTP_OK==200){
+      }
+      if(HTTP_ACCEPTED==201) {
       }
       List<String> list = new ArrayList<String>();
       reverse(list);

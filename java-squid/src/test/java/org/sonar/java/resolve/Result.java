@@ -72,7 +72,7 @@ class Result {
   public Symbol symbol(String name, int line) {
     Symbol result = null;
     for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
-      if (name.equals(symbol.name) && ((JavaTree)semanticModel.getTree(symbol)).getAstNode().getTokenLine() == line) {
+      if (name.equals(symbol.name) && ((JavaTree) semanticModel.getTree(symbol)).getAstNode().getTokenLine() == line) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");
         }
@@ -88,7 +88,7 @@ class Result {
   public Symbol reference(int line, int column) {
     // In SSLR column starts at 0, but here we want consistency with IDE, so we start from 1:
     column -= 1;
-    for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
+    for (Symbol symbol : semanticModel.getSymbolUsed()) {
       for (IdentifierTree usage : semanticModel.getUsages(symbol)) {
         Token token = ((JavaTree) usage).getAstNode().getToken();
         if (token.getLine() == line && token.getColumn() == column) {

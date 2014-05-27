@@ -82,10 +82,10 @@ public class ImportResolutionTest {
     assertThat(sort.owner().type.symbol.name).isEqualTo("Collections");
     assertThat(sort.kind).isEqualTo(Symbol.MTH);
     assertThat(sort.type.tag).isEqualTo(Type.METHOD);
-    assertThat(result.reference(41,7).name).isEqualTo("sort");
-    assertThat(result.reference(41,7)).isEqualTo(sort);
-    assertThat(result.reference(42,7).name).isEqualTo("sort");
-    assertThat(result.reference(42,7)).isEqualTo(sort);
+    assertThat(result.reference(45,7).name).isEqualTo("sort");
+    assertThat(result.reference(45,7)).isEqualTo(sort);
+    assertThat(result.reference(46,7).name).isEqualTo("sort");
+    assertThat(result.reference(46,7)).isEqualTo(sort);
   }
 
   @Test
@@ -123,4 +123,15 @@ public class ImportResolutionTest {
     assertThat(importInnerClassSymbol.type.symbol.owner().name).isEqualTo("ImportsResolutionCases");
     assertThat(importInnerClassSymbol.type.symbol.owner().owner().name).isEqualTo("org.sonar.java.test");
   }
+
+  @Test
+  public void import_static_on_demand_should_be_resolved() throws Exception {
+    Symbol http_accepted = result.reference(41,10);
+    assertThat(http_accepted.name).isEqualTo("HTTP_ACCEPTED");
+    assertThat(http_accepted.owner().name).isEqualTo("HttpURLConnection");
+    assertThat(http_accepted.owner().type.symbol.name).isEqualTo("HttpURLConnection");
+    assertThat(http_accepted.kind).isEqualTo(Symbol.VAR);
+    assertThat(http_accepted.type.tag).isEqualTo(Type.INT);
+  }
+
 }

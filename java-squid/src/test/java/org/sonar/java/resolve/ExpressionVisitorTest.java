@@ -100,6 +100,7 @@ public class ExpressionVisitorTest {
     compilationUnitEnv.enclosingClass = symbols.predefClass;
     compilationUnitEnv.namedImports = new Scope(p);
     compilationUnitEnv.starImports = new Scope(p);
+    compilationUnitEnv.staticStarImports = new Scope(p);
 
     env = compilationUnitEnv.dup();
     env.outer = compilationUnitEnv;

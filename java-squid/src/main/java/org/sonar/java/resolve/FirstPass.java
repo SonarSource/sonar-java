@@ -102,6 +102,7 @@ public class FirstPass extends BaseTreeVisitor {
     env.scope = compilationUnitPackage.members;
     env.namedImports = new Scope(compilationUnitPackage);
     env.starImports = resolve.createStarImportScope(compilationUnitPackage);
+    env.staticStarImports = resolve.createStaticStarImportScope(compilationUnitPackage);
     semanticModel.associateEnv(tree, env);
 
     super.visitCompilationUnit(tree);
@@ -138,6 +139,7 @@ public class FirstPass extends BaseTreeVisitor {
   private class ImportResolverVisitor extends BaseTreeVisitor {
     private Symbol currentSymbol;
     private List<Symbol> resolved;
+    private boolean isStatic;
 
     public ImportResolverVisitor() {
       currentSymbol = symbols.defaultPackage;
@@ -145,12 +147,13 @@ public class FirstPass extends BaseTreeVisitor {
 
     @Override
     public void visitImport(ImportTree tree) {
+      isStatic = tree.isStatic();
       super.visitImport(tree);
       //Associate symbol only if found.
       if (currentSymbol.kind < Symbol.ERRONEOUS) {
         enterSymbol(currentSymbol, tree);
       } else {
-        if (tree.isStatic()) {
+        if (isStatic) {
           for (Symbol symbol : resolved) {
             //add only static fields
             //TODO accessibility should be checked : package/public
@@ -178,8 +181,12 @@ public class FirstPass extends BaseTreeVisitor {
     public void visitIdentifier(IdentifierTree tree) {
       if (JavaPunctuator.STAR.getValue().equals(tree.name())) {
         //star import : we save the current symbol
-        env.starImports.enter(currentSymbol);
-        //FIXME : we set current symbol to not found to do not put it in named import scope.
+        if(isStatic) {
+          env.staticStarImports().enter(currentSymbol);
+        } else {
+          env.starImports().enter(currentSymbol);
+        }
+        //we set current symbol to not found to do not put it in named import scope.
         currentSymbol = new Resolve.SymbolNotFound();
       } else {
         if (currentSymbol.kind == Symbol.PCK) {
@@ -187,7 +194,7 @@ public class FirstPass extends BaseTreeVisitor {
           resolved = Collections.emptyList();
         } else if (currentSymbol.kind == Symbol.TYP) {
           resolved = ((Symbol.TypeSymbol) currentSymbol).members().lookup(tree.name());
-          currentSymbol = resolve.findIdentInType(env, (Symbol.TypeSymbol) currentSymbol, tree.name(), Symbol.TYP);
+          currentSymbol = resolve.findIdentInType(env, (Symbol.TypeSymbol) currentSymbol, tree.name(), Symbol.TYP | Symbol.VAR);
         } else {
           //Site symbol is not found so we won't be able to resolve the import.
           currentSymbol = new Resolve.SymbolNotFound();

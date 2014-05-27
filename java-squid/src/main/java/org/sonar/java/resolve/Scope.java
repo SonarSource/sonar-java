@@ -57,7 +57,7 @@ public class Scope {
     return scope == null ? ImmutableList.<Symbol>of() : scope.symbols.get(name);
   }
 
-  public static class StarImportScope extends Scope{
+  public static class StarImportScope extends Scope {
 
     private final BytecodeCompleter bytecodeCompleter;
 
@@ -69,9 +69,9 @@ public class Scope {
     @Override
     public List<Symbol> lookup(String name) {
       List<Symbol> symbolsList = Lists.newArrayList();
-      for(Symbol site : symbols.values()) {
+      for (Symbol site : symbols.values()) {
         Symbol symbol = bytecodeCompleter.loadClass(bytecodeCompleter.formFullName(name, site));
-        if(symbol.kind < Symbol.ERRONEOUS) {
+        if (symbol.kind < Symbol.ERRONEOUS) {
           symbolsList.add(symbol);
         }
       }
@@ -79,4 +79,42 @@ public class Scope {
     }
   }
 
+
+  public static class StaticStarImportScope extends Scope {
+
+    private final BytecodeCompleter bytecodeCompleter;
+
+    public StaticStarImportScope(Symbol owner, BytecodeCompleter bytecodeCompleter) {
+      super(owner);
+      this.bytecodeCompleter = bytecodeCompleter;
+    }
+
+    @Override
+    public List<Symbol> lookup(String name) {
+      List<Symbol> symbolsList = Lists.newArrayList();
+      for (Symbol site : symbols.values()) {
+        //site is a package, try to load referenced type.
+        if ((site.kind & Symbol.PCK) != 0) {
+          Symbol symbol = bytecodeCompleter.loadClass(bytecodeCompleter.formFullName(name, site));
+          if (symbol.kind < Symbol.ERRONEOUS) {
+            symbolsList.add(symbol);
+          }
+        }
+
+        //site is a type, try to find a matching type or field
+        if ((site.kind & Symbol.TYP) != 0) {
+          List<Symbol> resolved = ((Symbol.TypeSymbol) site).members().lookup(name);
+          for (Symbol symbol : resolved) {
+            //TODO check accessibility
+            //TODO factorize with static named import ?
+            if (symbol.kind < Symbol.ERRONEOUS && (symbol.flags & Flags.STATIC) != 0) {
+              symbolsList.add(symbol);
+            }
+          }
+        }
+
+      }
+      return symbolsList;
+    }
+  }
 }

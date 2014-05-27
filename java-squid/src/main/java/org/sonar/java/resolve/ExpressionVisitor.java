@@ -367,8 +367,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
   }
 
   private void associateReference(IdentifierTree tree, Symbol symbol) {
-    if (symbol.kind < Symbol.ERRONEOUS && semanticModel.getTree(symbol) != null) {
-      // symbol exists in current compilation unit
+    if (symbol.kind < Symbol.ERRONEOUS) {
       semanticModel.associateReference(tree, symbol);
     }
   }

@@ -110,4 +110,7 @@ public class SemanticModel {
     return Collections.unmodifiableCollection(usagesTree.get(symbol));
   }
 
+  public Collection<Symbol> getSymbolUsed() {
+    return usagesTree.keySet();
+  }
 }

@@ -60,6 +60,10 @@ public class Resolve {
     return new Scope.StarImportScope(owner, bytecodeCompleter);
   }
 
+  public Scope createStaticStarImportScope(Symbol owner) {
+    return new Scope.StaticStarImportScope(owner, bytecodeCompleter);
+  }
+
   static class Env {
     /**
      * The next enclosing environment.
@@ -78,6 +82,7 @@ public class Resolve {
     Scope scope;
     Scope namedImports;
     Scope starImports;
+    Scope staticStarImports;
 
     Env outer() {
       return outer;
@@ -99,6 +104,10 @@ public class Resolve {
       return starImports;
     }
 
+    public Scope staticStarImports() {
+      return staticStarImports;
+    }
+
     Scope scope() {
       return scope;
     }
@@ -112,8 +121,10 @@ public class Resolve {
       env.scope = this.scope;
       env.namedImports = this.namedImports;
       env.starImports = this.starImports;
+      env.staticStarImports = this.staticStarImports;
       return env;
     }
+
   }
 
   /**
@@ -170,7 +181,18 @@ public class Resolve {
       env1 = env1.outer();
     }
 
-    // TODO imports
+    //imports
+    //TODO rules to distinguish static imports ??
+    for (Symbol symbol : env.namedImports().lookup(name)) {
+      if (symbol.kind < bestSoFar.kind) {
+        return symbol;
+      }
+    }
+    for (Symbol symbol : env.staticStarImports().lookup(name)) {
+      if (symbol.kind < bestSoFar.kind) {
+        return symbol;
+      }
+    }
 
     return bestSoFar;
   }
@@ -243,7 +265,7 @@ public class Resolve {
     //on demand imports
     for (Symbol symbol : env.starImports().lookup(name)) {
       if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+        return symbol;
       }
     }
     return bestSoFar;
