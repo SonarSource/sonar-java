@@ -21,7 +21,7 @@ package org.sonar.java.resolve;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sonar.java.test.ImportsResolutionCases.*;
+import org.sonar.java.test.ImportsResolutionCases.ImportInnerClass;
 
 import java.util.List;
 
@@ -33,6 +33,7 @@ public class ImportResolutionTest {
   private static Result result;
   //test inner imports
   private ImportInnerClass importInnerClass;
+
   @BeforeClass
   public static void setUp() throws Exception {
     result = Result.createFor("ImportResolution");
@@ -42,12 +43,12 @@ public class ImportResolutionTest {
   @Test
   public void extends_should_point_to_correct_symbol() {
     assertThat(result.symbol("Class2").kind == Symbol.TYP);
-    Symbol.TypeSymbol class1 =(Symbol.TypeSymbol) result.symbol("Class1");
-    Symbol.TypeSymbol class2 =(Symbol.TypeSymbol) result.symbol("Class2");
+    Symbol.TypeSymbol class1 = (Symbol.TypeSymbol) result.symbol("Class1");
+    Symbol.TypeSymbol class2 = (Symbol.TypeSymbol) result.symbol("Class2");
     assertThat(class2.getSuperclass().symbol).isEqualTo(class1);
     assertThat(class1.getSuperclass()).isNotNull();
     assertThat(class1.getSuperclass().symbol.name).isEqualTo("Collection");
-    Symbol.TypeSymbol interface1 =(Symbol.TypeSymbol) result.symbol("Interface1");
+    Symbol.TypeSymbol interface1 = (Symbol.TypeSymbol) result.symbol("Interface1");
     assertThat(interface1.getInterfaces()).isNotEmpty();
     assertThat(interface1.getInterfaces().get(0).symbol.name).isEqualTo("List");
   }
@@ -82,10 +83,10 @@ public class ImportResolutionTest {
     assertThat(sort.owner().type.symbol.name).isEqualTo("Collections");
     assertThat(sort.kind).isEqualTo(Symbol.MTH);
     assertThat(sort.type.tag).isEqualTo(Type.METHOD);
-    assertThat(result.reference(45,7).name).isEqualTo("sort");
-    assertThat(result.reference(45,7)).isEqualTo(sort);
-    assertThat(result.reference(46,7).name).isEqualTo("sort");
-    assertThat(result.reference(46,7)).isEqualTo(sort);
+    assertThat(result.reference(45, 7).name).isEqualTo("sort");
+    assertThat(result.reference(45, 7)).isEqualTo(sort);
+    assertThat(result.reference(46, 7).name).isEqualTo("sort");
+    assertThat(result.reference(46, 7)).isEqualTo(sort);
   }
 
   @Test
@@ -126,12 +127,19 @@ public class ImportResolutionTest {
 
   @Test
   public void import_static_on_demand_should_be_resolved() throws Exception {
-    Symbol http_accepted = result.reference(41,10);
+    Symbol http_accepted = result.reference(41, 10);
     assertThat(http_accepted.name).isEqualTo("HTTP_ACCEPTED");
     assertThat(http_accepted.owner().name).isEqualTo("HttpURLConnection");
     assertThat(http_accepted.owner().type.symbol.name).isEqualTo("HttpURLConnection");
     assertThat(http_accepted.kind).isEqualTo(Symbol.VAR);
     assertThat(http_accepted.type.tag).isEqualTo(Type.INT);
+  }
+
+  @Test
+  public void imports_from_java_lang() {
+    Symbol iterable = result.symbol("iterable");
+    assertThat(iterable.type.symbol.name).isEqualTo("Iterable");
+    assertThat(iterable.type.symbol.owner().name).isEqualTo("java.lang");
   }
 
 }

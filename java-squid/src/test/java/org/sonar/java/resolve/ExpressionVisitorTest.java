@@ -48,7 +48,8 @@ public class ExpressionVisitorTest {
 
   private LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-  private Symbols symbols = new Symbols();
+  private BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+  private Symbols symbols = new Symbols(bytecodeCompleter);
 
   private Resolve.Env env;
 
@@ -392,7 +393,7 @@ public class ExpressionVisitorTest {
   private Type typeOf(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
     when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
-    ExpressionVisitor visitor = new ExpressionVisitor(semanticModel, symbols, new Resolve(symbols, Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
+    ExpressionVisitor visitor = new ExpressionVisitor(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter));
 
     b.setRootRule(JavaGrammar.COMPILATION_UNIT);
     String p = "class Test { void wrapperMethod() { " + input + "; } }";

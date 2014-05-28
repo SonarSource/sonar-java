@@ -54,6 +54,8 @@ class ImportResolution {
     }
   }
 
+  Iterable iterable;
+
   static class Class2 extends Class1 implements Interface1, Interface2 {
   }
 

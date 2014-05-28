@@ -65,7 +65,7 @@ public class Symbols {
   final Type classType;
   final Type stringType;
 
-  public Symbols() {
+  public Symbols(BytecodeCompleter bytecodeCompleter) {
     rootPackage = new Symbol.PackageSymbol("", null);
     defaultPackage = new Symbol.PackageSymbol("", rootPackage);
 
@@ -100,12 +100,19 @@ public class Symbols {
     booleanType = initType(Type.BOOLEAN, "boolean");
     nullType = initType(Type.BOT, "<nulltype>");
 
-    // predefined types
-    objectType = enterClass("java.lang.Object");
-    classType = enterClass("java.lang.Class");
-    stringType = enterClass("java.lang.String");
-    cloneableType = enterClass("java.lang.Cloneable");
-    serializableType = enterClass("java.io.Serializable");
+    bytecodeCompleter.init(this);
+
+    // predefined types for java lang
+    Symbol.PackageSymbol javalang = bytecodeCompleter.enterPackage("java.lang");
+    //define a star import scope to let resolve types to java.lang when needed.
+    javalang.members = new Scope.StarImportScope(javalang, bytecodeCompleter);
+    javalang.members.enter(javalang);
+
+    objectType = bytecodeCompleter.loadClass("java.lang.Object").type;
+    classType = bytecodeCompleter.loadClass("java.lang.Class").type;
+    stringType = bytecodeCompleter.loadClass("java.lang.String").type;
+    cloneableType = bytecodeCompleter.loadClass("java.lang.Cloneable").type;
+    serializableType = bytecodeCompleter.loadClass("java.io.Serializable").type;
 
     // TODO comment me
     arrayClass = new Symbol.TypeSymbol(Flags.PUBLIC, "Array", noSymbol);

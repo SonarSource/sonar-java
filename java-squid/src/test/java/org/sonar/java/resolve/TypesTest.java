@@ -19,8 +19,10 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,7 +30,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class TypesTest {
 
-  private Symbols symbols = new Symbols();
+  private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList()));
   private Types types = new Types();
 
   @Test

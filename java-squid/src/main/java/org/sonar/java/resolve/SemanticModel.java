@@ -47,8 +47,9 @@ public class SemanticModel {
   private final Map<AstNode, Resolve.Env> envs = Maps.newHashMap();
 
   public static SemanticModel createFor(CompilationUnitTree tree, List<File> projectClasspath) {
-    Symbols symbols = new Symbols();
-    Resolve resolve = new Resolve(symbols, projectClasspath);
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(projectClasspath);
+    Symbols symbols = new Symbols(bytecodeCompleter);
+    Resolve resolve = new Resolve(symbols, bytecodeCompleter);
     SemanticModel semanticModel = new SemanticModel();
     new FirstPass(semanticModel, symbols, resolve).visitCompilationUnit(tree);
     new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);

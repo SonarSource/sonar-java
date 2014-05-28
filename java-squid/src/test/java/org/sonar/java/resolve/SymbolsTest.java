@@ -19,13 +19,16 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
+
+import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class SymbolsTest {
 
-  private Symbols symbols = new Symbols();
+  private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList()));
 
   @Test
   public void root_package() {

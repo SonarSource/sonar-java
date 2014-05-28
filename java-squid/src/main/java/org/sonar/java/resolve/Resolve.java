@@ -21,7 +21,6 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,9 +46,9 @@ public class Resolve {
   private final Symbols symbols;
   private Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
 
-  public Resolve(Symbols symbols, List<File> projectClasspath) {
+  public Resolve(Symbols symbols, BytecodeCompleter bytecodeCompleter) {
     this.symbols = symbols;
-    this.bytecodeCompleter = new BytecodeCompleter(symbols, projectClasspath);
+    this.bytecodeCompleter = bytecodeCompleter;
   }
 
   public void done() {
@@ -250,6 +249,7 @@ public class Resolve {
     }
 
     //JLS8 6.4.1 Shadowing rules
+    //TODO check that symbol is indeed a type.
     //named imports
     for (Symbol symbol : env.namedImports().lookup(name)) {
       if (symbol.kind < bestSoFar.kind) {
@@ -261,9 +261,15 @@ public class Resolve {
     if (sym.kind < bestSoFar.kind) {
       return sym;
     }
-
     //on demand imports
     for (Symbol symbol : env.starImports().lookup(name)) {
+      if (symbol.kind < bestSoFar.kind) {
+        return symbol;
+      }
+    }
+    //java.lang
+    Symbol.PackageSymbol javaLang = bytecodeCompleter.enterPackage("java.lang");
+    for (Symbol symbol : javaLang.members().lookup(name)) {
       if (symbol.kind < bestSoFar.kind) {
         return symbol;
       }

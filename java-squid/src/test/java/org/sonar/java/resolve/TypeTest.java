@@ -20,7 +20,10 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.junit.Test;
+
+import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -43,7 +46,7 @@ public class TypeTest {
   @Test
   public void to_string_on_type() throws Exception {
     assertThat(new Type(Type.VOID, null).toString()).isEmpty();
-    String methodToString  = new Type.MethodType(ImmutableList.<Type>of(), new Symbols().intType, ImmutableList.<Type>of(), null).toString();
+    String methodToString  = new Type.MethodType(ImmutableList.<Type>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList())).intType, ImmutableList.<Type>of(), null).toString();
     assertThat(methodToString).isEqualTo("returns int");
   }
 }

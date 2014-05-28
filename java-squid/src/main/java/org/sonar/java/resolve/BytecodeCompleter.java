@@ -55,7 +55,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       Flags.STATIC | Flags.FINAL | Flags.SYNCHRONIZED | Flags.VOLATILE | Flags.TRANSIENT | Flags.NATIVE |
       Flags.ABSTRACT | Flags.STRICTFP;
 
-  private final Symbols symbols;
+  private Symbols symbols;
   private final List<File> projectClasspath;
 
   /**
@@ -66,9 +66,12 @@ public class BytecodeCompleter implements Symbol.Completer {
 
   private ClassLoader classLoader;
 
-  public BytecodeCompleter(Symbols symbols, List<File> projectClasspath) {
-    this.symbols = symbols;
+  public BytecodeCompleter(List<File> projectClasspath) {
     this.projectClasspath = projectClasspath;
+  }
+
+  public void init(Symbols symbols) {
+    this.symbols = symbols;
   }
 
   @Override

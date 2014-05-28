@@ -39,13 +39,14 @@ public class BytecodeCompleterTest {
   //used to load classes in same package
   public BytecodeCompleterPackageVisibility bytecodeCompleterPackageVisibility = new BytecodeCompleterPackageVisibility();
 
-  private void accessPackageVisibility(){
+  private void accessPackageVisibility() {
     bytecodeCompleterPackageVisibility.add(1, 2);
   }
 
   @Before
   public void setUp() throws Exception {
-    bytecodeCompleter = new BytecodeCompleter(new Symbols(), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    new Symbols(bytecodeCompleter);
 
   }
 
@@ -88,7 +89,7 @@ public class BytecodeCompleterTest {
     //Check interfaces
     assertThat(arrayList.getInterfaces()).hasSize(4);
     List<String> interfacesName = Lists.newArrayList();
-    for(Type interfaceType : arrayList.getInterfaces()) {
+    for (Type interfaceType : arrayList.getInterfaces()) {
       interfacesName.add(interfaceType.symbol.name);
     }
     assertThat(interfacesName).hasSize(4);
