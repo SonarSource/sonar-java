@@ -211,6 +211,8 @@ public class FirstPass extends BaseTreeVisitor {
       flag = computeClassFlags(tree);
     }
     Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
+    //Only register classes that can be accessible, so classes owned by a method are not registered.
+    //TODO : register also based on flags ?
     if(env.scope.owner.kind == Symbol.TYP || env.scope.owner.kind == Symbol.PCK) {
       resolve.registerClass(symbol);
     }
