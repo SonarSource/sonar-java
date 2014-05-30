@@ -43,6 +43,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvider {
 
@@ -92,7 +93,7 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
   }
 
   private boolean isNotJavaLang() {
-    String[] path = peekSourceFile().getName().split(File.separator);
+    String[] path = peekSourceFile().getName().split(Pattern.quote(File.separator));
     return !(path.length > 3 && path[path.length-2].equals("lang") && path[path.length-3].equals("java"));
   }
 
