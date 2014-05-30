@@ -20,6 +20,9 @@
 package org.sonar.java.resolve;
 
 public class BytecodeCompleterPackageVisibility {
+
+  public BytecodeCompleterTest bytecodeCompleterTest;
+
   public int add(int a , int b) {
     return a+b;
   }

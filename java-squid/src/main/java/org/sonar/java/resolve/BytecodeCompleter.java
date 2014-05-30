@@ -74,6 +74,12 @@ public class BytecodeCompleter implements Symbol.Completer {
     this.symbols = symbols;
   }
 
+  public Symbol.TypeSymbol registerClass(Symbol.TypeSymbol classSymbol) {
+    String flatName = formFullName(classSymbol);
+    classes.put(flatName, classSymbol);
+    return classSymbol;
+  }
+
   @Override
   public void complete(Symbol symbol) {
     LOG.debug("Completing symbol : " + symbol.name);

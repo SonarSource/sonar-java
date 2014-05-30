@@ -107,6 +107,7 @@ public class FirstPass extends BaseTreeVisitor {
 
     super.visitCompilationUnit(tree);
     restoreEnvironment(tree);
+    resolveImports(tree.imports());
     completeSymbols();
   }
 
@@ -124,16 +125,13 @@ public class FirstPass extends BaseTreeVisitor {
       }
       packageName += tree.name();
     }
-
   }
 
-  @Override
-  public void visitImport(ImportTree tree) {
-    //an import is always of the form : TypeName/PackName.Identifier
-    Preconditions.checkArgument(tree.qualifiedIdentifier().is(Tree.Kind.MEMBER_SELECT));
+  private void resolveImports(List<ImportTree> imports){
     ImportResolverVisitor importResolverVisitor = new ImportResolverVisitor();
-    tree.accept(importResolverVisitor);
-    super.visitImport(tree);
+    for(ImportTree importTree : imports) {
+      importTree.accept(importResolverVisitor);
+    }
   }
 
   private class ImportResolverVisitor extends BaseTreeVisitor {
@@ -141,12 +139,10 @@ public class FirstPass extends BaseTreeVisitor {
     private List<Symbol> resolved;
     private boolean isStatic;
 
-    public ImportResolverVisitor() {
-      currentSymbol = symbols.defaultPackage;
-    }
-
     @Override
     public void visitImport(ImportTree tree) {
+      //reset currentSymbol to default package
+      currentSymbol = symbols.defaultPackage;
       isStatic = tree.isStatic();
       super.visitImport(tree);
       //Associate symbol only if found.
@@ -215,6 +211,9 @@ public class FirstPass extends BaseTreeVisitor {
       flag = computeClassFlags(tree);
     }
     Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
+    if(env.scope.owner.kind == Symbol.TYP || env.scope.owner.kind == Symbol.PCK) {
+      resolve.registerClass(symbol);
+    }
     if (!anonymousClass) {
       enterSymbol(tree, symbol);
     }

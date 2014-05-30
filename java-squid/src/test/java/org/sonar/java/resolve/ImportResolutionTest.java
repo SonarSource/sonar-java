@@ -142,4 +142,17 @@ public class ImportResolutionTest {
     assertThat(iterable.type.symbol.owner().name).isEqualTo("java.lang");
   }
 
+  @Test
+  public void only_one_symbol_per_class_should_be_created() {
+    Result result1 = Result.createForJavaFile("src/test/java/org/sonar/java/resolve/BytecodeCompleterTest");
+    Symbol.TypeSymbol thisTest = (Symbol.TypeSymbol) result1.symbol("BytecodeCompleterTest");
+    List<Symbol> symbols = thisTest.members().lookup("bytecodeCompleterPackageVisibility");
+    assertThat(symbols).hasSize(1);
+    Symbol.TypeSymbol symbol = ((Symbol.VariableSymbol) symbols.get(0)).type.symbol;
+    symbols = symbol.members().lookup("bytecodeCompleterTest");
+    assertThat(symbols).hasSize(1);
+    Symbol.TypeSymbol test = ((Symbol.VariableSymbol) symbols.get(0)).type.symbol;
+    assertThat(test).isEqualTo(thisTest);
+  }
+
 }

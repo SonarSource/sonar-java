@@ -72,16 +72,18 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
 
   @Override
   public void visitFile(@Nullable AstNode astNode) {
+    semanticModel = null;
     if (astNode != null) {
       CompilationUnitTree tree = treeMaker.compilationUnit(astNode);
-      try {
-        semanticModel = SemanticModel.createFor(tree, getProjectClasspath());
-      } catch (Exception e) {
-        LOG.error("Unable to create symbol table for : " + getContext().getFile().getName(), e);
-        semanticModel = null;
-        return;
+      if (isNotJavaLang()) {
+        try {
+          semanticModel = SemanticModel.createFor(tree, getProjectClasspath());
+        } catch (Exception e) {
+          LOG.error("Unable to create symbol table for : " + getContext().getFile().getName(), e);
+          return;
+        }
+        createSonarSymbolTable(tree);
       }
-      createSonarSymbolTable(tree);
       JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), semanticModel);
       for (JavaFileScanner scanner : scanners) {
         scanner.scanFile(context);
@@ -89,9 +91,13 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
     }
   }
 
+  private boolean isNotJavaLang() {
+    return !peekSourceFile().getName().matches(".*/java/lang/[^/]+\\.java");
+  }
+
   private List<File> getProjectClasspath() {
     List<File> projectClasspath = Lists.newArrayList();
-    if(sonarComponents != null) {
+    if (sonarComponents != null) {
       projectClasspath = sonarComponents.getProjectClasspath();
     }
     return projectClasspath;

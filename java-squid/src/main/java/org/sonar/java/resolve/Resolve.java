@@ -55,6 +55,10 @@ public class Resolve {
     bytecodeCompleter.done();
   }
 
+  public Symbol.TypeSymbol registerClass(Symbol.TypeSymbol classSymbol) {
+    return bytecodeCompleter.registerClass(classSymbol);
+  }
+
   public Scope createStarImportScope(Symbol owner) {
     return new Scope.StarImportScope(owner, bytecodeCompleter);
   }

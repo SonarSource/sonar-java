@@ -126,14 +126,6 @@ public class Symbols {
     enterOperators();
   }
 
-  private Type enterClass(String name) {
-    // TODO use BytecodeCompleter
-    Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(Flags.PUBLIC, name.substring(name.lastIndexOf('.') + 1, name.length()), /* FIXME */ rootPackage);
-    symbol.members = new Scope(symbol);
-    ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
-    return symbol.type;
-  }
-
   /**
    * Registers builtin types as symbols, so that they can be found as an usual identifiers.
    */
