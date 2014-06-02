@@ -62,6 +62,9 @@ public class Type {
       super(CLASS, symbol);
     }
 
+    public Symbol.TypeSymbol getSymbol() {
+      return symbol;
+    }
   }
 
   public static class ArrayType extends Type {

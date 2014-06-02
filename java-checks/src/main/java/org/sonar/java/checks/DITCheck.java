@@ -19,38 +19,58 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.bytecode.asm.AsmClass;
-import org.sonar.java.bytecode.visitor.BytecodeVisitor;
-import org.sonar.squid.api.CheckMessage;
-import org.sonar.squid.api.SourceClass;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.measures.Metric;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 
 @Rule(key = DITCheck.RULE_KEY, priority = Priority.MAJOR)
-public class DITCheck extends BytecodeVisitor {
+public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "MaximumInheritanceDepth";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
   public static final int DEFAULT_MAX = 5;
+
+  private JavaFileScannerContext context;
 
   @RuleProperty(defaultValue = "" + DEFAULT_MAX)
   private Integer max = DEFAULT_MAX;
 
+
   @Override
-  public void visitClass(AsmClass asmClass) {
-    SourceClass sourceClass = getSourceClass(asmClass);
-    int dit = sourceClass.getInt(Metric.DIT);
-    if (dit > max) {
-      CheckMessage message = new CheckMessage(this, "This class has " + dit + " parents which is greater than " + max + " authorized.");
-      message.setLine(sourceClass.getStartAtLine());
-      message.setCost(dit - max);
-      sourceClass.getParent(SourceFile.class).log(message);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    if (context.getSemanticModel() != null) {
+      scan(context.getTree());
     }
   }
 
-  public void setMax(int max) {
+  @Override
+  public void visitClass(ClassTree tree) {
+    Symbol.TypeSymbol typeSymbol = ((JavaTree.ClassTreeImpl) tree).getSymbol();
+    //Start with one as long as we did not solve the problem with default inheritance (java.lang.Object vs java.lang.enum)
+    int dit = 1;
+    while(typeSymbol.getSuperclass() != null ){
+      dit++;
+      typeSymbol = ((Type.ClassType) typeSymbol.getSuperclass()).getSymbol();
+    }
+    if(dit > max) {
+      context.addIssue(tree, ruleKey, "This class has "+dit+" parents which is greater than "+max+" authorized.");
+    }
+    super.visitClass(tree);
+  }
+
+  @VisibleForTesting
+  void setMax(int max) {
     this.max = max;
   }
 

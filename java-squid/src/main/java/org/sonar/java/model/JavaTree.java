@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -233,6 +234,7 @@ public abstract class JavaTree implements Tree {
     private final Tree superClass;
     private final List<Tree> superInterfaces;
     private final List<Tree> members;
+    private Symbol.TypeSymbol symbol;
 
     public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable IdentifierTree simpleName, @Nullable Tree superClass, List<Tree> superInterfaces,
                          List<Tree> members) {
@@ -291,6 +293,14 @@ public abstract class JavaTree implements Tree {
     @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitClass(this);
+    }
+
+    public Symbol.TypeSymbol getSymbol() {
+      return symbol;
+    }
+
+    public void setSymbol(Symbol.TypeSymbol symbol) {
+      this.symbol = symbol;
     }
   }
 

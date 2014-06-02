@@ -84,7 +84,19 @@ public class SecondPass implements Symbol.Completer {
       ((Type.ClassType) symbol.type).supertype = resolveType(env, superClassTree).type;
       checkHierarchyCycles(symbol.type);
     } else {
-      // TODO superclass is java.lang.Object or java.lang.Enum
+      // TODO superclass is java.lang.Object or java.lang.Enum or java.lang.Annotation
+      if (tree.is(Tree.Kind.ENUM)) {
+
+      } else if (tree.is(Tree.Kind.INTERFACE)) {
+        //JLS8 9.1.3 : While every class is an extension of class Object, there is no single interface of which all interfaces are extensions.
+
+      } else if (tree.is(Tree.Kind.ANNOTATION)) {
+        //JLS8 9.6 : The direct superinterface of every annotation type is java.lang.annotation.Annotation.
+
+      } else if (tree.is(Tree.Kind.CLASS)) {
+
+      }
+
     }
 
     ImmutableList.Builder<Type> interfaces = ImmutableList.builder();

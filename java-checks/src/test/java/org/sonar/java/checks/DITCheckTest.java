@@ -21,7 +21,11 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
+import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
+
+import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -31,7 +35,7 @@ public class DITCheckTest {
 
   @Test
   public void defaults() {
-    SourceFile file = BytecodeFixture.scan("Dit", check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/checks/targets/Dit.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .noMore();
   }
@@ -39,7 +43,7 @@ public class DITCheckTest {
   @Test
   public void test() {
     check.setMax(2);
-    SourceFile file = BytecodeFixture.scan("Dit", check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/checks/targets/Dit.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(22).withMessage("This class has 3 parents which is greater than 2 authorized.")
       .noMore();
