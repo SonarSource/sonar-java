@@ -94,7 +94,7 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
 
   private boolean isNotJavaLang() {
     String[] path = peekSourceFile().getName().split(Pattern.quote(File.separator));
-    return !(path.length > 3 && path[path.length-2].equals("lang") && path[path.length-3].equals("java"));
+    return !(path.length > 3 && "lang".equals(path[path.length-2]) && "java".equals(path[path.length-3]));
   }
 
   private List<File> getProjectClasspath() {
