@@ -43,7 +43,7 @@ class A {
 
 }
 
-abstract class A {
+abstract class AAbstract {
   // Compliant
   private void f() {
     abstract class B {
@@ -66,7 +66,7 @@ abstract class A {
   };
 }
 
-enum A {
+enum AEnum {
   ;
 
   // Non-Compliant
@@ -78,7 +78,7 @@ enum A {
   }
 }
 
-class A {
+class ANestedEnum {
   enum B {
     ;
 

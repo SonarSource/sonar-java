@@ -1,41 +1,41 @@
 class A {
 }
 
-class A {
+class B {
   public boolean equals(Object o) { // Noncompliant
   }
 }
 
-class A {
+class C {
   public int hashCode() { // Noncompliant
   }
 }
 
-class A {
+class D {
   public boolean equals(Object o) {
   }
   public int hashCode() {
   }
 }
 
-class A {
+class E {
   public boolean equals() {
   }
 }
 
-class A {
+class F {
   public int hashCode(Object o) {
   }
 }
 
-enum A {
+enum G {
   ;
 
   public boolean equals(Object o) { // Noncompliant
   }
 }
 
-class A {
+class H {
   public boolean equals(Object o) {
   }
 
@@ -43,17 +43,17 @@ class A {
   }
 }
 
-class A {
+class I {
   class B {
     public boolean equals(Object o) { // Noncompliant
     }
   }
 }
 
-interface A {
+interface J {
   boolean equals(Object o); // Noncompliant
 }
 
-@interface A {
+@interface K {
   int hashCode(); // Compliant
 }

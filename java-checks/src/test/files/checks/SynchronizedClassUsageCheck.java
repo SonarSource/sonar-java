@@ -39,11 +39,11 @@ class A {
   }
 }
 
-interface A {
+interface AInterface {
   void f(Vector a); // Non-Compliant
 }
 
-enum A {
+enum AEnum {
   ;
 
   Vector a; // Non-Compliant

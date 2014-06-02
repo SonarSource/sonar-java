@@ -1,4 +1,4 @@
-class Foo {
+class FooClass {
 
   private int unusedField; // Noncompliant
 
@@ -30,13 +30,13 @@ class Foo {
 
 }
 
-enum Foo {
+enum FooEnum {
 
   FOO;
 
 }
 
-interface Foo {
+interface FooInterface {
 
   int FOO = 0; // Compliant
 

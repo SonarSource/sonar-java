@@ -76,7 +76,7 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
     semanticModel = null;
     if (astNode != null) {
       CompilationUnitTree tree = treeMaker.compilationUnit(astNode);
-      if (isNotJavaLang()) {
+      if (isNotJavaLangOrSerializable()) {
         try {
           semanticModel = SemanticModel.createFor(tree, getProjectClasspath());
         } catch (Exception e) {
@@ -92,9 +92,11 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
     }
   }
 
-  private boolean isNotJavaLang() {
+  private boolean isNotJavaLangOrSerializable() {
     String[] path = peekSourceFile().getName().split(Pattern.quote(File.separator));
-    return !(path.length > 3 && "lang".equals(path[path.length-2]) && "java".equals(path[path.length-3]));
+    boolean isJavaLang = path.length > 3 && "lang".equals(path[path.length-2]) && "java".equals(path[path.length-3]);
+    boolean isSerializable = path.length > 3 && "Serializable.java".equals(path[path.length-1]) && "io".equals(path[path.length-2]) && "java".equals(path[path.length-3]);
+    return !(isJavaLang || isSerializable);
   }
 
   private List<File> getProjectClasspath() {

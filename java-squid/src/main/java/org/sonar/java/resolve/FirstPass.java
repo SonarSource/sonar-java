@@ -214,10 +214,10 @@ public class FirstPass extends BaseTreeVisitor {
     ((JavaTree.ClassTreeImpl)tree).setSymbol(symbol);
     //Only register classes that can be accessible, so classes owned by a method are not registered.
     //TODO : register also based on flags ?
-    if(env.scope.owner.kind == Symbol.TYP || env.scope.owner.kind == Symbol.PCK) {
-      resolve.registerClass(symbol);
-    }
     if (!anonymousClass) {
+      if(env.scope.owner.kind == Symbol.TYP || env.scope.owner.kind == Symbol.PCK) {
+        resolve.registerClass(symbol);
+      }
       enterSymbol(tree, symbol);
     }
     symbol.members = new Scope(symbol);

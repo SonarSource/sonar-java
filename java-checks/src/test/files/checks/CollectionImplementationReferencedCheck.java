@@ -1,4 +1,4 @@
-public class Employees {
+public class EmployeesTopLevel {
   private HashSet<Employee> employees = new HashSet<Employee>();  // Noncompliant - "persons" should have type "Set" rather than "HashSet"
 
   public HashSet<Employee> getEmployees() {                       // Noncompliant
