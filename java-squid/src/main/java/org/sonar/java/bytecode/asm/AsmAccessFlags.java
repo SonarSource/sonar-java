@@ -58,4 +58,8 @@ public final class AsmAccessFlags {
   public static boolean isFinal(int accessFlags) {
     return (accessFlags & Opcodes.ACC_FINAL) != 0;
   }
+
+  public static boolean isSynthetic(int accessFlags) {
+    return (accessFlags & Opcodes.ACC_SYNTHETIC) != 0;
+  }
 }

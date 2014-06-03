@@ -110,6 +110,10 @@ public class AsmResource {
     return AsmAccessFlags.isDeprecated(accessFlags);
   }
 
+  public boolean isSynthetic() {
+    return AsmAccessFlags.isSynthetic(accessFlags);
+  }
+
   public void setUsed(boolean used) {
     this.used = used;
   }

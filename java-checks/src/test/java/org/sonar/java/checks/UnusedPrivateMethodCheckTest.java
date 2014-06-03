@@ -21,7 +21,19 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
+import org.sonar.api.resources.InputFile;
+import org.sonar.api.resources.InputFileUtils;
+import org.sonar.java.JavaConfiguration;
+import org.sonar.java.JavaSquid;
+import org.sonar.squid.api.CodeVisitor;
+import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
+import org.sonar.squid.indexer.QueryByType;
+
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -35,6 +47,33 @@ public class UnusedPrivateMethodCheckTest {
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().withMessage("Private method 'unusedPrivateMethod(...)' is never used.") // TODO verify line?
       .noMore();
+  }
+
+
+  @Test
+  public void lambdas_should_not_raise_issue() throws Exception {
+    SourceFile file = scan(check);
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+        .noMore();
+  }
+
+  public static SourceFile scan(CodeVisitor visitor) {
+    File baseDir = new File("src/test/resources/");
+    InputFile sourceFile = InputFileUtils.create(baseDir, new File(baseDir, "Lambdas.java"));
+    File bytecodeFile = new File("target/test-classes/");
+
+    if (!sourceFile.getFile().isFile()) {
+      throw new IllegalArgumentException("File '" + sourceFile + "' not found.");
+    }
+
+    JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), visitor);
+    javaSquid.scan(Collections.singleton(sourceFile), Collections.<InputFile>emptyList(), Collections.singleton(bytecodeFile));
+
+    Collection<SourceCode> sources = javaSquid.getIndex().search(new QueryByType(SourceFile.class));
+    if (sources.size() != 1) {
+      throw new IllegalStateException("Only one SourceFile was expected whereas " + sources.size() + " has been returned.");
+    }
+    return (SourceFile) sources.iterator().next();
   }
 
   @Test
