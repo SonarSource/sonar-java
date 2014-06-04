@@ -74,6 +74,8 @@ public class ExpressionTest {
         .matches("(Cast) T::size")
         .matches("Arrays::<String>sort")
         .matches("(foo?list.map(String::length):Collections.emptyList()) :: iterator")
+        .matches("myMethod()::size")
+        .matches("MyClass.this::size")
 
         //Java 8 : Lambda expressions
         .matches("()->12")

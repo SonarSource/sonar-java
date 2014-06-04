@@ -857,11 +857,11 @@ public enum JavaGrammar implements GrammarRuleKey {
         ));
 
     b.rule(METHOD_REFERENCE).is(b.firstOf(
-        SUPER,
-        TYPE,
-        PRIMARY
+        b.sequence(SUPER, DBLECOLON),
+        b.sequence(TYPE, DBLECOLON),
+        b.sequence(PRIMARY, DBLECOLON)
         ),
-        DBLECOLON, b.optional(TYPE_ARGUMENTS), b.firstOf(NEW,IDENTIFIER)
+        b.optional(TYPE_ARGUMENTS), b.firstOf(NEW,IDENTIFIER)
     );
     b.rule(IDENTIFIER_SUFFIX).is(b.firstOf(
         b.sequence(LBRK, b.firstOf(b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), b.sequence(EXPRESSION, RBRK))),
