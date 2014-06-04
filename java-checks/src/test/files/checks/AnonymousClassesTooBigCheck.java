@@ -65,3 +65,39 @@ class A {
 
   }
 }
+
+public enum SizeUnit {
+
+  BYTES {
+    @Override
+    public long toBytes(long size) {
+      return size;
+    }
+
+    @Override
+    public long toKB(long size) {
+      return size / (C1 / C0);
+    }
+
+    @Override
+    public long toMB(long size) {
+      return size / (C2 / C0);
+    }
+
+    @Override
+    public long toGB(long size) {
+      return size / (C3 / C0);
+    }
+  };
+
+  public abstract long toBytes(long size);
+  public abstract long toKB(long size);
+  public abstract long toMB(long size);
+  public abstract long toGB(long size);
+
+  private static final long C0 = 1L;
+  private static final long C1 = C0 * 1024L;
+  private static final long C2 = C1 * 1024L;
+  private static final long C3 = C2 * 1024L;
+
+}

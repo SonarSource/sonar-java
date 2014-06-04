@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
@@ -49,25 +50,34 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   public int max = DEFAULT_MAX;
 
   private JavaFileScannerContext context;
-
+  /**
+   * Flag to skip check for class bodies of EnumConstants.
+   */
+  private boolean isEnumConstantBody;
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
+    isEnumConstantBody = false;
     scan(context.getTree());
   }
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    if (tree.classBody() != null) {
-
+    if (tree.classBody() != null && !isEnumConstantBody) {
       int lines = getNumberOfLines(tree.classBody());
       if (lines > max) {
         context.addIssue(tree, RULE, "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.");
       }
     }
+    isEnumConstantBody = false;
     super.visitNewClass(tree);
   }
 
+  @Override
+  public void visitEnumConstant(EnumConstantTree tree) {
+    isEnumConstantBody = true;
+    super.visitEnumConstant(tree);
+  }
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
