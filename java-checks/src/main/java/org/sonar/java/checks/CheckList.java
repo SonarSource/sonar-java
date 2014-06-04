@@ -173,7 +173,8 @@ public final class CheckList {
       LambdaSingleExpressionCheck.class,
       LambdaOptionalParenthesisCheck.class,
       AnonymousClassShouldBeLambdaCheck.class,
-      AbstractClassNoFieldShouldBeInterfaceCheck.class
+      AbstractClassNoFieldShouldBeInterfaceCheck.class,
+      SAMAnnotatedCheck.class
     );
   }
 
