@@ -44,7 +44,7 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
   @Override
   public void visitMethod(AsmMethod asmMethod) {
-    if (!asmMethod.isUsed() && asmMethod.isPrivate() && !asmMethod.isSynthetic() && !asmMethod.isDefaultConstructor() && !SerializableContract.methodMatch(asmMethod)) {
+    if (isPrivateUnused(asmMethod) && !isExcludedFromCheck(asmMethod)) {
       CheckMessage message = new CheckMessage(this, "Private method '" + asmMethod.getName() + "(...)' is never used.");
       SourceMethod sourceMethod = getSourceMethod(asmMethod);
       if (sourceMethod != null) {
@@ -53,6 +53,14 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
       SourceFile file = getSourceFile(asmClass);
       file.log(message);
     }
+  }
+
+  private boolean isPrivateUnused(AsmMethod asmMethod){
+    return !asmMethod.isUsed() && asmMethod.isPrivate();
+  }
+
+  private boolean isExcludedFromCheck(AsmMethod asmMethod) {
+    return asmMethod.isSynthetic() || asmMethod.isDefaultConstructor() || SerializableContract.methodMatch(asmMethod);
   }
 
   @Override
