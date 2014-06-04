@@ -1147,4 +1147,7 @@
   <Match>
     <Bug pattern="TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS"/>
   </Match>
+  <Match>
+    <Bug pattern="DM_BOXED_PRIMITIVE_FOR_PARSING"/>
+  </Match>
 </FindBugsFilter>
