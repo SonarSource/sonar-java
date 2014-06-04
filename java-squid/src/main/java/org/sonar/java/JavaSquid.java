@@ -39,7 +39,6 @@ import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.ast.visitors.TestVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
-import org.sonar.java.bytecode.visitor.DITVisitor;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.CodeVisitor;
@@ -98,7 +97,6 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     squidIndex = (SquidIndex) astScanner.getIndex();
 
     bytecodeScanner = new BytecodeScanner(squidIndex);
-    bytecodeScanner.accept(new DITVisitor());
     bytecodeScanner.accept(new DependenciesVisitor(graph));
 
     // External visitors (typically Check ones):

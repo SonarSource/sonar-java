@@ -24,18 +24,14 @@ import org.junit.Test;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
-import org.sonar.java.bytecode.asm.AsmResource;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceCodeEdge;
 import org.sonar.squid.api.SourceCodeEdgeUsage;
 import org.sonar.squid.indexer.SquidIndex;
-import org.sonar.squid.measures.Metric;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -79,16 +75,6 @@ public class BytecodeVisitorsTest {
     fixme = index.search("tags/impl/FixMe");
     pacTag = index.search("tags");
     pacImpl = index.search("tags/impl");
-  }
-
-  @Test
-  public void dit() {
-    assertThat(index.search("tags/SourceFile").getInt(Metric.DIT)).isEqualTo(3);
-    assertThat(index.search("tags/File").getInt(Metric.DIT)).isEqualTo(2);
-    assertThat(index.search("tags/Content").getInt(Metric.DIT)).isEqualTo(1);
-    assertThat(index.search("tags/TagException").getInt(Metric.DIT)).isEqualTo(3);
-    assertThat(index.search("tags/Comment").getInt(Metric.DIT)).isEqualTo(0);
-    assertThat(index.search("tags/Tag").getInt(Metric.DIT)).isEqualTo(1);
   }
 
   @Test
