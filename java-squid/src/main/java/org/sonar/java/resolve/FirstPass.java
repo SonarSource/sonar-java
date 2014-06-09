@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -89,11 +90,13 @@ public class FirstPass extends BaseTreeVisitor {
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
     Symbol.PackageSymbol compilationUnitPackage = symbols.defaultPackage;
-    if (tree.packageName() != null) {
+
+    ExpressionTree packageName = tree.packageName();
+    if (packageName != null) {
       PackageResolverVisitor packageResolver = new PackageResolverVisitor();
-      tree.packageName().accept(packageResolver);
+      packageName.accept(packageResolver);
       compilationUnitPackage = (Symbol.PackageSymbol) resolve.findIdentInPackage(env, compilationUnitPackage, packageResolver.packageName, Symbol.PCK);
-      semanticModel.associateSymbol(tree.packageName(), compilationUnitPackage);
+      semanticModel.associateSymbol(packageName, compilationUnitPackage);
     }
     compilationUnitPackage.members = new Scope(compilationUnitPackage);
 

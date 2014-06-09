@@ -57,7 +57,7 @@ import java.util.Map;
  */
 public class ExpressionVisitor extends BaseTreeVisitor {
 
-  private final Map<Tree.Kind, Type> typesOfLiterals = Maps.newHashMap();
+  private final Map<Tree.Kind, Type> typesOfLiterals = Maps.newEnumMap(Tree.Kind.class);
 
   private final SemanticModel semanticModel;
   private final Symbols symbols;
