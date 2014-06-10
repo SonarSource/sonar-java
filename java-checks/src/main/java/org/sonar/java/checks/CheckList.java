@@ -174,7 +174,8 @@ public final class CheckList {
       LambdaOptionalParenthesisCheck.class,
       AnonymousClassShouldBeLambdaCheck.class,
       AbstractClassNoFieldShouldBeInterfaceCheck.class,
-      SAMAnnotatedCheck.class
+      SAMAnnotatedCheck.class,
+      CatchNPECheck.class
     );
   }
 

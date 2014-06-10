@@ -1,0 +1,36 @@
+<p><code>NullPointerException</code> should be avoided, not caught. Any situation in which <code>NullPointerException</code> is explicitly caught can easily be converted to a <code>null</code> test, and any behavior being carried out in the catch block can easily be moved to the "is null" branch of the conditional.</p>
+
+<h2>Noncompliant Code Sample</h2>
+<pre>
+public int lengthPlus(String str)
+{
+int len = 2;
+try
+{
+len += str.length();
+}
+catch (NullPointerException e)
+{
+log.info("argument was null");
+}
+return len;
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public int lengthPlus(String str)
+{
+int len = 2;
+
+if (str != null)
+{
+len += str.length();
+}
+else
+{
+log.info("argument was null");
+}
+return len;
+}
+</pre>
