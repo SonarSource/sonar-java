@@ -152,6 +152,7 @@ public class SecondPass implements Symbol.Completer {
     } else {
       symbol.type = castToTypeIfPossible(resolveType(env, variableTree.type()));
     }
+    ((JavaTree.VariableTreeImpl) variableTree).setSymbol(symbol);
   }
 
   private Symbol resolveType(Resolve.Env env, Tree tree) {

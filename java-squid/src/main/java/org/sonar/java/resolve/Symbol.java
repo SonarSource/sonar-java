@@ -153,7 +153,7 @@ public class Symbol {
       return ((Type.ClassType) type).interfaces;
     }
 
-    Scope members() {
+    public Scope members() {
       complete();
       return members;
     }
@@ -176,6 +176,10 @@ public class Symbol {
     public VariableSymbol(int flags, String name, Type type, Symbol owner) {
       super(VAR, flags, name, owner);
       this.type = type;
+    }
+
+    public String type() {
+      return type.symbol.name;
     }
 
   }

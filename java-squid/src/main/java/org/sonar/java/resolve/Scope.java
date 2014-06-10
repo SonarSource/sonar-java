@@ -23,6 +23,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -55,6 +56,10 @@ public class Scope {
       scope = scope.next;
     }
     return scope == null ? ImmutableList.<Symbol>of() : scope.symbols.get(name);
+  }
+
+  public Collection<Symbol> scopeSymbols() {
+    return symbols.values();
   }
 
   public static class StarImportScope extends Scope {

@@ -37,6 +37,7 @@ public class SAMAnnotatedCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SAMAnnotatedCheck.java"), new VisitorsBridge(new SAMAnnotatedCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("Annotate the \"notAnnotated\" interface with the @FunctionInterface annotation");
+        .next().atLine(1).withMessage("Annotate the \"notAnnotated\" interface with the @FunctionInterface annotation")
+        .next().atLine(24).withMessage("Annotate the \"MyFunc\" interface with the @FunctionInterface annotation");
   }
 }

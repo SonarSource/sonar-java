@@ -20,3 +20,19 @@ interface notAnnotatedWithStatic {
 interface Annotated {
   public int transform(int a);
 }
+
+interface MyFunc {
+  int func(Object b);
+  String toString();
+}
+
+interface extendsOther extends notAnnotated {
+  public int transform2(int a);
+}
+
+interface extendsOther2 extends notAnnotated, Annotated { //False negative, this one should raise an issue.
+}
+
+interface NonFunc {
+  boolean equals(Object obj);
+}

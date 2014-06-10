@@ -234,6 +234,7 @@ public abstract class JavaTree implements Tree {
     private final Tree superClass;
     private final List<Tree> superInterfaces;
     private final List<Tree> members;
+    @Nullable
     private Symbol.TypeSymbol symbol;
 
     public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable IdentifierTree simpleName, @Nullable Tree superClass, List<Tree> superInterfaces,
@@ -295,6 +296,7 @@ public abstract class JavaTree implements Tree {
       visitor.visitClass(this);
     }
 
+    @Nullable
     public Symbol.TypeSymbol getSymbol() {
       return symbol;
     }
@@ -1022,6 +1024,7 @@ public abstract class JavaTree implements Tree {
     private final IdentifierTree simpleName;
     @Nullable
     private final ExpressionTree initializer;
+    private Symbol.VariableSymbol symbol;
 
     public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
       super(astNode);
@@ -1060,6 +1063,14 @@ public abstract class JavaTree implements Tree {
     @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitVariable(this);
+    }
+
+    public Symbol.VariableSymbol getSymbol() {
+      return symbol;
+    }
+
+    public void setSymbol(Symbol.VariableSymbol symbol) {
+      this.symbol = symbol;
     }
   }
 

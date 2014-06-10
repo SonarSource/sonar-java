@@ -19,9 +19,16 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Lists;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -31,6 +38,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
@@ -42,8 +50,20 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
 
   public static final String RULE_KEY = "S1609";
   private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private static final ImmutableMultimap<String, List<String>> OBJECT_METHODS = new ImmutableMultimap.Builder<String, List<String>>().
+      put("equals", ImmutableList.of("Object")).
+      put("getClass", ImmutableList.<String>of()).
+      put("hashcode", ImmutableList.<String>of()).
+      put("notify", ImmutableList.<String>of()).
+      put("notifyAll", ImmutableList.<String>of()).
+      put("toString", ImmutableList.<String>of()).
+      put("wait", ImmutableList.<String>of()).
+      put("wait", ImmutableList.of("long")).
+      put("wait", ImmutableList.of("long", "int")).
+      build();
 
   private JavaFileScannerContext context;
+
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -69,8 +89,51 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
     return false;
   }
 
+  //JLS8 9.8
   private boolean isSAM(ClassTree tree) {
-    return tree.is(Tree.Kind.INTERFACE) && tree.members().size() == 1 && isNonStaticNonDefaultMethod(tree.members().get(0));
+    return tree.is(Tree.Kind.INTERFACE) && hasOneAbstractMethod(tree);
+  }
+
+  private boolean hasOneAbstractMethod(ClassTree classTree) {
+
+    Symbol.TypeSymbol symbol = ((JavaTree.ClassTreeImpl) classTree).getSymbol();
+    if (symbol != null) {
+      List<Type> types = symbol.getInterfaces();
+      for (Type type : types) {
+        if (!((Type.ClassType) type).getSymbol().members().scopeSymbols().isEmpty()) {
+          return false;
+        }
+      }
+    }
+    int methods = 0;
+    for (Tree member : classTree.members()) {
+      boolean isMethod = member.is(Tree.Kind.METHOD);
+      if (!isMethod) {
+        return false;
+      }
+      if (isNotObjectMethod((MethodTree) member) && isNonStaticNonDefaultMethod(member)) {
+        methods++;
+      }
+    }
+    return methods == 1;
+  }
+
+  private boolean isNotObjectMethod(MethodTree method) {
+    ImmutableCollection<List<String>> methods = OBJECT_METHODS.get(method.simpleName().name());
+    if (methods != null) {
+      for (List<String> arguments : methods) {
+        List<String> args = Lists.newArrayList(arguments);
+        if (method.parameters().size() == args.size()) {
+          for (VariableTree var : method.parameters()) {
+            args.remove(((JavaTree.VariableTreeImpl) var).getSymbol().type());
+          }
+          if (args.isEmpty()) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
   private boolean isNonStaticNonDefaultMethod(Tree memberTree) {
