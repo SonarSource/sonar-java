@@ -31,9 +31,9 @@ import org.sonar.sslr.ast.AstSelect;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
-  key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck",
-  priority = Priority.BLOCKER,
-  tags={"bug"})
+    key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck",
+    priority = Priority.BLOCKER,
+    tags = {"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
 public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<LexerlessGrammar> {
 
@@ -48,9 +48,8 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<L
   @Override
   public void visitNode(AstNode node) {
     if (node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
-      AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
 
-      if ("finalize".equals(identifier.getTokenValue())) {
+      if (isObjectFinalize(node)) {
         lastSuperFinalizeStatement = null;
       }
     } else if (isSuperFinalize(node)) {
@@ -60,35 +59,37 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<L
 
   private static boolean isSuperFinalize(AstNode node) {
     return node.is(JavaGrammar.PRIMARY) &&
-      node.hasDirectChildren(JavaKeyword.SUPER) &&
-      isFinalizeCallSuffix(node.getFirstChild(JavaGrammar.SUPER_SUFFIX));
+        node.hasDirectChildren(JavaKeyword.SUPER) &&
+        isFinalizeCallSuffix(node.getFirstChild(JavaGrammar.SUPER_SUFFIX));
   }
 
   private static boolean isFinalizeCallSuffix(AstNode node) {
     AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
     return identifier != null &&
-      "finalize".equals(identifier.getTokenOriginalValue()) &&
-      node.hasDirectChildren(JavaGrammar.ARGUMENTS);
+        "finalize".equals(identifier.getTokenOriginalValue()) &&
+        node.hasDirectChildren(JavaGrammar.ARGUMENTS);
+  }
+
+  private boolean isObjectFinalize(AstNode node) {
+    AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
+    return "finalize".equals(identifier.getTokenValue()) &&
+        !node.getFirstDescendant(JavaGrammar.FORMAL_PARAMETERS).hasDirectChildren(JavaGrammar.FORMAL_PARAMETER_DECLS);
   }
 
   @Override
   public void leaveNode(AstNode node) {
-    if (node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
-      AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
+    if (node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST) && isObjectFinalize(node)) {
+      AstSelect methodBlockStatement = node.select()
+          .children(JavaGrammar.VOID_METHOD_DECLARATOR_REST)
+          .children(JavaGrammar.METHOD_BODY)
+          .children(JavaGrammar.BLOCK)
+          .children(JavaGrammar.BLOCK_STATEMENTS)
+          .children(JavaGrammar.BLOCK_STATEMENT);
 
-      if ("finalize".equals(identifier.getTokenValue())) {
-        AstSelect methodBlockStatement = node.select()
-            .children(JavaGrammar.VOID_METHOD_DECLARATOR_REST)
-            .children(JavaGrammar.METHOD_BODY)
-            .children(JavaGrammar.BLOCK)
-            .children(JavaGrammar.BLOCK_STATEMENTS)
-            .children(JavaGrammar.BLOCK_STATEMENT);
-
-        if (lastSuperFinalizeStatement == null) {
-          getContext().createLineViolation(this, "Add a call to super.finalize() at the end of this Object.finalize() implementation.", identifier);
-        } else if (!lastSuperFinalizeStatement.equals(getLastEffectiveStatement(getLastBlockStatement(methodBlockStatement)))) {
-          getContext().createLineViolation(this, "Move this super.finalize() call to the end of this Object.finalize() implementation.", lastSuperFinalizeStatement);
-        }
+      if (lastSuperFinalizeStatement == null) {
+        getContext().createLineViolation(this, "Add a call to super.finalize() at the end of this Object.finalize() implementation.", node.getFirstChild(JavaTokenType.IDENTIFIER));
+      } else if (!lastSuperFinalizeStatement.equals(getLastEffectiveStatement(getLastBlockStatement(methodBlockStatement)))) {
+        getContext().createLineViolation(this, "Move this super.finalize() call to the end of this Object.finalize() implementation.", lastSuperFinalizeStatement);
       }
     }
   }

@@ -62,4 +62,7 @@ class Foo {
       super.finalize();                         // Non-Compliant
     }
   }
+  public void finalize(Object pf, int mode) {
+
+  }
 }
