@@ -28,6 +28,7 @@ import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.AnnotationCheckFactory;
 import org.sonar.api.checks.NoSonarFilter;
+import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.Java;
@@ -60,9 +61,10 @@ public class JavaSquidSensor implements Sensor {
   private final ModuleFileSystem moduleFileSystem;
   private final DefaultJavaResourceLocator javaResourceLocator;
   private final RulesProfile profile;
+  private Settings settings;
 
   public JavaSquidSensor(RulesProfile profile, NoSonarFilter noSonarFilter, ProjectClasspath projectClasspath, SonarComponents sonarComponents, ModuleFileSystem moduleFileSystem,
-                         DefaultJavaResourceLocator javaResourceLocator) {
+                         DefaultJavaResourceLocator javaResourceLocator, Settings settings) {
     this.profile = profile;
     this.annotationCheckFactory = AnnotationCheckFactory.create(profile, CheckList.REPOSITORY_KEY, CheckList.getChecks());
     this.noSonarFilter = noSonarFilter;
@@ -70,6 +72,7 @@ public class JavaSquidSensor implements Sensor {
     this.sonarComponents = sonarComponents;
     this.moduleFileSystem = moduleFileSystem;
     this.javaResourceLocator = javaResourceLocator;
+    this.settings = settings;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
@@ -84,7 +87,7 @@ public class JavaSquidSensor implements Sensor {
 
     javaResourceLocator.setSquidIndex(squid.getIndex());
 
-    new Bridges(squid).save(context, project, annotationCheckFactory, noSonarFilter, profile);
+    new Bridges(squid, settings).save(context, project, annotationCheckFactory, noSonarFilter, profile);
   }
 
   private List<InputFile> getSourceFiles(Project project) {
@@ -96,16 +99,14 @@ public class JavaSquidSensor implements Sensor {
   }
 
   private List<File> getBytecodeFiles(Project project) {
-    if (project.getConfiguration().getBoolean(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY, CoreProperties.DESIGN_SKIP_DESIGN_DEFAULT_VALUE)) {
+    if (settings.getBoolean(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)) {
       return Collections.emptyList();
     }
     return projectClasspath.getElements();
   }
 
   private JavaConfiguration createConfiguration(Project project) {
-    boolean analyzePropertyAccessors = project.getConfiguration().getBoolean(
-        JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY,
-        JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE);
+    boolean analyzePropertyAccessors = settings.getBoolean(JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY);
     Charset charset = moduleFileSystem.sourceCharset();
     JavaConfiguration conf = new JavaConfiguration(charset);
     conf.setAnalyzePropertyAccessors(analyzePropertyAccessors);

@@ -20,16 +20,13 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.checks.NoSonarFilter;
+import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.scan.filesystem.FileQuery;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.java.SonarComponents;
@@ -48,7 +45,7 @@ public class JavaSquidSensorTest {
 
   @Before
   public void setUp() {
-    sensor = new JavaSquidSensor(mock(RulesProfile.class), mock(NoSonarFilter.class), mock(ProjectClasspath.class), mock(SonarComponents.class), moduleFileSystem, mock(DefaultJavaResourceLocator.class));
+    sensor = new JavaSquidSensor(mock(RulesProfile.class), mock(NoSonarFilter.class), mock(ProjectClasspath.class), mock(SonarComponents.class), moduleFileSystem, mock(DefaultJavaResourceLocator.class), new Settings());
   }
 
   @Test

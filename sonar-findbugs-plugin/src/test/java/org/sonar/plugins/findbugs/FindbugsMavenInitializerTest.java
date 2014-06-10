@@ -19,29 +19,19 @@
  */
 package org.sonar.plugins.findbugs;
 
-import org.apache.commons.configuration.Configuration;
-import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.resources.InputFile;
+import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.test.MavenTestUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class FindbugsMavenInitializerTest {
 
   private final Project project = mock(Project.class);
-  private final FindbugsMavenInitializer initializer = new FindbugsMavenInitializer();
+  private final Settings settings = new Settings();
+  private final FindbugsMavenInitializer initializer = new FindbugsMavenInitializer(settings);
 
   @Test
   public void should_analyse() {
@@ -50,18 +40,16 @@ public class FindbugsMavenInitializerTest {
 
   @Test
   public void doNotSetExcludesFiltersIfAlreadyConfigured() {
-    Configuration configuration = mock(Configuration.class);
-    when(configuration.containsKey(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY)).thenReturn(true);
-    when(project.getConfiguration()).thenReturn(configuration);
+    settings.setProperty(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY, "toto");
     initializer.execute(project);
-    verify(configuration, never()).setProperty(eq(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY), anyString());
+    assertThat(settings.getString(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY)).isEqualTo("toto");
   }
 
   @Test
   public void shouldGetExcludesFiltersFromPom() {
     Project project = MavenTestUtils.loadProjectFromPom(getClass(), "pom.xml");
     initializer.execute(project);
-    assertThat(project.getConfiguration().getString(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY)).isEqualTo("foo.xml");
+    assertThat(settings.getString(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY)).isEqualTo("foo.xml");
   }
 
 }

@@ -23,6 +23,7 @@ import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.checks.NoSonarFilter;
+import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
@@ -44,16 +45,15 @@ import java.util.List;
 public class Bridges {
 
   private final JavaSquid squid;
+  private final Settings settings;
 
-  public Bridges(JavaSquid squid) {
+  public Bridges(JavaSquid squid, Settings settings) {
     this.squid = squid;
+    this.settings = settings;
   }
 
   public void save(SensorContext context, Project project, CheckFactory checkFactory, NoSonarFilter noSonarFilter, RulesProfile profile) {
-    boolean skipPackageDesignAnalysis = project.getConfiguration().getBoolean(
-        CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY,
-        CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_DEFAULT_VALUE);
-
+    boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     ResourceIndex resourceIndex = new ResourceIndex(skipPackageDesignAnalysis).loadSquidResources(squid, context, project);
     List<Bridge> bridges = BridgeFactory.create(
         squid.isBytecodeScanned(),

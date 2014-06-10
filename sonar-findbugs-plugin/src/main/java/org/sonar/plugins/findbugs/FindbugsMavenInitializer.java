@@ -19,11 +19,11 @@
  */
 package org.sonar.plugins.findbugs;
 
-import org.apache.commons.configuration.Configuration;
 import org.sonar.api.batch.Initializer;
 import org.sonar.api.batch.SupportedEnvironment;
 import org.sonar.api.batch.maven.MavenPlugin;
 import org.sonar.api.batch.maven.MavenUtils;
+import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 
 /**
@@ -35,6 +35,11 @@ public class FindbugsMavenInitializer extends Initializer {
 
   private static final String FINDBUGS_GROUP_ID = MavenUtils.GROUP_ID_CODEHAUS_MOJO;
   private static final String FINDBUGS_ARTIFACT_ID = "findbugs-maven-plugin";
+  private final Settings settings;
+
+  public FindbugsMavenInitializer(Settings settings) {
+    this.settings = settings;
+  }
 
   @Override
   public boolean shouldExecuteOnProject(Project project) {
@@ -43,9 +48,8 @@ public class FindbugsMavenInitializer extends Initializer {
 
   @Override
   public void execute(Project project) {
-    Configuration conf = project.getConfiguration();
-    if (!conf.containsKey(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY)) {
-      conf.setProperty(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY, getExcludesFiltersFromPluginConfiguration(project));
+    if (!settings.hasKey(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY)) {
+      settings.setProperty(FindbugsConstants.EXCLUDES_FILTERS_PROPERTY, getExcludesFiltersFromPluginConfiguration(project));
     }
   }
 
