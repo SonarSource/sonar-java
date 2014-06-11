@@ -11,5 +11,10 @@ class A {
     } catch(java.lang.NullPointerException npe) {
       log.info("argument was null");
     }
+    try {
+      a.equals(null);
+    } catch(java.lang.NullPointerException | RuntimeException runtimeException) {
+      log.info("argument was null");
+    }
   }
 }

@@ -38,7 +38,9 @@ public class CatchNPECheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchNPECheck.java"), new VisitorsBridge(new CatchNPECheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(6).withMessage("Avoid catching NullPointerException.")
-      .next().atLine(11).withMessage("Avoid catching NullPointerException.");
+      .next().atLine(11).withMessage("Avoid catching NullPointerException.")
+      .next().atLine(16).withMessage("Avoid catching NullPointerException.")
+    ;
   }
 
 }
