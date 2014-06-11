@@ -175,7 +175,8 @@ public final class CheckList {
       AnonymousClassShouldBeLambdaCheck.class,
       AbstractClassNoFieldShouldBeInterfaceCheck.class,
       SAMAnnotatedCheck.class,
-      CatchNPECheck.class
+      CatchNPECheck.class,
+      FieldNameMatchingTypeNameCheck.class
     );
   }
 

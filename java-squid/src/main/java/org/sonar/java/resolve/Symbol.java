@@ -113,6 +113,14 @@ public class Symbol {
     return (TypeSymbol) result;
   }
 
+  public boolean isKind(int kind) {
+    return (this.kind & kind) != 0;
+  }
+
+  public Type getType() {
+    return type;
+  }
+
   /**
    * Represents package.
    */

@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -336,8 +337,15 @@ public class FirstPass extends BaseTreeVisitor {
   }
 
   private int computeFlags(ModifiersTree modifiers) {
-    //TODO  JLS7 6.6.1: All members of interfaces are implicitly public. but we should use modifiers to compute flags.
-    return 1;
+    int result = 0;
+    //JLS7 6.6.1: All members of interfaces are implicitly public.
+    if ((env.scope.owner.flags & Flags.INTERFACE) != 0) {
+      result = Flags.PUBLIC;
+    }
+    for(Modifier modifier : modifiers.modifiers()){
+      result |= Flags.flagForModifier(modifier);
+    }
+    return result;
   }
 
   private void declareVariable(int flags, IdentifierTree identifierTree, Tree tree) {

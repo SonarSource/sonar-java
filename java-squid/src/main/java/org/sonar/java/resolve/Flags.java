@@ -19,6 +19,8 @@
  */
 package org.sonar.java.resolve;
 
+import org.sonar.plugins.java.api.tree.Modifier;
+
 import java.util.EnumSet;
 
 public class Flags {
@@ -59,6 +61,12 @@ public class Flags {
   public static final int ENUM = 1 << 14;
 
   /**
+   * Flag that marks either a default method or an interface containing default methods.
+   * Warning : This value is not compliant with openJDK (default is 1L<<43 and 1<<15 is MANDATE)
+   */
+  public static final int DEFAULT = 1<<15;
+
+  /**
    * Masks.
    */
   public static final int ACCESS_FLAGS = PUBLIC | PROTECTED | PRIVATE;
@@ -96,6 +104,52 @@ public class Flags {
     public String toString() {
       return name().toLowerCase();
     }
+  }
+
+
+  public static int flagForModifier(Modifier modifier) {
+    int result;
+    switch (modifier) {
+      case PUBLIC:
+        result =  Flags.PUBLIC;
+        break;
+      case PRIVATE:
+        result =  Flags.PRIVATE;
+        break;
+      case PROTECTED:
+        result =  Flags.PROTECTED;
+        break;
+      case ABSTRACT:
+        result =  Flags.ABSTRACT;
+        break;
+      case STATIC:
+        result =  Flags.STATIC;
+      break;
+      case FINAL:
+        result =  Flags.FINAL;
+      break;
+      case TRANSIENT:
+        result =  Flags.TRANSIENT;
+      break;
+      case VOLATILE:
+        result =  Flags.VOLATILE;
+      break;
+      case SYNCHRONIZED:
+        result =  Flags.SYNCHRONIZED;
+      break;
+      case NATIVE:
+        result =  Flags.NATIVE;
+      break;
+      case DEFAULT:
+        result =  Flags.DEFAULT;
+      break;
+      case STRICTFP:
+        result =  Flags.STRICTFP;
+      break;
+      default:
+        result =  0;
+    }
+    return result;
   }
 
 }
