@@ -343,8 +343,18 @@ public class SymbolTableTest {
   @Test
   public void MethodCall() {
     Result result = Result.createFor("references/MethodCall");
-
     assertThat(result.reference(10, 5)).isSameAs(result.symbol("target"));
   }
+
+  @Test
+  public void FieldTypes() {
+    Result result = Result.createFor("FieldTypes");
+    assertThat(result.symbol("fieldBoolean").type.symbol.name).isEqualTo("Boolean");
+    assertThat(result.symbol("fieldBoolean").type.symbol.owner().name).isEqualTo("java.lang");
+    assertThat(result.symbol("fieldList").type).isNull(); //FIXME type should be resolved properly
+    assertThat(result.symbol("fieldInt").type).isNotNull();
+    assertThat(result.symbol("fieldInt").type.symbol.name).isEqualTo("int");
+  }
+
 
 }

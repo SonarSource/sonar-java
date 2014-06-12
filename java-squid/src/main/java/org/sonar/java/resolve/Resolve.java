@@ -247,7 +247,7 @@ public class Resolve {
     }
 
     //checks predefined types
-    Symbol predefinedSymbol = findField(env, symbols.predefClass, name, symbols.predefClass);
+    Symbol predefinedSymbol = findMemberType(env, symbols.predefClass, name, symbols.predefClass);
     if (predefinedSymbol.kind < bestSoFar.kind) {
       return predefinedSymbol;
     }
