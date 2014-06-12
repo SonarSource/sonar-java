@@ -68,10 +68,11 @@ public class JaCoCoOverallSensor implements Sensor {
     File reportUTs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
     File reportITs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
     boolean foundBothReports = reportUTs.exists() && reportITs.exists();
-    if (!foundBothReports) {
-      JaCoCoUtils.LOG.info("JaCoCo reports not found.");
+    boolean shouldExecute = configuration.shouldExecuteOnProject(foundBothReports);
+    if (!foundBothReports && shouldExecute) {
+      JaCoCoUtils.LOG.info("JaCoCoOverallSensor: JaCoCo reports not found.");
     }
-    return configuration.shouldExecuteOnProject(foundBothReports);
+    return shouldExecute;
   }
 
   public void analyse(Project project, SensorContext context) {
