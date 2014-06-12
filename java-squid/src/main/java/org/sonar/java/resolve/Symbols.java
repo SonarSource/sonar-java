@@ -57,6 +57,7 @@ public class Symbols {
   final Type doubleType;
   final Type booleanType;
   final Type nullType;
+  final Type voidType;
 
   // predefined types
   final Type objectType;
@@ -99,6 +100,7 @@ public class Symbols {
     doubleType = initType(Type.DOUBLE, "double");
     booleanType = initType(Type.BOOLEAN, "boolean");
     nullType = initType(Type.BOT, "<nulltype>");
+    voidType = initType(Type.VOID, "void");
 
     bytecodeCompleter.init(this);
 

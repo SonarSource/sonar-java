@@ -394,8 +394,7 @@ public class BytecodeCompleter implements Symbol.Completer {
           result = new Type.ArrayType(convertAsmType(asmType.getElementType()), symbols.arrayClass);
           break;
         case org.objectweb.asm.Type.VOID:
-          // FIXME
-          result = symbols.unknownType;
+          result = symbols.voidType;
           break;
         default:
           throw new IllegalArgumentException(asmType.toString());

@@ -26,4 +26,7 @@ public class BytecodeCompleterPackageVisibility {
   public int add(int a , int b) {
     return a+b;
   }
+
+  public void voidMethod(){
+  }
 }

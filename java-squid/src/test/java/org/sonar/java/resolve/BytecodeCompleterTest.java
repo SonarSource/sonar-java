@@ -105,4 +105,18 @@ public class BytecodeCompleterTest {
     assertThat(symbol.type.symbol.name).isEqualTo("BytecodeCompleterPackageVisibility");
     assertThat(symbol.type.symbol.owner().name).isEqualTo(thisTest.owner().name);
   }
+
+  @Test
+  public void void_method_type_should_be_resolved() {
+    Symbol.TypeSymbol thisTest = bytecodeCompleter.getClassSymbol(Convert.bytecodeName(getClass().getName()));
+    List<Symbol> symbols = thisTest.members().lookup("bytecodeCompleterPackageVisibility");
+    assertThat(symbols).hasSize(1);
+    Symbol.VariableSymbol symbol = (Symbol.VariableSymbol) symbols.get(0);
+    symbols = symbol.getType().symbol.members().lookup("voidMethod");
+    assertThat(symbols).hasSize(1);
+    Symbol method = symbols.get(0);
+    assertThat(method.type).isInstanceOf(Type.MethodType.class);
+    assertThat(((Type.MethodType)method.type).resultType.symbol.name).isEqualTo("void");
+
+  }
 }
