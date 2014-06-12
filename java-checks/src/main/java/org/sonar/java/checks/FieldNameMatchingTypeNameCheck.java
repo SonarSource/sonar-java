@@ -80,7 +80,7 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
   }
 
   private boolean staticFieldSameType(Symbol.TypeSymbol classSymbol, Symbol sym) {
-      return sym.getType() != null && sym.getType().equals(classSymbol.getType()) && (sym.flags() & Flags.STATIC) != 0;
+    return sym.getType() != null && sym.getType().equals(classSymbol.getType()) && (sym.flags() & Flags.STATIC) != 0;
   }
 
   @Override
