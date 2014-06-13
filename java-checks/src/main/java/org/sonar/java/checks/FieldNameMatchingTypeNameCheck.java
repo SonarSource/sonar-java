@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
@@ -40,6 +41,7 @@ import java.util.Collection;
     key = FieldNameMatchingTypeNameCheck.RULE_KEY,
     priority = Priority.MAJOR,
     tags = {"brain-overload"})
+@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1700";
