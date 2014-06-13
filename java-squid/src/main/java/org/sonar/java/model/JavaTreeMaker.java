@@ -1479,7 +1479,7 @@ public class JavaTreeMaker {
   private ExpressionTree applyDim(ExpressionTree expression, int count) {
     ExpressionTree result = expression;
     for (int i = 0; i < count; i++) {
-      result = new JavaTree.ArrayTypeTreeImpl(/* FIXME should not be null */null, expression);
+      result = new JavaTree.ArrayTypeTreeImpl(/* FIXME should not be null */null, result);
     }
     return result;
   }

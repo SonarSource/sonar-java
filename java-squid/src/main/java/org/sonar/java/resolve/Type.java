@@ -36,6 +36,7 @@ public class Type {
   public static final int ARRAY = 11;
   public static final int METHOD = 12;
   public static final int BOT = 13;
+  public static final int UNKNOWN = 14;
 
   int tag;
 

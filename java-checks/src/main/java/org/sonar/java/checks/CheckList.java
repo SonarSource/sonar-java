@@ -182,7 +182,8 @@ public final class CheckList {
       UnusedMethodParameterCheck.class,
       FieldMatchMethodNameCheck.class,
       MagicNumberCheck.class,
-      StringConcatenationInLoopCheck.class
+      StringConcatenationInLoopCheck.class,
+      CompareObjectWithEqualsCheck.class
     );
   }
 

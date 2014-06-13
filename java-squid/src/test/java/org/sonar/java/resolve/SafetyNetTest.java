@@ -41,7 +41,8 @@ public class SafetyNetTest {
     "src/test/java",
     "src/test/files",
     "target/test-projects/struts-core-1.3.9/src",
-    "target/test-projects/commons-collections-3.2.1/src"
+    "target/test-projects/commons-collections-3.2.1/src",
+      "/home/benzonico/Development/SonarSource/it-sources/sslr/oracle-jdk-1.7.0.3/com/sun/corba/se/PortableActivationIDL/"
   };
 
   @Test
@@ -50,7 +51,9 @@ public class SafetyNetTest {
     for (String dir : dirs) {
       for (File file : FileUtils.listFiles(new File(dir), new String[]{"java"}, true)) {
         try {
-          SemanticModel.createFor(new JavaTreeMaker().compilationUnit(parser.parse(file)), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+          if(file.getName().equals("ActivatorHelper.java")) {
+            SemanticModel.createFor(new JavaTreeMaker().compilationUnit(parser.parse(file)), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+          }
         } catch (Exception e) {
           throw new RuntimeException("Unable to process file " + file, e);
         }

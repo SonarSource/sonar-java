@@ -82,6 +82,7 @@ public class Symbols {
         return "!unknown!";
       }
     };
+    unknownType.tag = Type.UNKNOWN;
     unknownType.interfaces = ImmutableList.of();
     unknownSymbol.type = unknownType;
 

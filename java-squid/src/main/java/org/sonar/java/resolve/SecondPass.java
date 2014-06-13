@@ -44,10 +44,12 @@ public class SecondPass implements Symbol.Completer {
 
   private final SemanticModel semanticModel;
   private final Resolve resolve;
+  private final Symbols symbols;
 
-  public SecondPass(SemanticModel semanticModel, Resolve resolve) {
+  public SecondPass(SemanticModel semanticModel, Resolve resolve, Symbols symbols) {
     this.semanticModel = semanticModel;
     this.resolve = resolve;
+    this.symbols = symbols;
   }
 
   @Override
@@ -81,7 +83,7 @@ public class SecondPass implements Symbol.Completer {
     ClassTree tree = (ClassTree) semanticModel.getTree(symbol);
     Tree superClassTree = tree.superClass();
     if (superClassTree != null && (superClassTree.is(Tree.Kind.MEMBER_SELECT) || superClassTree.is(Tree.Kind.IDENTIFIER))) {
-      ((Type.ClassType) symbol.type).supertype = resolveType(env, superClassTree).type;
+      ((Type.ClassType) symbol.type).supertype = resolveType(env, superClassTree);
       checkHierarchyCycles(symbol.type);
     } else {
       // TODO superclass is java.lang.Object or java.lang.Enum or java.lang.Annotation
@@ -101,7 +103,7 @@ public class SecondPass implements Symbol.Completer {
 
     ImmutableList.Builder<Type> interfaces = ImmutableList.builder();
     for (Tree interfaceTree : tree.superInterfaces()) {
-      Type interfaceType = castToTypeIfPossible(resolveType(env, interfaceTree));
+      Type interfaceType = resolveType(env, interfaceTree);
       if (interfaceType != null) {
         interfaces.add(interfaceType);
       }
@@ -127,7 +129,7 @@ public class SecondPass implements Symbol.Completer {
 
     ImmutableList.Builder<Symbol.TypeSymbol> thrown = ImmutableList.builder();
     for (ExpressionTree throwClause : methodTree.throwsClauses()) {
-      Type thrownType = castToTypeIfPossible(resolveType(env, throwClause));
+      Type thrownType = resolveType(env, throwClause);
       if (thrownType != null) {
         thrown.add(((Type.ClassType) thrownType).symbol);
       }
@@ -138,9 +140,13 @@ public class SecondPass implements Symbol.Completer {
       // no return type for constructor
       return;
     }
-    Type type = castToTypeIfPossible(resolveType(env, methodTree.returnType()));
+    Type type = resolveType(env, methodTree.returnType());
     if (type != null) {
-      symbol.type = ((Type.ClassType) type).symbol;
+      if(type.isTagged(Type.CLASS)) {
+        symbol.type = ((Type.ClassType) type).symbol;
+      } else if(type.isTagged(Type.ARRAY)) {
+        symbol.type = symbols.arrayClass;
+      }
     }
   }
 
@@ -150,16 +156,19 @@ public class SecondPass implements Symbol.Completer {
     if (variableTree.is(Tree.Kind.ENUM_CONSTANT)) {
       symbol.type = env.enclosingClass().type;
     } else {
-      symbol.type = castToTypeIfPossible(resolveType(env, variableTree.type()));
+      symbol.type = resolveType(env, variableTree.type());
     }
     ((JavaTree.VariableTreeImpl) variableTree).setSymbol(symbol);
   }
 
-  private Symbol resolveType(Resolve.Env env, Tree tree) {
+  private Type resolveType(Resolve.Env env, Tree tree) {
     Preconditions.checkArgument(checkTypeOfTree(tree), "Kind of tree unexpected " + ((JavaTree) tree).getKind());
     TypeResolverVisitor typeResolverVisitor = new TypeResolverVisitor(env.dup());
     tree.accept(typeResolverVisitor);
-    return typeResolverVisitor.site;
+    if(typeResolverVisitor.arrayType != null) {
+      return typeResolverVisitor.arrayType;
+    }
+    return castToTypeIfPossible(typeResolverVisitor.site);
   }
 
   private boolean checkTypeOfTree(Tree tree) {
@@ -172,7 +181,7 @@ public class SecondPass implements Symbol.Completer {
   }
 
   private Type castToTypeIfPossible(Symbol symbol) {
-    return symbol instanceof Symbol.TypeSymbol ? ((Symbol.TypeSymbol) symbol).type : null;
+    return symbol instanceof Symbol.TypeSymbol ? ((Symbol.TypeSymbol) symbol).type : symbols.unknownType;
   }
 
   private void associateReference(IdentifierTree tree, Symbol symbol) {
@@ -184,6 +193,7 @@ public class SecondPass implements Symbol.Completer {
   private class TypeResolverVisitor extends BaseTreeVisitor {
     private final Resolve.Env env;
     private Symbol site;
+    private Type.ArrayType arrayType;
 
     public TypeResolverVisitor(Resolve.Env env) {
       this.env = env;
@@ -198,7 +208,11 @@ public class SecondPass implements Symbol.Completer {
     @Override
     public void visitArrayType(ArrayTypeTree tree) {
       super.visitArrayType(tree);
-      //TODO handle arrays type (for methods).
+      if(arrayType == null) {
+        arrayType = new Type.ArrayType(site.type, symbols.arrayClass);
+      }else {
+        arrayType = new Type.ArrayType(arrayType, symbols.arrayClass);
+      }
     }
 
     @Override

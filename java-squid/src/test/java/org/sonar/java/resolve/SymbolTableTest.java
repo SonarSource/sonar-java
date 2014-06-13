@@ -351,10 +351,19 @@ public class SymbolTableTest {
     Result result = Result.createFor("FieldTypes");
     assertThat(result.symbol("fieldBoolean").type.symbol.name).isEqualTo("Boolean");
     assertThat(result.symbol("fieldBoolean").type.symbol.owner().name).isEqualTo("java.lang");
-    assertThat(result.symbol("fieldList").type).isNull(); //FIXME type should be resolved properly
+    assertThat(result.symbol("fieldList").type.toString()).isEqualTo("!unknown!"); //FIXME type should be resolved properly
     assertThat(result.symbol("fieldInt").type).isNotNull();
     assertThat(result.symbol("fieldInt").type.symbol.name).isEqualTo("int");
   }
 
+  @Test
+  public void ArrayTypes() {
+    Result result = Result.createFor("ArrayTypes");
+    assertThat(result.symbol("strings1").type.symbol.name).isEqualTo("Array");
+    assertThat(result.symbol("strings2").type.symbol.name).isEqualTo("Array");
+    assertThat(result.symbol("strings3").type.symbol.name).isEqualTo("Array");
+    assertThat(result.symbol("strings3").type.toString()).isEqualTo("String[][][]");
+    assertThat(result.symbol("objects").type.toString()).isEqualTo("Object[][][]");
 
+  }
 }

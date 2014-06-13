@@ -83,7 +83,7 @@ import java.util.List;
 
 public abstract class JavaTree implements Tree {
 
-  private final AstNode astNode;
+  protected final AstNode astNode;
 
   public JavaTree(AstNode astNode) {
     this.astNode = astNode;
@@ -104,7 +104,23 @@ public abstract class JavaTree implements Tree {
 
   public abstract Kind getKind();
 
-  public static class PrimitiveTypeTreeImpl extends JavaTree implements PrimitiveTypeTree {
+  public static abstract class AbstractExpressionTree extends JavaTree {
+    private Type type;
+
+    public AbstractExpressionTree(AstNode astNode) {
+      super(astNode);
+    }
+
+    public Type getType() {
+      return type;
+    }
+
+    public void setType(Type type) {
+      this.type = type;
+    }
+  }
+
+  public static class PrimitiveTypeTreeImpl extends AbstractExpressionTree implements PrimitiveTypeTree {
     Type type;
     public PrimitiveTypeTreeImpl(AstNode astNode) {
       super(astNode);
@@ -129,7 +145,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class IdentifierTreeImpl extends JavaTree implements IdentifierTree {
+  public static class IdentifierTreeImpl extends AbstractExpressionTree implements IdentifierTree {
     private final String name;
 
     public IdentifierTreeImpl(AstNode astNode, String name) {
@@ -1084,7 +1100,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class LiteralTreeImpl extends JavaTree implements LiteralTree {
+  public static class LiteralTreeImpl extends AbstractExpressionTree implements LiteralTree {
     private final Kind kind;
 
     public LiteralTreeImpl(AstNode astNode, Kind kind) {
@@ -1108,7 +1124,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class BinaryExpressionTreeImpl extends JavaTree implements BinaryExpressionTree {
+  public static class BinaryExpressionTreeImpl extends AbstractExpressionTree implements BinaryExpressionTree {
     private final ExpressionTree leftOperand;
     private final Kind kind;
     private final ExpressionTree rightOperand;
@@ -1141,7 +1157,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class UnaryExpressionTreeImpl extends JavaTree implements UnaryExpressionTree {
+  public static class UnaryExpressionTreeImpl extends AbstractExpressionTree implements UnaryExpressionTree {
     private final Kind kind;
     private final ExpressionTree expression;
 
@@ -1167,7 +1183,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class ParenthesizedTreeImpl extends JavaTree implements ParenthesizedTree {
+  public static class ParenthesizedTreeImpl extends AbstractExpressionTree implements ParenthesizedTree {
     private final ExpressionTree expression;
 
     public ParenthesizedTreeImpl(AstNode astNode, ExpressionTree expression) {
@@ -1191,7 +1207,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class ConditionalExpressionTreeImpl extends JavaTree implements ConditionalExpressionTree {
+  public static class ConditionalExpressionTreeImpl extends AbstractExpressionTree implements ConditionalExpressionTree {
     private final ExpressionTree condition;
     private final ExpressionTree trueExpression;
     private final ExpressionTree falseExpression;
@@ -1229,7 +1245,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class InstanceOfTreeImpl extends JavaTree implements InstanceOfTree {
+  public static class InstanceOfTreeImpl extends AbstractExpressionTree implements InstanceOfTree {
     private final ExpressionTree expression;
     private final Tree type;
 
@@ -1260,7 +1276,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class TypeCastExpressionTreeImpl extends JavaTree implements TypeCastTree {
+  public static class TypeCastExpressionTreeImpl extends AbstractExpressionTree implements TypeCastTree {
     private final Tree type;
     private final ExpressionTree expression;
 
@@ -1291,7 +1307,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class AssignmentExpressionTreeImpl extends JavaTree implements AssignmentExpressionTree {
+  public static class AssignmentExpressionTreeImpl extends AbstractExpressionTree implements AssignmentExpressionTree {
     private final ExpressionTree variable;
     private final Kind kind;
     private final ExpressionTree expression;
@@ -1333,7 +1349,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class MethodInvocationTreeImpl extends JavaTree implements MethodInvocationTree {
+  public static class MethodInvocationTreeImpl extends AbstractExpressionTree implements MethodInvocationTree {
     private final ExpressionTree methodSelect;
     private final List<ExpressionTree> arguments;
 
@@ -1370,7 +1386,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class NewArrayTreeImpl extends JavaTree implements NewArrayTree {
+  public static class NewArrayTreeImpl extends AbstractExpressionTree implements NewArrayTree {
     private final Tree type;
     private final List<ExpressionTree> dimensions;
     private final List<ExpressionTree> initializers;
@@ -1409,7 +1425,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class NewClassTreeImpl extends JavaTree implements NewClassTree {
+  public static class NewClassTreeImpl extends AbstractExpressionTree implements NewClassTree {
     private final ExpressionTree enclosingExpression;
     private final ExpressionTree identifier;
     private final List<ExpressionTree> arguments;
@@ -1464,7 +1480,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class MemberSelectExpressionTreeImpl extends JavaTree implements MemberSelectExpressionTree {
+  public static class MemberSelectExpressionTreeImpl extends AbstractExpressionTree implements MemberSelectExpressionTree {
     private final ExpressionTree expression;
     private final IdentifierTree identifier;
 
@@ -1495,7 +1511,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class ArrayAccessExpressionTreeImpl extends JavaTree implements ArrayAccessExpressionTree {
+  public static class ArrayAccessExpressionTreeImpl extends AbstractExpressionTree implements ArrayAccessExpressionTree {
     private final ExpressionTree expression;
     private final ExpressionTree index;
 
@@ -1526,7 +1542,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class ArrayTypeTreeImpl extends JavaTree implements ArrayTypeTree {
+  public static class ArrayTypeTreeImpl extends AbstractExpressionTree implements ArrayTypeTree {
     private final Tree type;
 
     public ArrayTypeTreeImpl(AstNode astNode, Tree type) {
@@ -1578,7 +1594,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class ParameterizedTypeTreeImpl extends JavaTree implements ParameterizedTypeTree, ExpressionTree {
+  public static class ParameterizedTypeTreeImpl extends AbstractExpressionTree implements ParameterizedTypeTree, ExpressionTree {
     private final ExpressionTree type;
     private final List<Tree> typeArguments;
 
@@ -1667,7 +1683,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class AnnotationTreeImpl extends JavaTree implements AnnotationTree {
+  public static class AnnotationTreeImpl extends AbstractExpressionTree implements AnnotationTree {
 
     private final List<ExpressionTree> arguments;
     private final Tree annotationType;
@@ -1700,7 +1716,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class LambdaExpressionTreeImpl extends JavaTree implements LambdaExpressionTree {
+  public static class LambdaExpressionTreeImpl extends AbstractExpressionTree implements LambdaExpressionTree {
 
     private final List<VariableTree> parameters;
     private final Tree body;
@@ -1732,7 +1748,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class NotImplementedTreeImpl extends JavaTree implements ExpressionTree{
+  public static class NotImplementedTreeImpl extends AbstractExpressionTree implements ExpressionTree{
     private String name;
 
     public NotImplementedTreeImpl(AstNode astNode, String name) {
