@@ -169,6 +169,7 @@ public final class CheckList {
       RedundantThrowsDeclarationCheck.class,
       ThrowsSeveralCheckedExceptionCheck.class,
       ThreadRunCheck.class,
+
       ImmediatelyReturnedVariableCheck.class,
       LambdaSingleExpressionCheck.class,
       LambdaOptionalParenthesisCheck.class,
@@ -177,7 +178,8 @@ public final class CheckList {
       SAMAnnotatedCheck.class,
       CatchNPECheck.class,
       FieldNameMatchingTypeNameCheck.class,
-      AbstractClassWithoutAbstractMethodCheck.class
+      AbstractClassWithoutAbstractMethodCheck.class,
+      UnusedMethodParameterCheck.class
     );
   }
 

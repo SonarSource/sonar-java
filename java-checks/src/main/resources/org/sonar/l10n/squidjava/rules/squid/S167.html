@@ -1,0 +1,30 @@
+<p>Unused parameters are misleading. Whatever the value passed to such parameters is, the behavior will be the same.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+void doSomething(int a, int b) {     // "b" is unused
+  compute(a);
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+
+<pre>
+void doSomething(int a) { 
+  compute(a);
+}
+</pre>
+
+<h2>Exceptions</h2>
+
+<h3>For Java</h3>
+Methods overriding or implementing another one should be excluded
+
+<pre>
+@override
+void doSomething(int a, int b) {     // no issue reported on b
+  compute(a);
+}
+</pre>
+
