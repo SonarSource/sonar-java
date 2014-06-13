@@ -21,10 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -131,9 +128,9 @@ public class FirstPass extends BaseTreeVisitor {
     }
   }
 
-  private void resolveImports(List<ImportTree> imports){
+  private void resolveImports(List<ImportTree> imports) {
     ImportResolverVisitor importResolverVisitor = new ImportResolverVisitor();
-    for(ImportTree importTree : imports) {
+    for (ImportTree importTree : imports) {
       importTree.accept(importResolverVisitor);
     }
   }
@@ -172,7 +169,7 @@ public class FirstPass extends BaseTreeVisitor {
       //FIXME That is why we only add the first symbol so we resolve references at best for now.
       //add to semantic model only the first symbol.
       //twice the same import : ignore the duplication JLS8 7.5.1.
-      if (semanticModel.getSymbol(tree) == null && semanticModel.getTree(symbol)==null) {
+      if (semanticModel.getSymbol(tree) == null && semanticModel.getTree(symbol) == null) {
         semanticModel.associateSymbol(tree, symbol);
       }
     }
@@ -181,7 +178,7 @@ public class FirstPass extends BaseTreeVisitor {
     public void visitIdentifier(IdentifierTree tree) {
       if (JavaPunctuator.STAR.getValue().equals(tree.name())) {
         //star import : we save the current symbol
-        if(isStatic) {
+        if (isStatic) {
           env.staticStarImports().enter(currentSymbol);
         } else {
           env.starImports().enter(currentSymbol);
@@ -215,11 +212,11 @@ public class FirstPass extends BaseTreeVisitor {
       flag = computeClassFlags(tree);
     }
     Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
-    ((JavaTree.ClassTreeImpl)tree).setSymbol(symbol);
+    ((JavaTree.ClassTreeImpl) tree).setSymbol(symbol);
     //Only register classes that can be accessible, so classes owned by a method are not registered.
     //TODO : register also based on flags ?
     if (!anonymousClass) {
-      if(env.scope.owner.kind == Symbol.TYP || env.scope.owner.kind == Symbol.PCK) {
+      if (env.scope.owner.kind == Symbol.TYP || env.scope.owner.kind == Symbol.PCK) {
         resolve.registerClass(symbol);
       }
       enterSymbol(tree, symbol);
@@ -242,41 +239,14 @@ public class FirstPass extends BaseTreeVisitor {
     restoreEnvironment(tree);
   }
 
-  private int computeModifierFlag(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.MODIFIER));
-    final int flag;
-    AstNode modifierNode = astNode.getFirstChild();
-    if (modifierNode.is(JavaKeyword.PRIVATE)) {
-      flag = Flags.PRIVATE;
-    } else if (modifierNode.is(JavaKeyword.PROTECTED)) {
-      flag = Flags.PROTECTED;
-    } else if (modifierNode.is(JavaKeyword.PUBLIC)) {
-      flag = Flags.PUBLIC;
-    } else {
-      flag = 0;
-    }
-    return flag;
-  }
-
-  private int computeFlags(AstNode astNode) {
-    int flags = 0;
-    AstNode modifierNode = astNode.getPreviousAstNode();
-    while (modifierNode != null && modifierNode.is(JavaGrammar.MODIFIER)) {
-      flags |= computeModifierFlag(modifierNode);
-      modifierNode = modifierNode.getPreviousAstNode();
-    }
-    return flags;
-  }
-
   private int computeClassFlags(ClassTree tree) {
-    AstNode astNode = ((JavaTree) tree).getAstNode();
-    int flags = computeFlags(astNode);
-    if (astNode.is(JavaGrammar.INTERFACE_DECLARATION)) {
+    int flags = computeFlags(tree.modifiers());
+    if (tree.is(Tree.Kind.INTERFACE)) {
       flags |= Flags.INTERFACE;
-    } else if (astNode.is(JavaGrammar.ENUM_DECLARATION)) {
+    }else if (tree.is(Tree.Kind.ENUM)) {
       flags |= Flags.ENUM;
-    } else if (astNode.is(JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
-      flags |= Flags.ANNOTATION | Flags.INTERFACE;
+    }else if (tree.is(Tree.Kind.ANNOTATION_TYPE)) {
+      flags |= Flags.INTERFACE | Flags.ANNOTATION;
     }
     if (env.scope.owner instanceof Symbol.TypeSymbol && ((env.enclosingClass.flags() & Flags.INTERFACE) != 0)) {
       // JLS7 6.6.1: All members of interfaces are implicitly public.
@@ -294,7 +264,7 @@ public class FirstPass extends BaseTreeVisitor {
 
   private void visitMethodDeclaration(MethodTree tree) {
     String name = tree.returnType() == null ? "<init>" : tree.simpleName().name();
-    Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeMethodFlags(tree), name, env.scope.owner);
+    Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeFlags(tree.modifiers()), name, env.scope.owner);
     enterSymbol(tree, symbol);
     symbol.parameters = new Scope(symbol);
     symbol.completer = completer;
@@ -307,21 +277,6 @@ public class FirstPass extends BaseTreeVisitor {
     Resolve.Env methodEnv = env.dup();
     methodEnv.scope = symbol.parameters;
     env = methodEnv;
-  }
-
-  private int computeMethodFlags(MethodTree tree) {
-    AstNode astNode = ((JavaTree) tree).getAstNode();
-    if (astNode.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
-      return computeFlags(astNode.getFirstAncestor(JavaGrammar.MEMBER_DECL));
-    } else if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST, JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST)) {
-      // JLS7 6.6.1: All members of interfaces are implicitly public.
-      return Flags.PUBLIC;
-    } else if (astNode.is(JavaGrammar.ANNOTATION_METHOD_REST)) {
-      // JLS7 6.6.1: All members of interfaces are implicitly public.
-      return Flags.PUBLIC;
-    } else {
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
-    }
   }
 
   @Override
@@ -342,7 +297,7 @@ public class FirstPass extends BaseTreeVisitor {
     if ((env.scope.owner.flags & Flags.INTERFACE) != 0) {
       result = Flags.PUBLIC;
     }
-    for(Modifier modifier : modifiers.modifiers()){
+    for (Modifier modifier : modifiers.modifiers()) {
       result |= Flags.flagForModifier(modifier);
     }
     return result;

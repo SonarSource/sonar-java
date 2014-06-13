@@ -170,7 +170,7 @@ public class SymbolTableTest {
 
     Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) result.symbol("method", 21);
     assertThat(methodSymbol.owner()).isSameAs(enumSymbol);
-    assertThat(methodSymbol.flags()).isEqualTo(0);
+    assertThat(methodSymbol.flags()).isEqualTo(Flags.ABSTRACT);
   }
 
   @Test

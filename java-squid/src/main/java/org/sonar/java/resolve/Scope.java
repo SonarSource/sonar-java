@@ -59,7 +59,7 @@ public class Scope {
   }
 
   public Collection<Symbol> scopeSymbols() {
-    return symbols.values();
+    return ImmutableList.copyOf(symbols.values());
   }
 
   public static class StarImportScope extends Scope {

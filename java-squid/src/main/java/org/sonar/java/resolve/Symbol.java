@@ -66,6 +66,10 @@ public class Symbol {
     return owner;
   }
 
+  public String getName() {
+    return name;
+  }
+
   interface Completer {
     void complete(Symbol symbol);
   }

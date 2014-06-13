@@ -176,7 +176,8 @@ public final class CheckList {
       AbstractClassNoFieldShouldBeInterfaceCheck.class,
       SAMAnnotatedCheck.class,
       CatchNPECheck.class,
-      FieldNameMatchingTypeNameCheck.class
+      FieldNameMatchingTypeNameCheck.class,
+      AbstractClassWithoutAbstractMethodCheck.class
     );
   }
 
