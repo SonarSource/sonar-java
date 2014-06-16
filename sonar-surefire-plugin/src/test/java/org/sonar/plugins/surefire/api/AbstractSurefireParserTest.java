@@ -54,15 +54,15 @@ public class AbstractSurefireParserTest {
 
     SensorContext context = mockContext();
     parser.collect(project, context, null);
-    verify(context).saveMeasure(CoreMetrics.TESTS, 0.0);
+    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
 
     context = mockContext();
     parser.collect(project, context, getDir("nonExistingReportsDirectory"));
-    verify(context).saveMeasure(CoreMetrics.TESTS, 0.0);
+    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
 
     context = mockContext();
     parser.collect(project, context, getDir("file.txt"));
-    verify(context).saveMeasure(CoreMetrics.TESTS, 0.0);
+    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
   }
 
   @Test
@@ -102,8 +102,8 @@ public class AbstractSurefireParserTest {
     Project project = mock(Project.class);
 
     parser.collect(project, context, getDir("noReports"));
+    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
 
-    verify(context).saveMeasure(CoreMetrics.TESTS, 0.0);
   }
 
   /**
