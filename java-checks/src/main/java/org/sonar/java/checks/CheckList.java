@@ -180,7 +180,8 @@ public final class CheckList {
       FieldNameMatchingTypeNameCheck.class,
       AbstractClassWithoutAbstractMethodCheck.class,
       UnusedMethodParameterCheck.class,
-      FieldMatchMethodNameCheck.class
+      FieldMatchMethodNameCheck.class,
+      MagicNumberCheck.class
     );
   }
 
