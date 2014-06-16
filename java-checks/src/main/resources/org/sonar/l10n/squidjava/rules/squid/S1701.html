@@ -1,0 +1,37 @@
+<p>It's confusing to have a class member with the same name as a method in the class.</p>
+
+<p>Typically this situation indicates that the method is poorly named; method names should be action-oriented, and thus contain a verb, which is unlikely in the case where both a method and a member have the same name. However, renaming a public method could be disruptive to callers. Therefore renaming the member is the recommended action.</p>
+
+<h2>Noncompliant Code Sample</h2>
+<pre>
+public class Foo {
+
+  private string fiz;
+  public String fiz() {
+    // do something...
+  }
+
+  private void doSomething() {
+
+    String tmp = fiz; // is this what was intended? Should this have been a call to fiz()?
+
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Foo {
+
+  private string fizbah; // member has been renamed
+  public String fiz() {
+    // do something...
+  }
+
+  private void doSomething() {
+
+    String tmp = fiz; // results in a compile error
+    String tmp2 = fiz(); // no question now what was intended
+  }
+}
+</pre>

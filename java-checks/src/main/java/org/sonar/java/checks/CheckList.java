@@ -179,7 +179,8 @@ public final class CheckList {
       CatchNPECheck.class,
       FieldNameMatchingTypeNameCheck.class,
       AbstractClassWithoutAbstractMethodCheck.class,
-      UnusedMethodParameterCheck.class
+      UnusedMethodParameterCheck.class,
+      FieldMatchMethodNameCheck.class
     );
   }
 
