@@ -47,7 +47,7 @@ import java.util.List;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S167";
+  public static final String RULE_KEY = "S1172";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
