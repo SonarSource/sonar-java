@@ -44,7 +44,7 @@ public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final String DEFAULT_FOR_CLASSES = "**";
   private Pattern setterPattern = Pattern.compile("set[A-Z].*");
-  private Pattern getterPattern = Pattern.compile("get[A-Z].*");
+  private Pattern getterPattern = Pattern.compile("(get|is)[A-Z].*");
 
   @RuleProperty(
       key = "forClasses",
