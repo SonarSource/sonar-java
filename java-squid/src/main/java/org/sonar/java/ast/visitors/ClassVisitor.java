@@ -21,13 +21,19 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.squid.api.SourceClass;
+import org.sonar.squid.api.SourceMethod;
 import org.sonar.squid.api.SourcePackage;
 
+import javax.annotation.Nullable;
+
 public class ClassVisitor extends JavaAstVisitor {
+
+  private int localNameCounter;
 
   @Override
   public void init() {
@@ -39,12 +45,19 @@ public class ClassVisitor extends JavaAstVisitor {
   }
 
   @Override
+  public void visitFile(@Nullable AstNode astNode) {
+    localNameCounter = 0;
+  }
+
+  @Override
   public void visitNode(AstNode astNode) {
     String className = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
-
     final SourceClass sourceClass;
     if (getContext().peekSourceCode().isType(SourceClass.class)) {
       sourceClass = createSourceClass((SourceClass) getContext().peekSourceCode(), className);
+    } else if (getContext().peekSourceCode().isType(SourceMethod.class)) {
+      localNameCounter++;
+      sourceClass = createSourceClass((SourceClass) getContext().peekSourceCode().getParent(), localNameCounter+className);
     } else {
       sourceClass = createSourceClass(peekParentPackage(), className);
     }
