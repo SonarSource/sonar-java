@@ -181,7 +181,8 @@ public final class CheckList {
       AbstractClassWithoutAbstractMethodCheck.class,
       UnusedMethodParameterCheck.class,
       FieldMatchMethodNameCheck.class,
-      MagicNumberCheck.class
+      MagicNumberCheck.class,
+      StringConcatenationInLoopCheck.class
     );
   }
 

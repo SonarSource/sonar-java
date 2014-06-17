@@ -216,7 +216,9 @@ public class ExpressionVisitor extends BaseTreeVisitor {
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     super.visitAssignmentExpression(tree);
-    types.put(tree, getType(tree.variable()));
+    Type type = getType(tree.variable());
+    ((JavaTree.AssignmentExpressionTreeImpl) tree).setType(type);
+    types.put(tree, type);
   }
 
   @Override
@@ -328,7 +330,6 @@ public class ExpressionVisitor extends BaseTreeVisitor {
       }
 
       @Override
-
       public void visitIdentifier(IdentifierTree tree) {
         site = resolve.findIdent(semanticModel.getEnv(tree), tree.name(), Symbol.VAR | Symbol.TYP | Symbol.PCK);
         associateReference(tree, site);

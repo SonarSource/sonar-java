@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -1285,6 +1286,7 @@ public abstract class JavaTree implements Tree {
     private final ExpressionTree variable;
     private final Kind kind;
     private final ExpressionTree expression;
+    private Type type;
 
     public AssignmentExpressionTreeImpl(AstNode astNode, ExpressionTree variable, Kind kind, ExpressionTree expression) {
       super(astNode);
@@ -1311,6 +1313,14 @@ public abstract class JavaTree implements Tree {
     @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitAssignmentExpression(this);
+    }
+
+    public void setType(Type type) {
+      this.type = type;
+    }
+
+    public Type getType() {
+      return type;
     }
   }
 

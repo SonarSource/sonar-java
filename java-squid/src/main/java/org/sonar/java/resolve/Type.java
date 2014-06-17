@@ -46,6 +46,10 @@ public class Type {
     this.symbol = symbol;
   }
 
+  public boolean isTagged(int tag) {
+    return tag == this.tag;
+  }
+
   public static class ClassType extends Type {
 
     /**
@@ -84,7 +88,7 @@ public class Type {
 
     @Override
     public String toString() {
-      return elementType.toString()+"[]";
+      return elementType.toString() + "[]";
     }
   }
 
@@ -103,12 +107,12 @@ public class Type {
 
     @Override
     public String toString() {
-      return "returns "+resultType.toString();
+      return "returns " + resultType.toString();
     }
   }
 
   @Override
   public String toString() {
-    return symbol==null ? "" : symbol.toString();
+    return symbol == null ? "" : symbol.toString();
   }
 }
