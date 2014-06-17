@@ -29,23 +29,26 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.visitors.MethodHelper;
 import org.sonar.java.ast.visitors.PublicApiVisitor;
 import org.sonar.squid.api.SourceClass;
 import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceMethod;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Rule(key = "UndocumentedApi", priority = Priority.MAJOR,
-tags={"convention"})
+    tags = {"convention"})
 public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final String DEFAULT_FOR_CLASSES = "**";
+  private Pattern setterPattern = Pattern.compile("set[A-Z].*");
+  private Pattern getterPattern = Pattern.compile("get[A-Z].*");
 
   @RuleProperty(
-    key = "forClasses",
-    defaultValue = DEFAULT_FOR_CLASSES)
+      key = "forClasses",
+      defaultValue = DEFAULT_FOR_CLASSES)
   public String forClasses = DEFAULT_FOR_CLASSES;
 
   private WildcardPattern[] patterns;
@@ -76,14 +79,21 @@ public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private boolean isExcluded(AstNode node) {
-    return isAccessor() ||
-      !isPublicApi(node) ||
-      !isMatchingPattern();
+    return isAccessor(node) ||
+        !isPublicApi(node) ||
+        !isMatchingPattern();
   }
 
-  private boolean isAccessor() {
-    SourceCode currentResource = getContext().peekSourceCode();
-    return currentResource instanceof SourceMethod && ((SourceMethod) currentResource).isAccessor();
+  private boolean isAccessor(AstNode node) {
+    boolean result = false;
+    //setter resolution  based solely on names and parameters number : generate false negative. But for undocumented API we tolerate it.
+    if (node.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
+      MethodHelper methodHelper = new MethodHelper(node);
+      String methodName = methodHelper.getName().getTokenOriginalValue();
+      result = (setterPattern.matcher(methodName).matches() && methodHelper.getParameters().size() == 1)
+          || (getterPattern.matcher(methodName).matches() && !methodHelper.hasParameters());
+    }
+    return result;
   }
 
   private boolean isPublicApi(AstNode node) {
@@ -139,12 +149,12 @@ public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
 
   private static boolean hasNonVoidReturnType(AstNode node) {
     return node.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST) &&
-      !isGenericMethodReturningVoid(node);
+        !isGenericMethodReturningVoid(node);
   }
 
   private static boolean isGenericMethodReturningVoid(AstNode node) {
     return node.getParent().is(JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST) &&
-      node.getParent().hasDirectChildren(JavaKeyword.VOID);
+        node.getParent().hasDirectChildren(JavaKeyword.VOID);
   }
 
   private static boolean hasReturnJavadoc(String comment) {

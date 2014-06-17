@@ -189,4 +189,7 @@ public class Foo { // Compliant
    */
   public <T> int foo() { // Compliant
   }
+
+  public void getThisThingDone() { //false negative this is interpreted as a getter.
+  }
 }
