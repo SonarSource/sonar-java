@@ -90,6 +90,8 @@ public class JacocoConfiguration implements BatchExtension {
         PropertyDefinition.builder(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO)
             .defaultValue(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO_DEFAULT_VALUE + "")
             .name("Force zero coverage")
+            .category(CoreProperties.CATEGORY_JAVA)
+            .subCategory(subCategory)
             .description("Force coverage to 0% if no JaCoCo reports are found during analysis.")
             .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
             .type(PropertyType.BOOLEAN)
