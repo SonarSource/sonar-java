@@ -66,6 +66,7 @@ public class FieldMatchMethodNameCheck extends BaseTreeVisitor implements JavaFi
     if (classSymbol != null) {
       Map<String, Symbol> indexSymbol = Maps.newHashMap();
       Multiset<String> fields = HashMultiset.create();
+      Map<String, String> fieldsOriginal = Maps.newHashMap();
       Set<String> methodNames = Sets.newHashSet();
       Collection<Symbol> symbols = classSymbol.members().scopeSymbols();
       for (Symbol sym : symbols) {
@@ -73,6 +74,7 @@ public class FieldMatchMethodNameCheck extends BaseTreeVisitor implements JavaFi
         if (sym.isKind(Symbol.VAR)) {
           indexSymbol.put(symName, sym);
           fields.add(symName);
+          fieldsOriginal.put(symName, sym.getName());
         }
         if (sym.isKind(Symbol.MTH)) {
           methodNames.add(symName);
@@ -83,7 +85,7 @@ public class FieldMatchMethodNameCheck extends BaseTreeVisitor implements JavaFi
         if (entry.getCount() > 1) {
           Tree field = semanticModel.getTree(indexSymbol.get(entry.getElement()));
           if(field != null) {
-            context.addIssue(field, ruleKey, "Rename the \"" + entry.getElement() + "\" member.");
+            context.addIssue(field, ruleKey, "Rename the \"" + fieldsOriginal.get(entry.getElement()) + "\" member.");
           }
         }
       }

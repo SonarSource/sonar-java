@@ -38,7 +38,7 @@ public class FieldMatchMethodNameCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FieldMatchMethodNameCheck.java"), new VisitorsBridge(new FieldMatchMethodNameCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(2).withMessage("Rename the \"foo\" member.")
-      .next().atLine(3).withMessage("Rename the \"bar\" member.")
+      .next().atLine(3).withMessage("Rename the \"bAr\" member.")
     ;
   }
 

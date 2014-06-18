@@ -1,6 +1,6 @@
 class A {
   private String foo;
-  private String bar;
+  private String bAr;
   private String qix;
   public String foo() {
     //doSomething
