@@ -1623,6 +1623,7 @@
     <priority>CRITICAL</priority>
     <name><![CDATA[Performance - Method concatenates strings using + in a loop]]></name>
     <configKey><![CDATA[SBSC_USE_STRINGBUFFER_CONCATENATION]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="ITA_INEFFICIENT_TO_ARRAY">

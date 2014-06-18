@@ -923,9 +923,6 @@
     <Bug pattern="BIT_ADD_OF_SIGNED_BYTE"/>
   </Match>
   <Match>
-    <Bug pattern="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
-  </Match>
-  <Match>
     <Bug pattern="WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL"/>
   </Match>
   <Match>
