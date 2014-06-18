@@ -586,6 +586,10 @@ public interface Tree {
      */
     LAMBDA_EXPRESSION(LambdaExpressionTree.class),
     /**
+     * {@link PrimitiveTypeTree}
+     */
+    PRIMITIVE_TYPE(PrimitiveTypeTree.class),
+    /**
      *An implementation-reserved node.
      *
      */

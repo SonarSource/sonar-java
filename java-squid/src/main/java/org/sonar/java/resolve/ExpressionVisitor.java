@@ -206,6 +206,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
     AstNode astNode = ((JavaTree) tree).getAstNode();
     Type type = resolve.findIdent(semanticModel.getEnv(tree), astNode.getLastChild().getTokenValue(), Symbol.TYP).type;
+    ((JavaTree.PrimitiveTypeTreeImpl) tree).setType(type);
     types.put(tree, type);
   }
 

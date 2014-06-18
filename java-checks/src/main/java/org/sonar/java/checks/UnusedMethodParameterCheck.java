@@ -25,15 +25,18 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -65,7 +68,7 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    if (tree.block() != null && !isOverriden(tree)) {
+    if (tree.block() != null && !isMainMethod(tree) && !isOverriden(tree)) {
       List<String> unused = Lists.newArrayList();
       for (VariableTree var : tree.parameters()) {
         Symbol sym = semanticModel.getSymbol(var);
@@ -77,6 +80,41 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
         context.addIssue(tree, ruleKey, "Remove the unused method parameter(s) \"" + Joiner.on(",").join(unused) + "\".");
       }
     }
+  }
+
+  private boolean isMainMethod(MethodTree tree) {
+    return isPublicStatic(tree) && isCalledMain(tree) && returnsVoid(tree) && hasStringArrayParameter(tree);
+  }
+
+  private boolean hasStringArrayParameter(MethodTree tree) {
+    return hasOneParameter(tree) && isParameterStringArray(tree);
+  }
+
+  private boolean isParameterStringArray(MethodTree tree) {
+    VariableTree variableTree = tree.parameters().get(0);
+    boolean result = false;
+    if(variableTree.type().is(Tree.Kind.ARRAY_TYPE)) {
+      ArrayTypeTree arrayTypeTree = (ArrayTypeTree) variableTree.type();
+      result = !arrayTypeTree.type().is(Tree.Kind.PRIMITIVE_TYPE);
+    }
+    return result;
+  }
+
+  private boolean isPublicStatic(MethodTree tree) {
+    return tree.modifiers().modifiers().contains(Modifier.STATIC) && tree.modifiers().modifiers().contains(Modifier.PUBLIC);
+  }
+
+  private boolean isCalledMain(MethodTree tree) {
+    return "main".equals(tree.simpleName().name());
+  }
+
+  private boolean returnsVoid(MethodTree tree) {
+    Tree returnType = tree.returnType();
+    return returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && ((JavaTree.PrimitiveTypeTreeImpl) returnType).getType().isTagged(Type.VOID);
+  }
+
+  private boolean hasOneParameter(MethodTree tree) {
+    return tree.parameters().size() == 1;
   }
 
   private boolean isOverriden(MethodTree tree) {

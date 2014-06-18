@@ -105,18 +105,27 @@ public abstract class JavaTree implements Tree {
   public abstract Kind getKind();
 
   public static class PrimitiveTypeTreeImpl extends JavaTree implements PrimitiveTypeTree {
+    Type type;
     public PrimitiveTypeTreeImpl(AstNode astNode) {
       super(astNode);
     }
 
     @Override
     public Kind getKind() {
-      return null;
+      return Kind.PRIMITIVE_TYPE;
     }
 
     @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitPrimitiveType(this);
+    }
+
+    public Type getType() {
+      return type;
+    }
+
+    public void setType(Type type) {
+      this.type = type;
     }
   }
 
