@@ -44,6 +44,7 @@ public class UnusedMethodParameterCheckTest {
       .next().atLine(56).withMessage("Remove the unused method parameter(s) \"args\".")
       .next().atLine(57).withMessage("Remove the unused method parameter(s) \"args\".")
       .next().atLine(58).withMessage("Remove the unused method parameter(s) \"args\".")
+      .next().atLine(59).withMessage("Remove the unused method parameter(s) \"args\".")
     ;
   }
 

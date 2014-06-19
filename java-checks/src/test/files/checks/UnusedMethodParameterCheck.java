@@ -56,5 +56,5 @@ class F {
   public static void main(int[] args) { }
   public static Object main(String[] args) { }
   public static void main(String args) { }
-  public static void main(Double[] args) { } //false negative
+  public static void main(Double[] args) { }
 }
