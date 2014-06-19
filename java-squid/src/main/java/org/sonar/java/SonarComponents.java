@@ -46,12 +46,12 @@ public class SonarComponents implements BatchExtension {
   private final ProjectClasspath projectClasspath;
   private final Project project;
 
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project) {
-    this(fileLinesContextFactory, resourcePerspectives, project, null, null);
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project, ProjectClasspath projectClasspath) {
+    this(fileLinesContextFactory, resourcePerspectives, project, projectClasspath, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
-                         @Nullable ProjectClasspath projectClasspath,
+                         ProjectClasspath projectClasspath,
                          @Nullable JavaFileScannersFactory[] fileScannersFactories) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
