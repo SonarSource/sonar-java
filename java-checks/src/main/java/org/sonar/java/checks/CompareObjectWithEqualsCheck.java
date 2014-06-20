@@ -23,7 +23,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -67,7 +66,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   }
 
   private boolean isClass(Type operandType) {
-    return operandType.isTagged(Type.CLASS) && (((Type.ClassType) operandType).getSymbol().flags() & Flags.ENUM) == 0;
+    return operandType.isTagged(Type.CLASS) && !((Type.ClassType) operandType).getSymbol().isEnum();
   }
 
   private boolean isNullComparison(Type leftOperandType, Type rightOperandType) {

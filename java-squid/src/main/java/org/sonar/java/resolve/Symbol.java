@@ -224,4 +224,17 @@ public class Symbol {
 
   }
 
+  public boolean isStatic() {
+    return (flags & Flags.STATIC) != 0;
+  }
+
+  public boolean isEnum() {
+    return (flags & Flags.ENUM) != 0;
+  }
+
+  public boolean isAbstract() {
+    return (flags & Flags.ABSTRACT) != 0;
+  }
+
+
 }

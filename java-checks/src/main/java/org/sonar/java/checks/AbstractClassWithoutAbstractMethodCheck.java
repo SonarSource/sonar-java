@@ -23,7 +23,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -54,7 +53,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
   public void visitClass(ClassTree tree) {
     if (tree.is(Tree.Kind.CLASS)) {
       Symbol.TypeSymbol typeSymbol = ((JavaTree.ClassTreeImpl) tree).getSymbol();
-      if (typeSymbol != null && isAbstract(typeSymbol)) {
+      if (typeSymbol != null && typeSymbol.isAbstract()) {
         Collection<Symbol> symbols = typeSymbol.members().scopeSymbols();
         int abstractMethod = countAbstractMethods(symbols);
         if (symbols.size() == 1 || abstractMethod == symbols.size() - 1) {
@@ -82,10 +81,6 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
   }
 
   private boolean isAbstractMethod(Symbol sym) {
-    return sym.isKind(Symbol.MTH) && isAbstract(sym);
-  }
-
-  private boolean isAbstract(Symbol sym) {
-    return (sym.flags() & Flags.ABSTRACT) != 0;
+    return sym.isKind(Symbol.MTH) && sym.isAbstract();
   }
 }

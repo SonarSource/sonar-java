@@ -29,7 +29,7 @@ import org.sonar.squid.api.CheckMessage;
 import org.sonar.squid.api.SourceFile;
 
 @Rule(key = CallToFileDeleteOnExitMethodCheck.RULE_KEY, priority = Priority.MAJOR)
-public class CallToFileDeleteOnExitMethodCheck extends BytecodeVisitor {
+public class  CallToFileDeleteOnExitMethodCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "CallToFileDeleteOnExitMethod";
   private AsmClass asmClass;
