@@ -148,7 +148,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       String enclosingClassName = Convert.enclosingClassName(shortName);
       if (StringUtils.isNotEmpty(enclosingClassName)) {
         //handle innerClasses
-        symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), Convert.innerClassName(shortName), getClassSymbol(packageName + "." + enclosingClassName));
+        symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), Convert.innerClassName(shortName), getClassSymbol(Convert.fullName(packageName,enclosingClassName)));
       } else {
         symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), shortName, enterPackage(packageName));
       }
@@ -302,7 +302,7 @@ public class BytecodeCompleter implements Symbol.Completer {
      */
     private void defineInnerClass(String bytecodeName, int flags) {
       Symbol.TypeSymbol innerClass = getClassSymbol(bytecodeName, flags);
-      Preconditions.checkState(innerClass.owner == classSymbol);
+      Preconditions.checkState(innerClass.owner == classSymbol, "Innerclass : "+innerClass.owner.getName()+" and classSymbol : "+classSymbol.getName()+" are not the same.");
       classSymbol.members.enter(innerClass);
     }
 

@@ -70,4 +70,11 @@ public class ConvertTest {
     assertThat(Convert.innerClassName("MyClass")).isEqualTo("MyClass");
     assertThat(Convert.innerClassName("MyClass$InnerClass")).isEqualTo("InnerClass");
   }
+
+  @Test
+  public void fullName() throws Exception {
+    assertThat(Convert.fullName(null, "MyClass")).isEqualTo("MyClass");
+    assertThat(Convert.fullName("","MyClass")).isEqualTo("MyClass");
+    assertThat(Convert.fullName("org.example", "MyClass")).isEqualTo("org.example.MyClass");
+  }
 }

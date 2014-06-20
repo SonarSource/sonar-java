@@ -19,6 +19,8 @@
  */
 package org.sonar.java.resolve;
 
+import org.apache.commons.lang.StringUtils;
+
 public class Convert {
 
   private Convert() {
@@ -48,5 +50,13 @@ public class Convert {
 
   public static String innerClassName(String shortName) {
     return shortName.substring(shortName.lastIndexOf('$') +1);
+  }
+
+  public static String fullName(String packagePart, String className) {
+    String pck = StringUtils.defaultIfBlank(packagePart, "");
+    if(StringUtils.isNotEmpty(pck)) {
+      pck += ".";
+    }
+    return pck + className;
   }
 }
