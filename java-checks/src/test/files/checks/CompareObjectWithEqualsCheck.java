@@ -21,5 +21,10 @@ class B {
     if(strArray2[0][0] == strArray2[1][1]){}
     byte[] bits;
     if(bits [0] == bits [1]) {}
+    if(Foo.FOO == Foo.BAR) {}
   }
+enum Foo {
+  FOO,
+  BAR;
+}
 }

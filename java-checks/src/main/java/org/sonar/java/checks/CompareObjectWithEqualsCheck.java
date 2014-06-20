@@ -23,6 +23,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -59,10 +60,14 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
         //FIXME null type should not happen.
         return;
       }
-      if (!isNullComparison(leftOperandType, rightOperandType) && (leftOperandType.isTagged(Type.CLASS) || rightOperandType.isTagged(Type.CLASS))) {
+      if (!isNullComparison(leftOperandType, rightOperandType) && (isClass(leftOperandType) || isClass(rightOperandType))) {
         context.addIssue(tree, ruleKey, "Change this comparison to use the equals method.");
       }
     }
+  }
+
+  private boolean isClass(Type operandType) {
+    return operandType.isTagged(Type.CLASS) && (((Type.ClassType) operandType).getSymbol().flags() & Flags.ENUM) == 0;
   }
 
   private boolean isNullComparison(Type leftOperandType, Type rightOperandType) {
