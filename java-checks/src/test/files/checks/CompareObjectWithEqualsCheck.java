@@ -41,4 +41,10 @@ class C{
     if(null != str1){ }
     if(str1 != null){ }
   }
+
+  public boolean equals(Object obj) {
+    if (str1 != str2) {}
+    if (str1 == str2) {}
+    return super.equals(obj);
+  }
 }

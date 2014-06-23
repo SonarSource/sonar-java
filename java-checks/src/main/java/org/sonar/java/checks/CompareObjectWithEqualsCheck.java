@@ -28,6 +28,9 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
@@ -47,6 +50,31 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
     if (context.getSemanticModel() != null) {
       scan(context.getTree());
     }
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    if (!isEquals(tree)) {
+      super.visitMethod(tree);
+    }
+  }
+
+  private boolean isEquals(MethodTree tree) {
+    String methodName = tree.simpleName().name();
+    return methodName.equals("equals") && hasObjectParam(tree) && returnsBoolean(tree);
+  }
+
+  private boolean returnsBoolean(MethodTree tree) {
+    Tree returnType = tree.returnType();
+    return returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && ((JavaTree.AbstractExpressionTree) returnType).getType().isTagged(Type.BOOLEAN);
+  }
+
+  private boolean hasObjectParam(MethodTree tree) {
+    boolean result = false;
+    if (tree.parameters().size() == 1 && tree.parameters().get(0).type().is(Tree.Kind.IDENTIFIER)) {
+      result = ((IdentifierTree) tree.parameters().get(0).type()).name().endsWith("Object");
+    }
+    return result;
   }
 
   @Override
