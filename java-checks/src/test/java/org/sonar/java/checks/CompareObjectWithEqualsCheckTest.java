@@ -40,6 +40,8 @@ public class CompareObjectWithEqualsCheckTest {
       .next().atLine(7).withMessage("Change this comparison to use the equals method.")
       .next().atLine(8).withMessage("Change this comparison to use the equals method.")
       .next().atLine(21).withMessage("Change this comparison to use the equals method.")
+      .next().atLine(37).withMessage("Change this comparison to use the equals method.")
+      .next().atLine(38).withMessage("Change this comparison to use the equals method.")
     ;
   }
 

@@ -52,7 +52,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     super.visitBinaryExpression(tree);
-    if (tree.is(Tree.Kind.EQUAL_TO)) {
+    if (tree.is(Tree.Kind.EQUAL_TO) || tree.is(Tree.Kind.NOT_EQUAL_TO)) {
       Type leftOperandType = ((JavaTree.AbstractExpressionTree) tree.leftOperand()).getType();
       Type rightOperandType = ((JavaTree.AbstractExpressionTree) tree.rightOperand()).getType();
       if (leftOperandType == null || rightOperandType == null) {
