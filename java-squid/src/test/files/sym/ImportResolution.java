@@ -1,6 +1,6 @@
 package sym;
 
-import org.sonar.java.model.JavaTree.AnnotationTreeImpl;
+import org.sonar.java.model.JavaTree.NotImplementedTreeImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +18,7 @@ import static java.util.Collections.sort;
 
 @SuppressWarnings("all")
 class ImportResolution {
-  private AnnotationTreeImpl annotationTree;
+  private NotImplementedTreeImpl annotationTree;
 
   interface Interface1 extends List{
   }

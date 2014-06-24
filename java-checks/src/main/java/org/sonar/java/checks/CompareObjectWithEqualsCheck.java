@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
@@ -66,7 +65,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
 
   private boolean returnsBoolean(MethodTree tree) {
     Tree returnType = tree.returnType();
-    return returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && ((JavaTree.AbstractExpressionTree) returnType).getType().isTagged(Type.BOOLEAN);
+    return returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && ((AbstractTypedTree) returnType).getType().isTagged(Type.BOOLEAN);
   }
 
   private boolean hasObjectParam(MethodTree tree) {
@@ -81,8 +80,8 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     super.visitBinaryExpression(tree);
     if (tree.is(Tree.Kind.EQUAL_TO) || tree.is(Tree.Kind.NOT_EQUAL_TO)) {
-      Type leftOperandType = ((JavaTree.AbstractExpressionTree) tree.leftOperand()).getType();
-      Type rightOperandType = ((JavaTree.AbstractExpressionTree) tree.rightOperand()).getType();
+      Type leftOperandType = ((AbstractTypedTree) tree.leftOperand()).getType();
+      Type rightOperandType = ((AbstractTypedTree) tree.rightOperand()).getType();
       if (leftOperandType == null || rightOperandType == null) {
         //FIXME null type should not happen.
         return;

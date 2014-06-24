@@ -27,6 +27,7 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+// FIXME(Godin): must not depend on real files
 public class ImportResolutionTest {
 
 
@@ -37,7 +38,6 @@ public class ImportResolutionTest {
   @BeforeClass
   public static void setUp() throws Exception {
     result = Result.createFor("ImportResolution");
-
   }
 
   @Test
@@ -55,7 +55,7 @@ public class ImportResolutionTest {
 
   @Test
   public void import_on_inner_type_should_be_resolved() throws Exception {
-    assertThat(result.symbol("annotationTree").type.symbol.name).isEqualTo("AnnotationTreeImpl");
+    assertThat(result.symbol("annotationTree").type.symbol.name).isEqualTo("NotImplementedTreeImpl");
     assertThat(result.symbol("annotationTree").type.symbol.owner().name).isEqualTo("JavaTree");
   }
 

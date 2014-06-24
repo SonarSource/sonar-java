@@ -24,7 +24,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
+import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -218,7 +221,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     super.visitAssignmentExpression(tree);
     Type type = getType(tree.variable());
-    ((JavaTree.AssignmentExpressionTreeImpl) tree).setType(type);
+    ((AssignmentExpressionTreeImpl) tree).setType(type);
     registerType(tree, type);
   }
 
@@ -226,7 +229,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
   public void visitLiteral(LiteralTree tree) {
     super.visitLiteral(tree);
     Type type = typesOfLiterals.get(((JavaTree) tree).getKind());
-    ((JavaTree.LiteralTreeImpl) tree).setType(type);
+    ((LiteralTreeImpl) tree).setType(type);
     registerType(tree, type);
   }
 
@@ -370,8 +373,8 @@ public class ExpressionVisitor extends BaseTreeVisitor {
   }
 
   private void registerType(Tree tree, Type type) {
-    if (JavaTree.AbstractExpressionTree.class.isAssignableFrom(tree.getClass())) {
-      ((JavaTree.AbstractExpressionTree) tree).setType(type);
+    if (AbstractTypedTree.class.isAssignableFrom(tree.getClass())) {
+      ((AbstractTypedTree) tree).setType(type);
     }
     types.put(tree, type);
   }

@@ -25,6 +25,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
@@ -95,7 +96,7 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
     boolean result = false;
     if(variableTree.type().is(Tree.Kind.ARRAY_TYPE)) {
       ArrayTypeTree arrayTypeTree = (ArrayTypeTree) variableTree.type();
-      Type arrayType = ((JavaTree.AbstractExpressionTree) arrayTypeTree.type()).getType();
+      Type arrayType = ((AbstractTypedTree) arrayTypeTree.type()).getType();
       result = arrayType.isTagged(Type.CLASS) && "String".equals(((Type.ClassType) arrayType).getSymbol().getName());
     }
     return result;
