@@ -73,7 +73,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
     int abstractMethod = 0;
     for (Symbol sym : symbols) {
       //skip "this"
-      if (!sym.getName().equals("this") && isAbstractMethod(sym)) {
+      if (!"this".equals(sym.getName()) && isAbstractMethod(sym)) {
         abstractMethod++;
       }
     }

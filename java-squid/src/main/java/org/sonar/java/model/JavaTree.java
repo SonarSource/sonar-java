@@ -104,7 +104,7 @@ public abstract class JavaTree implements Tree {
 
   public abstract Kind getKind();
 
-  public static abstract class AbstractExpressionTree extends JavaTree {
+  public abstract static class AbstractExpressionTree extends JavaTree {
     private Type type;
 
     public AbstractExpressionTree(AstNode astNode) {

@@ -83,7 +83,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
   private boolean isString(Type type) {
     if (type != null && type.isTagged(Type.CLASS)) {
       Symbol.TypeSymbol typeSymbol = ((Type.ClassType) type).getSymbol();
-      return typeSymbol.getName().equals("String") && typeSymbol.owner().getName().equals("java.lang");
+      return "String".equals(typeSymbol.getName()) && "java.lang".equals(typeSymbol.owner().getName());
     }
     return false;
   }

@@ -61,7 +61,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
 
   private boolean isEquals(MethodTree tree) {
     String methodName = tree.simpleName().name();
-    return methodName.equals("equals") && hasObjectParam(tree) && returnsBoolean(tree);
+    return "equals".equals(methodName) && hasObjectParam(tree) && returnsBoolean(tree);
   }
 
   private boolean returnsBoolean(MethodTree tree) {
