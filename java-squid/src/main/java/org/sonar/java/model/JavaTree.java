@@ -121,7 +121,6 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class PrimitiveTypeTreeImpl extends AbstractExpressionTree implements PrimitiveTypeTree {
-    Type type;
     public PrimitiveTypeTreeImpl(AstNode astNode) {
       super(astNode);
     }
@@ -134,14 +133,6 @@ public abstract class JavaTree implements Tree {
     @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitPrimitiveType(this);
-    }
-
-    public Type getType() {
-      return type;
-    }
-
-    public void setType(Type type) {
-      this.type = type;
     }
   }
 
@@ -1311,7 +1302,6 @@ public abstract class JavaTree implements Tree {
     private final ExpressionTree variable;
     private final Kind kind;
     private final ExpressionTree expression;
-    private Type type;
 
     public AssignmentExpressionTreeImpl(AstNode astNode, ExpressionTree variable, Kind kind, ExpressionTree expression) {
       super(astNode);
@@ -1338,14 +1328,6 @@ public abstract class JavaTree implements Tree {
     @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitAssignmentExpression(this);
-    }
-
-    public void setType(Type type) {
-      this.type = type;
-    }
-
-    public Type getType() {
-      return type;
     }
   }
 
