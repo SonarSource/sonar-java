@@ -88,7 +88,7 @@ public class SecondPass implements Symbol.Completer {
     } else {
       // TODO superclass is java.lang.Object or java.lang.Enum or java.lang.Annotation
       if (tree.is(Tree.Kind.ENUM)) {
-
+        //JLS8 8.9 : The direct superclass of an enum type E is Enum<E>
       } else if (tree.is(Tree.Kind.INTERFACE)) {
         //JLS8 9.1.3 : While every class is an extension of class Object, there is no single interface of which all interfaces are extensions.
 
@@ -96,7 +96,7 @@ public class SecondPass implements Symbol.Completer {
         //JLS8 9.6 : The direct superinterface of every annotation type is java.lang.annotation.Annotation.
 
       } else if (tree.is(Tree.Kind.CLASS)) {
-
+        //JLS8 8.1.4:  the direct superclass of the class type C<F1,...,Fn> is the type given in the extends clause of the declaration of C if an extends clause is present, or Object otherwise.
       }
 
     }
