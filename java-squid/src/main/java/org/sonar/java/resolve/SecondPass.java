@@ -96,7 +96,9 @@ public class SecondPass implements Symbol.Completer {
         //JLS8 9.6 : The direct superinterface of every annotation type is java.lang.annotation.Annotation.
 
       } else if (tree.is(Tree.Kind.CLASS)) {
-        //JLS8 8.1.4:  the direct superclass of the class type C<F1,...,Fn> is the type given in the extends clause of the declaration of C if an extends clause is present, or Object otherwise.
+        //JLS8 8.1.4:  the direct superclass of the class type C<F1,...,Fn> is
+        // the type given in the extends clause of the declaration of C
+        // if an extends clause is present, or Object otherwise.
       }
 
     }

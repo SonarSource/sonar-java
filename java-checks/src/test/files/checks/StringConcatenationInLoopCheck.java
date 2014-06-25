@@ -17,7 +17,8 @@ class A {
       s = i + " : "; //Non-Compliant
       inner.s1 = i + " : "; //Non-Compliant
       s = ((i + " : ")); //Non-Compliant
-      i++;
+      inner = new Inner();
+      i = i + 1;
     }
     s = "a" + "b";
 
