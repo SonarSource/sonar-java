@@ -129,4 +129,18 @@ public class SymbolTest {
     assertThat(variableSymbol.enclosingClass()).isSameAs(typeSymbol);
   }
 
+  @Test
+  public void test_helper_methods() throws Exception {
+    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("p", null);
+    Symbol.TypeSymbol outermostClass = new Symbol.TypeSymbol(Flags.INTERFACE, "name", packageSymbol);
+    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.INTERFACE, "t", outermostClass);
+    Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(Flags.STATIC | Flags.ABSTRACT, "name", typeSymbol);
+    Symbol.TypeSymbol enumeration = new Symbol.TypeSymbol(Flags.ENUM, "enumeration", packageSymbol);
+    assertThat(methodSymbol.isEnum()).isFalse();
+    assertThat(methodSymbol.isAbstract()).isTrue();
+    assertThat(methodSymbol.isStatic()).isTrue();
+    assertThat(enumeration.isEnum()).isTrue();
+    assertThat(enumeration.isAbstract()).isFalse();
+    assertThat(enumeration.isStatic()).isFalse();
+  }
 }
