@@ -47,6 +47,10 @@ public interface SwitchStatementTree extends StatementTree {
 
   SyntaxToken closeParenToken();
 
+  SyntaxToken openBraceToken();
+
   List<CaseGroupTree> cases();
+
+  SyntaxToken closeBraceToken();
 
 }

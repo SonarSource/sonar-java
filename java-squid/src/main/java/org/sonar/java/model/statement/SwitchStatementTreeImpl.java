@@ -70,8 +70,18 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   }
 
   @Override
+  public SyntaxToken openBraceToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LWING).getToken());
+  }
+
+  @Override
   public List<CaseGroupTree> cases() {
     return cases;
+  }
+
+  @Override
+  public SyntaxToken closeBraceToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RWING).getToken());
   }
 
   @Override
