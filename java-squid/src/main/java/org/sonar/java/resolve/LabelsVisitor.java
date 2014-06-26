@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 public class LabelsVisitor extends BaseTreeVisitor {
@@ -58,12 +59,13 @@ public class LabelsVisitor extends BaseTreeVisitor {
     super.visitContinueStatement(tree);
   }
 
-  private void associateLabel(IdentifierTree label) {
-    if (label != null) {
-      LabeledStatementTree labelTree = labelTrees.get(label.name());
-      if (labelTree != null) {
-        semanticModel.associateReference(label, semanticModel.getSymbol(labelTree));
-      }
+  private void associateLabel(@Nullable IdentifierTree label) {
+    if (label == null) {
+      return;
+    }
+    LabeledStatementTree labelTree = labelTrees.get(label.name());
+    if (labelTree != null) {
+      semanticModel.associateReference(label, semanticModel.getSymbol(labelTree));
     }
   }
 }
