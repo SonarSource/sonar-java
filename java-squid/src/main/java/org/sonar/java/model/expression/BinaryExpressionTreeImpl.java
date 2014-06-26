@@ -31,6 +31,9 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
   private final Kind kind;
   private final ExpressionTree rightOperand;
 
+  /**
+   * @param astNode node associated with operator
+   */
   public BinaryExpressionTreeImpl(AstNode astNode, ExpressionTree leftOperand, Kind kind, ExpressionTree rightOperand) {
     super(astNode);
     this.leftOperand = Preconditions.checkNotNull(leftOperand);

@@ -30,6 +30,9 @@ public class InternalPostfixUnaryExpression extends AbstractTypedTree implements
   private final Kind kind;
   private final ExpressionTree expression;
 
+  /**
+   * @param astNode node associated with operator
+   */
   public InternalPostfixUnaryExpression(AstNode astNode, Kind kind, ExpressionTree expression) {
     super(astNode);
     this.kind = Preconditions.checkNotNull(kind);

@@ -1300,7 +1300,7 @@ public class JavaTreeMaker {
       }
       Tree.Kind kind = kindMaps.getPrefixOperator((JavaPunctuator) operatorNode.getType());
       return new InternalPrefixUnaryExpression(
-          astNode,
+          operatorNode,
           kind,
           expression(astNode.getChild(1)));
     } else {
@@ -1312,7 +1312,7 @@ public class JavaTreeMaker {
       for (AstNode postfixOpNode : astNode.getChildren(JavaGrammar.POST_FIX_OP)) {
         JavaPunctuator punctuator = (JavaPunctuator) postfixOpNode.getFirstChild().getType();
         Tree.Kind kind = kindMaps.getPostfixOperator(punctuator);
-        result = new InternalPostfixUnaryExpression(astNode, kind, result);
+        result = new InternalPostfixUnaryExpression(postfixOpNode, kind, result);
       }
       return result;
     }
@@ -1340,10 +1340,10 @@ public class JavaTreeMaker {
 
     ExpressionTree expression = expression(astNode.getLastChild());
     for (int i = astNode.getNumberOfChildren() - 3; i >= 0; i -= 2) {
-      JavaPunctuator punctuator = (JavaPunctuator) astNode.getChild(i + 1).getType();
-      Tree.Kind kind = kindMaps.getBinaryOperator(punctuator);
+      AstNode operatorNode = astNode.getChild(i + 1);
+      Tree.Kind kind = kindMaps.getBinaryOperator((JavaPunctuator) operatorNode.getType());
       expression = new BinaryExpressionTreeImpl(
-          astNode,
+          operatorNode,
           expression(astNode.getChild(i)),
           kind,
           expression
