@@ -41,6 +41,8 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private final Tree superClass;
   private final List<Tree> superInterfaces;
   private final List<Tree> members;
+
+  // FIXME(Godin): never should be null, i.e. should have default value
   @Nullable
   private Symbol.TypeSymbol symbol;
 

@@ -1092,6 +1092,7 @@ public class JavaTreeMaker {
       bodyTree = expression(body.getFirstChild());
     }
     List<VariableTree> params = Lists.newArrayList();
+    // FIXME(Godin): params always empty
     return new LambdaExpressionTreeImpl(astNode, params, bodyTree);
   }
 

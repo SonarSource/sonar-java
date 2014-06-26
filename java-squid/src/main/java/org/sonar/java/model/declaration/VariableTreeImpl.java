@@ -38,6 +38,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   private final IdentifierTree simpleName;
   @Nullable
   private final ExpressionTree initializer;
+
+  // FIXME(Godin): never should be null, i.e. should have default value
   private Symbol.VariableSymbol symbol;
 
   public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {

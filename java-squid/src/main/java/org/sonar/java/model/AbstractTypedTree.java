@@ -23,6 +23,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.resolve.Type;
 
 public abstract class AbstractTypedTree extends JavaTree {
+  // FIXME(Godin): never should be null, i.e. better to assign default value
   private Type type;
 
   public AbstractTypedTree(AstNode astNode) {
