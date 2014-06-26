@@ -31,6 +31,9 @@ public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements A
   private final Kind kind;
   private final ExpressionTree expression;
 
+  /**
+   * @param astNode node associated with operator
+   */
   public AssignmentExpressionTreeImpl(AstNode astNode, ExpressionTree variable, Kind kind, ExpressionTree expression) {
     super(astNode);
     this.variable = Preconditions.checkNotNull(variable);

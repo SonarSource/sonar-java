@@ -238,8 +238,9 @@ public class JavaTreeMaker {
           List<AstNode> values = elementValuePairs.getChildren(JavaGrammar.ELEMENT_VALUE_PAIR);
           for (AstNode value : values) {
             AstNode identifier = value.getFirstChild(JavaTokenType.IDENTIFIER);
+            AstNode operator = value.getFirstChild(JavaPunctuator.EQU);
             arguments.add(new AssignmentExpressionTreeImpl(
-                value,
+                operator,
                 identifier(identifier),
                 kindMaps.getAssignmentOperator(JavaPunctuator.EQU),
                 elementValue(value.getFirstChild(JavaGrammar.ELEMENT_VALUE))
@@ -1374,10 +1375,10 @@ public class JavaTreeMaker {
   private ExpressionTree assignmentExpression(AstNode astNode) {
     ExpressionTree expression = expression(astNode.getLastChild());
     for (int i = astNode.getNumberOfChildren() - 3; i >= 0; i -= 2) {
-      JavaPunctuator punctuator = (JavaPunctuator) astNode.getChild(i + 1).getFirstChild().getType();
-      Tree.Kind kind = kindMaps.getAssignmentOperator(punctuator);
+      AstNode operator = astNode.getChild(i + 1).getFirstChild();
+      Tree.Kind kind = kindMaps.getAssignmentOperator((JavaPunctuator) operator.getType());
       expression = new AssignmentExpressionTreeImpl(
-          astNode,
+          operator,
           expression(astNode.getChild(i)),
           kind,
           expression
