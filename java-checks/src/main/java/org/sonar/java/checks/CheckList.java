@@ -183,7 +183,8 @@ public final class CheckList {
       FieldMatchMethodNameCheck.class,
       MagicNumberCheck.class,
       StringConcatenationInLoopCheck.class,
-      CompareObjectWithEqualsCheck.class
+      CompareObjectWithEqualsCheck.class,
+      ArrayEqualsCheck.class
     );
   }
 
