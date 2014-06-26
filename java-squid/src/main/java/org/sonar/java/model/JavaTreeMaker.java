@@ -1291,13 +1291,13 @@ public class JavaTreeMaker {
           expression(astNode.getFirstChild(JavaPunctuator.RPAR).getNextSibling()));
     } else if (astNode.hasDirectChildren(JavaGrammar.PREFIX_OP, JavaPunctuator.TILDA, JavaPunctuator.BANG)) {
       // 15.15. Unary Operators
-      JavaPunctuator punctuator;
-      if(astNode.hasDirectChildren(JavaPunctuator.TILDA, JavaPunctuator.BANG)){
-        punctuator = (JavaPunctuator) astNode.getFirstChild(JavaPunctuator.TILDA, JavaPunctuator.BANG).getType();
-      }else{
-        punctuator = (JavaPunctuator) astNode.getFirstChild(JavaGrammar.PREFIX_OP, JavaPunctuator.TILDA, JavaPunctuator.BANG).getFirstChild().getType();
+      AstNode operatorNode;
+      if (astNode.hasDirectChildren(JavaPunctuator.TILDA, JavaPunctuator.BANG)) {
+        operatorNode = astNode.getFirstChild(JavaPunctuator.TILDA, JavaPunctuator.BANG);
+      } else {
+        operatorNode = astNode.getFirstChild(JavaGrammar.PREFIX_OP).getFirstChild();
       }
-      Tree.Kind kind = kindMaps.getPrefixOperator(punctuator);
+      Tree.Kind kind = kindMaps.getPrefixOperator((JavaPunctuator) operatorNode.getType());
       return new UnaryExpressionTreeImpl(
           astNode,
           kind,
