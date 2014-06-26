@@ -36,6 +36,8 @@ import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InstanceOfTreeImpl;
+import org.sonar.java.model.expression.InternalPostfixUnaryExpression;
+import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
@@ -44,7 +46,6 @@ import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
-import org.sonar.java.model.expression.UnaryExpressionTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
@@ -1298,7 +1299,7 @@ public class JavaTreeMaker {
         operatorNode = astNode.getFirstChild(JavaGrammar.PREFIX_OP).getFirstChild();
       }
       Tree.Kind kind = kindMaps.getPrefixOperator((JavaPunctuator) operatorNode.getType());
-      return new UnaryExpressionTreeImpl(
+      return new InternalPrefixUnaryExpression(
           astNode,
           kind,
           expression(astNode.getChild(1)));
@@ -1311,7 +1312,7 @@ public class JavaTreeMaker {
       for (AstNode postfixOpNode : astNode.getChildren(JavaGrammar.POST_FIX_OP)) {
         JavaPunctuator punctuator = (JavaPunctuator) postfixOpNode.getFirstChild().getType();
         Tree.Kind kind = kindMaps.getPostfixOperator(punctuator);
-        result = new UnaryExpressionTreeImpl(astNode, kind, result);
+        result = new InternalPostfixUnaryExpression(astNode, kind, result);
       }
       return result;
     }

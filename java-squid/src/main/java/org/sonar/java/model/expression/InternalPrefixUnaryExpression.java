@@ -26,11 +26,11 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-public class UnaryExpressionTreeImpl extends AbstractTypedTree implements UnaryExpressionTree {
+public class InternalPrefixUnaryExpression extends AbstractTypedTree implements UnaryExpressionTree {
   private final Kind kind;
   private final ExpressionTree expression;
 
-  public UnaryExpressionTreeImpl(AstNode astNode, Kind kind, ExpressionTree expression) {
+  public InternalPrefixUnaryExpression(AstNode astNode, Kind kind, ExpressionTree expression) {
     super(astNode);
     this.kind = Preconditions.checkNotNull(kind);
     this.expression = Preconditions.checkNotNull(expression);
@@ -50,4 +50,5 @@ public class UnaryExpressionTreeImpl extends AbstractTypedTree implements UnaryE
   public void accept(TreeVisitor visitor) {
     visitor.visitUnaryExpression(this);
   }
+
 }
