@@ -40,6 +40,7 @@ public class LambdaSingleExpressionCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(4).withMessage("Remove useless curly braces around statement and then remove useless return keyword")
       .next().atLine(5).withMessage("Remove useless curly braces around statement")
+      .next().atLine(26).withMessage("Remove useless curly braces around statement")
       .noMore();
   }
 
