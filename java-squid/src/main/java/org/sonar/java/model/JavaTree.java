@@ -48,7 +48,7 @@ import java.util.List;
 
 public abstract class JavaTree implements Tree {
 
-  private final AstNode astNode;
+  protected final AstNode astNode;
 
   public JavaTree(AstNode astNode) {
     this.astNode = astNode;

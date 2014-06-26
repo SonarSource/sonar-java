@@ -178,6 +178,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
     super.visitBinaryExpression(tree);
     Resolve.Env env = semanticModel.getEnv(tree);
     Type left = getType(tree.leftOperand());
+    // FIXME(Godin): get rid of AstNode:
     AstNode astNode = ((JavaTree) tree).getAstNode();
     AstNode opNode = astNode.getFirstChild().getNextSibling();
     Type right = getType(tree.rightOperand());

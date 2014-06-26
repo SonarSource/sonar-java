@@ -60,4 +60,10 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
   public void accept(TreeVisitor visitor) {
     visitor.visitBinaryExpression(this);
   }
+
+  @Override
+  public AstNode getAstNode() {
+    // TODO(Godin): provides behavioral compatibility, because this method used by AnonymousClassesTooBigCheck, but should not
+    return astNode.getParent();
+  }
 }
