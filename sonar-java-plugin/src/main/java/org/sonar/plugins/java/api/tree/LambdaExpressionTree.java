@@ -24,13 +24,14 @@ import com.google.common.annotations.Beta;
 import java.util.List;
 
 /**
- * lambda expression.
+ * Lambda expression.
  *
  * For example:
  * <pre>{@code
- *   ()->{}
- *   (List<String> ls)->ls.size()
- *   (x,y)-> { return x + y; }
+ *   () -> { }
+ *   x -> x + 1
+ *   (x, y) -> { return x + y; }
+ *   (List<String> ls) -> ls.size()
  * }</pre>
  *
  * @since Java 1.8
@@ -38,7 +39,8 @@ import java.util.List;
 @Beta
 public interface LambdaExpressionTree extends ExpressionTree {
 
-
   List<VariableTree> parameters();
+
   Tree body();
+
 }

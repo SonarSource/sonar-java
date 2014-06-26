@@ -29,8 +29,8 @@ import java.util.List;
  * JLS 15.12
  *
  * <pre>
- *   {@link #methodSelect()} ()} ( {@link #arguments()} )
- *   this . {@link #typeArguments} {@link #methodSelect()} ()} ( {@link #arguments} )
+ *   {@link #methodSelect()} ( {@link #arguments()} )
+ *   this . {@link #typeArguments} {@link #methodSelect()} ( {@link #arguments} )
  * </pre>
  *
  * @since Java 1.3
