@@ -30,6 +30,12 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.declaration.AnnotationTreeImpl;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.EnumConstantTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
@@ -207,7 +213,7 @@ public class JavaTreeMaker {
 
   private ModifiersTree modifiers(List<AstNode> modifierNodes) {
     if (modifierNodes.isEmpty()) {
-      return JavaTree.ModifiersTreeImpl.EMPTY;
+      return ModifiersTreeImpl.EMPTY;
     }
 
     ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
@@ -222,7 +228,7 @@ public class JavaTreeMaker {
         modifiers.add(kindMaps.getModifier(keyword));
       }
     }
-    return new JavaTree.ModifiersTreeImpl(modifierNodes.get(0), modifiers.build(), annotations.build());
+    return new ModifiersTreeImpl(modifierNodes.get(0), modifiers.build(), annotations.build());
   }
 
   private AnnotationTree annotation(AstNode astNode) {
@@ -249,7 +255,7 @@ public class JavaTreeMaker {
         }
       }
     }
-    return new JavaTree.AnnotationTreeImpl(astNode, annotationType, arguments.build());
+    return new AnnotationTreeImpl(astNode, annotationType, arguments.build());
   }
 
   private ExpressionTree elementValue(AstNode astNode) {
@@ -274,7 +280,7 @@ public class JavaTreeMaker {
 
   private VariableTree variableDeclarator(ModifiersTree modifiers, ExpressionTree type, AstNode astNode) {
     checkType(astNode, JavaGrammar.VARIABLE_DECLARATOR);
-    return new JavaTree.VariableTreeImpl(
+    return new VariableTreeImpl(
         astNode,
         modifiers,
         applyDim(type, astNode.getChildren(JavaGrammar.DIM).size()),
@@ -375,7 +381,7 @@ public class JavaTreeMaker {
     Tree superClass = extendsNode != null ? classType(extendsNode.getNextSibling()) : null;
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
     List<Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.CLASS,
+    return new ClassTreeImpl(astNode, Tree.Kind.CLASS,
         modifiers,
         simpleName,
         superClass,
@@ -492,7 +498,7 @@ public class JavaTreeMaker {
       body = block(astNode.getFirstChild(JavaGrammar.METHOD_BODY).getFirstChild(JavaGrammar.BLOCK));
     }
     AstNode throwsClauseNode = astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER_LIST);
-    return new JavaTree.MethodTreeImpl(
+    return new MethodTreeImpl(
         astNode,
         modifiers,
         returnType,
@@ -513,9 +519,9 @@ public class JavaTreeMaker {
         referenceTypeNode = referenceTypeNode.getPreviousAstNode();
       }
       Tree type = typeNode.is(JavaPunctuator.ELLIPSIS) ? new JavaTree.ArrayTypeTreeImpl(typeNode, referenceType(referenceTypeNode)) : referenceType(typeNode);
-      result.add(new JavaTree.VariableTreeImpl(
+      result.add(new VariableTreeImpl(
           variableDeclaratorIdNode,
-          JavaTree.ModifiersTreeImpl.EMPTY,
+          ModifiersTreeImpl.EMPTY,
           type,
           identifier(variableDeclaratorIdNode.getFirstChild(JavaTokenType.IDENTIFIER)),
           null
@@ -538,9 +544,9 @@ public class JavaTreeMaker {
         AstNode argumentsNode = enumConstantNode.getFirstChild(JavaGrammar.ARGUMENTS);
         AstNode classBodyNode = enumConstantNode.getFirstChild(JavaGrammar.CLASS_BODY);
         IdentifierTree enumIdentifier = identifier(enumConstantNode.getFirstChild(JavaTokenType.IDENTIFIER));
-        members.add(new JavaTree.EnumConstantTreeImpl(
+        members.add(new EnumConstantTreeImpl(
             enumConstantNode,
-            JavaTree.ModifiersTreeImpl.EMPTY,
+            ModifiersTreeImpl.EMPTY,
             enumType,
             enumIdentifier,
             new NewClassTreeImpl(
@@ -548,10 +554,10 @@ public class JavaTreeMaker {
             /* enclosing expression: */null,
                 enumIdentifier,
                 argumentsNode != null ? arguments(argumentsNode) : ImmutableList.<ExpressionTree>of(),
-                classBodyNode == null ? null : new JavaTree.ClassTreeImpl(
+                classBodyNode == null ? null : new ClassTreeImpl(
                     classBodyNode,
                     Tree.Kind.CLASS,
-                    JavaTree.ModifiersTreeImpl.EMPTY,
+                    ModifiersTreeImpl.EMPTY,
                     classBody(classBodyNode)
                 )
             )
@@ -564,7 +570,7 @@ public class JavaTreeMaker {
     }
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
     List<Tree> superInterfaces = implementsNode != null ? classTypeList(implementsNode.getNextSibling()) : ImmutableList.<Tree>of();
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType, /* super class: */null, superInterfaces, members.build());
+    return new ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType, /* super class: */null, superInterfaces, members.build());
   }
 
   /*
@@ -587,7 +593,7 @@ public class JavaTreeMaker {
     }
     AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
     List<Tree> superInterfaces = extendsNode != null ? classTypeList(extendsNode.getNextSibling()) : ImmutableList.<Tree>of();
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.INTERFACE, modifiers, simpleName, null, superInterfaces, members.build());
+    return new ClassTreeImpl(astNode, Tree.Kind.INTERFACE, modifiers, simpleName, null, superInterfaces, members.build());
   }
 
   /**
@@ -652,7 +658,7 @@ public class JavaTreeMaker {
     for (AstNode constantDeclaratorRestNode : astNode.getDescendants(JavaGrammar.CONSTANT_DECLARATOR_REST)) {
       AstNode identifierNode = constantDeclaratorRestNode.getPreviousAstNode();
       Preconditions.checkState(identifierNode.is(JavaTokenType.IDENTIFIER));
-      members.add(new JavaTree.VariableTreeImpl(
+      members.add(new VariableTreeImpl(
           constantDeclaratorRestNode,
           modifiers,
           applyDim(type, constantDeclaratorRestNode.getChildren(JavaGrammar.DIM).size()),
@@ -675,7 +681,7 @@ public class JavaTreeMaker {
         appendAnnotationTypeElementDeclaration(members, annotationTypeElementRestNode);
       }
     }
-    return new JavaTree.ClassTreeImpl(astNode, Tree.Kind.ANNOTATION_TYPE,
+    return new ClassTreeImpl(astNode, Tree.Kind.ANNOTATION_TYPE,
         modifiers,
         simpleName,
       /* super class: */null,
@@ -695,16 +701,16 @@ public class JavaTreeMaker {
         JavaGrammar.ANNOTATION_TYPE_DECLARATION
     );
     if (declarationNode != null) {
-      members.add(typeDeclaration(JavaTree.ModifiersTreeImpl.EMPTY, declarationNode));
+      members.add(typeDeclaration(ModifiersTreeImpl.EMPTY, declarationNode));
       return;
     }
     AstNode typeNode = astNode.getFirstChild(JavaGrammar.TYPE);
     AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
     AstNode annotationMethodRestNode = astNode.getFirstChild(JavaGrammar.ANNOTATION_METHOD_OR_CONSTANT_REST).getFirstChild(JavaGrammar.ANNOTATION_METHOD_REST);
     if (annotationMethodRestNode != null) {
-      members.add(new JavaTree.MethodTreeImpl(
+      members.add(new MethodTreeImpl(
           annotationMethodRestNode,
-        /* modifiers */JavaTree.ModifiersTreeImpl.EMPTY,
+        /* modifiers */ModifiersTreeImpl.EMPTY,
         /* return type */referenceType(typeNode),
         /* name */identifier(identifierNode),
         /* parameters */ImmutableList.<VariableTree>of(),
@@ -714,7 +720,7 @@ public class JavaTreeMaker {
         /* default value */null
       ));
     } else {
-      appendConstantDeclarations(JavaTree.ModifiersTreeImpl.EMPTY, members, astNode);
+      appendConstantDeclarations(ModifiersTreeImpl.EMPTY, members, astNode);
     }
   }
 
@@ -759,7 +765,7 @@ public class JavaTreeMaker {
 
   private ModifiersTree variableModifiers(@Nullable AstNode astNode) {
     if (astNode == null) {
-      return JavaTree.ModifiersTreeImpl.EMPTY;
+      return ModifiersTreeImpl.EMPTY;
     }
 
     Preconditions.checkArgument(astNode.is(JavaGrammar.VARIABLE_MODIFIERS), "Unexpected AstNodeType: %s", astNode.getType().toString());
@@ -774,7 +780,7 @@ public class JavaTreeMaker {
         modifiers.add(kindMaps.getModifier(keyword));
       }
     }
-    return new JavaTree.ModifiersTreeImpl(astNode, modifiers.build(), annotations.build());
+    return new ModifiersTreeImpl(astNode, modifiers.build(), annotations.build());
   }
 
   @VisibleForTesting
@@ -936,7 +942,7 @@ public class JavaTreeMaker {
       } else if (forInitNode.hasDirectChildren(JavaGrammar.VARIABLE_DECLARATORS)) {
         // TODO modifiers
         forInit = variableDeclarators(
-            JavaTree.ModifiersTreeImpl.EMPTY,
+            ModifiersTreeImpl.EMPTY,
             referenceType(forInitNode.getFirstChild(JavaGrammar.TYPE)),
             forInitNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS)
         );
@@ -952,9 +958,9 @@ public class JavaTreeMaker {
     } else {
       return new ForEachStatementImpl(
           astNode,
-          new JavaTree.VariableTreeImpl(
+          new VariableTreeImpl(
               formalParameterNode,
-              JavaTree.ModifiersTreeImpl.EMPTY,
+              ModifiersTreeImpl.EMPTY,
               // TODO dim
               referenceType(formalParameterNode.getFirstChild(JavaGrammar.TYPE)),
               identifier(formalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER)),
@@ -986,10 +992,10 @@ public class JavaTreeMaker {
       AstNode catchFormalParameterNode = catchNode.getFirstChild(JavaGrammar.CATCH_FORMAL_PARAMETER);
       catches.add(new CatchTreeImpl(
           catchNode,
-          new JavaTree.VariableTreeImpl(
+          new VariableTreeImpl(
               catchFormalParameterNode,
               // TODO modifiers:
-              JavaTree.ModifiersTreeImpl.EMPTY,
+              ModifiersTreeImpl.EMPTY,
               catchType(catchFormalParameterNode.getFirstChild(JavaGrammar.CATCH_TYPE)),
               // TODO WTF why VARIABLE_DECLARATOR_ID in grammar?
               identifier(catchFormalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER)),
@@ -1029,10 +1035,10 @@ public class JavaTreeMaker {
     checkType(astNode, JavaGrammar.RESOURCE_SPECIFICATION);
     ImmutableList.Builder<VariableTree> result = ImmutableList.builder();
     for (AstNode resourceNode : astNode.getChildren(JavaGrammar.RESOURCE)) {
-      result.add(new JavaTree.VariableTreeImpl(
+      result.add(new VariableTreeImpl(
           resourceNode,
           // TODO modifiers:
-          JavaTree.ModifiersTreeImpl.EMPTY,
+          ModifiersTreeImpl.EMPTY,
           classType(resourceNode.getFirstChild(JavaGrammar.CLASS_TYPE)),
           identifier(resourceNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER)),
           expression(resourceNode.getFirstChild(JavaGrammar.EXPRESSION))
@@ -1466,10 +1472,10 @@ public class JavaTreeMaker {
     checkType(classCreatorRestNode, JavaGrammar.CLASS_CREATOR_REST);
     ClassTree classBody = null;
     if (classCreatorRestNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
-      classBody = new JavaTree.ClassTreeImpl(
+      classBody = new ClassTreeImpl(
           classCreatorRestNode,
           Tree.Kind.CLASS,
-          JavaTree.ModifiersTreeImpl.EMPTY,
+          ModifiersTreeImpl.EMPTY,
           classBody(classCreatorRestNode.getFirstChild(JavaGrammar.CLASS_BODY))
       );
     }

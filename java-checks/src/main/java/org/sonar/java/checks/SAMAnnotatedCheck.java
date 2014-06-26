@@ -26,7 +26,8 @@ import com.google.common.collect.Lists;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -96,7 +97,7 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
 
   private boolean hasOneAbstractMethod(ClassTree classTree) {
 
-    Symbol.TypeSymbol symbol = ((JavaTree.ClassTreeImpl) classTree).getSymbol();
+    Symbol.TypeSymbol symbol = ((ClassTreeImpl) classTree).getSymbol();
     if (symbol != null) {
       List<Type> types = symbol.getInterfaces();
       for (Type type : types) {
@@ -125,7 +126,7 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
         List<String> args = Lists.newArrayList(arguments);
         if (method.parameters().size() == args.size()) {
           for (VariableTree var : method.parameters()) {
-            args.remove(((JavaTree.VariableTreeImpl) var).getSymbol().type());
+            args.remove(((VariableTreeImpl) var).getSymbol().type());
           }
           if (args.isEmpty()) {
             return false;

@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -160,7 +161,7 @@ public class SecondPass implements Symbol.Completer {
     } else {
       symbol.type = resolveType(env, variableTree.type());
     }
-    ((JavaTree.VariableTreeImpl) variableTree).setSymbol(symbol);
+    ((VariableTreeImpl) variableTree).setSymbol(symbol);
   }
 
   private Type resolveType(Resolve.Env env, Tree tree) {

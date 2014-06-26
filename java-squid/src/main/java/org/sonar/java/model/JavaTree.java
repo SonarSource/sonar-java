@@ -20,27 +20,17 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
-import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
@@ -147,237 +137,6 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class ClassTreeImpl extends JavaTree implements ClassTree {
-    private final Kind kind;
-    private final ModifiersTree modifiers;
-    private final IdentifierTree simpleName;
-    @Nullable
-    private final Tree superClass;
-    private final List<Tree> superInterfaces;
-    private final List<Tree> members;
-    @Nullable
-    private Symbol.TypeSymbol symbol;
-
-    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable IdentifierTree simpleName, @Nullable Tree superClass, List<Tree> superInterfaces,
-                         List<Tree> members) {
-      super(astNode);
-      this.kind = Preconditions.checkNotNull(kind);
-      this.modifiers = Preconditions.checkNotNull(modifiers);
-      this.simpleName = simpleName;
-      this.superClass = superClass;
-      this.superInterfaces = Preconditions.checkNotNull(superInterfaces);
-      this.members = Preconditions.checkNotNull(members);
-    }
-
-    // TODO remove:
-    public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, List<Tree> members) {
-      this(astNode, kind, modifiers, null, null, ImmutableList.<Tree>of(), members);
-    }
-
-    @Override
-    public Kind getKind() {
-      return kind;
-    }
-
-    @Nullable
-    @Override
-    public IdentifierTree simpleName() {
-      return simpleName;
-    }
-
-    @Override
-    public List<Tree> typeParameters() {
-      // TODO implement
-      return ImmutableList.of();
-    }
-
-    @Override
-    public ModifiersTree modifiers() {
-      return modifiers;
-    }
-
-    @Nullable
-    @Override
-    public Tree superClass() {
-      return superClass;
-    }
-
-    @Override
-    public List<Tree> superInterfaces() {
-      return superInterfaces;
-    }
-
-    @Override
-    public List<Tree> members() {
-      return members;
-    }
-
-    @Override
-    public void accept(TreeVisitor visitor) {
-      visitor.visitClass(this);
-    }
-
-    @Nullable
-    public Symbol.TypeSymbol getSymbol() {
-      return symbol;
-    }
-
-    public void setSymbol(Symbol.TypeSymbol symbol) {
-      this.symbol = symbol;
-    }
-  }
-
-  public static class MethodTreeImpl extends JavaTree implements MethodTree {
-    private final ModifiersTree modifiers;
-    @Nullable
-    private final Tree returnType;
-    private final IdentifierTree simpleName;
-    private final List<VariableTree> parameters;
-    @Nullable
-    private final BlockTree block;
-    private final List<ExpressionTree> throwsClauses;
-    private final ExpressionTree defaultValue;
-
-    public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, IdentifierTree simpleName, List<VariableTree> parameters,
-                          @Nullable BlockTree block,
-                          List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
-      super(astNode);
-      this.modifiers = Preconditions.checkNotNull(modifiers);
-      this.returnType = returnType;
-      this.simpleName = Preconditions.checkNotNull(simpleName);
-      this.parameters = Preconditions.checkNotNull(parameters);
-      this.block = block;
-      this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
-      this.defaultValue = defaultValue;
-    }
-
-    @Override
-    public Kind getKind() {
-      return returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD;
-    }
-
-    @Override
-    public ModifiersTree modifiers() {
-      return modifiers;
-    }
-
-    @Override
-    public List<Tree> typeParameters() {
-      // TODO implement
-      return ImmutableList.of();
-    }
-
-    @Nullable
-    @Override
-    public Tree returnType() {
-      return returnType;
-    }
-
-    @Override
-    public IdentifierTree simpleName() {
-      return simpleName;
-    }
-
-    @Override
-    public List<VariableTree> parameters() {
-      return parameters;
-    }
-
-    @Override
-    public List<ExpressionTree> throwsClauses() {
-      return throwsClauses;
-    }
-
-    @Nullable
-    @Override
-    public BlockTree block() {
-      return block;
-    }
-
-    @Nullable
-    @Override
-    public ExpressionTree defaultValue() {
-      return defaultValue;
-    }
-
-    @Override
-    public void accept(TreeVisitor visitor) {
-      visitor.visitMethod(this);
-    }
-  }
-
-  public static class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConstantTree {
-    public EnumConstantTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, ExpressionTree initializer) {
-      super(astNode, modifiers, type, simpleName, Preconditions.checkNotNull(initializer));
-    }
-
-    @Override
-    public Kind getKind() {
-      return Kind.ENUM_CONSTANT;
-    }
-
-    @Override
-    public void accept(TreeVisitor visitor) {
-      visitor.visitEnumConstant(this);
-    }
-  }
-
-  public static class VariableTreeImpl extends JavaTree implements VariableTree {
-    private final ModifiersTree modifiers;
-    private final Tree type;
-    private final IdentifierTree simpleName;
-    @Nullable
-    private final ExpressionTree initializer;
-    private Symbol.VariableSymbol symbol;
-
-    public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
-      super(astNode);
-      this.modifiers = Preconditions.checkNotNull(modifiers);
-      this.type = Preconditions.checkNotNull(type);
-      this.simpleName = Preconditions.checkNotNull(simpleName);
-      this.initializer = initializer;
-    }
-
-    @Override
-    public Kind getKind() {
-      return Kind.VARIABLE;
-    }
-
-    @Override
-    public ModifiersTree modifiers() {
-      return modifiers;
-    }
-
-    @Override
-    public Tree type() {
-      return type;
-    }
-
-    @Override
-    public IdentifierTree simpleName() {
-      return simpleName;
-    }
-
-    @Nullable
-    @Override
-    public ExpressionTree initializer() {
-      return initializer;
-    }
-
-    @Override
-    public void accept(TreeVisitor visitor) {
-      visitor.visitVariable(this);
-    }
-
-    public Symbol.VariableSymbol getSymbol() {
-      return symbol;
-    }
-
-    public void setSymbol(Symbol.VariableSymbol symbol) {
-      this.symbol = symbol;
-    }
-  }
-
   public static class WildcardTreeImpl extends JavaTree implements WildcardTree {
     private final Kind kind;
     @Nullable
@@ -427,40 +186,6 @@ public abstract class JavaTree implements Tree {
     @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitUnionType(this);
-    }
-  }
-
-  public static class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
-    // TODO remove:
-    public static final ModifiersTreeImpl EMPTY = new ModifiersTreeImpl(null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
-
-    private final List<Modifier> modifiers;
-    private final List<AnnotationTree> annotations;
-
-    public ModifiersTreeImpl(AstNode astNode, List<Modifier> modifiers, List<AnnotationTree> annotations) {
-      super(astNode);
-      this.modifiers = Preconditions.checkNotNull(modifiers);
-      this.annotations = Preconditions.checkNotNull(annotations);
-    }
-
-    @Override
-    public Kind getKind() {
-      return Kind.MODIFIERS;
-    }
-
-    @Override
-    public List<Modifier> modifiers() {
-      return modifiers;
-    }
-
-    @Override
-    public List<AnnotationTree> annotations() {
-      return annotations;
-    }
-
-    @Override
-    public void accept(TreeVisitor visitor) {
-      visitor.visitModifier(this);
     }
   }
 
@@ -531,39 +256,6 @@ public abstract class JavaTree implements Tree {
     @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitParameterizedType(this);
-    }
-  }
-
-  public static class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationTree {
-
-    private final List<ExpressionTree> arguments;
-    private final Tree annotationType;
-
-    public AnnotationTreeImpl(AstNode astNode, Tree annotationType, List<ExpressionTree> arguments) {
-      super(astNode);
-      this.annotationType = annotationType;
-      this.arguments = arguments;
-    }
-
-    @Override
-    public Tree annotationType() {
-      return annotationType;
-    }
-
-    @Override
-    public List<ExpressionTree> arguments() {
-      return arguments;
-    }
-
-    @Override
-    public Kind getKind() {
-      return Kind.ANNOTATION;
-    }
-
-    @Override
-    public void accept(TreeVisitor visitor) {
-      visitor.visitAnnotation(this);
-
     }
   }
 

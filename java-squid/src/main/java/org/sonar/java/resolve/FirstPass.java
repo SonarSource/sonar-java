@@ -22,7 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -212,7 +212,7 @@ public class FirstPass extends BaseTreeVisitor {
       flag = computeClassFlags(tree);
     }
     Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
-    ((JavaTree.ClassTreeImpl) tree).setSymbol(symbol);
+    ((ClassTreeImpl) tree).setSymbol(symbol);
     //Only register classes that can be accessible, so classes owned by a method are not registered.
     //TODO : register also based on flags ?
     if (!anonymousClass) {

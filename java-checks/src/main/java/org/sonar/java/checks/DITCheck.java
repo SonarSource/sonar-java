@@ -24,7 +24,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -56,7 +56,7 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitClass(ClassTree tree) {
-    Symbol.TypeSymbol typeSymbol = ((JavaTree.ClassTreeImpl) tree).getSymbol();
+    Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();
     //Start with one as long as we did not solve the problem with default inheritance (java.lang.Object vs java.lang.enum)
     int dit = 1;
     while(typeSymbol.getSuperclass() != null ){

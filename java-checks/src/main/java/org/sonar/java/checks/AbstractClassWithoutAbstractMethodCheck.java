@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -52,7 +52,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.is(Tree.Kind.CLASS)) {
-      Symbol.TypeSymbol typeSymbol = ((JavaTree.ClassTreeImpl) tree).getSymbol();
+      Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();
       if (typeSymbol != null && typeSymbol.isAbstract()) {
         Collection<Symbol> symbols = typeSymbol.members().scopeSymbols();
         int abstractMethod = countAbstractMethods(symbols);

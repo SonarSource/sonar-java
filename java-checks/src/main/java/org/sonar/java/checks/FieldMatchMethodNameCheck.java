@@ -26,7 +26,7 @@ import com.google.common.collect.Sets;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -62,7 +62,7 @@ public class FieldMatchMethodNameCheck extends BaseTreeVisitor implements JavaFi
 
   @Override
   public void visitClass(ClassTree tree) {
-    Symbol.TypeSymbol classSymbol = ((JavaTree.ClassTreeImpl) tree).getSymbol();
+    Symbol.TypeSymbol classSymbol = ((ClassTreeImpl) tree).getSymbol();
     if (classSymbol != null) {
       Map<String, Symbol> indexSymbol = Maps.newHashMap();
       Multiset<String> fields = HashMultiset.create();
