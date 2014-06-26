@@ -21,9 +21,12 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements ConditionalExpressionTree {
@@ -49,8 +52,18 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
   }
 
   @Override
+  public SyntaxToken questionToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.QUERY).getToken());
+  }
+
+  @Override
   public ExpressionTree trueExpression() {
     return trueExpression;
+  }
+
+  @Override
+  public SyntaxToken colonToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.COLON).getToken());
   }
 
   @Override

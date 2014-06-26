@@ -42,6 +42,8 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface UnaryExpressionTree extends ExpressionTree {
 
+  SyntaxToken operatorToken();
+
   ExpressionTree expression();
 
 }

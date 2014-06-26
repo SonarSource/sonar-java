@@ -21,9 +21,14 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
@@ -43,8 +48,23 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
   }
 
   @Override
+  public SyntaxToken whileKeyword() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.WHILE).getToken());
+  }
+
+  @Override
+  public SyntaxToken openParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
+  }
+
+  @Override
   public ExpressionTree condition() {
     return condition;
+  }
+
+  @Override
+  public SyntaxToken closeParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override

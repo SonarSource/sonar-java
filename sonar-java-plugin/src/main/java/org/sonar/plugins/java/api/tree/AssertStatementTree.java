@@ -38,9 +38,16 @@ import javax.annotation.Nullable;
 @Beta
 public interface AssertStatementTree extends StatementTree {
 
+  SyntaxToken assertKeyword();
+
   ExpressionTree condition();
 
   @Nullable
+  SyntaxToken colonToken();
+
+  @Nullable
   ExpressionTree detail();
+
+  SyntaxToken semicolonToken();
 
 }

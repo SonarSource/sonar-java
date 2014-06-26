@@ -35,9 +35,17 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface ForEachStatement extends StatementTree {
 
+  SyntaxToken forKeyword();
+
+  SyntaxToken openParenToken();
+
   VariableTree variable();
 
+  SyntaxToken colonToken();
+
   ExpressionTree expression();
+
+  SyntaxToken closeParenToken();
 
   StatementTree statement();
 

@@ -38,7 +38,11 @@ import javax.annotation.Nullable;
 @Beta
 public interface CaseLabelTree extends Tree {
 
+  SyntaxToken caseOrDefaultKeyword();
+
   @Nullable
   ExpressionTree expression();
+
+  SyntaxToken colonToken();
 
 }

@@ -21,9 +21,14 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -52,8 +57,43 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   }
 
   @Override
+  public SyntaxToken tryKeyword() {
+    if (!resources.isEmpty()) {
+      return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.TRY_WITH_RESOURCES_STATEMENT).getFirstChild(JavaKeyword.TRY).getToken());
+    } else {
+      return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.TRY).getToken());
+    }
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken openParenToken() {
+    if (!resources.isEmpty()) {
+      return new InternalSyntaxToken(astNode
+        .getFirstChild(JavaGrammar.RESOURCE_SPECIFICATION)
+        .getFirstChild(JavaPunctuator.LPAR)
+        .getToken());
+    } else {
+      return null;
+    }
+  }
+
+  @Override
   public List<VariableTree> resources() {
     return resources;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken closeParenToken() {
+    if (!resources.isEmpty()) {
+      return new InternalSyntaxToken(astNode
+        .getFirstChild(JavaGrammar.RESOURCE_SPECIFICATION)
+        .getFirstChild(JavaPunctuator.RPAR)
+        .getToken());
+    } else {
+      return null;
+    }
   }
 
   @Override
@@ -64,6 +104,13 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   @Override
   public List<CatchTree> catches() {
     return catches;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken finallyKeyword() {
+    AstNode node = astNode.getFirstChild(JavaGrammar.FINALLY_);
+    return node == null ? null : new InternalSyntaxToken(node.getFirstChild(JavaKeyword.FINALLY).getToken());
   }
 
   @Nullable

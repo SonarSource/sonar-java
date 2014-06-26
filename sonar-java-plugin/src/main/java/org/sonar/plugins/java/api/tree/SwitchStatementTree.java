@@ -39,7 +39,13 @@ import java.util.List;
 @Beta
 public interface SwitchStatementTree extends StatementTree {
 
+  SyntaxToken switchKeyword();
+
+  SyntaxToken openParenToken();
+
   ExpressionTree expression();
+
+  SyntaxToken closeParenToken();
 
   List<CaseGroupTree> cases();
 

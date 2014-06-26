@@ -35,7 +35,11 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface TypeCastTree extends ExpressionTree {
 
+  SyntaxToken openParenToken();
+
   Tree type();
+
+  SyntaxToken closeParenToken();
 
   ExpressionTree expression();
 

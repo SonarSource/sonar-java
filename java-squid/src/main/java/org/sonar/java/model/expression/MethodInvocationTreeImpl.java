@@ -25,6 +25,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
@@ -57,8 +58,18 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   }
 
   @Override
+  public SyntaxToken openParenToken() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public List<ExpressionTree> arguments() {
     return arguments;
+  }
+
+  @Override
+  public SyntaxToken closeParenToken() {
+    throw new UnsupportedOperationException();
   }
 
   @Override

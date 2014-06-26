@@ -39,14 +39,25 @@ import java.util.List;
 @Beta
 public interface TryStatementTree extends StatementTree {
 
+  SyntaxToken tryKeyword();
+
+  @Nullable
+  SyntaxToken openParenToken();
+
   /**
    * @since Java 1.7
    */
   List<VariableTree> resources();
 
+  @Nullable
+  SyntaxToken closeParenToken();
+
   BlockTree block();
 
   List<CatchTree> catches();
+
+  @Nullable
+  SyntaxToken finallyKeyword();
 
   @Nullable
   BlockTree finallyBlock();

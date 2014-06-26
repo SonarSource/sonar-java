@@ -35,7 +35,13 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface WhileStatementTree extends StatementTree {
 
+  SyntaxToken whileKeyword();
+
+  SyntaxToken openParenToken();
+
   ExpressionTree condition();
+
+  SyntaxToken closeParenToken();
 
   StatementTree statement();
 

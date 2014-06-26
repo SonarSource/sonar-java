@@ -38,9 +38,18 @@ import javax.annotation.Nullable;
 @Beta
 public interface IfStatementTree extends StatementTree {
 
+  SyntaxToken ifKeyword();
+
+  SyntaxToken openParenToken();
+
   ExpressionTree condition();
 
+  SyntaxToken closeParenToken();
+
   StatementTree thenStatement();
+
+  @Nullable
+  SyntaxToken elseKeyword();
 
   @Nullable
   StatementTree elseStatement();

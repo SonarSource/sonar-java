@@ -21,8 +21,11 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
@@ -43,8 +46,18 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
   }
 
   @Override
+  public SyntaxToken openParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LPAR).getToken());
+  }
+
+  @Override
   public Tree type() {
     return type;
+  }
+
+  @Override
+  public SyntaxToken closeParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override

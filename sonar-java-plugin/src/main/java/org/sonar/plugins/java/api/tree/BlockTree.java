@@ -45,6 +45,10 @@ import java.util.List;
 @Beta
 public interface BlockTree extends StatementTree {
 
+  SyntaxToken openBraceToken();
+
   List<StatementTree> body();
+
+  SyntaxToken closeBraceToken();
 
 }

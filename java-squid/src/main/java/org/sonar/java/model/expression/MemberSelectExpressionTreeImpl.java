@@ -25,6 +25,7 @@ import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements MemberSelectExpressionTree {
@@ -45,6 +46,11 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   @Override
   public ExpressionTree expression() {
     return expression;
+  }
+
+  @Override
+  public SyntaxToken operatorToken() {
+    throw new UnsupportedOperationException();
   }
 
   @Override

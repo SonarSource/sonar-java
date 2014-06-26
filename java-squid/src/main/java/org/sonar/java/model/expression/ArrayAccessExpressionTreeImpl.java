@@ -24,6 +24,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements ArrayAccessExpressionTree {
@@ -47,8 +48,18 @@ public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements 
   }
 
   @Override
+  public SyntaxToken openBracketToken() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public ExpressionTree index() {
     return index;
+  }
+
+  @Override
+  public SyntaxToken closeBracketToken() {
+    throw new UnsupportedOperationException();
   }
 
   @Override

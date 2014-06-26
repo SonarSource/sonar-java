@@ -37,6 +37,8 @@ public interface LabeledStatementTree extends StatementTree {
 
   IdentifierTree label();
 
+  SyntaxToken colonToken();
+
   StatementTree statement();
 
 }

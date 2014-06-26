@@ -22,8 +22,10 @@ package org.sonar.java.model.expression;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements AssignmentExpressionTree {
@@ -49,6 +51,11 @@ public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements A
   @Override
   public ExpressionTree variable() {
     return variable;
+  }
+
+  @Override
+  public SyntaxToken operatorToken() {
+    return new InternalSyntaxToken(astNode.getToken());
   }
 
   @Override

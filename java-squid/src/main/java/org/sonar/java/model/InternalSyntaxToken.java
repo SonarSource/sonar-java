@@ -17,28 +17,33 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.java.model;
 
-import com.google.common.annotations.Beta;
+import com.sonar.sslr.api.Token;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-/**
- * Parenthesized expression.
- *
- * JLS 15.8.5
- *
- * <pre>
- *   ( {@link #expression()} )
- * </pre>
- *
- * @since Java 1.3
- */
-@Beta
-public interface ParenthesizedTree extends ExpressionTree {
+public class InternalSyntaxToken implements SyntaxToken {
 
-  SyntaxToken openParenToken();
+  private final Token token;
 
-  ExpressionTree expression();
+  public InternalSyntaxToken(Token token) {
+    this.token = token;
+  }
 
-  SyntaxToken closeParenToken();
+  @Override
+  public String text() {
+    return token.getValue();
+  }
+
+  @Override
+  public boolean is(Kind kind) {
+    return false;
+  }
+
+  @Override
+  public void accept(TreeVisitor visitor) {
+    throw new UnsupportedOperationException();
+  }
 
 }

@@ -20,9 +20,13 @@
 package org.sonar.java.model.statement;
 
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
@@ -41,10 +45,20 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
     return Kind.RETURN_STATEMENT;
   }
 
+  @Override
+  public SyntaxToken returnKeyword() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.RETURN).getToken());
+  }
+
   @Nullable
   @Override
   public ExpressionTree expression() {
     return expression;
+  }
+
+  @Override
+  public SyntaxToken semicolonToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.SEMI).getToken());
   }
 
   @Override

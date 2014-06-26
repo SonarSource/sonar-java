@@ -22,23 +22,13 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 
 /**
- * Parenthesized expression.
+ * Represents a token in the syntax tree.
  *
- * JLS 15.8.5
- *
- * <pre>
- *   ( {@link #expression()} )
- * </pre>
- *
- * @since Java 1.3
+ * @since plugin 2.4
  */
 @Beta
-public interface ParenthesizedTree extends ExpressionTree {
+public interface SyntaxToken extends Tree {
 
-  SyntaxToken openParenToken();
-
-  ExpressionTree expression();
-
-  SyntaxToken closeParenToken();
+  String text();
 
 }

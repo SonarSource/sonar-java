@@ -21,9 +21,13 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
@@ -45,14 +49,30 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   }
 
   @Override
+  public SyntaxToken assertKeyword() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.ASSERT).getToken());
+  }
+
+  @Override
   public ExpressionTree condition() {
     return condition;
   }
 
   @Nullable
   @Override
+  public SyntaxToken colonToken() {
+    return detail == null ? null : new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.COLON).getToken());
+  }
+
+  @Nullable
+  @Override
   public ExpressionTree detail() {
     return detail;
+  }
+
+  @Override
+  public SyntaxToken semicolonToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.SEMI).getToken());
   }
 
   @Override

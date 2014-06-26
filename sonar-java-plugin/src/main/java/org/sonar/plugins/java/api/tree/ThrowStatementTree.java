@@ -35,6 +35,10 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface ThrowStatementTree extends StatementTree {
 
+  SyntaxToken throwKeyword();
+
   ExpressionTree expression();
+
+  SyntaxToken semicolonToken();
 
 }

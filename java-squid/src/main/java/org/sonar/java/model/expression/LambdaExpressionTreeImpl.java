@@ -22,10 +22,12 @@ package org.sonar.java.model.expression;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class LambdaExpressionTreeImpl extends AbstractTypedTree implements LambdaExpressionTree {
@@ -44,9 +46,21 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
     return Kind.LAMBDA_EXPRESSION;
   }
 
+  @Nullable
+  @Override
+  public SyntaxToken openParenToken() {
+    throw new UnsupportedOperationException();
+  }
+
   @Override
   public List<VariableTree> parameters() {
     return parameters;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken closeParenToken() {
+    throw new UnsupportedOperationException();
   }
 
   @Override

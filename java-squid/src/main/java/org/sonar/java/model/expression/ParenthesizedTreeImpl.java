@@ -21,9 +21,12 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class ParenthesizedTreeImpl extends AbstractTypedTree implements ParenthesizedTree {
@@ -40,8 +43,18 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
   }
 
   @Override
+  public SyntaxToken openParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LPAR).getToken());
+  }
+
+  @Override
   public ExpressionTree expression() {
     return expression;
+  }
+
+  @Override
+  public SyntaxToken closeParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override

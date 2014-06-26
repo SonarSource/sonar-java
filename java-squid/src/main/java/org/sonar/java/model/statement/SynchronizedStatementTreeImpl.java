@@ -21,10 +21,15 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class SynchronizedStatementTreeImpl extends JavaTree implements SynchronizedStatementTree {
@@ -43,8 +48,23 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   }
 
   @Override
+  public SyntaxToken synchronizedKeyword() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.SYNCHRONIZED).getToken());
+  }
+
+  @Override
+  public SyntaxToken openParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
+  }
+
+  @Override
   public ExpressionTree expression() {
     return expression;
+  }
+
+  @Override
+  public SyntaxToken closeParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override

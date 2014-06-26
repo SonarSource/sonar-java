@@ -21,9 +21,13 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionStatementTree {
@@ -42,6 +46,17 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
   @Override
   public ExpressionTree expression() {
     return expression;
+  }
+
+  @Override
+  public SyntaxToken semicolonToken() {
+    if (astNode.is(JavaGrammar.EXPRESSION_STATEMENT)) {
+      return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.SEMI).getToken());
+    } else if (astNode.is(JavaGrammar.STATEMENT_EXPRESSION)) {
+      return new InternalSyntaxToken(astNode.getParent().getFirstChild(JavaPunctuator.SEMI).getToken());
+    } else {
+      throw new IllegalStateException();
+    }
   }
 
   @Override

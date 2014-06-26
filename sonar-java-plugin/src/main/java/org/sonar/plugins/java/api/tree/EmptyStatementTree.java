@@ -34,4 +34,7 @@ import com.google.common.annotations.Beta;
  */
 @Beta
 public interface EmptyStatementTree extends StatementTree {
+
+  SyntaxToken semicolonToken();
+
 }

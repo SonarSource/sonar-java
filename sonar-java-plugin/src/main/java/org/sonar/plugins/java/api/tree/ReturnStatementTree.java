@@ -38,7 +38,11 @@ import javax.annotation.Nullable;
 @Beta
 public interface ReturnStatementTree extends StatementTree {
 
+  SyntaxToken returnKeyword();
+
   @Nullable
   ExpressionTree expression();
+
+  SyntaxToken semicolonToken();
 
 }

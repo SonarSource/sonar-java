@@ -37,4 +37,6 @@ public interface ExpressionStatementTree extends StatementTree {
 
   ExpressionTree expression();
 
+  SyntaxToken semicolonToken();
+
 }

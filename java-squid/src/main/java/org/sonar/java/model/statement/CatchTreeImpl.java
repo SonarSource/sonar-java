@@ -21,9 +21,13 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -43,8 +47,23 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
   }
 
   @Override
+  public SyntaxToken catchKeyword() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.CATCH).getToken());
+  }
+
+  @Override
+  public SyntaxToken openParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LPAR).getToken());
+  }
+
+  @Override
   public VariableTree parameter() {
     return parameter;
+  }
+
+  @Override
+  public SyntaxToken closeParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override

@@ -21,10 +21,14 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
@@ -52,8 +56,23 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   }
 
   @Override
+  public SyntaxToken forKeyword() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.FOR).getToken());
+  }
+
+  @Override
+  public SyntaxToken openParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LPAR).getToken());
+  }
+
+  @Override
   public List<StatementTree> initializer() {
     return initializer;
+  }
+
+  @Override
+  public SyntaxToken firstSemicolonToken() {
+    return new InternalSyntaxToken(astNode.getChildren(JavaPunctuator.SEMI).get(0).getToken());
   }
 
   @Nullable
@@ -63,8 +82,18 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   }
 
   @Override
+  public SyntaxToken secondSemicolonToken() {
+    return new InternalSyntaxToken(astNode.getChildren(JavaPunctuator.SEMI).get(1).getToken());
+  }
+
+  @Override
   public List<StatementTree> update() {
     return update;
+  }
+
+  @Override
+  public SyntaxToken closeParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override

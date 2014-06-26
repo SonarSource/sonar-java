@@ -35,7 +35,13 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface SynchronizedStatementTree extends StatementTree {
 
+  SyntaxToken synchronizedKeyword();
+
+  SyntaxToken openParenToken();
+
   ExpressionTree expression();
+
+  SyntaxToken closeParenToken();
 
   BlockTree block();
 

@@ -21,6 +21,7 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -39,7 +40,13 @@ import java.util.List;
 @Beta
 public interface LambdaExpressionTree extends ExpressionTree {
 
+  @Nullable
+  SyntaxToken openParenToken();
+
   List<VariableTree> parameters();
+
+  @Nullable
+  SyntaxToken closeParenToken();
 
   Tree body();
 

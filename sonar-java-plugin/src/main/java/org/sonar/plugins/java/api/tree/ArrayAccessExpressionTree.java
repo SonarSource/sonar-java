@@ -37,6 +37,10 @@ public interface ArrayAccessExpressionTree extends ExpressionTree {
 
   ExpressionTree expression();
 
+  SyntaxToken openBracketToken();
+
   ExpressionTree index();
+
+  SyntaxToken closeBracketToken();
 
 }

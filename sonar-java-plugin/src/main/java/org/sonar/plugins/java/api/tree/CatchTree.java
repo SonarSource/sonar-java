@@ -35,7 +35,13 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface CatchTree extends Tree {
 
+  SyntaxToken catchKeyword();
+
+  SyntaxToken openParenToken();
+
   VariableTree parameter();
+
+  SyntaxToken closeParenToken();
 
   BlockTree block();
 

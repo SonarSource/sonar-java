@@ -21,9 +21,12 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import java.util.List;
@@ -44,8 +47,18 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
   }
 
   @Override
+  public SyntaxToken openBraceToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LWING).getToken());
+  }
+
+  @Override
   public List<StatementTree> body() {
     return body;
+  }
+
+  @Override
+  public SyntaxToken closeBraceToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RWING).getToken());
   }
 
   @Override

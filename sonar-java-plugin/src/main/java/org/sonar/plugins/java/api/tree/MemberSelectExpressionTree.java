@@ -37,6 +37,8 @@ public interface MemberSelectExpressionTree extends ExpressionTree {
 
   ExpressionTree expression();
 
+  SyntaxToken operatorToken();
+
   IdentifierTree identifier();
 
 }

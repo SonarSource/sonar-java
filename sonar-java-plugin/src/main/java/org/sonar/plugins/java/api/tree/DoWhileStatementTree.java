@@ -35,8 +35,18 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface DoWhileStatementTree extends StatementTree {
 
+  SyntaxToken doKeyword();
+
   StatementTree statement();
 
+  SyntaxToken whileKeyword();
+
+  SyntaxToken openParenToken();
+
   ExpressionTree condition();
+
+  SyntaxToken closeParenToken();
+
+  SyntaxToken semicolonToken();
 
 }

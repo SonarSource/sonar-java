@@ -20,9 +20,14 @@
 package org.sonar.java.model.statement;
 
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
@@ -41,10 +46,20 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
     return Kind.CASE_LABEL;
   }
 
+  @Override
+  public SyntaxToken caseOrDefaultKeyword() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.SWITCH_LABEL).getFirstChild(JavaKeyword.CASE, JavaKeyword.DEFAULT).getToken());
+  }
+
   @Nullable
   @Override
   public ExpressionTree expression() {
     return expression;
+  }
+
+  @Override
+  public SyntaxToken colonToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.SWITCH_LABEL).getFirstChild(JavaPunctuator.COLON).getToken());
   }
 
   @Override

@@ -38,12 +38,22 @@ import java.util.List;
 @Beta
 public interface ForStatementTree extends StatementTree {
 
+  SyntaxToken forKeyword();
+
+  SyntaxToken openParenToken();
+
   List<StatementTree> initializer();
+
+  SyntaxToken firstSemicolonToken();
 
   @Nullable
   ExpressionTree condition();
 
+  SyntaxToken secondSemicolonToken();
+
   List<StatementTree> update();
+
+  SyntaxToken closeParenToken();
 
   StatementTree statement();
 

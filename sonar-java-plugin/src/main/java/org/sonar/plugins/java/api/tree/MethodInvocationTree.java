@@ -45,6 +45,10 @@ public interface MethodInvocationTree extends ExpressionTree {
 
   ExpressionTree methodSelect();
 
+  SyntaxToken openParenToken();
+
   List<ExpressionTree> arguments();
+
+  SyntaxToken closeParenToken();
 
 }

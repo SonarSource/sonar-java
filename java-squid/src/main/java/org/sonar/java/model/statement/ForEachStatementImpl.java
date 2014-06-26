@@ -21,10 +21,14 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -46,13 +50,33 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
   }
 
   @Override
+  public SyntaxToken forKeyword() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.FOR).getToken());
+  }
+
+  @Override
+  public SyntaxToken openParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LPAR).getToken());
+  }
+
+  @Override
   public VariableTree variable() {
     return variable;
   }
 
   @Override
+  public SyntaxToken colonToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.COLON).getToken());
+  }
+
+  @Override
   public ExpressionTree expression() {
     return expression;
+  }
+
+  @Override
+  public SyntaxToken closeParenToken() {
+    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override
