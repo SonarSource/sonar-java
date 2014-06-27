@@ -71,6 +71,11 @@ public class Symbols {
    */
   final Type annotationType;
 
+  /**
+   * {@link java.lang.Enum}
+   */
+  final Type enumType;
+
   public Symbols(BytecodeCompleter bytecodeCompleter) {
     rootPackage = new Symbol.PackageSymbol("", null);
     defaultPackage = new Symbol.PackageSymbol("", rootPackage);
@@ -122,6 +127,7 @@ public class Symbols {
     cloneableType = bytecodeCompleter.loadClass("java.lang.Cloneable").type;
     serializableType = bytecodeCompleter.loadClass("java.io.Serializable").type;
     annotationType = bytecodeCompleter.loadClass("java.lang.annotation.Annotation").type;
+    enumType = bytecodeCompleter.loadClass("java.lang.Enum").type;
 
     // TODO comment me
     arrayClass = new Symbol.TypeSymbol(Flags.PUBLIC, "Array", noSymbol);

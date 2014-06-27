@@ -141,7 +141,12 @@ public class SymbolTableTest {
     Symbol.TypeSymbol enumSymbol = (Symbol.TypeSymbol) result.symbol("Declaration");
     assertThat(enumSymbol.owner()).isSameAs(result.symbol("EnumDeclaration"));
     assertThat(enumSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.ENUM);
-    assertThat(enumSymbol.getSuperclass()).isNull(); // FIXME should be java.lang.Enum
+
+    Symbol superclass = enumSymbol.getSuperclass().symbol;
+    assertThat(superclass.getName()).isEqualTo("Enum");
+    assertThat(superclass.owner).isInstanceOf(Symbol.PackageSymbol.class);
+    assertThat(superclass.owner.getName()).isEqualTo("java.lang");
+
     assertThat(enumSymbol.getInterfaces()).containsExactly(
         result.symbol("FirstInterface").type,
         result.symbol("SecondInterface").type);

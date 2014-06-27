@@ -90,7 +90,9 @@ public class SecondPass implements Symbol.Completer {
     } else {
       // TODO superclass is java.lang.Object or java.lang.Enum or java.lang.Annotation
       if (tree.is(Tree.Kind.ENUM)) {
-        //JLS8 8.9 : The direct superclass of an enum type E is Enum<E>
+        // JLS8 8.9: The direct superclass of an enum type E is Enum<E>.
+        // TODO(Godin): generics
+        ((Type.ClassType) symbol.type).supertype = symbols.enumType;
       } else if (tree.is(Tree.Kind.INTERFACE)) {
         //JLS8 9.1.3 : While every class is an extension of class Object, there is no single interface of which all interfaces are extensions.
 
