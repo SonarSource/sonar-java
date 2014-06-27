@@ -190,6 +190,7 @@ public class Symbol {
       this.type = type;
     }
 
+    // FIXME(Godin): method "type", which returns a String, looks very strange here:
     public String type() {
       return type.symbol.name;
     }
