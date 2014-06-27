@@ -54,5 +54,24 @@ class A {
       case 0:
         break;
     }
+
+    while(true){// Non-Compliant
+      for (int i = 0; i < 42; i++) {
+        continue;
+      }
+      break;
+    }
+
+    switch (foo) {
+      case 0:
+        do{ //non-compliant
+          if(false){
+            continue;
+          }
+          break;
+        }while(true);
+      case 1:
+        break;
+    }
   }
 }

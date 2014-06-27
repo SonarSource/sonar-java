@@ -23,6 +23,7 @@ import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
@@ -34,12 +35,14 @@ public class SeveralBreakOrContinuePerLoopCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SeveralBreakOrContinuePerLoopCheck.java"), new SeveralBreakOrContinuePerLoopCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SeveralBreakOrContinuePerLoopCheck.java"), new VisitorsBridge(new SeveralBreakOrContinuePerLoopCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(10).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.")
         .next().atLine(15).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.")
         .next().atLine(20).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.")
-        .next().atLine(41).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.");
+        .next().atLine(41).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.")
+        .next().atLine(58).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.")
+        .next().atLine(67).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.");
   }
 
 }

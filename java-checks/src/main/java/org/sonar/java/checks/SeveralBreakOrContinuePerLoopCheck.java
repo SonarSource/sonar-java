@@ -19,104 +19,134 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.ContinueStatementTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 @Rule(
-  key = "S135",
-  priority = Priority.MAJOR,
-  tags={"brain-overload"})
+    key = SeveralBreakOrContinuePerLoopCheck.RULE_KEY,
+    priority = Priority.MAJOR,
+    tags = {"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class SeveralBreakOrContinuePerLoopCheck extends SquidCheck<LexerlessGrammar> {
+public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final int IS_SWITCH = -1;
+  public static final String RULE_KEY = "S135";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
-  private final Stack<Integer> loopLines = new Stack<Integer>();
-  private final Stack<Integer> breakAndContinueCounter = new Stack<Integer>();
+  private final Deque<Integer> breakAndContinueCounter = new ArrayDeque<Integer>();
+  private final Deque<Boolean> currentScopeIsSwitch = new ArrayDeque<Boolean>();
+  private int loopCount;
 
-  private static final JavaGrammar[] LOOP_NODES = new JavaGrammar[] {
-    JavaGrammar.FOR_STATEMENT,
-    JavaGrammar.WHILE_STATEMENT,
-    JavaGrammar.DO_STATEMENT
-  };
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.SWITCH_STATEMENT);
-    subscribeTo(LOOP_NODES);
-    subscribeTo(JavaGrammar.BREAK_STATEMENT);
-    subscribeTo(JavaGrammar.CONTINUE_STATEMENT);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    loopCount = 0;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.SWITCH_STATEMENT)) {
-      enterSwitch();
-    } else if (node.is(LOOP_NODES)) {
-      enterLoop(node.getTokenLine());
-    } else if (isInsideLoopOrSwitch() && !node.is(JavaGrammar.BREAK_STATEMENT) || isInLoop()) {
-      incrementLoopBreakAndContinueCounter();
-    }
+  public void visitForStatement(ForStatementTree tree) {
+    enterLoop();
+    super.visitForStatement(tree);
+    leaveLoop(tree);
   }
 
   @Override
-  public void leaveNode(AstNode node) {
-    if (!node.is(JavaGrammar.CONTINUE_STATEMENT, JavaGrammar.BREAK_STATEMENT)) {
-      if (isInLoop() && breakAndContinueCounter.peek() > 1) {
-        getContext().createLineViolation(this, "Reduce the total number of break and continue statement in this loop to use at most one.", node);
-      }
+  public void visitForEachStatement(ForEachStatement tree) {
+    enterLoop();
+    super.visitForEachStatement(tree);
+    leaveLoop(tree);
+  }
 
-      leave();
+  @Override
+  public void visitWhileStatement(WhileStatementTree tree) {
+    enterLoop();
+    super.visitWhileStatement(tree);
+    leaveLoop(tree);
+  }
+
+  @Override
+  public void visitDoWhileStatement(DoWhileStatementTree tree) {
+    enterLoop();
+    super.visitDoWhileStatement(tree);
+    leaveLoop(tree);
+  }
+
+  @Override
+  public void visitBreakStatement(BreakStatementTree tree) {
+    if (isInLoop() && !isInSwitch()) {
+      incrementBreakCounter();
     }
+    super.visitBreakStatement(tree);
   }
 
-  private boolean isInsideLoopOrSwitch() {
-    for (Integer line : loopLines) {
-      if (line != IS_SWITCH) {
-        return true;
-      }
+  @Override
+  public void visitContinueStatement(ContinueStatementTree tree) {
+    if (isInLoop()) {
+      incrementBreakCounter();
     }
-
-    return false;
-  }
-
-  private void incrementLoopBreakAndContinueCounter() {
-    for (int i = loopLines.size() - 1; i >= 0; i--) {
-      if (loopLines.get(i) != IS_SWITCH) {
-        int count = breakAndContinueCounter.get(i);
-        breakAndContinueCounter.set(i, count + 1);
-      }
-    }
-  }
-
-  private void enterSwitch() {
-    enter(IS_SWITCH);
-  }
-
-  private void enterLoop(int line) {
-    enter(line);
-  }
-
-  private void enter(int line) {
-    loopLines.push(line);
-    breakAndContinueCounter.push(0);
+    super.visitContinueStatement(tree);
   }
 
   private boolean isInLoop() {
-    return !loopLines.isEmpty() &&
-      loopLines.peek() != IS_SWITCH;
+    return loopCount > 0;
   }
 
-  private void leave() {
-    loopLines.pop();
-    breakAndContinueCounter.pop();
+  private boolean isInSwitch() {
+    return currentScopeIsSwitch.peek();
   }
 
+  private void incrementBreakCounter() {
+    int increment = 1;
+    if (!breakAndContinueCounter.isEmpty()) {
+      increment += breakAndContinueCounter.pop();
+    }
+    breakAndContinueCounter.push(increment);
+  }
+
+  @Override
+  public void visitSwitchStatement(SwitchStatementTree tree) {
+    currentScopeIsSwitch.push(true);
+    super.visitSwitchStatement(tree);
+    currentScopeIsSwitch.pop();
+  }
+
+  private void enterLoop() {
+    loopCount++;
+    breakAndContinueCounter.push(0);
+    currentScopeIsSwitch.push(false);
+  }
+
+  private void leaveLoop(Tree tree) {
+    int count = 0;
+    if (!breakAndContinueCounter.isEmpty()) {
+      count = breakAndContinueCounter.pop();
+    }
+    if (!breakAndContinueCounter.isEmpty()) {
+      int pushBack = breakAndContinueCounter.pop() + count;
+      breakAndContinueCounter.push(pushBack);
+    }
+    if (count > 1) {
+      context.addIssue(tree, ruleKey, "Reduce the total number of break and continue statement in this loop to use at most one.");
+    }
+    loopCount--;
+    currentScopeIsSwitch.pop();
+  }
 }
