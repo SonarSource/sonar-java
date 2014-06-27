@@ -126,7 +126,11 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
         List<String> args = Lists.newArrayList(arguments);
         if (method.parameters().size() == args.size()) {
           for (VariableTree var : method.parameters()) {
-            args.remove(((VariableTreeImpl) var).getSymbol().type());
+            Symbol.VariableSymbol symbol = ((VariableTreeImpl) var).getSymbol();
+            // TODO(Godin): get rid of null check
+            if (symbol != null) {
+              args.remove(symbol.type());
+            }
           }
           if (args.isEmpty()) {
             return false;
