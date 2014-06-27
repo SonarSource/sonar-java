@@ -184,7 +184,8 @@ public final class CheckList {
       MagicNumberCheck.class,
       StringConcatenationInLoopCheck.class,
       CompareObjectWithEqualsCheck.class,
-      ArrayEqualsCheck.class
+      ArrayEqualsCheck.class,
+      RepeatAnnotationCheck.class
     );
   }
 
