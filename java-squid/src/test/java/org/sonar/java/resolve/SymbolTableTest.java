@@ -33,7 +33,6 @@ public class SymbolTableTest {
 
   @Test
   public void ClassDeclaration() {
-
     Result result = Result.createFor("declarations/ClassDeclaration");
     Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration");
     assertThat(typeSymbol.owner()).isSameAs(result.symbol("ClassDeclaration"));
@@ -45,7 +44,12 @@ public class SymbolTableTest {
     assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Superclass");
-    assertThat(typeSymbol.getSuperclass()).isNull(); // FIXME should be java.lang.Object
+
+    Symbol superclass = typeSymbol.getSuperclass().symbol;
+    assertThat(superclass.getName()).isEqualTo("Object");
+    assertThat(superclass.owner).isInstanceOf(Symbol.PackageSymbol.class);
+    assertThat(superclass.owner.getName()).isEqualTo("java.lang");
+
     assertThat(typeSymbol.getInterfaces()).isEmpty();
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Foo");

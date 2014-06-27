@@ -60,7 +60,12 @@ public class Symbols {
   final Type voidType;
 
   // predefined types
+
+  /**
+   * {@link java.lang.Object}
+   */
   final Type objectType;
+
   final Type cloneableType;
   final Type serializableType;
   final Type classType;

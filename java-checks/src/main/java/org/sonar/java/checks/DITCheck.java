@@ -57,8 +57,7 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
   @Override
   public void visitClass(ClassTree tree) {
     Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();
-    //Start with one as long as we did not solve the problem with default inheritance (java.lang.Object vs java.lang.enum)
-    int dit = 1;
+    int dit = 0;
     while(typeSymbol.getSuperclass() != null ){
       dit++;
       typeSymbol = ((Type.ClassType) typeSymbol.getSuperclass()).getSymbol();
