@@ -77,6 +77,7 @@ public class SecondPass implements Symbol.Completer {
 
     if ("".equals(symbol.name)) {
       // Anonymous Class Declaration
+      // FIXME(Godin): This case avoids NPE which occurs because semanticModel has no associations for anonymous classes.
       ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
       return;
     }
