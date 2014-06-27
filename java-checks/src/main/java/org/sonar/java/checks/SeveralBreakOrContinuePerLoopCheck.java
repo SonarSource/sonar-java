@@ -70,7 +70,7 @@ public class SeveralBreakOrContinuePerLoopCheck extends SquidCheck<LexerlessGram
   public void leaveNode(AstNode node) {
     if (!node.is(JavaGrammar.CONTINUE_STATEMENT, JavaGrammar.BREAK_STATEMENT)) {
       if (isInLoop() && breakAndContinueCounter.peek() > 1) {
-        getContext().createLineViolation(this, "Reduce the number of break and continue statement of this loop from " + breakAndContinueCounter.peek() + " to at most 1.", node);
+        getContext().createLineViolation(this, "Reduce the total number of break and continue statement in this loop to use at most one.", node);
       }
 
       leave();
