@@ -809,9 +809,6 @@
     <Bug pattern="UL_UNRELEASED_LOCK_EXCEPTION_PATH"/>
   </Match>
   <Match>
-    <Bug pattern="EC_BAD_ARRAY_COMPARE"/>
-  </Match>
-  <Match>
     <Bug pattern="SE_BAD_FIELD"/>
   </Match>
   <Match>
@@ -999,9 +996,6 @@
   </Match>
   <Match>
     <Bug pattern="RS_READOBJECT_SYNC"/>
-  </Match>
-  <Match>
-    <Bug pattern="EC_INCOMPATIBLE_ARRAY_COMPARE"/>
   </Match>
   <Match>
     <Bug pattern="NS_DANGEROUS_NON_SHORT_CIRCUIT"/>

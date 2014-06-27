@@ -16,6 +16,7 @@
     <priority>BLOCKER</priority>
     <name><![CDATA[Correctness - equals(...) used to compare incompatible arrays]]></name>
     <configKey><![CDATA[EC_INCOMPATIBLE_ARRAY_COMPARE]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="NP_CLOSING_NULL">
@@ -1702,6 +1703,7 @@
     <priority>CRITICAL</priority>
     <name><![CDATA[Correctness - Invocation of equals() on an array, which is equivalent to ==]]></name>
     <configKey><![CDATA[EC_BAD_ARRAY_COMPARE]]></configKey>
+    <status>DEPRECATED</status>
   </rule>
 
   <rule key="STI_INTERRUPTED_ON_CURRENTTHREAD">

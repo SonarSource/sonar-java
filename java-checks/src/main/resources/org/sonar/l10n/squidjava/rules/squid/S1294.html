@@ -1,6 +1,6 @@
-<p>Since arrays do not override Object.equals(), calling equals on two arrays is the same as comparing their addresses. This means that array1.equals(array2) is equivalent to array1==array2.</p>
+<p>Since arrays do not override <code>Object.equals()</code>, calling equals on two arrays is the same as comparing their addresses. This means that <code>array1.equals(array2)</code> is equivalent to <code>array1==array2</code>.</p>
 
-<p>However, some developers might expect Array.equals(Object obj) to do more than a simple memory address comparison, comparing for instance the size and content of the two arrays. To prevent such a misunderstanding, the '==' operator must always be used in place of the Array.equals(Object obj) method.</p>
+<p>However, some developers might expect Array.equals(Object obj) to do more than a simple memory address comparison, comparing for instance the size and content of the two arrays. To prevent such a misunderstanding, the '==' operator or <code>Arrays.equals(array1, array2)</code> must always be used in place of the Array.equals(Object obj) method.</p>
 
 <h2>Noncompliant Code Example</h2>
 <pre>
@@ -20,4 +20,30 @@ String[] array2 = ...
 if(array1 == array2){
 ...
 }
+//or
+if(Arrays.equals(array1, array2)) {
+  ...
+}
 </pre>
+
+<h2>See</h2>
+
+<table class="data">
+  <thead>
+    <tr><th>Tool</th>
+    <th>Reference</th>
+    <th>Description</th></tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Findbugs</td>
+    <td>EC_INCOMPATIBLE_ARRAY_COMPARE</td>
+    <td>Correctness - equals(...) used to compare incompatible arrays</td>
+  </tr>
+  <tr>
+    <td>Findbugs</td>
+    <td>EC_BAD_ARRAY_COMPARE</td>
+    <td>Correctness - Invocation of equals() on an array, which is equivalent to ==</td>
+  </tr>
+  </tbody>
+</table>
