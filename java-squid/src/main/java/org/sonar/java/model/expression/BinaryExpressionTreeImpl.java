@@ -73,4 +73,9 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
     // TODO(Godin): provides behavioral compatibility, because this method used by AnonymousClassesTooBigCheck, but should not
     return astNode.getParent();
   }
+
+  @Override
+  public int getLine() {
+    return getAstNode().getTokenLine();
+  }
 }
