@@ -66,6 +66,11 @@ public class Symbols {
   final Type classType;
   final Type stringType;
 
+  /**
+   * {@link java.lang.annotation.Annotation}
+   */
+  final Type annotationType;
+
   public Symbols(BytecodeCompleter bytecodeCompleter) {
     rootPackage = new Symbol.PackageSymbol("", null);
     defaultPackage = new Symbol.PackageSymbol("", rootPackage);
@@ -116,6 +121,7 @@ public class Symbols {
     stringType = bytecodeCompleter.loadClass("java.lang.String").type;
     cloneableType = bytecodeCompleter.loadClass("java.lang.Cloneable").type;
     serializableType = bytecodeCompleter.loadClass("java.io.Serializable").type;
+    annotationType = bytecodeCompleter.loadClass("java.lang.annotation.Annotation").type;
 
     // TODO comment me
     arrayClass = new Symbol.TypeSymbol(Flags.PUBLIC, "Array", noSymbol);

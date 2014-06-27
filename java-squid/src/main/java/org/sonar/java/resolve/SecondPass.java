@@ -94,15 +94,11 @@ public class SecondPass implements Symbol.Completer {
       } else if (tree.is(Tree.Kind.INTERFACE)) {
         //JLS8 9.1.3 : While every class is an extension of class Object, there is no single interface of which all interfaces are extensions.
 
-      } else if (tree.is(Tree.Kind.ANNOTATION)) {
-        //JLS8 9.6 : The direct superinterface of every annotation type is java.lang.annotation.Annotation.
-
       } else if (tree.is(Tree.Kind.CLASS)) {
         //JLS8 8.1.4:  the direct superclass of the class type C<F1,...,Fn> is
         // the type given in the extends clause of the declaration of C
         // if an extends clause is present, or Object otherwise.
       }
-
     }
 
     ImmutableList.Builder<Type> interfaces = ImmutableList.builder();
@@ -112,7 +108,13 @@ public class SecondPass implements Symbol.Completer {
         interfaces.add(interfaceType);
       }
     }
-    // TODO interface of AnnotationType is java.lang.annotation.Annotation
+
+    if (tree.is(Tree.Kind.ANNOTATION_TYPE)) {
+      // JLS8 9.6: The direct superinterface of every annotation type is java.lang.annotation.Annotation.
+      // (Godin): Note that "extends" and "implements" clauses are forbidden by grammar for annotation types
+      interfaces.add(symbols.annotationType);
+    }
+
     ((Type.ClassType) symbol.type).interfaces = interfaces.build();
   }
 

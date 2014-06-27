@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.Iterables;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -181,7 +182,12 @@ public class SymbolTableTest {
     assertThat(annotationSymbol.owner()).isSameAs(result.symbol("AnnotationTypeDeclaration"));
     assertThat(annotationSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.INTERFACE | Flags.ANNOTATION);
     assertThat(annotationSymbol.getSuperclass()).isNull(); // TODO should it be java.lang.Object?
-    assertThat(annotationSymbol.getInterfaces()).isEmpty(); // FIXME should be java.lang.annotation.Annotation
+
+    Symbol superinterface = Iterables.getOnlyElement(annotationSymbol.getInterfaces()).symbol;
+    assertThat(superinterface.getName()).isEqualTo("Annotation");
+    assertThat(superinterface.owner).isInstanceOf(Symbol.PackageSymbol.class);
+    assertThat(superinterface.owner.getName()).isEqualTo("java.lang.annotation");
+
     assertThat(annotationSymbol.members.lookup("this")).isEmpty();
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
