@@ -235,6 +235,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       classSymbol.members = new Scope(classSymbol);
       if (superName == null) {
         Preconditions.checkState("java/lang/Object".equals(className), "superName must be null only for java/lang/Object, but not for " + className);
+        // TODO(Godin): what about interfaces and annotations
       } else {
         ((Type.ClassType) classSymbol.type).supertype = getClassSymbol(superName).type;
       }
