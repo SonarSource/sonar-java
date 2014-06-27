@@ -94,8 +94,9 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
 
   private boolean isNotJavaLangOrSerializable() {
     String[] path = peekSourceFile().getName().split(Pattern.quote(File.separator));
-    boolean isJavaLang = path.length > 3 && "lang".equals(path[path.length-2]) && "java".equals(path[path.length-3]);
-    boolean isSerializable = path.length > 3 && "Serializable.java".equals(path[path.length-1]) && "io".equals(path[path.length-2]) && "java".equals(path[path.length-3]);
+    boolean isJavaLang = (path.length > 3 && "java".equals(path[path.length - 3]) && "lang".equals(path[path.length - 2]))
+      || (path.length > 4 && "java".equals(path[path.length - 4]) && "lang".equals(path[path.length - 3]));
+    boolean isSerializable = path.length > 3 && "Serializable.java".equals(path[path.length-1]) && "java".equals(path[path.length-3]) && "io".equals(path[path.length-2]);
     return !(isJavaLang || isSerializable);
   }
 
