@@ -1749,7 +1749,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>h</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1918,7 +1918,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>h</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1969,7 +1969,7 @@
         </prop>
         <prop>
           <key>offset</key>
-          <val>10</val>
+          <val>5</val>
           <txt>mn</txt>
         </prop>
       </chc>
