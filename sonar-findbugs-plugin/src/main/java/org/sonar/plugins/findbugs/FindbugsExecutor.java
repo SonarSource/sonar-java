@@ -50,6 +50,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -148,6 +149,10 @@ public class FindbugsExecutor implements BatchExtension {
       profiler.stop();
 
       return toReportedBugs(xmlBugReporter.getBugCollection());
+    } catch (AnalysisNotNeededException e) {
+      LOG.info("There are no class files to analyze. Skipping Findbugs analysis");
+      profiler.stop();
+      return Collections.emptyList();
     } catch (TimeoutException e) {
       throw new SonarException("Can not execute Findbugs with a timeout threshold value of " + configuration.getTimeout() + " milliseconds", e);
     } catch (Exception e) {

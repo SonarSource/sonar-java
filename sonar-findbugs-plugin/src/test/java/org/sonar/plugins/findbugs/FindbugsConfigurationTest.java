@@ -27,9 +27,15 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.ProjectClasspath;
+import org.sonar.api.batch.fs.FilePredicate;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.internal.DefaultFilePredicates;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.scan.filesystem.FileQuery;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.utils.SonarException;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -38,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +56,8 @@ public class FindbugsConfigurationTest {
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
-  private ModuleFileSystem fs;
+  private FileSystem fs;
+  private ModuleFileSystem mfs;
   private Settings settings;
   private File baseDir;
   private FindbugsConfiguration conf;
@@ -60,25 +68,28 @@ public class FindbugsConfigurationTest {
   public void setUp() throws Exception {
     baseDir = temp.newFolder("findbugs");
 
-    fs = mock(ModuleFileSystem.class);
-    when(fs.workingDir()).thenReturn(temp.newFolder());
-    when(fs.baseDir()).thenReturn(baseDir);
+    mfs = mock(ModuleFileSystem.class);
+    when(mfs.workingDir()).thenReturn(temp.newFolder());
+    when(mfs.baseDir()).thenReturn(baseDir);
+
+    fs = mock(FileSystem.class);
+    when(fs.predicates()).thenReturn(new DefaultFileSystem().predicates());
 
     settings = new Settings(new PropertyDefinitions().addComponents(FindbugsConfiguration.getPropertyDefinitions()));
     classpath = mock(ProjectClasspath.class);
     javaResourceLocator = mock(JavaResourceLocator.class);
-    conf = new FindbugsConfiguration(fs, settings, RulesProfile.create(), new FindbugsProfileExporter(), classpath, javaResourceLocator);
+    conf = new FindbugsConfiguration(fs, mfs, settings, RulesProfile.create(), new FindbugsProfileExporter(), classpath, javaResourceLocator);
   }
 
   @Test
   public void should_return_report_file() throws Exception {
-    assertThat(conf.getTargetXMLReport().getCanonicalPath()).isEqualTo(new File(fs.workingDir(), "findbugs-result.xml").getCanonicalPath());
+    assertThat(conf.getTargetXMLReport().getCanonicalPath()).isEqualTo(new File(mfs.workingDir(), "findbugs-result.xml").getCanonicalPath());
   }
 
   @Test
   public void should_save_include_config() throws Exception {
     conf.saveIncludeConfigXml();
-    File findbugsIncludeFile = new File(fs.workingDir(), "findbugs-include.xml");
+    File findbugsIncludeFile = new File(mfs.workingDir(), "findbugs-include.xml");
     assertThat(findbugsIncludeFile.exists()).isTrue();
   }
 
@@ -111,7 +122,9 @@ public class FindbugsConfigurationTest {
   }
 
   @Test
-  public void should_fail_if_no_class_files() throws IOException {
+  public void should_fail_if_source_files_but_no_class_files() throws IOException, AnalysisNotNeededException {
+    when(fs.hasFiles(any(FilePredicate.class))).thenReturn(true);
+
     thrown.expect(SonarException.class);
     thrown.expectMessage("Findbugs needs sources to be compiled");
 
@@ -119,7 +132,16 @@ public class FindbugsConfigurationTest {
   }
 
   @Test
-  public void should_set_class_files() throws IOException {
+  public void should_fail_if_no_source_files_and_no_class_files() throws IOException, AnalysisNotNeededException {
+    when(fs.hasFiles(any(FilePredicate.class))).thenReturn(false);
+
+    thrown.expect(AnalysisNotNeededException.class);
+
+    conf.getFindbugsProject();
+  }
+
+  @Test
+  public void should_set_class_files() throws IOException, AnalysisNotNeededException {
     File file = temp.newFile("MyClass.class");
     when(javaResourceLocator.classFilesToAnalyze()).thenReturn(ImmutableList.of(file));
     Project findbugsProject = conf.getFindbugsProject();
@@ -134,11 +156,11 @@ public class FindbugsConfigurationTest {
     String annotations = "findbugs/annotations.jar";
 
     conf.copyLibs();
-    assertThat(new File(fs.workingDir(), jsr305)).isFile();
-    assertThat(new File(fs.workingDir(), annotations)).isFile();
+    assertThat(new File(mfs.workingDir(), jsr305)).isFile();
+    assertThat(new File(mfs.workingDir(), annotations)).isFile();
     conf.stop();
-    assertThat(new File(fs.workingDir(), jsr305)).doesNotExist();
-    assertThat(new File(fs.workingDir(), annotations)).doesNotExist();
+    assertThat(new File(mfs.workingDir(), jsr305)).doesNotExist();
+    assertThat(new File(mfs.workingDir(), annotations)).doesNotExist();
   }
 
 }
