@@ -66,8 +66,10 @@ public class SecondPass implements Symbol.Completer {
     }
   }
 
-  public void complete(Symbol.TypeSymbol symbol) {
+  private void complete(Symbol.TypeSymbol symbol) {
     Resolve.Env env = semanticModel.getEnv(symbol);
+
+    Type.ClassType type = (Type.ClassType) symbol.type;
 
     if ((symbol.flags() & Flags.INTERFACE) == 0) {
       // If this is a class, enter symbols for "this" and "super".
@@ -78,25 +80,25 @@ public class SecondPass implements Symbol.Completer {
     if ("".equals(symbol.name)) {
       // Anonymous Class Declaration
       // FIXME(Godin): This case avoids NPE which occurs because semanticModel has no associations for anonymous classes.
-      ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
+      type.interfaces = ImmutableList.of();
       return;
     }
 
     ClassTree tree = (ClassTree) semanticModel.getTree(symbol);
     Tree superClassTree = tree.superClass();
     if (superClassTree != null && (superClassTree.is(Tree.Kind.MEMBER_SELECT) || superClassTree.is(Tree.Kind.IDENTIFIER))) {
-      ((Type.ClassType) symbol.type).supertype = resolveType(env, superClassTree);
+      type.supertype = resolveType(env, superClassTree);
       checkHierarchyCycles(symbol.type);
     } else {
       if (tree.is(Tree.Kind.ENUM)) {
         // JLS8 8.9: The direct superclass of an enum type E is Enum<E>.
         // TODO(Godin): generics
-        ((Type.ClassType) symbol.type).supertype = symbols.enumType;
+        type.supertype = symbols.enumType;
       } else if (tree.is(Tree.Kind.CLASS)) {
         // JLS8 8.1.4: the direct superclass of the class type C<F1,...,Fn> is
         // the type given in the extends clause of the declaration of C
         // if an extends clause is present, or Object otherwise.
-        ((Type.ClassType) symbol.type).supertype = symbols.objectType;
+        type.supertype = symbols.objectType;
       }
       // JLS8 9.1.3: While every class is an extension of class Object, there is no single interface of which all interfaces are extensions.
     }
@@ -115,7 +117,7 @@ public class SecondPass implements Symbol.Completer {
       interfaces.add(symbols.annotationType);
     }
 
-    ((Type.ClassType) symbol.type).interfaces = interfaces.build();
+    type.interfaces = interfaces.build();
   }
 
   private void checkHierarchyCycles(Type baseType) {
@@ -129,7 +131,7 @@ public class SecondPass implements Symbol.Completer {
     }
   }
 
-  public void complete(Symbol.MethodSymbol symbol) {
+  private void complete(Symbol.MethodSymbol symbol) {
     MethodTree methodTree = (MethodTree) semanticModel.getTree(symbol);
     Resolve.Env env = semanticModel.getEnv(symbol);
 
@@ -156,7 +158,7 @@ public class SecondPass implements Symbol.Completer {
     }
   }
 
-  public void complete(Symbol.VariableSymbol symbol) {
+  private void complete(Symbol.VariableSymbol symbol) {
     VariableTree variableTree = (VariableTree) semanticModel.getTree(symbol);
     Resolve.Env env = semanticModel.getEnv(symbol);
     if (variableTree.is(Tree.Kind.ENUM_CONSTANT)) {
