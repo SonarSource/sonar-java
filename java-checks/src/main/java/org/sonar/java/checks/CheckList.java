@@ -185,7 +185,8 @@ public final class CheckList {
       StringConcatenationInLoopCheck.class,
       CompareObjectWithEqualsCheck.class,
       ArrayEqualsCheck.class,
-      RepeatAnnotationCheck.class
+      RepeatAnnotationCheck.class,
+      NPEThrowCheck.class
     );
   }
 
