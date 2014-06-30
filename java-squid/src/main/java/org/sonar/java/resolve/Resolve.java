@@ -21,9 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Routines for name resolution.
@@ -44,7 +42,6 @@ public class Resolve {
   private final BytecodeCompleter bytecodeCompleter;
   private final Types types = new Types();
   private final Symbols symbols;
-  private Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
 
   public Resolve(Symbols symbols, BytecodeCompleter bytecodeCompleter) {
     this.symbols = symbols;
@@ -318,13 +315,6 @@ public class Resolve {
     String fullname = bytecodeCompleter.formFullName(name, site);
     Symbol bestSoFar = symbolNotFound;
     Symbol.PackageSymbol pack = null;
-    //Check if we already have resolved this package.
-    if ((kind & Symbol.PCK) != 0) {
-      pack = packages.get(fullname);
-      if (pack != null) {
-        return pack;
-      }
-    }
     //Try to find a type matching the name.
     if ((kind & Symbol.TYP) != 0) {
       Symbol sym = bytecodeCompleter.loadClass(fullname);
