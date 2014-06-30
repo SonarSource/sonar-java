@@ -859,7 +859,7 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(METHOD_REFERENCE).is(b.firstOf(
         b.sequence(SUPER, DBLECOLON),
         b.sequence(TYPE, DBLECOLON),
-        b.sequence(PRIMARY, DBLECOLON)
+        b.sequence(PRIMARY, b.zeroOrMore(SELECTOR), DBLECOLON)
         ),
         b.optional(TYPE_ARGUMENTS), b.firstOf(NEW,IDENTIFIER)
     );

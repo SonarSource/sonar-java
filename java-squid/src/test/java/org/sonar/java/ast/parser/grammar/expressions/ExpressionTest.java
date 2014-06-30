@@ -76,6 +76,9 @@ public class ExpressionTest {
         .matches("(foo?list.map(String::length):Collections.emptyList()) :: iterator")
         .matches("myMethod()::size")
         .matches("MyClass.this::size")
+        .matches("myMethod().myMethod()::size")
+        .matches("new MyClass(3).myMethod()::size")
+        .notMatches("myMethod()::myMethod::myMethod")
 
         //Java 8 : Lambda expressions
         .matches("()->12")
