@@ -22,7 +22,9 @@ package org.sonar.java.model.expression;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierTree {
@@ -36,6 +38,11 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   @Override
   public Kind getKind() {
     return Kind.IDENTIFIER;
+  }
+
+  @Override
+  public SyntaxToken identifier() {
+    return new InternalSyntaxToken(astNode.getToken());
   }
 
   @Override

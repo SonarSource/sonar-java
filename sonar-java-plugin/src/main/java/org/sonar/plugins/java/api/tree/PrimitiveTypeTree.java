@@ -30,4 +30,7 @@ import com.google.common.annotations.Beta;
  */
 @Beta
 public interface PrimitiveTypeTree extends ExpressionTree {
+
+  SyntaxToken keyword();
+
 }

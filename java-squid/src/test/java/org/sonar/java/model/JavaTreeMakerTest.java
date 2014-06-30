@@ -107,11 +107,11 @@ public class JavaTreeMakerTest {
   public void basic_type() {
     AstNode astNode = p.parse("class T { int m() { return null; } }").getFirstDescendant(JavaGrammar.BASIC_TYPE);
     PrimitiveTypeTree tree = maker.basicType(astNode);
-    assertThat(tree).isNotNull();
+    assertThat(tree.keyword().text()).isEqualTo("int");
 
     astNode = p.parse("class T { void m() { return null; } }").getFirstDescendant(JavaKeyword.VOID);
     tree = maker.basicType(astNode);
-    assertThat(tree).isNotNull();
+    assertThat(tree.keyword().text()).isEqualTo("void");
   }
 
   @Test
@@ -1071,30 +1071,35 @@ public class JavaTreeMakerTest {
     MemberSelectExpressionTree tree = (MemberSelectExpressionTree) maker.primary(astNode);
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isNotNull();
+    assertThat(tree.identifier().identifier().text()).isEqualTo("class");
     assertThat(tree.identifier().name()).isEqualTo("class");
 
     astNode = p.parse("class T { m() { return int.class; } }").getFirstDescendant(JavaGrammar.PRIMARY);
     tree = (MemberSelectExpressionTree) maker.primary(astNode);
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isInstanceOf(PrimitiveTypeTree.class);
+    assertThat(tree.identifier().identifier().text()).isEqualTo("class");
     assertThat(tree.identifier().name()).isEqualTo("class");
 
     astNode = p.parse("class T { m() { return int[].class; } }").getFirstDescendant(JavaGrammar.PRIMARY);
     tree = (MemberSelectExpressionTree) maker.primary(astNode);
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isInstanceOf(ArrayTypeTree.class);
+    assertThat(tree.identifier().identifier().text()).isEqualTo("class");
     assertThat(tree.identifier().name()).isEqualTo("class");
 
     astNode = p.parse("class T { m() { return T.class; } }").getFirstDescendant(JavaGrammar.PRIMARY);
     tree = (MemberSelectExpressionTree) maker.primary(astNode);
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isNotNull();
+    assertThat(tree.identifier().identifier().text()).isEqualTo("class");
     assertThat(tree.identifier().name()).isEqualTo("class");
 
     astNode = p.parse("class T { m() { return T[].class; } }").getFirstDescendant(JavaGrammar.PRIMARY);
     tree = (MemberSelectExpressionTree) maker.primary(astNode);
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isInstanceOf(ArrayTypeTree.class);
+    assertThat(tree.identifier().identifier().text()).isEqualTo("class");
     assertThat(tree.identifier().name()).isEqualTo("class");
   }
 
@@ -1107,6 +1112,7 @@ public class JavaTreeMakerTest {
     IdentifierTree tree = (IdentifierTree) maker.primary(astNode);
     assertThat(tree.is(Tree.Kind.IDENTIFIER)).isTrue();
     assertThat(tree).isNotNull();
+    assertThat(tree.identifier().text()).isEqualTo("this");
     assertThat(tree.name()).isEqualTo("this");
   }
 
@@ -1119,6 +1125,7 @@ public class JavaTreeMakerTest {
     MemberSelectExpressionTree tree = (MemberSelectExpressionTree) maker.primary(astNode);
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isNotNull();
+    assertThat(tree.identifier().identifier().text()).isEqualTo("this");
     assertThat(tree.identifier().name()).isEqualTo("this");
   }
 
@@ -1130,7 +1137,9 @@ public class JavaTreeMakerTest {
     AstNode astNode = p.parse("class T { boolean m() { return (true); } }").getFirstDescendant(JavaGrammar.EXPRESSION);
     ParenthesizedTree tree = (ParenthesizedTree) maker.expression(astNode);
     assertThat(tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)).isTrue();
+    assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.expression()).isNotNull();
+    assertThat(tree.closeParenToken().text()).isEqualTo(")");
   }
 
   /**

@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
@@ -225,6 +226,11 @@ public abstract class JavaTree implements Tree {
     @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitPrimitiveType(this);
+    }
+
+    @Override
+    public SyntaxToken keyword() {
+      return new InternalSyntaxToken(astNode.getLastToken());
     }
   }
 
