@@ -178,16 +178,13 @@ public class ExpressionVisitor extends BaseTreeVisitor {
     super.visitBinaryExpression(tree);
     Resolve.Env env = semanticModel.getEnv(tree);
     Type left = getType(tree.leftOperand());
-    // FIXME(Godin): get rid of AstNode:
-    AstNode astNode = ((JavaTree) tree).getAstNode();
-    AstNode opNode = astNode.getFirstChild().getNextSibling();
     Type right = getType(tree.rightOperand());
     // TODO avoid nulls
     if (left == null || right == null) {
       registerType(tree, symbols.unknownType);
       return;
     }
-    Symbol symbol = resolve.findMethod(env, opNode.getTokenValue(), ImmutableList.of(left, right));
+    Symbol symbol = resolve.findMethod(env, tree.operatorToken().text(), ImmutableList.of(left, right));
     if (symbol.kind != Symbol.MTH) {
       // not found
       registerType(tree, symbols.unknownType);
@@ -208,6 +205,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
+    // FIXME(Godin): get rid of AstNode:
     AstNode astNode = ((JavaTree) tree).getAstNode();
     Type type = resolve.findIdent(semanticModel.getEnv(tree), astNode.getLastChild().getTokenValue(), Symbol.TYP).type;
     ((JavaTree.PrimitiveTypeTreeImpl) tree).setType(type);
@@ -351,6 +349,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
 
       @Override
       public void visitPrimitiveType(PrimitiveTypeTree tree) {
+        // FIXME(Godin): get rid of AstNode:
         AstNode astNode = ((JavaTree) tree).getAstNode();
         site = resolve.findIdent(semanticModel.getEnv(tree), astNode.getLastChild().getTokenValue(), Symbol.TYP);
         registerType(tree, site.type);
