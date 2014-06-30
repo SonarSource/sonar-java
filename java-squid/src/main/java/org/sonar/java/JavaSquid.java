@@ -104,9 +104,6 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
       if (visitor instanceof CharsetAwareVisitor) {
         ((CharsetAwareVisitor) visitor).setCharset(conf.getCharset());
       }
-      if (visitor instanceof SemanticModelProviderAwareVisitor) {
-        ((SemanticModelProviderAwareVisitor) visitor).setSemanticModelProvider(visitorsBridge);
-      }
       astScanner.accept(visitor);
       bytecodeScanner.accept(visitor);
     }

@@ -27,7 +27,6 @@ import com.sonar.sslr.api.AstNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.java.SemanticModelProvider;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
@@ -45,7 +44,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvider {
+public class VisitorsBridge extends JavaAstVisitor {
 
   private static final Logger LOG = LoggerFactory.getLogger(VisitorsBridge.class);
 
@@ -113,12 +112,6 @@ public class VisitorsBridge extends JavaAstVisitor implements SemanticModelProvi
       SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(getContext().getFile()), semanticModel);
       symVisitor.visitCompilationUnit(tree);
     }
-  }
-
-  @Nullable
-  @Override
-  public SemanticModel semanticModel() {
-    return semanticModel;
   }
 
   private static class DefaultJavaFileScannerContext implements JavaFileScannerContext {
