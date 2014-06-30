@@ -250,7 +250,7 @@ public class SecondPass implements Symbol.Completer {
 
     @Override
     public void visitPrimitiveType(PrimitiveTypeTree tree) {
-      site = resolve.findIdent(semanticModel.getEnv(tree), ((JavaTree) tree).getAstNode().getLastChild().getTokenValue(), Symbol.TYP);
+      site = resolve.findIdent(semanticModel.getEnv(tree), tree.keyword().text(), Symbol.TYP);
     }
   }
 
