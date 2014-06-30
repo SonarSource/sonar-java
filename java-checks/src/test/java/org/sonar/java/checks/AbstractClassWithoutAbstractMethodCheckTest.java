@@ -38,7 +38,7 @@ public class AbstractClassWithoutAbstractMethodCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AbstractClassWithoutAbstractMethodCheck.java"), new VisitorsBridge(new AbstractClassWithoutAbstractMethodCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(1).withMessage("Convert this \"Animal\" class to an interface")
-      .next().atLine(8).withMessage("Convert this \"AbstractColor\" class to a concrete class with a private constructor)")
+      .next().atLine(8).withMessage("Convert this \"AbstractColor\" class to a concrete class with a private constructor")
       .next().atLine(56).withMessage("Convert this \"Empty\" class to an interface")
     ;
   }

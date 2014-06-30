@@ -62,7 +62,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
         }
         if (symbols.size()>1 && abstractMethod == 0) {
           //Not empty abstract class with no abstract method
-          context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to a concrete class with a private constructor)");
+          context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to a concrete class with a private constructor");
         }
       }
     }
