@@ -35,7 +35,7 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface IdentifierTree extends ExpressionTree {
 
-  SyntaxToken identifier();
+  SyntaxToken identifierToken();
 
   String name();
 
