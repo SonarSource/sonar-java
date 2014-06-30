@@ -103,7 +103,8 @@ public class SemanticModel {
     usagesTree.put(symbol, tree);
   }
 
-  public Map<Tree, Symbol> getSymbolsTree() {
+  @VisibleForTesting
+  Map<Tree, Symbol> getSymbolsTree() {
     return Collections.unmodifiableMap(symbolsTree);
   }
 
@@ -111,7 +112,8 @@ public class SemanticModel {
     return Collections.unmodifiableCollection(usagesTree.get(symbol));
   }
 
-  public Collection<Symbol> getSymbolUsed() {
+  @VisibleForTesting
+  Collection<Symbol> getSymbolUsed() {
     return usagesTree.keySet();
   }
 }
