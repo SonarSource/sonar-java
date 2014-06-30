@@ -43,7 +43,6 @@
     <module>sonar-surefire-plugin</module>
     <module>sonar-jacoco-plugin</module>
     <module>sonar-jacoco-listeners</module>
-    <module>sonar-findbugs-plugin</module>
     <module>sslr-java-toolkit</module>
   </modules>
 
