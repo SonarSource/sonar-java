@@ -87,7 +87,7 @@ public class SecondPass implements Symbol.Completer {
 
     ClassTree tree = (ClassTree) semanticModel.getTree(symbol);
     Tree superClassTree = tree.superClass();
-    if (superClassTree != null && (superClassTree.is(Tree.Kind.MEMBER_SELECT) || superClassTree.is(Tree.Kind.IDENTIFIER))) {
+    if (superClassTree != null) {
       type.supertype = resolveType(env, superClassTree);
       checkHierarchyCycles(symbol.type);
     } else {
