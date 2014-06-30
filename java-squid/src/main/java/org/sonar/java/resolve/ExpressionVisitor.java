@@ -22,7 +22,6 @@ package org.sonar.java.resolve;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
@@ -205,9 +204,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
-    // FIXME(Godin): get rid of AstNode:
-    AstNode astNode = ((JavaTree) tree).getAstNode();
-    Type type = resolve.findIdent(semanticModel.getEnv(tree), astNode.getLastChild().getTokenValue(), Symbol.TYP).type;
+    Type type = resolve.findIdent(semanticModel.getEnv(tree), tree.keyword().text(), Symbol.TYP).type;
     ((JavaTree.PrimitiveTypeTreeImpl) tree).setType(type);
     registerType(tree, type);
   }
@@ -349,9 +346,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
 
       @Override
       public void visitPrimitiveType(PrimitiveTypeTree tree) {
-        // FIXME(Godin): get rid of AstNode:
-        AstNode astNode = ((JavaTree) tree).getAstNode();
-        site = resolve.findIdent(semanticModel.getEnv(tree), astNode.getLastChild().getTokenValue(), Symbol.TYP);
+        site = resolve.findIdent(semanticModel.getEnv(tree), tree.keyword().text(), Symbol.TYP);
         registerType(tree, site.type);
       }
     }
