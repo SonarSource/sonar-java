@@ -20,7 +20,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>sonar-java-library</artifactId>
+      <artifactId>java-squid</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

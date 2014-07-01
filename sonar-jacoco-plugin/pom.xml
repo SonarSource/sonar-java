@@ -48,7 +48,7 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.sonar-plugins.java</groupId>
-      <artifactId>sonar-java-library</artifactId>
+      <artifactId>java-squid</artifactId>
       <version>${project.version}</version>
     </dependency>
 

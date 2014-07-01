@@ -27,11 +27,6 @@
   <dependencies>
     <dependency>
       <groupId>org.codehaus.sonar-plugins.java</groupId>
-      <artifactId>sonar-java-library</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.sonar-plugins.java</groupId>
       <artifactId>sonar-surefire-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>
