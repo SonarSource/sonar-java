@@ -26,6 +26,8 @@ import org.sonar.api.SonarPlugin;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.java.SonarComponents;
+import org.sonar.plugins.jacoco.JaCoCoPlugin;
+import org.sonar.plugins.surefire.SurefirePlugin;
 
 import java.util.List;
 
@@ -39,7 +41,11 @@ public class JavaSquidPlugin extends SonarPlugin {
 
   @Override
   public List getExtensions() {
-    return ImmutableList.of(
+    ImmutableList.Builder<Object> builder = ImmutableList.builder();
+    builder.addAll(JavaPlugin.getExtensions());
+    builder.addAll(SurefirePlugin.getExtensions());
+    builder.addAll(JaCoCoPlugin.getExtensions());
+     builder.add(
       PropertyDefinition.builder(JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY)
         .defaultValue(JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE + "")
         .category(JAVA_CATEGORY)
@@ -65,6 +71,7 @@ public class JavaSquidPlugin extends SonarPlugin {
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
       JavaSquidSensor.class);
+    return builder.build();
   }
 
 }

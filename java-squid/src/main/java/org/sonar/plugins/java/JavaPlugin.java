@@ -26,10 +26,9 @@ import org.sonar.api.resources.Qualifiers;
 
 import java.util.List;
 
-public final class JavaPlugin extends SonarPlugin {
+public final class JavaPlugin {
 
-  @Override
-  public List getExtensions() {
+  public static List getExtensions() {
     return ImmutableList.of(
         JavaCommonRulesEngine.class,
         JavaCommonRulesDecorator.class,

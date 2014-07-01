@@ -28,10 +28,9 @@ import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.util.List;
 
-public final class SurefirePlugin extends SonarPlugin {
+public final class SurefirePlugin {
 
-  @Override
-  public List getExtensions() {
+  public static List getExtensions() {
     return ImmutableList.of(
       PropertyDefinition.builder(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)
         .name("JUnit Reports")

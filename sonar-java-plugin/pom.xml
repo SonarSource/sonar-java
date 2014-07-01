@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -12,25 +13,60 @@
   <packaging>sonar-plugin</packaging>
 
   <name>SonarQube Java :: Plugin</name>
-  <description>Enables analysis of Java projects.</description>
-  <url>http://docs.codehaus.org/display/SONAR/Java+Ecosystem</url>
+  <description>SonarQube rule engine.</description>
+  <!--
+  <url></url>
+  -->
 
   <properties>
     <!-- Configuration for sonar-packaging-maven-plugin -->
-    <sonar.pluginClass>org.sonar.plugins.java.JavaPlugin</sonar.pluginClass>
+    <sonar.pluginClass>org.sonar.plugins.java.JavaSquidPlugin</sonar.pluginClass>
     <sonar.pluginName>Java</sonar.pluginName>
   </properties>
 
   <dependencies>
     <dependency>
+      <groupId>org.codehaus.sonar-plugins.java</groupId>
+      <artifactId>sonar-java-library</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.sonar-plugins.java</groupId>
+      <artifactId>sonar-surefire-plugin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.sonar-plugins.java</groupId>
+      <artifactId>sonar-jacoco-plugin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>java-squid</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>java-checks</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.sonar</groupId>
+      <artifactId>sonar-java-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.sonar</groupId>
       <artifactId>sonar-plugin-api</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
-      <groupId>org.codehaus.sonar.common-rules</groupId>
-      <artifactId>sonar-common-rules</artifactId>
-      <version>1.2</version>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- unit tests -->
@@ -50,8 +86,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.sonar</groupId>
-      <artifactId>sonar-deprecated</artifactId>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-project</artifactId>
+      <version>2.0.7</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -71,8 +108,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>80000</maxsize>
-                  <minsize>50000</minsize>
+                  <maxsize>2000000</maxsize>
+                  <minsize>1000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>

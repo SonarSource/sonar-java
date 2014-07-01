@@ -24,10 +24,9 @@ import org.sonar.api.SonarPlugin;
 
 import java.util.List;
 
-public class JaCoCoPlugin extends SonarPlugin {
+public class JaCoCoPlugin {
 
-  @Override
-  public List getExtensions() {
+  public static List getExtensions() {
     ImmutableList.Builder<Object> extensions = ImmutableList.builder();
 
     extensions.addAll(JacocoConfiguration.getPropertyDefinitions());

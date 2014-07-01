@@ -9,7 +9,6 @@
   </parent>
 
   <artifactId>sonar-surefire-plugin</artifactId>
-  <packaging>sonar-plugin</packaging>
 
   <name>SonarQube Java :: Surefire Plugin</name>
 
@@ -21,10 +20,8 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>sonar-java-plugin</artifactId>
+      <artifactId>sonar-java-library</artifactId>
       <version>${project.version}</version>
-      <type>sonar-plugin</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -71,32 +68,6 @@
         <directory>${basedir}/src/test/resources</directory>
       </testResource>
     </testResources>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.sonar</groupId>
-        <artifactId>sonar-packaging-maven-plugin</artifactId>
-        <configuration>
-          <pluginKey>surefire</pluginKey>
-          <pluginName>Surefire</pluginName>
-          <pluginParent>java</pluginParent>
-          <pluginClass>org.sonar.plugins.surefire.SurefirePlugin</pluginClass>
-          <pluginDescription>
-            <![CDATA[Get results of unit tests with <a href='http://maven.apache.org/plugins/maven-surefire-plugin/'>Surefire</a>.]]></pluginDescription>
-        </configuration>
-      </plugin>
-      <!-- Running JUnit tests in parallel -->
-      <!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <parallel>classes</parallel>
-          <threadCount>3</threadCount>
-          <perCoreThreadCount>true</perCoreThreadCount>
-        </configuration>
-      </plugin>
-      -->
-    </plugins>
   </build>
 
 </project>

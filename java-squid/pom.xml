@@ -15,8 +15,7 @@
   <dependencies>
     <dependency>
       <groupId>org.codehaus.sonar-plugins.java</groupId>
-      <artifactId>sonar-java-plugin</artifactId>
-      <type>sonar-plugin</type>
+      <artifactId>sonar-java-library</artifactId>
       <version>${project.version}</version>
     </dependency>
 

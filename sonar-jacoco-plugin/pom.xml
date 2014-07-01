@@ -8,7 +8,6 @@
     <version>2.4-SNAPSHOT</version>
   </parent>
   <artifactId>sonar-jacoco-plugin</artifactId>
-  <packaging>sonar-plugin</packaging>
 
   <name>SonarQube Java :: JaCoCo Plugin</name>
   <description><![CDATA[Get code coverage with <a href="http://www.jacoco.org/jacoco/">JaCoCo</a>.]]></description>
@@ -33,12 +32,6 @@
     </developer>
   </developers>
 
-  <properties>
-    <sonar.pluginName>JaCoCo</sonar.pluginName>
-    <sonar.pluginClass>org.sonar.plugins.jacoco.JaCoCoPlugin</sonar.pluginClass>
-    <sonar.pluginParent>java</sonar.pluginParent>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.jacoco</groupId>
@@ -55,10 +48,8 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.sonar-plugins.java</groupId>
-      <artifactId>sonar-java-plugin</artifactId>
+      <artifactId>sonar-java-library</artifactId>
       <version>${project.version}</version>
-      <type>sonar-plugin</type>
-      <scope>provided</scope>
     </dependency>
 
     <!-- Would be provided by environment -->
@@ -137,8 +128,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>760000</maxsize>
-                  <minsize>700000</minsize>
+                  <maxsize>30000</maxsize>
+                  <minsize>10000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>

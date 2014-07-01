@@ -38,7 +38,6 @@
   <modules>
     <module>java-squid</module>
     <module>java-checks</module>
-    <module>sonar-squid-java-plugin</module>
     <module>sonar-java-plugin</module>
     <module>sonar-surefire-plugin</module>
     <module>sonar-jacoco-plugin</module>
