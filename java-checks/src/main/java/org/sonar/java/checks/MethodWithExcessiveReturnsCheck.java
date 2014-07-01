@@ -46,6 +46,7 @@ public class MethodWithExcessiveReturnsCheck extends SquidCheck<LexerlessGrammar
   public void init() {
     subscribeTo(JavaGrammar.RETURN_STATEMENT);
     subscribeTo(JavaGrammar.CLASS_BODY_DECLARATION);
+    subscribeTo(JavaGrammar.INTERFACE_BODY_DECLARATION);
   }
 
   @Override

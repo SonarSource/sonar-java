@@ -51,4 +51,14 @@ public class MethodWithExcessiveReturnsCheckTest {
         .next().atLine(31).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 4.");
   }
 
+  @Test
+  public void interfaceWithDefaultMethods() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodWithExcessiveReturnsCheckInterface.java"), new MethodWithExcessiveReturnsCheck());
+	System.out.println(file.getCheckMessages());
+    checkMessagesVerifier.verify(file.getCheckMessages())
+//TODO: default methods are not yet recognized
+//        .next().atLine(8).withMessage("Reduce the number of returns of this method 4, down to the maximum allowed 3.")
+//        .next().atLine(15).withMessage("Reduce the number of returns of this method 4, down to the maximum allowed 3.")
+        .next().atLine(20).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 3.");
+  }
 }
