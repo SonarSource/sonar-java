@@ -228,8 +228,8 @@ public class BytecodeCompleter implements Symbol.Completer {
 
     @Override
     public void visit(int version, int flags, String name, @Nullable String signature, @Nullable String superName, @Nullable String[] interfaces) {
-      Preconditions.checkState(name.endsWith(classSymbol.name));
-      Preconditions.checkState(!isSynthetic(flags));
+      Preconditions.checkState(name.endsWith(classSymbol.name), "Name : '"+name+"' should ends with "+classSymbol.name);
+      Preconditions.checkState(!isSynthetic(flags), name+" is synthetic");
       className = name;
       classSymbol.flags = filterBytecodeFlags(flags);
       classSymbol.members = new Scope(classSymbol);
