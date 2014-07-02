@@ -23,6 +23,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTreeMaker;
@@ -45,6 +46,7 @@ public class SafetyNetTest {
   };
 
   @Test
+  @Ignore
   public void test() {
     Parser<LexerlessGrammar> parser = new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, JavaGrammar.createGrammar());
     for (String dir : dirs) {
