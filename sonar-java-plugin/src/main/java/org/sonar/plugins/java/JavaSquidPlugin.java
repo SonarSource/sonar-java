@@ -67,7 +67,6 @@ public class JavaSquidPlugin extends SonarPlugin {
 
       JavaRuleRepository.class,
       JavaSonarWayProfile.class,
-      JavaSonarWayWithFindbugsProfile.class,
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
       JavaSquidSensor.class);

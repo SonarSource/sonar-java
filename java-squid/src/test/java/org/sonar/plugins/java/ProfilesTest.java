@@ -45,17 +45,6 @@ public class ProfilesTest {
     assertThat(profile.getActiveRules()).hasSize(2);
   }
 
-  @Test
-  public void should_load_sonar_way_with_findbugs_with_common_rules() {
-    CommonRulesSonarWayProfile sonarWay = new CommonRulesSonarWayProfile(new XMLProfileParser(universalRuleFinder()));
-    CommonRulesSonarWayWithFindbugsProfile definition = new CommonRulesSonarWayWithFindbugsProfile(sonarWay);
-    RulesProfile profile = definition.createProfile(ValidationMessages.create());
-
-    assertThat(profile.getName()).isEqualTo("Sonar way with Findbugs");
-    assertThat(profile.getLanguage()).isEqualTo("java");
-    assertThat(profile.getActiveRules()).hasSize(2);
-  }
-
   private RuleFinder universalRuleFinder() {
     RuleFinder ruleFinder = mock(RuleFinder.class);
     when(ruleFinder.findByKey(anyString(), anyString())).thenAnswer(new Answer<Rule>() {

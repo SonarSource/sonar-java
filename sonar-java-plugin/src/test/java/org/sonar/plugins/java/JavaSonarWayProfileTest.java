@@ -50,20 +50,6 @@ public class JavaSonarWayProfileTest {
     assertThat(validation.hasErrors()).isFalse();
   }
 
-  @Test
-  public void should_create_sonar_way_with_findbugs_profile() {
-    ValidationMessages validation = ValidationMessages.create();
-
-    JavaSonarWayWithFindbugsProfile definition = new JavaSonarWayWithFindbugsProfile(new JavaSonarWayProfile(new AnnotationProfileParser(ruleFinder())));
-    RulesProfile profile = definition.createProfile(validation);
-
-    assertThat(profile.getLanguage()).isEqualTo(Java.KEY);
-    assertThat(profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY))
-      .hasSize(116);
-    assertThat(profile.getName()).isEqualTo("Sonar way with Findbugs");
-    assertThat(validation.hasErrors()).isFalse();
-  }
-
   static RuleFinder ruleFinder() {
     return when(mock(RuleFinder.class).findByKey(anyString(), anyString())).thenAnswer(new Answer<Rule>() {
       @Override
