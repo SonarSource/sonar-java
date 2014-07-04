@@ -106,7 +106,7 @@ public class JavaSquidSensor implements Sensor {
   }
 
   private JavaConfiguration createConfiguration(Project project) {
-    boolean analyzePropertyAccessors = settings.getBoolean(JavaSquidPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY);
+    boolean analyzePropertyAccessors = settings.getBoolean(JavaPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY);
     Charset charset = moduleFileSystem.sourceCharset();
     JavaConfiguration conf = new JavaConfiguration(charset);
     conf.setAnalyzePropertyAccessors(analyzePropertyAccessors);

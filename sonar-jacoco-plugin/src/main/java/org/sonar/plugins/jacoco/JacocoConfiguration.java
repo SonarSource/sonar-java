@@ -27,7 +27,6 @@ import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Qualifiers;
-import org.sonar.plugins.java.Java;
 
 import java.util.List;
 
@@ -53,7 +52,7 @@ public class JacocoConfiguration implements BatchExtension {
   }
 
   private boolean hasJavaFiles() {
-    return fileSystem.hasFiles(fileSystem.predicates().hasLanguage(Java.KEY));
+    return fileSystem.hasFiles(fileSystem.predicates().hasLanguage("java"));
   }
 
   public String getReportPath() {

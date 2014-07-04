@@ -17,8 +17,17 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-@ParametersAreNonnullByDefault
 package org.sonar.plugins.java;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.junit.Test;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+public class JavaPluginTest {
+
+  @Test
+  public void test() {
+    assertThat(new JavaPlugin().getExtensions().size()).isEqualTo(23);
+  }
+
+}
