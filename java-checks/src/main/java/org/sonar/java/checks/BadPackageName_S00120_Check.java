@@ -22,11 +22,15 @@ package org.sonar.java.checks;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.*;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.regex.Pattern;
@@ -36,35 +40,53 @@ import java.util.regex.Pattern;
   priority = Priority.MAJOR,
   tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class BadPackageName_S00120_Check extends SquidCheck<LexerlessGrammar> {
+public class BadPackageName_S00120_Check extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final String RULE_KEY = "S00120";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^[a-z]+(\\.[a-z][a-z0-9]*)*$";
 
   @RuleProperty(
     key = "format",
-    defaultValue = "" + DEFAULT_FORMAT)
+    defaultValue = DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.PACKAGE_DECLARATION);
-    pattern = Pattern.compile(format, Pattern.DOTALL);
+  public void scanFile(JavaFileScannerContext context) {
+    if (pattern == null) {
+      pattern = Pattern.compile(format, Pattern.DOTALL);
+    }
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
-    String name = concatenate(astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
-    if (!pattern.matcher(name).matches()) {
-      getContext().createLineViolation(this, "Rename this package name to match the regular expression '" + format + "'.", astNode);
+  public void visitCompilationUnit(CompilationUnitTree tree) {
+    if (tree.packageName() != null) {
+      String name = concatenate(tree.packageName());
+
+      if (!pattern.matcher(name).matches()) {
+        context.addIssue(tree, ruleKey, "Rename this package name to match the regular expression '" + format + "'.");
+      }
     }
   }
 
-  private String concatenate(AstNode astNode) {
+  private String concatenate(ExpressionTree tree) {
     StringBuilder sb = new StringBuilder();
-    for (Token token : astNode.getTokens()) {
-      sb.append(token.getValue());
+
+    while (tree.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
+      sb.insert(0,mse.identifier());
+      sb.insert(0,'.');
+      tree = mse.expression();
+    }
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree idt = (IdentifierTree) tree;
+      sb.insert(0,idt.name());
     }
     return sb.toString();
   }

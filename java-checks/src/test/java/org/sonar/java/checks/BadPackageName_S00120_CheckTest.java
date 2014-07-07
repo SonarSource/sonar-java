@@ -28,6 +28,7 @@ import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.AstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.indexer.QueryByType;
 
@@ -40,12 +41,8 @@ public class BadPackageName_S00120_CheckTest {
 
   @Test
   public void test() {
-    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), check);
-    File baseDir = new File("src/test/files/checks");
-    List<InputFile> inputFiles = InputFileUtils.create(baseDir,
-      ImmutableList.of(new File("src/test/files/checks/PACKAGE/BadPackageName.java")));
-    scanner.scan(inputFiles);
-    SourceFile file = (SourceFile) scanner.getIndex().search(new QueryByType(SourceFile.class)).iterator().next();
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/PACKAGE/BadPackageName.java"), new VisitorsBridge(check));
+
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(1).withMessage("Rename this package name to match the regular expression '^[a-z]+(\\.[a-z][a-z0-9]*)*$'.")
       .noMore();
@@ -54,14 +51,18 @@ public class BadPackageName_S00120_CheckTest {
   @Test
   public void test2() {
     check.format = "^[a-zA-Z0-9]*$";
-    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), check);
-    File baseDir = new File("src/test/files/checks");
-    List<InputFile> inputFiles = InputFileUtils.create(baseDir,
-      ImmutableList.of(new File("src/test/files/checks/PACKAGE/BadPackageName.java")));
-    scanner.scan(inputFiles);
-    SourceFile file = (SourceFile) scanner.getIndex().search(new QueryByType(SourceFile.class)).iterator().next();
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/PACKAGE/BadPackageName.java"), new VisitorsBridge(check));
+
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .noMore();
   }
 
+  @Test
+  public void test3() throws Exception {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/PACKAGE/BadQualifiedIdentifierPackageName.java"), new VisitorsBridge(check));
+
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(1).withMessage("Rename this package name to match the regular expression '^[a-z]+(\\.[a-z][a-z0-9]*)*$'.")
+        .noMore();
+  }
 }
