@@ -314,7 +314,6 @@ public class Resolve {
   public Symbol findIdentInPackage(Env env, Symbol site, String name, int kind) {
     String fullname = bytecodeCompleter.formFullName(name, site);
     Symbol bestSoFar = symbolNotFound;
-    Symbol.PackageSymbol pack = null;
     //Try to find a type matching the name.
     if ((kind & Symbol.TYP) != 0) {
       Symbol sym = bytecodeCompleter.loadClass(fullname);
@@ -324,9 +323,9 @@ public class Resolve {
     }
     //We did not find the class so identifier must be a package.
     if ((kind & Symbol.PCK) != 0 && bestSoFar.kind >= symbolNotFound.kind) {
-      pack = bytecodeCompleter.enterPackage(fullname);
+      bestSoFar = bytecodeCompleter.enterPackage(fullname);
     }
-    return (pack != null) ? pack : bestSoFar;
+    return bestSoFar;
   }
 
 
