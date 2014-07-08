@@ -18,3 +18,8 @@ class Foo {
   @VisibleForTesting
   public int foo; // Compliant
 }
+
+interface bar {
+  public int blah = 0;
+
+}

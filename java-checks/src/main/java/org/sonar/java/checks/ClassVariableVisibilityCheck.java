@@ -19,53 +19,58 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.*;
 
-import java.util.Iterator;
 import java.util.List;
 
 @Rule(
-  key = "ClassVariableVisibilityCheck",
+  key = ClassVariableVisibilityCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements JavaFileScanner {
-//    extends SquidCheck<LexerlessGrammar> {
 
-  public static final String RULE_KEY = "S00114";
+  public static final String RULE_KEY = "ClassVariableVisibilityCheck";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private boolean isClass = false;
+
   private JavaFileScannerContext context;
 
   @Override
-  public void scanFile(JavaFileScannerContext context)
-  {
+  public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     scan(context.getTree());
   }
 
   @Override
+  public void visitClass(ClassTree tree) {
+
+    if (tree.is(Tree.Kind.CLASS)) {
+      isClass = true;
+    }
+    else {
+      isClass = false;
+    }
+    super.visitClass(tree);
+  }
+
+  @Override
   public void visitVariable(VariableTree tree) {
+
     List<Modifier> modifiers = tree.modifiers().modifiers();
     List<AnnotationTree> annotations = tree.modifiers().annotations();
 
-    if (isPublic(modifiers) && !(isConstant(modifiers) || isAnnotated(annotations))) {
+    if (isClass && isPublic(modifiers) && !(isConstant(modifiers) || isAnnotated(annotations))) {
       context.addIssue(tree, ruleKey, "Make this class field a static final constant or non-public and provide accessors if needed.");
     }
 
+    super.visitVariable(tree);
   }
 
   private static boolean isConstant(List<Modifier> modifiers) {
