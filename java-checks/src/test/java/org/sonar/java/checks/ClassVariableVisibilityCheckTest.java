@@ -45,7 +45,8 @@ public class ClassVariableVisibilityCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(7).withMessage("Make this class field a static final constant or non-public and provide accessors if needed.")
         .next().atLine(9)
-        .next().atLine(10);
+        .next().atLine(10)
+        .next().atLine(24);
   }
 
 }

@@ -27,6 +27,8 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.*;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 @Rule(
@@ -38,7 +40,7 @@ public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements Jav
   public static final String RULE_KEY = "ClassVariableVisibilityCheck";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
-  private boolean isClass = false;
+  private Deque<Boolean> isClassStack = new ArrayDeque<Boolean>();
 
   private JavaFileScannerContext context;
 
@@ -51,13 +53,9 @@ public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements Jav
   @Override
   public void visitClass(ClassTree tree) {
 
-    if (tree.is(Tree.Kind.CLASS)) {
-      isClass = true;
-    }
-    else {
-      isClass = false;
-    }
+    isClassStack.push(tree.is(Tree.Kind.CLASS));
     super.visitClass(tree);
+    isClassStack.pop();
   }
 
   @Override
@@ -66,11 +64,15 @@ public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements Jav
     List<Modifier> modifiers = tree.modifiers().modifiers();
     List<AnnotationTree> annotations = tree.modifiers().annotations();
 
-    if (isClass && isPublic(modifiers) && !(isConstant(modifiers) || isAnnotated(annotations))) {
+    if (isClass() && isPublic(modifiers) && !(isConstant(modifiers) || isAnnotated(annotations))) {
       context.addIssue(tree, ruleKey, "Make this class field a static final constant or non-public and provide accessors if needed.");
     }
 
     super.visitVariable(tree);
+  }
+
+  private boolean isClass() {
+    return !isClassStack.isEmpty() && isClassStack.peek();
   }
 
   private static boolean isConstant(List<Modifier> modifiers) {

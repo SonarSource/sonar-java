@@ -17,6 +17,11 @@ class Foo {
 
   @VisibleForTesting
   public int foo; // Compliant
+  static interface blah {
+    public String howdy = "Well, hello there!";
+  }
+
+  public long l1;
 }
 
 interface bar {
