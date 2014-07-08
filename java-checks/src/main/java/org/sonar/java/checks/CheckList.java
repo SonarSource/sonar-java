@@ -186,7 +186,8 @@ public final class CheckList {
       CompareObjectWithEqualsCheck.class,
       ArrayEqualsCheck.class,
       RepeatAnnotationCheck.class,
-      NPEThrowCheck.class
+      NPEThrowCheck.class,
+      NullDereferenceInConditionalCheck.class
     );
   }
 
