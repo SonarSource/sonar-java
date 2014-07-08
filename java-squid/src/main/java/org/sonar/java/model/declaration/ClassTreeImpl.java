@@ -111,6 +111,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   public void setSymbol(Symbol.TypeSymbol symbol) {
+    Preconditions.checkState(this.symbol == null);
     this.symbol = symbol;
   }
 }

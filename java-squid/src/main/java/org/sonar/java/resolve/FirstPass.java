@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -258,18 +259,20 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    visitMethodDeclaration(tree);
+    visitMethodDeclaration((MethodTreeImpl) tree);
     super.visitMethod(tree);
     restoreEnvironment(tree);
   }
 
-  private void visitMethodDeclaration(MethodTree tree) {
+  private void visitMethodDeclaration(MethodTreeImpl tree) {
     String name = tree.returnType() == null ? "<init>" : tree.simpleName().name();
     Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeFlags(tree.modifiers()), name, env.scope.owner);
     enterSymbol(tree, symbol);
     symbol.parameters = new Scope(symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
+
+    tree.setSymbol(symbol);
 
     // Save current environment to be able to complete method later
     semanticModel.saveEnv(symbol, env);

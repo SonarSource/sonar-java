@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -45,6 +46,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   private final BlockTree block;
   private final List<ExpressionTree> throwsClauses;
   private final ExpressionTree defaultValue;
+
+  private Symbol.MethodSymbol symbol;
 
   public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, IdentifierTree simpleName, List<VariableTree> parameters,
                         @Nullable BlockTree block,
@@ -111,5 +114,14 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitMethod(this);
+  }
+
+  public Symbol.MethodSymbol getSymbol() {
+    return symbol;
+  }
+
+  public void setSymbol(Symbol.MethodSymbol symbol) {
+    Preconditions.checkState(this.symbol == null);
+    this.symbol = symbol;
   }
 }
