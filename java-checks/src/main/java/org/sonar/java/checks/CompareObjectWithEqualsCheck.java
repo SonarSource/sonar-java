@@ -23,6 +23,8 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -58,14 +60,16 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
     }
   }
 
+  // TODO(Godin): It seems to be quite common need - operate with signature of methods, so this operation should be generalized and simplified.
   private boolean isEquals(MethodTree tree) {
     String methodName = tree.simpleName().name();
     return "equals".equals(methodName) && hasObjectParam(tree) && returnsBoolean(tree);
   }
 
   private boolean returnsBoolean(MethodTree tree) {
-    Tree returnType = tree.returnType();
-    return returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && ((AbstractTypedTree) returnType).getType().isTagged(Type.BOOLEAN);
+    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
+    // TODO(Godin): Not very convenient way to get a return type
+    return (methodSymbol != null) && (methodSymbol.getReturnType().getType().isTagged(Type.BOOLEAN));
   }
 
   private boolean hasObjectParam(MethodTree tree) {

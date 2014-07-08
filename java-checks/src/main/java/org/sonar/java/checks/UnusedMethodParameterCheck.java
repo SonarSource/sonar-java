@@ -26,7 +26,7 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
@@ -83,6 +83,7 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
     }
   }
 
+  // TODO(Godin): It seems to be quite common need - operate with signature of methods, so this operation should be generalized and simplified.
   private boolean isMainMethod(MethodTree tree) {
     return isPublicStatic(tree) && isCalledMain(tree) && returnsVoid(tree) && hasStringArrayParameter(tree);
   }
@@ -111,8 +112,9 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
   }
 
   private boolean returnsVoid(MethodTree tree) {
-    Tree returnType = tree.returnType();
-    return returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && ((JavaTree.PrimitiveTypeTreeImpl) returnType).getType().isTagged(Type.VOID);
+    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
+    // TODO(Godin): Not very convenient way to get a return type
+    return (methodSymbol != null) && (methodSymbol.getReturnType().getType().isTagged(Type.VOID));
   }
 
   private boolean hasOneParameter(MethodTree tree) {
