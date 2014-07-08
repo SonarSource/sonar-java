@@ -24,11 +24,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
 public class ClassVariableVisibilityCheckTest {
+
+  private final ClassVariableVisibilityCheck check = new ClassVariableVisibilityCheck();
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -38,7 +41,7 @@ public class ClassVariableVisibilityCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassVariableVisibilityCheck.java"), new ClassVariableVisibilityCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassVariableVisibilityCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(7).withMessage("Make this class field a static final constant or non-public and provide accessors if needed.")
         .next().atLine(9)

@@ -22,51 +22,66 @@ package org.sonar.java.checks;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.Iterator;
+import java.util.List;
 
 @Rule(
   key = "ClassVariableVisibilityCheck",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ClassVariableVisibilityCheck extends SquidCheck<LexerlessGrammar> {
+public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements JavaFileScanner {
+//    extends SquidCheck<LexerlessGrammar> {
+
+  public static final String RULE_KEY = "S00114";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.FIELD_DECLARATION);
+  public void scanFile(JavaFileScannerContext context)
+  {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    AstNode classBodyDeclaration = node.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION);
+  public void visitVariable(VariableTree tree) {
+    List<Modifier> modifiers = tree.modifiers().modifiers();
+    List<AnnotationTree> annotations = tree.modifiers().annotations();
 
-    if (isPublic(classBodyDeclaration) && !isConstant(classBodyDeclaration) && !isAnnotated(classBodyDeclaration)) {
-      getContext().createLineViolation(this, "Make this class field a static final constant or non-public and provide accessors if needed.", node);
+    if (isPublic(modifiers) && !(isConstant(modifiers) || isAnnotated(annotations))) {
+      context.addIssue(tree, ruleKey, "Make this class field a static final constant or non-public and provide accessors if needed.");
     }
+
   }
 
-  private static boolean isConstant(AstNode node) {
-    return hasModifier(node, JavaKeyword.STATIC) &&
-      hasModifier(node, JavaKeyword.FINAL);
+  private static boolean isConstant(List<Modifier> modifiers) {
+    return hasModifier(modifiers) && modifiers.contains(Modifier.FINAL) && modifiers.contains(Modifier.STATIC);
   }
 
-  private static boolean isPublic(AstNode node) {
-    return hasModifier(node, JavaKeyword.PUBLIC);
+  private static boolean isPublic(List<Modifier> modifiers) {
+    return hasModifier(modifiers) && modifiers.contains(Modifier.PUBLIC);
   }
 
-  private static boolean hasModifier(AstNode node, AstNodeType modifier) {
-    return node.select()
-        .children(JavaGrammar.MODIFIER)
-        .children(modifier)
-        .isNotEmpty();
+  private static boolean hasModifier(List<Modifier> modifiers) {
+    return (modifiers != null && modifiers.size() > 0);
   }
 
-  private static boolean isAnnotated(AstNode node) {
-    return hasModifier(node, JavaGrammar.ANNOTATION);
+  private static boolean isAnnotated(List<AnnotationTree> annotations) {
+    return (annotations != null && annotations.size() > 0);
   }
 
 }
