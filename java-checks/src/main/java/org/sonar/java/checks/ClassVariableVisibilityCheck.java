@@ -53,7 +53,7 @@ public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements Jav
   @Override
   public void visitClass(ClassTree tree) {
 
-    isClassStack.push(tree.is(Tree.Kind.CLASS));
+    isClassStack.push(tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM));
     super.visitClass(tree);
     isClassStack.pop();
   }
@@ -65,7 +65,7 @@ public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements Jav
     List<AnnotationTree> annotations = tree.modifiers().annotations();
 
     if (isClass() && isPublic(modifiers) && !(isConstant(modifiers) || isAnnotated(annotations))) {
-      context.addIssue(tree, ruleKey, "Make this class field a static final constant or non-public and provide accessors if needed.");
+      context.addIssue(tree, ruleKey, "Make " + tree.simpleName() + " a static final constant or non-public and provide accessors if needed.");
     }
 
     super.visitVariable(tree);
