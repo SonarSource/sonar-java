@@ -151,11 +151,7 @@ public class SecondPass implements Symbol.Completer {
     }
     Type type = resolveType(env, methodTree.returnType());
     if (type != null) {
-      if(type.isTagged(Type.CLASS)) {
-        symbol.type = ((Type.ClassType) type).symbol;
-      } else if(type.isTagged(Type.ARRAY)) {
-        symbol.type = symbols.arrayClass;
-      }
+      symbol.type = type.symbol;
     }
   }
 

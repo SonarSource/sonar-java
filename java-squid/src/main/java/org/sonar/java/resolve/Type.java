@@ -40,6 +40,9 @@ public class Type {
 
   int tag;
 
+  /**
+   * Symbol, which defines this type.
+   */
   Symbol.TypeSymbol symbol;
 
   public Type(int tag, Symbol.TypeSymbol symbol) {
