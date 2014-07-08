@@ -33,6 +33,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.*;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.regex.Pattern;
 
 @Rule(
@@ -68,7 +70,6 @@ public class BadPackageName_S00120_Check extends BaseTreeVisitor implements Java
   public void visitCompilationUnit(CompilationUnitTree tree) {
     if (tree.packageName() != null) {
       String name = concatenate(tree.packageName());
-
       if (!pattern.matcher(name).matches()) {
         context.addIssue(tree, ruleKey, "Rename this package name to match the regular expression '" + format + "'.");
       }
@@ -76,17 +77,23 @@ public class BadPackageName_S00120_Check extends BaseTreeVisitor implements Java
   }
 
   private String concatenate(ExpressionTree tree) {
-    StringBuilder sb = new StringBuilder();
-
+    LinkedList<String> pieces = new LinkedList<String>();
     while (tree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
-      sb.insert(0,mse.identifier());
-      sb.insert(0,'.');
+      pieces.push(mse.identifier().name());
+      pieces.push(".");
       tree = mse.expression();
     }
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree idt = (IdentifierTree) tree;
-      sb.insert(0,idt.name());
+      pieces.push(idt.name());
+    }
+
+    StringBuilder sb = new StringBuilder();
+    Iterator<String> itr = pieces.iterator();
+    while (itr.hasNext())
+    {
+      sb.append(itr.next());
     }
     return sb.toString();
   }
