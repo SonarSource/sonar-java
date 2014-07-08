@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -281,13 +282,13 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
-    declareVariable(Flags.PUBLIC | Flags.ENUM, tree.simpleName(), tree);
+    declareVariable(Flags.PUBLIC | Flags.ENUM, tree.simpleName(), (VariableTreeImpl) tree);
     super.visitEnumConstant(tree);
   }
 
   @Override
   public void visitVariable(VariableTree tree) {
-    declareVariable(computeFlags(tree.modifiers()), tree.simpleName(), tree);
+    declareVariable(computeFlags(tree.modifiers()), tree.simpleName(), (VariableTreeImpl) tree);
     super.visitVariable(tree);
   }
 
@@ -303,11 +304,13 @@ public class FirstPass extends BaseTreeVisitor {
     return result;
   }
 
-  private void declareVariable(int flags, IdentifierTree identifierTree, Tree tree) {
+  private void declareVariable(int flags, IdentifierTree identifierTree, VariableTreeImpl tree) {
     Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, identifierTree.name(), env.scope.owner);
     enterSymbol(tree, symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
+
+    tree.setSymbol(symbol);
 
     // Save current environment to be able to complete variable declaration later
     semanticModel.saveEnv(symbol, env);

@@ -86,6 +86,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   public void setSymbol(Symbol.VariableSymbol symbol) {
+    Preconditions.checkState(this.symbol == null);
     this.symbol = symbol;
   }
 }
