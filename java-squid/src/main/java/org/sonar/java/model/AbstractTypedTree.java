@@ -35,6 +35,8 @@ public abstract class AbstractTypedTree extends JavaTree {
   }
 
   public void setType(Type type) {
+    // FIXME(Godin): type should be computed and set only once, but currently this is not the case and this contract is violated
+//    Preconditions.checkState(this.type == null);
     this.type = type;
   }
 }
