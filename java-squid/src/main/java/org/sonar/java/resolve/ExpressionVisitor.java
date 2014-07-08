@@ -82,6 +82,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
   @Override
   public void visitExpressionStatement(ExpressionStatementTree tree) {
     super.visitExpressionStatement(tree);
+    // TODO(Godin): strictly speaking statement can't have type
     registerType(tree, getType(tree.expression()));
   }
 
