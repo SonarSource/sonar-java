@@ -47,6 +47,7 @@ import org.sonar.api.utils.SonarException;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
@@ -128,7 +129,7 @@ public abstract class AbstractAnalyzer {
     } else {
       JaCoCoUtils.LOG.info("Analysing {}", jacocoExecutionData);
 
-      ExecutionDataReader reader = new ExecutionDataReader(new FileInputStream(jacocoExecutionData));
+      ExecutionDataReader reader = new ExecutionDataReader(new BufferedInputStream(new FileInputStream(jacocoExecutionData)));
       reader.setSessionInfoVisitor(executionDataVisitor);
       reader.setExecutionDataVisitor(executionDataVisitor);
       reader.read();
