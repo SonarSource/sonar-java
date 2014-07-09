@@ -67,6 +67,10 @@ public abstract class AbstractSurefireParser {
       // maybe there's only a test suite result file
       unitTestResultFiles = findXMLFilesStartingWith(dir, "TESTS-");
     }
+    if (unitTestResultFiles.length == 0) {
+      // Support for SBT unit test  (see http://jira.codehaus.org/browse/SONARJAVA-43)
+      unitTestResultFiles = findXMLFilesEndWith(dir, ".xml");
+    }
     return unitTestResultFiles;
   }
 
@@ -75,6 +79,14 @@ public abstract class AbstractSurefireParser {
       @Override
       public boolean accept(File dir, String name) {
         return name.startsWith(fileNameStart) && name.endsWith(".xml");
+      }
+    });
+  }
+
+  private File[] findXMLFilesEndWith(File dir, final String fileNameEnd) {
+    return dir.listFiles(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return name.endsWith(fileNameEnd);
       }
     });
   }

@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuite tests="4" name="controllers.CategoryControllerTest" failures="0"
+           time="3.254" errors="0">
+    <properties>
+        <property name="sbt.ivy.home" value="/Volumes/DEV/04_Tools/play-2.1.0/framework/../repository"></property>
+        <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"></property>
+        <property name="sun.boot.library.path"
+                  value="/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/lib"></property>
+        <property name="java.vm.version" value="23.7-b01"></property>
+        <property name="user.country.format" value="FR"></property>
+        <property name="gopherProxySet" value="false"></property>
+        <property name="java.vm.vendor" value="Oracle Corporation"></property>
+        <property name="java.vendor.url" value="http://java.oracle.com/"></property>
+        <property name="path.separator" value=":"></property>
+        <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"></property>
+        <property name="file.encoding.pkg" value="sun.io"></property>
+        <property name="user.country" value="US"></property>
+        <property name="sun.java.launcher" value="SUN_STANDARD"></property>
+        <property name="sun.os.patch.level" value="unknown"></property>
+        <property name="java.vm.specification.name" value="Java Virtual Machine Specification"></property>
+        <property name="user.dir" value="/Volumes/DEV/01_Github/JCertifLab/jcertif-backend-2013"></property>
+        <property name="java.runtime.version" value="1.7.0_15-b03"></property>
+        <property name="sbt.boot.properties"
+                  value="/Volumes/DEV/04_Tools/play-2.1.0/framework/sbt/sbt.boot.properties"></property>
+        <property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"></property>
+        <property name="java.endorsed.dirs"
+                  value="/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/lib/endorsed"></property>
+        <property name="os.arch" value="x86_64"></property>
+        <property name="java.io.tmpdir" value="/var/folders/hf/n3vtmsln7gb4c0tvdy2c3r_m0000gq/T/"></property>
+        <property name="line.separator" value="
+"></property>
+        <property name="java.vm.specification.vendor" value="Oracle Corporation"></property>
+        <property name="os.name" value="Mac OS X"></property>
+        <property name="sun.jnu.encoding" value="UTF-8"></property>
+        <property name="java.library.path"
+                  value="/Users/dev/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."></property>
+        <property name="java.specification.name" value="Java Platform API Specification"></property>
+        <property name="java.class.version" value="51.0"></property>
+        <property name="play.home" value="/Volumes/DEV/04_Tools/play-2.1.0/framework"></property>
+        <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"></property>
+        <property name="os.version" value="10.8.2"></property>
+        <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"></property>
+        <property name="user.home" value="/Users/dev"></property>
+        <property name="user.timezone" value="Africa/Kinshasa"></property>
+        <property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"></property>
+        <property name="file.encoding" value="UTF-8"></property>
+        <property name="java.specification.version" value="1.7"></property>
+        <property name="java.class.path"
+                  value="/Volumes/DEV/04_Tools/play-2.1.0/framework/sbt/sbt-launch.jar"></property>
+        <property name="user.name" value="dev"></property>
+        <property name="play.version" value="2.1.0"></property>
+        <property name="java.vm.specification.version" value="1.7"></property>
+        <property name="sun.java.command"
+                  value="/Volumes/DEV/04_Tools/play-2.1.0/framework/sbt/sbt-launch.jar jacoco:cover"></property>
+        <property name="java.home"
+                  value="/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre"></property>
+        <property name="sun.arch.data.model" value="64"></property>
+        <property name="user.language" value="en"></property>
+        <property name="java.specification.vendor" value="Oracle Corporation"></property>
+        <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"></property>
+        <property name="java.vm.info" value="mixed mode"></property>
+        <property name="java.version" value="1.7.0_15"></property>
+        <property name="java.ext.dirs"
+                  value="/Users/dev/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java"></property>
+        <property name="sun.boot.class.path"
+                  value="/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/lib/JObjC.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_15.jdk/Contents/Home/jre/classes"></property>
+        <property name="java.vendor" value="Oracle Corporation"></property>
+        <property name="file.separator" value="/"></property>
+        <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"></property>
+        <property name="sun.io.unicode.encoding" value="UnicodeBig"></property>
+        <property name="sun.cpu.endian" value="little"></property>
+        <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"></property>
+        <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"></property>
+        <property name="sun.cpu.isalist" value=""></property>
+    </properties>
+    <testcase name="controllers.CategoryControllerTest.test_category_list" time="0.0"
+              classname="controllers.CategoryControllerTest">
+
+    </testcase>
+    <testcase name="controllers.CategoryControllerTest.test_category_new_forbidden" time="0.0"
+              classname="controllers.CategoryControllerTest">
+
+    </testcase>
+    <testcase name="controllers.CategoryControllerTest.test_category_new_ok" time="0.0"
+              classname="controllers.CategoryControllerTest">
+
+    </testcase>
+    <testcase name="controllers.CategoryControllerTest.test_category_new_badrequest" time="0.0"
+              classname="controllers.CategoryControllerTest">
+
+    </testcase>
+    <system-out></system-out>
+    <system-err></system-err>
+</testsuite>

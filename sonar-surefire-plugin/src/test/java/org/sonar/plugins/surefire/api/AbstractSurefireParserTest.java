@@ -79,6 +79,19 @@ public class AbstractSurefireParserTest {
     verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), argThat(new IsMeasure(CoreMetrics.TEST_DATA)));
   }
 
+  // SONARJAVA-43 - Support for SBT unit test output xmls with surefire plugin's reuse report functionality
+  @Test
+  public void shouldReuseSBTReports() throws URISyntaxException {
+    AbstractSurefireParser parser = newParser();
+    SensorContext context = mockContext();
+
+    parser.collect(new Project("foo"), context, getDir("sbtReports"));
+
+    verify(context, times(3)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TESTS), anyDouble());
+    verify(context, times(3)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_ERRORS), anyDouble());
+    verify(context, times(3)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), argThat(new IsMeasure(CoreMetrics.TEST_DATA)));
+  }
+
   // SONAR-2841: if there's only a test suite report, then it should be read.
   @Test
   public void shouldUseTestSuiteReportIfAlone() throws URISyntaxException {
