@@ -82,14 +82,10 @@ private int counter = 0;
     if (thenStatement.is(Tree.Kind.BLOCK)) {
       // thenStatement has curly braces. Let's see what's inside...
       BlockTree block = (BlockTree) thenStatement;
-      if (block.body().size() == 1 && block.body().get(0).is(Tree.Kind.IF_STATEMENT)) {
-        return true;
-      }
-      else {
-        return false;
-      }
-    } else if (thenStatement.is(Tree.Kind.IF_STATEMENT)) {
-      // no curlys on thenStatement, It's a bare if statement
+      return (block.body().size() == 1 && block.body().get(0).is(Tree.Kind.IF_STATEMENT));
+    }
+    else if (thenStatement.is(Tree.Kind.IF_STATEMENT)) {
+      // no curlys on thenStatement; it's a bare if statement
       return true;
     }
 
