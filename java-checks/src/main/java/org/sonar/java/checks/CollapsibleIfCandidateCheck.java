@@ -19,66 +19,80 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.*;
 
-import javax.annotation.Nullable;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 @Rule(
-  key = "S1066",
+  key = CollapsibleIfCandidateCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class CollapsibleIfCandidateCheck extends SquidCheck<LexerlessGrammar> {
+public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1066";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
+  private Deque<Boolean> outerIf = new ArrayDeque<Boolean>();
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.IF_STATEMENT);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
+private int counter = 0;
+
   @Override
-  public void visitNode(AstNode node) {
-    if (!hasElseClause(node)) {
-      AstNode enclosingIfStatement = getEnclosingIfStatement(node);
-      if (enclosingIfStatement != null && !hasElseClause(enclosingIfStatement) && hasSingleTrueStatement(enclosingIfStatement)) {
-        getContext().createLineViolation(this, "Merge this if statement with the enclosing one.", node);
+  public void visitIfStatement(IfStatementTree tree) {
+
+    if (!outerIf.isEmpty() && !hasElseClause(tree)) {
+      context.addIssue(tree, ruleKey, "Merge this if statement with the enclosing one.");
+    }
+
+    if (!hasElseClause(tree) && hasBodySingleIfStatement(tree.thenStatement())) {
+      // children of this if statement are eligible for issues
+      outerIf.push(Boolean.TRUE);
+      // recurse into sub-tree
+      super.visitIfStatement(tree);
+      if (!outerIf.isEmpty()) {
+        outerIf.pop();
       }
     }
+    else {
+      // direct children of this if statement not eligible for issues. Reset nesting count
+      outerIf.clear();
+      super.visitIfStatement(tree);
+    }
   }
 
-  private static boolean hasElseClause(AstNode node) {
-    return node.hasDirectChildren(JavaKeyword.ELSE);
+  private static boolean hasElseClause(IfStatementTree tree) {
+    return tree.elseStatement() != null;
   }
 
-  @Nullable
-  private static AstNode getEnclosingIfStatement(AstNode node) {
-    AstNode grandParent = node.getParent().getParent();
-    if (grandParent.is(JavaGrammar.IF_STATEMENT)) {
-      return grandParent;
-    } else if (!grandParent.is(JavaGrammar.BLOCK_STATEMENT)) {
-      return null;
+  private static boolean hasBodySingleIfStatement(StatementTree thenStatement) {
+
+    if (thenStatement.is(Tree.Kind.BLOCK)) {
+      // thenStatement has curly braces. Let's see what's inside...
+      BlockTree block = (BlockTree) thenStatement;
+      if (block.body().size() == 1 && block.body().get(0).is(Tree.Kind.IF_STATEMENT)) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    } else if (thenStatement.is(Tree.Kind.IF_STATEMENT)) {
+      // no curlys on thenStatement, It's a bare if statement
+      return true;
     }
 
-    AstNode statement = grandParent.getFirstAncestor(JavaGrammar.BLOCK, JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP).getParent();
-    if (!statement.is(JavaGrammar.STATEMENT)) {
-      return null;
-    }
-
-    AstNode enclosingStatement = statement.getParent();
-    return enclosingStatement.is(JavaGrammar.IF_STATEMENT) ? enclosingStatement : null;
+    return false;
   }
-
-  private static boolean hasSingleTrueStatement(AstNode node) {
-    AstNode statement = node.getFirstChild(JavaGrammar.STATEMENT);
-
-    return statement.hasDirectChildren(JavaGrammar.BLOCK) ?
-        statement.getFirstChild(JavaGrammar.BLOCK).getFirstChild(JavaGrammar.BLOCK_STATEMENTS).getChildren().size() == 1 :
-        true;
-  }
-
 }

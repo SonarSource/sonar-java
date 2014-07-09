@@ -1,73 +1,94 @@
 class A {
   void f() {
-    if (false) { // Compliant
+    if (false) { // Compliant 1
     }
 
-    if (false) { // Compliant
+    if (false) { // Compliant  2
     } else {
     }
 
-    if (false) { // Compliant
-      if (false) { // Non-Compliant
+    if (false) { // Compliant 3
+      if (false) { // Non-Compliant 4
       }
     }
 
-    if (false) { // Compliant
-      if (false) { // Compliant
+    if (false) { // Compliant 5
+      if (false) { // Compliant 6
       }
       System.out.println();
     }
 
-    if (false) { // Compliant
+    if (false) { // Compliant 7
       int a;
-      if (a) { // Compliant
+      if (a) { // Compliant 8
       }
     }
 
-    if (false) { // Compliant
-      if (false) { // Compliant
+    if (false) { // Compliant 9
+      if (false) { // Compliant 10
       }
     } else {
     }
 
-    if (false) { // Compliant
-      if (false) { // Compliant
+    if (false) { // Compliant 11
+      if (false) { // Compliant 12
       } else {
       }
     }
 
-    if (false) { // Compliant
-    } else if (false) { // Compliant
-      if (false) { // Non-Compliant
+    if (false) { // Compliant 13
+    } else if (false) { // Compliant  14
+      if (false) { // Non-Compliant 15
       }
     }
 
-    if (false) // Compliant
-      if (true) { // Non-Compliant
+    if (false) // Compliant 16
+      if (true) { // Non-Compliant  17
     }
 
-    if (false) { // Compliant
+    if (false) { // Compliant 18
       while (true) {
-        if (true) { // Compliant
+        if (true) { // Compliant  19
         }
       }
 
       while (true)
-        if(true) { // Compliant
+        if(true) { // Compliant 20
       }
     }
   }
 
   {
-    if (false) { // Compliant
+    if (false) { // Compliant 21
     }
-      if (false) {
+      if (false) {  // 22
         switch ("SELECT") {
           case "SELECT":
-            if ("SELECT".equals(token.getValue())) { // Compliant
+            if ("SELECT".equals(token.getValue())) { // Compliant 23
             }
             break;
           }
        }
+
+    if (true) {  // Compliant 24
+      if (true) { // Noncompliant 25
+        int a;
+        if (true) {   // Compliant 26
+          int b;
+        }
+      }
+    }
+
+    if (false) { // Compliant 27
+      while (true) {
+        if (true) { // Compliant  28
+        }
+      }
+    }
+
+    if (true) // Compliant 29
+      if (false)  // Noncompliant 30
+        if (true)  // Noncompliant 31
+          a = 0;
   }
 }

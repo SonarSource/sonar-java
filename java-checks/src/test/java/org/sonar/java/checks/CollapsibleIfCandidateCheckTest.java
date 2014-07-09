@@ -19,26 +19,28 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
+import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
 public class CollapsibleIfCandidateCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+  private final CollapsibleIfCandidateCheck check = new CollapsibleIfCandidateCheck();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CollapsibleIfCandidateCheck.java"), new CollapsibleIfCandidateCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CollapsibleIfCandidateCheck.java"), new VisitorsBridge(check));
+    CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(11).withMessage("Merge this if statement with the enclosing one.")
         .next().atLine(41)
-        .next().atLine(46);
+        .next().atLine(46)
+        .next().atLine(74)
+        .next().atLine(90)
+        .next().atLine(91);
   }
 
 }
