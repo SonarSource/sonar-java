@@ -92,7 +92,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
 
     @Override
     public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      if (tree.expression().is(Tree.Kind.IDENTIFIER)) {
+      if (tree.expression().is(Tree.Kind.IDENTIFIER) || tree.expression().is(Tree.Kind.MEMBER_SELECT)) {
         //Check only first identifier of a member select expression : in a.b.c we are only interested in a.
         scan(tree.expression());
       }

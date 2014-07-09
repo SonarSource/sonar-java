@@ -43,6 +43,7 @@ public class NullDereferenceInConditionalCheckTest {
       .next().atLine(11).withMessage("Either reverse the equality operator in the \"b\" null test, or reverse the logical operator that follows it.")
       .next().atLine(12).withMessage("Either reverse the equality operator in the \"str\" null test, or reverse the logical operator that follows it.")
       .next().atLine(13).withMessage("Either reverse the equality operator in the \"str\" null test, or reverse the logical operator that follows it.")
+      .next().atLine(22).withMessage("Either reverse the equality operator in the \"str\" null test, or reverse the logical operator that follows it.")
     ;
   }
 

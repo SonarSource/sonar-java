@@ -19,6 +19,7 @@ class A{
     if(str == null && str != a){} //Compliant
     if(str == null && str != a){} //Compliant
     if(str == null && str != str){} //Compliant
+    if(str == null && str.a.b > 0){} //Compliant
   }
   String str;
   String a;
