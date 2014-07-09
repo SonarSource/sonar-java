@@ -19,21 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.api.resources.InputFile;
-import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.JavaAstScanner;
-import org.sonar.java.JavaConfiguration;
-import org.sonar.java.ast.AstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.indexer.QueryByType;
 
 import java.io.File;
-import java.util.List;
 
 public class BadPackageName_S00120_CheckTest {
 

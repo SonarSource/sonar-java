@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.*;
 
-import java.util.Iterator;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
@@ -72,23 +72,23 @@ public class BadPackageName_S00120_Check extends BaseTreeVisitor implements Java
   }
 
   private String concatenate(ExpressionTree tree) {
-    LinkedList<String> pieces = new LinkedList<String>();
-    while (tree.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
+    Deque<String> pieces = new LinkedList<String>();
+
+    ExpressionTree expr = tree;
+    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
       pieces.push(mse.identifier().name());
       pieces.push(".");
-      tree = mse.expression();
+      expr = mse.expression();
     }
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree idt = (IdentifierTree) tree;
+    if (expr.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree idt = (IdentifierTree) expr;
       pieces.push(idt.name());
     }
 
     StringBuilder sb = new StringBuilder();
-    Iterator<String> itr = pieces.iterator();
-    while (itr.hasNext())
-    {
-      sb.append(itr.next());
+    for (String piece: pieces) {
+      sb.append(piece);
     }
     return sb.toString();
   }
