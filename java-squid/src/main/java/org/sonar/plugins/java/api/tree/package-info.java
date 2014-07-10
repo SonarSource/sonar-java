@@ -19,7 +19,7 @@
  */
 
 /**
- * Provides interfaces to represent Java source code as abstract syntax trees (AST).
+ * Provides interfaces to represent Java source code as syntax tree.
  */
 @javax.annotation.ParametersAreNonnullByDefault
 @MethodsAreNonnullByDefault
