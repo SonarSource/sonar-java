@@ -19,30 +19,70 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import com.sun.org.apache.xpath.internal.operations.Variable;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.*;
 
 @Rule(
-  key = "S1190",
+  key = EnumAsIdentifierCheck.RULE_KEY,
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class EnumAsIdentifierCheck extends SquidCheck<LexerlessGrammar> {
+public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1190";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaTokenType.IDENTIFIER);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
-  @Override
-  public void visitNode(AstNode node) {
-    if ("enum".equals(node.getTokenOriginalValue())) {
-      getContext().createLineViolation(this, "Use a different name than \"enum\".", node);
+//  @Override
+//  public void init() {
+//    subscribeTo(JavaTokenType.IDENTIFIER);
+//  }
+//
+//  @Override
+//  public void visitNode(AstNode node) {
+//    if ("enum".equals(node.getTokenOriginalValue())) {
+//      getContext().createLineViolation(this, "Use a different name than \"enum\".", node);
+//    }
+//  }
+
+  public void visitClass(ClassTree tree) {
+    for (Tree member : tree.members()) {
+      checkMember(member);
+    }
+    super.visitClass(tree);
+  }
+
+  public void visitMethod(MethodTree tree) {
+    for (VariableTree var: tree.parameters()) {
+      checkMember(var);
+    }
+
+    if (tree.block() != null && tree.block().body() != null && !tree.block().body().isEmpty()) {
+      for (StatementTree stmt : tree.block().body()) {
+        checkMember(stmt);
+      }
+    }
+    
+    super.visitMethod(tree);
+  }
+
+  private void checkMember(Tree candidate) {
+    if (candidate.is(Tree.Kind.VARIABLE) ) {
+      VariableTree var = (VariableTree) candidate;
+      if (var.simpleName().name().equals("enum")) {
+        context.addIssue(candidate, ruleKey, "Use a different name than \"enum\".");
+      }
     }
   }
-
 }
