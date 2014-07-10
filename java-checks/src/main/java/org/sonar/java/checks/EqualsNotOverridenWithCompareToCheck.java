@@ -23,12 +23,15 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.*;
+
+import java.util.List;
 
 @Rule(
   key = EqualsNotOverridenWithCompareToCheck.RULE_KEY,
@@ -49,27 +52,59 @@ public class EqualsNotOverridenWithCompareToCheck extends BaseTreeVisitor implem
 
   @Override
   public void visitClass(ClassTree tree) {
-
-    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) {
+    if ((tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) && isComparable(tree)) {
       boolean hasEquals = false;
-      MethodTree compare = null;
+      Tree compare = null;
+
       for (Tree member : tree.members()) {
         if (member.is(Tree.Kind.METHOD)) {
           MethodTree method = (MethodTree) member;
-          if (method.parameters().size() == 1) {
-            String name = method.simpleName().name();
-            if (name.equals("equals")) {
-              hasEquals = true;
-            } else if (name.equals("compareTo")) {
-              compare = method;
-            }
+          String name = method.simpleName().name();
+
+          if ("equals".equals(name) && hasObjectParam(method) && returnsBoolean(method)) {
+            hasEquals = true;
+          } else if ("compareTo".equals(name) && returnsInt(method) && method.parameters().size() == 1) {
+            compare = member;
           }
         }
       }
+
       if (compare != null && !hasEquals) {
         context.addIssue(compare, ruleKey, "Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.");
       }
     }
     super.visitClass(tree);
   }
+
+  private boolean isComparable(ClassTree tree) {
+    Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();
+    if (typeSymbol == null) {
+      return false;
+    }
+    for (Type type : typeSymbol.getInterfaces()) {
+      if ("Comparable".equals(((Type.ClassType) type).getSymbol().getName())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean hasObjectParam(MethodTree tree) {
+    boolean result = false;
+    if (tree.parameters().size() == 1 && tree.parameters().get(0).type().is(Tree.Kind.IDENTIFIER)) {
+      result = ((IdentifierTree) tree.parameters().get(0).type()).name().endsWith("Object");
+    }
+    return result;
+  }
+
+  private boolean returnsBoolean(MethodTree tree) {
+    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
+    return methodSymbol != null && methodSymbol.getReturnType().getType().isTagged(Type.BOOLEAN);
+  }
+
+  private boolean returnsInt(MethodTree tree) {
+    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
+    return methodSymbol != null && methodSymbol.getReturnType().getType().isTagged(Type.INT);
+  }
+
 }
