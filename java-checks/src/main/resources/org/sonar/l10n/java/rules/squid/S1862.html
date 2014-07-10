@@ -1,0 +1,26 @@
+<p>
+  A chain of if/else if statements is evaluated from top to bottom. At most, only one branch of the chain will be executed: the first one with a condition that evaluates to true.
+</p>
+<p>
+  Therefore, duplicating a condition in a sequence of if/else if statements automatically leads to dead code. Usually, is due to a copy/paste error. Obviously it could lead to unexpected behavior.
+</p>
+
+<h2>Noncompliant Code Sample</h2>
+<pre>
+if (param == 1)
+  openWindow();
+else if (param == 2)
+  closeWindow();
+else if (param == 1)  // For sure this is a bug
+  moveWindowToTheBackground();
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+if (param == 1)
+  openWindow();
+else if (param == 2)
+  closeWindow();
+else if (param == 3)
+  moveWindowToTheBackground();
+</pre>

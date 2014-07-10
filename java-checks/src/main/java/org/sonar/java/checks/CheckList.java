@@ -170,6 +170,8 @@ public final class CheckList {
       ThrowsSeveralCheckedExceptionCheck.class,
       ThreadRunCheck.class,
 
+      DuplicateConditionIfElseIfCheck.class,
+
       ImmediatelyReturnedVariableCheck.class,
       LambdaSingleExpressionCheck.class,
       LambdaOptionalParenthesisCheck.class,
