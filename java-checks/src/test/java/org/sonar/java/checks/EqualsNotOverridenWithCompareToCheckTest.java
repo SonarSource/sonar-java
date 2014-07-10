@@ -19,24 +19,23 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
+import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
 import java.io.File;
 
 public class EqualsNotOverridenWithCompareToCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+  private final EqualsNotOverridenWithCompareToCheck check = new EqualsNotOverridenWithCompareToCheck();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EqualsNotOverridenWithCompareToCheck.java"), new EqualsNotOverridenWithCompareToCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(18).withMessage("Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method")
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EqualsNotOverridenWithCompareToCheck.java"), new VisitorsBridge(check));
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(18).withMessage("Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.")
       .next().atLine(45)
       .next().atLine(59)
       .next().atLine(80);

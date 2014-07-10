@@ -12,7 +12,7 @@ class Foo implements Comparable<Foo> {
 
 }
 
-class Foo implements Comparable<Foo> {
+class Foo2 implements Comparable<Foo> {
 
   @Override
   public int compareTo(Foo o) {           // Non-Compliant
@@ -21,7 +21,7 @@ class Foo implements Comparable<Foo> {
 
 }
 
-class Foo implements Comparable<Foo> {
+class Foo3 implements Comparable<Foo> {
 
   @Override
   public boolean equals(Object obj) {
@@ -30,7 +30,7 @@ class Foo implements Comparable<Foo> {
 
 }
 
-class Foo implements Comparable<Foo> {
+class Foo4 implements Comparable<Foo> {
 
   @Override
   public int compareTo() {
@@ -39,7 +39,7 @@ class Foo implements Comparable<Foo> {
 
 }
 
-class Foo implements Comparable<Foo> {
+class Foo5 implements Comparable<Foo> {
 
   @Override
   public int compareTo(Foo o) {           // Non-Compliant
@@ -53,7 +53,7 @@ class Foo implements Comparable<Foo> {
 
 }
 
-class Foo implements Comparable<Foo> {
+class Foo6 implements Comparable<Foo> {
 
   @Override
   public int compareTo(Foo o) {           // Non-Compliant
@@ -67,13 +67,13 @@ class Foo implements Comparable<Foo> {
 
 }
 
-class Foo implements Comparable<Foo> {
+class Foo7 implements Comparable<Foo> {
 
   ;
 
 }
 
-enum Foo implements Comparable<Foo> {
+enum Foo8 implements Comparable<Foo> {
   ;
 
   @Override
@@ -85,5 +85,11 @@ enum Foo implements Comparable<Foo> {
   public int foo(Object o) {
     return 0;
   }
+
+}
+
+public interface Doc extends Comparable<Object> {
+
+  int compareTo(Object obj);
 
 }

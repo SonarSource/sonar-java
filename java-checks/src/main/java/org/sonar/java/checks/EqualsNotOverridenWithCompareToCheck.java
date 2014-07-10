@@ -19,46 +19,57 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.visitors.MethodHelper;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
-  key = "S1210",
+  key = EqualsNotOverridenWithCompareToCheck.RULE_KEY,
   priority = Priority.CRITICAL,
   tags={"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class EqualsNotOverridenWithCompareToCheck extends SquidCheck<LexerlessGrammar> {
+public class EqualsNotOverridenWithCompareToCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1210";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_BODY);
-    subscribeTo(JavaGrammar.ENUM_BODY_DECLARATIONS);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    MethodHelper compareToMethod = null;
-    boolean hasEquals = false;
+  public void visitClass(ClassTree tree) {
 
-    for (MethodHelper method : MethodHelper.getMethods(node)) {
-      if (method.getParameters().size() == 1) {
-        if ("compareTo".equals(method.getName().getTokenOriginalValue())) {
-          compareToMethod = method;
-        } else if ("equals".equals(method.getName().getTokenOriginalValue())) {
-          hasEquals = true;
+    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) {
+      boolean hasEquals = false;
+      MethodTree compare = null;
+      for (Tree member : tree.members()) {
+        if (member.is(Tree.Kind.METHOD)) {
+          MethodTree method = (MethodTree) member;
+          if (method.parameters().size() == 1) {
+            String name = method.simpleName().name();
+            if (name.equals("equals")) {
+              hasEquals = true;
+            } else if (name.equals("compareTo")) {
+              compare = method;
+            }
+          }
         }
       }
+      if (compare != null && !hasEquals) {
+        context.addIssue(compare, ruleKey, "Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.");
+      }
     }
-
-    if (compareToMethod != null && !hasEquals) {
-      getContext().createLineViolation(this, "Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method", compareToMethod.getName());
-    }
+    super.visitClass(tree);
   }
-
 }
