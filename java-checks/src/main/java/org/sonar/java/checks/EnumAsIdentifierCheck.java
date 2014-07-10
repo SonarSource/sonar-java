@@ -19,14 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import com.sun.org.apache.xpath.internal.operations.Variable;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.*;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(
   key = EnumAsIdentifierCheck.RULE_KEY,
