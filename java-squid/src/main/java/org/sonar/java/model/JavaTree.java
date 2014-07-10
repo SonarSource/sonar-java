@@ -286,8 +286,13 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
+    public boolean isLeaf() {
+      return true;
+    }
+
+    @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.emptyIterator();
+      throw new UnsupportedOperationException();
     }
   }
 
