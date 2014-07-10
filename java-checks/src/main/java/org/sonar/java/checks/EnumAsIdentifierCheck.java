@@ -44,45 +44,13 @@ public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileSc
     scan(context.getTree());
   }
 
-//  @Override
-//  public void init() {
-//    subscribeTo(JavaTokenType.IDENTIFIER);
-//  }
-//
-//  @Override
-//  public void visitNode(AstNode node) {
-//    if ("enum".equals(node.getTokenOriginalValue())) {
-//      getContext().createLineViolation(this, "Use a different name than \"enum\".", node);
-//    }
-//  }
-
-  public void visitClass(ClassTree tree) {
-    for (Tree member : tree.members()) {
-      checkMember(member);
+  @Override
+  public void visitVariable(VariableTree tree) {
+    if (tree.simpleName().name().equals("enum")) {
+      context.addIssue(tree, ruleKey, "Use a different name than \"enum\".");
     }
-    super.visitClass(tree);
+
+    super.visitVariable(tree);
   }
 
-  public void visitMethod(MethodTree tree) {
-    for (VariableTree var: tree.parameters()) {
-      checkMember(var);
-    }
-
-    if (tree.block() != null && tree.block().body() != null && !tree.block().body().isEmpty()) {
-      for (StatementTree stmt : tree.block().body()) {
-        checkMember(stmt);
-      }
-    }
-    
-    super.visitMethod(tree);
-  }
-
-  private void checkMember(Tree candidate) {
-    if (candidate.is(Tree.Kind.VARIABLE) ) {
-      VariableTree var = (VariableTree) candidate;
-      if (var.simpleName().name().equals("enum")) {
-        context.addIssue(candidate, ruleKey, "Use a different name than \"enum\".");
-      }
-    }
-  }
 }
