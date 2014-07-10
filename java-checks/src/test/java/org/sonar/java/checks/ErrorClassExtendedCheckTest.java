@@ -19,23 +19,23 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
+import java.io.File;
+
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squid.api.SourceFile;
 
-import java.io.File;
+import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
 
 public class ErrorClassExtendedCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+  private final ErrorClassExtendedCheck check = new ErrorClassExtendedCheck();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ErrorClassExtendedCheck.java"), new ErrorClassExtendedCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ErrorClassExtendedCheck.java"), new VisitorsBridge(check));
+    CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(1).withMessage("Extend \"java.lang.Exception\" or one of its subclasses.")
         .next().atLine(4);
   }

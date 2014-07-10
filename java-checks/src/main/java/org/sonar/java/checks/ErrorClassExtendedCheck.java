@@ -19,54 +19,68 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
-
-import java.util.List;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.*;
 
 @Rule(
-  key = "S1194",
+  key = ErrorClassExtendedCheck.RULE_KEY,
   priority = Priority.MAJOR,
   tags={"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ErrorClassExtendedCheck extends SquidCheck<LexerlessGrammar> {
+public class ErrorClassExtendedCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1194";
+
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_DECLARATION);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    AstNode extendedClass = node.getFirstChild(JavaGrammar.CLASS_TYPE);
-
-    if (extendedClass != null && isErrorClass(extendedClass)) {
-      getContext().createLineViolation(this, "Extend \"java.lang.Exception\" or one of its subclasses.", node);
+  public void visitClass(ClassTree tree) {
+    if (tree.is(Tree.Kind.CLASS))
+    {
+      ClassTree clz = (ClassTree) tree;
+      if (clz.superClass() != null) {
+        if (clz.superClass().is(Tree.Kind.IDENTIFIER)) {
+          IdentifierTree idt = (IdentifierTree) clz.superClass();
+          if (idt.name().equals("Error")) {
+            context.addIssue(tree, ruleKey, "Extend \"java.lang.Exception\" or one of its subclasses.");
+          }
+        } else if (clz.superClass().is(Tree.Kind.MEMBER_SELECT)) {
+          MemberSelectExpressionTree mse = (MemberSelectExpressionTree) clz.superClass();
+          if (mse.identifier().name().equals("Error") && isJavaLang(mse.expression())) {
+            context.addIssue(tree, ruleKey, "Extend \"java.lang.Exception\" or one of its subclasses.");
+          }
+        }
+      }
     }
+
+    super.visitClass(tree);
   }
 
-  private static boolean isErrorClass(AstNode node) {
-    return isError(node) || isJavaLangError(node);
-  }
-
-  private static boolean isError(AstNode node) {
-    return "Error".equals(node.getTokenOriginalValue()) &&
-      !node.hasDirectChildren(JavaPunctuator.DOT);
-  }
-
-  private static boolean isJavaLangError(AstNode node) {
-    List<AstNode> identifiers = node.getChildren(JavaTokenType.IDENTIFIER);
-    return identifiers.size() == 3 &&
-      "java".equals(identifiers.get(0).getTokenOriginalValue()) &&
-      "lang".equals(identifiers.get(1).getTokenOriginalValue()) &&
-      "Error".equals(identifiers.get(2).getTokenOriginalValue());
+  private boolean isJavaLang(ExpressionTree tree) {
+    if (tree.is(Tree.Kind.MEMBER_SELECT))
+    {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
+      if (!mse.identifier().name().equals("lang")) {
+        return false;
+      }
+      if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree idt = (IdentifierTree) mse.expression();
+        return idt.name().equals("java");
+      }
+    }
+    return false;
   }
 
 }
