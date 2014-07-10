@@ -20,6 +20,7 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.AbstractTypedTree;
@@ -29,6 +30,8 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+
+import java.util.Iterator;
 
 public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements TypeCastTree {
   private final Tree type;
@@ -68,5 +71,13 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitTypeCast(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.forArray(
+      type,
+      expression
+    );
   }
 }

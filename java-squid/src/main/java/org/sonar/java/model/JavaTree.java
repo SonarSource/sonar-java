@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -35,6 +36,7 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class JavaTree implements Tree {
@@ -59,6 +61,18 @@ public abstract class JavaTree implements Tree {
   }
 
   public abstract Kind getKind();
+
+  /**
+   * Creates iterator for children of this node.
+   * Note that iterator may contain {@code null} elements.
+   *
+   * @throws java.lang.UnsupportedOperationException if {@link #isLeaf()} returns {@code true}
+   */
+  public abstract Iterator<Tree> childrenIterator();
+
+  public boolean isLeaf() {
+    return false;
+  }
 
   public static class CompilationUnitTreeImpl extends JavaTree implements CompilationUnitTree {
     @Nullable
@@ -105,6 +119,16 @@ public abstract class JavaTree implements Tree {
     public void accept(TreeVisitor visitor) {
       visitor.visitCompilationUnit(this);
     }
+
+    @Override
+    public Iterator<Tree> childrenIterator() {
+      return Iterators.concat(
+        Iterators.singletonIterator(packageName),
+        imports.iterator(),
+        types.iterator(),
+        packageAnnotations.iterator()
+      );
+    }
   }
 
   public static class ImportTreeImpl extends JavaTree implements ImportTree {
@@ -136,6 +160,13 @@ public abstract class JavaTree implements Tree {
     public void accept(TreeVisitor visitor) {
       visitor.visitImport(this);
     }
+
+    @Override
+    public Iterator<Tree> childrenIterator() {
+      return Iterators.singletonIterator(
+        qualifiedIdentifier
+      );
+    }
   }
 
   public static class WildcardTreeImpl extends JavaTree implements WildcardTree {
@@ -164,6 +195,13 @@ public abstract class JavaTree implements Tree {
     public void accept(TreeVisitor visitor) {
       visitor.visitWildcard(this);
     }
+
+    @Override
+    public Iterator<Tree> childrenIterator() {
+      return Iterators.singletonIterator(
+        bound
+      );
+    }
   }
 
   public static class UnionTypeTreeImpl extends JavaTree implements UnionTypeTree {
@@ -188,6 +226,15 @@ public abstract class JavaTree implements Tree {
     public void accept(TreeVisitor visitor) {
       visitor.visitUnionType(this);
     }
+
+    @Override
+    public Iterator<Tree> childrenIterator() {
+      return Iterators.concat(
+        // (Godin): workaround for generics
+        Iterators.<Tree>emptyIterator(),
+        typeAlternatives.iterator()
+      );
+    }
   }
 
   public static class NotImplementedTreeImpl extends AbstractTypedTree implements ExpressionTree{
@@ -211,6 +258,11 @@ public abstract class JavaTree implements Tree {
     public String getName() {
       return name;
     }
+
+    @Override
+    public Iterator<Tree> childrenIterator() {
+      throw new UnsupportedOperationException();
+    }
   }
 
   public static class PrimitiveTypeTreeImpl extends AbstractTypedTree implements PrimitiveTypeTree {
@@ -231,6 +283,11 @@ public abstract class JavaTree implements Tree {
     @Override
     public SyntaxToken keyword() {
       return new InternalSyntaxToken(astNode.getLastToken());
+    }
+
+    @Override
+    public Iterator<Tree> childrenIterator() {
+      return Iterators.emptyIterator();
     }
   }
 
@@ -263,6 +320,14 @@ public abstract class JavaTree implements Tree {
     public void accept(TreeVisitor visitor) {
       visitor.visitParameterizedType(this);
     }
+
+    @Override
+    public Iterator<Tree> childrenIterator() {
+      return Iterators.concat(
+        Iterators.singletonIterator(type),
+        typeArguments.iterator()
+      );
+    }
   }
 
   public static class ArrayTypeTreeImpl extends AbstractTypedTree implements ArrayTypeTree {
@@ -286,6 +351,11 @@ public abstract class JavaTree implements Tree {
     @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitArrayType(this);
+    }
+
+    @Override
+    public Iterator<Tree> childrenIterator() {
+      return Iterators.singletonIterator(type);
     }
   }
 }

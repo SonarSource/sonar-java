@@ -21,13 +21,16 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
@@ -61,5 +64,14 @@ public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitModifier(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.concat(
+      // TODO(Godin): modifiers
+      Iterators.<Tree>emptyIterator(),
+      annotations.iterator()
+    );
   }
 }

@@ -25,7 +25,10 @@ import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import java.util.Iterator;
 
 public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierTree {
   private final String name;
@@ -58,5 +61,15 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   @Override
   public String toString() {
     return name;
+  }
+
+  @Override
+  public boolean isLeaf() {
+    return true;
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    throw new UnsupportedOperationException();
   }
 }

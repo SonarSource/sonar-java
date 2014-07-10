@@ -20,12 +20,16 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import java.util.Iterator;
 
 public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements ArrayAccessExpressionTree {
   private final ExpressionTree expression;
@@ -65,5 +69,13 @@ public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements 
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitArrayAccessExpression(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.<Tree>forArray(
+      expression,
+      index
+    );
   }
 }

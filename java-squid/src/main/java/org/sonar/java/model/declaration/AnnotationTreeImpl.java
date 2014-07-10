@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model.declaration;
 
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -26,6 +27,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationTree {
@@ -57,5 +59,13 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitAnnotation(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.concat(
+      arguments.iterator(),
+      Iterators.singletonIterator(annotationType)
+    );
   }
 }

@@ -21,6 +21,7 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -30,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.List;
 
 public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree {
@@ -84,5 +86,17 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitNewClass(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.concat(
+      Iterators.forArray(
+        enclosingExpression,
+        identifier
+      ),
+      arguments.iterator(),
+      Iterators.singletonIterator(classBody)
+    );
   }
 }

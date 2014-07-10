@@ -20,6 +20,7 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
@@ -29,9 +30,11 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.List;
 
 public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
@@ -104,5 +107,15 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitForStatement(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.concat(
+      initializer.iterator(),
+      Iterators.singletonIterator(condition),
+      update.iterator(),
+      Iterators.singletonIterator(statement)
+    );
   }
 }

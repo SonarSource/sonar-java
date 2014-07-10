@@ -23,7 +23,10 @@ import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import java.util.Iterator;
 
 public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
   private final Kind kind;
@@ -46,5 +49,15 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitLiteral(this);
+  }
+
+  @Override
+  public boolean isLeaf() {
+    return true;
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    throw new UnsupportedOperationException();
   }
 }

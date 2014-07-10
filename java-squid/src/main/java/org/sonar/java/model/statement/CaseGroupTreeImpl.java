@@ -20,13 +20,16 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
@@ -57,5 +60,13 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitCaseGroup(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.concat(
+      labels.iterator(),
+      body.iterator()
+    );
   }
 }

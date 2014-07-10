@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
@@ -27,9 +28,11 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 
 public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatementTree {
   @Nullable
@@ -64,5 +67,12 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitReturnStatement(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.<Tree>singletonIterator(
+      expression
+    );
   }
 }

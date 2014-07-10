@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -28,6 +29,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.List;
 
 public class LambdaExpressionTreeImpl extends AbstractTypedTree implements LambdaExpressionTree {
@@ -71,5 +73,13 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitLambdaExpression(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.concat(
+      parameters.iterator(),
+      Iterators.singletonIterator(body)
+    );
   }
 }

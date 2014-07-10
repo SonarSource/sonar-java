@@ -20,6 +20,7 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -27,6 +28,7 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
@@ -65,5 +67,14 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitNewArray(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.concat(
+      Iterators.singletonIterator(type),
+      dimensions.iterator(),
+      initializers.iterator()
+    );
   }
 }

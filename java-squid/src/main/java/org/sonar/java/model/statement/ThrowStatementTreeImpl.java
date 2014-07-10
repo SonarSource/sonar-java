@@ -20,6 +20,7 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
@@ -28,7 +29,10 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import java.util.Iterator;
 
 public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTree {
   private final ExpressionTree expression;
@@ -61,5 +65,12 @@ public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTr
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitThrowStatement(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.<Tree>singletonIterator(
+      expression
+    );
   }
 }

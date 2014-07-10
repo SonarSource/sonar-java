@@ -20,6 +20,7 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbol;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 
 public class VariableTreeImpl extends JavaTree implements VariableTree {
   private final ModifiersTree modifiers;
@@ -88,5 +90,15 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   public void setSymbol(Symbol.VariableSymbol symbol) {
     Preconditions.checkState(this.symbol == null);
     this.symbol = symbol;
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.forArray(
+      modifiers,
+      type,
+      simpleName,
+      initializer
+    );
   }
 }

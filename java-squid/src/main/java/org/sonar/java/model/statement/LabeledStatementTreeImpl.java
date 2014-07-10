@@ -20,6 +20,7 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -28,7 +29,10 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import java.util.Iterator;
 
 public class LabeledStatementTreeImpl extends JavaTree implements LabeledStatementTree {
   private final IdentifierTree label;
@@ -63,5 +67,13 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitLabeledStatement(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.forArray(
+      label,
+      statement
+    );
   }
 }

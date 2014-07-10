@@ -21,6 +21,7 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbol;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.List;
 
 public class ClassTreeImpl extends JavaTree implements ClassTree {
@@ -113,5 +115,18 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   public void setSymbol(Symbol.TypeSymbol symbol) {
     Preconditions.checkState(this.symbol == null);
     this.symbol = symbol;
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.concat(
+      Iterators.forArray(
+        modifiers,
+        simpleName,
+        superClass
+      ),
+      superInterfaces.iterator(),
+      members.iterator()
+    );
   }
 }
