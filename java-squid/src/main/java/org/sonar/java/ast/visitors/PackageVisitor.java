@@ -21,6 +21,7 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.GenericTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourcePackage;
@@ -28,12 +29,15 @@ import org.sonar.squid.api.SourceProject;
 
 public class PackageVisitor extends JavaAstVisitor {
 
+  public static final String UNRESOLVED_PACKAGE = "!error!";
+
   @Override
   public void visitFile(AstNode astNode) {
     SourceProject sourceProject = (SourceProject) getContext().peekSourceCode();
     SourcePackage sourcePackage = findOrCreateSourcePackage(sourceProject, getPackageKey(astNode));
     getContext().addSourceCode(sourcePackage);
   }
+
 
   @Override
   public void leaveFile(AstNode astNode) {
@@ -53,13 +57,20 @@ public class PackageVisitor extends JavaAstVisitor {
   }
 
   private String getPackageKey(AstNode astNode) {
-    if (astNode != null && astNode.getFirstChild().is(JavaGrammar.PACKAGE_DECLARATION)) {
+    if (isEmptyFileOrParseError(astNode)) {
+      // Cannot resolve package for empty file and parse error.
+      return UNRESOLVED_PACKAGE;
+    } else if (astNode.getFirstChild().is(JavaGrammar.PACKAGE_DECLARATION)) {
       AstNode packageNameNode = astNode.getFirstChild().getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
       return getAstNodeValue(packageNameNode).replace('.', '/');
     } else {
       // unnamed package
       return "";
     }
+  }
+
+  private boolean isEmptyFileOrParseError(AstNode astNode) {
+    return astNode == null || astNode.getFirstChild().is(GenericTokenType.EOF);
   }
 
   private static String getAstNodeValue(AstNode astNode) {

@@ -28,6 +28,7 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.SonarException;
 import org.sonar.java.JavaSquid;
+import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourcePackage;
@@ -74,12 +75,15 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
 
       File file = new File(filePath);
       Resource sonarFile = org.sonar.api.resources.File.fromIOFile(file, project);
+
       // resource is reloaded to get the id:
       put(squidFile, context.getResource(sonarFile));
-
       SourceCode squidPackage = squidFile.getParent(SourcePackage.class);
+      // we ignore mapping for unresolved package
+      if (PackageVisitor.UNRESOLVED_PACKAGE.equals(squidPackage.getKey())) {
+        continue;
+      }
       Resource sonarDirectory = context.getResource(sonarFile.getParent());
-
       SourceCode previousDirectoryMapping = directoryReverseMap.get(sonarDirectory);
       if (previousDirectoryMapping == null) {
         directoryReverseMap.put(sonarDirectory, squidPackage);
@@ -97,5 +101,4 @@ public final class ResourceIndex extends HashMap<SourceCode, Resource> {
       }
     }
   }
-
 }

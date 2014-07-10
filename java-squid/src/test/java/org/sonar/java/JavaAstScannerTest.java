@@ -21,6 +21,7 @@ package org.sonar.java;
 
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.measures.Metric;
 
@@ -77,6 +78,17 @@ public class JavaAstScannerTest {
   public void accessors() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Accessors.java"));
     assertThat(file.getInt(Metric.ACCESSORS)).isEqualTo(3);
+  }
+
+  @Test
+  public void parseError() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/filesInError/ParseError.java"));
+    assertThat(file.getParent().getKey()).isEqualTo(PackageVisitor.UNRESOLVED_PACKAGE);
+  }
+  @Test
+  public void emptyFile() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/filesInError/EmptyFile.java"));
+    assertThat(file.getParent().getKey()).isEqualTo(PackageVisitor.UNRESOLVED_PACKAGE);
   }
 
 }

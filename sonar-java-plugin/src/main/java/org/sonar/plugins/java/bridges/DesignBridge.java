@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.bridges;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
@@ -32,14 +34,21 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Violation;
 import org.sonar.api.utils.TimeProfiler;
-import org.sonar.graph.*;
+import org.sonar.graph.Cycle;
+import org.sonar.graph.Dsm;
+import org.sonar.graph.DsmTopologicalSorter;
+import org.sonar.graph.Edge;
+import org.sonar.graph.IncrementalCyclesAndFESSolver;
+import org.sonar.graph.MinimumFeedbackEdgeSetSolver;
 import org.sonar.java.JavaSquid;
+import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.java.checks.CycleBetweenPackagesCheck;
 import org.sonar.squid.api.SourceCode;
 import org.sonar.squid.api.SourceCodeEdge;
 import org.sonar.squid.api.SourcePackage;
 import org.sonar.squid.api.SourceProject;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -61,7 +70,16 @@ public class DesignBridge extends Bridge {
   @Override
   public void onProject(SourceProject squidProject, Project sonarProject) {
     Set<SourceCode> squidPackages = squidProject.getChildren();
-    if (squidPackages != null && !squidPackages.isEmpty()) {
+    if (squidPackages != null) {
+      squidPackages = Sets.filter(squidPackages, new Predicate<SourceCode>() {
+        @Override
+        public boolean apply(@Nullable SourceCode input) {
+          return input != null && !PackageVisitor.UNRESOLVED_PACKAGE.equals(input.getKey());
+        }
+      });
+      if (squidPackages.isEmpty()) {
+        return;
+      }
       TimeProfiler profiler = new TimeProfiler(LOG).start("Package design analysis");
       LOG.debug("{} packages to analyze", squidPackages.size());
 
