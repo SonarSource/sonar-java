@@ -24,7 +24,6 @@ import org.sonar.squid.measures.MetricDef;
 
 public enum JavaMetric implements MetricDef {
 
-  FILES,
   LINES(false),
   LINES_OF_CODE(false),
   COMMENT_LINES_WITHOUT_HEADER(false),

@@ -21,7 +21,6 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squid.api.SourceFile;
 import org.sonar.squid.api.SourcePackage;
 
@@ -32,7 +31,6 @@ public class FileVisitor extends JavaAstVisitor {
   @Override
   public void visitFile(AstNode astNode) {
     SourceFile sourceFile = createSourceFile(peekParentPackage(), getContext().getFile());
-    sourceFile.setMeasure(JavaMetric.FILES, 1);
     getContext().addSourceCode(sourceFile);
   }
 

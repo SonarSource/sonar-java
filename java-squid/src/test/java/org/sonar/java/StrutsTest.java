@@ -55,7 +55,6 @@ public class StrutsTest {
 
   @Test
   public void measures_on_project() throws Exception {
-    assertThat(project.getInt(JavaMetric.FILES)).isEqualTo(134);
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(146);
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(1437 + 48);
     assertThat(project.getInt(Metric.ACCESSORS)).isEqualTo(48);

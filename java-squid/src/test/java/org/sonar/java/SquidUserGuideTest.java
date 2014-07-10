@@ -57,7 +57,6 @@ public class SquidUserGuideTest {
 
   @Test
   public void measures_on_project() throws Exception {
-    assertThat(project.getInt(JavaMetric.FILES)).isEqualTo(273);
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(412);
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(3805 + 69);
     assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(3805);
