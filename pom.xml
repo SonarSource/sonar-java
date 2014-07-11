@@ -41,7 +41,7 @@
     <module>sonar-java-plugin</module>
     <module>java-surefire</module>
     <module>java-jacoco</module>
-    <module>java-jacoco-listeners</module>
+    <module>sonar-jacoco-listeners</module>
     <module>sslr-java-toolkit</module>
   </modules>
 

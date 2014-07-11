@@ -8,7 +8,7 @@
     <version>2.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>java-jacoco-listeners</artifactId>
+  <artifactId>sonar-jacoco-listeners</artifactId>
 
   <name>SonarQube Java :: JaCoCo Listeners</name>
 
