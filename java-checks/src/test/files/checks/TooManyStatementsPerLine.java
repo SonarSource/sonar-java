@@ -15,5 +15,30 @@ class TooManyStatementsPerLine {
     }
 
     int a = 0; a++; // NOK
+    doSomething(
+    ); doSomethingElse(); // NOK
+    if (a)
+      System.out.println("plop"); //OK
+    try {
+      System.out.println("plop"); //OK
+    } catch (Exception e){
+      return ""; } //OK
+    if (a) {
+      return doSomething(
+      );} //OK
+    if (a)
+      return "";
+    else if (b)
+      return "";
+    else
+    {
+      return "";
+    } //OK
+    if(a) return false;
+    if (debug) System.out.println(
+        "ServerTableEntry constructed with activation command " +
+            activationCmd);
+    if(a){
+    }else if(b) return true;
   }
 }

@@ -37,6 +37,10 @@ public class TooManyStatementsPerLine_S00122_CheckTest {
         .next().atLine(5).withMessage("At most one statement is allowed per line, but 2 statements were found on this line.")
         .next().atLine(9)
         .next().atLine(17)
+        .next().atLine(19).withMessage("At most one statement is allowed per line, but 2 statements were found on this line.")
+        .next().atLine(37).withMessage("At most one statement is allowed per line, but 2 statements were found on this line.")
+        .next().atLine(38).withMessage("At most one statement is allowed per line, but 2 statements were found on this line.")
+        .next().atLine(42).withMessage("At most one statement is allowed per line, but 2 statements were found on this line.")
         .noMore();
   }
 

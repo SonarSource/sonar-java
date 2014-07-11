@@ -19,37 +19,84 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.checks.AbstractOneStatementPerLineCheck;
+import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
-@Rule(
-  key = "S00122",
-  priority = Priority.MAJOR,
-  tags={"convention"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class TooManyStatementsPerLine_S00122_Check extends AbstractOneStatementPerLineCheck<LexerlessGrammar> {
+import java.util.HashMap;
+import java.util.Map;
 
-  @Override
-  public com.sonar.sslr.api.Rule getStatementRule() {
-    throw new UnsupportedOperationException();
-  }
+@Rule(
+    key = "S00122",
+    priority = Priority.MAJOR,
+    tags = {"convention"})
+@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessGrammar> {
+
+  private final Multiset<Integer> statementsPerLine = HashMultiset.create();
+  private final Map<Integer, Integer> columnsByLine = new HashMap<Integer, Integer>();
+//  private final Multimap<Integer, Integer> columnsByLine = HashMultimap.create();
 
   @Override
   public void init() {
     subscribeTo(JavaGrammar.STATEMENT, JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT);
   }
 
-  @Override
   public boolean isExcluded(AstNode astNode) {
     AstNode statementNode = astNode.getFirstChild();
     return statementNode.is(JavaGrammar.BLOCK)
-      || statementNode.is(JavaGrammar.EMPTY_STATEMENT)
-      || statementNode.is(JavaGrammar.LABELED_STATEMENT);
+        || statementNode.is(JavaGrammar.EMPTY_STATEMENT)
+        || statementNode.is(JavaGrammar.LABELED_STATEMENT);
+  }
+
+  @Override
+  public void visitFile(AstNode astNode) {
+    statementsPerLine.clear();
+    columnsByLine.clear();
+  }
+
+  @Override
+  public void visitNode(AstNode statementNode) {
+    if (!isExcluded(statementNode)) {
+      int lineStart = statementNode.getTokenLine();
+      int lineEnd = statementNode.getLastToken().getLine();
+      int columnStart = statementNode.getToken().getColumn();
+      int columnEnd = statementNode.getLastToken().getColumn();
+
+      if(!isNestedInStatement(lineStart, columnStart)) {
+        statementsPerLine.add(lineStart);
+      }
+      if (lineStart != lineEnd) {
+        if(!isNestedInStatement(lineEnd, columnEnd)) {
+          statementsPerLine.add(lineEnd);
+        }
+        columnsByLine.put(lineEnd, columnEnd);
+      }
+    }
+  }
+
+  private boolean isNestedInStatement(int line, int column){
+      if(columnsByLine.get(line) !=null && columnsByLine.get(line) >= column){
+        columnsByLine.remove(line);
+       return true;
+      }
+    return false;
+  }
+
+  @Override
+  public void leaveFile(AstNode astNode) {
+    for (Multiset.Entry<Integer> statementsAtLine : statementsPerLine.entrySet()) {
+      if (statementsAtLine.getCount() > 1) {
+        getContext().createLineViolation(this, "At most one statement is allowed per line, but {0} statements were found on this line.", statementsAtLine.getElement(),
+            statementsAtLine.getCount());
+      }
+    }
   }
 
 }
