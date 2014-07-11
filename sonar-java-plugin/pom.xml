@@ -27,12 +27,12 @@
   <dependencies>
     <dependency>
       <groupId>org.codehaus.sonar-plugins.java</groupId>
-      <artifactId>sonar-surefire-plugin</artifactId>
+      <artifactId>java-surefire</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.sonar-plugins.java</groupId>
-      <artifactId>sonar-jacoco-plugin</artifactId>
+      <artifactId>java-jacoco</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

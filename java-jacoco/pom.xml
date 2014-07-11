@@ -7,9 +7,9 @@
     <artifactId>java</artifactId>
     <version>2.4-SNAPSHOT</version>
   </parent>
-  <artifactId>sonar-jacoco-plugin</artifactId>
+  <artifactId>java-jacoco</artifactId>
 
-  <name>SonarQube Java :: JaCoCo Plugin</name>
+  <name>SonarQube Java :: JaCoCo</name>
   <description><![CDATA[Get code coverage with <a href="http://www.jacoco.org/jacoco/">JaCoCo</a>.]]></description>
   <url>http://docs.codehaus.org/display/SONAR/JaCoCo+Plugin</url>
   <inceptionYear>2010</inceptionYear>

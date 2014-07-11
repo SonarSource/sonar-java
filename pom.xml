@@ -39,9 +39,9 @@
     <module>java-squid</module>
     <module>java-checks</module>
     <module>sonar-java-plugin</module>
-    <module>sonar-surefire-plugin</module>
-    <module>sonar-jacoco-plugin</module>
-    <module>sonar-jacoco-listeners</module>
+    <module>java-surefire</module>
+    <module>java-jacoco</module>
+    <module>java-jacoco-listeners</module>
     <module>sslr-java-toolkit</module>
   </modules>
 

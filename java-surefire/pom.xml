@@ -8,9 +8,9 @@
     <version>2.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>sonar-surefire-plugin</artifactId>
+  <artifactId>java-surefire</artifactId>
 
-  <name>SonarQube Java :: Surefire Plugin</name>
+  <name>SonarQube Java :: Surefire</name>
 
   <dependencies>
     <dependency>
