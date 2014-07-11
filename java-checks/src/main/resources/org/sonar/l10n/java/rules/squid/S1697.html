@@ -2,26 +2,22 @@
 
 <h2>Noncompliant Code Sample</h2>
 <pre>
-if (str == null && str.length() == 0)
-{
-System.out.println("String is empty");
+if (str == null && str.length() == 0) {
+  System.out.println("String is empty");
 }
 
-if (str != null || str.length() > 0)
-{
-System.out.println("String is not empty");
+if (str != null || str.length() > 0) {
+ System.out.println("String is not empty");
 }
 </pre>
 
 <h2>Compliant Solution</h2>
 <pre>
-if (str == null || str.length() == 0)
-{
-System.out.println("String is empty");
+if (str == null || str.length() == 0) {
+  System.out.println("String is empty");
 }
 
-if (str != null && str.length() > 0)
-{
-System.out.println("String is not empty");
+if (str != null && str.length() > 0) {
+  System.out.println("String is not empty");
 }
 </pre>
