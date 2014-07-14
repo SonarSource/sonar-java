@@ -47,18 +47,17 @@ public class ErrorClassExtendedCheck extends BaseTreeVisitor implements JavaFile
 
   @Override
   public void visitClass(ClassTree tree) {
-    if (tree.is(Tree.Kind.CLASS))
-    {
+    if (tree.is(Tree.Kind.CLASS)) {
       ClassTree clz = (ClassTree) tree;
       if (clz.superClass() != null) {
         if (clz.superClass().is(Tree.Kind.IDENTIFIER)) {
           IdentifierTree idt = (IdentifierTree) clz.superClass();
-          if (idt.name().equals("Error")) {
+          if ("Error".equals(idt.name())) {
             context.addIssue(tree, ruleKey, "Extend \"java.lang.Exception\" or one of its subclasses.");
           }
         } else if (clz.superClass().is(Tree.Kind.MEMBER_SELECT)) {
           MemberSelectExpressionTree mse = (MemberSelectExpressionTree) clz.superClass();
-          if (mse.identifier().name().equals("Error") && isJavaLang(mse.expression())) {
+          if ("Error".equals(mse.identifier().name()) && isJavaLang(mse.expression())) {
             context.addIssue(tree, ruleKey, "Extend \"java.lang.Exception\" or one of its subclasses.");
           }
         }
@@ -69,15 +68,14 @@ public class ErrorClassExtendedCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private boolean isJavaLang(ExpressionTree tree) {
-    if (tree.is(Tree.Kind.MEMBER_SELECT))
-    {
+    if (tree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
-      if (!mse.identifier().name().equals("lang")) {
+      if (! "lang".equals(mse.identifier().name())) {
         return false;
       }
       if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree idt = (IdentifierTree) mse.expression();
-        return idt.name().equals("java");
+        return "java".equals(idt.name());
       }
     }
     return false;
