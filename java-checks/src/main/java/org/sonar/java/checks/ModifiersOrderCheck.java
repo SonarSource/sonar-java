@@ -51,6 +51,7 @@ public class ModifiersOrderCheck extends SquidCheck<LexerlessGrammar> {
     JavaKeyword.VOLATILE,
     JavaKeyword.SYNCHRONIZED,
     JavaKeyword.NATIVE,
+    JavaKeyword.DEFAULT,
     JavaKeyword.STRICTFP
   };
 

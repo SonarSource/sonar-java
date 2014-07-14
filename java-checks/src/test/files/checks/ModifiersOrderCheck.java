@@ -7,3 +7,7 @@ class Foo {
 
   public int a;
 }
+
+interface Bar{
+  default void fun(){}
+}
