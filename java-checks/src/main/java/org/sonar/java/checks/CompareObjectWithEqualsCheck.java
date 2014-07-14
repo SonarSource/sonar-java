@@ -90,7 +90,9 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
         //FIXME null type should not happen.
         return;
       }
-      if (!isNullComparison(leftOperandType, rightOperandType) && (isClass(leftOperandType) || isClass(rightOperandType))) {
+      if (!isNullComparison(leftOperandType, rightOperandType)
+          && !isNumericalComparison(leftOperandType, rightOperandType)
+          && (isClass(leftOperandType) || isClass(rightOperandType))) {
         context.addIssue(tree, ruleKey, "Change this comparison to use the equals method.");
       }
     }
@@ -102,5 +104,9 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
 
   private boolean isNullComparison(Type leftOperandType, Type rightOperandType) {
     return leftOperandType.isTagged(Type.BOT) || rightOperandType.isTagged(Type.BOT);
+  }
+
+  private boolean isNumericalComparison(Type leftOperandType, Type rightOperandType) {
+    return leftOperandType.isNumerical() || rightOperandType.isNumerical();
   }
 }

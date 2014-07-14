@@ -54,6 +54,11 @@ public class Type {
     return tag == this.tag;
   }
 
+  public boolean isNumerical() {
+    //JLS8 4.2
+    return tag <= DOUBLE;
+  }
+
   public static class ClassType extends Type {
 
     /**

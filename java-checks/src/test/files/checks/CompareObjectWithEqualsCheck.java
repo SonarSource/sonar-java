@@ -47,4 +47,15 @@ class C{
     if (str1 == str2) {}
     return super.equals(obj);
   }
+  void meth(){
+    Integer i;
+    char c = 'c';
+    if(i == (byte)0){}
+    if(i == c){}
+    if(i == (short)1){}
+    if(i == 1){}
+    if(i == 1L){}
+    if(i == 1F){}
+    if(i == 1D){}
+  }
 }
