@@ -19,27 +19,15 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.collect.ImmutableList;
-import org.sonar.api.SonarPlugin;
+import org.junit.Test;
 
-import java.util.List;
+import static org.fest.assertions.Assertions.assertThat;
 
-public class JaCoCoPlugin {
+public class JaCoCoExtensionsTest {
 
-  public static List getExtensions() {
-    ImmutableList.Builder<Object> extensions = ImmutableList.builder();
-
-    extensions.addAll(JacocoConfiguration.getPropertyDefinitions());
-    extensions.add(
-      JacocoConfiguration.class,
-      JaCoCoAgentDownloader.class,
-      // Unit tests
-      JaCoCoSensor.class,
-      // Integration tests
-      JaCoCoItSensor.class,
-      JaCoCoOverallSensor.class);
-
-    return extensions.build();
+  @Test
+  public void testExtensions() {
+    assertThat(new JaCoCoExtensions().getExtensions().size()).isEqualTo(8);
   }
 
 }

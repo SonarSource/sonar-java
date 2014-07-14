@@ -30,6 +30,6 @@ public final class JaCoCoUtils {
   private JaCoCoUtils() {
   }
 
-  public static final Logger LOG = LoggerFactory.getLogger(JaCoCoPlugin.class.getName());
+  public static final Logger LOG = LoggerFactory.getLogger(JaCoCoExtensions.class.getName());
 
 }

@@ -26,7 +26,7 @@ import org.sonar.api.SonarPlugin;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.java.SonarComponents;
-import org.sonar.plugins.jacoco.JaCoCoPlugin;
+import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefirePlugin;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class JavaPlugin extends SonarPlugin {
   public List getExtensions() {
     ImmutableList.Builder<Object> builder = ImmutableList.builder();
     builder.addAll(SurefirePlugin.getExtensions());
-    builder.addAll(JaCoCoPlugin.getExtensions());
+    builder.addAll(JaCoCoExtensions.getExtensions());
     builder.add(
         JavaCommonRulesEngine.class,
         JavaCommonRulesDecorator.class,
