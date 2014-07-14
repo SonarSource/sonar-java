@@ -189,7 +189,8 @@ public final class CheckList {
       ArrayEqualsCheck.class,
       RepeatAnnotationCheck.class,
       NPEThrowCheck.class,
-      NullDereferenceInConditionalCheck.class
+      NullDereferenceInConditionalCheck.class,
+      SelfAssignementCheck.class
     );
   }
 
