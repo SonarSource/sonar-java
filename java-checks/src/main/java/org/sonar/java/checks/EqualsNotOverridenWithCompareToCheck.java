@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.base.Preconditions;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
@@ -30,8 +31,6 @@ import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.*;
-
-import java.util.List;
 
 @Rule(
   key = EqualsNotOverridenWithCompareToCheck.RULE_KEY,
@@ -59,11 +58,10 @@ public class EqualsNotOverridenWithCompareToCheck extends BaseTreeVisitor implem
       for (Tree member : tree.members()) {
         if (member.is(Tree.Kind.METHOD)) {
           MethodTree method = (MethodTree) member;
-          String name = method.simpleName().name();
 
-          if ("equals".equals(name) && hasObjectParam(method) && returnsBoolean(method)) {
+          if (isEqualsMethod(method)) {
             hasEquals = true;
-          } else if ("compareTo".equals(name) && returnsInt(method) && method.parameters().size() == 1) {
+          } else if (isCompareToMethod(method)) {
             compare = member;
           }
         }
@@ -75,6 +73,17 @@ public class EqualsNotOverridenWithCompareToCheck extends BaseTreeVisitor implem
     }
     super.visitClass(tree);
   }
+
+  private boolean isCompareToMethod(MethodTree method) {
+    String name = method.simpleName().name();
+    return "compareTo".equals(name) && returnsInt(method) && method.parameters().size() == 1;
+  }
+
+  private boolean isEqualsMethod(MethodTree method) {
+    String name = method.simpleName().name();
+    return "equals".equals(name) && hasObjectParam(method) && returnsBoolean(method);
+  }
+
 
   private boolean isComparable(ClassTree tree) {
     Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();

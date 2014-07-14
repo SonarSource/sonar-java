@@ -46,7 +46,7 @@ public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileSc
 
   @Override
   public void visitVariable(VariableTree tree) {
-    if (tree.simpleName().name().equals("enum")) {
+    if ("enum".equals(tree.simpleName().name())) {
       context.addIssue(tree, ruleKey, "Use a different name than \"enum\".");
     }
 
