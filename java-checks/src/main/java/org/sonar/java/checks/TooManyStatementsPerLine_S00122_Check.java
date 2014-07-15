@@ -41,7 +41,6 @@ public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessG
 
   private final Multiset<Integer> statementsPerLine = HashMultiset.create();
   private final Map<Integer, Integer> columnsByLine = new HashMap<Integer, Integer>();
-//  private final Multimap<Integer, Integer> columnsByLine = HashMultimap.create();
 
   @Override
   public void init() {
@@ -69,11 +68,11 @@ public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessG
       int columnStart = statementNode.getToken().getColumn();
       int columnEnd = statementNode.getLastToken().getColumn();
 
-      if(!isNestedInStatement(lineStart, columnStart)) {
+      if (!isNestedInStatement(lineStart, columnStart)) {
         statementsPerLine.add(lineStart);
       }
       if (lineStart != lineEnd) {
-        if(!isNestedInStatement(lineEnd, columnEnd)) {
+        if (!isNestedInStatement(lineEnd, columnEnd)) {
           statementsPerLine.add(lineEnd);
         }
         columnsByLine.put(lineEnd, columnEnd);
@@ -81,11 +80,11 @@ public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessG
     }
   }
 
-  private boolean isNestedInStatement(int line, int column){
-      if(columnsByLine.get(line) !=null && columnsByLine.get(line) >= column){
-        columnsByLine.remove(line);
-       return true;
-      }
+  private boolean isNestedInStatement(int line, int column) {
+    if (columnsByLine.get(line) != null && columnsByLine.get(line) >= column) {
+      columnsByLine.remove(line);
+      return true;
+    }
     return false;
   }
 

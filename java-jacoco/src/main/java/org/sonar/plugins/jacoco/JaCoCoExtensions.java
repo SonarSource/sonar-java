@@ -25,6 +25,10 @@ import java.util.List;
 
 public class JaCoCoExtensions {
 
+
+  private JaCoCoExtensions(){
+  }
+
   public static List getExtensions() {
     ImmutableList.Builder<Object> extensions = ImmutableList.builder();
 
