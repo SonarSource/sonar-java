@@ -22,11 +22,11 @@ package org.sonar.java.ast.visitors;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.squid.SquidAstVisitor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
@@ -43,7 +43,7 @@ public class MethodHelperTest {
 
   @Test
   public void subscribeTo() {
-    SquidAstVisitor<LexerlessGrammar> visitor = new SquidAstVisitor<LexerlessGrammar>();
+    SquidAstVisitor<LexerlessGrammar> visitor = new JavaAstVisitor() {};
     MethodHelper.subscribe(visitor);
     assertThat(visitor.getAstNodeTypesToVisit()).containsExactly(
       JavaGrammar.METHOD_DECLARATOR_REST,

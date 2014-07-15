@@ -26,10 +26,10 @@ import org.sonar.api.measures.RangeDistributionBuilder;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.measures.Metric;
-import org.sonar.squid.measures.MetricDef;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.measures.Metric;
+import org.sonar.squidbridge.measures.MetricDef;
 
 public final class CopyBasicMeasuresBridge extends Bridge {
 

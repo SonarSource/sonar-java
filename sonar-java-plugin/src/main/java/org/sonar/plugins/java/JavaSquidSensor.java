@@ -41,7 +41,7 @@ import org.sonar.java.JavaSquid;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.api.JavaUtils;
 import org.sonar.java.checks.CheckList;
-import org.sonar.squid.api.CodeVisitor;
+import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
 import java.nio.charset.Charset;

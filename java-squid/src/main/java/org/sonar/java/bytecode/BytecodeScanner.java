@@ -26,12 +26,12 @@ import org.sonar.java.bytecode.asm.AsmClassProviderImpl;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
-import org.sonar.squid.api.CodeScanner;
-import org.sonar.squid.api.CodeVisitor;
-import org.sonar.squid.api.SourceClass;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.indexer.QueryByType;
-import org.sonar.squid.indexer.SquidIndex;
+import org.sonar.squidbridge.api.CodeScanner;
+import org.sonar.squidbridge.api.CodeVisitor;
+import org.sonar.squidbridge.api.SourceClass;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.indexer.QueryByType;
+import org.sonar.squidbridge.indexer.SquidIndex;
 
 import java.io.File;
 import java.util.Arrays;

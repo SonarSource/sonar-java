@@ -25,10 +25,10 @@ import org.sonar.api.measures.PersistenceMode;
 import org.sonar.api.measures.RangeDistributionBuilder;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.squid.api.SourceClass;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourceMethod;
+import org.sonar.squidbridge.api.SourceClass;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourceMethod;
 
 public class FunctionsBridge extends Bridge {
 

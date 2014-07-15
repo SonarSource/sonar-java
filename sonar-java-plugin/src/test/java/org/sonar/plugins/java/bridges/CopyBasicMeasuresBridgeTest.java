@@ -27,8 +27,8 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.measures.Metric;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.measures.Metric;
 
 import java.util.List;
 

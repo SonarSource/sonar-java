@@ -19,16 +19,16 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.squid.checks.CheckMessagesVerifier;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
-import org.sonar.squid.api.CodeVisitor;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.indexer.QueryByType;
+import org.sonar.squidbridge.api.CodeVisitor;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.indexer.QueryByType;
 
 import java.io.File;
 import java.nio.charset.Charset;

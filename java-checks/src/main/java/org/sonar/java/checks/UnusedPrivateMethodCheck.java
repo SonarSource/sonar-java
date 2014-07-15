@@ -25,9 +25,9 @@ import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
-import org.sonar.squid.api.CheckMessage;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourceMethod;
+import org.sonar.squidbridge.api.CheckMessage;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourceMethod;
 
 @Rule(key = UnusedPrivateMethodCheck.RULE_KEY, priority = Priority.MAJOR,
   tags={"unused"})

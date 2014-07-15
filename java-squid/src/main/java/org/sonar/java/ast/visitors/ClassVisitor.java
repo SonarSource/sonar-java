@@ -24,9 +24,9 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squid.api.SourceClass;
-import org.sonar.squid.api.SourceMethod;
-import org.sonar.squid.api.SourcePackage;
+import org.sonar.squidbridge.api.SourceClass;
+import org.sonar.squidbridge.api.SourceMethod;
+import org.sonar.squidbridge.api.SourcePackage;
 
 import javax.annotation.Nullable;
 

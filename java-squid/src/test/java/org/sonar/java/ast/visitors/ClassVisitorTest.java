@@ -21,10 +21,10 @@ package org.sonar.java.ast.visitors;
 
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
-import org.sonar.squid.api.SourceClass;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourceMethod;
+import org.sonar.squidbridge.api.SourceClass;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourceMethod;
 
 import java.io.File;
 

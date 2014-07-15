@@ -24,10 +24,10 @@ import org.junit.Test;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceCodeEdge;
-import org.sonar.squid.api.SourceCodeEdgeUsage;
-import org.sonar.squid.indexer.SquidIndex;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceCodeEdge;
+import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
+import org.sonar.squidbridge.indexer.SquidIndex;
 
 import java.io.File;
 import java.nio.charset.Charset;

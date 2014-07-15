@@ -19,11 +19,11 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.sonar.sslr.squid.SquidAstVisitor;
-import org.sonar.squid.api.SourceClass;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourcePackage;
+import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.squidbridge.api.SourceClass;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourcePackage;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 /**

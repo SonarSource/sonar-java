@@ -22,24 +22,24 @@ package org.sonar.java.ast;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AuditListener;
-import com.sonar.sslr.api.CommentAnalyser;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.ast.AstWalker;
-import com.sonar.sslr.squid.SquidAstVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.InputFile;
 import org.sonar.java.ProgressReport;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.visitors.VisitorContext;
-import org.sonar.squid.api.AnalysisException;
-import org.sonar.squid.api.CodeVisitor;
-import org.sonar.squid.api.SourceCodeSearchEngine;
-import org.sonar.squid.api.SourceCodeTreeDecorator;
-import org.sonar.squid.api.SourceProject;
-import org.sonar.squid.indexer.SquidIndex;
+import org.sonar.squidbridge.CommentAnalyser;
+import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.squidbridge.api.AnalysisException;
+import org.sonar.squidbridge.api.CodeVisitor;
+import org.sonar.squidbridge.api.SourceCodeSearchEngine;
+import org.sonar.squidbridge.api.SourceCodeTreeDecorator;
+import org.sonar.squidbridge.api.SourceProject;
+import org.sonar.squidbridge.indexer.SquidIndex;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
@@ -84,7 +84,7 @@ public class AstScanner {
 
     SourceCodeTreeDecorator decorator = new SourceCodeTreeDecorator(project);
     decorator.decorateWith(JavaMetric.values());
-    decorator.decorateWith(org.sonar.squid.measures.Metric.values());
+    decorator.decorateWith(org.sonar.squidbridge.measures.Metric.values());
   }
 
   /**

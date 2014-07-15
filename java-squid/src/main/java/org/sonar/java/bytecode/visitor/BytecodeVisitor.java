@@ -26,11 +26,11 @@ import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.signature.MethodSignature;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.MethodSignatureScanner;
-import org.sonar.squid.api.CodeVisitor;
-import org.sonar.squid.api.SourceClass;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourceMethod;
-import org.sonar.squid.indexer.SquidIndex;
+import org.sonar.squidbridge.api.CodeVisitor;
+import org.sonar.squidbridge.api.SourceClass;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourceMethod;
+import org.sonar.squidbridge.indexer.SquidIndex;
 
 public abstract class BytecodeVisitor implements CodeVisitor {
 

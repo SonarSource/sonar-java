@@ -21,7 +21,7 @@ package org.sonar.java.ast.visitors;
 
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squid.api.SourceClass;
+import org.sonar.squidbridge.api.SourceClass;
 
 public class AnonymousInnerClassVisitor extends JavaAstVisitor {
 

@@ -22,15 +22,15 @@ package org.sonar.java.checks;
 import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.squid.api.CheckMessage;
-import org.sonar.squid.api.SourceFile;
+import org.sonar.squidbridge.api.CheckMessage;
+import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 /**
- * Note that {@link com.sonar.sslr.squid.checks.AbstractNoSonarCheck} can't be used because of bug SSLRSQBR-16.
+ * Note that {@link org.sonar.squidbridge.checks.AbstractNoSonarCheck} can't be used because of bug SSLRSQBR-16.
  */
 @Rule(key = "NoSonar", priority = Priority.INFO)
 public class NoSonarCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {

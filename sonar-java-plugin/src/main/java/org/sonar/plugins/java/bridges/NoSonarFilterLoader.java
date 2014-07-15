@@ -21,10 +21,10 @@ package org.sonar.plugins.java.bridges;
 
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.resources.Resource;
-import org.sonar.squid.api.SourceClass;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourceMethod;
+import org.sonar.squidbridge.api.SourceClass;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourceMethod;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -90,11 +90,6 @@
       </dependency>
       <dependency>
         <groupId>org.codehaus.sonar</groupId>
-        <artifactId>sonar-squid</artifactId>
-        <version>${sonar.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.sonar</groupId>
         <artifactId>sonar-deprecated</artifactId>
         <version>${sonar.version}</version>
       </dependency>
@@ -122,7 +117,7 @@
       <dependency>
         <groupId>org.codehaus.sonar.sslr-squid-bridge</groupId>
         <artifactId>sslr-squid-bridge</artifactId>
-        <version>2.3</version>
+        <version>2.4</version>
       </dependency>
 
       <dependency>

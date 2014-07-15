@@ -26,7 +26,7 @@ import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.squid.api.SourceCode;
+import org.sonar.squidbridge.api.SourceCode;
 
 import java.util.Set;
 

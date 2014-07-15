@@ -19,11 +19,7 @@
  */
 package org.sonar.java;
 
-import com.sonar.sslr.api.CommentAnalyser;
 import com.sonar.sslr.impl.Parser;
-import com.sonar.sslr.squid.SquidAstVisitor;
-import com.sonar.sslr.squid.metrics.CommentsVisitor;
-import com.sonar.sslr.squid.metrics.CounterVisitor;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.AstScanner;
@@ -41,9 +37,13 @@ import org.sonar.java.ast.visitors.LinesVisitor;
 import org.sonar.java.ast.visitors.MethodVisitor;
 import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.java.ast.visitors.PublicApiVisitor;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.indexer.QueryByType;
+import org.sonar.squidbridge.CommentAnalyser;
+import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.indexer.QueryByType;
+import org.sonar.squidbridge.metrics.CommentsVisitor;
+import org.sonar.squidbridge.metrics.CounterVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
@@ -110,7 +110,7 @@ public final class JavaAstScanner {
       new CommentAnalyser() {
         @Override
         public boolean isBlank(String line) {
-          // Implementation of this method was taken from org.sonar.squid.text.Line#isThereBlankComment()
+          // Implementation of this method was taken from org.sonar.squidbridge.text.Line#isThereBlankComment()
           // TODO Godin: for some languages we use Character.isLetterOrDigit instead of Character.isWhitespace
           for (int i = 0; i < line.length(); i++) {
             char character = line.charAt(i);

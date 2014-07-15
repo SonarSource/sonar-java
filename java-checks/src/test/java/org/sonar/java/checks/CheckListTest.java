@@ -20,14 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
-import com.sonar.sslr.squid.SquidAstVisitor;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.api.rules.AnnotationRuleParser;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleParam;
 import org.sonar.java.JavaAstScanner;
-import org.sonar.squid.api.CodeVisitor;
+import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
 import java.lang.reflect.Constructor;

@@ -21,8 +21,8 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourcePackage;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourcePackage;
 
 import java.io.File;
 

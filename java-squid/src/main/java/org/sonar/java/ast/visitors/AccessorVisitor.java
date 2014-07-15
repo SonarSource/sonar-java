@@ -25,8 +25,8 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squid.api.SourceMethod;
-import org.sonar.squid.measures.Metric;
+import org.sonar.squidbridge.api.SourceMethod;
+import org.sonar.squidbridge.measures.Metric;
 
 import java.util.List;
 

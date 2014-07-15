@@ -23,9 +23,9 @@ import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.GenericTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourcePackage;
-import org.sonar.squid.api.SourceProject;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourcePackage;
+import org.sonar.squidbridge.api.SourceProject;
 
 public class PackageVisitor extends JavaAstVisitor {
 

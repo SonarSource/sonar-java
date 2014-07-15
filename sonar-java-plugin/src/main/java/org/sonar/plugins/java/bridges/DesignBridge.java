@@ -43,10 +43,10 @@ import org.sonar.graph.MinimumFeedbackEdgeSetSolver;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.java.checks.CycleBetweenPackagesCheck;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceCodeEdge;
-import org.sonar.squid.api.SourcePackage;
-import org.sonar.squid.api.SourceProject;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceCodeEdge;
+import org.sonar.squidbridge.api.SourcePackage;
+import org.sonar.squidbridge.api.SourceProject;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

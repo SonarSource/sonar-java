@@ -28,8 +28,8 @@ import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmEdge;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
-import org.sonar.squid.api.CheckMessage;
-import org.sonar.squid.api.SourceFile;
+import org.sonar.squidbridge.api.CheckMessage;
+import org.sonar.squidbridge.api.SourceFile;
 
 @Rule(
   key = ThreadRunCheck.RULE_KEY,

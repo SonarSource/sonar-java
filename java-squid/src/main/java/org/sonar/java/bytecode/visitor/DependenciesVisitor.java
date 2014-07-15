@@ -22,12 +22,12 @@ package org.sonar.java.bytecode.visitor;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmEdge;
-import org.sonar.squid.api.SourceClass;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceCodeEdge;
-import org.sonar.squid.api.SourceCodeEdgeUsage;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourcePackage;
+import org.sonar.squidbridge.api.SourceClass;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceCodeEdge;
+import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourcePackage;
 
 public class DependenciesVisitor extends BytecodeVisitor {
 

@@ -22,7 +22,7 @@ package org.sonar.plugins.java.bridges;
 import org.sonar.api.resources.Resource;
 import org.sonar.graph.Dsm;
 import org.sonar.graph.DsmCell;
-import org.sonar.squid.api.SourceCode;
+import org.sonar.squidbridge.api.SourceCode;
 
 public final class DsmSerializer {
 

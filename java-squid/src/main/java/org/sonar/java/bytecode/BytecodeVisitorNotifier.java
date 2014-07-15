@@ -25,7 +25,7 @@ import org.sonar.java.bytecode.asm.AsmField;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.asm.AsmResource;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
-import org.sonar.squid.indexer.SquidIndex;
+import org.sonar.squidbridge.indexer.SquidIndex;
 
 public class BytecodeVisitorNotifier {
 

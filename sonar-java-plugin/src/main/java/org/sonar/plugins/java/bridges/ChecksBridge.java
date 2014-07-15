@@ -23,8 +23,8 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Violation;
-import org.sonar.squid.api.CheckMessage;
-import org.sonar.squid.api.SourceFile;
+import org.sonar.squidbridge.api.CheckMessage;
+import org.sonar.squidbridge.api.SourceFile;
 
 import java.util.Locale;
 import java.util.Set;

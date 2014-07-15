@@ -25,9 +25,9 @@ import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaSquid;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourcePackage;
-import org.sonar.squid.api.SourceProject;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourcePackage;
+import org.sonar.squidbridge.api.SourceProject;
 
 /**
  * Pattern visitor : project -> packages -> files

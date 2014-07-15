@@ -24,12 +24,12 @@ import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
-import com.sonar.sslr.squid.checks.SquidCheck;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.squid.recognizer.CodeRecognizer;
+import org.sonar.squidbridge.recognizer.CodeRecognizer;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.Collections;

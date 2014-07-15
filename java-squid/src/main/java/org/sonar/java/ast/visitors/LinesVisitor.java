@@ -25,7 +25,7 @@ import com.google.common.io.Files;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.squid.api.SourceCode;
+import org.sonar.squidbridge.api.SourceCode;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

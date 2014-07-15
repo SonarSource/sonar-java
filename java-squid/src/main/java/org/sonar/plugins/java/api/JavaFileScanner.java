@@ -20,7 +20,7 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
-import org.sonar.squid.api.CodeVisitor;
+import org.sonar.squidbridge.api.CodeVisitor;
 
 @Beta
 public interface JavaFileScanner extends CodeVisitor {

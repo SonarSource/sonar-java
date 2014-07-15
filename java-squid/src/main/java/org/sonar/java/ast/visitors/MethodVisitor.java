@@ -32,8 +32,8 @@ import org.sonar.java.signature.JvmJavaType;
 import org.sonar.java.signature.MethodSignature;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.Parameter;
-import org.sonar.squid.api.SourceClass;
-import org.sonar.squid.api.SourceMethod;
+import org.sonar.squidbridge.api.SourceClass;
+import org.sonar.squidbridge.api.SourceMethod;
 
 import java.util.List;
 import java.util.Map;

@@ -20,14 +20,14 @@
 package org.sonar.java.ast.visitors;
 
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.CommentAnalyser;
 import com.sonar.sslr.api.Token;
-import com.sonar.sslr.squid.SquidAstVisitorContext;
-import org.sonar.squid.api.CheckMessage;
-import org.sonar.squid.api.CodeCheck;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourceProject;
+import org.sonar.squidbridge.CommentAnalyser;
+import org.sonar.squidbridge.SquidAstVisitorContext;
+import org.sonar.squidbridge.api.CheckMessage;
+import org.sonar.squidbridge.api.CodeCheck;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourceProject;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;

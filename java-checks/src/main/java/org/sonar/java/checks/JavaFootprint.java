@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
-import org.sonar.squid.recognizer.*;
+import org.sonar.squidbridge.recognizer.*;
 
 import java.util.Set;
 

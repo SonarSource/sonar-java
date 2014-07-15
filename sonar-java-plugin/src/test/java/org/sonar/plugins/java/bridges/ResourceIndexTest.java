@@ -26,11 +26,11 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.ast.visitors.PackageVisitor;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceFile;
-import org.sonar.squid.api.SourcePackage;
-import org.sonar.squid.indexer.QueryByType;
-import org.sonar.squid.indexer.SquidIndex;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourcePackage;
+import org.sonar.squidbridge.indexer.QueryByType;
+import org.sonar.squidbridge.indexer.SquidIndex;
 
 import java.io.File;
 import java.util.Collection;

@@ -19,10 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.squid.checks.CheckMessagesVerifierRule;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.squid.api.SourceFile;
+import org.sonar.squidbridge.api.SourceFile;
 
 import static org.fest.assertions.Assertions.assertThat;
 

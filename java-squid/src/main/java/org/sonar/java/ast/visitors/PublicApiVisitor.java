@@ -23,11 +23,11 @@ import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Trivia;
-import com.sonar.sslr.squid.checks.SquidCheck;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.measures.Metric;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.checks.SquidCheck;
+import org.sonar.squidbridge.measures.Metric;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.List;

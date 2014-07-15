@@ -24,12 +24,12 @@ import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.squid.api.SourceCode;
-import org.sonar.squid.api.SourceCodeEdgeUsage;
-import org.sonar.squid.api.SourceCodeSearchEngine;
-import org.sonar.squid.api.SourceProject;
-import org.sonar.squid.indexer.QueryByType;
-import org.sonar.squid.measures.Metric;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
+import org.sonar.squidbridge.api.SourceCodeSearchEngine;
+import org.sonar.squidbridge.api.SourceProject;
+import org.sonar.squidbridge.indexer.QueryByType;
+import org.sonar.squidbridge.measures.Metric;
 
 import java.io.File;
 import java.util.Collections;
