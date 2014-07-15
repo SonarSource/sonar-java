@@ -41,7 +41,7 @@ public class ParsingErrorCheck extends SquidCheck<LexerlessGrammar> implements A
 
   @Override
   public void processRecognitionException(RecognitionException e) {
-    getContext().createLineViolation(this, e.getMessage(), e.getLine());
+    getContext().createLineViolation(this, "Parse error", e.getLine());
   }
 
 }

@@ -19,14 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 import java.io.File;
-
-import static org.hamcrest.Matchers.containsString;
 
 public class ParsingErrorCheckTest {
 
@@ -36,7 +34,7 @@ public class ParsingErrorCheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ParsingError.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessageThat(containsString("Parse error"))
+        .next().atLine(1).withMessage("Parse error")
         .noMore();
   }
 
