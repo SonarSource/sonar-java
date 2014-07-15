@@ -19,47 +19,90 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.Deque;
+import java.util.LinkedList;
 
 @Rule(
-  key = "S1148",
-  priority = Priority.CRITICAL,
-  tags={"error-handling"})
+    key = PrintStackTraceCalledWithoutArgumentCheck.RULE_KEY,
+    priority = Priority.CRITICAL,
+    tags = {"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class PrintStackTraceCalledWithoutArgumentCheck extends SquidCheck<LexerlessGrammar> {
+public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1148";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private JavaFileScannerContext context;
+  private final Deque<Symbol.TypeSymbol> enclosingClass = new LinkedList<Symbol.TypeSymbol>();
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.PRIMARY);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isPrintStackTraceCall(node)) {
-      getContext().createLineViolation(this, "Use a logger to log this exception.", node);
+  public void visitClass(ClassTree tree) {
+    Symbol.TypeSymbol enclosingSymbol = ((ClassTreeImpl) tree).getSymbol();
+    enclosingClass.push(enclosingSymbol);
+    super.visitClass(tree);
+    enclosingClass.pop();
+  }
+
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    super.visitMethodInvocation(tree);
+    if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      IdentifierTree identifierTree = ((MemberSelectExpressionTree) tree.methodSelect()).identifier();
+      if (!enclosingClassExtendsThrowable() && identifierTree.name().equals("printStackTrace") && calledOnTypeInheritedFromThrowable(tree)) {
+        context.addIssue(identifierTree, ruleKey, "Use a logger to log this exception.");
+      }
     }
   }
 
-  private static boolean isPrintStackTraceCall(AstNode node) {
-    AstNode identifierSuffix = node.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
-
-    return identifierSuffix != null &&
-      hasArgumentIdentifierSuffix(identifierSuffix) &&
-      isPrintStackTraceQualifiedIdentifier(node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
+  private boolean enclosingClassExtendsThrowable() {
+    return enclosingClass.peek() != null && extendsThrowable((Type.ClassType) enclosingClass.peek().getType());
   }
 
-  private static boolean hasArgumentIdentifierSuffix(AstNode node) {
-    return node.hasDirectChildren(JavaGrammar.ARGUMENTS);
+  private boolean calledOnTypeInheritedFromThrowable(MethodInvocationTree tree) {
+    //TODO this is painful way to access caller site of a method.
+    Type type = ((AbstractTypedTree) ((MemberSelectExpressionTree) tree.methodSelect()).expression()).getType();
+    //TODO get rid of null check : type should be !unknown!
+    return type != null && extendsThrowable((Type.ClassType) type);
   }
 
-  private static boolean isPrintStackTraceQualifiedIdentifier(AstNode node) {
-    return "printStackTrace".equals(node.getLastChild().getTokenOriginalValue());
+  private boolean extendsThrowable(Type.ClassType type) {
+    Symbol.TypeSymbol site = type.getSymbol();
+    if (isThrowable(site)) {
+      return true;
+    }
+    while (site.getSuperclass() != null) {
+      site = ((Type.ClassType) site.getSuperclass()).getSymbol();
+      if (isThrowable(site)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isThrowable(Symbol.TypeSymbol site) {
+    return "Throwable".equals(site.getName()) && "java.lang".equals(site.owner().getName());
   }
 
 }

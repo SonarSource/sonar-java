@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,11 +37,12 @@ public class PrintStackTraceCalledWithoutArgumentCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(
         new File("src/test/files/checks/PrintStackTraceCalledWithoutArgumentCheck.java"),
-        new PrintStackTraceCalledWithoutArgumentCheck());
+        new VisitorsBridge(new PrintStackTraceCalledWithoutArgumentCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("Use a logger to log this exception.")
         .next().atLine(4)
-        .next().atLine(6);
+        .next().atLine(10)
+    ;
   }
 
 }
