@@ -35,7 +35,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
     key = NullDereferenceInConditionalCheck.RULE_KEY,
-    priority = Priority.BLOCKER)
+    priority = Priority.BLOCKER,
+    tags = {"bug"}
+)
 public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1697";
