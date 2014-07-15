@@ -27,7 +27,7 @@ public class JaCoCoExtensionsTest {
 
   @Test
   public void testExtensions() {
-    assertThat(new JaCoCoExtensions().getExtensions().size()).isEqualTo(8);
+    assertThat(JaCoCoExtensions.getExtensions().size()).isEqualTo(8);
   }
 
 }
