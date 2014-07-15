@@ -25,16 +25,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class UnitTestClassReportTest {
-  @Test
-  public void shouldExportToXml() {
-    UnitTestClassReport report = new UnitTestClassReport();
-    report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_ERROR).setDurationMilliseconds(500L));
-    report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_OK).setDurationMilliseconds(200L));
-
-    String xml = report.toXml();
-
-    assertThat(xml, is("<tests-details><testcase status=\"error\" time=\"500\" name=\"null\"><error message=\"null\"><![CDATA[null]]></error></testcase><testcase status=\"ok\" time=\"200\" name=\"null\"/></tests-details>"));
-  }
 
   @Test
   public void shouldIncrementCounters() {

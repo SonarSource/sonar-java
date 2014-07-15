@@ -49,24 +49,4 @@ public class UnitTestResultTest {
     assertThat(result.isError(), is(false));
     assertThat(result.isErrorOrFailure(), is(false));
   }
-
-  @Test
-  public void shouldExportSuccessToXml() {
-    UnitTestResult result = new UnitTestResult().setStatus(UnitTestResult.STATUS_OK);
-    result.setDurationMilliseconds(520L);
-    result.setName("testOne");
-
-    assertThat(result.toXml(), is("<testcase status=\"ok\" time=\"520\" name=\"testOne\"/>"));
-  }
-
-  @Test
-  public void shouldExportErrorToXml() {
-    UnitTestResult result = new UnitTestResult().setStatus(UnitTestResult.STATUS_ERROR);
-    result.setDurationMilliseconds(580L);
-    result.setName("testOne");
-    result.setStackTrace("java.lang.RuntimeException");
-    result.setMessage("expected xxx");
-
-    assertThat(result.toXml(), is("<testcase status=\"error\" time=\"580\" name=\"testOne\"><error message=\"expected xxx\"><![CDATA[java.lang.RuntimeException]]></error></testcase>"));
-  }
 }

@@ -79,19 +79,9 @@ public final class UnitTestClassReport {
   }
 
   public List<UnitTestResult> getResults() {
-    if (results==null) {
+    if (results == null) {
       return Collections.emptyList();
     }
     return results;
-  }
-
-  public String toXml() {
-    StringBuilder sb = new StringBuilder(256);
-    sb.append("<tests-details>");
-    for (UnitTestResult result : results) {
-      result.appendXml(sb);
-    }
-    sb.append("</tests-details>");
-    return sb.toString();
   }
 }

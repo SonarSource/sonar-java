@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.surefire.data;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 public final class UnitTestResult {
   public static final String STATUS_OK = "ok";
   public static final String STATUS_ERROR = "error";
@@ -82,36 +80,4 @@ public final class UnitTestResult {
   public boolean isError() {
     return STATUS_ERROR.equals(status);
   }
-
-  public String toXml() {
-    StringBuilder sb = new StringBuilder();
-    return appendXml(sb).toString();
-  }
-  public StringBuilder appendXml(StringBuilder sb) {
-    sb
-        .append("<testcase status=\"")
-        .append(status)
-        .append("\" time=\"")
-        .append(durationMilliseconds)
-        .append("\" name=\"")
-        .append(StringEscapeUtils.escapeXml(name))
-        .append("\"");
-
-    if (isErrorOrFailure()) {
-      sb
-          .append(">")
-          .append(isError() ? "<error message=\"" : "<failure message=\"")
-          .append(StringEscapeUtils.escapeXml(message))
-          .append("\">")
-          .append("<![CDATA[")
-          .append(StringEscapeUtils.escapeXml(stackTrace))
-          .append("]]>")
-          .append(isError() ? "</error>" : "</failure>")
-          .append("</testcase>");
-    } else {
-      sb.append("/>");
-    }
-    return sb;
-  }
-
 }
