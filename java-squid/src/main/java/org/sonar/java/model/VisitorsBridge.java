@@ -147,6 +147,11 @@ public class VisitorsBridge extends JavaAstVisitor {
       return semanticModel;
     }
 
+    @Override
+    public String getFileName() {
+      return sourceFile.getName();
+    }
+
   }
 
 }

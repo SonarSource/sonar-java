@@ -190,7 +190,8 @@ public final class CheckList {
       RepeatAnnotationCheck.class,
       NPEThrowCheck.class,
       NullDereferenceInConditionalCheck.class,
-      SelfAssignementCheck.class
+      SelfAssignementCheck.class,
+      MismatchPackageDirectoryCheck.class
     );
   }
 
