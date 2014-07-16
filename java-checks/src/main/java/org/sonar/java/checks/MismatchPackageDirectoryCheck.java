@@ -71,7 +71,7 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
       pieces.push(mse.identifier().name());
-      pieces.push("/");
+      pieces.push(File.separator);
       expr = mse.expression();
     }
     if (expr.is(Tree.Kind.IDENTIFIER)) {
