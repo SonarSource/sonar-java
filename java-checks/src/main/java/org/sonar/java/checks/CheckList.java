@@ -191,7 +191,8 @@ public final class CheckList {
       NPEThrowCheck.class,
       NullDereferenceInConditionalCheck.class,
       SelfAssignementCheck.class,
-      MismatchPackageDirectoryCheck.class
+      MismatchPackageDirectoryCheck.class,
+      ReplaceLambdaByMethodRefCheck.class
     );
   }
 

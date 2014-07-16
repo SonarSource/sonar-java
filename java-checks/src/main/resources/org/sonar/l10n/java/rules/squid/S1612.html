@@ -1,0 +1,11 @@
+<p>Method/constructor references are more compact and readable than using lambdas, and are therefore preferred.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+forEach(n -> { System.out.println(n); }, numbers);
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+forEach(System.out::println, numbers);
+</pre>
