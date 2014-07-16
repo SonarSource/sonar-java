@@ -48,10 +48,6 @@ public class Resolve {
     this.bytecodeCompleter = bytecodeCompleter;
   }
 
-  public void done() {
-    bytecodeCompleter.done();
-  }
-
   public Symbol.TypeSymbol registerClass(Symbol.TypeSymbol classSymbol) {
     return bytecodeCompleter.registerClass(classSymbol);
   }

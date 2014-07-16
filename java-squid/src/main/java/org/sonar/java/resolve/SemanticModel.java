@@ -27,11 +27,14 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,13 +52,36 @@ public class SemanticModel {
   public static SemanticModel createFor(CompilationUnitTree tree, List<File> projectClasspath) {
     BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(projectClasspath);
     Symbols symbols = new Symbols(bytecodeCompleter);
-    Resolve resolve = new Resolve(symbols, bytecodeCompleter);
     SemanticModel semanticModel = new SemanticModel();
-    new FirstPass(semanticModel, symbols, resolve).visitCompilationUnit(tree);
-    new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);
-    new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
-    resolve.done();
+    try {
+      Resolve resolve = new Resolve(symbols, bytecodeCompleter);
+      new FirstPass(semanticModel, symbols, resolve).visitCompilationUnit(tree);
+      new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);
+      new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
+    } finally {
+      bytecodeCompleter.done();
+      handleMissingTypes(symbols, tree);
+    }
     return semanticModel;
+  }
+
+  /**
+   * Handles missing types in Syntax Tree to prevent NPE in subsequent steps of analysis.
+   */
+  private static void handleMissingTypes(final Symbols symbols, Tree tree) {
+    // (Godin): Another and probably better (safer) way to do the same - is to assign default value during creation of nodes, so that to guarantee that this step won't be skipped.
+    tree.accept(new BaseTreeVisitor() {
+      @Override
+      protected void scan(@Nullable Tree tree) {
+        if (tree instanceof AbstractTypedTree) {
+          AbstractTypedTree typedNode = (AbstractTypedTree) tree;
+          if (typedNode.getType() == null) {
+            typedNode.setType(symbols.unknownType);
+          }
+        }
+        super.scan(tree);
+      }
+    });
   }
 
   @VisibleForTesting
