@@ -34,7 +34,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
   key = DuplicateConditionIfElseIfCheck.RULE_KEY,
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "unused"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class DuplicateConditionIfElseIfCheck extends BaseTreeVisitor implements JavaFileScanner {
 
