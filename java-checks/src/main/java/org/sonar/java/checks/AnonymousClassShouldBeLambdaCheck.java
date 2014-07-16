@@ -26,8 +26,10 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -63,9 +65,45 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     super.visitNewClass(tree);
     if (tree.classBody() != null) {
       List<Tree> members = tree.classBody().members();
-      if (!enumConstants.contains(tree.identifier()) && members.size() == 1 && members.get(0).is(Tree.Kind.METHOD)) {
+      if (!useThisIdentifier(tree.classBody()) && !enumConstants.contains(tree.identifier()) && members.size() == 1 && members.get(0).is(Tree.Kind.METHOD)) {
         context.addIssue(tree, RULE, "Make this anonymous inner class a lambda");
       }
+    }
+  }
+
+  private boolean useThisIdentifier(ClassTree body) {
+    ThisIdentifierVisitor visitor = new ThisIdentifierVisitor();
+    body.accept(visitor);
+    return visitor.usesThisIdentifier;
+  }
+
+  private static class ThisIdentifierVisitor extends BaseTreeVisitor {
+    boolean usesThisIdentifier = false;
+    boolean visitedClassTree = false;
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      //visit the class body but ignore inner classes
+      if (!visitedClassTree) {
+        visitedClassTree = true;
+        super.visitClass(tree);
+      }
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      //ignore anonymous classes
+    }
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      scan(tree.expression());
+      //ignore identifier, because if it is this, it is a qualified this.
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      usesThisIdentifier |= "this".equals(tree.name());
     }
   }
 }

@@ -39,7 +39,10 @@ public class AnonymousClassShouldBeLambdaCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AnonymousClassShouldBeLambdaCheck.java"), new VisitorsBridge(new AnonymousClassShouldBeLambdaCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(30).withMessage("Make this anonymous inner class a lambda");
+        .next().atLine(30).withMessage("Make this anonymous inner class a lambda")
+        .next().atLine(56).withMessage("Make this anonymous inner class a lambda")
+        .next().atLine(71).withMessage("Make this anonymous inner class a lambda")
+    ;
   }
 
 }

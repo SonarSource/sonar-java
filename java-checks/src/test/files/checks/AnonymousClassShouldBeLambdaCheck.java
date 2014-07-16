@@ -45,6 +45,39 @@ class A {
         return myMethod();
       }
     }.handle();
+
+    new Handler(){
+      @Override
+      public String handle() {
+        return this.toString();
+      }
+    }.handle();
+
+    new Handler(){
+      @Override
+      public String handle() {
+        class C{
+          String meth(){
+            return "";
+          }
+          String fun(){
+            return this.meth();
+          }
+        }
+        return new C().fun();
+      }
+    };
+
+    new Handler(){
+      @Override
+      public String handle() {
+        return A.this.toStr();
+      }
+    };
+  }
+
+  String toStr(){
+    return "";
   }
 
 }
