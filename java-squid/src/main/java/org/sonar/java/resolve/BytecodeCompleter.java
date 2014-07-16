@@ -173,16 +173,36 @@ public class BytecodeCompleter implements Symbol.Completer {
   }
 
   /**
-   * Load a class from bytecode.
-   * @param fullname class name.
-   * @return symbolNotFound if the class was not resolved.
+   * <b>Note:</b> Attempt to find something like "java.class" on case-insensitive file system can result in unwanted loading of "JAVA.class".
+   * This method performs check of class name within file in order to avoid such situation.
+   * This is definitely not the best solution in terms of performance, but acceptable for now.
+   *
+   * @return symbol for requested class, if corresponding class file exists, and {@link Resolve.SymbolNotFound} otherwise
    */
+  // TODO(Godin): Method name is misleading because of lazy loading.
   public Symbol loadClass(String fullname) {
+    // TODO(Godin): avoid unnecessary checks of the same class
+
+    // TODO(Godin): pull out conversion of name from the next method to avoid unnecessary conversion afterwards:
     InputStream inputStream = inputStreamFor(fullname);
+    String bytecodeName = Convert.bytecodeName(fullname);
+
     if (inputStream == null) {
       return new Resolve.SymbolNotFound();
     }
-    Closeables.closeQuietly(inputStream);
+
+    try {
+      ClassReader classReader = new ClassReader(inputStream);
+      String className = classReader.getClassName();
+      if (!className.equals(bytecodeName)) {
+        return new Resolve.SymbolNotFound();
+      }
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    } finally {
+      Closeables.closeQuietly(inputStream);
+    }
+
     return getClassSymbol(fullname);
   }
 
