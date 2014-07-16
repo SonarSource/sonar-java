@@ -64,9 +64,9 @@ public class ModifiersOrderCheck extends SquidCheck<LexerlessGrammar> {
   public void visitNode(AstNode node) {
     if (isFirstModifer(node)) {
       List<AstNode> modifiers = getModifiers(node);
-
-      if (isBadlyOrdered(modifiers)) {
-        getContext().createLineViolation(this, "Reorder the modifiers to comply with the Java Language Specification.", node);
+      AstNode badlyOrderedModifier = isBadlyOrdered(modifiers);
+      if (badlyOrderedModifier != null) {
+        getContext().createLineViolation(this, "Reorder the modifiers to comply with the Java Language Specification.", badlyOrderedModifier);
       }
     }
   }
@@ -86,16 +86,18 @@ public class ModifiersOrderCheck extends SquidCheck<LexerlessGrammar> {
     return builder.build();
   }
 
-  private static boolean isBadlyOrdered(List<AstNode> modifiers) {
-    int i = 0;
+  private static AstNode isBadlyOrdered(List<AstNode> modifiers) {
+    int expectedIndex = 0;
 
     for (AstNode modifier : modifiers) {
-      for (; i < EXPECTED_ORDER.length && !modifier.getFirstChild().is(EXPECTED_ORDER[i]); i++) {
-        // We're just interested in the final value of 'i'
+      for (; expectedIndex < EXPECTED_ORDER.length && !modifier.getFirstChild().is(EXPECTED_ORDER[expectedIndex]); expectedIndex++) {
+        // We're just interested in the final value of 'expectedIndex'
+      }
+      if(expectedIndex==EXPECTED_ORDER.length) {
+        return modifier;
       }
     }
-
-    return i == EXPECTED_ORDER.length;
+    return null;
   }
 
 }
