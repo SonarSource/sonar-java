@@ -41,7 +41,9 @@ public class MismatchPackageDirectoryCheckTest {
   @Test
   public void mismatch() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/mismatchPackage/Mismatch.java"), new VisitorsBridge(new MismatchPackageDirectoryCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages()).next().atLine(1).withMessage("This file \"Mismatch.java\" should be located in \"org/foo/mismatchPackage\" directory, not in \"src/test/files/checks/mismatchPackage\".");
+    String expectedLocation = "org"+File.separator+"foo"+File.separator+"mismatchPackage";
+    String actualLocation = "src"+File.separator+"test"+File.separator+"files"+File.separator+"checks"+File.separator+"mismatchPackage";
+    checkMessagesVerifier.verify(file.getCheckMessages()).next().atLine(1).withMessage("This file \"Mismatch.java\" should be located in \""+expectedLocation+"\" directory, not in \""+actualLocation+"\".");
   }
 
 }
