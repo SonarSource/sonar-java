@@ -39,6 +39,11 @@ public class MismatchPackageDirectoryCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages()).noMore();
   }
   @Test
+  public void defaultPackage() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/mismatchPackage/DefaultPackage.java"), new VisitorsBridge(new MismatchPackageDirectoryCheck()));
+    checkMessagesVerifier.verify(file.getCheckMessages()).noMore();
+  }
+  @Test
   public void mismatch() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/mismatchPackage/Mismatch.java"), new VisitorsBridge(new MismatchPackageDirectoryCheck()));
     String expectedLocation = "org"+File.separator+"foo"+File.separator+"mismatchPackage";

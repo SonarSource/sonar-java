@@ -56,11 +56,13 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    String packageName = concatenate(tree.packageName());
-    File javaFile = new File(context.getFileName());
-    String dir = javaFile.getParent();
-    if(!dir.endsWith(packageName)) {
-      context.addIssue(tree.packageName(), ruleKey, "This file \""+javaFile.getName()+"\" should be located in \""+packageName+"\" directory, not in \""+dir+"\".");
+    if (tree.packageName() != null) {
+      String packageName = concatenate(tree.packageName());
+      File javaFile = new File(context.getFileName());
+      String dir = javaFile.getParent();
+      if (!dir.endsWith(packageName)) {
+        context.addIssue(tree.packageName(), ruleKey, "This file \"" + javaFile.getName() + "\" should be located in \"" + packageName + "\" directory, not in \"" + dir + "\".");
+      }
     }
   }
 
@@ -80,7 +82,7 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
     }
 
     StringBuilder sb = new StringBuilder();
-    for (String piece: pieces) {
+    for (String piece : pieces) {
       sb.append(piece);
     }
     return sb.toString();
