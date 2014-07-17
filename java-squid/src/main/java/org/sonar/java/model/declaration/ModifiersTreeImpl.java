@@ -35,14 +35,15 @@ import java.util.List;
 
 public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
   // TODO remove:
-  public static final org.sonar.java.model.declaration.ModifiersTreeImpl EMPTY = new org.sonar.java.model.declaration.ModifiersTreeImpl(null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
+  public static final org.sonar.java.model.declaration.ModifiersTreeImpl EMPTY =
+      new org.sonar.java.model.declaration.ModifiersTreeImpl(null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
 
   private final List<Modifier> modifiers;
   private final List<AnnotationTree> annotations;
 
   public ModifiersTreeImpl(AstNode astNode, List<Modifier> modifiers, List<AnnotationTree> annotations) {
     super(astNode);
-    this.modifiers = Preconditions.checkNotNull(modifiers);
+    this.modifiers = Preconditions.checkNotNull(modifiers);e
     this.annotations = Preconditions.checkNotNull(annotations);
   }
 
