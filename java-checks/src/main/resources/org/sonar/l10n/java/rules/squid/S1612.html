@@ -2,10 +2,22 @@
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-forEach(n -> { System.out.println(n); }, numbers);
+  List<Integer> list = new ArrayList<Integer>();
+  list.add(0);
+  list.add(1);
+  list.add(2);
+
+  list.forEach(System.out::println);
 </pre>
 
 <h2>Compliant Solution</h2>
 <pre>
-forEach(System.out::println, numbers);
+  List<Integer> list = new ArrayList<Integer>();
+    list.add(0);
+    list.add(1);
+    list.add(2);
+
+    list.forEach(System.out::println);
+
+    list.forEach(n -> { System.out.println(n); });
 </pre>
