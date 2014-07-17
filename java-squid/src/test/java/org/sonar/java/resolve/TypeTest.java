@@ -44,6 +44,24 @@ public class TypeTest {
   }
 
   @Test
+  public void checkTagging() {
+    assertThat(new Type(Type.VOID, null).isTagged(Type.VOID)).isTrue();
+  }
+  @Test
+  public void isNumerical_should_return_true_for_numerical_types() {
+    assertThat(new Type(Type.BYTE, null).isNumerical()).isTrue();
+    assertThat(new Type(Type.CHAR, null).isNumerical()).isTrue();
+    assertThat(new Type(Type.SHORT, null).isNumerical()).isTrue();
+    assertThat(new Type(Type.INT, null).isNumerical()).isTrue();
+    assertThat(new Type(Type.LONG, null).isNumerical()).isTrue();
+    assertThat(new Type(Type.FLOAT, null).isNumerical()).isTrue();
+    assertThat(new Type(Type.DOUBLE, null).isNumerical()).isTrue();
+    assertThat(new Type(Type.BOOLEAN, null).isNumerical()).isFalse();
+    assertThat(new Type(Type.VOID, null).isNumerical()).isFalse();
+    assertThat(new Type(Type.CLASS, null).isNumerical()).isFalse();
+  }
+
+  @Test
   public void to_string_on_type() throws Exception {
     assertThat(new Type(Type.VOID, null).toString()).isEmpty();
     String methodToString  = new Type.MethodType(ImmutableList.<Type>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList())).intType, ImmutableList.<Type>of(), null).toString();
