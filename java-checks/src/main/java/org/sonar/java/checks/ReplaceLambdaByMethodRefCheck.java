@@ -69,11 +69,11 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   }
 
   private boolean isReturnStatementInvokingMethod(Tree statement) {
-    return (statement.is(Tree.Kind.RETURN_STATEMENT) && isMethodInvocation(((ReturnStatementTree) statement).expression()));
+    return statement.is(Tree.Kind.RETURN_STATEMENT) && isMethodInvocation(((ReturnStatementTree) statement).expression());
   }
 
   private boolean isExpressionStatementInvokingMethod(Tree statement) {
-    return (statement.is(Tree.Kind.EXPRESSION_STATEMENT) && isMethodInvocation(((ExpressionStatementTree) statement).expression()));
+    return statement.is(Tree.Kind.EXPRESSION_STATEMENT) && isMethodInvocation(((ExpressionStatementTree) statement).expression());
   }
 
   private boolean isBlockWithOneStatement(Tree tree) {
