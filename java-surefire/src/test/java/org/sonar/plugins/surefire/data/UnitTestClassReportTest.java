@@ -31,14 +31,17 @@ public class UnitTestClassReportTest {
     UnitTestClassReport report = new UnitTestClassReport();
     report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_ERROR).setDurationMilliseconds(500L));
     report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_OK).setDurationMilliseconds(200L));
+    //Some negative duration can occur due to bug in surefire.
+    report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_OK).setDurationMilliseconds(-200L));
     report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_SKIPPED));
 
-    assertThat(report.getResults().size(), is(3));
+    assertThat(report.getResults().size(), is(4));
     assertThat(report.getSkipped(), is(1L));
-    assertThat(report.getTests(), is(3L));
+    assertThat(report.getTests(), is(4L));
     assertThat(report.getDurationMilliseconds(), is(500L + 200L));
     assertThat(report.getErrors(), is(1L));
     assertThat(report.getFailures(), is(0L));
+    assertThat(report.getNegativeTimeTestNumber(), is(1L));
   }
 
   @Test

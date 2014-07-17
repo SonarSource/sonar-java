@@ -29,18 +29,15 @@ import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.File;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
-import org.sonar.api.test.IsMeasure;
 import org.sonar.api.test.IsResource;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
 import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.plugins.surefire.SurefireJavaParser;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -210,6 +207,19 @@ public class SurefireJavaParserTest {
       eq(3.0));
   }
 
+  @Test
+  public void should_not_count_negative_tests() throws URISyntaxException {
+    SensorContext context = mockContext();
+
+    parser.collect(new Project("foo"), context, getDir("negativeTestTime"));
+    //Test times : -1.120, 0.644, 0.015 -> computed time : 0.659, ignore negative time.
+
+    verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.SKIPPED_TESTS), eq(0.0));
+    verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TESTS), anyDouble());
+    verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_ERRORS), anyDouble());
+    verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_FAILURES), anyDouble());
+    verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_EXECUTION_TIME), eq(659.0));
+  }
 
   private java.io.File getDir(String dirname) throws URISyntaxException {
     return new java.io.File("src/test/resources/org/sonar/plugins/surefire/api/SurefireParserTest/" + dirname);

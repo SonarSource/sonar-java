@@ -121,16 +121,21 @@ public class SurefireJavaParser implements BatchExtension {
   }
 
   private void save(UnitTestIndex index, SensorContext context) {
+    long negativeTimeTestNumber = 0;
     for (Map.Entry<String, UnitTestClassReport> entry : index.getIndexByClassname().entrySet()) {
       UnitTestClassReport report = entry.getValue();
       if (report.getTests() > 0) {
+        negativeTimeTestNumber += report.getNegativeTimeTestNumber();
         Resource resource = getUnitTestResource(entry.getKey());
         if (resource != null) {
-          save(entry.getValue(), resource, context);
+          save(report, resource, context);
         } else {
           LOGGER.warn("Resource not found: {}", entry.getKey());
         }
       }
+    }
+    if (negativeTimeTestNumber > 0) {
+      LOGGER.warn("There is {} test(s) reported with negative time by surefire, total duration may not be accurate.", negativeTimeTestNumber);
     }
   }
 

@@ -25,7 +25,14 @@ import java.util.Collections;
 import java.util.List;
 
 public final class UnitTestClassReport {
-  private long errors = 0L, failures = 0L, skipped = 0L, tests = 0L, durationMilliseconds = 0L;
+  private long errors = 0L;
+  private long failures = 0L;
+  private long skipped = 0L;
+  private long tests = 0L;
+  private long durationMilliseconds = 0L;
+
+
+  private long negativeTimeTestNumber = 0L;
   private List<UnitTestResult> results = null;
 
   public UnitTestClassReport add(UnitTestClassReport other) {
@@ -48,7 +55,11 @@ public final class UnitTestClassReport {
       errors += 1;
     }
     tests += 1;
-    durationMilliseconds += result.getDurationMilliseconds();
+    if (result.getDurationMilliseconds() < 0) {
+      negativeTimeTestNumber += 1;
+    } else {
+      durationMilliseconds += result.getDurationMilliseconds();
+    }
     return this;
   }
 
@@ -76,6 +87,10 @@ public final class UnitTestClassReport {
 
   public long getDurationMilliseconds() {
     return durationMilliseconds;
+  }
+
+  public long getNegativeTimeTestNumber() {
+    return negativeTimeTestNumber;
   }
 
   public List<UnitTestResult> getResults() {
