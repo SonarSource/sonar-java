@@ -86,10 +86,6 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
     if (tree.is(Tree.Kind.EQUAL_TO) || tree.is(Tree.Kind.NOT_EQUAL_TO)) {
       Type leftOperandType = ((AbstractTypedTree) tree.leftOperand()).getType();
       Type rightOperandType = ((AbstractTypedTree) tree.rightOperand()).getType();
-      if (leftOperandType == null || rightOperandType == null) {
-        //FIXME null type should not happen.
-        return;
-      }
       if (!isNullComparison(leftOperandType, rightOperandType)
           && !isNumericalComparison(leftOperandType, rightOperandType)
           && (isClass(leftOperandType) || isClass(rightOperandType))) {
