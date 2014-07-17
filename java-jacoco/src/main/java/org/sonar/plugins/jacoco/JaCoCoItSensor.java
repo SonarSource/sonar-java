@@ -54,7 +54,7 @@ public class JaCoCoItSensor implements Sensor {
     boolean foundReport = report.exists() && report.isFile();
     boolean shouldExecute = configuration.shouldExecuteOnProject(foundReport);
     if(!foundReport && shouldExecute) {
-      JaCoCoUtils.LOG.info("JaCoCoItSensor: JaCoCo IT report not found.");
+      JaCoCoExtensions.LOG.info("JaCoCoItSensor: JaCoCo IT report not found.");
     }
     return shouldExecute;
   }

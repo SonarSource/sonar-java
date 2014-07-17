@@ -96,7 +96,7 @@ public abstract class AbstractAnalyzer {
 
   public final void analyse(Project project, SensorContext context) {
     if (!atLeastOneBinaryDirectoryExists()) {
-      JaCoCoUtils.LOG.info("No JaCoCo analysis of project coverage can be done since there is no directories with classes.");
+      JaCoCoExtensions.LOG.info("No JaCoCo analysis of project coverage can be done since there is no directories with classes.");
       return;
     }
     String path = getReportPath(project);
@@ -123,10 +123,10 @@ public abstract class AbstractAnalyzer {
     ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
 
     if (jacocoExecutionData == null || !jacocoExecutionData.isFile()) {
-      JaCoCoUtils.LOG.info("Project coverage is set to 0% as no JaCoCo execution data has been dumped: {}", jacocoExecutionData);
+      JaCoCoExtensions.LOG.info("Project coverage is set to 0% as no JaCoCo execution data has been dumped: {}", jacocoExecutionData);
       jacocoExecutionData = null;
     } else {
-      JaCoCoUtils.LOG.info("Analysing {}", jacocoExecutionData);
+      JaCoCoExtensions.LOG.info("Analysing {}", jacocoExecutionData);
 
       ExecutionDataReader reader = new ExecutionDataReader(new FileInputStream(jacocoExecutionData));
       reader.setSessionInfoVisitor(executionDataVisitor);
@@ -154,11 +154,11 @@ public abstract class AbstractAnalyzer {
       }
     }
     if (analyzedResources == 0) {
-      JaCoCoUtils.LOG.warn("Coverage information was not collected. Perhaps you forget to include debug information into compiled classes?");
+      JaCoCoExtensions.LOG.warn("Coverage information was not collected. Perhaps you forget to include debug information into compiled classes?");
     } else if (collectedCoveragePerTest) {
-      JaCoCoUtils.LOG.info("Information about coverage per test has been collected.");
+      JaCoCoExtensions.LOG.info("Information about coverage per test has been collected.");
     } else if (jacocoExecutionData != null) {
-      JaCoCoUtils.LOG.info("No information about coverage per test.");
+      JaCoCoExtensions.LOG.info("No information about coverage per test.");
     }
   }
 
@@ -202,7 +202,7 @@ public abstract class AbstractAnalyzer {
           try {
             analyzer.analyzeAll(classFile);
           } catch (Exception e) {
-            JaCoCoUtils.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
+            JaCoCoExtensions.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
           }
         }
       }
@@ -256,7 +256,7 @@ public abstract class AbstractAnalyzer {
       try {
         analyzer.analyzeAll(file);
       } catch (Exception e) {
-        JaCoCoUtils.LOG.warn("Exception during analysis of file " + file.getAbsolutePath(), e);
+        JaCoCoExtensions.LOG.warn("Exception during analysis of file " + file.getAbsolutePath(), e);
       }
     }
   }
@@ -277,7 +277,7 @@ public abstract class AbstractAnalyzer {
         case ICounter.EMPTY:
           continue;
         default:
-          JaCoCoUtils.LOG.warn("Unknown status for line {} in {}", lineId, resource);
+          JaCoCoExtensions.LOG.warn("Unknown status for line {} in {}", lineId, resource);
           continue;
       }
       builder.setHits(lineId, hits);

@@ -70,7 +70,7 @@ public class JaCoCoOverallSensor implements Sensor {
     boolean foundBothReports = reportUTs.exists() && reportITs.exists();
     boolean shouldExecute = configuration.shouldExecuteOnProject(foundBothReports);
     if (!foundBothReports && shouldExecute) {
-      JaCoCoUtils.LOG.info("JaCoCoOverallSensor: JaCoCo reports not found.");
+      JaCoCoExtensions.LOG.info("JaCoCoOverallSensor: JaCoCo reports not found.");
     }
     return shouldExecute;
   }
