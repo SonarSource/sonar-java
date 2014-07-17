@@ -93,10 +93,10 @@ public class VisitorsBridge extends JavaAstVisitor {
 
   private boolean isNotJavaLangOrSerializable() {
     String[] path = peekSourceFile().getName().split(Pattern.quote(File.separator));
-    boolean isJavaLang = (path.length > 3 && "java".equals(path[path.length - 3]) && "lang".equals(path[path.length - 2]))
-      || (path.length > 4 && "Annotation.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 4]) && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]));
+    boolean isJavaLang = (path.length > 3 && "java".equals(path[path.length - 3]) && "lang".equals(path[path.length - 2]));
+    boolean isJavaLangAnnotation = (path.length > 4 && "Annotation.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 4]) && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]));
     boolean isSerializable = path.length > 3 && "Serializable.java".equals(path[path.length-1]) && "java".equals(path[path.length-3]) && "io".equals(path[path.length-2]);
-    return !(isJavaLang || isSerializable);
+    return !(isJavaLang || isJavaLangAnnotation || isSerializable);
   }
 
   private List<File> getProjectClasspath() {

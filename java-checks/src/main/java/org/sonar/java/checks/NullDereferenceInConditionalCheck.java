@@ -60,7 +60,8 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
         IdentifierVisitor visitor = new IdentifierVisitor(identifierTree);
         tree.rightOperand().accept(visitor);
         if (visitor.raiseIssue) {
-          context.addIssue(tree, ruleKey, "Either reverse the equality operator in the \"" + identifierTree.name() + "\" null test, or reverse the logical operator that follows it.");
+          context.addIssue(tree, ruleKey, "Either reverse the equality operator in the \"" +
+              identifierTree.name() + "\" null test, or reverse the logical operator that follows it.");
         }
       }
     }
@@ -84,7 +85,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
     return tree.is(Tree.Kind.CONDITIONAL_OR) && isNotEqualNullComparison(tree.leftOperand());
   }
 
-  private class IdentifierVisitor extends BaseTreeVisitor {
+  private static class IdentifierVisitor extends BaseTreeVisitor {
     private IdentifierTree identifierTree;
     boolean raiseIssue = false;
 

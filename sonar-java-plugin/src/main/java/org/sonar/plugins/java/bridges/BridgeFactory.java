@@ -36,7 +36,7 @@ public final class BridgeFactory {
   }
 
   private static List<Bridge> create(NoSonarFilter noSonarFilter, boolean skipPackageDesignAnalysis) {
-    ArrayList<Bridge> result = Lists.newArrayList(
+    List<Bridge> result = Lists.newArrayList(
         new CopyBasicMeasuresBridge(),
         new FunctionsBridge(),
         new NoSonarFilterLoader(noSonarFilter),
