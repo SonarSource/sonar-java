@@ -43,7 +43,7 @@ public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
 
   public ModifiersTreeImpl(AstNode astNode, List<Modifier> modifiers, List<AnnotationTree> annotations) {
     super(astNode);
-    this.modifiers = Preconditions.checkNotNull(modifiers);e
+    this.modifiers = Preconditions.checkNotNull(modifiers);
     this.annotations = Preconditions.checkNotNull(annotations);
   }
 
