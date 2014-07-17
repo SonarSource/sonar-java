@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
@@ -44,7 +45,6 @@ import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.util.Collections;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyDouble;
@@ -60,18 +60,18 @@ import static org.mockito.Mockito.when;
 public class SurefireSensorTest {
 
   private Project project;
-  private ProjectFileSystem fileSystem;
   private ResourcePerspectives perspectives;
   private JavaResourceLocator javaResourceLocator;
   private SurefireSensor surefireSensor;
+  private DefaultFileSystem fs;
 
   @Before
   public void before() {
     project = mock(Project.class);
-    fileSystem = mock(ProjectFileSystem.class);
-    when(fileSystem.mainFiles("java")).thenReturn(Collections.singletonList(mock(InputFile.class)));
-    when(project.getFileSystem()).thenReturn(fileSystem);
-
+    fs = new DefaultFileSystem();
+    DefaultInputFile javaFile = new DefaultInputFile("src/org/foo/java");
+    javaFile.setLanguage("java");
+    fs.add(javaFile);
     perspectives = mock(ResourcePerspectives.class);
 
     javaResourceLocator = mock(JavaResourceLocator.class);
@@ -82,7 +82,7 @@ public class SurefireSensorTest {
       }
     });
 
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class));
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs);
   }
 
   @Test
@@ -91,17 +91,13 @@ public class SurefireSensorTest {
     Project project = mock(Project.class);
     when(project.getFileSystem()).thenReturn(projectFileSystem);
     when(projectFileSystem.mainFiles("java")).thenReturn(Lists.<InputFile>newArrayList(new DefaultInputFile("")));
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class));
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs);
     Assertions.assertThat(surefireSensor.shouldExecuteOnProject(project)).isTrue();
   }
 
   @Test
   public void should_not_execute_if_filesystem_does_not_contains_java_files() {
-    ProjectFileSystem projectFileSystem = mock(ProjectFileSystem.class);
-    Project project = mock(Project.class);
-    when(project.getFileSystem()).thenReturn(projectFileSystem);
-    when(projectFileSystem.mainFiles("java")).thenReturn(Lists.<InputFile>newArrayList());
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class));
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), new DefaultFileSystem());
     Assertions.assertThat(surefireSensor.shouldExecuteOnProject(project)).isFalse();
   }
 
@@ -116,7 +112,7 @@ public class SurefireSensorTest {
     Project project = mock(Project.class);
     when(project.getFileSystem()).thenReturn(projectFileSystem);
 
-    SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings);
+    SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings, fs);
     surefireSensor.analyse(project, mockContext());
   }
 

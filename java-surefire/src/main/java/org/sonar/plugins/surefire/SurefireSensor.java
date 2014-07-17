@@ -26,6 +26,7 @@ import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 import org.sonar.plugins.surefire.api.SurefireUtils;
@@ -39,10 +40,12 @@ public class SurefireSensor implements Sensor {
 
   private final SurefireJavaParser surefireJavaParser;
   private final Settings settings;
+  private final FileSystem fs;
 
-  public SurefireSensor(SurefireJavaParser surefireJavaParser, Settings settings) {
+  public SurefireSensor(SurefireJavaParser surefireJavaParser, Settings settings, FileSystem fs) {
     this.surefireJavaParser = surefireJavaParser;
     this.settings = settings;
+    this.fs = fs;
   }
 
   @DependsUpon
@@ -52,7 +55,7 @@ public class SurefireSensor implements Sensor {
 
   @Override
   public boolean shouldExecuteOnProject(Project project) {
-    return !project.getFileSystem().mainFiles("java").isEmpty() || !project.getFileSystem().testFiles("java").isEmpty();
+    return fs.hasFiles(fs.predicates().hasLanguage("java"));
   }
 
   @Override
