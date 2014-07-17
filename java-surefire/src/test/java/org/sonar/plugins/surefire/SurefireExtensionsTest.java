@@ -19,29 +19,15 @@
  */
 package org.sonar.plugins.surefire;
 
-import com.google.common.collect.ImmutableList;
-import org.sonar.api.CoreProperties;
-import org.sonar.api.SonarPlugin;
-import org.sonar.api.config.PropertyDefinition;
-import org.sonar.api.resources.Qualifiers;
-import org.sonar.plugins.surefire.api.SurefireUtils;
+import org.junit.Test;
 
-import java.util.List;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertThat;
 
-public final class SurefirePlugin {
+public class SurefireExtensionsTest {
 
-  public static List getExtensions() {
-    return ImmutableList.of(
-      PropertyDefinition.builder(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)
-        .name("JUnit Reports")
-        .description("Path to the directory containing all the *.xml JUnit report files. The path may be absolute or relative to the project base directory.")
-        .onQualifiers(Qualifiers.PROJECT)
-        .category(CoreProperties.CATEGORY_JAVA)
-        .subCategory("JUnit")
-        .build(),
-
-      SurefireSensor.class,
-      SurefireJavaParser.class);
+  @Test
+  public void shouldGetExtensions() {
+    assertThat(SurefireExtensions.getExtensions().size(), greaterThan(0));
   }
-
 }

@@ -19,11 +19,14 @@
  */
 package org.sonar.plugins.surefire;
 
+import com.google.common.collect.Lists;
+import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
 import org.sonar.api.measures.CoreMetrics;
@@ -43,9 +46,6 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyString;
@@ -86,15 +86,23 @@ public class SurefireSensorTest {
   }
 
   @Test
-  public void shouldNotAnalyseIfStaticAnalysis() {
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.STATIC);
-    assertFalse(surefireSensor.shouldExecuteOnProject(project));
+  public void should_execute_if_filesystem_contains_java_files() {
+    ProjectFileSystem projectFileSystem = mock(ProjectFileSystem.class);
+    Project project = mock(Project.class);
+    when(project.getFileSystem()).thenReturn(projectFileSystem);
+    when(projectFileSystem.mainFiles("java")).thenReturn(Lists.<InputFile>newArrayList(new DefaultInputFile("")));
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class));
+    Assertions.assertThat(surefireSensor.shouldExecuteOnProject(project)).isTrue();
   }
 
   @Test
-  public void shouldAnalyseIfReuseDynamicReports() {
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.REUSE_REPORTS);
-    assertThat(surefireSensor.shouldExecuteOnProject(project), is(true));
+  public void should_not_execute_if_filesystem_does_not_contains_java_files() {
+    ProjectFileSystem projectFileSystem = mock(ProjectFileSystem.class);
+    Project project = mock(Project.class);
+    when(project.getFileSystem()).thenReturn(projectFileSystem);
+    when(projectFileSystem.mainFiles("java")).thenReturn(Lists.<InputFile>newArrayList());
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class));
+    Assertions.assertThat(surefireSensor.shouldExecuteOnProject(project)).isFalse();
   }
 
   @Test
