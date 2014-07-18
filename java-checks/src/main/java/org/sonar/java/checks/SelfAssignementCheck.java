@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(
     key = SelfAssignementCheck.RULE_KEY,
     priority = Priority.MAJOR,
-    tags = {"error-handling"})
+    tags = {"bug"})
 public class SelfAssignementCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1656";
