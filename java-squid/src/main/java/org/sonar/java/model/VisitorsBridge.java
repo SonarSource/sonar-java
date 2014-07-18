@@ -83,6 +83,8 @@ public class VisitorsBridge extends JavaAstVisitor {
           return;
         }
         createSonarSymbolTable(tree);
+      } else {
+        SemanticModel.handleMissingTypes(tree);
       }
       JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), semanticModel);
       for (JavaFileScanner scanner : scanners) {

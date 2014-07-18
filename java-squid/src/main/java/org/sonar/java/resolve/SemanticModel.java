@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.sonar.sslr.api.AstNode;
@@ -63,6 +64,12 @@ public class SemanticModel {
       handleMissingTypes(symbols, tree);
     }
     return semanticModel;
+  }
+
+  public static void handleMissingTypes(Tree tree) {
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(ImmutableList.<File>of());
+    Symbols symbols = new Symbols(bytecodeCompleter);
+    handleMissingTypes(symbols, tree);
   }
 
   /**
