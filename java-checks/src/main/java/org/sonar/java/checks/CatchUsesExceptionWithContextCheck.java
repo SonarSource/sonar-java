@@ -44,6 +44,7 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
@@ -133,16 +134,24 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     if (!tree.is(Kind.MEMBER_SELECT)) {
       return false;
     }
-
-    MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) tree;
-    String fullyQualifiedName = memberSelectExpressionTree.identifier().name();
-    Tree mset = memberSelectExpressionTree.expression();
-    while (!mset.is(Kind.IDENTIFIER)) {
-      fullyQualifiedName = ((MemberSelectExpressionTree) mset).identifier().name() + "." + fullyQualifiedName;
-      mset = ((MemberSelectExpressionTree) mset).expression();
+    Deque<String> pieces = new LinkedList<String>();
+    ExpressionTree expr = (MemberSelectExpressionTree) tree;
+    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
+      pieces.push(mse.identifier().name());
+      pieces.push(".");
+      expr = mse.expression();
     }
-    fullyQualifiedName = ((IdentifierTree) mset).name() + "." + fullyQualifiedName;
-    return Iterables.contains(exceptions, fullyQualifiedName);
+    if (expr.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree idt = (IdentifierTree) expr;
+      pieces.push(idt.name());
+    }
+
+    StringBuilder sb = new StringBuilder();
+    for (String piece: pieces) {
+      sb.append(piece);
+    }
+    return Iterables.contains(exceptions, sb.toString());
   }
 
 }

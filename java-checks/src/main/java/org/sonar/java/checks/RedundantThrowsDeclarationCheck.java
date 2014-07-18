@@ -57,15 +57,7 @@ public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
         String thrownClassName = thrownClass.getDisplayName();
 
         if (!reportedExceptions.contains(thrownClassName)) {
-          String issueMessage = null;
-
-          if (isSubClassOfAny(thrownClass, thrownClasses)) {
-            issueMessage = "Remove the declaration of thrown exception '" + thrownClassName + "' which is a subclass of another one.";
-          } else if (isSubClassOfRuntimeException(thrownClass)) {
-            issueMessage = "Remove the declaration of thrown exception '" + thrownClassName + "' which is a runtime exception.";
-          } else if (isDeclaredMoreThanOnce(thrownClass, thrownClasses)) {
-            issueMessage = "Remove the redundant '" + thrownClassName + "' thrown exception declaration(s).";
-          }
+          String issueMessage = getIssueMessage(thrownClasses, thrownClass);
 
           if (issueMessage != null) {
             reportedExceptions.add(thrownClassName);
@@ -78,6 +70,18 @@ public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
         }
       }
     }
+  }
+
+  private String getIssueMessage(List<AsmClass> thrownClasses, AsmClass thrownClass) {
+    String thrownClassName = thrownClass.getDisplayName();
+    if (isSubClassOfAny(thrownClass, thrownClasses)) {
+      return "Remove the declaration of thrown exception '" + thrownClassName + "' which is a subclass of another one.";
+    } else if (isSubClassOfRuntimeException(thrownClass)) {
+      return "Remove the declaration of thrown exception '" + thrownClassName + "' which is a runtime exception.";
+    } else if (isDeclaredMoreThanOnce(thrownClass, thrownClasses)) {
+      return "Remove the redundant '" + thrownClassName + "' thrown exception declaration(s).";
+    }
+    return null;
   }
 
   private static boolean isDeclaredMoreThanOnce(AsmClass thrownClass, List<AsmClass> thrownClassCandidates) {
