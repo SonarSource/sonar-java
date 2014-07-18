@@ -20,18 +20,17 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
-  key = "S1143",
-  priority = Priority.BLOCKER,
-  tags={"bug"})
+    key = "S1143",
+    priority = Priority.BLOCKER,
+    tags = {"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
 public class ReturnInFinallyCheck extends SquidCheck<LexerlessGrammar> {
 
@@ -48,18 +47,8 @@ public class ReturnInFinallyCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isInFinally(AstNode node) {
-    AstNode ancestor = getFirstAncestor(node, JavaGrammar.FINALLY_, JavaGrammar.CLASS_BODY);
-    return ancestor != null &&
-      ancestor.is(JavaGrammar.FINALLY_);
-  }
-
-  private static AstNode getFirstAncestor(AstNode node, AstNodeType type1, AstNodeType type2) {
-    for (AstNode ancestor = node.getParent(); ancestor != null; ancestor = ancestor.getParent()) {
-      if (ancestor.getType() == type1 || ancestor.getType() == type2) {
-        return ancestor;
-      }
-    }
-    return null;
+    AstNode ancestor = node.getFirstAncestor(JavaGrammar.FINALLY_, JavaGrammar.CLASS_BODY);
+    return ancestor != null && ancestor.is(JavaGrammar.FINALLY_);
   }
 
 }
