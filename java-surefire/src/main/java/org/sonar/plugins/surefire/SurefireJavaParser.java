@@ -159,7 +159,7 @@ public class SurefireJavaParser implements BatchExtension {
       MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {
         testPlan.addTestCase(unitTestResult.getName())
-            .setDurationInMs(unitTestResult.getDurationMilliseconds())
+            .setDurationInMs(Math.max(unitTestResult.getDurationMilliseconds(), 0))
             .setStatus(TestCase.Status.of(unitTestResult.getStatus()))
             .setMessage(unitTestResult.getMessage())
             .setType(TestCase.TYPE_UNIT)
