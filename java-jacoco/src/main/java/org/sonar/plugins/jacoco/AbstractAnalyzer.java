@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.base.Strings;
 import com.google.common.io.Closeables;
 import org.apache.commons.lang.StringUtils;
 import org.jacoco.core.analysis.Analyzer;
@@ -30,7 +29,6 @@ import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataReader;
 import org.jacoco.core.data.ExecutionDataStore;
-import org.jacoco.core.runtime.WildcardMatcher;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoverageMeasuresBuilder;
@@ -72,11 +70,6 @@ public abstract class AbstractAnalyzer {
     this.javaResourceLocator = javaResourceLocator;
   }
 
-  private static boolean isExcluded(ISourceFileCoverage coverage, WildcardMatcher excludesMatcher) {
-    String name = coverage.getPackageName() + "/" + coverage.getName();
-    return excludesMatcher.matches(name);
-  }
-
   private static String fullyQualifiedClassName(String packageName, String simpleClassName) {
     return ("".equals(packageName) ? "" : packageName + "/") + StringUtils.substringBeforeLast(simpleClassName, ".");
   }
@@ -105,9 +98,8 @@ public abstract class AbstractAnalyzer {
     String path = getReportPath(project);
     File jacocoExecutionData = pathResolver.relativeFile(fileSystem.baseDir(), path);
 
-    WildcardMatcher excludes = new WildcardMatcher(Strings.nullToEmpty(getExcludes(project)));
     try {
-      readExecutionData(jacocoExecutionData, context, excludes);
+      readExecutionData(jacocoExecutionData, context);
     } catch (IOException e) {
       throw new SonarException(e);
     }
@@ -122,7 +114,7 @@ public abstract class AbstractAnalyzer {
     return false;
   }
 
-  public final void readExecutionData(File jacocoExecutionData, SensorContext context, WildcardMatcher excludes) throws IOException {
+  public final void readExecutionData(File jacocoExecutionData, SensorContext context) throws IOException {
     ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
 
     if (jacocoExecutionData == null || !jacocoExecutionData.isFile()) {
@@ -145,7 +137,7 @@ public abstract class AbstractAnalyzer {
 
     boolean collectedCoveragePerTest = false;
     for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
-      if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context, excludes)) {
+      if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context)) {
         collectedCoveragePerTest = true;
       }
     }
@@ -155,10 +147,8 @@ public abstract class AbstractAnalyzer {
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       Resource resource = getResource(coverage, context);
       if (resource != null) {
-        if (!isExcluded(coverage, excludes)) {
-          CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
-          saveMeasures(context, resource, builder.createMeasures());
-        }
+        CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
+        saveMeasures(context, resource, builder.createMeasures());
         analyzedResources++;
       }
     }
@@ -171,7 +161,7 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, SensorContext context, WildcardMatcher excludes) {
+  private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, SensorContext context) {
     int i = sessionId.indexOf(' ');
     if (i < 0) {
       return false;
@@ -188,7 +178,7 @@ public abstract class AbstractAnalyzer {
     CoverageBuilder coverageBuilder = analyze2(executionDataStore);
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       Resource resource = getResource(coverage, context);
-      if (resource != null && !isExcluded(coverage, excludes)) {
+      if (resource != null) {
         CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
         List<Integer> coveredLines = getCoveredLines(builder);
         if (!coveredLines.isEmpty() && addCoverage(resource, testResource, testName, coveredLines)) {
@@ -312,7 +302,5 @@ public abstract class AbstractAnalyzer {
   protected abstract void saveMeasures(SensorContext context, Resource resource, Collection<Measure> measures);
 
   protected abstract String getReportPath(Project project);
-
-  protected abstract String getExcludes(Project project);
 
 }

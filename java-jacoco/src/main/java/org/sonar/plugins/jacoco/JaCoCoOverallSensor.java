@@ -141,11 +141,6 @@ public class JaCoCoOverallSensor implements Sensor {
     }
 
     @Override
-    protected String getExcludes(Project project) {
-      return null;
-    }
-
-    @Override
     protected void saveMeasures(SensorContext context, Resource resource, Collection<Measure> measures) {
       for (Measure measure : measures) {
         Measure mergedMeasure = convertForOverall(measure);
