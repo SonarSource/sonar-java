@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.jacoco;
 
+import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
 import org.apache.commons.lang.StringUtils;
 import org.jacoco.core.analysis.Analyzer;
@@ -63,6 +64,8 @@ public abstract class AbstractAnalyzer {
   private final PathResolver pathResolver;
   private final JavaResourceLocator javaResourceLocator;
 
+  private Map<String, File> classFilesCache;
+
   public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator) {
     this.perspectives = perspectives;
     this.fileSystem = fileSystem;
@@ -91,8 +94,13 @@ public abstract class AbstractAnalyzer {
   }
 
   public final void analyse(Project project, SensorContext context) {
-    if (!atLeastOneBinaryDirectoryExists()) {
-      JaCoCoExtensions.LOG.info("No JaCoCo analysis of project coverage can be done since there is no directories with classes.");
+    classFilesCache = Maps.newHashMap();
+    for (File classesDir : fileSystem.binaryDirs()) {
+      populateClassFilesCache(classesDir, "");
+    }
+
+    if (classFilesCache.isEmpty()) {
+      JaCoCoExtensions.LOG.info("No JaCoCo analysis of project coverage can be done since there is no class files.");
       return;
     }
     String path = getReportPath(project);
@@ -103,15 +111,23 @@ public abstract class AbstractAnalyzer {
     } catch (IOException e) {
       throw new SonarException(e);
     }
+
+    classFilesCache = null;
   }
 
-  private boolean atLeastOneBinaryDirectoryExists() {
-    for (File binaryDir : fileSystem.binaryDirs()) {
-      if (binaryDir.exists()) {
-        return true;
+  private void populateClassFilesCache(File dir, String path) {
+    File[] files = dir.listFiles();
+    if (files == null) {
+      return;
+    }
+    for (File file : files) {
+      if (file.isDirectory()) {
+        populateClassFilesCache(file, path + file.getName() + "/");
+      } else if (file.getName().endsWith(".class")) {
+        String className = path + StringUtils.removeEnd(file.getName(), ".class");
+        classFilesCache.put(className, file);
       }
     }
-    return false;
   }
 
   public final void readExecutionData(File jacocoExecutionData, SensorContext context) throws IOException {
@@ -192,14 +208,11 @@ public abstract class AbstractAnalyzer {
   private CoverageBuilder analyze2(ExecutionDataStore executionDataStore) {
     CoverageBuilder coverageBuilder = new CoverageBuilder();
     Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
-    for (File binaryDir : fileSystem.binaryDirs()) {
-      for (ExecutionData data : executionDataStore.getContents()) {
-        String vmClassName = data.getName();
-        String classFileName = vmClassName.replace('.', '/') + ".class";
-        File classFile = new File(binaryDir, classFileName);
-        if (classFile.isFile()) {
-          analyzeClassFile(analyzer, classFile);
-        }
+    for (ExecutionData data : executionDataStore.getContents()) {
+      String vmClassName = data.getName();
+      File classFile = classFilesCache.get(vmClassName);
+      if (classFile != null) {
+        analyzeClassFile(analyzer, classFile);
       }
     }
     return coverageBuilder;
@@ -233,23 +246,10 @@ public abstract class AbstractAnalyzer {
   private CoverageBuilder analyze(ExecutionDataStore executionDataStore) {
     CoverageBuilder coverageBuilder = new CoverageBuilder();
     Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
-    for (File binaryDir : fileSystem.binaryDirs()) {
-      analyzeAll(analyzer, binaryDir);
+    for (File classFile : classFilesCache.values()) {
+      analyzeClassFile(analyzer, classFile);
     }
     return coverageBuilder;
-  }
-
-  /**
-   * In comparison with {@link Analyzer#analyzeAll(File)}, instead of stop of analysis this method produces warning for individual files, which cannot be properly analysed.
-   */
-  private void analyzeAll(Analyzer analyzer, File file) {
-    if (file.isDirectory()) {
-      for (File f : file.listFiles()) {
-        analyzeAll(analyzer, f);
-      }
-    } else if (file.getName().endsWith(".class")) {
-      analyzeClassFile(analyzer, file);
-    }
   }
 
   /**
