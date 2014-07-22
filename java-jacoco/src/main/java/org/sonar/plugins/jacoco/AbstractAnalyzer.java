@@ -208,11 +208,7 @@ public abstract class AbstractAnalyzer {
         String classFileName = vmClassName.replace('.', '/') + ".class";
         File classFile = new File(binaryDir, classFileName);
         if (classFile.isFile()) {
-          try {
-            analyzer.analyzeAll(classFile);
-          } catch (Exception e) {
-            JaCoCoExtensions.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
-          }
+          analyzeClassFile(analyzer, classFile);
         }
       }
     }
@@ -254,7 +250,7 @@ public abstract class AbstractAnalyzer {
   }
 
   /**
-   * Copied from {@link Analyzer#analyzeAll(File)} in order to add logging.
+   * In comparison with {@link Analyzer#analyzeAll(File)}, instead of stop of analysis this method produces warning for individual files, which cannot be properly analysed.
    */
   private void analyzeAll(Analyzer analyzer, File file) {
     if (file.isDirectory()) {
@@ -262,11 +258,23 @@ public abstract class AbstractAnalyzer {
         analyzeAll(analyzer, f);
       }
     } else if (file.getName().endsWith(".class")) {
-      try {
-        analyzer.analyzeAll(file);
-      } catch (Exception e) {
-        JaCoCoExtensions.LOG.warn("Exception during analysis of file " + file.getAbsolutePath(), e);
-      }
+      analyzeClassFile(analyzer, file);
+    }
+  }
+
+  /**
+   * Caller must guarantee that {@code classFile} is actually class file.
+   */
+  private void analyzeClassFile(Analyzer analyzer, File classFile) {
+    InputStream inputStream = null;
+    try {
+      inputStream = new FileInputStream(classFile);
+      analyzer.analyzeClass(inputStream, classFile.getPath());
+    } catch (IOException e) {
+      // (Godin): in fact JaCoCo includes name into exception
+      JaCoCoExtensions.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
+    } finally {
+      Closeables.closeQuietly(inputStream);
     }
   }
 
