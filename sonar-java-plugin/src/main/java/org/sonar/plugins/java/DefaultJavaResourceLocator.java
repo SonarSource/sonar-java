@@ -19,8 +19,8 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.Project;
@@ -35,6 +35,7 @@ import org.sonar.squidbridge.indexer.SquidIndex;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
 
 public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
@@ -42,7 +43,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   private final Project project;
   private final ModuleFileSystem fileSystem;
-  private SquidIndex squidIndex;
+  private Map<String, Resource> resourcesCache;
 
   public DefaultJavaResourceLocator(Project project, ModuleFileSystem fileSystem) {
     this.project = project;
@@ -50,34 +51,29 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   }
 
   public void setSquidIndex(SquidIndex squidIndex) {
-    this.squidIndex = Preconditions.checkNotNull(squidIndex);
-  }
-
-  private SquidIndex getSquidIndex() {
-    Preconditions.checkState(squidIndex != null, "SquidIndex can't be null");
-    return squidIndex;
+    this.resourcesCache = Maps.newHashMap();
+    for (SourceCode sourceClass : squidIndex.search(new QueryByType(SourceClass.class))) {
+      String filePath = sourceClass.getParent(SourceFile.class).getName();
+      Resource resource = org.sonar.api.resources.File.fromIOFile(new File(filePath), project);
+      resourcesCache.put(sourceClass.getKey(), resource);
+    }
   }
 
   @Override
   public Resource findResourceByClassName(String className) {
     String name = className.replace('.', '/');
-    SourceCode sourceCode = getSquidIndex().search(name);
-    if (sourceCode == null) {
+    Resource resource = resourcesCache.get(name);
+    if (resource == null) {
       LOG.debug("Class not found in SquidIndex: {}", className);
-      return null;
     }
-    Preconditions.checkState(sourceCode instanceof SourceClass, "Expected SourceClass, got %s for %s", sourceCode.getClass().getSimpleName(), name);
-    String filePath = sourceCode.getParent(SourceFile.class).getName();
-    return org.sonar.api.resources.File.fromIOFile(new File(filePath), project);
+    return resource;
   }
 
   @Override
   public Collection<File> classFilesToAnalyze() {
     ImmutableList.Builder<File> result = ImmutableList.builder();
-    Collection<SourceCode> sourceClasses = getSquidIndex().search(new QueryByType(SourceClass.class));
-
-    for (SourceCode sourceClass : sourceClasses) {
-      String filePath = sourceClass.getKey() + ".class";
+    for (String key : resourcesCache.keySet()) {
+      String filePath = key + ".class";
       for (File binaryDir : fileSystem.binaryDirs()) {
         File classFile = new File(binaryDir, filePath);
         if (classFile.isFile()) {
