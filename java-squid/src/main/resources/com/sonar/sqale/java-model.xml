@@ -40,7 +40,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -65,7 +65,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -107,7 +107,7 @@
         <prop>
           <key>offset</key>
           <val>1</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -120,7 +120,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -146,7 +146,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -159,7 +159,7 @@
         <prop>
           <key>offset</key>
           <val>1</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -172,7 +172,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -185,7 +185,7 @@
         <prop>
           <key>offset</key>
           <val>2</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -198,7 +198,7 @@
         <prop>
           <key>offset</key>
           <val>2</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -211,7 +211,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -224,7 +224,7 @@
         <prop>
           <key>offset</key>
           <val>2</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -237,7 +237,7 @@
         <prop>
           <key>offset</key>
           <val>1</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -250,7 +250,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -263,7 +263,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -276,7 +276,7 @@
         <prop>
           <key>offset</key>
           <val>2</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -289,7 +289,7 @@
         <prop>
           <key>offset</key>
           <val>1</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -302,7 +302,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -315,7 +315,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -328,7 +328,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -341,7 +341,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -354,7 +354,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -367,7 +367,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -380,7 +380,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -393,7 +393,7 @@
         <prop>
           <key>offset</key>
           <val>2</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -406,7 +406,7 @@
         <prop>
           <key>offset</key>
           <val>1</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -419,7 +419,7 @@
         <prop>
           <key>offset</key>
           <val>2</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -432,7 +432,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -445,7 +445,7 @@
         <prop>
           <key>offset</key>
           <val>1</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -458,7 +458,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -471,7 +471,7 @@
         <prop>
           <key>offset</key>
           <val>1</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -484,7 +484,7 @@
         <prop>
           <key>offset</key>
           <val>2</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -510,7 +510,7 @@
         <prop>
           <key>offset</key>
           <val>1</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -523,7 +523,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -536,7 +536,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -549,7 +549,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -562,7 +562,7 @@
         <prop>
           <key>offset</key>
           <val>1</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -575,7 +575,7 @@
         <prop>
           <key>offset</key>
           <val>1</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -588,7 +588,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -601,7 +601,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -614,7 +614,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -627,7 +627,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -640,7 +640,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -653,7 +653,7 @@
         <prop>
           <key>offset</key>
           <val>1</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -666,7 +666,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -679,7 +679,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -692,7 +692,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -709,7 +709,7 @@
         <prop>
           <key>remediationFactor</key>
           <val>3</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -735,7 +735,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -748,7 +748,7 @@
         <prop>
           <key>offset</key>
           <val>2</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -761,7 +761,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -774,7 +774,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -787,7 +787,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -800,7 +800,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -813,7 +813,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -839,7 +839,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -852,7 +852,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -865,7 +865,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -878,7 +878,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -891,7 +891,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -904,7 +904,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -917,7 +917,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -930,7 +930,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -943,7 +943,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -969,7 +969,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -982,7 +982,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -995,7 +995,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1008,7 +1008,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1034,7 +1034,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1047,7 +1047,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1060,7 +1060,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1073,7 +1073,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1094,7 +1094,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1111,7 +1111,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1132,7 +1132,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1153,7 +1153,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1166,7 +1166,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1179,7 +1179,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1200,7 +1200,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1213,7 +1213,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1226,7 +1226,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1247,7 +1247,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1260,12 +1260,12 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
         <rule-repo>squid</rule-repo>
-        <rule-key>MaximumInheritanceDepth</rule-key>
+        <rule-key>MaximumnheritanceDepth</rule-key>
         <prop>
           <key>remediationFunction</key>
           <txt>LINEAR</txt>
@@ -1286,7 +1286,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1312,7 +1312,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1325,7 +1325,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1338,7 +1338,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1368,7 +1368,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1398,7 +1398,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1419,7 +1419,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1432,7 +1432,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1445,7 +1445,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1458,7 +1458,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1471,7 +1471,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1497,7 +1497,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1510,7 +1510,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1523,7 +1523,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1536,7 +1536,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1549,7 +1549,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1562,7 +1562,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1575,7 +1575,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1588,7 +1588,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1601,7 +1601,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1618,7 +1618,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1631,7 +1631,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1644,7 +1644,7 @@
         <prop>
           <key>offset</key>
           <val>3</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1657,7 +1657,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1670,7 +1670,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1687,7 +1687,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1700,7 +1700,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1713,7 +1713,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1726,7 +1726,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1739,7 +1739,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1752,7 +1752,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1765,7 +1765,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1782,7 +1782,7 @@
         <prop>
           <key>offset</key>
           <val>2</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1799,7 +1799,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1812,7 +1812,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1825,7 +1825,7 @@
         <prop>
           <key>remediationFactor</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1838,7 +1838,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1851,7 +1851,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1864,7 +1864,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1877,7 +1877,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1890,7 +1890,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1903,7 +1903,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1916,7 +1916,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1929,7 +1929,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1942,7 +1942,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1955,7 +1955,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -1972,7 +1972,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1985,7 +1985,7 @@
         <prop>
           <key>offset</key>
           <val>2</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -1998,7 +1998,7 @@
         <prop>
           <key>offset</key>
           <val>30</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -2011,7 +2011,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -2037,7 +2037,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -2050,7 +2050,7 @@
         <prop>
           <key>offset</key>
           <val>5</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -2063,7 +2063,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -2088,7 +2088,7 @@
         <prop>
           <key>remediationFactor</key>
           <val>3</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -2114,7 +2114,7 @@
         <prop>
           <key>remediationFactor</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
@@ -2139,7 +2139,7 @@
         <prop>
           <key>remediationFactor</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -2152,7 +2152,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -2165,7 +2165,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -2178,7 +2178,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -2191,7 +2191,7 @@
         <prop>
           <key>offset</key>
           <val>10</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
       <chc>
@@ -2217,7 +2217,7 @@
         <prop>
           <key>offset</key>
           <val>20</val>
-          <txt>min</txt>
+          <txt>mn</txt>
         </prop>
       </chc>
     </chc>
