@@ -20,6 +20,7 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.base.Strings;
+import com.google.common.io.Closeables;
 import org.apache.commons.lang.StringUtils;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
@@ -46,9 +47,11 @@ import org.sonar.api.test.Testable;
 import org.sonar.api.utils.SonarException;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -128,10 +131,16 @@ public abstract class AbstractAnalyzer {
     } else {
       JaCoCoExtensions.LOG.info("Analysing {}", jacocoExecutionData);
 
-      ExecutionDataReader reader = new ExecutionDataReader(new FileInputStream(jacocoExecutionData));
-      reader.setSessionInfoVisitor(executionDataVisitor);
-      reader.setExecutionDataVisitor(executionDataVisitor);
-      reader.read();
+      InputStream inputStream = null;
+      try {
+        inputStream = new BufferedInputStream(new FileInputStream(jacocoExecutionData));
+        ExecutionDataReader reader = new ExecutionDataReader(inputStream);
+        reader.setSessionInfoVisitor(executionDataVisitor);
+        reader.setExecutionDataVisitor(executionDataVisitor);
+        reader.read();
+      } finally {
+        Closeables.closeQuietly(inputStream);
+      }
     }
 
     boolean collectedCoveragePerTest = false;
