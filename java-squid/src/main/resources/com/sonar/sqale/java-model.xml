@@ -25,13 +25,8 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
         </prop>
       </chc>
@@ -43,14 +38,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -73,14 +63,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -95,13 +80,8 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
         </prop>
       </chc>
@@ -125,14 +105,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>mn</txt>
+          <val>1</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -143,14 +118,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -161,13 +131,8 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
         </prop>
       </chc>
@@ -179,14 +144,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -197,14 +157,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>mn</txt>
+          <val>1</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -215,14 +170,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -233,14 +183,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>2.0</val>
-          <txt>mn</txt>
+          <val>2</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -251,14 +196,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>2.0</val>
-          <txt>mn</txt>
+          <val>2</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -269,14 +209,22 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <key>offset</key>
+          <val>5</val>
+          <txt>min</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1612</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>2</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -287,14 +235,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>mn</txt>
+          <val>1</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -305,14 +248,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -323,14 +261,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -341,14 +274,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>2.0</val>
-          <txt>mn</txt>
+          <val>2</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -359,14 +287,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>mn</txt>
+          <val>1</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -377,14 +300,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -395,14 +313,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -413,14 +326,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -431,14 +339,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -449,14 +352,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -467,14 +365,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -485,14 +378,22 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <key>offset</key>
+          <val>10</val>
+          <txt>min</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1710</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>2</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -503,14 +404,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>mn</txt>
+          <val>1</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -521,14 +417,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>2.0</val>
-          <txt>mn</txt>
+          <val>2</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -539,14 +430,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -557,14 +443,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>mn</txt>
+          <val>1</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -575,14 +456,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -593,14 +469,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>mn</txt>
+          <val>1</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -611,14 +482,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>2.0</val>
-          <txt>mn</txt>
+          <val>2</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -629,13 +495,8 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
         </prop>
       </chc>
@@ -647,14 +508,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>mn</txt>
+          <val>1</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -665,14 +521,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -683,14 +534,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -701,14 +547,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -719,14 +560,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>mn</txt>
+          <val>1</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -737,14 +573,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>mn</txt>
+          <val>1</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -755,14 +586,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -773,14 +599,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -791,14 +612,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -809,14 +625,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -827,14 +638,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -845,14 +651,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>mn</txt>
+          <val>1</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -863,14 +664,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -881,14 +677,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -899,32 +690,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
-        </prop>
-      </chc>
-      <chc>
-        <rule-repo>squid</rule-repo>
-        <rule-key>S1710</rule-key>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>linear</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>2.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>0.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -940,77 +708,10 @@
         </prop>
         <prop>
           <key>remediationFactor</key>
-          <val>3.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>3</val>
+          <txt>min</txt>
         </prop>
       </chc>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S138</rule-key>
@@ -1019,13 +720,8 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
         </prop>
       </chc>
@@ -1037,14 +733,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1052,17 +743,12 @@
         <rule-key>S1609</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>LINEAR</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>2.0</val>
-          <txt>mn</txt>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>2</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1073,14 +759,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1091,14 +772,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1106,17 +782,12 @@
         <rule-key>S1694</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>LINEAR</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1124,17 +795,12 @@
         <rule-key>S1172</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>LINEAR</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1145,14 +811,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1163,13 +824,8 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
         </prop>
       </chc>
@@ -1181,14 +837,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1196,17 +847,12 @@
         <rule-key>S1700</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>LINEAR</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1217,14 +863,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1235,14 +876,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1253,14 +889,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1271,14 +902,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1289,14 +915,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1307,14 +928,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1325,14 +941,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1343,13 +954,8 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
         </prop>
       </chc>
@@ -1361,14 +967,22 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <key>offset</key>
+          <val>5</val>
+          <txt>min</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1598</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1379,14 +993,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1397,14 +1006,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1415,13 +1019,8 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
         </prop>
       </chc>
@@ -1433,14 +1032,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1451,14 +1045,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1469,14 +1058,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1487,14 +1071,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -1505,14 +1084,6 @@
     <chc>
       <key>API_ABUSE</key>
       <name>API abuse</name>
-      
-      
-      
-      
-      
-      
-      
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>NoSonar</rule-key>
@@ -1521,14 +1092,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -1543,44 +1109,19 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
     <chc>
       <key>INPUT_VALIDATION_AND_REPRESENTATION</key>
       <name>Input validation and representation</name>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
     </chc>
     <chc>
       <key>SECURITY_FEATURES</key>
       <name>Security features</name>
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S1451</rule-key>
@@ -1589,14 +1130,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -1607,10 +1143,6 @@
     <chc>
       <key>MEMORY_EFFICIENCY</key>
       <name>Memory use</name>
-      
-      
-      
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S1170</rule-key>
@@ -1619,14 +1151,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1637,14 +1164,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1652,17 +1174,12 @@
         <rule-key>S1643</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>LINEAR</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -1673,24 +1190,6 @@
     <chc>
       <key>CPU_EFFICIENCY</key>
       <name>Processor use</name>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S1158</rule-key>
@@ -1699,14 +1198,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1714,17 +1208,12 @@
         <rule-key>S1696</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>LINEAR</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1735,14 +1224,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -1753,12 +1237,6 @@
     <chc>
       <key>ARCHITECTURE_CHANGEABILITY</key>
       <name>Architecture</name>
-      
-      
-      
-      
-      
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S1214</rule-key>
@@ -1767,14 +1245,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1785,14 +1258,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1804,13 +1272,8 @@
         </prop>
         <prop>
           <key>remediationFactor</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
         </prop>
       </chc>
       <chc>
@@ -1821,14 +1284,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1839,13 +1297,8 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>2.0</val>
+          <val>2</val>
           <txt>h</txt>
         </prop>
       </chc>
@@ -1857,14 +1310,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1875,14 +1323,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1893,14 +1336,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -1912,12 +1350,7 @@
         </prop>
         <prop>
           <key>remediationFactor</key>
-          <val>1.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>0.0</val>
+          <val>1</val>
           <txt>d</txt>
         </prop>
       </chc>
@@ -1930,17 +1363,12 @@
         <rule-key>S109</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>LINEAR</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -1956,16 +1384,10 @@
         </prop>
         <prop>
           <key>remediationFactor</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
         </prop>
-        <prop>
-          <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
       </chc>
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S134</rule-key>
@@ -1974,14 +1396,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -1992,39 +1409,6 @@
     <chc>
       <key>ARCHITECTURE_RELIABILITY</key>
       <name>Architecture</name>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S1210</rule-key>
@@ -2033,14 +1417,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2051,14 +1430,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2069,14 +1443,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2087,14 +1456,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2105,14 +1469,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2123,13 +1482,8 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
         </prop>
       </chc>
@@ -2141,14 +1495,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2159,14 +1508,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2177,14 +1521,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2195,14 +1534,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2213,14 +1547,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2231,14 +1560,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2249,14 +1573,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2267,14 +1586,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2285,43 +1599,15 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
     <chc>
       <key>DATA_RELIABILITY</key>
       <name>Data</name>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>HiddenFieldCheck</rule-key>
@@ -2330,14 +1616,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2348,14 +1629,22 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <key>offset</key>
+          <val>5</val>
+          <txt>min</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1656</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>3</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2366,14 +1655,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2384,27 +1668,15 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
     <chc>
       <key>EXCEPTION_HANDLING</key>
       <name>Exception handling</name>
-      
-      
-      
-      
-      
-      
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S1163</rule-key>
@@ -2413,14 +1685,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2431,14 +1698,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2449,14 +1711,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2467,14 +1724,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2485,14 +1737,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2503,14 +1750,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2521,117 +1763,32 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
     <chc>
       <key>FAULT_TOLERANCE</key>
       <name>Fault tolerance</name>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1697</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>2</val>
+          <txt>min</txt>
+        </prop>
+      </chc>
     </chc>
     <chc>
       <key>INSTRUCTION_RELIABILITY</key>
       <name>Instruction</name>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S1215</rule-key>
@@ -2640,14 +1797,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2658,14 +1810,22 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <key>offset</key>
+          <val>20</val>
+          <txt>min</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1294</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>LINEAR</txt>
         </prop>
         <prop>
-          <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <key>remediationFactor</key>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2676,14 +1836,22 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <key>offset</key>
+          <val>10</val>
+          <txt>min</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1695</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2694,14 +1862,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2712,14 +1875,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2730,14 +1888,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2748,14 +1901,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2766,14 +1914,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2784,14 +1927,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2802,14 +1940,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2820,119 +1953,15 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
-        </prop>
-      </chc>
-      <chc>
-        <rule-repo>squid</rule-repo>
-        <rule-key>S1294</rule-key>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>linear</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>5.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>0.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
     <chc>
       <key>LOGIC_RELIABILITY</key>
       <name>Logic</name>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S128</rule-key>
@@ -2941,14 +1970,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2956,17 +1980,12 @@
         <rule-key>S1698</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>LINEAR</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>2.0</val>
-          <txt>mn</txt>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>2</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2977,14 +1996,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>30.0</val>
-          <txt>mn</txt>
+          <val>30</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -2992,17 +2006,12 @@
         <rule-key>S1701</rule-key>
         <prop>
           <key>remediationFunction</key>
-          <txt>LINEAR</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -3013,14 +2022,22 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <key>offset</key>
+          <val>1</val>
+          <txt>h</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1862</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
           <key>offset</key>
-          <val>1.0</val>
-          <txt>h</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -3031,14 +2048,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>5.0</val>
-          <txt>mn</txt>
+          <val>5</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -3049,14 +2061,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -3067,48 +2074,6 @@
     <chc>
       <key>SYNCHRONIZATION_RELIABILITY</key>
       <name>Synchronization</name>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
     </chc>
     <chc>
       <key>UNIT_TESTS</key>
@@ -3122,13 +2087,8 @@
         </prop>
         <prop>
           <key>remediationFactor</key>
-          <val>3.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>3</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -3140,13 +2100,8 @@
         </prop>
         <prop>
           <key>remediationFactor</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
         </prop>
       </chc>
       <chc>
@@ -3158,13 +2113,8 @@
         </prop>
         <prop>
           <key>remediationFactor</key>
-          <val>10.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
@@ -3188,13 +2138,8 @@
         </prop>
         <prop>
           <key>remediationFactor</key>
-          <val>10.0</val>
-          <txt>mn</txt>
-        </prop>
-        <prop>
-          <key>offset</key>
-          <val>0.0</val>
-          <txt>d</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -3205,14 +2150,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -3223,14 +2163,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -3241,14 +2176,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -3259,14 +2189,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>10.0</val>
-          <txt>mn</txt>
+          <val>10</val>
+          <txt>min</txt>
         </prop>
       </chc>
       <chc>
@@ -3277,13 +2202,8 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>1.0</val>
+          <val>1</val>
           <txt>h</txt>
         </prop>
       </chc>
@@ -3295,14 +2215,9 @@
           <txt>CONSTANT_ISSUE</txt>
         </prop>
         <prop>
-          <key>remediationFactor</key>
-          <val>0.0</val>
-          <txt>d</txt>
-        </prop>
-        <prop>
           <key>offset</key>
-          <val>20.0</val>
-          <txt>mn</txt>
+          <val>20</val>
+          <txt>min</txt>
         </prop>
       </chc>
     </chc>
