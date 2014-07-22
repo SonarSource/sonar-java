@@ -27,7 +27,6 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
@@ -60,7 +59,7 @@ public class SurefireJavaParser implements BatchExtension {
   }
 
 
-  public void collect(Project project, SensorContext context, File reportsDir) {
+  public void collect(SensorContext context, File reportsDir) {
     File[] xmlFiles = getReports(reportsDir);
     if (xmlFiles.length > 0) {
       parseFiles(context, xmlFiles);
@@ -151,10 +150,10 @@ public class SurefireJavaParser implements BatchExtension {
       double percentage = passedTests * 100d / testsCount;
       saveMeasure(context, resource, CoreMetrics.TEST_SUCCESS_DENSITY, ParsingUtils.scaleValue(percentage));
     }
-    saveResults(context, resource, report);
+    saveResults(resource, report);
   }
 
-  protected void saveResults(SensorContext context, Resource testFile, UnitTestClassReport report) {
+  protected void saveResults(Resource testFile, UnitTestClassReport report) {
     for (UnitTestResult unitTestResult : report.getResults()) {
       MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {

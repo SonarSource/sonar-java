@@ -126,7 +126,7 @@ public class SurefireSensorTest {
   public void shouldHandleTestSuiteDetails() throws URISyntaxException {
     SensorContext context = mockContext();
 
-    surefireSensor.collect(new Project("key"), context, new File(getClass().getResource(
+    surefireSensor.collect(context, new File(getClass().getResource(
       "/org/sonar/plugins/surefire/SurefireSensorTest/shouldHandleTestSuiteDetails/").toURI()));
 
     // 3 classes, 6 measures by class
@@ -168,7 +168,7 @@ public class SurefireSensorTest {
   @Test
   public void shouldSaveErrorsAndFailuresInXML() throws URISyntaxException {
     SensorContext context = mockContext();
-    surefireSensor.collect(new Project("key"), context, new File(getClass().getResource(
+    surefireSensor.collect(context, new File(getClass().getResource(
       "/org/sonar/plugins/surefire/SurefireSensorTest/shouldSaveErrorsAndFailuresInXML/").toURI()));
 
     // 1 classes, 6 measures by class
@@ -187,7 +187,7 @@ public class SurefireSensorTest {
   @Test
   public void shouldManageClassesWithDefaultPackage() throws URISyntaxException {
     SensorContext context = mockContext();
-    surefireSensor.collect(new Project("key"), context, new File(getClass().getResource(
+    surefireSensor.collect(context, new File(getClass().getResource(
       "/org/sonar/plugins/surefire/SurefireSensorTest/shouldManageClassesWithDefaultPackage/").toURI()));
 
     verify(context).saveMeasure(new JavaFile("NoPackagesTest", true), CoreMetrics.TESTS, 2d);
@@ -196,7 +196,7 @@ public class SurefireSensorTest {
   @Test
   public void successRatioIsZeroWhenAllTestsFail() throws URISyntaxException {
     SensorContext context = mockContext();
-    surefireSensor.collect(new Project("key"), context, new File(getClass().getResource(
+    surefireSensor.collect(context, new File(getClass().getResource(
       "/org/sonar/plugins/surefire/SurefireSensorTest/successRatioIsZeroWhenAllTestsFail/").toURI()));
 
     verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TESTS), eq(2d));
@@ -208,7 +208,7 @@ public class SurefireSensorTest {
   @Test
   public void measuresShouldNotIncludeSkippedTests() throws URISyntaxException {
     SensorContext context = mockContext();
-    surefireSensor.collect(new Project("key"), context, new File(getClass().getResource(
+    surefireSensor.collect(context, new File(getClass().getResource(
       "/org/sonar/plugins/surefire/SurefireSensorTest/measuresShouldNotIncludeSkippedTests/").toURI()));
 
     verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TESTS), eq(2d));
@@ -221,7 +221,7 @@ public class SurefireSensorTest {
   @Test
   public void noSuccessRatioIfNoTests() throws URISyntaxException {
     SensorContext context = mockContext();
-    surefireSensor.collect(new Project("key"), context, new File(getClass().getResource(
+    surefireSensor.collect(context, new File(getClass().getResource(
       "/org/sonar/plugins/surefire/SurefireSensorTest/noSuccessRatioIfNoTests/").toURI()));
 
     verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TESTS), eq(0d));
@@ -234,7 +234,7 @@ public class SurefireSensorTest {
   @Test
   public void ignoreSuiteAsInnerClass() throws URISyntaxException {
     SensorContext context = mockContext();
-    surefireSensor.collect(new Project("key"), context, new File(getClass().getResource(
+    surefireSensor.collect(context, new File(getClass().getResource(
       "/org/sonar/plugins/surefire/SurefireSensorTest/ignoreSuiteAsInnerClass/").toURI()));
 
     // ignore TestHandler$Input.xml

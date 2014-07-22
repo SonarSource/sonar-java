@@ -61,12 +61,12 @@ public class SurefireSensor implements Sensor {
   @Override
   public void analyse(Project project, SensorContext context) {
     File dir = SurefireUtils.getReportsDirectory(settings, project);
-    collect(project, context, dir);
+    collect(context, dir);
   }
 
-  protected void collect(Project project, SensorContext context, File reportsDir) {
+  protected void collect(SensorContext context, File reportsDir) {
     LOGGER.info("parsing {}", reportsDir);
-    surefireJavaParser.collect(project, context, reportsDir);
+    surefireJavaParser.collect(context, reportsDir);
   }
 
   @Override

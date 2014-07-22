@@ -82,8 +82,8 @@ public class JavaSquidSensor implements Sensor {
   public void analyse(Project project, SensorContext context) {
     Collection<CodeVisitor> checks = annotationCheckFactory.getChecks();
 
-    JavaSquid squid = new JavaSquid(createConfiguration(project), sonarComponents, checks.toArray(new CodeVisitor[checks.size()]));
-    squid.scan(getSourceFiles(project), getTestFiles(project), getBytecodeFiles(project));
+    JavaSquid squid = new JavaSquid(createConfiguration(), sonarComponents, checks.toArray(new CodeVisitor[checks.size()]));
+    squid.scan(getSourceFiles(project), getTestFiles(project), getBytecodeFiles());
 
     javaResourceLocator.setSquidIndex(squid.getIndex());
 
@@ -98,14 +98,14 @@ public class JavaSquidSensor implements Sensor {
     return project.getFileSystem().testFiles(Java.KEY);
   }
 
-  private List<File> getBytecodeFiles(Project project) {
+  private List<File> getBytecodeFiles() {
     if (settings.getBoolean(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)) {
       return Collections.emptyList();
     }
     return projectClasspath.getElements();
   }
 
-  private JavaConfiguration createConfiguration(Project project) {
+  private JavaConfiguration createConfiguration() {
     boolean analyzePropertyAccessors = settings.getBoolean(JavaPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY);
     Charset charset = moduleFileSystem.sourceCharset();
     JavaConfiguration conf = new JavaConfiguration(charset);
