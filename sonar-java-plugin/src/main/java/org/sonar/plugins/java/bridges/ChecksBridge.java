@@ -33,8 +33,8 @@ public class ChecksBridge extends Bridge {
 
   @Override
   public void onFile(SourceFile squidFile, Resource sonarFile) {
-    Set<CheckMessage> messages = squidFile.getCheckMessages();
-    if (messages != null) {
+    if (squidFile.hasCheckMessages()) {
+      Set<CheckMessage> messages = squidFile.getCheckMessages();
       for (CheckMessage checkMessage : messages) {
         final ActiveRule rule;
         Object check = checkMessage.getCheck();
