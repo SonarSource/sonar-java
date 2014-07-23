@@ -24,7 +24,7 @@
 
     <dependency>
       <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
+      <artifactId>asm-debug-all</artifactId>
     </dependency>
 
     <dependency>
