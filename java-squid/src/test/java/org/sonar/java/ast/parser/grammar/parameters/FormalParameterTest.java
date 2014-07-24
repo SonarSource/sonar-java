@@ -21,27 +21,28 @@ package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParameterTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.ANNOTATION).mock();
-    g.rule(JavaGrammar.TYPE).mock();
-    g.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).mock();
+    b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
+    b.rule(JavaGrammar.TYPE).override(RuleMock.word(b, "type"));
+    b.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).override(RuleMock.word(b, "variableDeclaratorId"));
 
-    assertThat(g.rule(JavaGrammar.FORMAL_PARAMETER))
-        .matches("type variableDeclaratorId")
-        .matches("final type variableDeclaratorId")
-        .matches("annotation type variableDeclaratorId")
-        .matches("final final type variableDeclaratorId")
-        .matches("annotation annotation type variableDeclaratorId")
-        .matches("annotation final annotation final type variableDeclaratorId");
+    assertThat(b, JavaGrammar.FORMAL_PARAMETER)
+      .matches("type variableDeclaratorId")
+      .matches("final type variableDeclaratorId")
+      .matches("annotation type variableDeclaratorId")
+      .matches("final final type variableDeclaratorId")
+      .matches("annotation annotation type variableDeclaratorId")
+      .matches("annotation final annotation final type variableDeclaratorId");
   }
 
 }

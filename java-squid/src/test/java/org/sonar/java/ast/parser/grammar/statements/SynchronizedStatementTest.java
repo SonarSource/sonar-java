@@ -21,21 +21,22 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SynchronizedStatementTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void okSynchronized() {
-    g.rule(JavaGrammar.PAR_EXPRESSION).mock();
-    g.rule(JavaGrammar.BLOCK).mock();
+    b.rule(JavaGrammar.PAR_EXPRESSION).override(RuleMock.word(b, "parExpression"));
+    b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
 
-    assertThat(g.rule(JavaGrammar.SYNCHRONIZED_STATEMENT))
-        .matches("synchronized parExpression block");
+    assertThat(b, JavaGrammar.SYNCHRONIZED_STATEMENT)
+      .matches("synchronized parExpression block");
   }
 
 }

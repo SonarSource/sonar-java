@@ -21,23 +21,22 @@ package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class VariableDeclaratorIdTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    assertThat(g.rule(JavaGrammar.VARIABLE_DECLARATOR_ID))
-        .matches("identifier")
-        .matches("identifier []")
-        .matches("identifier @Foo []")
-        .matches("identifier [] []")
-        .matches("identifier [] @Foo @Bar []")
-    ;
+    assertThat(b, JavaGrammar.VARIABLE_DECLARATOR_ID)
+      .matches("identifier")
+      .matches("identifier []")
+      .matches("identifier @Foo []")
+      .matches("identifier [] []")
+      .matches("identifier [] @Foo @Bar []");
   }
 
 }

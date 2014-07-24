@@ -23,12 +23,11 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
-import org.sonar.java.ast.parser.JavaGrammar;
+import com.sonar.sslr.impl.Parser;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.sslr.parser.LexerlessGrammar;
-import org.sonar.sslr.parser.ParserAdapter;
 
 import java.io.File;
 
@@ -44,8 +43,7 @@ class Result {
     return new Result(SemanticModel.createFor(new JavaTreeMaker().compilationUnit(astNode), Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
   }
 
-  private static final LexerlessGrammar grammar = JavaGrammar.createGrammar();
-  private static final ParserAdapter<LexerlessGrammar> parser = new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, grammar);
+  private static final Parser parser = JavaParser.createParser(Charsets.UTF_8);
 
   private final SemanticModel semanticModel;
 

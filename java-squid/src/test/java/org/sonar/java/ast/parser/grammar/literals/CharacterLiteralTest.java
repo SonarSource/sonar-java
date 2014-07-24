@@ -22,24 +22,24 @@ package org.sonar.java.ast.parser.grammar.literals;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CharacterLiteralTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    assertThat(g.rule(JavaTokenType.CHARACTER_LITERAL))
-        .as("single character").matches("'a'")
-        .as("escaped LF").matches("'\\n'")
-        .as("escaped quote").matches("'\\''")
-        .as("octal escape").matches("'\\177'")
-        .as("unicode escape").matches("'\\u03a9'")
-        .as("unicode escape").matches("'\\uuuu005Cr'")
-        .as("unicode escape").matches("'\\u005c\\u005c'");
+    assertThat(b, JavaTokenType.CHARACTER_LITERAL)
+      .as("single character").matches("'a'")
+      .as("escaped LF").matches("'\\n'")
+      .as("escaped quote").matches("'\\''")
+      .as("octal escape").matches("'\\177'")
+      .as("unicode escape").matches("'\\u03a9'")
+      .as("unicode escape").matches("'\\uuuu005Cr'")
+      .as("unicode escape").matches("'\\u005c\\u005c'");
   }
 
 }

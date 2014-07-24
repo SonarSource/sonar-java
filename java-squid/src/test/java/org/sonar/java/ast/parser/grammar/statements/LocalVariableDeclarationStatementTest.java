@@ -21,24 +21,25 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class LocalVariableDeclarationStatementTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.TYPE).mock();
-    g.rule(JavaGrammar.VARIABLE_DECLARATORS).mock();
-    g.rule(JavaGrammar.ANNOTATION).mock();
+    b.rule(JavaGrammar.TYPE).override(RuleMock.word(b, "type"));
+    b.rule(JavaGrammar.VARIABLE_DECLARATORS).override(RuleMock.word(b, "variableDeclarators"));
+    b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
 
-    assertThat(g.rule(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT))
-        .matches("final type variableDeclarators ;")
-        .matches("annotation type variableDeclarators ;")
-        .matches("type variableDeclarators ;");
+    assertThat(b, JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)
+      .matches("final type variableDeclarators ;")
+      .matches("annotation type variableDeclarators ;")
+      .matches("type variableDeclarators ;");
   }
 
 }

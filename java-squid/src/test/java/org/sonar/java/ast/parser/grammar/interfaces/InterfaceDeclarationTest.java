@@ -21,33 +21,33 @@ package org.sonar.java.ast.parser.grammar.interfaces;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class InterfaceDeclarationTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.TYPE_PARAMETERS).mock();
-    g.rule(JavaGrammar.CLASS_TYPE_LIST).mock();
-    g.rule(JavaGrammar.INTERFACE_BODY).mock();
+    b.rule(JavaGrammar.TYPE_PARAMETERS).override(RuleMock.word(b, "typeParameters"));
+    b.rule(JavaGrammar.CLASS_TYPE_LIST).override(RuleMock.word(b, "classTypeList"));
+    b.rule(JavaGrammar.INTERFACE_BODY).override(RuleMock.word(b, "interfaceBody"));
 
-    assertThat(g.rule(JavaGrammar.INTERFACE_DECLARATION))
-        .matches("interface identifier typeParameters extends classTypeList interfaceBody")
-        .matches("interface identifier typeParameters interfaceBody")
-        .matches("interface identifier interfaceBody");
+    assertThat(b, JavaGrammar.INTERFACE_DECLARATION)
+      .matches("interface identifier typeParameters extends classTypeList interfaceBody")
+      .matches("interface identifier typeParameters interfaceBody")
+      .matches("interface identifier interfaceBody");
   }
 
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.INTERFACE_DECLARATION))
-        .matches("interface HelloWorld { }")
-        .matches("interface HelloWorld { int method() @Foo [];}")
-        .matches("interface HelloWorld { default int method(){} default void methodVoid(){} default <T> Map<K,V>  methodGeneric(T t){} }")
-    ;
+    assertThat(b, JavaGrammar.INTERFACE_DECLARATION)
+      .matches("interface HelloWorld { }")
+      .matches("interface HelloWorld { int method() @Foo [];}")
+      .matches("interface HelloWorld { default int method(){} default void methodVoid(){} default <T> Map<K,V>  methodGeneric(T t){} }");
   }
 
 }

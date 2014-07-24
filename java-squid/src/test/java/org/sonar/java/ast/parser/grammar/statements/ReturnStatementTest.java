@@ -21,19 +21,19 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ReturnStatementTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void okReturn() {
-    assertThat(g.rule(JavaGrammar.RETURN_STATEMENT))
-        .matches("return;")
-        .matches("return expression;");
+    assertThat(b, JavaGrammar.RETURN_STATEMENT)
+      .matches("return;")
+      .matches("return expression;");
   }
 
 }

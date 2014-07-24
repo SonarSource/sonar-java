@@ -21,22 +21,21 @@ package org.sonar.java.ast.parser.grammar.classes;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class MemberDeclTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.MEMBER_DECL))
-        .matches("Map<SomeType<?>,SomeType<?>> member;")
-        .matches("Map < SomeType < ? > , SomeType < ? > > member;")
-        .matches("int member()@Foo[]{}")
-        .matches("int member() throws @Foo IllegalStateException {}")
-    ;
+    assertThat(b, JavaGrammar.MEMBER_DECL)
+      .matches("Map<SomeType<?>,SomeType<?>> member;")
+      .matches("Map < SomeType < ? > , SomeType < ? > > member;")
+      .matches("int member()@Foo[]{}")
+      .matches("int member() throws @Foo IllegalStateException {}");
   }
 
 }

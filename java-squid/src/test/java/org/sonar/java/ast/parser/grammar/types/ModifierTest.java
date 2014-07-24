@@ -21,31 +21,32 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ModifierTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.ANNOTATION).mock();
+    b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
 
-    assertThat(g.rule(JavaGrammar.MODIFIER))
-        .matches("annotation")
-        .matches("public")
-        .matches("protected")
-        .matches("private")
-        .matches("static")
-        .matches("abstract")
-        .matches("final")
-        .matches("native")
-        .matches("synchronized")
-        .matches("transient")
-        .matches("volatile")
-        .matches("strictfp");
+    assertThat(b, JavaGrammar.MODIFIER)
+      .matches("annotation")
+      .matches("public")
+      .matches("protected")
+      .matches("private")
+      .matches("static")
+      .matches("abstract")
+      .matches("final")
+      .matches("native")
+      .matches("synchronized")
+      .matches("transient")
+      .matches("volatile")
+      .matches("strictfp");
   }
 
 }

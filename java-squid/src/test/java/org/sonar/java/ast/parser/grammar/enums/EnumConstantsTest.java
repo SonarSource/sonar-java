@@ -21,21 +21,22 @@ package org.sonar.java.ast.parser.grammar.enums;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class EnumConstantsTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.ENUM_CONSTANT).mock();
+    b.rule(JavaGrammar.ENUM_CONSTANT).override(RuleMock.word(b, "enumConstant"));
 
-    assertThat(g.rule(JavaGrammar.ENUM_CONSTANTS))
-        .matches("enumConstant")
-        .matches("enumConstant , enumConstant");
+    assertThat(b, JavaGrammar.ENUM_CONSTANTS)
+      .matches("enumConstant")
+      .matches("enumConstant , enumConstant");
   }
 
 }

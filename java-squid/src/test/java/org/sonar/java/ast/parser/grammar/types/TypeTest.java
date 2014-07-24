@@ -21,26 +21,25 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    assertThat(g.rule(JavaGrammar.TYPE))
-        .matches("int")
-        .matches("classType")
-        .matches("int []")
-        .matches("classType []")
-        .matches("int [] []")
-        .matches("classType [] []")
-        .matches("classType @Foo [] @Bar []")
-        .matches("int @Foo [] @Bar []")
-    ;
+    assertThat(b, JavaGrammar.TYPE)
+      .matches("int")
+      .matches("classType")
+      .matches("int []")
+      .matches("classType []")
+      .matches("int [] []")
+      .matches("classType [] []")
+      .matches("classType @Foo [] @Bar []")
+      .matches("int @Foo [] @Bar []");
   }
 
 }

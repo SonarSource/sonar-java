@@ -22,78 +22,78 @@ package org.sonar.java.ast.parser.grammar.literals;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class IntegerLiteralTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
     // Decimal
-    assertThat(g.rule(JavaTokenType.INTEGER_LITERAL))
-        .matches("0")
-        .matches("543");
-    assertThat(g.rule(JavaTokenType.LONG_LITERAL))
-        .matches("543l")
-        .matches("543L");
+    assertThat(b, JavaTokenType.INTEGER_LITERAL)
+      .matches("0")
+      .matches("543");
+    assertThat(b, JavaTokenType.LONG_LITERAL)
+      .matches("543l")
+      .matches("543L");
 
     // Hexadecimal
-    assertThat(g.rule(JavaTokenType.INTEGER_LITERAL))
-        .matches("0xFF");
-    assertThat(g.rule(JavaTokenType.LONG_LITERAL))
-        .matches("0xFFl")
-        .matches("0xFFL");
+    assertThat(b, JavaTokenType.INTEGER_LITERAL)
+      .matches("0xFF");
+    assertThat(b, JavaTokenType.LONG_LITERAL)
+      .matches("0xFFl")
+      .matches("0xFFL");
 
-    assertThat(g.rule(JavaTokenType.INTEGER_LITERAL))
-        .matches("0XFF");
-    assertThat(g.rule(JavaTokenType.LONG_LITERAL))
-        .matches("0XFFl")
-        .matches("0XFFL");
+    assertThat(b, JavaTokenType.INTEGER_LITERAL)
+      .matches("0XFF");
+    assertThat(b, JavaTokenType.LONG_LITERAL)
+      .matches("0XFFl")
+      .matches("0XFFL");
 
     // Octal
-    assertThat(g.rule(JavaTokenType.INTEGER_LITERAL))
-        .matches("077");
-    assertThat(g.rule(JavaTokenType.LONG_LITERAL))
-        .matches("077l")
-        .matches("077L");
+    assertThat(b, JavaTokenType.INTEGER_LITERAL)
+      .matches("077");
+    assertThat(b, JavaTokenType.LONG_LITERAL)
+      .matches("077l")
+      .matches("077L");
 
     // Binary (new in Java 7)
-    assertThat(g.rule(JavaTokenType.INTEGER_LITERAL))
-        .matches("0b1010");
-    assertThat(g.rule(JavaTokenType.LONG_LITERAL))
-        .matches("0b1010l")
-        .matches("0b1010L");
+    assertThat(b, JavaTokenType.INTEGER_LITERAL)
+      .matches("0b1010");
+    assertThat(b, JavaTokenType.LONG_LITERAL)
+      .matches("0b1010l")
+      .matches("0b1010L");
 
-    assertThat(g.rule(JavaTokenType.INTEGER_LITERAL))
-        .matches("0B1010");
-    assertThat(g.rule(JavaTokenType.LONG_LITERAL))
-        .matches("0B1010l")
-        .matches("0B1010L");
+    assertThat(b, JavaTokenType.INTEGER_LITERAL)
+      .matches("0B1010");
+    assertThat(b, JavaTokenType.LONG_LITERAL)
+      .matches("0B1010l")
+      .matches("0B1010L");
 
     // Underscore (new in Java 7)
-    assertThat(g.rule(JavaTokenType.INTEGER_LITERAL))
-        .matches("1_000_000")
-        .matches("5_______2");
+    assertThat(b, JavaTokenType.INTEGER_LITERAL)
+      .matches("1_000_000")
+      .matches("5_______2");
 
-    assertThat(g.rule(JavaTokenType.LONG_LITERAL))
-        .matches("0x7fff_ffff_ffff_ffffL");
+    assertThat(b, JavaTokenType.LONG_LITERAL)
+      .matches("0x7fff_ffff_ffff_ffffL");
   }
 
   @Test
   public void nok() {
-    assertThat(g.rule(JavaTokenType.INTEGER_LITERAL))
-        .notMatches("0.1")
-        .notMatches("_0")
-        .notMatches("_d")
-        .notMatches("._list");
-    assertThat(g.rule(JavaTokenType.LONG_LITERAL))
-        .notMatches("0.1")
-        .notMatches("_0")
-        .notMatches("_d")
-        .notMatches("._list");
+    assertThat(b, JavaTokenType.INTEGER_LITERAL)
+      .notMatches("0.1")
+      .notMatches("_0")
+      .notMatches("_d")
+      .notMatches("._list");
+    assertThat(b, JavaTokenType.LONG_LITERAL)
+      .notMatches("0.1")
+      .notMatches("_0")
+      .notMatches("_d")
+      .notMatches("._list");
   }
 
 }

@@ -36,7 +36,7 @@ import java.util.List;
 public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
   // TODO remove:
   public static final org.sonar.java.model.declaration.ModifiersTreeImpl EMPTY =
-      new org.sonar.java.model.declaration.ModifiersTreeImpl(null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
+    new org.sonar.java.model.declaration.ModifiersTreeImpl(null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
 
   private final List<Modifier> modifiers;
   private final List<AnnotationTree> annotations;
@@ -73,6 +73,7 @@ public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
       // TODO(Godin): modifiers
       Iterators.<Tree>emptyIterator(),
       annotations.iterator()
-    );
+      );
   }
+
 }

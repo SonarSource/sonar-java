@@ -21,36 +21,36 @@ package org.sonar.java.ast.parser.grammar.classes;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ClassDeclarationTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.TYPE_PARAMETERS).mock();
-    g.rule(JavaGrammar.CLASS_TYPE).mock();
-    g.rule(JavaGrammar.CLASS_TYPE_LIST).mock();
-    g.rule(JavaGrammar.CLASS_BODY).mock();
+    b.rule(JavaGrammar.TYPE_PARAMETERS).override(RuleMock.word(b, "typeParameters"));
+    b.rule(JavaGrammar.CLASS_TYPE).override(RuleMock.word(b, "classType"));
+    b.rule(JavaGrammar.CLASS_TYPE_LIST).override(RuleMock.word(b, "classTypeList"));
+    b.rule(JavaGrammar.CLASS_BODY).override(RuleMock.word(b, "classBody"));
 
-    assertThat(g.rule(JavaGrammar.CLASS_DECLARATION))
-        .matches("class identifier typeParameters extends classType implements classTypeList classBody")
-        .matches("class identifier typeParameters extends classType classBody")
-        .matches("class identifier typeParameters classBody")
-        .matches("class identifier classBody");
+    assertThat(b, JavaGrammar.CLASS_DECLARATION)
+      .matches("class identifier typeParameters extends classType implements classTypeList classBody")
+      .matches("class identifier typeParameters extends classType classBody")
+      .matches("class identifier typeParameters classBody")
+      .matches("class identifier classBody");
   }
 
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.CLASS_DECLARATION))
-        .matches("class HelloWorld { }")
-        .matches("class HelloWorld<@Foo T> { }")
-        .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>{}")
-        .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>  extends java.util. @Foo HashMap implements @Foo Serializable, InterfaceTest{}")
-    ;
+    assertThat(b, JavaGrammar.CLASS_DECLARATION)
+      .matches("class HelloWorld { }")
+      .matches("class HelloWorld<@Foo T> { }")
+      .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>{}")
+      .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>  extends java.util. @Foo HashMap implements @Foo Serializable, InterfaceTest{}");
   }
 
 }

@@ -22,25 +22,25 @@ package org.sonar.java.ast.parser.grammar.literals;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class IdentifierTest {
 
-  private final LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaTokenType.IDENTIFIER))
-        .matches("foo")
-        .matches("bar")
-        .matches("enum")
+    assertThat(b, JavaTokenType.IDENTIFIER)
+      .matches("foo")
+      .matches("bar")
+      .matches("enum")
 
-        .notMatches("public")
-        .notMatches("final")
+      .notMatches("public")
+      .notMatches("final")
 
-        .notMatches("assert");
+      .notMatches("assert");
   }
 
 }

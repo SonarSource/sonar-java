@@ -21,50 +21,51 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class StatementTest {
 
-  private final LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.BLOCK).mock();
-    g.rule(JavaGrammar.ASSERT_STATEMENT).mock();
-    g.rule(JavaGrammar.IF_STATEMENT).mock();
-    g.rule(JavaGrammar.FOR_STATEMENT).mock();
-    g.rule(JavaGrammar.WHILE_STATEMENT).mock();
-    g.rule(JavaGrammar.DO_STATEMENT).mock();
-    g.rule(JavaGrammar.TRY_STATEMENT).mock();
-    g.rule(JavaGrammar.SWITCH_STATEMENT).mock();
-    g.rule(JavaGrammar.SYNCHRONIZED_STATEMENT).mock();
-    g.rule(JavaGrammar.RETURN_STATEMENT).mock();
-    g.rule(JavaGrammar.THROW_STATEMENT).mock();
-    g.rule(JavaGrammar.BREAK_STATEMENT).mock();
-    g.rule(JavaGrammar.CONTINUE_STATEMENT).mock();
-    g.rule(JavaGrammar.LABELED_STATEMENT).mock();
-    g.rule(JavaGrammar.EXPRESSION_STATEMENT).mock();
-    g.rule(JavaGrammar.EMPTY_STATEMENT).mock();
+    b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
+    b.rule(JavaGrammar.ASSERT_STATEMENT).override(RuleMock.word(b, "emptyStatement"));
+    b.rule(JavaGrammar.IF_STATEMENT).override(RuleMock.word(b, "labeledStatement"));
+    b.rule(JavaGrammar.FOR_STATEMENT).override(RuleMock.word(b, "expressionStatement"));
+    b.rule(JavaGrammar.WHILE_STATEMENT).override(RuleMock.word(b, "ifStatement"));
+    b.rule(JavaGrammar.DO_STATEMENT).override(RuleMock.word(b, "assertStatement"));
+    b.rule(JavaGrammar.TRY_STATEMENT).override(RuleMock.word(b, "switchStatement"));
+    b.rule(JavaGrammar.SWITCH_STATEMENT).override(RuleMock.word(b, "whileStatement"));
+    b.rule(JavaGrammar.SYNCHRONIZED_STATEMENT).override(RuleMock.word(b, "doStatement"));
+    b.rule(JavaGrammar.RETURN_STATEMENT).override(RuleMock.word(b, "forStatement"));
+    b.rule(JavaGrammar.THROW_STATEMENT).override(RuleMock.word(b, "breakStatement"));
+    b.rule(JavaGrammar.BREAK_STATEMENT).override(RuleMock.word(b, "continueStatement"));
+    b.rule(JavaGrammar.CONTINUE_STATEMENT).override(RuleMock.word(b, "returnStatement"));
+    b.rule(JavaGrammar.LABELED_STATEMENT).override(RuleMock.word(b, "throwStatement"));
+    b.rule(JavaGrammar.EXPRESSION_STATEMENT).override(RuleMock.word(b, "synchronizedStatement"));
+    b.rule(JavaGrammar.EMPTY_STATEMENT).override(RuleMock.word(b, "tryStatement"));
 
-    assertThat(g.rule(JavaGrammar.STATEMENT))
-        .matches("block")
-        .matches("emptyStatement")
-        .matches("labeledStatement")
-        .matches("expressionStatement")
-        .matches("ifStatement")
-        .matches("assertStatement")
-        .matches("switchStatement")
-        .matches("whileStatement")
-        .matches("doStatement")
-        .matches("forStatement")
-        .matches("breakStatement")
-        .matches("continueStatement")
-        .matches("returnStatement")
-        .matches("throwStatement")
-        .matches("synchronizedStatement")
-        .matches("tryStatement");
+    assertThat(b, JavaGrammar.STATEMENT)
+      .matches("block")
+      .matches("emptyStatement")
+      .matches("labeledStatement")
+      .matches("expressionStatement")
+      .matches("ifStatement")
+      .matches("assertStatement")
+      .matches("switchStatement")
+      .matches("whileStatement")
+      .matches("doStatement")
+      .matches("forStatement")
+      .matches("breakStatement")
+      .matches("continueStatement")
+      .matches("returnStatement")
+      .matches("throwStatement")
+      .matches("synchronizedStatement")
+      .matches("tryStatement");
   }
 
 }

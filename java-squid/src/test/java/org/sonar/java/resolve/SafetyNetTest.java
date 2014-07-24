@@ -24,10 +24,8 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTreeMaker;
-import org.sonar.sslr.parser.LexerlessGrammar;
-import org.sonar.sslr.parser.ParserAdapter;
 
 import java.io.File;
 
@@ -37,18 +35,18 @@ import java.io.File;
 public class SafetyNetTest {
 
   private final String[] dirs = {
-      "src/main/java",
-      "src/test/java",
-      "src/test/files",
-      "target/test-projects/struts-core-1.3.9/src",
-      "target/test-projects/commons-collections-3.2.1/src"
+    "src/main/java",
+    "src/test/java",
+    "src/test/files",
+    "target/test-projects/struts-core-1.3.9/src",
+    "target/test-projects/commons-collections-3.2.1/src"
   };
 
   @Test
   public void test() {
-    Parser<LexerlessGrammar> parser = new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, JavaGrammar.createGrammar());
+    Parser parser = JavaParser.createParser(Charsets.UTF_8);
     for (String dir : dirs) {
-      for (File file : FileUtils.listFiles(new File(dir), new String[]{"java"}, true)) {
+      for (File file : FileUtils.listFiles(new File(dir), new String[] {"java"}, true)) {
         try {
           SemanticModel.createFor(new JavaTreeMaker().compilationUnit(parser.parse(file)), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
         } catch (Exception e) {

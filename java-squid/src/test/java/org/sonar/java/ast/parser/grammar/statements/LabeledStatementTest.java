@@ -21,18 +21,18 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class LabeledStatementTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void okLabel() {
-    assertThat(g.rule(JavaGrammar.LABELED_STATEMENT))
-        .matches("identifier : { }");
+    assertThat(b, JavaGrammar.LABELED_STATEMENT)
+      .matches("identifier : { }");
   }
 
 }

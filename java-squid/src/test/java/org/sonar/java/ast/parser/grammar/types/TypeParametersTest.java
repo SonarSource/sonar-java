@@ -21,21 +21,22 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeParametersTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.TYPE_PARAMETER).mock();
+    b.rule(JavaGrammar.TYPE_PARAMETER).override(RuleMock.word(b, "typeParameter"));
 
-    assertThat(g.rule(JavaGrammar.TYPE_PARAMETERS))
-        .matches("< typeParameter >")
-        .matches("< typeParameter , typeParameter >");
+    assertThat(b, JavaGrammar.TYPE_PARAMETERS)
+      .matches("< typeParameter >")
+      .matches("< typeParameter , typeParameter >");
   }
 
 }

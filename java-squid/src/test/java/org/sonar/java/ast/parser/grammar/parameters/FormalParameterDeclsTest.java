@@ -21,26 +21,27 @@ package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParameterDeclsTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.ANNOTATION).mock();
-    g.rule(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST).mock();
+    b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
+    b.rule(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST).override(RuleMock.word(b, "formalParametersDeclsRest"));
 
-    assertThat(g.rule(JavaGrammar.FORMAL_PARAMETER_DECLS))
-        .matches("type formalParametersDeclsRest")
-        .matches("final type formalParametersDeclsRest")
-        .matches("annotation type formalParametersDeclsRest")
-        .matches("final final type formalParametersDeclsRest")
-        .matches("annotation annotation type formalParametersDeclsRest")
-        .matches("annotation final annotation final type formalParametersDeclsRest");
+    assertThat(b, JavaGrammar.FORMAL_PARAMETER_DECLS)
+      .matches("type formalParametersDeclsRest")
+      .matches("final type formalParametersDeclsRest")
+      .matches("annotation type formalParametersDeclsRest")
+      .matches("final final type formalParametersDeclsRest")
+      .matches("annotation annotation type formalParametersDeclsRest")
+      .matches("annotation final annotation final type formalParametersDeclsRest");
   }
 
 }

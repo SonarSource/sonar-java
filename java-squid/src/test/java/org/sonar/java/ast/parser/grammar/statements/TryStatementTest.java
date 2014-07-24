@@ -21,35 +21,36 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TryStatementTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.BLOCK).mock();
-    g.rule(JavaGrammar.CATCH_CLAUSE).mock();
-    g.rule(JavaGrammar.FINALLY_).mock();
+    b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
+    b.rule(JavaGrammar.CATCH_CLAUSE).override(RuleMock.word(b, "catchClause"));
+    b.rule(JavaGrammar.FINALLY_).override(RuleMock.word(b, "finally_"));
 
-    assertThat(g.rule(JavaGrammar.STATEMENT))
-        .matches("try block catchClause catchClause finally_")
-        .matches("try block catchClause finally_")
-        .matches("try block finally_");
+    assertThat(b, JavaGrammar.STATEMENT)
+      .matches("try block catchClause catchClause finally_")
+      .matches("try block catchClause finally_")
+      .matches("try block finally_");
   }
 
   @Test
   public void realLife() {
     // Java 7: multi-catch
-    assertThat(g.rule(JavaGrammar.STATEMENT))
-        .matches("try {} catch (ClassNotFoundException | IllegalAccessException ex) {}");
+    assertThat(b, JavaGrammar.STATEMENT)
+      .matches("try {} catch (ClassNotFoundException | IllegalAccessException ex) {}");
     // Java 7: try-with-resources
-    assertThat(g.rule(JavaGrammar.STATEMENT))
-        .matches("try (Resource resource = new Resource()) {}")
-        .matches("try (Resource resource = new Resource()) {} catch (Expception e) {} finally {}");
+    assertThat(b, JavaGrammar.STATEMENT)
+      .matches("try (Resource resource = new Resource()) {}")
+      .matches("try (Resource resource = new Resource()) {} catch (Expception e) {} finally {}");
   }
 
 }

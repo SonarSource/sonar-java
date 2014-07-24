@@ -21,32 +21,33 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class VariableDeclaratorTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.DIM).mock();
-    g.rule(JavaGrammar.VARIABLE_INITIALIZER).mock();
+    b.rule(JavaGrammar.DIM).override(RuleMock.word(b, "dim"));
+    b.rule(JavaGrammar.VARIABLE_INITIALIZER).override(RuleMock.word(b, "variableInitializer"));
 
-    assertThat(g.rule(JavaGrammar.VARIABLE_DECLARATOR))
-        .matches("identifier dim dim = variableInitializer")
-        .matches("identifier dim dim")
-        .matches("identifier dim = variableInitializer")
-        .matches("identifier dim")
-        .matches("identifier = variableInitializer")
-        .matches("identifier");
+    assertThat(b, JavaGrammar.VARIABLE_DECLARATOR)
+      .matches("identifier dim dim = variableInitializer")
+      .matches("identifier dim dim")
+      .matches("identifier dim = variableInitializer")
+      .matches("identifier dim")
+      .matches("identifier = variableInitializer")
+      .matches("identifier");
   }
 
   @Test
   public void ko() {
-    assertThat(g.rule(JavaGrammar.VARIABLE_DECLARATOR))
-        .notMatches("");
+    assertThat(b, JavaGrammar.VARIABLE_DECLARATOR)
+      .notMatches("");
   }
 
 }

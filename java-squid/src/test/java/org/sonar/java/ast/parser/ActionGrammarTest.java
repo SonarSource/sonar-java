@@ -17,25 +17,27 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser.grammar.expressions;
+package org.sonar.java.ast.parser;
 
+import com.google.common.base.Charsets;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.ActionGrammar.TreeFactory;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
-import static org.sonar.sslr.tests.Assertions.assertThat;
-
-public class RelationalExpressionTest {
-
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+public class ActionGrammarTest {
 
   @Test
-  public void realLife() {
-    assertThat(b, JavaGrammar.RELATIONAL_EXPRESSION)
-      .matches("i < 10")
-      .matches("i <= 10")
-      .matches("b > 4")
-      .matches("b >= 4");
+  @Ignore
+  public void calculator() throws Exception {
+    ActionParser parser = new ActionParser(
+      Charsets.UTF_8,
+      LexerlessGrammarBuilder.create(),
+      ActionGrammar.class,
+      new TreeFactory(),
+      JavaGrammar.COMPILATION_UNIT);
+
+    System.out.println(parser.parse("foo"));
   }
 
 }

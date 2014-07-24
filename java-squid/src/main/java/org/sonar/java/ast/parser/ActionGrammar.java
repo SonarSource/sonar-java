@@ -17,29 +17,52 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.model;
+package org.sonar.java.ast.parser;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.resolve.Type;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
-public abstract class AbstractTypedTree extends JavaTree {
-  /**
-   * Can be {@code null} before and during semantic analysis, but not after.
-   */
-  // TODO(Godin): never should be null, i.e. better to assign default value
-  private Type type;
+import java.util.List;
 
-  public AbstractTypedTree(AstNode astNode) {
-    super(astNode);
+public class ActionGrammar {
+
+  // TODO Visibility
+  public final GrammarBuilder b;
+  public final TreeFactory f;
+
+  public ActionGrammar(GrammarBuilder b, TreeFactory f) {
+    this.b = b;
+    this.f = f;
   }
 
-  public Type getType2() {
-    return type;
+  public interface GrammarBuilder {
+
+    <T> NonterminalBuilder<T> nonterminal();
+
+    <T> NonterminalBuilder<T> nonterminal(GrammarRuleKey ruleKey);
+
+    <T> T firstOf(T... methods);
+
+    <T> Optional<T> optional(T method);
+
+    <T> List<T> oneOrMore(T method);
+
+    <T> Optional<List<T>> zeroOrMore(T method);
+
+    AstNode invokeRule(GrammarRuleKey ruleKey);
+
+    AstNode token(String value);
+
   }
 
-  public void setType(Type type) {
-    // FIXME(Godin): type should be computed and set only once, but currently this is not the case and this contract is violated
-//    Preconditions.checkState(this.type == null);
-    this.type = type;
+  public interface NonterminalBuilder<T> {
+
+    T is(T method);
+
   }
+
+  public static class TreeFactory {
+
+  }
+
 }

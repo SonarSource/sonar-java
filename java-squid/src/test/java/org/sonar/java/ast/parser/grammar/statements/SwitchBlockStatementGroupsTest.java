@@ -21,22 +21,23 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SwitchBlockStatementGroupsTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP).mock();
+    b.rule(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP).override(RuleMock.word(b, "switchBlockStatementGroup"));
 
-    assertThat(g.rule(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS))
-        .matches("")
-        .matches("switchBlockStatementGroup")
-        .matches("switchBlockStatementGroup switchBlockStatementGroup");
+    assertThat(b, JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS)
+      .matches("")
+      .matches("switchBlockStatementGroup")
+      .matches("switchBlockStatementGroup switchBlockStatementGroup");
   }
 
 }

@@ -21,25 +21,26 @@ package org.sonar.java.ast.parser.grammar.enums;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class EnumBodyTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.ENUM_CONSTANTS).mock();
-    g.rule(JavaGrammar.ENUM_BODY_DECLARATIONS).mock();
+    b.rule(JavaGrammar.ENUM_CONSTANTS).override(RuleMock.word(b, "enumConstants"));
+    b.rule(JavaGrammar.ENUM_BODY_DECLARATIONS).override(RuleMock.word(b, "enumBodyDeclarations"));
 
-    assertThat(g.rule(JavaGrammar.ENUM_BODY))
-        .matches("{ }")
-        .matches("{ enumConstants }")
-        .matches("{ enumBodyDeclarations }")
-        .matches("{ enumConstants enumBodyDeclarations }")
-        .matches("{ enumConstants , enumBodyDeclarations }");
+    assertThat(b, JavaGrammar.ENUM_BODY)
+      .matches("{ }")
+      .matches("{ enumConstants }")
+      .matches("{ enumBodyDeclarations }")
+      .matches("{ enumConstants enumBodyDeclarations }")
+      .matches("{ enumConstants , enumBodyDeclarations }");
   }
 
 }

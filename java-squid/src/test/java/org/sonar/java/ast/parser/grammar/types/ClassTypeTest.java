@@ -21,26 +21,25 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ClassTypeTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.TYPE_ARGUMENTS).mock();
+    b.rule(JavaGrammar.TYPE_ARGUMENTS).override(RuleMock.word(b, "typeArguments"));
 
-    assertThat(g.rule(JavaGrammar.CLASS_TYPE))
-        .matches("identifier")
-        .matches("identifier typeArguments")
-        .matches("identifier typeArguments . identifier typeArguments")
-        .matches("identifier typeArguments . identifier typeArguments . identifier typeArguments")
-        .matches("identifier typeArguments . @Annotated identifier typeArguments . identifier typeArguments")
-
-    ;
+    assertThat(b, JavaGrammar.CLASS_TYPE)
+      .matches("identifier")
+      .matches("identifier typeArguments")
+      .matches("identifier typeArguments . identifier typeArguments")
+      .matches("identifier typeArguments . identifier typeArguments . identifier typeArguments")
+      .matches("identifier typeArguments . @Annotated identifier typeArguments . identifier typeArguments");
   }
 
 }

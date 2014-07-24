@@ -82,7 +82,7 @@ public class SemanticModel {
       protected void scan(@Nullable Tree tree) {
         if (tree instanceof AbstractTypedTree) {
           AbstractTypedTree typedNode = (AbstractTypedTree) tree;
-          if (typedNode.getType() == null) {
+          if (typedNode.getType2() == null) {
             typedNode.setType(symbols.unknownType);
           }
         }

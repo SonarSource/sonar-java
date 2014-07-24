@@ -21,21 +21,22 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ClassTypeListTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.CLASS_TYPE).mock();
+    b.rule(JavaGrammar.CLASS_TYPE).override(RuleMock.word(b, "classType"));
 
-    assertThat(g.rule(JavaGrammar.CLASS_TYPE_LIST))
-        .matches("classType")
-        .matches("classType , classType");
+    assertThat(b, JavaGrammar.CLASS_TYPE_LIST)
+      .matches("classType")
+      .matches("classType , classType");
   }
 
 }

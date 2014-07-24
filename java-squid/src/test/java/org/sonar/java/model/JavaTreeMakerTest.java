@@ -27,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -76,8 +77,6 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
-import org.sonar.sslr.parser.LexerlessGrammar;
-import org.sonar.sslr.parser.ParserAdapter;
 
 import java.io.File;
 import java.util.List;
@@ -86,7 +85,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaTreeMakerTest {
 
-  private final Parser p = new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, JavaGrammar.createGrammar());
+  private final Parser p = JavaParser.createParser(Charsets.UTF_8);
   private final JavaTreeMaker maker = new JavaTreeMaker();
 
   @Test
@@ -261,7 +260,6 @@ public class JavaTreeMakerTest {
     assertThat(tree.modifiers().annotations()).hasSize(1);
   }
 
-
   @Test
   public void annotations() {
     AstNode astNode = p.parse("@SuppressWarnings(\"unchecked\") class T { }");
@@ -299,7 +297,7 @@ public class JavaTreeMakerTest {
 
     astNode = p.parse("class T { private void meth() { @NonNullable String str;}}");
     tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
-    VariableTree variable = (VariableTree)((MethodTree) tree.members().get(0)).block().body().get(0);
+    VariableTree variable = (VariableTree) ((MethodTree) tree.members().get(0)).block().body().get(0);
     annotations = variable.modifiers().annotations();
     assertThat(annotations).hasSize(1);
     annotation = annotations.get(0);
@@ -1633,16 +1631,16 @@ public class JavaTreeMakerTest {
     assertThat(tree.expression()).isNotNull();
   }
 
-
   @Test
   public void method_reference_expression_should_not_break_AST() throws Exception {
-    AstNode astNode = p.parse("class T { public void meth(){IntStream.range(1,12).map(new MethodReferences()::square).forEach(System.out::println);}}").getFirstDescendant(JavaGrammar.EXPRESSION);
+    AstNode astNode = p.parse("class T { public void meth(){IntStream.range(1,12).map(new MethodReferences()::square).forEach(System.out::println);}}").getFirstDescendant(
+      JavaGrammar.EXPRESSION);
     ExpressionTree expressionTree = maker.expression(astNode);
     assertThat(expressionTree).isNotNull();
   }
 
   @Test
-  public void lambda_expressions_should_not_break_AST(){
+  public void lambda_expressions_should_not_break_AST() {
     AstNode astNode = p.parse("class T { public void meth(){IntStream.range(1,12).map(x->x*x).map((int a)-> {return a*a;});}}").getFirstDescendant(JavaGrammar.EXPRESSION);
     ExpressionTree expressionTree = maker.expression(astNode);
     assertThat(expressionTree).isNotNull();

@@ -21,21 +21,20 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeArgumentsTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void ok() {
-    assertThat(g.rule(JavaGrammar.TYPE_ARGUMENTS))
-        .matches("< typeArgument >")
-        .matches("< typeArgument , typeArgument >")
-        .matches("< @Foo typeArgument , @Foo typeArgument >")
-    ;
+    assertThat(b, JavaGrammar.TYPE_ARGUMENTS)
+      .matches("< typeArgument >")
+      .matches("< typeArgument , typeArgument >")
+      .matches("< @Foo typeArgument , @Foo typeArgument >");
   }
 
 }

@@ -21,24 +21,24 @@ package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class LiteralTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.LITERAL))
-        .matches("1.0")
-        .matches("1")
-        .matches("'a'")
-        .matches("\"string\"")
-        .matches("true")
-        .matches("false")
-        .matches("null");
+    assertThat(b, JavaGrammar.LITERAL)
+      .matches("1.0")
+      .matches("1")
+      .matches("'a'")
+      .matches("\"string\"")
+      .matches("true")
+      .matches("false")
+      .matches("null");
   }
 
 }
