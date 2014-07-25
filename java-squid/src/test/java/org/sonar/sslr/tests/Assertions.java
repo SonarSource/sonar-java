@@ -27,6 +27,7 @@ import org.fest.assertions.GenericAssert;
 import org.sonar.java.ast.parser.ActionGrammar;
 import org.sonar.java.ast.parser.ActionGrammar.TreeFactory;
 import org.sonar.java.ast.parser.ActionParser;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
@@ -34,6 +35,15 @@ public class Assertions {
 
   public static RuleAssert assertThat(Rule actual) {
     return new RuleAssert(actual);
+  }
+
+  public static ParserAssert assertThat(GrammarRuleKey rule) {
+    return new ParserAssert(new ActionParser(
+      Charsets.UTF_8,
+      JavaGrammar.createGrammarBuilder(),
+      ActionGrammar.class,
+      new TreeFactory(),
+      rule));
   }
 
   public static ParserAssert assertThat(LexerlessGrammarBuilder b, GrammarRuleKey rule) {

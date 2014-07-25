@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class StatementTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
     b.rule(JavaGrammar.ASSERT_STATEMENT).override(RuleMock.word(b, "emptyStatement"));
     b.rule(JavaGrammar.IF_STATEMENT).override(RuleMock.word(b, "labeledStatement"));

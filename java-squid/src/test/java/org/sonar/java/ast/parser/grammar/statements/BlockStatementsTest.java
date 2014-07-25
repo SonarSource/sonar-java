@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class BlockStatementsTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.BLOCK_STATEMENT).override(RuleMock.word(b, "blockStatement"));
 
     assertThat(b, JavaGrammar.BLOCK_STATEMENTS)

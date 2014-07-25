@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SwitchBlockStatementGroupsTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP).override(RuleMock.word(b, "switchBlockStatementGroup"));
 
     assertThat(b, JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS)

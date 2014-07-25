@@ -21,17 +21,14 @@ package org.sonar.java.ast.parser.grammar.classes;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class MemberDeclTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.MEMBER_DECL)
+    assertThat(JavaGrammar.MEMBER_DECL)
       .matches("Map<SomeType<?>,SomeType<?>> member;")
       .matches("Map < SomeType < ? > , SomeType < ? > > member;")
       .matches("int member()@Foo[]{}")

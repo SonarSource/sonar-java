@@ -21,17 +21,14 @@ package org.sonar.java.ast.parser.grammar.units;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ImportDeclarationTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.IMPORT_DECLARATION)
+    assertThat(JavaGrammar.IMPORT_DECLARATION)
       .matches("import org.example.HelloWorld;")
       .matches("import org.example.*;")
       .matches("import static org.junit.Assert.assertThat;")

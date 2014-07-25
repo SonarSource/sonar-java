@@ -21,17 +21,14 @@ package org.sonar.java.ast.parser.grammar.expressions;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class RelationalExpressionTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.RELATIONAL_EXPRESSION)
+    assertThat(JavaGrammar.RELATIONAL_EXPRESSION)
       .matches("i < 10")
       .matches("i <= 10")
       .matches("b > 4")

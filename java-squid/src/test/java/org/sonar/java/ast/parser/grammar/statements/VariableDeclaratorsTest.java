@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class VariableDeclaratorsTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.VARIABLE_DECLARATOR).override(RuleMock.word(b, "variableDeclarator"));
 
     assertThat(b, JavaGrammar.VARIABLE_DECLARATORS)

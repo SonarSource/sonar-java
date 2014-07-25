@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class EnumDeclarationTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.CLASS_TYPE_LIST).override(RuleMock.word(b, "classTypeList"));
     b.rule(JavaGrammar.ENUM_BODY).override(RuleMock.word(b, "enumBody"));
 
@@ -41,7 +41,7 @@ public class EnumDeclarationTest {
 
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.ENUM_DECLARATION)
+    assertThat(JavaGrammar.ENUM_DECLARATION)
       .matches("enum HelloWorld { }");
   }
 

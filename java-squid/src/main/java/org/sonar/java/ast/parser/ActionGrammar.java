@@ -19,7 +19,16 @@
  */
 package org.sonar.java.ast.parser;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.java.model.KindMaps;
+import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.List;
@@ -33,6 +42,40 @@ public class ActionGrammar {
   public ActionGrammar(GrammarBuilder b, TreeFactory f) {
     this.b = b;
     this.f = f;
+  }
+
+  public ModifiersTree DSL_MODIFIERS() {
+    return b.<ModifiersTree>nonterminal(JavaGrammar.DSL_MODIFIERS)
+      .is(f.modifiers(b.zeroOrMore(b.invokeRule(JavaGrammar.MODIFIER))));
+  }
+
+  public static class TreeFactory {
+
+    private final KindMaps kindMaps = new KindMaps();
+
+    private final JavaTreeMaker treeMaker = new JavaTreeMaker();
+
+    public ModifiersTree modifiers(Optional<List<AstNode>> modifierNodes) {
+      if (!modifierNodes.isPresent()) {
+        return ModifiersTreeImpl.EMPTY_MODIFIERS;
+      }
+
+      ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
+      ImmutableList.Builder<AnnotationTree> annotations = ImmutableList.builder();
+      for (AstNode astNode : modifierNodes.get()) {
+        Preconditions.checkArgument(astNode.is(JavaGrammar.MODIFIER), "Unexpected AstNodeType: %s", astNode.getType().toString());
+        astNode = astNode.getFirstChild();
+        if (astNode.is(JavaGrammar.ANNOTATION)) {
+          annotations.add(treeMaker.annotation(astNode));
+        } else {
+          JavaKeyword keyword = (JavaKeyword) astNode.getType();
+          modifiers.add(kindMaps.getModifier(keyword));
+        }
+      }
+
+      return new ModifiersTreeImpl(modifierNodes.get(), modifiers.build(), annotations.build());
+    }
+
   }
 
   public interface GrammarBuilder {
@@ -58,10 +101,6 @@ public class ActionGrammar {
   public interface NonterminalBuilder<T> {
 
     T is(T method);
-
-  }
-
-  public static class TreeFactory {
 
   }
 

@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SynchronizedStatementTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void okSynchronized() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.PAR_EXPRESSION).override(RuleMock.word(b, "parExpression"));
     b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
 

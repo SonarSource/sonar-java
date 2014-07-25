@@ -26,15 +26,12 @@ import com.sonar.sslr.api.AstNode;
 import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
-import org.sonar.sslr.parser.LexerlessGrammar;
-import org.sonar.sslr.parser.ParserAdapter;
 
 import java.io.File;
 import java.util.Arrays;
@@ -46,10 +43,8 @@ import static org.mockito.Mockito.when;
 
 public class ExpressionVisitorTest {
 
-  private LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
-  private BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
-  private Symbols symbols = new Symbols(bytecodeCompleter);
+  private final BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+  private final Symbols symbols = new Symbols(bytecodeCompleter);
 
   private Resolve.Env env;
 
@@ -69,7 +64,7 @@ public class ExpressionVisitorTest {
 
     // class MyClass
     classSymbol = new Symbol.TypeSymbol(0, "MyClass", p);
-    classType = ((Type.ClassType) classSymbol.type);
+    classType = (Type.ClassType) classSymbol.type;
     classType.supertype = symbols.unknownType; // TODO extend some superclass
     classType.interfaces = ImmutableList.of();
     classSymbol.members = new Scope(classSymbol);
@@ -84,7 +79,7 @@ public class ExpressionVisitorTest {
 
     // int method()
     methodSymbol = new Symbol.MethodSymbol(0, "method", classSymbol);
-    methodSymbol.type = new Type.MethodType(ImmutableList.<Type>of(), symbols.intType, ImmutableList.<Type>of(), /* TODO defining class? */ null);
+    methodSymbol.type = new Type.MethodType(ImmutableList.<Type>of(), symbols.intType, ImmutableList.<Type>of(), /* TODO defining class? */null);
     classSymbol.members.enter(methodSymbol);
 
     classSymbol.members.enter(new Symbol.VariableSymbol(0, "this", classType, classSymbol));
@@ -162,7 +157,6 @@ public class ExpressionVisitorTest {
   @Test
   public void primary_qualified_identifier() {
 
-
     // qualified_identifier
     assertThat(typeOf("var")).isSameAs(variableSymbol.type);
     assertThat(typeOf("var.length")).isSameAs(symbols.intType);
@@ -234,7 +228,7 @@ public class ExpressionVisitorTest {
   @Test
   public void selector() {
     // method call
-    assertThat(typeOf("this.method(arguments)")).isInstanceOf(Type.MethodType.class);//isSameAs(symbols.unknownType);
+    assertThat(typeOf("this.method(arguments)")).isInstanceOf(Type.MethodType.class);// isSameAs(symbols.unknownType);
     assertThat(typeOf("var[42].clone()")).isSameAs(symbols.unknownType);
 
     // field access
@@ -363,7 +357,6 @@ public class ExpressionVisitorTest {
   @Test
   public void conditional_expression() {
 
-
     // FIXME implement
     assertThat(typeOf("42 ? 42 : 42")).isSameAs(symbols.unknownType);
   }
@@ -395,9 +388,8 @@ public class ExpressionVisitorTest {
     when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
     ExpressionVisitor visitor = new ExpressionVisitor(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter));
 
-    b.setRootRule(JavaGrammar.COMPILATION_UNIT);
     String p = "class Test { void wrapperMethod() { " + input + "; } }";
-    AstNode node = new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, b.build()).parse(p);
+    AstNode node = JavaParser.createParser(Charsets.UTF_8).parse(p);
     CompilationUnitTree tree = new JavaTreeMaker().compilationUnit(node);
     tree.accept(visitor);
 

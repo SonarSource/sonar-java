@@ -21,18 +21,14 @@ package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CharacterLiteralTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
-    assertThat(b, JavaTokenType.CHARACTER_LITERAL)
+    assertThat(JavaTokenType.CHARACTER_LITERAL)
       .as("single character").matches("'a'")
       .as("escaped LF").matches("'\\n'")
       .as("escaped quote").matches("'\\''")

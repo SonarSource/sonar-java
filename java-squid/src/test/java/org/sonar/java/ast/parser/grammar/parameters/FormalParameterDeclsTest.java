@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParameterDeclsTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
     b.rule(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST).override(RuleMock.word(b, "formalParametersDeclsRest"));
 

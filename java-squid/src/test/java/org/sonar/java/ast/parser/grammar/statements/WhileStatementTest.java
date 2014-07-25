@@ -21,17 +21,14 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class WhileStatementTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void okWhile() {
-    assertThat(b, JavaGrammar.WHILE_STATEMENT)
+    assertThat(JavaGrammar.WHILE_STATEMENT)
       .matches("while (expression) { }");
   }
 

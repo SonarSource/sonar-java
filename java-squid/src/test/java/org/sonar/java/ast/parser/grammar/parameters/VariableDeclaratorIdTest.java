@@ -21,17 +21,14 @@ package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class VariableDeclaratorIdTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
-    assertThat(b, JavaGrammar.VARIABLE_DECLARATOR_ID)
+    assertThat(JavaGrammar.VARIABLE_DECLARATOR_ID)
       .matches("identifier")
       .matches("identifier []")
       .matches("identifier @Foo []")

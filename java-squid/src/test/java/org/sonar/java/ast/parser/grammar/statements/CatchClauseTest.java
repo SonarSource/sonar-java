@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CatchClauseTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.CATCH_FORMAL_PARAMETER).override(RuleMock.word(b, "catchFormalParameter"));
     b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
 

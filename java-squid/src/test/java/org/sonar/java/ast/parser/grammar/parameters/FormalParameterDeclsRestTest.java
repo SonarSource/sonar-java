@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParameterDeclsRestTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).override(RuleMock.word(b, "variableDeclaratorId"));
     b.rule(JavaGrammar.FORMAL_PARAMETER_DECLS).override(RuleMock.word(b, "formalParameterDecls"));
     b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
@@ -45,7 +45,7 @@ public class FormalParameterDeclsRestTest {
 
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.FORMAL_PARAMETERS_DECLS_REST)
+    assertThat(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST)
       .matches("@Foo ... variableDeclaratorId");
   }
 }

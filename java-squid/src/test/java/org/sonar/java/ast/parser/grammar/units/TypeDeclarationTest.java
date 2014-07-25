@@ -28,11 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeDeclarationTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
-    b.rule(JavaGrammar.MODIFIER).override(RuleMock.word(b, "modifier"));
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.CLASS_DECLARATION).override(RuleMock.word(b, "classDeclaration"));
     b.rule(JavaGrammar.ENUM_DECLARATION).override(RuleMock.word(b, "enumDeclaration"));
     b.rule(JavaGrammar.INTERFACE_DECLARATION).override(RuleMock.word(b, "interfaceDeclaration"));
@@ -43,14 +42,14 @@ public class TypeDeclarationTest {
       .matches("enumDeclaration")
       .matches("interfaceDeclaration")
       .matches("annotationTypeDeclaration")
-      .matches("modifier classDeclaration")
-      .matches("modifier modifier classDeclaration")
+      .matches("public classDeclaration")
+      .matches("public private classDeclaration")
       .matches(";");
   }
 
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.TYPE_DECLARATION)
+    assertThat(JavaGrammar.TYPE_DECLARATION)
       .matches("public static final class HelloWorld { }")
       .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>  extends java.util. @Foo HashMap implements @Foo Serializable, InterfaceTest{}");
   }

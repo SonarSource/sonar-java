@@ -21,17 +21,14 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ForStatementTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.FOR_STATEMENT)
+    assertThat(JavaGrammar.FOR_STATEMENT)
       .matches("for (int i = 0; i < 10; i++) {} ")
       .matches("for (; i < 10; i++) {} ")
       .matches("for (;; i++) {} ")

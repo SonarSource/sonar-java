@@ -29,10 +29,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CompilationUnitTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.PACKAGE_DECLARATION).override(RuleMock.word(b, "packageDeclaration"));
     b.rule(JavaGrammar.IMPORT_DECLARATION).override(RuleMock.word(b, "importDeclaration"));
     b.rule(JavaGrammar.TYPE_DECLARATION).override(RuleMock.word(b, "typeDeclaration"));
@@ -47,7 +47,7 @@ public class CompilationUnitTest {
 
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.COMPILATION_UNIT)
+    assertThat(JavaGrammar.COMPILATION_UNIT)
       .matches(lines(
         "package org.example;",
         "",

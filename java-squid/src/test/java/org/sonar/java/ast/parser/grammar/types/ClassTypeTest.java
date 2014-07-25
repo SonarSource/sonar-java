@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ClassTypeTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.TYPE_ARGUMENTS).override(RuleMock.word(b, "typeArguments"));
 
     assertThat(b, JavaGrammar.CLASS_TYPE)

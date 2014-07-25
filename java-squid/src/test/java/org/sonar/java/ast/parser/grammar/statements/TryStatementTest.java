@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TryStatementTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
     b.rule(JavaGrammar.CATCH_CLAUSE).override(RuleMock.word(b, "catchClause"));
     b.rule(JavaGrammar.FINALLY_).override(RuleMock.word(b, "finally_"));
@@ -45,10 +45,10 @@ public class TryStatementTest {
   @Test
   public void realLife() {
     // Java 7: multi-catch
-    assertThat(b, JavaGrammar.STATEMENT)
+    assertThat(JavaGrammar.STATEMENT)
       .matches("try {} catch (ClassNotFoundException | IllegalAccessException ex) {}");
     // Java 7: try-with-resources
-    assertThat(b, JavaGrammar.STATEMENT)
+    assertThat(JavaGrammar.STATEMENT)
       .matches("try (Resource resource = new Resource()) {}")
       .matches("try (Resource resource = new Resource()) {} catch (Expception e) {} finally {}");
   }

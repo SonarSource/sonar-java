@@ -21,12 +21,14 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.ast.AstSelect;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -77,12 +79,7 @@ public class UtilityClassWithPublicConstructorCheck extends SquidCheck<Lexerless
   }
 
   private static boolean hasStaticModifier(AstNode node) {
-    for (AstNode modifier : node.getChildren(JavaGrammar.MODIFIER)) {
-      if (modifier.hasDirectChildren(JavaKeyword.STATIC)) {
-        return true;
-      }
-    }
-    return false;
+    return hasModifier(node, Modifier.STATIC);
   }
 
   private static boolean hasInstanceMembers(AstNode node) {
@@ -111,9 +108,9 @@ public class UtilityClassWithPublicConstructorCheck extends SquidCheck<Lexerless
     ImmutableList.Builder<AstNode> builder = ImmutableList.builder();
 
     AstSelect query = node.select()
-        .children(JavaGrammar.CLASS_BODY_DECLARATION)
-        .children(JavaGrammar.MEMBER_DECL)
-        .children(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST, JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
+      .children(JavaGrammar.CLASS_BODY_DECLARATION)
+      .children(JavaGrammar.MEMBER_DECL)
+      .children(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST, JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
 
     for (AstNode methodOrGeneric : query) {
       if (isConstructor(methodOrGeneric)) {
@@ -133,12 +130,13 @@ public class UtilityClassWithPublicConstructorCheck extends SquidCheck<Lexerless
   }
 
   private static boolean hasPublicModifier(AstNode node) {
-    for (AstNode modifier : node.getChildren(JavaGrammar.MODIFIER)) {
-      if (modifier.hasDirectChildren(JavaKeyword.PUBLIC)) {
-        return true;
-      }
-    }
-    return false;
+    return hasModifier(node, Modifier.PUBLIC);
+  }
+
+  public static boolean hasModifier(AstNode node, Modifier modifier) {
+    ModifiersTree modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.DSL_MODIFIERS);
+
+    return modifiers != null && modifiers.modifiers().contains(modifier);
   }
 
 }

@@ -21,17 +21,14 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class IfStatementTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
-    assertThat(b, JavaGrammar.IF_STATEMENT)
+    assertThat(JavaGrammar.IF_STATEMENT)
       .matches("if (expression) { }")
       .matches("if (expression) { } else { }");
   }

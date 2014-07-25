@@ -21,17 +21,14 @@ package org.sonar.java.ast.parser.grammar.units;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class PackageDeclarationTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.PACKAGE_DECLARATION)
+    assertThat(JavaGrammar.PACKAGE_DECLARATION)
       .matches("package org.example;")
       .matches("@javax.annotation.ParametersAreNonnullByDefault @Beta package org.example;");
   }

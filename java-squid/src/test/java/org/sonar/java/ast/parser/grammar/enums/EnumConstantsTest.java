@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class EnumConstantsTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.ENUM_CONSTANT).override(RuleMock.word(b, "enumConstant"));
 
     assertThat(b, JavaGrammar.ENUM_CONSTANTS)

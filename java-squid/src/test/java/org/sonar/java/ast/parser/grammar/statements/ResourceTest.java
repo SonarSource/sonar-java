@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ResourceTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.VARIABLE_MODIFIERS).override(RuleMock.word(b, "variableModifiers"));
     b.rule(JavaGrammar.CLASS_TYPE).override(RuleMock.word(b, "classType"));
     b.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).override(RuleMock.word(b, "variableDeclaratorId"));
@@ -44,7 +44,7 @@ public class ResourceTest {
 
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.RESOURCE)
+    assertThat(JavaGrammar.RESOURCE)
       .matches("Closeable resource = open()")
       .notMatches("byte resource = open()");
   }

@@ -29,9 +29,7 @@ import org.sonar.colorizer.KeywordsTokenizer;
 import org.sonar.colorizer.Tokenizer;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
-import org.sonar.sslr.parser.ParserAdapter;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.sslr.toolkit.AbstractConfigurationModel;
 import org.sonar.sslr.toolkit.ConfigurationProperty;
 import org.sonar.sslr.toolkit.Validators;
@@ -47,16 +45,17 @@ public class JavaConfigurationModel extends AbstractConfigurationModel {
 
   @VisibleForTesting
   ConfigurationProperty charsetProperty = new ConfigurationProperty("Charset", CHARSET_PROPERTY_KEY,
-      getPropertyOrDefaultValue(CHARSET_PROPERTY_KEY, "UTF-8"),
-      Validators.charsetValidator());
+    getPropertyOrDefaultValue(CHARSET_PROPERTY_KEY, "UTF-8"),
+    Validators.charsetValidator());
 
+  @Override
   public List<ConfigurationProperty> getProperties() {
     return ImmutableList.of(charsetProperty);
   }
 
   @Override
   public Parser<? extends Grammar> doGetParser() {
-    return new ParserAdapter<LexerlessGrammar>(getCharset(), JavaGrammar.createGrammar());
+    return JavaParser.createParser(getCharset());
   }
 
   @Override

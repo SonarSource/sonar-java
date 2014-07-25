@@ -21,26 +21,23 @@ package org.sonar.java.ast.parser.grammar.expressions;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ExpressionTest {
-
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   /**
    * Our grammar accepts such constructions, whereas should not.
    */
   @Test
   public void error() {
-    assertThat(b, JavaGrammar.EXPRESSION)
+    assertThat(JavaGrammar.EXPRESSION)
       .matches("a = b + 1 = c + 2");
   }
 
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.EXPRESSION)
+    assertThat(JavaGrammar.EXPRESSION)
       .matches("b >> 4")
       .matches("b >>= 4")
       .matches("b >>> 4")

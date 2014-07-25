@@ -21,20 +21,17 @@ package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class KeywordTest {
-
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
   /**
    * JLS7 3.9
    */
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.KEYWORD)
+    assertThat(JavaGrammar.KEYWORD)
       .matches("abstract")
       .matches("assert")
       .matches("boolean")

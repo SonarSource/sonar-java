@@ -25,10 +25,10 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -57,7 +57,6 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
     .put("StringBuffer", "\"StringBuilder\"")
     .put("Stack", "\"Deque\"")
     .build();
-
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -131,9 +130,9 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
   }
 
   private boolean isOverriding(MethodTree tree) {
-    AstNode memberDec = ((JavaTree) tree).getAstNode().getParent().getParent();
-    for (AstNode modifier : memberDec.getChildren(JavaGrammar.MODIFIER)) {
-      if (AstNodeTokensMatcher.matches(modifier, "@Override")) {
+    for (AnnotationTree annotation : tree.modifiers().annotations()) {
+      AstNode node = ((JavaTree) annotation).getAstNode();
+      if (AstNodeTokensMatcher.matches(node, "@Override")) {
         return true;
       }
     }

@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class EnumBodyTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.ENUM_CONSTANTS).override(RuleMock.word(b, "enumConstants"));
     b.rule(JavaGrammar.ENUM_BODY_DECLARATIONS).override(RuleMock.word(b, "enumBodyDeclarations"));
 

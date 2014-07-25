@@ -48,6 +48,11 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   protected final AstNode astNode;
 
+  public JavaTree(AstNodeType type, @Nullable AstNode astNode) {
+    super(type, type.toString(), null);
+    this.astNode = astNode;
+  }
+
   public JavaTree(@Nullable AstNode astNode) {
     super(
       astNode == null ? NULL_NODE : astNode.getType(),

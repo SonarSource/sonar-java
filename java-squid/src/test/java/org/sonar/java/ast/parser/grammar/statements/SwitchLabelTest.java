@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SwitchLabelTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.CONSTANT_EXPRESSION).override(RuleMock.word(b, "constantExpression"));
 
     assertThat(b, JavaGrammar.SWITCH_LABEL)

@@ -21,17 +21,14 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeArgumentsTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
-    assertThat(b, JavaGrammar.TYPE_ARGUMENTS)
+    assertThat(JavaGrammar.TYPE_ARGUMENTS)
       .matches("< typeArgument >")
       .matches("< typeArgument , typeArgument >")
       .matches("< @Foo typeArgument , @Foo typeArgument >");

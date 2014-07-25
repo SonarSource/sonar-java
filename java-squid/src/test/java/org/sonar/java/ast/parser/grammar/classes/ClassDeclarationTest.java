@@ -28,10 +28,10 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ClassDeclarationTest {
 
-  private final LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
   @Test
   public void ok() {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
     b.rule(JavaGrammar.TYPE_PARAMETERS).override(RuleMock.word(b, "typeParameters"));
     b.rule(JavaGrammar.CLASS_TYPE).override(RuleMock.word(b, "classType"));
     b.rule(JavaGrammar.CLASS_TYPE_LIST).override(RuleMock.word(b, "classTypeList"));
@@ -46,7 +46,7 @@ public class ClassDeclarationTest {
 
   @Test
   public void realLife() {
-    assertThat(b, JavaGrammar.CLASS_DECLARATION)
+    assertThat(JavaGrammar.CLASS_DECLARATION)
       .matches("class HelloWorld { }")
       .matches("class HelloWorld<@Foo T> { }")
       .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>{}")

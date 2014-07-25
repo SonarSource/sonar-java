@@ -21,16 +21,16 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Trivia;
-import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.squidbridge.measures.Metric;
 import org.sonar.sslr.parser.LexerlessGrammar;
-
-import java.util.List;
 
 public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
 
@@ -116,8 +116,9 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
 
   private static boolean hasAnnotation(AstNode astNode, String expected) {
     AstNode declaration = getDeclaration(astNode);
-    for (AstNode modifier : getModifiers(declaration)) {
-      AstNode annotation = modifier.getFirstChild(JavaGrammar.ANNOTATION);
+    for (AnnotationTree annotationTree : getModifiers(declaration).annotations()) {
+      // FIXME
+      AstNode annotation = ((JavaTree) annotationTree).getAstNode();
       if (annotation != null) {
         StringBuilder value = new StringBuilder();
         for (AstNode identifier : annotation.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER).getChildren()) {
@@ -142,8 +143,8 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
   private static boolean isStaticFinalVariable(AstNode astNode) {
     AstNode declaration = getDeclaration(astNode);
     return astNode.is(JavaGrammar.FIELD_DECLARATION, JavaGrammar.CONSTANT_DECLARATORS_REST)
-      && hasModifier(declaration, JavaKeyword.STATIC)
-      && hasModifier(declaration, JavaKeyword.FINAL);
+      && hasModifier(declaration, Modifier.STATIC)
+      && hasModifier(declaration, Modifier.FINAL);
   }
 
   public static boolean isDocumentedApi(AstNode astNode) {
@@ -167,20 +168,15 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
     AstNode declaration = getDeclaration(astNode);
     return declaration.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)
       || declaration.is(JavaGrammar.INTERFACE_BODY_DECLARATION)
-      || hasModifier(declaration, JavaKeyword.PUBLIC);
+      || hasModifier(declaration, Modifier.PUBLIC);
   }
 
-  private static boolean hasModifier(AstNode declaration, AstNodeType astNodeType) {
-    for (AstNode modifier : getModifiers(declaration)) {
-      if (modifier.getFirstChild().is(astNodeType)) {
-        return true;
-      }
-    }
-    return false;
+  private static boolean hasModifier(AstNode declaration, Modifier modifier) {
+    return getModifiers(declaration).modifiers().contains(modifier);
   }
 
-  private static List<AstNode> getModifiers(AstNode declaration) {
-    return declaration.getChildren(JavaGrammar.MODIFIER);
+  private static ModifiersTree getModifiers(AstNode declaration) {
+    return (ModifiersTree) declaration.getFirstChild(JavaGrammar.DSL_MODIFIERS);
   }
 
   public static AstNode getDeclaration(AstNode astNode) {
