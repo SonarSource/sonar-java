@@ -55,7 +55,7 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
 
   @Override
   public SyntaxToken instanceofKeyword() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.INSTANCEOF).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.INSTANCEOF).getToken());
   }
 
   @Override
@@ -73,6 +73,7 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
     return Iterators.forArray(
       expression,
       type
-    );
+      );
   }
+
 }

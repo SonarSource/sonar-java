@@ -64,7 +64,6 @@ import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForEachStatementImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
-import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
@@ -81,6 +80,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -763,8 +763,7 @@ public class JavaTreeMaker {
     return new ModifiersTreeImpl(astNode, modifiers.build(), annotations.build());
   }
 
-  @VisibleForTesting
-  StatementTree statement(AstNode astNode) {
+  public StatementTree statement(AstNode astNode) {
     checkType(astNode, JavaGrammar.STATEMENT);
     final AstNode statementNode = astNode.getFirstChild();
     final StatementTree result;
@@ -793,13 +792,7 @@ public class JavaTreeMaker {
         break;
       case IF_STATEMENT:
         // 14.9. The if Statement
-        List<AstNode> statements = statementNode.getChildren(JavaGrammar.STATEMENT);
-        result = new IfStatementTreeImpl(
-          statementNode,
-          expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
-          statement(statements.get(0)),
-          statements.size() > 1 ? statement(statements.get(1)) : null
-          );
+        result = (IfStatementTree) statementNode;
         break;
       case ASSERT_STATEMENT:
         // 14.10. The assert Statement
@@ -1027,8 +1020,7 @@ public class JavaTreeMaker {
     return result.build();
   }
 
-  @VisibleForTesting
-  ExpressionTree expression(AstNode astNode) {
+  public ExpressionTree expression(AstNode astNode) {
     if (astNode.is(JavaGrammar.CONSTANT_EXPRESSION, JavaGrammar.STATEMENT_EXPRESSION)) {
       astNode = astNode.getFirstChild(JavaGrammar.EXPRESSION).getFirstChild();
     } else if (astNode.is(JavaGrammar.EXPRESSION)) {

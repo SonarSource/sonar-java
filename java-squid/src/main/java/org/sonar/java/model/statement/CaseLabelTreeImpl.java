@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
@@ -51,7 +52,7 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
 
   @Override
   public SyntaxToken caseOrDefaultKeyword() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.SWITCH_LABEL).getFirstChild(JavaKeyword.CASE, JavaKeyword.DEFAULT).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.SWITCH_LABEL).getFirstChild(JavaKeyword.CASE, JavaKeyword.DEFAULT).getToken());
   }
 
   @Nullable
@@ -62,7 +63,7 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
 
   @Override
   public SyntaxToken colonToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.SWITCH_LABEL).getFirstChild(JavaPunctuator.COLON).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.SWITCH_LABEL).getFirstChild(JavaPunctuator.COLON).getToken());
   }
 
   @Override
@@ -73,7 +74,7 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>singletonIterator(
-      expression
-    );
+      expression);
   }
+
 }

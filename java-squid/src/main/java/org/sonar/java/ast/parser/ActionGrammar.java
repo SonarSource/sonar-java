@@ -26,7 +26,9 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
@@ -47,6 +49,16 @@ public class ActionGrammar {
   public ModifiersTree DSL_MODIFIERS() {
     return b.<ModifiersTree>nonterminal(JavaGrammar.DSL_MODIFIERS)
       .is(f.modifiers(b.zeroOrMore(b.invokeRule(JavaGrammar.MODIFIER))));
+  }
+
+  // 14.9. The if Statement
+  public IfStatementTree IF_STATEMENT() {
+    return b.<IfStatementTree>nonterminal(JavaGrammar.IF_STATEMENT)
+      .is(
+        f.completeIf(
+          b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaGrammar.PAR_EXPRESSION), b.invokeRule(JavaGrammar.STATEMENT),
+          b.optional(
+            f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), b.invokeRule(JavaGrammar.STATEMENT)))));
   }
 
   public static class TreeFactory {
@@ -74,6 +86,18 @@ public class ActionGrammar {
       }
 
       return new ModifiersTreeImpl(modifierNodes.get(), modifiers.build(), annotations.build());
+    }
+
+    public IfStatementTree completeIf(AstNode ifToken, AstNode condition, AstNode statement, Optional<IfStatementTreeImpl> elseClause) {
+      if (elseClause.isPresent()) {
+        return elseClause.get().complete(treeMaker.expression(condition), treeMaker.statement(statement), ifToken, condition, statement);
+      } else {
+        return new IfStatementTreeImpl(treeMaker.expression(condition), treeMaker.statement(statement), ifToken, condition, statement);
+      }
+    }
+
+    public IfStatementTreeImpl newIfWithElse(AstNode elseToken, AstNode elseStatement) {
+      return new IfStatementTreeImpl(treeMaker.statement(elseStatement), elseToken, elseStatement);
     }
 
   }

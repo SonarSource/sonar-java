@@ -54,12 +54,12 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken switchKeyword() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.SWITCH).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.SWITCH).getToken());
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
   }
 
   @Override
@@ -69,12 +69,12 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override
   public SyntaxToken openBraceToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LWING).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LWING).getToken());
   }
 
   @Override
@@ -84,7 +84,7 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken closeBraceToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RWING).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RWING).getToken());
   }
 
   @Override
@@ -96,7 +96,7 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
       Iterators.singletonIterator(expression),
-      cases.iterator()
-    );
+      cases.iterator());
   }
+
 }

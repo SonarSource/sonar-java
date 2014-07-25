@@ -52,7 +52,7 @@ public class InternalPrefixUnaryExpression extends AbstractTypedTree implements 
 
   @Override
   public SyntaxToken operatorToken() {
-    return new InternalSyntaxToken(astNode.getToken());
+    return new InternalSyntaxToken(getAstNode().getToken());
   }
 
   @Override
@@ -69,7 +69,7 @@ public class InternalPrefixUnaryExpression extends AbstractTypedTree implements 
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>singletonIterator(
       expression
-    );
+      );
   }
 
 }

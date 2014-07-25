@@ -66,7 +66,6 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
       labels.iterator(),
-      body.iterator()
-    );
+      body.iterator());
   }
 }

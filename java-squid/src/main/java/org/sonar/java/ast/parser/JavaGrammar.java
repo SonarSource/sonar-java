@@ -41,7 +41,6 @@ import static org.sonar.java.ast.api.JavaKeyword.CONTINUE;
 import static org.sonar.java.ast.api.JavaKeyword.DEFAULT;
 import static org.sonar.java.ast.api.JavaKeyword.DO;
 import static org.sonar.java.ast.api.JavaKeyword.DOUBLE;
-import static org.sonar.java.ast.api.JavaKeyword.ELSE;
 import static org.sonar.java.ast.api.JavaKeyword.ENUM;
 import static org.sonar.java.ast.api.JavaKeyword.EXTENDS;
 import static org.sonar.java.ast.api.JavaKeyword.FALSE;
@@ -49,7 +48,6 @@ import static org.sonar.java.ast.api.JavaKeyword.FINAL;
 import static org.sonar.java.ast.api.JavaKeyword.FINALLY;
 import static org.sonar.java.ast.api.JavaKeyword.FLOAT;
 import static org.sonar.java.ast.api.JavaKeyword.FOR;
-import static org.sonar.java.ast.api.JavaKeyword.IF;
 import static org.sonar.java.ast.api.JavaKeyword.IMPLEMENTS;
 import static org.sonar.java.ast.api.JavaKeyword.IMPORT;
 import static org.sonar.java.ast.api.JavaKeyword.INSTANCEOF;
@@ -738,8 +736,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(LABELED_STATEMENT).is(IDENTIFIER, COLON, STATEMENT);
     // 14.8. Expression Statements
     b.rule(EXPRESSION_STATEMENT).is(STATEMENT_EXPRESSION, SEMI);
-    // 14.9. The if Statement
-    b.rule(IF_STATEMENT).is(IF, PAR_EXPRESSION, STATEMENT, b.optional(ELSE, STATEMENT));
     // 14.10. The assert Statement
     b.rule(ASSERT_STATEMENT).is(ASSERT, EXPRESSION, b.optional(COLON, EXPRESSION), SEMI);
 

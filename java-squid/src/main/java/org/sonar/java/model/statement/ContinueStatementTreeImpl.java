@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class ContinueStatementTreeImpl extends JavaTree implements ContinueStatementTree {
@@ -50,7 +51,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
 
   @Override
   public SyntaxToken continueKeyword() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.CONTINUE).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.CONTINUE).getToken());
   }
 
   @Nullable
@@ -61,7 +62,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
 
   @Override
   public SyntaxToken semicolonToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.SEMI).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI).getToken());
   }
 
   @Override
@@ -72,7 +73,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>singletonIterator(
-      label
-    );
+      label);
   }
+
 }

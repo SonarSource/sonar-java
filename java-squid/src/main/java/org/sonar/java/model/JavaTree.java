@@ -44,13 +44,19 @@ import java.util.List;
 public abstract class JavaTree extends AstNode implements Tree {
 
   private static final AstNodeType NULL_NODE = new AstNodeType() {
+
+    @Override
+    public String toString() {
+      return "[null]";
+    };
+
   };
 
-  protected final AstNode astNode;
+  private final AstNode astNode;
 
-  public JavaTree(AstNodeType type, @Nullable AstNode astNode) {
+  public JavaTree(AstNodeType type) {
     super(type, type.toString(), null);
-    this.astNode = astNode;
+    this.astNode = this;
   }
 
   public JavaTree(@Nullable AstNode astNode) {
@@ -297,7 +303,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public SyntaxToken keyword() {
-      return new InternalSyntaxToken(astNode.getLastToken());
+      return new InternalSyntaxToken(getAstNode().getLastToken());
     }
 
     @Override

@@ -21,8 +21,6 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -30,42 +28,23 @@ public class StatementTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
-    b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
-    b.rule(JavaGrammar.ASSERT_STATEMENT).override(RuleMock.word(b, "emptyStatement"));
-    b.rule(JavaGrammar.IF_STATEMENT).override(RuleMock.word(b, "labeledStatement"));
-    b.rule(JavaGrammar.FOR_STATEMENT).override(RuleMock.word(b, "expressionStatement"));
-    b.rule(JavaGrammar.WHILE_STATEMENT).override(RuleMock.word(b, "ifStatement"));
-    b.rule(JavaGrammar.DO_STATEMENT).override(RuleMock.word(b, "assertStatement"));
-    b.rule(JavaGrammar.TRY_STATEMENT).override(RuleMock.word(b, "switchStatement"));
-    b.rule(JavaGrammar.SWITCH_STATEMENT).override(RuleMock.word(b, "whileStatement"));
-    b.rule(JavaGrammar.SYNCHRONIZED_STATEMENT).override(RuleMock.word(b, "doStatement"));
-    b.rule(JavaGrammar.RETURN_STATEMENT).override(RuleMock.word(b, "forStatement"));
-    b.rule(JavaGrammar.THROW_STATEMENT).override(RuleMock.word(b, "breakStatement"));
-    b.rule(JavaGrammar.BREAK_STATEMENT).override(RuleMock.word(b, "continueStatement"));
-    b.rule(JavaGrammar.CONTINUE_STATEMENT).override(RuleMock.word(b, "returnStatement"));
-    b.rule(JavaGrammar.LABELED_STATEMENT).override(RuleMock.word(b, "throwStatement"));
-    b.rule(JavaGrammar.EXPRESSION_STATEMENT).override(RuleMock.word(b, "synchronizedStatement"));
-    b.rule(JavaGrammar.EMPTY_STATEMENT).override(RuleMock.word(b, "tryStatement"));
-
-    assertThat(b, JavaGrammar.STATEMENT)
-      .matches("block")
-      .matches("emptyStatement")
-      .matches("labeledStatement")
-      .matches("expressionStatement")
-      .matches("ifStatement")
-      .matches("assertStatement")
-      .matches("switchStatement")
-      .matches("whileStatement")
-      .matches("doStatement")
-      .matches("forStatement")
-      .matches("breakStatement")
-      .matches("continueStatement")
-      .matches("returnStatement")
-      .matches("throwStatement")
-      .matches("synchronizedStatement")
-      .matches("tryStatement");
+    assertThat(JavaGrammar.STATEMENT)
+      .matches("{}")
+      .matches(";")
+      .matches("foo: ;")
+      .matches("foo = 0;")
+      .matches("if (0);")
+      .matches("assert false;")
+      .matches("switch (foo) {}")
+      .matches("while (false);")
+      .matches("do {} while (false);")
+      .matches("for (int i = 0; i < 42; i++);")
+      .matches("break;")
+      .matches("continue;")
+      .matches("return;")
+      .matches("throw e;")
+      .matches("synchronized (foo) {}")
+      .matches("try {} finally {}");
   }
 
 }

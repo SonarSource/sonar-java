@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class AssertStatementTreeImpl extends JavaTree implements AssertStatementTree {
@@ -53,7 +54,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public SyntaxToken assertKeyword() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.ASSERT).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.ASSERT).getToken());
   }
 
   @Override
@@ -64,7 +65,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   @Nullable
   @Override
   public SyntaxToken colonToken() {
-    return detail == null ? null : new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.COLON).getToken());
+    return detail == null ? null : new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.COLON).getToken());
   }
 
   @Nullable
@@ -75,7 +76,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public SyntaxToken semicolonToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.SEMI).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI).getToken());
   }
 
   @Override
@@ -87,7 +88,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>forArray(
       condition,
-      detail
-    );
+      detail);
   }
+
 }
