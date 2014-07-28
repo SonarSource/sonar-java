@@ -621,8 +621,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void blocks() {
-    AstNode astNode = p.parse("class T { void m() { ; ; } }").getFirstDescendant(JavaGrammar.BLOCK);
-    BlockTree tree = maker.block(astNode);
+    BlockTree tree = (BlockTree) p.parse("class T { void m() { ; ; } }").getFirstDescendant(JavaGrammar.BLOCK);
     assertThat(tree.is(Tree.Kind.BLOCK)).isTrue();
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.body()).hasSize(2);
@@ -634,14 +633,14 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void local_class_declaration() {
-    AstNode astNode = p.parse("class T { void m() { abstract class Local { } } }").getFirstDescendant(JavaGrammar.BLOCK);
-    ClassTree tree = (ClassTree) maker.block(astNode).body().get(0);
+    BlockTree block = (BlockTree) p.parse("class T { void m() { abstract class Local { } } }").getFirstDescendant(JavaGrammar.BLOCK);
+    ClassTree tree = (ClassTree) block.body().get(0);
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     assertThat(tree.modifiers().modifiers()).containsOnly(Modifier.ABSTRACT);
     assertThat(tree).isNotNull();
 
-    astNode = p.parse("class T { void m() { static enum Local { ; } } }").getFirstDescendant(JavaGrammar.BLOCK);
-    tree = (ClassTree) maker.block(astNode).body().get(0);
+    block = (BlockTree) p.parse("class T { void m() { static enum Local { ; } } }").getFirstDescendant(JavaGrammar.BLOCK);
+    tree = (ClassTree) block.body().get(0);
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).containsOnly(Modifier.STATIC);
     assertThat(tree).isNotNull();
@@ -652,8 +651,8 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void local_variable_declaration() {
-    AstNode astNode = p.parse("class T { void m() { int a = 42, b[]; final @Nullable int c = 42; } }").getFirstDescendant(JavaGrammar.BLOCK);
-    List<StatementTree> declarations = maker.block(astNode).body();
+    BlockTree block = (BlockTree) p.parse("class T { void m() { int a = 42, b[]; final @Nullable int c = 42; } }").getFirstDescendant(JavaGrammar.BLOCK);
+    List<StatementTree> declarations = block.body();
     assertThat(declarations).hasSize(3);
 
     VariableTree tree = (VariableTree) declarations.get(0);

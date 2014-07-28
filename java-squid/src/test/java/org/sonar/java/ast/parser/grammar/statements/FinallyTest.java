@@ -21,8 +21,6 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -30,12 +28,8 @@ public class FinallyTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
-    b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
-
-    assertThat(b, JavaGrammar.FINALLY_)
-      .matches("finally block");
+    assertThat(JavaGrammar.FINALLY_)
+      .matches("finally {}");
   }
 
 }

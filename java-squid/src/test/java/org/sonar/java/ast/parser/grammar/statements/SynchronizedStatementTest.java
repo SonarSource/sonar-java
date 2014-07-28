@@ -33,10 +33,9 @@ public class SynchronizedStatementTest {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
     b.rule(JavaGrammar.PAR_EXPRESSION).override(RuleMock.word(b, "parExpression"));
-    b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
 
     assertThat(b, JavaGrammar.SYNCHRONIZED_STATEMENT)
-      .matches("synchronized parExpression block");
+      .matches("synchronized parExpression {}");
   }
 
 }

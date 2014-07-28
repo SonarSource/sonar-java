@@ -696,7 +696,6 @@ public enum JavaGrammar implements GrammarRuleKey {
    */
   private static void blocksAndStatements(LexerlessGrammarBuilder b) {
     // 14.2. Blocks
-    b.rule(BLOCK).is(LWING, BLOCK_STATEMENTS, RWING);
     b.rule(BLOCK_STATEMENTS).is(b.zeroOrMore(BLOCK_STATEMENT));
     b.rule(BLOCK_STATEMENT).is(b.firstOf(
       LOCAL_VARIABLE_DECLARATION_STATEMENT,

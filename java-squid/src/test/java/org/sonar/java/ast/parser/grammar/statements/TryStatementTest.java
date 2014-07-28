@@ -32,14 +32,13 @@ public class TryStatementTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
     b.rule(JavaGrammar.CATCH_CLAUSE).override(RuleMock.word(b, "catchClause"));
     b.rule(JavaGrammar.FINALLY_).override(RuleMock.word(b, "finally_"));
 
     assertThat(b, JavaGrammar.STATEMENT)
-      .matches("try block catchClause catchClause finally_")
-      .matches("try block catchClause finally_")
-      .matches("try block finally_");
+      .matches("try {} catchClause catchClause finally_")
+      .matches("try {} catchClause finally_")
+      .matches("try {} finally_");
   }
 
   @Test

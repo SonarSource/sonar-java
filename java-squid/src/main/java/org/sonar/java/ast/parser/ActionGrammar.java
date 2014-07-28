@@ -26,14 +26,20 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.List;
+
+import static org.sonar.java.ast.api.JavaPunctuator.LWING;
+import static org.sonar.java.ast.api.JavaPunctuator.RWING;
 
 public class ActionGrammar {
 
@@ -49,6 +55,11 @@ public class ActionGrammar {
   public ModifiersTree DSL_MODIFIERS() {
     return b.<ModifiersTree>nonterminal(JavaGrammar.DSL_MODIFIERS)
       .is(f.modifiers(b.zeroOrMore(b.invokeRule(JavaGrammar.MODIFIER))));
+  }
+
+  public BlockTree BLOCK() {
+    return b.<BlockTree>nonterminal(JavaGrammar.BLOCK)
+      .is(f.block(b.invokeRule(LWING), b.invokeRule(JavaGrammar.BLOCK_STATEMENTS), b.invokeRule(RWING)));
   }
 
   // 14.9. The if Statement
@@ -86,6 +97,10 @@ public class ActionGrammar {
       }
 
       return new ModifiersTreeImpl(modifierNodes.get(), modifiers.build(), annotations.build());
+    }
+
+    public BlockTree block(AstNode lwing, AstNode statements, AstNode rwing) {
+      return new BlockTreeImpl(Tree.Kind.BLOCK, treeMaker.blockStatements(statements), lwing, statements, rwing);
     }
 
     public IfStatementTree completeIf(AstNode ifToken, AstNode condition, AstNode statement, Optional<IfStatementTreeImpl> elseClause) {

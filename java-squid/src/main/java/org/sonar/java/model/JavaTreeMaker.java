@@ -475,7 +475,7 @@ public class JavaTreeMaker {
     }
     BlockTree body = null;
     if (astNode.hasDirectChildren(JavaGrammar.METHOD_BODY)) {
-      body = block(astNode.getFirstChild(JavaGrammar.METHOD_BODY).getFirstChild(JavaGrammar.BLOCK));
+      body = (BlockTree) astNode.getFirstChild(JavaGrammar.METHOD_BODY).getFirstChild(JavaGrammar.BLOCK);
     }
     AstNode throwsClauseNode = astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER_LIST);
     return new MethodTreeImpl(
@@ -708,13 +708,7 @@ public class JavaTreeMaker {
    * 14. Blocks and Statements
    */
 
-  @VisibleForTesting
-  BlockTree block(AstNode astNode) {
-    checkType(astNode, JavaGrammar.BLOCK);
-    return new BlockTreeImpl(astNode, Tree.Kind.BLOCK, blockStatements(astNode.getFirstChild(JavaGrammar.BLOCK_STATEMENTS)));
-  }
-
-  private List<StatementTree> blockStatements(AstNode astNode) {
+  public List<StatementTree> blockStatements(AstNode astNode) {
     checkType(astNode, JavaGrammar.BLOCK_STATEMENTS);
     ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
     for (AstNode blockStatementNode : astNode.getChildren(JavaGrammar.BLOCK_STATEMENT)) {
@@ -769,7 +763,7 @@ public class JavaTreeMaker {
     final StatementTree result;
     switch ((JavaGrammar) statementNode.getType()) {
       case BLOCK:
-        result = block(statementNode);
+        result = (BlockTree) statementNode;
         break;
       case EMPTY_STATEMENT:
         // 14.6. The Empty Statement
@@ -858,7 +852,7 @@ public class JavaTreeMaker {
         result = new SynchronizedStatementTreeImpl(
           statementNode,
           expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
-          block(statementNode.getFirstChild(JavaGrammar.BLOCK))
+          (BlockTree) statementNode.getFirstChild(JavaGrammar.BLOCK)
           );
         break;
       case TRY_STATEMENT:
@@ -974,18 +968,18 @@ public class JavaTreeMaker {
           identifier(catchFormalParameterNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID).getFirstChild(JavaTokenType.IDENTIFIER)),
           /* initializer: */null
         ),
-        block(catchNode.getFirstChild(JavaGrammar.BLOCK))
+        (BlockTree) catchNode.getFirstChild(JavaGrammar.BLOCK)
         ));
     }
     BlockTree finallyBlock = null;
     if (astNode.hasDirectChildren(JavaGrammar.FINALLY_)) {
-      finallyBlock = block(astNode.getFirstChild(JavaGrammar.FINALLY_).getFirstChild(JavaGrammar.BLOCK));
+      finallyBlock = (BlockTree) astNode.getFirstChild(JavaGrammar.FINALLY_).getFirstChild(JavaGrammar.BLOCK);
     }
     AstNode resourceSpecificationNode = astNode.getFirstChild(JavaGrammar.RESOURCE_SPECIFICATION);
     return new TryStatementTreeImpl(
       astNode,
       resourceSpecificationNode == null ? ImmutableList.<VariableTree>of() : resourceSpecification(resourceSpecificationNode),
-      block(astNode.getFirstChild(JavaGrammar.BLOCK)),
+      (BlockTree) astNode.getFirstChild(JavaGrammar.BLOCK),
       catches.build(),
       finallyBlock);
   }
@@ -1059,7 +1053,7 @@ public class JavaTreeMaker {
     AstNode body = astNode.getFirstChild(JavaGrammar.LAMBDA_BODY);
     Tree bodyTree;
     if (body.hasDirectChildren(JavaGrammar.BLOCK)) {
-      bodyTree = block(body.getFirstChild(JavaGrammar.BLOCK));
+      bodyTree = (BlockTree) body.getFirstChild(JavaGrammar.BLOCK);
     } else {
       bodyTree = expression(body.getFirstChild());
     }

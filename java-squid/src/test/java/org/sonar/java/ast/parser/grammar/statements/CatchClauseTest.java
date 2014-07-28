@@ -33,10 +33,9 @@ public class CatchClauseTest {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
     b.rule(JavaGrammar.CATCH_FORMAL_PARAMETER).override(RuleMock.word(b, "catchFormalParameter"));
-    b.rule(JavaGrammar.BLOCK).override(RuleMock.word(b, "block"));
 
     assertThat(b, JavaGrammar.CATCH_CLAUSE)
-      .matches("catch ( catchFormalParameter ) block");
+      .matches("catch ( catchFormalParameter ) {}");
   }
 
 }
