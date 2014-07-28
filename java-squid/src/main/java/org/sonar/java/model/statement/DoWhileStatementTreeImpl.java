@@ -40,10 +40,14 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
   private final StatementTree statement;
   private final ExpressionTree condition;
 
-  public DoWhileStatementTreeImpl(AstNode astNode, StatementTree statement, ExpressionTree condition) {
-    super(astNode);
+  public DoWhileStatementTreeImpl(StatementTree statement, ExpressionTree condition, AstNode... children) {
+    super(JavaGrammar.DO_STATEMENT);
     this.statement = Preconditions.checkNotNull(statement);
     this.condition = Preconditions.checkNotNull(condition);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override

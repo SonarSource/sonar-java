@@ -31,6 +31,7 @@ import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
 import org.sonar.java.model.statement.ContinueStatementTreeImpl;
+import org.sonar.java.model.statement.DoWhileStatementTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
@@ -73,6 +74,13 @@ public class ActionGrammar {
           b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaGrammar.PAR_EXPRESSION), b.invokeRule(JavaGrammar.STATEMENT),
           b.optional(
             f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), b.invokeRule(JavaGrammar.STATEMENT)))));
+  }
+
+  public DoWhileStatementTreeImpl DO_WHILE_STATEMENT() {
+    return b.<DoWhileStatementTreeImpl>nonterminal(JavaGrammar.DO_STATEMENT)
+      .is(
+        f.doWhileStatement(b.invokeRule(JavaKeyword.DO), b.invokeRule(JavaGrammar.STATEMENT), b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaGrammar.PAR_EXPRESSION),
+          b.invokeRule(JavaPunctuator.SEMI)));
   }
 
   public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
@@ -150,6 +158,11 @@ public class ActionGrammar {
 
     public IfStatementTreeImpl newIfWithElse(AstNode elseToken, AstNode elseStatement) {
       return new IfStatementTreeImpl(treeMaker.statement(elseStatement), elseToken, elseStatement);
+    }
+
+    public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, AstNode statement, AstNode whileToken, AstNode expression, AstNode semicolonToken) {
+      return new DoWhileStatementTreeImpl(treeMaker.statement(statement), treeMaker.expression(expression),
+        doToken, statement, whileToken, expression, semicolonToken);
     }
 
     public SynchronizedStatementTreeImpl synchronizedStatement(AstNode synchronizedToken, AstNode expression, BlockTreeImpl block) {

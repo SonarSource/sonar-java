@@ -37,7 +37,6 @@ import static org.sonar.java.ast.api.JavaKeyword.CATCH;
 import static org.sonar.java.ast.api.JavaKeyword.CHAR;
 import static org.sonar.java.ast.api.JavaKeyword.CLASS;
 import static org.sonar.java.ast.api.JavaKeyword.DEFAULT;
-import static org.sonar.java.ast.api.JavaKeyword.DO;
 import static org.sonar.java.ast.api.JavaKeyword.DOUBLE;
 import static org.sonar.java.ast.api.JavaKeyword.ENUM;
 import static org.sonar.java.ast.api.JavaKeyword.EXTENDS;
@@ -742,8 +741,6 @@ public enum JavaGrammar implements GrammarRuleKey {
 
     // 14.12. The while Statement
     b.rule(WHILE_STATEMENT).is(WHILE, PAR_EXPRESSION, STATEMENT);
-    // 14.13. The do Statement
-    b.rule(DO_STATEMENT).is(DO, STATEMENT, WHILE, PAR_EXPRESSION, SEMI);
 
     // 14.14. The for Statement
     b.rule(FOR_STATEMENT).is(b.firstOf(
