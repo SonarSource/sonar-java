@@ -53,13 +53,10 @@ import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
-import org.sonar.java.model.statement.CaseGroupTreeImpl;
-import org.sonar.java.model.statement.CaseLabelTreeImpl;
 import org.sonar.java.model.statement.CatchTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForEachStatementImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
-import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
@@ -67,8 +64,6 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
-import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -713,29 +708,33 @@ public class JavaTreeMaker {
     checkType(astNode, JavaGrammar.BLOCK_STATEMENTS);
     ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
     for (AstNode blockStatementNode : astNode.getChildren(JavaGrammar.BLOCK_STATEMENT)) {
-      AstNode statementNode = blockStatementNode.getFirstChild(
-        JavaGrammar.STATEMENT,
-        JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
-        JavaGrammar.CLASS_DECLARATION,
-        JavaGrammar.ENUM_DECLARATION
-        );
-      if (statementNode.is(JavaGrammar.STATEMENT)) {
-        statements.add(statement(statementNode));
-      } else if (statementNode.is(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)) {
-        statements.addAll(variableDeclarators(
-          variableModifiers(statementNode.getFirstChild(JavaGrammar.VARIABLE_MODIFIERS)),
-          referenceType(statementNode.getFirstChild(JavaGrammar.TYPE)),
-          statementNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS)
-          ));
-      } else if (statementNode.is(JavaGrammar.CLASS_DECLARATION)) {
-        statements.add(classDeclaration((ModifiersTree) blockStatementNode.getFirstChild(JavaGrammar.DSL_MODIFIERS), statementNode));
-      } else if (statementNode.is(JavaGrammar.ENUM_DECLARATION)) {
-        statements.add(enumDeclaration((ModifiersTree) blockStatementNode.getFirstChild(JavaGrammar.DSL_MODIFIERS), statementNode));
-      } else {
-        throw new IllegalStateException("Unexpected AstNodeType: " + statementNode.getType().toString());
-      }
+      statements.addAll(blockStatement(blockStatementNode));
     }
     return statements.build();
+  }
+
+  public List<StatementTree> blockStatement(AstNode astNode) {
+    checkType(astNode, JavaGrammar.BLOCK_STATEMENT);
+    AstNode statementNode = astNode.getFirstChild(
+      JavaGrammar.STATEMENT,
+      JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
+      JavaGrammar.CLASS_DECLARATION,
+      JavaGrammar.ENUM_DECLARATION
+      );
+    if (statementNode.is(JavaGrammar.STATEMENT)) {
+      return ImmutableList.of(statement(statementNode));
+    } else if (statementNode.is(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)) {
+      return variableDeclarators(
+        variableModifiers(statementNode.getFirstChild(JavaGrammar.VARIABLE_MODIFIERS)),
+        referenceType(statementNode.getFirstChild(JavaGrammar.TYPE)),
+        statementNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS));
+    } else if (statementNode.is(JavaGrammar.CLASS_DECLARATION)) {
+      return ImmutableList.<StatementTree>of(classDeclaration((ModifiersTree) astNode.getFirstChild(JavaGrammar.DSL_MODIFIERS), statementNode));
+    } else if (statementNode.is(JavaGrammar.ENUM_DECLARATION)) {
+      return ImmutableList.<StatementTree>of(enumDeclaration((ModifiersTree) astNode.getFirstChild(JavaGrammar.DSL_MODIFIERS), statementNode));
+    } else {
+      throw new IllegalStateException("Unexpected AstNodeType: " + statementNode.getType().toString());
+    }
   }
 
   private ModifiersTree variableModifiers(@Nullable AstNode astNode) {
@@ -783,7 +782,7 @@ public class JavaTreeMaker {
         break;
       case SWITCH_STATEMENT:
         // TODO
-        result = switchStatement(statementNode);
+        result = (SwitchStatementTree) statementNode;
         break;
       case WHILE_STATEMENT:
         result = (WhileStatementTreeImpl) statementNode;
@@ -818,38 +817,6 @@ public class JavaTreeMaker {
         throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString());
     }
     return result;
-  }
-
-  /**
-   * 14.11. The switch Statement
-   */
-  private SwitchStatementTree switchStatement(AstNode astNode) {
-    ImmutableList.Builder<CaseGroupTree> cases = ImmutableList.builder();
-    List<CaseLabelTreeImpl> labels = Lists.newArrayList();
-    for (AstNode caseNode : astNode.getFirstChild(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS).getChildren(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)) {
-      AstNode expressionNode = caseNode.getFirstChild(JavaGrammar.SWITCH_LABEL).getFirstChild(JavaGrammar.CONSTANT_EXPRESSION);
-      AstNode blockStatementsNode = caseNode.getFirstChild(JavaGrammar.BLOCK_STATEMENTS);
-      labels.add(new CaseLabelTreeImpl(caseNode, expressionNode != null ? expression(expressionNode) : null));
-      if (blockStatementsNode.hasChildren()) {
-        cases.add(new CaseGroupTreeImpl(
-          labels.get(0).getAstNode(),
-          ImmutableList.<CaseLabelTree>copyOf(labels),
-          blockStatements(caseNode.getFirstChild(JavaGrammar.BLOCK_STATEMENTS))
-          ));
-        labels.clear();
-      }
-    }
-    if (!labels.isEmpty()) {
-      cases.add(new CaseGroupTreeImpl(
-        labels.get(0).getAstNode(),
-        ImmutableList.<CaseLabelTree>copyOf(labels),
-        ImmutableList.<StatementTree>of()
-        ));
-    }
-    return new SwitchStatementTreeImpl(
-      astNode,
-      expression(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
-      cases.build());
   }
 
   /**

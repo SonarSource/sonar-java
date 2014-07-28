@@ -31,6 +31,8 @@ import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
+import org.sonar.java.model.statement.CaseGroupTreeImpl;
+import org.sonar.java.model.statement.CaseLabelTreeImpl;
 import org.sonar.java.model.statement.ContinueStatementTreeImpl;
 import org.sonar.java.model.statement.DoWhileStatementTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
@@ -38,14 +40,17 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.sonar.java.ast.api.JavaPunctuator.COLON;
@@ -53,9 +58,8 @@ import static org.sonar.java.ast.api.JavaTokenType.IDENTIFIER;
 
 public class ActionGrammar {
 
-  // TODO Visibility
-  public final GrammarBuilder b;
-  public final TreeFactory f;
+  private final GrammarBuilder b;
+  private final TreeFactory f;
 
   public ActionGrammar(GrammarBuilder b, TreeFactory f) {
     this.b = b;
@@ -102,6 +106,28 @@ public class ActionGrammar {
       .is(
         f.doWhileStatement(b.invokeRule(JavaKeyword.DO), b.invokeRule(JavaGrammar.STATEMENT), b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaGrammar.PAR_EXPRESSION),
           b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
+  public SwitchStatementTreeImpl SWITCH_STATEMENT() {
+    return b.<SwitchStatementTreeImpl>nonterminal(JavaGrammar.SWITCH_STATEMENT)
+      .is(
+        f.switchStatement(
+          b.invokeRule(JavaKeyword.SWITCH), b.invokeRule(JavaGrammar.PAR_EXPRESSION), b.invokeRule(JavaPunctuator.LWING),
+          b.zeroOrMore(SWITCH_GROUP()),
+          b.invokeRule(JavaPunctuator.RWING)));
+  }
+
+  public CaseGroupTreeImpl SWITCH_GROUP() {
+    return b.<CaseGroupTreeImpl>nonterminal(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
+      .is(f.switchGroup(b.oneOrMore(SWITCH_LABEL()), b.zeroOrMore(b.invokeRule(JavaGrammar.BLOCK_STATEMENT))));
+  }
+
+  public CaseLabelTreeImpl SWITCH_LABEL() {
+    return b.<CaseLabelTreeImpl>nonterminal(JavaGrammar.SWITCH_LABEL)
+      .is(
+        b.firstOf(
+          f.newCaseSwitchLabel(b.invokeRule(JavaKeyword.CASE), b.invokeRule(JavaGrammar.CONSTANT_EXPRESSION), b.invokeRule(JavaPunctuator.COLON)),
+          f.newDefaultSwitchLabel(b.invokeRule(JavaKeyword.DEFAULT), b.invokeRule(JavaPunctuator.COLON))));
   }
 
   public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
@@ -179,9 +205,9 @@ public class ActionGrammar {
       return new BlockTreeImpl(Tree.Kind.BLOCK, treeMaker.blockStatements(statements), leftCurlyBraceToken, statements, rightCurlyBraceToken);
     }
 
-    public AssertStatementTreeImpl completeAssertStatement(AstNode assertToken, AstNode expression, Optional<AssertStatementTreeImpl> expression2, AstNode semicolonToken) {
-      return expression2.isPresent() ?
-        expression2.get().complete(treeMaker.expression(expression),
+    public AssertStatementTreeImpl completeAssertStatement(AstNode assertToken, AstNode expression, Optional<AssertStatementTreeImpl> detailExpression, AstNode semicolonToken) {
+      return detailExpression.isPresent() ?
+        detailExpression.get().complete(treeMaker.expression(expression),
           assertToken, expression, semicolonToken) :
         new AssertStatementTreeImpl(treeMaker.expression(expression),
           assertToken, expression, semicolonToken);
@@ -212,6 +238,41 @@ public class ActionGrammar {
     public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, AstNode statement, AstNode whileToken, AstNode expression, AstNode semicolonToken) {
       return new DoWhileStatementTreeImpl(treeMaker.statement(statement), treeMaker.expression(expression),
         doToken, statement, whileToken, expression, semicolonToken);
+    }
+
+    public SwitchStatementTreeImpl switchStatement(
+      AstNode switchToken, AstNode expression, AstNode leftCurlyBraceToken, Optional<List<CaseGroupTreeImpl>> optionalGroups, AstNode rightCurlyBraceToken) {
+
+      List<CaseGroupTreeImpl> groups = optionalGroups.isPresent() ? optionalGroups.get() : Collections.<CaseGroupTreeImpl>emptyList();
+
+      ImmutableList.Builder<AstNode> children = ImmutableList.builder();
+      children.add(switchToken, expression, leftCurlyBraceToken);
+      children.addAll(groups);
+      children.add(rightCurlyBraceToken);
+
+      return new SwitchStatementTreeImpl(treeMaker.expression(expression), groups,
+        children.build());
+    }
+
+    public CaseGroupTreeImpl switchGroup(List<CaseLabelTreeImpl> labels, Optional<List<AstNode>> optionalBlockStatements) {
+      List<AstNode> blockStatements = optionalBlockStatements.isPresent() ? optionalBlockStatements.get() : Collections.<AstNode>emptyList();
+
+      ImmutableList.Builder<StatementTree> builder = ImmutableList.builder();
+      for (AstNode blockStatement : blockStatements) {
+        builder.addAll(treeMaker.blockStatement(blockStatement));
+      }
+
+      return new CaseGroupTreeImpl(labels, builder.build(), blockStatements);
+    }
+
+    public CaseLabelTreeImpl newCaseSwitchLabel(AstNode caseToken, AstNode expression, AstNode colonToken) {
+      return new CaseLabelTreeImpl(treeMaker.expression(expression),
+        caseToken, expression, colonToken);
+    }
+
+    public CaseLabelTreeImpl newDefaultSwitchLabel(AstNode defaultToken, AstNode colonToken) {
+      return new CaseLabelTreeImpl(null,
+        defaultToken, colonToken);
     }
 
     public SynchronizedStatementTreeImpl synchronizedStatement(AstNode synchronizedToken, AstNode expression, BlockTreeImpl block) {

@@ -30,6 +30,7 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.impl.Parser;
+import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import com.sonar.sslr.impl.matcher.RuleDefinition;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -167,10 +168,15 @@ public class ActionParser extends Parser {
     Method method = grammarBuilderInterceptor.actionForRuleKey(astNode.getType());
     if (method != null) {
       children = astNode.getChildren().toArray(new AstNode[astNode.getChildren().size()]);
-      Preconditions.checkState(children.length == method.getParameterTypes().length, "Argument mismatch!");
+      Object[] convertedChildren = convertTypes(children);
+
+      Preconditions.checkState(
+        convertedChildren.length == method.getParameterTypes().length,
+        "Argument mismatch! Expected: " + method.getParameterTypes().length + " parameters, but got: " + convertedChildren.length + "\n" +
+          AstXmlPrinter.print(astNode));
 
       try {
-        AstNode typedNode = (AstNode) method.invoke(action, convertTypes(children));
+        AstNode typedNode = (AstNode) method.invoke(action, convertedChildren);
         replaceAstNode(astNode, typedNode, false);
       } catch (InvocationTargetException e) {
         throw Throwables.propagate(e);

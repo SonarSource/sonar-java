@@ -22,17 +22,17 @@ package org.sonar.java.checks;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "IndentationCheck",
   priority = Priority.MAJOR,
-  tags={"convention"})
+  tags = {"convention"})
 public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final AstNodeType[] BLOCK_TYPES = new AstNodeType[] {
@@ -40,7 +40,7 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
     JavaGrammar.ENUM_BODY,
     JavaGrammar.INTERFACE_BODY,
     JavaGrammar.BLOCK,
-    JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS,
+    JavaGrammar.SWITCH_STATEMENT,
     JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP
   };
 

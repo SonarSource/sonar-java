@@ -38,13 +38,18 @@ import java.util.Iterator;
 import java.util.List;
 
 public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatementTree {
-  private final ExpressionTree expression;
-  private final List<CaseGroupTree> cases;
 
-  public SwitchStatementTreeImpl(AstNode astNode, ExpressionTree expression, List<CaseGroupTree> cases) {
-    super(astNode);
+  private final ExpressionTree expression;
+  private final List<CaseGroupTreeImpl> cases;
+
+  public SwitchStatementTreeImpl(ExpressionTree expression, List<CaseGroupTreeImpl> groups, List<AstNode> children) {
+    super(JavaGrammar.SWITCH_STATEMENT);
     this.expression = Preconditions.checkNotNull(expression);
-    this.cases = Preconditions.checkNotNull(cases);
+    this.cases = Preconditions.checkNotNull(groups);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override
@@ -79,7 +84,8 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public List<CaseGroupTree> cases() {
-    return cases;
+    // FIXME
+    return (List) cases;
   }
 
   @Override

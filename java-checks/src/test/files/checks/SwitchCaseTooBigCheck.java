@@ -40,6 +40,12 @@ class A {
         System.out.println("");
         System.out.println("");
         break;
+      case 1:                     // Noncompliant - 6 lines till default
+
+
+
+
+
       default:                    // Non-Compliant - 6 lines till switch end
         System.out.println("");
         System.out.println("");

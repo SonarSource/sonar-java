@@ -31,7 +31,6 @@ import java.util.Arrays;
 import static org.sonar.java.ast.api.JavaKeyword.ABSTRACT;
 import static org.sonar.java.ast.api.JavaKeyword.BOOLEAN;
 import static org.sonar.java.ast.api.JavaKeyword.BYTE;
-import static org.sonar.java.ast.api.JavaKeyword.CASE;
 import static org.sonar.java.ast.api.JavaKeyword.CATCH;
 import static org.sonar.java.ast.api.JavaKeyword.CHAR;
 import static org.sonar.java.ast.api.JavaKeyword.CLASS;
@@ -61,7 +60,6 @@ import static org.sonar.java.ast.api.JavaKeyword.SHORT;
 import static org.sonar.java.ast.api.JavaKeyword.STATIC;
 import static org.sonar.java.ast.api.JavaKeyword.STRICTFP;
 import static org.sonar.java.ast.api.JavaKeyword.SUPER;
-import static org.sonar.java.ast.api.JavaKeyword.SWITCH;
 import static org.sonar.java.ast.api.JavaKeyword.SYNCHRONIZED;
 import static org.sonar.java.ast.api.JavaKeyword.THIS;
 import static org.sonar.java.ast.api.JavaKeyword.THROWS;
@@ -238,7 +236,6 @@ public enum JavaGrammar implements GrammarRuleKey {
   CATCH_TYPE,
 
   FINALLY_,
-  SWITCH_BLOCK_STATEMENT_GROUPS,
   STATEMENT_EXPRESSION,
 
   TRY_STATEMENT,
@@ -246,7 +243,6 @@ public enum JavaGrammar implements GrammarRuleKey {
   RESOURCE_SPECIFICATION,
 
   SWITCH_BLOCK_STATEMENT_GROUP,
-
   SWITCH_LABEL,
 
   CONSTANT_EXPRESSION,
@@ -721,14 +717,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       LABELED_STATEMENT,
       EXPRESSION_STATEMENT,
       EMPTY_STATEMENT));
-
-    // 14.11. The switch statement
-    b.rule(SWITCH_STATEMENT).is(SWITCH, PAR_EXPRESSION, LWING, SWITCH_BLOCK_STATEMENT_GROUPS, RWING);
-    b.rule(SWITCH_BLOCK_STATEMENT_GROUPS).is(b.zeroOrMore(SWITCH_BLOCK_STATEMENT_GROUP));
-    b.rule(SWITCH_BLOCK_STATEMENT_GROUP).is(SWITCH_LABEL, BLOCK_STATEMENTS);
-    b.rule(SWITCH_LABEL).is(b.firstOf(
-      b.sequence(CASE, CONSTANT_EXPRESSION, COLON),
-      b.sequence(DEFAULT, COLON)));
 
     // 14.14. The for Statement
     b.rule(FOR_STATEMENT).is(b.firstOf(

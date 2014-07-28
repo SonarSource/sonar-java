@@ -21,8 +21,6 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -30,13 +28,11 @@ public class SwitchBlockStatementGroupTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
-    b.rule(JavaGrammar.SWITCH_LABEL).override(RuleMock.word(b, "switchLabel"));
-    b.rule(JavaGrammar.BLOCK_STATEMENTS).override(RuleMock.word(b, "blockStatements"));
-
-    assertThat(b, JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
-      .matches("switchLabel blockStatements");
+    assertThat(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
+      .matches("case 0:")
+      .matches("case 0: break;")
+      .matches("case 0: int i = 0; break;")
+      .matches("case 0: case 1: break;");
   }
 
 }
