@@ -21,8 +21,6 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -30,12 +28,8 @@ public class SynchronizedStatementTest {
 
   @Test
   public void okSynchronized() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
-    b.rule(JavaGrammar.PAR_EXPRESSION).override(RuleMock.word(b, "parExpression"));
-
-    assertThat(b, JavaGrammar.SYNCHRONIZED_STATEMENT)
-      .matches("synchronized parExpression {}");
+    assertThat(JavaGrammar.SYNCHRONIZED_STATEMENT)
+      .matches("synchronized (this) {}");
   }
 
 }

@@ -40,10 +40,14 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   private final ExpressionTree expression;
   private final BlockTree block;
 
-  public SynchronizedStatementTreeImpl(AstNode astNode, ExpressionTree expression, BlockTree block) {
-    super(astNode);
+  public SynchronizedStatementTreeImpl(ExpressionTree expression, BlockTree block, AstNode... children) {
+    super(JavaGrammar.SYNCHRONIZED_STATEMENT);
     this.expression = Preconditions.checkNotNull(expression);
     this.block = Preconditions.checkNotNull(block);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override

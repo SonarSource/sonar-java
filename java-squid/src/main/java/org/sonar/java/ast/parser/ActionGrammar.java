@@ -30,12 +30,9 @@ import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
+import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.EmptyStatementTree;
-import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
@@ -55,19 +52,20 @@ public class ActionGrammar {
     this.f = f;
   }
 
-  public ModifiersTree DSL_MODIFIERS() {
-    return b.<ModifiersTree>nonterminal(JavaGrammar.DSL_MODIFIERS)
+  public ModifiersTreeImpl DSL_MODIFIERS() {
+    return b.<ModifiersTreeImpl>nonterminal(JavaGrammar.DSL_MODIFIERS)
       .is(f.modifiers(b.zeroOrMore(b.invokeRule(JavaGrammar.MODIFIER))));
   }
 
-  public BlockTree BLOCK() {
-    return b.<BlockTree>nonterminal(JavaGrammar.BLOCK)
+  // Statements
+
+  public BlockTreeImpl BLOCK() {
+    return b.<BlockTreeImpl>nonterminal(JavaGrammar.BLOCK)
       .is(f.block(b.invokeRule(LWING), b.invokeRule(JavaGrammar.BLOCK_STATEMENTS), b.invokeRule(RWING)));
   }
 
-  // 14.9. The if Statement
-  public IfStatementTree IF_STATEMENT() {
-    return b.<IfStatementTree>nonterminal(JavaGrammar.IF_STATEMENT)
+  public IfStatementTreeImpl IF_STATEMENT() {
+    return b.<IfStatementTreeImpl>nonterminal(JavaGrammar.IF_STATEMENT)
       .is(
         f.completeIf(
           b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaGrammar.PAR_EXPRESSION), b.invokeRule(JavaGrammar.STATEMENT),
@@ -75,10 +73,17 @@ public class ActionGrammar {
             f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), b.invokeRule(JavaGrammar.STATEMENT)))));
   }
 
-  public EmptyStatementTree EMPTY_STATEMENT() {
-    return b.<EmptyStatementTree>nonterminal(JavaGrammar.EMPTY_STATEMENT)
+  public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
+    return b.<SynchronizedStatementTreeImpl>nonterminal(JavaGrammar.SYNCHRONIZED_STATEMENT)
+      .is(f.synchronizedStatement(b.invokeRule(JavaKeyword.SYNCHRONIZED), b.invokeRule(JavaGrammar.PAR_EXPRESSION), BLOCK()));
+  }
+
+  public EmptyStatementTreeImpl EMPTY_STATEMENT() {
+    return b.<EmptyStatementTreeImpl>nonterminal(JavaGrammar.EMPTY_STATEMENT)
       .is(f.emptyStatement(b.invokeRule(JavaPunctuator.SEMI)));
   }
+
+  // End eof statements
 
   public static class TreeFactory {
 
@@ -86,7 +91,7 @@ public class ActionGrammar {
 
     private final JavaTreeMaker treeMaker = new JavaTreeMaker();
 
-    public ModifiersTree modifiers(Optional<List<AstNode>> modifierNodes) {
+    public ModifiersTreeImpl modifiers(Optional<List<AstNode>> modifierNodes) {
       if (!modifierNodes.isPresent()) {
         return ModifiersTreeImpl.EMPTY_MODIFIERS;
       }
@@ -107,11 +112,13 @@ public class ActionGrammar {
       return new ModifiersTreeImpl(modifierNodes.get(), modifiers.build(), annotations.build());
     }
 
-    public BlockTree block(AstNode lwing, AstNode statements, AstNode rwing) {
+    // Statements
+
+    public BlockTreeImpl block(AstNode lwing, AstNode statements, AstNode rwing) {
       return new BlockTreeImpl(Tree.Kind.BLOCK, treeMaker.blockStatements(statements), lwing, statements, rwing);
     }
 
-    public IfStatementTree completeIf(AstNode ifToken, AstNode condition, AstNode statement, Optional<IfStatementTreeImpl> elseClause) {
+    public IfStatementTreeImpl completeIf(AstNode ifToken, AstNode condition, AstNode statement, Optional<IfStatementTreeImpl> elseClause) {
       if (elseClause.isPresent()) {
         return elseClause.get().complete(treeMaker.expression(condition), treeMaker.statement(statement), ifToken, condition, statement);
       } else {
@@ -123,9 +130,18 @@ public class ActionGrammar {
       return new IfStatementTreeImpl(treeMaker.statement(elseStatement), elseToken, elseStatement);
     }
 
-    public EmptyStatementTree emptyStatement(AstNode semicolon) {
+    public SynchronizedStatementTreeImpl synchronizedStatement(AstNode synchronizedToken, AstNode expression, BlockTreeImpl block) {
+      return new SynchronizedStatementTreeImpl(
+        treeMaker.expression(expression),
+        block,
+        synchronizedToken, expression, block);
+    }
+
+    public EmptyStatementTreeImpl emptyStatement(AstNode semicolon) {
       return new EmptyStatementTreeImpl(semicolon);
     }
+
+    // End of statements
 
   }
 

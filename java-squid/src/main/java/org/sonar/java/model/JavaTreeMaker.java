@@ -849,11 +849,7 @@ public class JavaTreeMaker {
         break;
       case SYNCHRONIZED_STATEMENT:
         // 14.19. The synchronized Statement
-        result = new SynchronizedStatementTreeImpl(
-          statementNode,
-          expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
-          (BlockTree) statementNode.getFirstChild(JavaGrammar.BLOCK)
-          );
+        result = (SynchronizedStatementTreeImpl) statementNode;
         break;
       case TRY_STATEMENT:
         result = tryStatement(statementNode);

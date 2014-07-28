@@ -766,8 +766,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(RETURN_STATEMENT).is(RETURN, b.optional(EXPRESSION), SEMI);
     // 14.18. The throw Statement
     b.rule(THROW_STATEMENT).is(THROW, EXPRESSION, SEMI);
-    // 14.19. The synchronized Statement
-    b.rule(SYNCHRONIZED_STATEMENT).is(SYNCHRONIZED, PAR_EXPRESSION, BLOCK);
 
     // 14.20. The try Statement
     b.rule(TRY_STATEMENT).is(b.firstOf(
