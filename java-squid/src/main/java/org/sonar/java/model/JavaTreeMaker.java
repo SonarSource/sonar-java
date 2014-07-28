@@ -76,6 +76,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
@@ -766,7 +767,6 @@ public class JavaTreeMaker {
         result = (BlockTree) statementNode;
         break;
       case EMPTY_STATEMENT:
-        // 14.6. The Empty Statement
         result = (EmptyStatementTree) statementNode;
         break;
       case LABELED_STATEMENT:
@@ -778,55 +778,45 @@ public class JavaTreeMaker {
           );
         break;
       case EXPRESSION_STATEMENT:
-        // 14.8. Expression Statement
-        result = new ExpressionStatementTreeImpl(
-          statementNode,
-          expression(statementNode.getFirstChild(JavaGrammar.STATEMENT_EXPRESSION))
-          );
+        result = (ExpressionStatementTree) statementNode;
         break;
       case IF_STATEMENT:
-        // 14.9. The if Statement
         result = (IfStatementTree) statementNode;
         break;
       case ASSERT_STATEMENT:
-        // 14.10. The assert Statement
         result = (AssertStatementTree) statementNode;
         break;
       case SWITCH_STATEMENT:
+        // TODO
         result = switchStatement(statementNode);
         break;
       case WHILE_STATEMENT:
-        // 14.12. The while Statement
         result = (WhileStatementTreeImpl) statementNode;
         break;
       case DO_STATEMENT:
-        // 14.13. The do Statement
         result = (DoWhileStatementTree) statementNode;
         break;
       case FOR_STATEMENT:
+        // TODO
         result = forStatement(statementNode);
         break;
       case BREAK_STATEMENT:
-        // 14.15. The break Statement
         result = (BreakStatementTree) statementNode;
         break;
       case CONTINUE_STATEMENT:
-        // 14.16. The continue Statement
         result = (ContinueStatementTree) statementNode;
         break;
       case RETURN_STATEMENT:
-        // 14.17. The return Statement
         result = (ReturnStatementTree) statementNode;
         break;
       case THROW_STATEMENT:
-        // 14.18. The throw Statement
         result = (ThrowStatementTree) statementNode;
         break;
       case SYNCHRONIZED_STATEMENT:
-        // 14.19. The synchronized Statement
         result = (SynchronizedStatementTreeImpl) statementNode;
         break;
       case TRY_STATEMENT:
+        // TODO
         result = tryStatement(statementNode);
         break;
       default:

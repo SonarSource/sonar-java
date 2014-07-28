@@ -42,6 +42,15 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
     this.expression = Preconditions.checkNotNull(expression);
   }
 
+  public ExpressionStatementTreeImpl(ExpressionTree expression, AstNode... children) {
+    super(JavaGrammar.EXPRESSION_STATEMENT);
+    this.expression = Preconditions.checkNotNull(expression);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
+
   @Override
   public Kind getKind() {
     return Kind.EXPRESSION_STATEMENT;

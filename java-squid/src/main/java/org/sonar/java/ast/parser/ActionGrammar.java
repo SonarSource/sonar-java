@@ -34,6 +34,7 @@ import org.sonar.java.model.statement.BreakStatementTreeImpl;
 import org.sonar.java.model.statement.ContinueStatementTreeImpl;
 import org.sonar.java.model.statement.DoWhileStatementTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
+import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
@@ -122,6 +123,11 @@ public class ActionGrammar {
   public ThrowStatementTreeImpl THROW_STATEMENT() {
     return b.<ThrowStatementTreeImpl>nonterminal(JavaGrammar.THROW_STATEMENT)
       .is(f.throwStatement(b.invokeRule(JavaKeyword.THROW), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
+  public ExpressionStatementTreeImpl EXPRESSION_STATEMENT() {
+    return b.<ExpressionStatementTreeImpl>nonterminal(JavaGrammar.EXPRESSION_STATEMENT)
+      .is(f.expressionStatement(b.invokeRule(JavaGrammar.STATEMENT_EXPRESSION), b.invokeRule(JavaPunctuator.SEMI)));
   }
 
   public EmptyStatementTreeImpl EMPTY_STATEMENT() {
@@ -231,6 +237,11 @@ public class ActionGrammar {
     public ThrowStatementTreeImpl throwStatement(AstNode throwToken, AstNode expression, AstNode semicolonToken) {
       return new ThrowStatementTreeImpl(treeMaker.expression(expression),
         throwToken, expression, semicolonToken);
+    }
+
+    public ExpressionStatementTreeImpl expressionStatement(AstNode expression, AstNode semicolonToken) {
+      return new ExpressionStatementTreeImpl(treeMaker.expression(expression),
+        expression, semicolonToken);
     }
 
     public EmptyStatementTreeImpl emptyStatement(AstNode semicolon) {

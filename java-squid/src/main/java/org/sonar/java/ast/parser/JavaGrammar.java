@@ -724,8 +724,6 @@ public enum JavaGrammar implements GrammarRuleKey {
 
     // 14.7. Labeled Statements
     b.rule(LABELED_STATEMENT).is(IDENTIFIER, COLON, STATEMENT);
-    // 14.8. Expression Statements
-    b.rule(EXPRESSION_STATEMENT).is(STATEMENT_EXPRESSION, SEMI);
 
     // 14.11. The switch statement
     b.rule(SWITCH_STATEMENT).is(SWITCH, PAR_EXPRESSION, LWING, SWITCH_BLOCK_STATEMENT_GROUPS, RWING);
