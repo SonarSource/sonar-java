@@ -59,7 +59,6 @@ import org.sonar.java.model.statement.CatchTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForEachStatementImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
-import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
@@ -81,6 +80,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -770,12 +770,7 @@ public class JavaTreeMaker {
         result = (EmptyStatementTree) statementNode;
         break;
       case LABELED_STATEMENT:
-        // 14.7. Labeled Statement
-        result = new LabeledStatementTreeImpl(
-          statementNode,
-          identifier(statementNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-          statement(statementNode.getFirstChild(JavaGrammar.STATEMENT))
-          );
+        result = (LabeledStatementTree) statementNode;
         break;
       case EXPRESSION_STATEMENT:
         result = (ExpressionStatementTree) statementNode;

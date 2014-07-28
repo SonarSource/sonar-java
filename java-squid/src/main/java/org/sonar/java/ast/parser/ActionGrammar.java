@@ -36,6 +36,7 @@ import org.sonar.java.model.statement.DoWhileStatementTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
+import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
@@ -46,6 +47,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.List;
+
+import static org.sonar.java.ast.api.JavaPunctuator.COLON;
+import static org.sonar.java.ast.api.JavaTokenType.IDENTIFIER;
 
 public class ActionGrammar {
 
@@ -123,6 +127,11 @@ public class ActionGrammar {
   public ThrowStatementTreeImpl THROW_STATEMENT() {
     return b.<ThrowStatementTreeImpl>nonterminal(JavaGrammar.THROW_STATEMENT)
       .is(f.throwStatement(b.invokeRule(JavaKeyword.THROW), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
+  public LabeledStatementTreeImpl LABELED_STATEMENT() {
+    return b.<LabeledStatementTreeImpl>nonterminal(JavaGrammar.LABELED_STATEMENT)
+      .is(f.labeledStatement(b.invokeRule(IDENTIFIER), b.invokeRule(COLON), b.invokeRule(JavaGrammar.STATEMENT)));
   }
 
   public ExpressionStatementTreeImpl EXPRESSION_STATEMENT() {
@@ -237,6 +246,11 @@ public class ActionGrammar {
     public ThrowStatementTreeImpl throwStatement(AstNode throwToken, AstNode expression, AstNode semicolonToken) {
       return new ThrowStatementTreeImpl(treeMaker.expression(expression),
         throwToken, expression, semicolonToken);
+    }
+
+    public LabeledStatementTreeImpl labeledStatement(AstNode identifier, AstNode colon, AstNode statement) {
+      return new LabeledStatementTreeImpl(treeMaker.identifier(identifier), treeMaker.statement(statement),
+        identifier, colon, statement);
     }
 
     public ExpressionStatementTreeImpl expressionStatement(AstNode expression, AstNode semicolonToken) {
