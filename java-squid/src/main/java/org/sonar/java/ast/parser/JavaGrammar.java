@@ -59,7 +59,6 @@ import static org.sonar.java.ast.api.JavaKeyword.PACKAGE;
 import static org.sonar.java.ast.api.JavaKeyword.PRIVATE;
 import static org.sonar.java.ast.api.JavaKeyword.PROTECTED;
 import static org.sonar.java.ast.api.JavaKeyword.PUBLIC;
-import static org.sonar.java.ast.api.JavaKeyword.RETURN;
 import static org.sonar.java.ast.api.JavaKeyword.SHORT;
 import static org.sonar.java.ast.api.JavaKeyword.STATIC;
 import static org.sonar.java.ast.api.JavaKeyword.STRICTFP;
@@ -756,8 +755,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       b.sequence(STATEMENT_EXPRESSION, b.zeroOrMore(COMMA, STATEMENT_EXPRESSION))));
     b.rule(FOR_UPDATE).is(STATEMENT_EXPRESSION, b.zeroOrMore(COMMA, STATEMENT_EXPRESSION));
 
-    // 14.17. The return Statement
-    b.rule(RETURN_STATEMENT).is(RETURN, b.optional(EXPRESSION), SEMI);
     // 14.18. The throw Statement
     b.rule(THROW_STATEMENT).is(THROW, EXPRESSION, SEMI);
 

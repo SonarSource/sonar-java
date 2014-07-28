@@ -33,6 +33,7 @@ import org.sonar.java.model.statement.BreakStatementTreeImpl;
 import org.sonar.java.model.statement.ContinueStatementTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
+import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -86,6 +87,11 @@ public class ActionGrammar {
   public ContinueStatementTreeImpl CONTINUE_STATEMENT() {
     return b.<ContinueStatementTreeImpl>nonterminal(JavaGrammar.CONTINUE_STATEMENT)
       .is(f.continueStatement(b.invokeRule(JavaKeyword.CONTINUE), b.optional(b.invokeRule(JavaTokenType.IDENTIFIER)), b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
+  public ReturnStatementTreeImpl RETURN_STATEMENT() {
+    return b.<ReturnStatementTreeImpl>nonterminal(JavaGrammar.RETURN_STATEMENT)
+      .is(f.returnStatement(b.invokeRule(JavaKeyword.RETURN), b.optional(b.invokeRule(JavaGrammar.EXPRESSION)), b.invokeRule(JavaPunctuator.SEMI)));
   }
 
   public EmptyStatementTreeImpl EMPTY_STATEMENT() {
@@ -157,6 +163,12 @@ public class ActionGrammar {
       return identifier.isPresent() ?
         new ContinueStatementTreeImpl(treeMaker.identifier(identifier.get()), continueToken, identifier.get(), semicolonToken) :
         new ContinueStatementTreeImpl(null, continueToken, semicolonToken);
+    }
+
+    public ReturnStatementTreeImpl returnStatement(AstNode returnToken, Optional<AstNode> expression, AstNode semicolonToken) {
+      return expression.isPresent() ?
+        new ReturnStatementTreeImpl(treeMaker.expression(expression.get()), returnToken, expression.get(), semicolonToken) :
+        new ReturnStatementTreeImpl(null, returnToken, semicolonToken);
     }
 
     public EmptyStatementTreeImpl emptyStatement(AstNode semicolon) {

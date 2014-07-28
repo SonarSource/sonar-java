@@ -62,7 +62,6 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForEachStatementImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
-import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
@@ -87,6 +86,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -829,10 +829,7 @@ public class JavaTreeMaker {
         break;
       case RETURN_STATEMENT:
         // 14.17. The return Statement
-        result = new ReturnStatementTreeImpl(
-          statementNode,
-          statementNode.hasDirectChildren(JavaGrammar.EXPRESSION) ? expression(statementNode.getFirstChild(JavaGrammar.EXPRESSION)) : null
-          );
+        result = (ReturnStatementTree) statementNode;
         break;
       case THROW_STATEMENT:
         // 14.18. The throw Statement
