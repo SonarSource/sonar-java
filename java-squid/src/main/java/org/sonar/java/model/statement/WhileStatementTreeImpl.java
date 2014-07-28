@@ -40,10 +40,14 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
   private final ExpressionTree condition;
   private final StatementTree statement;
 
-  public WhileStatementTreeImpl(AstNode astNode, ExpressionTree condition, StatementTree statement) {
-    super(astNode);
+  public WhileStatementTreeImpl(ExpressionTree condition, StatementTree statement, AstNode... children) {
+    super(JavaGrammar.WHILE_STATEMENT);
     this.condition = Preconditions.checkNotNull(condition);
     this.statement = Preconditions.checkNotNull(statement);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override

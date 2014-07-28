@@ -52,7 +52,6 @@ import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
-import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.CaseGroupTreeImpl;
 import org.sonar.java.model.statement.CaseLabelTreeImpl;
@@ -66,6 +65,7 @@ import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -790,23 +790,14 @@ public class JavaTreeMaker {
         break;
       case ASSERT_STATEMENT:
         // 14.10. The assert Statement
-        List<AstNode> expressions = statementNode.getChildren(JavaGrammar.EXPRESSION);
-        result = new AssertStatementTreeImpl(
-          statementNode,
-          expression(expressions.get(0)),
-          expressions.size() > 1 ? expression(expressions.get(1)) : null
-          );
+        result = (AssertStatementTree) statementNode;
         break;
       case SWITCH_STATEMENT:
         result = switchStatement(statementNode);
         break;
       case WHILE_STATEMENT:
         // 14.12. The while Statement
-        result = new WhileStatementTreeImpl(
-          statementNode,
-          expression(statementNode.getFirstChild(JavaGrammar.PAR_EXPRESSION)),
-          statement(statementNode.getFirstChild(JavaGrammar.STATEMENT))
-          );
+        result = (WhileStatementTreeImpl) statementNode;
         break;
       case DO_STATEMENT:
         // 14.13. The do Statement

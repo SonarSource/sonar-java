@@ -29,7 +29,6 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import java.util.Arrays;
 
 import static org.sonar.java.ast.api.JavaKeyword.ABSTRACT;
-import static org.sonar.java.ast.api.JavaKeyword.ASSERT;
 import static org.sonar.java.ast.api.JavaKeyword.BOOLEAN;
 import static org.sonar.java.ast.api.JavaKeyword.BYTE;
 import static org.sonar.java.ast.api.JavaKeyword.CASE;
@@ -71,7 +70,6 @@ import static org.sonar.java.ast.api.JavaKeyword.TRUE;
 import static org.sonar.java.ast.api.JavaKeyword.TRY;
 import static org.sonar.java.ast.api.JavaKeyword.VOID;
 import static org.sonar.java.ast.api.JavaKeyword.VOLATILE;
-import static org.sonar.java.ast.api.JavaKeyword.WHILE;
 import static org.sonar.java.ast.api.JavaPunctuator.AND;
 import static org.sonar.java.ast.api.JavaPunctuator.ANDAND;
 import static org.sonar.java.ast.api.JavaPunctuator.ANDEQU;
@@ -728,8 +726,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(LABELED_STATEMENT).is(IDENTIFIER, COLON, STATEMENT);
     // 14.8. Expression Statements
     b.rule(EXPRESSION_STATEMENT).is(STATEMENT_EXPRESSION, SEMI);
-    // 14.10. The assert Statement
-    b.rule(ASSERT_STATEMENT).is(ASSERT, EXPRESSION, b.optional(COLON, EXPRESSION), SEMI);
 
     // 14.11. The switch statement
     b.rule(SWITCH_STATEMENT).is(SWITCH, PAR_EXPRESSION, LWING, SWITCH_BLOCK_STATEMENT_GROUPS, RWING);
@@ -738,9 +734,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(SWITCH_LABEL).is(b.firstOf(
       b.sequence(CASE, CONSTANT_EXPRESSION, COLON),
       b.sequence(DEFAULT, COLON)));
-
-    // 14.12. The while Statement
-    b.rule(WHILE_STATEMENT).is(WHILE, PAR_EXPRESSION, STATEMENT);
 
     // 14.14. The for Statement
     b.rule(FOR_STATEMENT).is(b.firstOf(

@@ -28,6 +28,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
 import org.sonar.java.model.statement.ContinueStatementTreeImpl;
@@ -37,6 +38,7 @@ import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
+import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -67,6 +69,15 @@ public class ActionGrammar {
       .is(f.block(b.invokeRule(JavaPunctuator.LWING), b.invokeRule(JavaGrammar.BLOCK_STATEMENTS), b.invokeRule(JavaPunctuator.RWING)));
   }
 
+  public AssertStatementTreeImpl ASSERT_STATEMENT() {
+    return b.<AssertStatementTreeImpl>nonterminal(JavaGrammar.ASSERT_STATEMENT)
+      .is(f.completeAssertStatement(
+        b.invokeRule(JavaKeyword.ASSERT), b.invokeRule(JavaGrammar.EXPRESSION),
+        b.optional(
+          f.newAssertStatement(b.invokeRule(JavaPunctuator.COLON), b.invokeRule(JavaGrammar.EXPRESSION))),
+        b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
   public IfStatementTreeImpl IF_STATEMENT() {
     return b.<IfStatementTreeImpl>nonterminal(JavaGrammar.IF_STATEMENT)
       .is(
@@ -74,6 +85,11 @@ public class ActionGrammar {
           b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaGrammar.PAR_EXPRESSION), b.invokeRule(JavaGrammar.STATEMENT),
           b.optional(
             f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), b.invokeRule(JavaGrammar.STATEMENT)))));
+  }
+
+  public WhileStatementTreeImpl WHILE_STATEMENT() {
+    return b.<WhileStatementTreeImpl>nonterminal(JavaGrammar.WHILE_STATEMENT)
+      .is(f.whileStatement(b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaGrammar.PAR_EXPRESSION), b.invokeRule(JavaGrammar.STATEMENT)));
   }
 
   public DoWhileStatementTreeImpl DO_WHILE_STATEMENT() {
@@ -148,6 +164,19 @@ public class ActionGrammar {
       return new BlockTreeImpl(Tree.Kind.BLOCK, treeMaker.blockStatements(statements), leftCurlyBraceToken, statements, rightCurlyBraceToken);
     }
 
+    public AssertStatementTreeImpl completeAssertStatement(AstNode assertToken, AstNode expression, Optional<AssertStatementTreeImpl> expression2, AstNode semicolonToken) {
+      return expression2.isPresent() ?
+        expression2.get().complete(treeMaker.expression(expression),
+          assertToken, expression, semicolonToken) :
+        new AssertStatementTreeImpl(treeMaker.expression(expression),
+          assertToken, expression, semicolonToken);
+    }
+
+    public AssertStatementTreeImpl newAssertStatement(AstNode colonToken, AstNode expression) {
+      return new AssertStatementTreeImpl(treeMaker.expression(expression),
+        colonToken, expression);
+    }
+
     public IfStatementTreeImpl completeIf(AstNode ifToken, AstNode condition, AstNode statement, Optional<IfStatementTreeImpl> elseClause) {
       if (elseClause.isPresent()) {
         return elseClause.get().complete(treeMaker.expression(condition), treeMaker.statement(statement), ifToken, condition, statement);
@@ -160,38 +189,48 @@ public class ActionGrammar {
       return new IfStatementTreeImpl(treeMaker.statement(elseStatement), elseToken, elseStatement);
     }
 
+    public WhileStatementTreeImpl whileStatement(AstNode whileToken, AstNode expression, AstNode statement) {
+      return new WhileStatementTreeImpl(treeMaker.expression(expression), treeMaker.statement(statement),
+        whileToken, expression, statement);
+    }
+
     public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, AstNode statement, AstNode whileToken, AstNode expression, AstNode semicolonToken) {
       return new DoWhileStatementTreeImpl(treeMaker.statement(statement), treeMaker.expression(expression),
         doToken, statement, whileToken, expression, semicolonToken);
     }
 
     public SynchronizedStatementTreeImpl synchronizedStatement(AstNode synchronizedToken, AstNode expression, BlockTreeImpl block) {
-      return new SynchronizedStatementTreeImpl(
-        treeMaker.expression(expression),
-        block,
+      return new SynchronizedStatementTreeImpl(treeMaker.expression(expression), block,
         synchronizedToken, expression, block);
     }
 
     public BreakStatementTreeImpl breakStatement(AstNode breakToken, Optional<AstNode> identifier, AstNode semicolonToken) {
       return identifier.isPresent() ?
-        new BreakStatementTreeImpl(treeMaker.identifier(identifier.get()), breakToken, identifier.get(), semicolonToken) :
-        new BreakStatementTreeImpl(null, breakToken, semicolonToken);
+        new BreakStatementTreeImpl(treeMaker.identifier(identifier.get()),
+          breakToken, identifier.get(), semicolonToken) :
+        new BreakStatementTreeImpl(null,
+          breakToken, semicolonToken);
     }
 
     public ContinueStatementTreeImpl continueStatement(AstNode continueToken, Optional<AstNode> identifier, AstNode semicolonToken) {
       return identifier.isPresent() ?
-        new ContinueStatementTreeImpl(treeMaker.identifier(identifier.get()), continueToken, identifier.get(), semicolonToken) :
-        new ContinueStatementTreeImpl(null, continueToken, semicolonToken);
+        new ContinueStatementTreeImpl(treeMaker.identifier(identifier.get()),
+          continueToken, identifier.get(), semicolonToken) :
+        new ContinueStatementTreeImpl(null,
+          continueToken, semicolonToken);
     }
 
     public ReturnStatementTreeImpl returnStatement(AstNode returnToken, Optional<AstNode> expression, AstNode semicolonToken) {
       return expression.isPresent() ?
-        new ReturnStatementTreeImpl(treeMaker.expression(expression.get()), returnToken, expression.get(), semicolonToken) :
-        new ReturnStatementTreeImpl(null, returnToken, semicolonToken);
+        new ReturnStatementTreeImpl(treeMaker.expression(expression.get()),
+          returnToken, expression.get(), semicolonToken) :
+        new ReturnStatementTreeImpl(null,
+          returnToken, semicolonToken);
     }
 
     public ThrowStatementTreeImpl throwStatement(AstNode throwToken, AstNode expression, AstNode semicolonToken) {
-      return new ThrowStatementTreeImpl(treeMaker.expression(expression), throwToken, expression, semicolonToken);
+      return new ThrowStatementTreeImpl(treeMaker.expression(expression),
+        throwToken, expression, semicolonToken);
     }
 
     public EmptyStatementTreeImpl emptyStatement(AstNode semicolon) {
