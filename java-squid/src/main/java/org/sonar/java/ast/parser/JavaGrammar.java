@@ -66,7 +66,6 @@ import static org.sonar.java.ast.api.JavaKeyword.SUPER;
 import static org.sonar.java.ast.api.JavaKeyword.SWITCH;
 import static org.sonar.java.ast.api.JavaKeyword.SYNCHRONIZED;
 import static org.sonar.java.ast.api.JavaKeyword.THIS;
-import static org.sonar.java.ast.api.JavaKeyword.THROW;
 import static org.sonar.java.ast.api.JavaKeyword.THROWS;
 import static org.sonar.java.ast.api.JavaKeyword.TRANSIENT;
 import static org.sonar.java.ast.api.JavaKeyword.TRUE;
@@ -754,9 +753,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       b.sequence(b.zeroOrMore(b.firstOf(FINAL, ANNOTATION)), TYPE, VARIABLE_DECLARATORS),
       b.sequence(STATEMENT_EXPRESSION, b.zeroOrMore(COMMA, STATEMENT_EXPRESSION))));
     b.rule(FOR_UPDATE).is(STATEMENT_EXPRESSION, b.zeroOrMore(COMMA, STATEMENT_EXPRESSION));
-
-    // 14.18. The throw Statement
-    b.rule(THROW_STATEMENT).is(THROW, EXPRESSION, SEMI);
 
     // 14.20. The try Statement
     b.rule(TRY_STATEMENT).is(b.firstOf(

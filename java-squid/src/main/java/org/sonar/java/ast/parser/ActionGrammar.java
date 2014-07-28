@@ -35,6 +35,7 @@ import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
+import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -92,6 +93,11 @@ public class ActionGrammar {
   public ReturnStatementTreeImpl RETURN_STATEMENT() {
     return b.<ReturnStatementTreeImpl>nonterminal(JavaGrammar.RETURN_STATEMENT)
       .is(f.returnStatement(b.invokeRule(JavaKeyword.RETURN), b.optional(b.invokeRule(JavaGrammar.EXPRESSION)), b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
+  public ThrowStatementTreeImpl THROW_STATEMENT() {
+    return b.<ThrowStatementTreeImpl>nonterminal(JavaGrammar.THROW_STATEMENT)
+      .is(f.throwStatement(b.invokeRule(JavaKeyword.THROW), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.SEMI)));
   }
 
   public EmptyStatementTreeImpl EMPTY_STATEMENT() {
@@ -169,6 +175,10 @@ public class ActionGrammar {
       return expression.isPresent() ?
         new ReturnStatementTreeImpl(treeMaker.expression(expression.get()), returnToken, expression.get(), semicolonToken) :
         new ReturnStatementTreeImpl(null, returnToken, semicolonToken);
+    }
+
+    public ThrowStatementTreeImpl throwStatement(AstNode throwToken, AstNode expression, AstNode semicolonToken) {
+      return new ThrowStatementTreeImpl(treeMaker.expression(expression), throwToken, expression, semicolonToken);
     }
 
     public EmptyStatementTreeImpl emptyStatement(AstNode semicolon) {
