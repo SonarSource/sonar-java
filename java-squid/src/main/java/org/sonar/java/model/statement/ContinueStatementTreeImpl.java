@@ -23,6 +23,7 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
@@ -39,9 +40,13 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
   @Nullable
   private final IdentifierTree label;
 
-  public ContinueStatementTreeImpl(AstNode astNode, @Nullable IdentifierTree label) {
-    super(astNode);
+  public ContinueStatementTreeImpl(@Nullable IdentifierTree label, AstNode... children) {
+    super(JavaGrammar.CONTINUE_STATEMENT);
     this.label = label;
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override

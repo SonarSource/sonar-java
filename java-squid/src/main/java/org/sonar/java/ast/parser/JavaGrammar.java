@@ -36,7 +36,6 @@ import static org.sonar.java.ast.api.JavaKeyword.CASE;
 import static org.sonar.java.ast.api.JavaKeyword.CATCH;
 import static org.sonar.java.ast.api.JavaKeyword.CHAR;
 import static org.sonar.java.ast.api.JavaKeyword.CLASS;
-import static org.sonar.java.ast.api.JavaKeyword.CONTINUE;
 import static org.sonar.java.ast.api.JavaKeyword.DEFAULT;
 import static org.sonar.java.ast.api.JavaKeyword.DO;
 import static org.sonar.java.ast.api.JavaKeyword.DOUBLE;
@@ -757,8 +756,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       b.sequence(STATEMENT_EXPRESSION, b.zeroOrMore(COMMA, STATEMENT_EXPRESSION))));
     b.rule(FOR_UPDATE).is(STATEMENT_EXPRESSION, b.zeroOrMore(COMMA, STATEMENT_EXPRESSION));
 
-    // 14.16. The continue Statement
-    b.rule(CONTINUE_STATEMENT).is(CONTINUE, b.optional(IDENTIFIER), SEMI);
     // 14.17. The return Statement
     b.rule(RETURN_STATEMENT).is(RETURN, b.optional(EXPRESSION), SEMI);
     // 14.18. The throw Statement

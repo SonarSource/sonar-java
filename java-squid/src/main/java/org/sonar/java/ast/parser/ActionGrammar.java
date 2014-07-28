@@ -30,6 +30,7 @@ import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
+import org.sonar.java.model.statement.ContinueStatementTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
@@ -82,12 +83,17 @@ public class ActionGrammar {
       .is(f.breakStatement(b.invokeRule(JavaKeyword.BREAK), b.optional(b.invokeRule(JavaTokenType.IDENTIFIER)), b.invokeRule(JavaPunctuator.SEMI)));
   }
 
+  public ContinueStatementTreeImpl CONTINUE_STATEMENT() {
+    return b.<ContinueStatementTreeImpl>nonterminal(JavaGrammar.CONTINUE_STATEMENT)
+      .is(f.continueStatement(b.invokeRule(JavaKeyword.CONTINUE), b.optional(b.invokeRule(JavaTokenType.IDENTIFIER)), b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
   public EmptyStatementTreeImpl EMPTY_STATEMENT() {
     return b.<EmptyStatementTreeImpl>nonterminal(JavaGrammar.EMPTY_STATEMENT)
       .is(f.emptyStatement(b.invokeRule(JavaPunctuator.SEMI)));
   }
 
-  // End eof statements
+  // End of statements
 
   public static class TreeFactory {
 
@@ -145,6 +151,12 @@ public class ActionGrammar {
       return identifier.isPresent() ?
         new BreakStatementTreeImpl(treeMaker.identifier(identifier.get()), breakToken, identifier.get(), semicolonToken) :
         new BreakStatementTreeImpl(null, breakToken, semicolonToken);
+    }
+
+    public ContinueStatementTreeImpl continueStatement(AstNode continueToken, Optional<AstNode> identifier, AstNode semicolonToken) {
+      return identifier.isPresent() ?
+        new ContinueStatementTreeImpl(treeMaker.identifier(identifier.get()), continueToken, identifier.get(), semicolonToken) :
+        new ContinueStatementTreeImpl(null, continueToken, semicolonToken);
     }
 
     public EmptyStatementTreeImpl emptyStatement(AstNode semicolon) {

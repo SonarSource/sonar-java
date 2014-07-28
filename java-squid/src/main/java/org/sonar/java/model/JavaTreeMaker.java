@@ -57,7 +57,6 @@ import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.CaseGroupTreeImpl;
 import org.sonar.java.model.statement.CaseLabelTreeImpl;
 import org.sonar.java.model.statement.CatchTreeImpl;
-import org.sonar.java.model.statement.ContinueStatementTreeImpl;
 import org.sonar.java.model.statement.DoWhileStatementTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForEachStatementImpl;
@@ -77,6 +76,7 @@ import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -825,10 +825,7 @@ public class JavaTreeMaker {
         break;
       case CONTINUE_STATEMENT:
         // 14.16. The continue Statement
-        result = new ContinueStatementTreeImpl(
-          statementNode,
-          statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? identifier(statementNode.getFirstChild(JavaTokenType.IDENTIFIER)) : null
-          );
+        result = (ContinueStatementTree) statementNode;
         break;
       case RETURN_STATEMENT:
         // 14.17. The return Statement
