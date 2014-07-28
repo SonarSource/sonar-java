@@ -60,7 +60,6 @@ import org.sonar.java.model.statement.CaseLabelTreeImpl;
 import org.sonar.java.model.statement.CatchTreeImpl;
 import org.sonar.java.model.statement.ContinueStatementTreeImpl;
 import org.sonar.java.model.statement.DoWhileStatementTreeImpl;
-import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForEachStatementImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
@@ -78,6 +77,7 @@ import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.EmptyStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
@@ -767,7 +767,7 @@ public class JavaTreeMaker {
         break;
       case EMPTY_STATEMENT:
         // 14.6. The Empty Statement
-        result = new EmptyStatementTreeImpl(statementNode);
+        result = (EmptyStatementTree) statementNode;
         break;
       case LABELED_STATEMENT:
         // 14.7. Labeled Statement

@@ -729,8 +729,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       EXPRESSION_STATEMENT,
       EMPTY_STATEMENT));
 
-    // 14.6. The Empty Statement
-    b.rule(EMPTY_STATEMENT).is(SEMI);
     // 14.7. Labeled Statements
     b.rule(LABELED_STATEMENT).is(IDENTIFIER, COLON, STATEMENT);
     // 14.8. Expression Statements

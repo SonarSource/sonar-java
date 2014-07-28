@@ -23,13 +23,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.EmptyStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -70,6 +73,11 @@ public class ActionGrammar {
           b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaGrammar.PAR_EXPRESSION), b.invokeRule(JavaGrammar.STATEMENT),
           b.optional(
             f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), b.invokeRule(JavaGrammar.STATEMENT)))));
+  }
+
+  public EmptyStatementTree EMPTY_STATEMENT() {
+    return b.<EmptyStatementTree>nonterminal(JavaGrammar.EMPTY_STATEMENT)
+      .is(f.emptyStatement(b.invokeRule(JavaPunctuator.SEMI)));
   }
 
   public static class TreeFactory {
@@ -113,6 +121,10 @@ public class ActionGrammar {
 
     public IfStatementTreeImpl newIfWithElse(AstNode elseToken, AstNode elseStatement) {
       return new IfStatementTreeImpl(treeMaker.statement(elseStatement), elseToken, elseStatement);
+    }
+
+    public EmptyStatementTree emptyStatement(AstNode semicolon) {
+      return new EmptyStatementTreeImpl(semicolon);
     }
 
   }
