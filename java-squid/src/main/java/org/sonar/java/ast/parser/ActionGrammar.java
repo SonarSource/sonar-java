@@ -24,10 +24,12 @@ import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.java.model.statement.BreakStatementTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
@@ -37,9 +39,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.List;
-
-import static org.sonar.java.ast.api.JavaPunctuator.LWING;
-import static org.sonar.java.ast.api.JavaPunctuator.RWING;
 
 public class ActionGrammar {
 
@@ -61,7 +60,7 @@ public class ActionGrammar {
 
   public BlockTreeImpl BLOCK() {
     return b.<BlockTreeImpl>nonterminal(JavaGrammar.BLOCK)
-      .is(f.block(b.invokeRule(LWING), b.invokeRule(JavaGrammar.BLOCK_STATEMENTS), b.invokeRule(RWING)));
+      .is(f.block(b.invokeRule(JavaPunctuator.LWING), b.invokeRule(JavaGrammar.BLOCK_STATEMENTS), b.invokeRule(JavaPunctuator.RWING)));
   }
 
   public IfStatementTreeImpl IF_STATEMENT() {
@@ -76,6 +75,11 @@ public class ActionGrammar {
   public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
     return b.<SynchronizedStatementTreeImpl>nonterminal(JavaGrammar.SYNCHRONIZED_STATEMENT)
       .is(f.synchronizedStatement(b.invokeRule(JavaKeyword.SYNCHRONIZED), b.invokeRule(JavaGrammar.PAR_EXPRESSION), BLOCK()));
+  }
+
+  public BreakStatementTreeImpl BREAK_STATEMENT() {
+    return b.<BreakStatementTreeImpl>nonterminal(JavaGrammar.BREAK_STATEMENT)
+      .is(f.breakStatement(b.invokeRule(JavaKeyword.BREAK), b.optional(b.invokeRule(JavaTokenType.IDENTIFIER)), b.invokeRule(JavaPunctuator.SEMI)));
   }
 
   public EmptyStatementTreeImpl EMPTY_STATEMENT() {
@@ -114,8 +118,8 @@ public class ActionGrammar {
 
     // Statements
 
-    public BlockTreeImpl block(AstNode lwing, AstNode statements, AstNode rwing) {
-      return new BlockTreeImpl(Tree.Kind.BLOCK, treeMaker.blockStatements(statements), lwing, statements, rwing);
+    public BlockTreeImpl block(AstNode leftCurlyBraceToken, AstNode statements, AstNode rightCurlyBraceToken) {
+      return new BlockTreeImpl(Tree.Kind.BLOCK, treeMaker.blockStatements(statements), leftCurlyBraceToken, statements, rightCurlyBraceToken);
     }
 
     public IfStatementTreeImpl completeIf(AstNode ifToken, AstNode condition, AstNode statement, Optional<IfStatementTreeImpl> elseClause) {
@@ -135,6 +139,12 @@ public class ActionGrammar {
         treeMaker.expression(expression),
         block,
         synchronizedToken, expression, block);
+    }
+
+    public BreakStatementTreeImpl breakStatement(AstNode breakToken, Optional<AstNode> identifier, AstNode semicolonToken) {
+      return identifier.isPresent() ?
+        new BreakStatementTreeImpl(treeMaker.identifier(identifier.get()), breakToken, identifier.get(), semicolonToken) :
+        new BreakStatementTreeImpl(null, breakToken, semicolonToken);
     }
 
     public EmptyStatementTreeImpl emptyStatement(AstNode semicolon) {

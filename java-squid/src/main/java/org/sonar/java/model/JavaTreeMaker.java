@@ -54,7 +54,6 @@ import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
-import org.sonar.java.model.statement.BreakStatementTreeImpl;
 import org.sonar.java.model.statement.CaseGroupTreeImpl;
 import org.sonar.java.model.statement.CaseLabelTreeImpl;
 import org.sonar.java.model.statement.CatchTreeImpl;
@@ -72,6 +71,7 @@ import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -105,7 +105,7 @@ public class JavaTreeMaker {
     Preconditions.checkArgument(astNode.is(expected), "Unexpected AstNodeType: %s", astNode.getType().toString());
   }
 
-  private IdentifierTree identifier(AstNode astNode) {
+  public IdentifierTree identifier(AstNode astNode) {
     checkType(astNode, JavaTokenType.IDENTIFIER, JavaKeyword.THIS, JavaKeyword.CLASS, JavaKeyword.SUPER);
     return new IdentifierTreeImpl(astNode, astNode.getTokenValue());
   }
@@ -821,10 +821,7 @@ public class JavaTreeMaker {
         break;
       case BREAK_STATEMENT:
         // 14.15. The break Statement
-        result = new BreakStatementTreeImpl(
-          statementNode,
-          statementNode.hasDirectChildren(JavaTokenType.IDENTIFIER) ? identifier(statementNode.getFirstChild(JavaTokenType.IDENTIFIER)) : null
-          );
+        result = (BreakStatementTree) statementNode;
         break;
       case CONTINUE_STATEMENT:
         // 14.16. The continue Statement

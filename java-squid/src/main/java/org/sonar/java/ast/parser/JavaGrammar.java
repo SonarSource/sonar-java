@@ -31,7 +31,6 @@ import java.util.Arrays;
 import static org.sonar.java.ast.api.JavaKeyword.ABSTRACT;
 import static org.sonar.java.ast.api.JavaKeyword.ASSERT;
 import static org.sonar.java.ast.api.JavaKeyword.BOOLEAN;
-import static org.sonar.java.ast.api.JavaKeyword.BREAK;
 import static org.sonar.java.ast.api.JavaKeyword.BYTE;
 import static org.sonar.java.ast.api.JavaKeyword.CASE;
 import static org.sonar.java.ast.api.JavaKeyword.CATCH;
@@ -758,8 +757,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       b.sequence(STATEMENT_EXPRESSION, b.zeroOrMore(COMMA, STATEMENT_EXPRESSION))));
     b.rule(FOR_UPDATE).is(STATEMENT_EXPRESSION, b.zeroOrMore(COMMA, STATEMENT_EXPRESSION));
 
-    // 14.15. The break Statement
-    b.rule(BREAK_STATEMENT).is(BREAK, b.optional(IDENTIFIER), SEMI);
     // 14.16. The continue Statement
     b.rule(CONTINUE_STATEMENT).is(CONTINUE, b.optional(IDENTIFIER), SEMI);
     // 14.17. The return Statement
