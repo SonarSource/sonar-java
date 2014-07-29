@@ -97,5 +97,11 @@ class Foo {
       case 3:
         break;
     }
+
+    switch (foo) {
+      case 1: break; // Noncompliant
+      case 2
+        : case 3: break; // Compliant
+    }
   };
 }

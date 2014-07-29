@@ -21,13 +21,17 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.api.Token;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.List;
 
 @Rule(
   key = "IndentationCheck",
@@ -80,6 +84,14 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
     if (node.is(BLOCK_TYPES)) {
       expectedLevel += indentationLevel;
       isBlockAlreadyReported = false;
+
+      // TODO This is quite horrible, but this is how the rule was actually behaving...
+      if (node.is(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)) {
+        List<CaseLabelTree> labels = ((CaseGroupTree) node).labels();
+        if (labels.size() >= 2) {
+          lastCheckedLine = ((JavaTree) labels.get(labels.size() - 2)).getAstNode().getLastToken().getLine();
+        }
+      }
     } else if (node.getToken().getColumn() != expectedLevel && !isExcluded(node)) {
       getContext().createLineViolation(this, "Make this line start at column " + (expectedLevel + 1) + ".", node);
       isBlockAlreadyReported = true;
@@ -93,8 +105,7 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
       isBlockAlreadyReported = false;
     }
 
-    Token lastToken = getLastToken(node);
-    lastCheckedLine = lastToken.getLine();
+    lastCheckedLine = node.getLastToken().getLine();
   }
 
   private boolean isExcluded(AstNode node) {
@@ -107,16 +118,6 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
 
   private static boolean isInAnnonymousClass(AstNode node) {
     return node.hasAncestor(JavaGrammar.CLASS_CREATOR_REST);
-  }
-
-  private static Token getLastToken(AstNode node) {
-    AstNode lastNodeWithTokens = node;
-
-    while (!lastNodeWithTokens.hasToken()) {
-      lastNodeWithTokens = lastNodeWithTokens.getPreviousAstNode();
-    }
-
-    return lastNodeWithTokens.getLastToken();
   }
 
 }
