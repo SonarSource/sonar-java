@@ -123,9 +123,9 @@ public class AccessorVisitor extends JavaAstVisitor {
     if (astNode.is(JavaGrammar.RETURN_STATEMENT) && astNode.hasDirectChildren(JavaGrammar.EXPRESSION)) {
       AstNode expression = astNode.getFirstChild(JavaGrammar.EXPRESSION);
       if (expression.getNumberOfChildren() == 1 && expression.getFirstChild().is(JavaGrammar.PRIMARY)) {
-        AstNode primary = expression.getFirstChild();
-        if (primary.getNumberOfChildren() == 1 && primary.getFirstChild().is(JavaGrammar.QUALIFIED_IDENTIFIER)) {
-          AstNode qualifiedIdentifier = primary.getFirstChild();
+        AstNode qualifiedIdentifierExpression = expression.getFirstChild().getFirstChild();
+        if (qualifiedIdentifierExpression.is(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION) && qualifiedIdentifierExpression.getNumberOfChildren() == 1) {
+          AstNode qualifiedIdentifier = qualifiedIdentifierExpression.getFirstChild();
           if (qualifiedIdentifier.getNumberOfChildren() == 1) {
             AstNode varReturned = qualifiedIdentifier.getFirstChild();
             if (findPrivateClassVariable(varReturned)) {

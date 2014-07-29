@@ -172,6 +172,10 @@ public class ActionGrammar {
 
   // End of statements
 
+  // Expressions
+
+  // End of expressions
+
   public static class TreeFactory {
 
     private final KindMaps kindMaps = new KindMaps();
@@ -324,6 +328,10 @@ public class ActionGrammar {
     }
 
     // End of statements
+
+    // Expressions
+
+    // End of expressions
 
   }
 

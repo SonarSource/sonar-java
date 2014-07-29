@@ -995,15 +995,15 @@ public class JavaTreeMaker {
     if (firstChildNode.is(JavaGrammar.PAR_EXPRESSION)) {
       // (expression)
       return expression(firstChildNode);
-    } else if (firstChildNode.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
-      if (astNode.hasDirectChildren(JavaKeyword.THIS)) {
+    } else if (firstChildNode.is(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_EXPRESSION)) {
+      if (firstChildNode.hasDirectChildren(JavaKeyword.THIS)) {
         // <T>this(arguments)
         return new MethodInvocationTreeImpl(
-          astNode,
-          identifier(astNode.getFirstChild(JavaKeyword.THIS)),
-          arguments(astNode.getFirstChild(JavaGrammar.ARGUMENTS)));
+          firstChildNode,
+          identifier(firstChildNode.getFirstChild(JavaKeyword.THIS)),
+          arguments(firstChildNode.getFirstChild(JavaGrammar.ARGUMENTS)));
       } else {
-        AstNode explicitGenericInvocationSuffixNode = astNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX);
+        AstNode explicitGenericInvocationSuffixNode = firstChildNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX);
         if (explicitGenericInvocationSuffixNode.hasDirectChildren(JavaKeyword.SUPER)) {
           // <T>super...
           return applySuperSuffix(
@@ -1012,37 +1012,37 @@ public class JavaTreeMaker {
         } else {
           // <T>id(arguments)
           return new MethodInvocationTreeImpl(
-            astNode,
+            firstChildNode,
             identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)),
             arguments(explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)));
         }
       }
-    } else if (firstChildNode.is(JavaKeyword.THIS)) {
-      IdentifierTree identifier = identifier(firstChildNode);
-      if (astNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
+    } else if (firstChildNode.is(JavaGrammar.THIS_EXPRESSION)) {
+      IdentifierTree identifier = identifier(firstChildNode.getFirstChild());
+      if (firstChildNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
         // this(arguments)
         return new MethodInvocationTreeImpl(
-          astNode,
+          firstChildNode,
           identifier,
-          arguments(astNode.getFirstChild(JavaGrammar.ARGUMENTS)));
+          arguments(firstChildNode.getFirstChild(JavaGrammar.ARGUMENTS)));
       } else {
         // this
         return identifier;
       }
-    } else if (firstChildNode.is(JavaKeyword.SUPER)) {
+    } else if (firstChildNode.is(JavaGrammar.SUPER_EXPRESSION)) {
       // super...
       return applySuperSuffix(
-        identifier(firstChildNode),
-        astNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
+        identifier(firstChildNode.getFirstChild()),
+        firstChildNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
     } else if (firstChildNode.is(JavaGrammar.LITERAL)) {
       // "literal"
       return literal(firstChildNode);
-    } else if (firstChildNode.is(JavaKeyword.NEW)) {
+    } else if (firstChildNode.is(JavaGrammar.NEW_EXPRESSION)) {
       // new...
-      return creator(astNode.getFirstChild(JavaGrammar.CREATOR));
-    } else if (firstChildNode.is(JavaGrammar.QUALIFIED_IDENTIFIER)) {
-      ExpressionTree identifier = qualifiedIdentifier(firstChildNode);
-      AstNode identifierSuffixNode = astNode.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
+      return creator(firstChildNode.getFirstChild(JavaGrammar.CREATOR));
+    } else if (firstChildNode.is(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION)) {
+      ExpressionTree identifier = qualifiedIdentifier(firstChildNode.getFirstChild());
+      AstNode identifierSuffixNode = firstChildNode.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
       if (identifierSuffixNode == null) {
         // id
         return identifier;
@@ -1052,20 +1052,20 @@ public class JavaTreeMaker {
             // 15.8.2. Class Literals
             // id[].class
             return new MemberSelectExpressionTreeImpl(
-              astNode,
+              firstChildNode,
               applyDim(identifier, identifierSuffixNode.getChildren(JavaGrammar.DIM).size() + 1),
               identifier(identifierSuffixNode.getFirstChild(JavaKeyword.CLASS)));
           } else {
             // id[expression]
             return new ArrayAccessExpressionTreeImpl(
-              astNode,
+              firstChildNode,
               identifier,
               expression(identifierSuffixNode.getFirstChild(JavaGrammar.EXPRESSION)));
           }
         } else if (identifierSuffixNode.getFirstChild().is(JavaGrammar.ARGUMENTS)) {
           // id(arguments)
           return new MethodInvocationTreeImpl(
-            astNode,
+            firstChildNode,
             identifier,
             arguments(identifierSuffixNode.getFirstChild()));
         } else if (identifierSuffixNode.getFirstChild().is(JavaPunctuator.DOT)) {
@@ -1109,15 +1109,20 @@ public class JavaTreeMaker {
           throw new IllegalArgumentException("Unexpected AstNodeType: " + identifierSuffixNode.getFirstChild());
         }
       }
-    } else if (firstChildNode.is(JavaGrammar.BASIC_TYPE, JavaKeyword.VOID)) {
+    } else if (firstChildNode.is(JavaGrammar.BASIC_CLASS_EXPRESSION)) {
       // 15.8.2. Class Literals
       // int.class
       // int[].class
+      return new MemberSelectExpressionTreeImpl(
+        astNode,
+        applyDim(basicType(firstChildNode.getFirstChild()), firstChildNode.getChildren(JavaGrammar.DIM).size()),
+        identifier(firstChildNode.getFirstChild(JavaKeyword.CLASS)));
+    } else if (firstChildNode.is(JavaGrammar.VOID_CLASS_EXPRESSION)) {
       // void.class
       return new MemberSelectExpressionTreeImpl(
         astNode,
-        applyDim(basicType(firstChildNode), astNode.getChildren(JavaGrammar.DIM).size()),
-        identifier(astNode.getFirstChild(JavaKeyword.CLASS)));
+        basicType(firstChildNode.getFirstChild()),
+        identifier(firstChildNode.getFirstChild(JavaKeyword.CLASS)));
     } else if (firstChildNode.is(JavaGrammar.LAMBDA_EXPRESSION)) {
       return lambdaExpression(firstChildNode);
     } else {

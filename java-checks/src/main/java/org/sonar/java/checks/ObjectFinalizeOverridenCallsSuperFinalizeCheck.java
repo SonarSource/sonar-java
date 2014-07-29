@@ -20,20 +20,19 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.ast.AstSelect;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
-    key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck",
-    priority = Priority.BLOCKER,
-    tags = {"bug"})
+  key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck",
+  priority = Priority.BLOCKER,
+  tags = {"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
 public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<LexerlessGrammar> {
 
@@ -42,7 +41,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<L
   @Override
   public void init() {
     subscribeTo(JavaGrammar.MEMBER_DECL);
-    subscribeTo(JavaGrammar.PRIMARY);
+    subscribeTo(JavaGrammar.SUPER_EXPRESSION);
   }
 
   @Override
@@ -58,33 +57,32 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<L
   }
 
   private static boolean isSuperFinalize(AstNode node) {
-    return node.is(JavaGrammar.PRIMARY) &&
-        node.hasDirectChildren(JavaKeyword.SUPER) &&
-        isFinalizeCallSuffix(node.getFirstChild(JavaGrammar.SUPER_SUFFIX));
+    return node.is(JavaGrammar.SUPER_EXPRESSION) &&
+      isFinalizeCallSuffix(node.getFirstChild(JavaGrammar.SUPER_SUFFIX));
   }
 
   private static boolean isFinalizeCallSuffix(AstNode node) {
     AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
     return identifier != null &&
-        "finalize".equals(identifier.getTokenOriginalValue()) &&
-        node.hasDirectChildren(JavaGrammar.ARGUMENTS);
+      "finalize".equals(identifier.getTokenOriginalValue()) &&
+      node.hasDirectChildren(JavaGrammar.ARGUMENTS);
   }
 
   private boolean isObjectFinalize(AstNode node) {
     AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
     return "finalize".equals(identifier.getTokenValue()) &&
-        !node.getFirstDescendant(JavaGrammar.FORMAL_PARAMETERS).hasDirectChildren(JavaGrammar.FORMAL_PARAMETER_DECLS);
+      !node.getFirstDescendant(JavaGrammar.FORMAL_PARAMETERS).hasDirectChildren(JavaGrammar.FORMAL_PARAMETER_DECLS);
   }
 
   @Override
   public void leaveNode(AstNode node) {
     if (node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST) && isObjectFinalize(node)) {
       AstSelect methodBlockStatement = node.select()
-          .children(JavaGrammar.VOID_METHOD_DECLARATOR_REST)
-          .children(JavaGrammar.METHOD_BODY)
-          .children(JavaGrammar.BLOCK)
-          .children(JavaGrammar.BLOCK_STATEMENTS)
-          .children(JavaGrammar.BLOCK_STATEMENT);
+        .children(JavaGrammar.VOID_METHOD_DECLARATOR_REST)
+        .children(JavaGrammar.METHOD_BODY)
+        .children(JavaGrammar.BLOCK)
+        .children(JavaGrammar.BLOCK_STATEMENTS)
+        .children(JavaGrammar.BLOCK_STATEMENT);
 
       if (lastSuperFinalizeStatement == null) {
         getContext().createLineViolation(this, "Add a call to super.finalize() at the end of this Object.finalize() implementation.", node.getFirstChild(JavaTokenType.IDENTIFIER));
@@ -114,10 +112,10 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<L
     }
 
     AstSelect query = tryStatement.select()
-        .children(JavaGrammar.FINALLY_)
-        .children(JavaGrammar.BLOCK)
-        .children(JavaGrammar.BLOCK_STATEMENTS)
-        .children(JavaGrammar.BLOCK_STATEMENT);
+      .children(JavaGrammar.FINALLY_)
+      .children(JavaGrammar.BLOCK)
+      .children(JavaGrammar.BLOCK_STATEMENTS)
+      .children(JavaGrammar.BLOCK_STATEMENT);
 
     return getLastBlockStatement(query);
   }
