@@ -781,7 +781,6 @@ public class JavaTreeMaker {
         result = (AssertStatementTree) statementNode;
         break;
       case SWITCH_STATEMENT:
-        // TODO
         result = (SwitchStatementTree) statementNode;
         break;
       case WHILE_STATEMENT:
