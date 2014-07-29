@@ -75,7 +75,7 @@ public class HiddenFieldCheck extends SquidCheck<LexerlessGrammar> {
   private static boolean isInStaticBlock(AstNode node) {
     AstSelect query = node.select()
       .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION, JavaGrammar.CLASS_INIT_DECLARATION)
-      .children(JavaGrammar.DSL_MODIFIERS, JavaKeyword.STATIC);
+      .children(JavaGrammar.MODIFIERS, JavaKeyword.STATIC);
 
     for (AstNode modifiersOrStatic : query) {
       if (modifiersOrStatic.is(JavaKeyword.STATIC) || ((ModifiersTree) modifiersOrStatic).modifiers().contains(Modifier.STATIC)) {

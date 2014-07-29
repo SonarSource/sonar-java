@@ -134,7 +134,7 @@ public class UtilityClassWithPublicConstructorCheck extends SquidCheck<Lexerless
   }
 
   public static boolean hasModifier(AstNode node, Modifier modifier) {
-    ModifiersTree modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.DSL_MODIFIERS);
+    ModifiersTree modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.MODIFIERS);
 
     return modifiers != null && modifiers.modifiers().contains(modifier);
   }

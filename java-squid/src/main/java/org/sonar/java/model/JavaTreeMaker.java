@@ -308,7 +308,7 @@ public class JavaTreeMaker {
         JavaGrammar.ANNOTATION_TYPE_DECLARATION
         );
       if (declarationNode != null) {
-        types.add(typeDeclaration((ModifiersTree) typeNode.getFirstChild(JavaGrammar.DSL_MODIFIERS), declarationNode));
+        types.add(typeDeclaration((ModifiersTree) typeNode.getFirstChild(JavaGrammar.MODIFIERS), declarationNode));
       }
     }
 
@@ -381,7 +381,7 @@ public class JavaTreeMaker {
     checkType(astNode, JavaGrammar.CLASS_BODY, JavaGrammar.ENUM_BODY_DECLARATIONS);
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode classBodyDeclaration : astNode.getChildren(JavaGrammar.CLASS_BODY_DECLARATION)) {
-      ModifiersTree modifiers = (ModifiersTree) classBodyDeclaration.getFirstChild(JavaGrammar.DSL_MODIFIERS);
+      ModifiersTree modifiers = (ModifiersTree) classBodyDeclaration.getFirstChild(JavaGrammar.MODIFIERS);
       if (classBodyDeclaration.hasDirectChildren(JavaGrammar.MEMBER_DECL)) {
         AstNode memberDeclNode = classBodyDeclaration.getFirstChild(JavaGrammar.MEMBER_DECL);
         if (memberDeclNode.hasDirectChildren(JavaGrammar.FIELD_DECLARATION)) {
@@ -561,7 +561,7 @@ public class JavaTreeMaker {
     IdentifierTree simpleName = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode interfaceBodyDeclarationNode : astNode.getFirstChild(JavaGrammar.INTERFACE_BODY).getChildren(JavaGrammar.INTERFACE_BODY_DECLARATION)) {
-      ModifiersTree memberModifiers = (ModifiersTree) interfaceBodyDeclarationNode.getFirstChild(JavaGrammar.DSL_MODIFIERS);
+      ModifiersTree memberModifiers = (ModifiersTree) interfaceBodyDeclarationNode.getFirstChild(JavaGrammar.MODIFIERS);
       AstNode interfaceMemberDeclNode = interfaceBodyDeclarationNode.getFirstChild(JavaGrammar.INTERFACE_MEMBER_DECL);
       if (interfaceMemberDeclNode != null) {
         appendInterfaceMember(memberModifiers, members, interfaceMemberDeclNode);
@@ -729,9 +729,9 @@ public class JavaTreeMaker {
         referenceType(statementNode.getFirstChild(JavaGrammar.TYPE)),
         statementNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS));
     } else if (statementNode.is(JavaGrammar.CLASS_DECLARATION)) {
-      return ImmutableList.<StatementTree>of(classDeclaration((ModifiersTree) astNode.getFirstChild(JavaGrammar.DSL_MODIFIERS), statementNode));
+      return ImmutableList.<StatementTree>of(classDeclaration((ModifiersTree) astNode.getFirstChild(JavaGrammar.MODIFIERS), statementNode));
     } else if (statementNode.is(JavaGrammar.ENUM_DECLARATION)) {
-      return ImmutableList.<StatementTree>of(enumDeclaration((ModifiersTree) astNode.getFirstChild(JavaGrammar.DSL_MODIFIERS), statementNode));
+      return ImmutableList.<StatementTree>of(enumDeclaration((ModifiersTree) astNode.getFirstChild(JavaGrammar.MODIFIERS), statementNode));
     } else {
       throw new IllegalStateException("Unexpected AstNodeType: " + statementNode.getType().toString());
     }

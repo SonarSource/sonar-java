@@ -53,7 +53,7 @@ public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
   }
 
   public ModifiersTreeImpl(List<AstNode> children, List<Modifier> modifiers, List<AnnotationTree> annotations) {
-    super(JavaGrammar.DSL_MODIFIERS);
+    super(JavaGrammar.MODIFIERS);
     for (AstNode child : children) {
       addChild(child);
     }

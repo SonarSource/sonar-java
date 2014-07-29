@@ -67,7 +67,7 @@ public class ActionGrammar {
   }
 
   public ModifiersTreeImpl DSL_MODIFIERS() {
-    return b.<ModifiersTreeImpl>nonterminal(JavaGrammar.DSL_MODIFIERS)
+    return b.<ModifiersTreeImpl>nonterminal(JavaGrammar.MODIFIERS)
       .is(f.modifiers(b.zeroOrMore(b.invokeRule(JavaGrammar.MODIFIER))));
   }
 

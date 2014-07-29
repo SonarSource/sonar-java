@@ -42,7 +42,7 @@ public class SuppressWarningsAnnotationUtils {
   public static boolean isSuppressAllWarnings(AstNode astNode) {
     if (astNode.is(JavaGrammar.CLASS_DECLARATION, JavaGrammar.INTERFACE_DECLARATION, JavaGrammar.ENUM_DECLARATION, JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
       AstNode modifiersCandidate = astNode.getPreviousAstNode();
-      if (!modifiersCandidate.is(JavaGrammar.DSL_MODIFIERS)) {
+      if (!modifiersCandidate.is(JavaGrammar.MODIFIERS)) {
         return false;
       }
 
@@ -59,7 +59,7 @@ public class SuppressWarningsAnnotationUtils {
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
     }
-    ModifiersTree modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.DSL_MODIFIERS);
+    ModifiersTree modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.MODIFIERS);
     return containsAnnotationSuppressAllWarnings(modifiers.annotations());
   }
 

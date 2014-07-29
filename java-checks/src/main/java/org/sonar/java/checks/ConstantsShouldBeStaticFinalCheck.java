@@ -71,7 +71,7 @@ public class ConstantsShouldBeStaticFinalCheck extends SquidCheck<LexerlessGramm
 
   private static boolean isFinal(AstNode node) {
     return node.select()
-      .children(JavaGrammar.DSL_MODIFIERS)
+      .children(JavaGrammar.MODIFIERS)
       .children(JavaGrammar.MODIFIER)
       .children(JavaKeyword.FINAL)
       .isNotEmpty();
@@ -79,7 +79,7 @@ public class ConstantsShouldBeStaticFinalCheck extends SquidCheck<LexerlessGramm
 
   private static boolean isStatic(AstNode node) {
     return node.select()
-      .children(JavaGrammar.DSL_MODIFIERS)
+      .children(JavaGrammar.MODIFIERS)
       .children(JavaGrammar.MODIFIER)
       .children(JavaKeyword.STATIC)
       .isNotEmpty();

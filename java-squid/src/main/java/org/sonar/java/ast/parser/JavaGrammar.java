@@ -316,7 +316,7 @@ public enum JavaGrammar implements GrammarRuleKey {
   UNARY_EXPRESSION_NOT_PLUS_MINUS,
   CAST_EXPRESSION,
 
-  DSL_MODIFIERS;
+  MODIFIERS;
 
   public static LexerlessGrammarBuilder createGrammarBuilder() {
     LexerlessGrammarBuilder b = LexerlessGrammarBuilder.create();
@@ -552,7 +552,7 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(PACKAGE_DECLARATION).is(b.zeroOrMore(ANNOTATION), PACKAGE, QUALIFIED_IDENTIFIER, SEMI);
     b.rule(IMPORT_DECLARATION).is(IMPORT, b.optional(STATIC), QUALIFIED_IDENTIFIER, b.optional(DOT, STAR), SEMI);
     b.rule(TYPE_DECLARATION).is(b.firstOf(
-      b.sequence(DSL_MODIFIERS, b.firstOf(CLASS_DECLARATION, ENUM_DECLARATION, INTERFACE_DECLARATION, ANNOTATION_TYPE_DECLARATION)),
+      b.sequence(MODIFIERS, b.firstOf(CLASS_DECLARATION, ENUM_DECLARATION, INTERFACE_DECLARATION, ANNOTATION_TYPE_DECLARATION)),
       SEMI));
   }
 
@@ -567,7 +567,7 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(CLASS_BODY_DECLARATION).is(b.firstOf(
       SEMI,
       CLASS_INIT_DECLARATION,
-      b.sequence(DSL_MODIFIERS, MEMBER_DECL)));
+      b.sequence(MODIFIERS, MEMBER_DECL)));
     b.rule(CLASS_INIT_DECLARATION).is(b.optional(STATIC), BLOCK);
     b.rule(MEMBER_DECL).is(b.firstOf(
       b.sequence(TYPE_PARAMETERS, GENERIC_METHOD_OR_CONSTRUCTOR_REST),
@@ -608,7 +608,7 @@ public enum JavaGrammar implements GrammarRuleKey {
 
     b.rule(INTERFACE_BODY).is(LWING, b.zeroOrMore(INTERFACE_BODY_DECLARATION), RWING);
     b.rule(INTERFACE_BODY_DECLARATION).is(b.firstOf(
-      b.sequence(DSL_MODIFIERS, INTERFACE_MEMBER_DECL),
+      b.sequence(MODIFIERS, INTERFACE_MEMBER_DECL),
       SEMI));
     b.rule(INTERFACE_MEMBER_DECL).is(b.firstOf(
       INTERFACE_METHOD_OR_FIELD_DECL,
@@ -651,7 +651,7 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(ANNOTATION_TYPE_DECLARATION).is(AT, INTERFACE, IDENTIFIER, ANNOTATION_TYPE_BODY);
     b.rule(ANNOTATION_TYPE_BODY).is(LWING, b.zeroOrMore(ANNOTATION_TYPE_ELEMENT_DECLARATION), RWING);
     b.rule(ANNOTATION_TYPE_ELEMENT_DECLARATION).is(b.firstOf(
-      b.sequence(DSL_MODIFIERS, ANNOTATION_TYPE_ELEMENT_REST),
+      b.sequence(MODIFIERS, ANNOTATION_TYPE_ELEMENT_REST),
       SEMI));
     b.rule(ANNOTATION_TYPE_ELEMENT_REST).is(b.firstOf(
       b.sequence(TYPE, IDENTIFIER, ANNOTATION_METHOD_OR_CONSTANT_REST, SEMI),
@@ -688,7 +688,7 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(BLOCK_STATEMENTS).is(b.zeroOrMore(BLOCK_STATEMENT));
     b.rule(BLOCK_STATEMENT).is(b.firstOf(
       LOCAL_VARIABLE_DECLARATION_STATEMENT,
-      b.sequence(DSL_MODIFIERS, b.firstOf(CLASS_DECLARATION, ENUM_DECLARATION)),
+      b.sequence(MODIFIERS, b.firstOf(CLASS_DECLARATION, ENUM_DECLARATION)),
       STATEMENT));
 
     // 14.4. Local Variable Declaration Statements

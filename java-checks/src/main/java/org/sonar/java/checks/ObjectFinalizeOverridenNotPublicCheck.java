@@ -55,7 +55,7 @@ public class ObjectFinalizeOverridenNotPublicCheck extends SquidCheck<LexerlessG
   private static boolean isPublic(AstNode node) {
     return node.select()
       .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
-      .children(JavaGrammar.DSL_MODIFIERS)
+      .children(JavaGrammar.MODIFIERS)
       .children(JavaGrammar.MODIFIER)
       .children(JavaKeyword.PUBLIC)
       .isNotEmpty();

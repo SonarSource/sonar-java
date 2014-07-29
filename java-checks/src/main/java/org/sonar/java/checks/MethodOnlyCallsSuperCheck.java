@@ -123,7 +123,7 @@ public class MethodOnlyCallsSuperCheck extends SquidCheck<LexerlessGrammar> {
   private static boolean hasAnnotationDifferentFromOverride(AstNode node) {
     AstSelect query = node.select()
       .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
-      .children(JavaGrammar.DSL_MODIFIERS)
+      .children(JavaGrammar.MODIFIERS)
       .children(JavaGrammar.MODIFIER)
       .children(JavaGrammar.ANNOTATION)
       .children(JavaGrammar.QUALIFIED_IDENTIFIER);

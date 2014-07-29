@@ -176,7 +176,7 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
   }
 
   private static ModifiersTree getModifiers(AstNode declaration) {
-    return (ModifiersTree) declaration.getFirstChild(JavaGrammar.DSL_MODIFIERS);
+    return (ModifiersTree) declaration.getFirstChild(JavaGrammar.MODIFIERS);
   }
 
   public static AstNode getDeclaration(AstNode astNode) {

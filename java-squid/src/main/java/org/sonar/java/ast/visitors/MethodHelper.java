@@ -64,7 +64,7 @@ public class MethodHelper {
       throw new IllegalStateException();
     }
 
-    ModifiersTree modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.DSL_MODIFIERS);
+    ModifiersTree modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.MODIFIERS);
     return modifiers.modifiers().contains(Modifier.PUBLIC);
   }
 

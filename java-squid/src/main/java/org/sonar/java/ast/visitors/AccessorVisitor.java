@@ -160,7 +160,7 @@ public class AccessorVisitor extends JavaAstVisitor {
   }
 
   private boolean hasPrivateModifier(AstNode classBodyDeclaration) {
-    ModifiersTree modifiers = (ModifiersTree) classBodyDeclaration.getFirstChild(JavaGrammar.DSL_MODIFIERS);
+    ModifiersTree modifiers = (ModifiersTree) classBodyDeclaration.getFirstChild(JavaGrammar.MODIFIERS);
     return modifiers != null &&
       modifiers.modifiers().contains(Modifier.PRIVATE);
   }

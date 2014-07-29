@@ -71,7 +71,7 @@ public class ExceptionsShouldBeImmutableCheck extends SquidCheck<LexerlessGramma
   private static boolean isFinal(AstNode node) {
     return node.select()
       .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
-      .children(JavaGrammar.DSL_MODIFIERS)
+      .children(JavaGrammar.MODIFIERS)
       .children(JavaGrammar.MODIFIER)
       .children(JavaKeyword.FINAL)
       .isNotEmpty();
