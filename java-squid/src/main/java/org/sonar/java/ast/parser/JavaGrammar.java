@@ -892,7 +892,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(DIM_EXPR).is(b.zeroOrMore(ANNOTATION), LBRK, EXPRESSION, RBRK);
 
     // Java 8 lambda expressions.
-    b.rule(LAMBDA_EXPRESSION).is(LAMBDA_PARAMETERS, ARROW, LAMBDA_BODY);
     b.rule(LAMBDA_PARAMETERS).is(b.firstOf(
       b.sequence(LPAR, b.optional(IDENTIFIER, b.zeroOrMore(COMMA, IDENTIFIER)), RPAR),
       FORMAL_PARAMETERS,

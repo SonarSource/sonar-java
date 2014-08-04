@@ -20,9 +20,11 @@
 package org.sonar.java.model;
 
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.resolve.Type;
 
 public abstract class AbstractTypedTree extends JavaTree {
+
   /**
    * Can be {@code null} before and during semantic analysis, but not after.
    */
@@ -33,13 +35,18 @@ public abstract class AbstractTypedTree extends JavaTree {
     super(astNode);
   }
 
+  public AbstractTypedTree(AstNodeType astNodeType) {
+    super(astNodeType);
+  }
+
   public Type getType2() {
     return type;
   }
 
   public void setType(Type type) {
     // FIXME(Godin): type should be computed and set only once, but currently this is not the case and this contract is violated
-//    Preconditions.checkState(this.type == null);
+    // Preconditions.checkState(this.type == null);
     this.type = type;
   }
+
 }

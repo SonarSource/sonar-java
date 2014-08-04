@@ -21,6 +21,7 @@ package org.sonar.java.ast.parser;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
@@ -28,6 +29,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
@@ -45,9 +47,12 @@ import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.Collections;
@@ -173,6 +178,11 @@ public class ActionGrammar {
   // End of statements
 
   // Expressions
+
+  public ExpressionTree LAMBDA_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.LAMBDA_EXPRESSION)
+      .is(f.lambdaExpression(b.invokeRule(JavaGrammar.LAMBDA_PARAMETERS), b.invokeRule(JavaGrammar.ARROW), b.invokeRule(JavaGrammar.LAMBDA_BODY)));
+  }
 
   // End of expressions
 
@@ -330,6 +340,20 @@ public class ActionGrammar {
     // End of statements
 
     // Expressions
+
+    public ExpressionTree lambdaExpression(AstNode parameters, AstNode arrowToken, AstNode body) {
+      Tree bodyTree;
+      if (body.hasDirectChildren(JavaGrammar.BLOCK)) {
+        bodyTree = (BlockTree) body.getFirstChild(JavaGrammar.BLOCK);
+      } else {
+        bodyTree = treeMaker.expression(body.getFirstChild());
+      }
+      List<VariableTree> params = Lists.newArrayList();
+      // FIXME(Godin): params always empty
+
+      return new LambdaExpressionTreeImpl(params, bodyTree,
+        parameters, arrowToken, body);
+    }
 
     // End of expressions
 

@@ -44,7 +44,6 @@ import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InstanceOfTreeImpl;
 import org.sonar.java.model.expression.InternalPostfixUnaryExpression;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
-import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
@@ -971,19 +970,6 @@ public class JavaTreeMaker {
     }
   }
 
-  private ExpressionTree lambdaExpression(AstNode astNode) {
-    AstNode body = astNode.getFirstChild(JavaGrammar.LAMBDA_BODY);
-    Tree bodyTree;
-    if (body.hasDirectChildren(JavaGrammar.BLOCK)) {
-      bodyTree = (BlockTree) body.getFirstChild(JavaGrammar.BLOCK);
-    } else {
-      bodyTree = expression(body.getFirstChild());
-    }
-    List<VariableTree> params = Lists.newArrayList();
-    // FIXME(Godin): params always empty
-    return new LambdaExpressionTreeImpl(astNode, params, bodyTree);
-  }
-
   /**
    * 15.11. Field Access Expressions
    * 15.12. Method Invocation Expressions
@@ -1124,7 +1110,7 @@ public class JavaTreeMaker {
         basicType(firstChildNode.getFirstChild()),
         identifier(firstChildNode.getFirstChild(JavaKeyword.CLASS)));
     } else if (firstChildNode.is(JavaGrammar.LAMBDA_EXPRESSION)) {
-      return lambdaExpression(firstChildNode);
+      return (ExpressionTree) firstChildNode;
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + firstChildNode.getType());
     }
