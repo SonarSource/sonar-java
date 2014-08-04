@@ -19,28 +19,28 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
-  key = "LabelsShouldNotBeUsedCheck",
-  priority = Priority.MAJOR)
+    key = "LabelsShouldNotBeUsedCheck",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class LabelsShouldNotBeUsedCheck extends SquidCheck<LexerlessGrammar> {
+public class LabelsShouldNotBeUsedCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.LABELED_STATEMENT);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.LABELED_STATEMENT);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    getContext().createLineViolation(this, "Refactor the code to remove this label and the need for it.", node);
+  public void visitNode(Tree tree) {
+    addIssue(tree, "Refactor the code to remove this label and the need for it.");
   }
 
 }
