@@ -50,7 +50,7 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LPAR).getToken());
   }
 
   @Override
@@ -60,7 +60,7 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override
@@ -78,6 +78,7 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
     return Iterators.forArray(
       type,
       expression
-    );
+      );
   }
+
 }

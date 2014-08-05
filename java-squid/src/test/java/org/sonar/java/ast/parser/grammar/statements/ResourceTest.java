@@ -21,31 +21,32 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ResourceTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.VARIABLE_MODIFIERS).mock();
-    g.rule(JavaGrammar.CLASS_TYPE).mock();
-    g.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).mock();
-    g.rule(JavaGrammar.EXPRESSION).mock();
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    assertThat(g.rule(JavaGrammar.RESOURCE))
-        .matches("variableModifiers classType variableDeclaratorId = expression")
-        .matches("classType variableDeclaratorId = expression");
+    b.rule(JavaGrammar.VARIABLE_MODIFIERS).override(RuleMock.word(b, "variableModifiers"));
+    b.rule(JavaGrammar.CLASS_TYPE).override(RuleMock.word(b, "classType"));
+    b.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).override(RuleMock.word(b, "variableDeclaratorId"));
+    b.rule(JavaGrammar.EXPRESSION).override(RuleMock.word(b, "expression"));
+
+    assertThat(b, JavaGrammar.RESOURCE)
+      .matches("variableModifiers classType variableDeclaratorId = expression")
+      .matches("classType variableDeclaratorId = expression");
   }
 
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.RESOURCE))
-        .matches("Closeable resource = open()")
-        .notMatches("byte resource = open()");
+    assertThat(JavaGrammar.RESOURCE)
+      .matches("Closeable resource = open()")
+      .notMatches("byte resource = open()");
   }
 
 }

@@ -21,6 +21,7 @@ package org.sonar.java.model.expression;
 
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -29,6 +30,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,10 +39,14 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
   private final List<VariableTree> parameters;
   private final Tree body;
 
-  public LambdaExpressionTreeImpl(AstNode astNode, List<VariableTree> parameters, Tree body) {
-    super(astNode);
+  public LambdaExpressionTreeImpl(List<VariableTree> parameters, Tree body, AstNode... children) {
+    super(JavaGrammar.LAMBDA_EXPRESSION);
     this.parameters = parameters;
     this.body = body;
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override
@@ -80,6 +86,7 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
     return Iterators.concat(
       parameters.iterator(),
       Iterators.singletonIterator(body)
-    );
+      );
   }
+
 }

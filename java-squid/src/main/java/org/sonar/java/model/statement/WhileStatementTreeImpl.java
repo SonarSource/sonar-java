@@ -40,10 +40,14 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
   private final ExpressionTree condition;
   private final StatementTree statement;
 
-  public WhileStatementTreeImpl(AstNode astNode, ExpressionTree condition, StatementTree statement) {
-    super(astNode);
+  public WhileStatementTreeImpl(ExpressionTree condition, StatementTree statement, AstNode... children) {
+    super(JavaGrammar.WHILE_STATEMENT);
     this.condition = Preconditions.checkNotNull(condition);
     this.statement = Preconditions.checkNotNull(statement);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override
@@ -53,12 +57,12 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
 
   @Override
   public SyntaxToken whileKeyword() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.WHILE).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.WHILE).getToken());
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
   }
 
   @Override
@@ -68,7 +72,7 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override
@@ -85,7 +89,7 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
       condition,
-      statement
-    );
+      statement);
   }
+
 }

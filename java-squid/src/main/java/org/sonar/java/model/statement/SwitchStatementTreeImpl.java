@@ -38,13 +38,18 @@ import java.util.Iterator;
 import java.util.List;
 
 public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatementTree {
-  private final ExpressionTree expression;
-  private final List<CaseGroupTree> cases;
 
-  public SwitchStatementTreeImpl(AstNode astNode, ExpressionTree expression, List<CaseGroupTree> cases) {
-    super(astNode);
+  private final ExpressionTree expression;
+  private final List<CaseGroupTreeImpl> cases;
+
+  public SwitchStatementTreeImpl(ExpressionTree expression, List<CaseGroupTreeImpl> groups, List<AstNode> children) {
+    super(JavaGrammar.SWITCH_STATEMENT);
     this.expression = Preconditions.checkNotNull(expression);
-    this.cases = Preconditions.checkNotNull(cases);
+    this.cases = Preconditions.checkNotNull(groups);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override
@@ -54,12 +59,12 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken switchKeyword() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.SWITCH).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.SWITCH).getToken());
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
   }
 
   @Override
@@ -69,22 +74,23 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override
   public SyntaxToken openBraceToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LWING).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LWING).getToken());
   }
 
   @Override
   public List<CaseGroupTree> cases() {
-    return cases;
+    // FIXME
+    return (List) cases;
   }
 
   @Override
   public SyntaxToken closeBraceToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RWING).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RWING).getToken());
   }
 
   @Override
@@ -96,7 +102,7 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
       Iterators.singletonIterator(expression),
-      cases.iterator()
-    );
+      cases.iterator());
   }
+
 }

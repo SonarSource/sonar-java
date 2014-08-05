@@ -21,25 +21,22 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeArgumentTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    assertThat(g.rule(JavaGrammar.TYPE_ARGUMENT))
-        .matches("referenceType")
-        .matches("?")
-        .matches("? extends referenceType")
-        .matches("? super referenceType")
-        .matches("@Foo referenceType")
-        .matches("@Foo ?")
-        .matches("@Foo ? extends @Foo referenceType")
-        .matches("@Foo ? super @Foo referenceType");
+    assertThat(JavaGrammar.TYPE_ARGUMENT)
+      .matches("referenceType")
+      .matches("?")
+      .matches("? extends referenceType")
+      .matches("? super referenceType")
+      .matches("@Foo referenceType")
+      .matches("@Foo ?")
+      .matches("@Foo ? extends @Foo referenceType")
+      .matches("@Foo ? super @Foo referenceType");
   }
 
 }

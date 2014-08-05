@@ -21,22 +21,23 @@ package org.sonar.java.ast.parser.grammar.enums;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class EnumBodyDeclarationsTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.CLASS_BODY_DECLARATION).mock();
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    assertThat(g.rule(JavaGrammar.ENUM_BODY_DECLARATIONS))
-        .matches(";")
-        .matches("; classBodyDeclaration")
-        .matches("; classBodyDeclaration classBodyDeclaration");
+    b.rule(JavaGrammar.CLASS_BODY_DECLARATION).override(RuleMock.word(b, "classBodyDeclaration"));
+
+    assertThat(b, JavaGrammar.ENUM_BODY_DECLARATIONS)
+      .matches(";")
+      .matches("; classBodyDeclaration")
+      .matches("; classBodyDeclaration classBodyDeclaration");
   }
 
 }

@@ -26,6 +26,8 @@ import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -61,12 +63,9 @@ public class MethodHelper {
     } else {
       throw new IllegalStateException();
     }
-    for (AstNode modifierNode : node.getChildren(JavaGrammar.MODIFIER)) {
-      if (modifierNode.getFirstChild().is(JavaKeyword.PUBLIC)) {
-        return true;
-      }
-    }
-    return false;
+
+    ModifiersTree modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.MODIFIERS);
+    return modifiers.modifiers().contains(Modifier.PUBLIC);
   }
 
   public boolean isConstructor() {

@@ -21,21 +21,16 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SwitchLabelTest {
 
-  private final LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.CONSTANT_EXPRESSION).mock();
-
-    assertThat(g.rule(JavaGrammar.SWITCH_LABEL))
-        .matches("case constantExpression :")
-        .matches("default :");
+    assertThat(JavaGrammar.SWITCH_LABEL)
+      .matches("case 0 :")
+      .matches("default :");
   }
 
 }

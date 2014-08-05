@@ -20,12 +20,12 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
@@ -39,7 +39,7 @@ public class CloneMethodCallsSuperCloneCheck extends SquidCheck<LexerlessGrammar
   @Override
   public void init() {
     subscribeTo(JavaGrammar.MEMBER_DECL);
-    subscribeTo(JavaGrammar.PRIMARY);
+    subscribeTo(JavaGrammar.SUPER_EXPRESSION);
   }
 
   @Override
@@ -68,11 +68,8 @@ public class CloneMethodCallsSuperCloneCheck extends SquidCheck<LexerlessGrammar
   }
 
   private static boolean isSuperCloneCall(AstNode node) {
-    AstNode superSuffix = node.getFirstChild(JavaGrammar.SUPER_SUFFIX);
-
-    return node.is(JavaGrammar.PRIMARY) &&
-      superSuffix != null &&
-      isCloneCallSuffix(superSuffix);
+    return node.is(JavaGrammar.SUPER_EXPRESSION) &&
+      isCloneCallSuffix(node.getFirstChild(JavaGrammar.SUPER_SUFFIX));
   }
 
   private static boolean isCloneCallSuffix(AstNode node) {

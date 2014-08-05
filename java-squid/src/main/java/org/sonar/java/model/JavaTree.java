@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.AstNodeType;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -36,14 +37,33 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class JavaTree implements Tree {
+public abstract class JavaTree extends AstNode implements Tree {
 
-  protected final AstNode astNode;
+  private static final AstNodeType NULL_NODE = new AstNodeType() {
 
-  public JavaTree(AstNode astNode) {
+    @Override
+    public String toString() {
+      return "[null]";
+    };
+
+  };
+
+  private final AstNode astNode;
+
+  public JavaTree(AstNodeType type) {
+    super(type, type.toString(), null);
+    this.astNode = this;
+  }
+
+  public JavaTree(@Nullable AstNode astNode) {
+    super(
+      astNode == null ? NULL_NODE : astNode.getType(),
+      astNode == null ? NULL_NODE.toString() : astNode.getType().toString(),
+      astNode == null ? null : astNode.getToken());
     this.astNode = astNode;
   }
 
@@ -127,7 +147,7 @@ public abstract class JavaTree implements Tree {
         imports.iterator(),
         types.iterator(),
         packageAnnotations.iterator()
-      );
+        );
     }
   }
 
@@ -165,7 +185,7 @@ public abstract class JavaTree implements Tree {
     public Iterator<Tree> childrenIterator() {
       return Iterators.singletonIterator(
         qualifiedIdentifier
-      );
+        );
     }
   }
 
@@ -200,7 +220,7 @@ public abstract class JavaTree implements Tree {
     public Iterator<Tree> childrenIterator() {
       return Iterators.singletonIterator(
         bound
-      );
+        );
     }
   }
 
@@ -233,12 +253,12 @@ public abstract class JavaTree implements Tree {
         // (Godin): workaround for generics
         Iterators.<Tree>emptyIterator(),
         typeAlternatives.iterator()
-      );
+        );
     }
   }
 
-  public static class NotImplementedTreeImpl extends AbstractTypedTree implements ExpressionTree{
-    private String name;
+  public static class NotImplementedTreeImpl extends AbstractTypedTree implements ExpressionTree {
+    private final String name;
 
     public NotImplementedTreeImpl(AstNode astNode, String name) {
       super(astNode);
@@ -255,6 +275,7 @@ public abstract class JavaTree implements Tree {
       visitor.visitOther(this);
     }
 
+    @Override
     public String getName() {
       return name;
     }
@@ -282,7 +303,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public SyntaxToken keyword() {
-      return new InternalSyntaxToken(astNode.getLastToken());
+      return new InternalSyntaxToken(getAstNode().getLastToken());
     }
 
     @Override
@@ -331,7 +352,7 @@ public abstract class JavaTree implements Tree {
       return Iterators.concat(
         Iterators.singletonIterator(type),
         typeArguments.iterator()
-      );
+        );
     }
   }
 

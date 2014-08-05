@@ -21,38 +21,37 @@ package org.sonar.java.ast.parser.grammar.units;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeDeclarationTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.MODIFIER).mock();
-    g.rule(JavaGrammar.CLASS_DECLARATION).mock();
-    g.rule(JavaGrammar.ENUM_DECLARATION).mock();
-    g.rule(JavaGrammar.INTERFACE_DECLARATION).mock();
-    g.rule(JavaGrammar.ANNOTATION_TYPE_DECLARATION).mock();
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    assertThat(g.rule(JavaGrammar.TYPE_DECLARATION))
-        .matches("classDeclaration")
-        .matches("enumDeclaration")
-        .matches("interfaceDeclaration")
-        .matches("annotationTypeDeclaration")
-        .matches("modifier classDeclaration")
-        .matches("modifier modifier classDeclaration")
-        .matches(";");
+    b.rule(JavaGrammar.CLASS_DECLARATION).override(RuleMock.word(b, "classDeclaration"));
+    b.rule(JavaGrammar.ENUM_DECLARATION).override(RuleMock.word(b, "enumDeclaration"));
+    b.rule(JavaGrammar.INTERFACE_DECLARATION).override(RuleMock.word(b, "interfaceDeclaration"));
+    b.rule(JavaGrammar.ANNOTATION_TYPE_DECLARATION).override(RuleMock.word(b, "annotationTypeDeclaration"));
+
+    assertThat(b, JavaGrammar.TYPE_DECLARATION)
+      .matches("classDeclaration")
+      .matches("enumDeclaration")
+      .matches("interfaceDeclaration")
+      .matches("annotationTypeDeclaration")
+      .matches("public classDeclaration")
+      .matches("public private classDeclaration")
+      .matches(";");
   }
 
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.TYPE_DECLARATION))
-        .matches("public static final class HelloWorld { }")
-        .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>  extends java.util. @Foo HashMap implements @Foo Serializable, InterfaceTest{}")
-    ;
+    assertThat(JavaGrammar.TYPE_DECLARATION)
+      .matches("public static final class HelloWorld { }")
+      .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>  extends java.util. @Foo HashMap implements @Foo Serializable, InterfaceTest{}");
   }
 
 }

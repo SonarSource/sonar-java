@@ -21,50 +21,30 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class StatementTest {
 
-  private final LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.BLOCK).mock();
-    g.rule(JavaGrammar.ASSERT_STATEMENT).mock();
-    g.rule(JavaGrammar.IF_STATEMENT).mock();
-    g.rule(JavaGrammar.FOR_STATEMENT).mock();
-    g.rule(JavaGrammar.WHILE_STATEMENT).mock();
-    g.rule(JavaGrammar.DO_STATEMENT).mock();
-    g.rule(JavaGrammar.TRY_STATEMENT).mock();
-    g.rule(JavaGrammar.SWITCH_STATEMENT).mock();
-    g.rule(JavaGrammar.SYNCHRONIZED_STATEMENT).mock();
-    g.rule(JavaGrammar.RETURN_STATEMENT).mock();
-    g.rule(JavaGrammar.THROW_STATEMENT).mock();
-    g.rule(JavaGrammar.BREAK_STATEMENT).mock();
-    g.rule(JavaGrammar.CONTINUE_STATEMENT).mock();
-    g.rule(JavaGrammar.LABELED_STATEMENT).mock();
-    g.rule(JavaGrammar.EXPRESSION_STATEMENT).mock();
-    g.rule(JavaGrammar.EMPTY_STATEMENT).mock();
-
-    assertThat(g.rule(JavaGrammar.STATEMENT))
-        .matches("block")
-        .matches("emptyStatement")
-        .matches("labeledStatement")
-        .matches("expressionStatement")
-        .matches("ifStatement")
-        .matches("assertStatement")
-        .matches("switchStatement")
-        .matches("whileStatement")
-        .matches("doStatement")
-        .matches("forStatement")
-        .matches("breakStatement")
-        .matches("continueStatement")
-        .matches("returnStatement")
-        .matches("throwStatement")
-        .matches("synchronizedStatement")
-        .matches("tryStatement");
+    assertThat(JavaGrammar.STATEMENT)
+      .matches("{}")
+      .matches(";")
+      .matches("foo: ;")
+      .matches("foo = 0;")
+      .matches("if (0);")
+      .matches("assert false;")
+      .matches("switch (foo) {}")
+      .matches("while (false);")
+      .matches("do {} while (false);")
+      .matches("for (int i = 0; i < 42; i++);")
+      .matches("break;")
+      .matches("continue;")
+      .matches("return;")
+      .matches("throw e;")
+      .matches("synchronized (foo) {}")
+      .matches("try {} finally {}");
   }
 
 }

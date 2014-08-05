@@ -21,21 +21,22 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class TypeParameterTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.BOUND).mock();
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    assertThat(g.rule(JavaGrammar.TYPE_PARAMETER))
-        .matches("identifier")
-        .matches("identifier extends bound");
+    b.rule(JavaGrammar.BOUND).override(RuleMock.word(b, "bound"));
+
+    assertThat(b, JavaGrammar.TYPE_PARAMETER)
+      .matches("identifier")
+      .matches("identifier extends bound");
   }
 
 }

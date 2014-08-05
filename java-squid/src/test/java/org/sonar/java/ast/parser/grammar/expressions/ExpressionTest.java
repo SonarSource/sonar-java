@@ -21,80 +21,75 @@ package org.sonar.java.ast.parser.grammar.expressions;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ExpressionTest {
-
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
 
   /**
    * Our grammar accepts such constructions, whereas should not.
    */
   @Test
   public void error() {
-    assertThat(g.rule(JavaGrammar.EXPRESSION))
-        .matches("a = b + 1 = c + 2");
+    assertThat(JavaGrammar.EXPRESSION)
+      .matches("a = b + 1 = c + 2");
   }
 
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.EXPRESSION))
-        .matches("b >> 4")
-        .matches("b >>= 4")
-        .matches("b >>> 4")
-        .matches("b >>>= 4")
+    assertThat(JavaGrammar.EXPRESSION)
+      .matches("b >> 4")
+      .matches("b >>= 4")
+      .matches("b >>> 4")
+      .matches("b >>>= 4")
 
-        // method call
-        .matches("SomeClass.<T>method(arguments)")
-        .matches("this.<T>method(arguments)")
-        .matches("super.<T>method(arguments)")
-        .matches("oc.new innerClass<String>()")
-        // constructor call
-        .matches("<T>this(arguments)")
-        .matches("<T>super(arguments)")
-        // Java 7: diamond
-        .matches("new HashMap<>()")
+      // method call
+      .matches("SomeClass.<T>method(arguments)")
+      .matches("this.<T>method(arguments)")
+      .matches("super.<T>method(arguments)")
+      .matches("oc.new innerClass<String>()")
+      // constructor call
+      .matches("<T>this(arguments)")
+      .matches("<T>super(arguments)")
+      // Java 7: diamond
+      .matches("new HashMap<>()")
 
-        //Java 8 : constructors with annotation types
-        .matches("new int @Foo [12]")
-        .matches("new int[12] @Foo [13] @Foo @Bar []")
+      // Java 8 : constructors with annotation types
+      .matches("new int @Foo [12]")
+      .matches("new int[12] @Foo [13] @Foo @Bar []")
 
-        .matches("new @Foo innerClass(\"literal\")")
-        .matches("new OuterClass.@Foo innerClass(\"literal\")")
-        //Java 8 : Method references
-        .matches("System.out::println")
-        .matches("int[]::new")
-        .matches("List::new")
-        .matches("List<String>::size")
-        .matches("List::size")
-        .matches("int[]::clone")
-        .matches("T::size")
-        .matches("(Cast) T::size")
-        .matches("Arrays::<String>sort")
-        .matches("(foo?list.map(String::length):Collections.emptyList()) :: iterator")
-        .matches("myMethod()::size")
-        .matches("MyClass.this::size")
-        .matches("myMethod().myMethod()::size")
-        .matches("new MyClass(3).myMethod()::size")
-        .notMatches("myMethod()::myMethod::myMethod")
+      .matches("new @Foo innerClass(\"literal\")")
+      .matches("new OuterClass.@Foo innerClass(\"literal\")")
+      // Java 8 : Method references
+      .matches("System.out::println")
+      .matches("int[]::new")
+      .matches("List::new")
+      .matches("List<String>::size")
+      .matches("List::size")
+      .matches("int[]::clone")
+      .matches("T::size")
+      .matches("(Cast) T::size")
+      .matches("Arrays::<String>sort")
+      .matches("(foo?list.map(String::length):Collections.emptyList()) :: iterator")
+      .matches("myMethod()::size")
+      .matches("MyClass.this::size")
+      .matches("myMethod().myMethod()::size")
+      .matches("new MyClass(3).myMethod()::size")
+      .notMatches("myMethod()::myMethod::myMethod")
 
-        //Java 8 : Lambda expressions
-        .matches("()->12")
-        .matches("()->{}")
-        .matches("a->a*a")
-        .matches("(int a)->a*a")
-        .matches("(a)->a*a")
+      // Java 8 : Lambda expressions
+      .matches("()->12")
+      .matches("()->{}")
+      .matches("a->a*a")
+      .matches("(int a)->a*a")
+      .matches("(a)->a*a")
 
-        //Java 8 : Cast expression with bounds
-        .matches("(Comparator<Map.Entry<K, V>> & Serializable) foo")
-        .matches("(Callable[] & Serializable) foo")
-        .matches("(Callable<Integer[]>[] & Serializable) foo")
-        .matches("(Comparator<Map.Entry<K, V>>[] & Serializable) foo")
-        .matches("(a & b) - c")
-    ;
-
+      // Java 8 : Cast expression with bounds
+      .matches("(Comparator<Map.Entry<K, V>> & Serializable) foo")
+      .matches("(Callable[] & Serializable) foo")
+      .matches("(Callable<Integer[]>[] & Serializable) foo")
+      .matches("(Comparator<Map.Entry<K, V>>[] & Serializable) foo")
+      .matches("(a & b) - c");
 
   }
 

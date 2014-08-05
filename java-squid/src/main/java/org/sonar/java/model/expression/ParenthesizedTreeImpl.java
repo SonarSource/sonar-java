@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -36,9 +37,13 @@ import java.util.Iterator;
 public class ParenthesizedTreeImpl extends AbstractTypedTree implements ParenthesizedTree {
   private final ExpressionTree expression;
 
-  public ParenthesizedTreeImpl(AstNode astNode, ExpressionTree expression) {
-    super(astNode);
+  public ParenthesizedTreeImpl(ExpressionTree expression, AstNode... children) {
+    super(JavaGrammar.PAR_EXPRESSION);
     this.expression = Preconditions.checkNotNull(expression);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override
@@ -48,7 +53,7 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LPAR).getToken());
   }
 
   @Override
@@ -58,7 +63,7 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override
@@ -69,7 +74,7 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>singletonIterator(
-      expression
-    );
+      expression);
   }
+
 }

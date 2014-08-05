@@ -23,6 +23,7 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
@@ -32,15 +33,20 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class ContinueStatementTreeImpl extends JavaTree implements ContinueStatementTree {
   @Nullable
   private final IdentifierTree label;
 
-  public ContinueStatementTreeImpl(AstNode astNode, @Nullable IdentifierTree label) {
-    super(astNode);
+  public ContinueStatementTreeImpl(@Nullable IdentifierTree label, AstNode... children) {
+    super(JavaGrammar.CONTINUE_STATEMENT);
     this.label = label;
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override
@@ -50,7 +56,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
 
   @Override
   public SyntaxToken continueKeyword() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.CONTINUE).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.CONTINUE).getToken());
   }
 
   @Nullable
@@ -61,7 +67,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
 
   @Override
   public SyntaxToken semicolonToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.SEMI).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI).getToken());
   }
 
   @Override
@@ -72,7 +78,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>singletonIterator(
-      label
-    );
+      label);
   }
+
 }

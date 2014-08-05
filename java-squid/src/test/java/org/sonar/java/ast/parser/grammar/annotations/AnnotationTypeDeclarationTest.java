@@ -21,18 +21,15 @@ package org.sonar.java.ast.parser.grammar.annotations;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class AnnotationTypeDeclarationTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.ANNOTATION_TYPE_DECLARATION))
-        .matches("@interface HelloWorld { int CONSTANT = 1, ANOTHER_CONSTANT = 2; int value() default 1; }");
+    assertThat(JavaGrammar.ANNOTATION_TYPE_DECLARATION)
+      .matches("@interface HelloWorld { int CONSTANT = 1, ANOTHER_CONSTANT = 2; int value() default 1; }");
   }
 
 }

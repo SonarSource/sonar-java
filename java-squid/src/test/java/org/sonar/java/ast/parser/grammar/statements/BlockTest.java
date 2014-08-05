@@ -21,20 +21,21 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class BlockTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.BLOCK_STATEMENTS).mock();
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    assertThat(g.rule(JavaGrammar.BLOCK))
-        .matches("{ blockStatements }");
+    b.rule(JavaGrammar.BLOCK_STATEMENTS).override(RuleMock.word(b, "blockStatements"));
+
+    assertThat(b, JavaGrammar.BLOCK)
+      .matches("{ blockStatements }");
   }
 
 }

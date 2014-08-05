@@ -21,20 +21,15 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ExpressionStatementTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.STATEMENT_EXPRESSION).mock();
-
-    assertThat(g.rule(JavaGrammar.STATEMENT))
-        .matches("statementExpression ;");
+    assertThat(JavaGrammar.STATEMENT)
+      .matches(";");
   }
 
 }

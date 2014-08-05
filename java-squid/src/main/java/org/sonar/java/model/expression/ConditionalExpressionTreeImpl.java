@@ -57,7 +57,7 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
 
   @Override
   public SyntaxToken questionToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.QUERY).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.QUERY).getToken());
   }
 
   @Override
@@ -67,7 +67,7 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
 
   @Override
   public SyntaxToken colonToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.COLON).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.COLON).getToken());
   }
 
   @Override
@@ -86,6 +86,7 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
       condition,
       trueExpression,
       falseExpression
-    );
+      );
   }
+
 }

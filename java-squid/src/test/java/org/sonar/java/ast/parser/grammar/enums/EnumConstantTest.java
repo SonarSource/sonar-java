@@ -21,25 +21,27 @@ package org.sonar.java.ast.parser.grammar.enums;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
-public class EnumConstantTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
+public class EnumConstantTest {
 
   @Test
   public void ok() {
-    g.rule(JavaGrammar.ANNOTATION).mock();
-    g.rule(JavaGrammar.ARGUMENTS).mock();
-    g.rule(JavaGrammar.CLASS_BODY).mock();
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    assertThat(g.rule(JavaGrammar.ENUM_CONSTANT))
-        .matches("identifier")
-        .matches("annotation identifier")
-        .matches("annotation identifier arguments")
-        .matches("annotation identifier classBody")
-        .matches("annotation identifier arguments classBody");
+    b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
+    b.rule(JavaGrammar.ARGUMENTS).override(RuleMock.word(b, "arguments"));
+    b.rule(JavaGrammar.CLASS_BODY).override(RuleMock.word(b, "classBody"));
+
+    assertThat(b, JavaGrammar.ENUM_CONSTANT)
+      .matches("identifier")
+      .matches("annotation identifier")
+      .matches("annotation identifier arguments")
+      .matches("annotation identifier classBody")
+      .matches("annotation identifier arguments classBody");
   }
 
 }

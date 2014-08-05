@@ -40,9 +40,9 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 @Rule(
-    key = PrintStackTraceCalledWithoutArgumentCheck.RULE_KEY,
-    priority = Priority.CRITICAL,
-    tags = {"error-handling"})
+  key = PrintStackTraceCalledWithoutArgumentCheck.RULE_KEY,
+  priority = Priority.CRITICAL,
+  tags = {"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -81,8 +81,8 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
   }
 
   private boolean calledOnTypeInheritedFromThrowable(MethodInvocationTree tree) {
-    //TODO this is painful way to access caller site of a method.
-    Type type = ((AbstractTypedTree) ((MemberSelectExpressionTree) tree.methodSelect()).expression()).getType();
+    // TODO this is painful way to access caller site of a method.
+    Type type = ((AbstractTypedTree) ((MemberSelectExpressionTree) tree.methodSelect()).expression()).getType2();
     return extendsThrowable((Type.ClassType) type);
   }
 

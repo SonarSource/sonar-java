@@ -42,6 +42,15 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
     this.expression = Preconditions.checkNotNull(expression);
   }
 
+  public ExpressionStatementTreeImpl(ExpressionTree expression, AstNode... children) {
+    super(JavaGrammar.EXPRESSION_STATEMENT);
+    this.expression = Preconditions.checkNotNull(expression);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
+
   @Override
   public Kind getKind() {
     return Kind.EXPRESSION_STATEMENT;
@@ -54,10 +63,10 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
 
   @Override
   public SyntaxToken semicolonToken() {
-    if (astNode.is(JavaGrammar.EXPRESSION_STATEMENT)) {
-      return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.SEMI).getToken());
-    } else if (astNode.is(JavaGrammar.STATEMENT_EXPRESSION)) {
-      return new InternalSyntaxToken(astNode.getParent().getFirstChild(JavaPunctuator.SEMI).getToken());
+    if (getAstNode().is(JavaGrammar.EXPRESSION_STATEMENT)) {
+      return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI).getToken());
+    } else if (getAstNode().is(JavaGrammar.STATEMENT_EXPRESSION)) {
+      return new InternalSyntaxToken(getAstNode().getParent().getFirstChild(JavaPunctuator.SEMI).getToken());
     } else {
       throw new IllegalStateException();
     }
@@ -71,7 +80,7 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>singletonIterator(
-      expression
-    );
+      expression);
   }
+
 }

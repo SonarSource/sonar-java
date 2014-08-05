@@ -21,12 +21,12 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.Iterator;
@@ -57,20 +57,18 @@ public class SwitchLastCaseIsDefaultCheck extends SquidCheck<LexerlessGrammar> {
 
   private AstNode getDefaultLabel(AstNode node) {
     Iterator<AstNode> it = node.select()
-        .children(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS)
-        .children(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
-        .children(JavaGrammar.SWITCH_LABEL)
-        .children(JavaKeyword.DEFAULT)
-        .iterator();
+      .children(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
+      .children(JavaGrammar.SWITCH_LABEL)
+      .children(JavaKeyword.DEFAULT)
+      .iterator();
 
     return !it.hasNext() ? null : it.next().getParent();
   }
 
   private AstNode getLastLabel(AstNode node) {
     List<AstNode> labels = ImmutableList.copyOf(node.select()
-        .children(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS)
-        .children(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
-        .children(JavaGrammar.SWITCH_LABEL));
+      .children(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
+      .children(JavaGrammar.SWITCH_LABEL));
 
     return labels.isEmpty() ? null : labels.get(labels.size() - 1);
   }

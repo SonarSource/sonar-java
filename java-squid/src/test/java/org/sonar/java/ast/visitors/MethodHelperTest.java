@@ -26,9 +26,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
-import org.sonar.sslr.parser.ParserAdapter;
 
 import java.util.List;
 
@@ -43,7 +43,8 @@ public class MethodHelperTest {
 
   @Test
   public void subscribeTo() {
-    SquidAstVisitor<LexerlessGrammar> visitor = new JavaAstVisitor() {};
+    SquidAstVisitor<LexerlessGrammar> visitor = new JavaAstVisitor() {
+    };
     MethodHelper.subscribe(visitor);
     assertThat(visitor.getAstNodeTypesToVisit()).containsExactly(
       JavaGrammar.METHOD_DECLARATOR_REST,
@@ -153,7 +154,7 @@ public class MethodHelperTest {
   }
 
   private static AstNode parse(String source) {
-    return new ParserAdapter(Charsets.UTF_8, JavaGrammar.createGrammar()).parse(source);
+    return JavaParser.createParser(Charsets.UTF_8).parse(source);
   }
 
 }

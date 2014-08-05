@@ -55,12 +55,12 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
 
   @Override
   public SyntaxToken forKeyword() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.FOR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.FOR).getToken());
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LPAR).getToken());
   }
 
   @Override
@@ -70,7 +70,7 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
 
   @Override
   public SyntaxToken colonToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.COLON).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.COLON).getToken());
   }
 
   @Override
@@ -80,7 +80,7 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override
@@ -98,7 +98,7 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
     return Iterators.forArray(
       variable,
       expression,
-      statement
-    );
+      statement);
   }
+
 }

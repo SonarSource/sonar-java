@@ -25,8 +25,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.sonar.sslr.parser.LexerlessGrammar;
-import org.sonar.sslr.parser.ParserAdapter;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +35,7 @@ import java.util.Collection;
 @RunWith(value = Parameterized.class)
 public class JavaParserIntegrationTest {
 
-  private final Parser<LexerlessGrammar> parser = new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, JavaGrammar.createGrammar());
+  private final Parser parser = JavaParser.createParser(Charsets.UTF_8);
 
   private File file = null;
 

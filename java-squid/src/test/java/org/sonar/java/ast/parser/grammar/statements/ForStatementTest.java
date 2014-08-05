@@ -21,22 +21,19 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ForStatementTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.FOR_STATEMENT))
-        .matches("for (int i = 0; i < 10; i++) {} ")
-        .matches("for (; i < 10; i++) {} ")
-        .matches("for (;; i++) {} ")
-        .matches("for (;;) {} ")
-        .matches("for (File file : files) {} ");
+    assertThat(JavaGrammar.FOR_STATEMENT)
+      .matches("for (int i = 0; i < 10; i++) {} ")
+      .matches("for (; i < 10; i++) {} ")
+      .matches("for (;; i++) {} ")
+      .matches("for (;;) {} ")
+      .matches("for (File file : files) {} ");
   }
 
 }

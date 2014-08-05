@@ -21,21 +21,18 @@ package org.sonar.java.ast.parser.grammar.expressions;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class RelationalExpressionTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.RELATIONAL_EXPRESSION))
-        .matches("i < 10")
-        .matches("i <= 10")
-        .matches("b > 4")
-        .matches("b >= 4");
+    assertThat(JavaGrammar.RELATIONAL_EXPRESSION)
+      .matches("i < 10")
+      .matches("i <= 10")
+      .matches("b > 4")
+      .matches("b >= 4");
   }
 
 }

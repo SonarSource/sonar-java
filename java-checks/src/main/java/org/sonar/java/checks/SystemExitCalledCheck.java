@@ -20,12 +20,12 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
@@ -36,7 +36,7 @@ public class SystemExitCalledCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.PRIMARY);
+    subscribeTo(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION);
   }
 
   @Override
@@ -56,7 +56,7 @@ public class SystemExitCalledCheck extends SquidCheck<LexerlessGrammar> {
     AstNode qualifiedIdentifier = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
     return AstNodeTokensMatcher.matches(qualifiedIdentifier, "System.exit") ||
       AstNodeTokensMatcher.matches(qualifiedIdentifier, "Runtime.getRuntime") &&
-      hasExitCallSuffix(node.getParent());
+      hasExitCallSuffix(node.getParent().getParent());
   }
 
   private static boolean hasExitCallSuffix(AstNode node) {

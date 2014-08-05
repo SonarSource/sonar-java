@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.ast.AstSelect;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -33,11 +33,11 @@ public class AbstractDeprecatedChecker extends SquidCheck<LexerlessGrammar> {
   @Override
   public void init() {
     subscribeTo(
-        JavaGrammar.TYPE_DECLARATION,
-        JavaGrammar.CLASS_BODY_DECLARATION,
-        JavaGrammar.INTERFACE_BODY_DECLARATION,
-        JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION,
-        JavaGrammar.BLOCK_STATEMENT);
+      JavaGrammar.TYPE_DECLARATION,
+      JavaGrammar.CLASS_BODY_DECLARATION,
+      JavaGrammar.INTERFACE_BODY_DECLARATION,
+      JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION,
+      JavaGrammar.BLOCK_STATEMENT);
   }
 
   public static boolean isDeprecated(AstNode node) {
@@ -63,17 +63,18 @@ public class AbstractDeprecatedChecker extends SquidCheck<LexerlessGrammar> {
 
   public static boolean hasDeprecatedAnnotationExcludingLocalVariables(AstNode node) {
     AstSelect annotations = node.select()
-        .children(JavaGrammar.MODIFIER)
-        .children(JavaGrammar.ANNOTATION);
+      .children(JavaGrammar.MODIFIERS)
+      .children(JavaGrammar.MODIFIER)
+      .children(JavaGrammar.ANNOTATION);
 
     return hasDeprecatedAnnotation(annotations);
   }
 
   public static boolean hasDeprecatedAnnotationOnLocalVariables(AstNode node) {
     AstSelect annotations = node.select()
-        .children(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)
-        .children(JavaGrammar.VARIABLE_MODIFIERS)
-        .children(JavaGrammar.ANNOTATION);
+      .children(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)
+      .children(JavaGrammar.VARIABLE_MODIFIERS)
+      .children(JavaGrammar.ANNOTATION);
 
     return hasDeprecatedAnnotation(annotations);
   }

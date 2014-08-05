@@ -20,12 +20,12 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
@@ -58,12 +58,18 @@ public class ConcatenationWithStringValueOfCheck extends SquidCheck<LexerlessGra
   }
 
   private static boolean isStringValueOfCall(AstNode node) {
-    AstNode identifierSuffix = node.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
+    AstNode qualifiedIdExpression = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION);
+    if (qualifiedIdExpression == null) {
+      return false;
+    }
+
+    AstNode identifierSuffix = qualifiedIdExpression.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
 
     return node.is(JavaGrammar.PRIMARY) &&
+      qualifiedIdExpression != null &&
       identifierSuffix != null &&
       hasSingleArgumentIdentifierSuffix(identifierSuffix) &&
-      isStringValueOfQualifiedIdentifier(node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
+      isStringValueOfQualifiedIdentifier(qualifiedIdExpression.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
   }
 
   private static boolean hasSingleArgumentIdentifierSuffix(AstNode node) {
