@@ -19,15 +19,19 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.visitors.MethodHelper;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
@@ -35,34 +39,54 @@ import java.util.List;
   priority = Priority.CRITICAL,
   tags={"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class MethodNamedEqualsCheck extends SquidCheck<LexerlessGrammar> {
+public class MethodNamedEqualsCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    MethodHelper.subscribe(this);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    MethodHelper methodHelper = new MethodHelper(node);
-
-    if ("equals".equalsIgnoreCase(methodHelper.getName().getTokenOriginalValue()) && !hasSingleObjectParameter(methodHelper)) {
-      getContext().createLineViolation(this, "Either override Object.equals(Object), or totally rename the method to prevent any confusion.", methodHelper.getName());
+  public void visitNode(Tree tree) {
+    MethodTree methodTree = (MethodTree) tree;
+    if ("equals".equalsIgnoreCase(methodTree.simpleName().name()) && !hasSingleObjectParameter(methodTree)) {
+      addIssue(tree, "Either override Object.equals(Object), or totally rename the method to prevent any confusion.");
     }
   }
 
-  private static boolean hasSingleObjectParameter(MethodHelper methodHelper) {
-    List<AstNode> parameters = methodHelper.getParameters();
+  private boolean hasSingleObjectParameter(MethodTree methodTree) {
+    List<VariableTree> parameters = methodTree.parameters();
     if (parameters.size() != 1) {
       return false;
     }
-
-    return isObjectType(parameters.get(0).getFirstChild(JavaGrammar.TYPE));
+    return isObjectType(parameters.get(0));
   }
 
-  private static boolean isObjectType(AstNode node) {
-    return AstNodeTokensMatcher.matches(node, "Object") ||
-      AstNodeTokensMatcher.matches(node, "java.lang.Object");
+  private boolean isObjectType(VariableTree variableTree) {
+    String type = concatenate((ExpressionTree) variableTree.type());
+    return "Object".equals(type)|| "java.lang.Object".equals(type);
   }
+
+  private String concatenate(ExpressionTree tree) {
+    Deque<String> pieces = new LinkedList<String>();
+    ExpressionTree expr = tree;
+    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
+      pieces.push(mse.identifier().name());
+      pieces.push(".");
+      expr = mse.expression();
+    }
+    if (expr.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree idt = (IdentifierTree) expr;
+      pieces.push(idt.name());
+    }
+
+    StringBuilder sb = new StringBuilder();
+    for (String piece: pieces) {
+      sb.append(piece);
+    }
+    return sb.toString();
+  }
+
 
 }
