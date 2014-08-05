@@ -30,6 +30,7 @@ import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
+import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
@@ -182,6 +183,11 @@ public class ActionGrammar {
   public ExpressionTree LAMBDA_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.LAMBDA_EXPRESSION)
       .is(f.lambdaExpression(b.invokeRule(JavaGrammar.LAMBDA_PARAMETERS), b.invokeRule(JavaGrammar.ARROW), b.invokeRule(JavaGrammar.LAMBDA_BODY)));
+  }
+
+  public ExpressionTree PARENTHESIZED_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.PAR_EXPRESSION)
+      .is(f.parenthesizedExpression(b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR)));
   }
 
   // End of expressions
@@ -353,6 +359,11 @@ public class ActionGrammar {
 
       return new LambdaExpressionTreeImpl(params, bodyTree,
         parameters, arrowToken, body);
+    }
+
+    public ExpressionTree parenthesizedExpression(AstNode leftParenthesisToken, AstNode expression, AstNode rightParenthesisToken) {
+      return new ParenthesizedTreeImpl(treeMaker.expression(expression),
+        leftParenthesisToken, expression, rightParenthesisToken);
     }
 
     // End of expressions

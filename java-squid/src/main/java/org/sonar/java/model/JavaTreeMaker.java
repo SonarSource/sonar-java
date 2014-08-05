@@ -943,7 +943,7 @@ public class JavaTreeMaker {
     }
 
     if (astNode.is(JavaGrammar.PAR_EXPRESSION)) {
-      return new ParenthesizedTreeImpl(astNode, expression(astNode.getFirstChild(JavaGrammar.EXPRESSION)));
+      return (ParenthesizedTreeImpl) astNode;
     } else if (astNode.is(JavaGrammar.PRIMARY)) {
       return primary(astNode);
     } else if (astNode.is(JavaGrammar.CONDITIONAL_OR_EXPRESSION,
