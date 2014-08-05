@@ -19,11 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
@@ -34,7 +35,7 @@ public class MethodWithExcessiveReturnsCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodWithExcessiveReturnsCheck.java"), new MethodWithExcessiveReturnsCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodWithExcessiveReturnsCheck.java"), new VisitorsBridge(new MethodWithExcessiveReturnsCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(19).withMessage("Reduce the number of returns of this method 4, down to the maximum allowed 3.")
         .next().atLine(26).withMessage("Reduce the number of returns of this method 4, down to the maximum allowed 3.")
@@ -46,7 +47,7 @@ public class MethodWithExcessiveReturnsCheckTest {
     MethodWithExcessiveReturnsCheck check = new MethodWithExcessiveReturnsCheck();
     check.max = 4;
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodWithExcessiveReturnsCheck.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodWithExcessiveReturnsCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(31).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 4.");
   }

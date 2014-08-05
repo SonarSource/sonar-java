@@ -19,74 +19,63 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multiset;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Stack;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 @Rule(
-  key = "S1142",
-  priority = Priority.MAJOR,
-  tags={"brain-overload"})
-public class MethodWithExcessiveReturnsCheck extends SquidCheck<LexerlessGrammar> {
+    key = "S1142",
+    priority = Priority.MAJOR,
+    tags = {"brain-overload"})
+public class MethodWithExcessiveReturnsCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 3;
 
   @RuleProperty(defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private final Stack<Integer> returnStatementCounter = new Stack<Integer>();
+  private final Multiset<Tree> returnStatementCounter = HashMultiset.create();
+  private final Deque<Tree> methods = new LinkedList<Tree>();
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.RETURN_STATEMENT);
-    subscribeTo(JavaGrammar.CLASS_BODY_DECLARATION);
-  }
-
-  @Override
-  public void visitFile(AstNode node) {
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
     returnStatementCounter.clear();
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.RETURN_STATEMENT)) {
-      setReturnStatementCounter(getReturnStatementCounter() + 1);
-    } else {
-      returnStatementCounter.push(0);
-    }
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.RETURN_STATEMENT, Tree.Kind.METHOD);
   }
 
   @Override
-  public void leaveNode(AstNode node) {
-    if (node.is(JavaGrammar.CLASS_BODY_DECLARATION)) {
-      if (isMethod(node) && getReturnStatementCounter() > max) {
-        getContext().createLineViolation(
-            this,
-            "Reduce the number of returns of this method " + getReturnStatementCounter() + ", down to the maximum allowed " + max + ".",
-            node);
-      }
-
-      returnStatementCounter.pop();
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.RETURN_STATEMENT)) {
+      returnStatementCounter.add(methods.peek());
+    } else {
+      methods.push(tree);
     }
   }
 
-  private static boolean isMethod(AstNode node) {
-    return !node.hasDirectChildren(JavaGrammar.CLASS_INIT_DECLARATION);
-  }
 
-  private int getReturnStatementCounter() {
-    return returnStatementCounter.peek();
-  }
 
-  private void setReturnStatementCounter(int value) {
-    returnStatementCounter.pop();
-    returnStatementCounter.push(value);
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      int count = returnStatementCounter.count(tree);
+      if (count > max) {
+        addIssue(tree, "Reduce the number of returns of this method " + count + ", down to the maximum allowed " + max + ".");
+      }
+      methods.pop();
+    }
   }
-
 }
