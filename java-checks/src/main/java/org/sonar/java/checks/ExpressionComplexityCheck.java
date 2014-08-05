@@ -19,121 +19,117 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.GrammarRuleKey;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.InstanceOfTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-import java.util.Stack;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 @Rule(
-  key = "S1067",
-  priority = Priority.MAJOR,
-  tags={"brain-overload"})
+    key = "S1067",
+    priority = Priority.MAJOR,
+    tags = {"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ExpressionComplexityCheck extends SquidCheck<LexerlessGrammar> {
+public class ExpressionComplexityCheck extends SubscriptionBaseVisitor {
 
-  private static final GrammarRuleKey[] OPERATORS = new GrammarRuleKey[] {
-    JavaGrammar.CONDITIONAL_EXPRESSION,
-    JavaGrammar.CONDITIONAL_OR_EXPRESSION,
-    JavaGrammar.CONDITIONAL_AND_EXPRESSION
-  };
-
-  private static final GrammarRuleKey[] EXCLUSIONS = new GrammarRuleKey[] {
-    JavaGrammar.CLASS_BODY,
-    JavaGrammar.ARRAY_INITIALIZER
-  };
 
   private static final int DEFAULT_MAX = 3;
 
   @RuleProperty(defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private final Stack<Integer> expressionNestingLevel = new Stack<Integer>();
-  private final Stack<Integer> operatorCounter = new Stack<Integer>();
+  private final Deque<Integer> count = new LinkedList<Integer>();
+  private final Deque<Integer> level = new LinkedList<Integer>();
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.EXPRESSION);
-    subscribeTo(OPERATORS);
-    subscribeTo(EXCLUSIONS);
+  public void scanFile(JavaFileScannerContext context) {
+    count.clear();
+    level.clear();
+    level.push(0);
+    count.push(0);
+    super.scanFile(context);
   }
 
   @Override
-  public void visitFile(AstNode node) {
-    expressionNestingLevel.clear();
-    operatorCounter.clear();
-
-    pushExclusionLevel();
+  public List<Tree.Kind> nodesToVisit() {
+    ImmutableList.Builder<Class<? extends Tree>> builder = ImmutableList.builder();
+    builder.add(ArrayAccessExpressionTree.class);
+    builder.add(ArrayTypeTree.class);
+    builder.add(AssignmentExpressionTree.class);
+    builder.add(BinaryExpressionTree.class);
+    builder.add(ConditionalExpressionTree.class);
+    builder.add(IdentifierTree.class);
+    builder.add(InstanceOfTree.class);
+    builder.add(LambdaExpressionTree.class);
+    builder.add(LiteralTree.class);
+    builder.add(MemberSelectExpressionTree.class);
+    builder.add(MethodInvocationTree.class);
+    builder.add(NewArrayTree.class);
+    builder.add(NewClassTree.class);
+    builder.add(JavaTree.ParameterizedTypeTreeImpl.class);
+    builder.add(ParenthesizedTree.class);
+    builder.add(PrimitiveTypeTree.class);
+    builder.add(TypeCastTree.class);
+    builder.add(UnaryExpressionTree.class);
+    Collection<Tree.Kind> kinds = Lists.newArrayList(getKinds(builder.build()));
+    return ImmutableList.<Tree.Kind>builder().addAll(kinds).add(Tree.Kind.CLASS).add(Tree.Kind.NEW_ARRAY).add(Tree.Kind.CONDITIONAL_EXPRESSION).build();
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.EXPRESSION)) {
-      int level = getExpressionNestingLevel();
-      level++;
-      setExpressionNestingLevel(level);
-
-      if (level == 1) {
-        setOperatorCounter(0);
-      }
-    } else if (node.is(EXCLUSIONS)) {
-      pushExclusionLevel();
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.NEW_ARRAY)) {
+      count.push(0);
+      level.push(0);
     } else {
-      setOperatorCounter(getOperatorCounter() + node.getChildren(JavaPunctuator.QUERY, JavaPunctuator.OROR, JavaPunctuator.ANDAND).size());
+      if (tree.is(Tree.Kind.CONDITIONAL_OR) || tree.is(Tree.Kind.CONDITIONAL_AND) || tree.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
+        count.push(count.pop() + 1);
+      }
+      level.push(level.pop() + 1);
     }
   }
 
   @Override
-  public void leaveNode(AstNode node) {
-    if (node.is(JavaGrammar.EXPRESSION)) {
-      int level = getExpressionNestingLevel();
-      level--;
-      setExpressionNestingLevel(level);
-
-      if (level == 0 && getOperatorCounter() > max) {
-        getContext().createLineViolation(
-            this,
-            "Reduce the number of conditional operators (" + getOperatorCounter() + ") used in the expression (maximum allowed " + max + ").",
-            node);
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.NEW_ARRAY)) {
+      count.pop();
+      level.pop();
+    } else {
+      int currentLevel = level.peek();
+      if (currentLevel == 1) {
+        int opCount = count.pop();
+        if (opCount > max) {
+          addIssue(tree, "Reduce the number of conditional operators (" + opCount + ") used in the expression (maximum allowed " + max + ").");
+        }
+        count.push(0);
       }
-    } else if (node.is(EXCLUSIONS)) {
-      popExclusionLevel();
+      level.push(level.pop() - 1);
     }
-  }
-
-  private void pushExclusionLevel() {
-    expressionNestingLevel.push(0);
-    operatorCounter.push(0);
-  }
-
-  private void popExclusionLevel() {
-    expressionNestingLevel.pop();
-    operatorCounter.pop();
-  }
-
-  private int getExpressionNestingLevel() {
-    return expressionNestingLevel.peek();
-  }
-
-  private void setExpressionNestingLevel(int level) {
-    expressionNestingLevel.pop();
-    expressionNestingLevel.push(level);
-  }
-
-  private int getOperatorCounter() {
-    return operatorCounter.peek();
-  }
-
-  private void setOperatorCounter(int count) {
-    operatorCounter.pop();
-    operatorCounter.push(count);
   }
 
 }

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class ExpressionComplexityCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ExpressionComplexityCheck.java"), new ExpressionComplexityCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ExpressionComplexityCheck.java"), new VisitorsBridge(new ExpressionComplexityCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).")
         .next().atLine(5).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).")
@@ -42,7 +43,8 @@ public class ExpressionComplexityCheckTest {
         .next().atLine(11).withMessage("Reduce the number of conditional operators (6) used in the expression (maximum allowed 3).")
         .next().atLine(26).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).")
         .next().atLine(28).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).")
-        .next().atLine(36);
+        .next().atLine(36)
+        .next().atLine(45);
   }
 
   @Test
@@ -50,7 +52,7 @@ public class ExpressionComplexityCheckTest {
     ExpressionComplexityCheck check = new ExpressionComplexityCheck();
     check.max = 4;
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ExpressionComplexityCheck.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ExpressionComplexityCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(6).withMessage("Reduce the number of conditional operators (5) used in the expression (maximum allowed 4).")
         .next().atLine(11).withMessage("Reduce the number of conditional operators (6) used in the expression (maximum allowed 4).");

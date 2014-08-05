@@ -35,4 +35,13 @@ class A {
     true && true && true && true,                                     // Compliant
     true && true && true && true && true                              // Non-Compliant
   };
+  String s = "ServerDef[applicationName=" + sd.applicationName +
+      " serverName=" + sd.serverName +
+      " serverClassPath=" + sd.serverClassPath +
+      " serverArgs=" + sd. serverArgs +
+      " serverVmArgs=" + sd.serverVmArgs +
+      "]" ;
+  ObjectInstance meth(){
+    return new ObjectInstance(true && false, true ? "":"plop", true ? "":"plop", true ? "":"plop");
+  }
 }
