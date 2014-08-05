@@ -19,32 +19,31 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.visitors.MethodHelper;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
-  key = "S1221",
-  priority = Priority.CRITICAL,
-  tags={"pitfall"})
+    key = "S1221",
+    priority = Priority.CRITICAL,
+    tags = {"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class MethodNamedHashcodeCheck extends SquidCheck<LexerlessGrammar> {
+public class MethodNamedHashcodeCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    MethodHelper.subscribe(this);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    MethodHelper methodHelper = new MethodHelper(node);
-
-    if ("hashcode".equals(methodHelper.getName().getTokenOriginalValue())) {
-      getContext().createLineViolation(this, "Either override Object.hashCode(), or totally rename the method to prevent any confusion.", methodHelper.getName());
+  public void visitNode(Tree tree) {
+    if ("hashcode".equals(((MethodTree) tree).simpleName().name())) {
+      addIssue(tree, "Either override Object.hashCode(), or totally rename the method to prevent any confusion.");
     }
   }
 

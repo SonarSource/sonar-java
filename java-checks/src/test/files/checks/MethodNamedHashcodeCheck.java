@@ -18,7 +18,7 @@ class A {
   }
 }
 
-interface A {
+interface B {
   void hashcode(); // Non-Compliant
 
   @Foo
