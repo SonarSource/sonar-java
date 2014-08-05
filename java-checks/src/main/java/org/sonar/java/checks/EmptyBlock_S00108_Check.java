@@ -20,18 +20,19 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S00108",
   priority = Priority.MAJOR,
-  tags={"bug"})
+  tags = {"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class EmptyBlock_S00108_Check extends SquidCheck<LexerlessGrammar> {
 
@@ -39,13 +40,14 @@ public class EmptyBlock_S00108_Check extends SquidCheck<LexerlessGrammar> {
   public void init() {
     subscribeTo(
       JavaGrammar.BLOCK,
-      JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS);
+      JavaGrammar.SWITCH_STATEMENT);
   }
 
   @Override
   public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS)) {
-      if (!node.hasChildren()) {
+    if (node.is(JavaGrammar.SWITCH_STATEMENT)) {
+      SwitchStatementTree tree = (SwitchStatementTree) node;
+      if (tree.cases().isEmpty()) {
         getContext().createLineViolation(this, "Either remove or fill this block of code.", node.getParent());
       }
     } else {

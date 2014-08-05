@@ -21,21 +21,22 @@ package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParametersTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.FORMAL_PARAMETER_DECLS).mock();
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    assertThat(g.rule(JavaGrammar.FORMAL_PARAMETERS))
-        .matches("( )")
-        .matches("( formalParameterDecls )");
+    b.rule(JavaGrammar.FORMAL_PARAMETER_DECLS).override(RuleMock.word(b, "formalParameterDecls"));
+
+    assertThat(b, JavaGrammar.FORMAL_PARAMETERS)
+      .matches("( )")
+      .matches("( formalParameterDecls )");
   }
 
 }

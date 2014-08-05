@@ -97,7 +97,7 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
     boolean result = false;
     if(variableTree.type().is(Tree.Kind.ARRAY_TYPE)) {
       ArrayTypeTree arrayTypeTree = (ArrayTypeTree) variableTree.type();
-      Type arrayType = ((AbstractTypedTree) arrayTypeTree.type()).getType();
+      Type arrayType = ((AbstractTypedTree) arrayTypeTree.type()).getType2();
       result = arrayType.isTagged(Type.CLASS) && "String".equals(((Type.ClassType) arrayType).getSymbol().getName());
     }
     return result;

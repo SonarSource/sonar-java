@@ -21,21 +21,18 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SwitchBlockStatementGroupTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.SWITCH_LABEL).mock();
-    g.rule(JavaGrammar.BLOCK_STATEMENTS).mock();
-
-    assertThat(g.rule(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP))
-        .matches("switchLabel blockStatements");
+    assertThat(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
+      .matches("case 0:")
+      .matches("case 0: break;")
+      .matches("case 0: int i = 0; break;")
+      .matches("case 0: case 1: break;");
   }
 
 }

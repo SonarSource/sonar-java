@@ -54,7 +54,7 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
 
   @Override
   public SyntaxToken operatorToken() {
-    return new InternalSyntaxToken(astNode.getToken());
+    return new InternalSyntaxToken(super.getAstNode().getToken());
   }
 
   @Override
@@ -75,7 +75,7 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
   @Override
   public AstNode getAstNode() {
     // TODO(Godin): provides behavioral compatibility, because this method used by AnonymousClassesTooBigCheck, but should not
-    return astNode.getParent();
+    return super.getAstNode().getParent();
   }
 
   @Override
@@ -87,7 +87,7 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>forArray(
       leftOperand,
-      rightOperand
-    );
+      rightOperand);
   }
+
 }

@@ -23,6 +23,7 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -32,15 +33,20 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatementTree {
   @Nullable
   private final ExpressionTree expression;
 
-  public ReturnStatementTreeImpl(AstNode astNode, @Nullable ExpressionTree expression) {
-    super(astNode);
+  public ReturnStatementTreeImpl(@Nullable ExpressionTree expression, AstNode... children) {
+    super(JavaGrammar.RETURN_STATEMENT);
     this.expression = expression;
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override
@@ -50,7 +56,7 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
 
   @Override
   public SyntaxToken returnKeyword() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.RETURN).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.RETURN).getToken());
   }
 
   @Nullable
@@ -61,7 +67,7 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
 
   @Override
   public SyntaxToken semicolonToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.SEMI).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI).getToken());
   }
 
   @Override
@@ -72,7 +78,7 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>singletonIterator(
-      expression
-    );
+      expression);
   }
+
 }

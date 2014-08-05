@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -36,13 +37,26 @@ import java.util.List;
 public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
   // TODO remove:
   public static final org.sonar.java.model.declaration.ModifiersTreeImpl EMPTY =
-      new org.sonar.java.model.declaration.ModifiersTreeImpl(null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
+    new org.sonar.java.model.declaration.ModifiersTreeImpl((AstNode) null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
+
+  /* FIXME */
+  public static final org.sonar.java.model.declaration.ModifiersTreeImpl EMPTY_MODIFIERS =
+    new org.sonar.java.model.declaration.ModifiersTreeImpl(ImmutableList.<AstNode>of(), ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
 
   private final List<Modifier> modifiers;
   private final List<AnnotationTree> annotations;
 
   public ModifiersTreeImpl(AstNode astNode, List<Modifier> modifiers, List<AnnotationTree> annotations) {
     super(astNode);
+    this.modifiers = Preconditions.checkNotNull(modifiers);
+    this.annotations = Preconditions.checkNotNull(annotations);
+  }
+
+  public ModifiersTreeImpl(List<AstNode> children, List<Modifier> modifiers, List<AnnotationTree> annotations) {
+    super(JavaGrammar.MODIFIERS);
+    for (AstNode child : children) {
+      addChild(child);
+    }
     this.modifiers = Preconditions.checkNotNull(modifiers);
     this.annotations = Preconditions.checkNotNull(annotations);
   }
@@ -73,6 +87,12 @@ public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
       // TODO(Godin): modifiers
       Iterators.<Tree>emptyIterator(),
       annotations.iterator()
-    );
+      );
   }
+
+  @Override
+  public String toString() {
+    return "ModifiersTreeImpl";
+  }
+
 }

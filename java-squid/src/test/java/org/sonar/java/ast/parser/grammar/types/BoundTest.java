@@ -21,21 +21,17 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class BoundTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    assertThat(g.rule(JavaGrammar.BOUND))
-        .matches("classType")
-        .matches("classType & classType")
-        .matches("@Foo classType & @Foo classType")
-    ;
+    assertThat(JavaGrammar.BOUND)
+      .matches("classType")
+      .matches("classType & classType")
+      .matches("@Foo classType & @Foo classType");
   }
 
 }

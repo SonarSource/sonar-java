@@ -19,19 +19,22 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.Iterables;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1151",
   priority = Priority.MAJOR,
-  tags={"brain-overload"})
+  tags = {"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> {
 
@@ -47,15 +50,27 @@ public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode node) {
-    int lines = getNumberOfLines(node);
-    if (lines > max) {
-      getContext().createLineViolation(this, "Reduce this switch case number of lines from " + lines + " to at most " + max + ", for example by extracting code into methods.",
-          node);
+    CaseGroupTree tree = (CaseGroupTree) node;
+
+    for (int i = 0; i < tree.labels().size() - 1; i++) {
+      int caseStartLine = ((JavaTree) tree.labels().get(i)).getLine();
+      int nextCaseStartLine = ((JavaTree) tree.labels().get(i + 1)).getLine();
+
+      check(caseStartLine, nextCaseStartLine);
     }
+
+    check(((JavaTree) Iterables.getLast(tree.labels())).getLine(), node.getNextAstNode().getTokenLine());
   }
 
-  private static int getNumberOfLines(AstNode node) {
-    return Math.max(node.getNextAstNode().getTokenLine() - node.getTokenLine(), 1);
+  private void check(int caseStartLine, int nextCaseStartLine) {
+    int lines = Math.max(nextCaseStartLine - caseStartLine, 1);
+
+    if (lines > max) {
+      getContext().createLineViolation(
+        this,
+        "Reduce this switch case number of lines from " + lines + " to at most " + max + ", for example by extracting code into methods.",
+        caseStartLine);
+    }
   }
 
 }

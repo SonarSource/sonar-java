@@ -21,21 +21,22 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ForUpdateTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.STATEMENT_EXPRESSION).mock();
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    assertThat(g.rule(JavaGrammar.FOR_UPDATE))
-        .matches("statementExpression , statementExpression")
-        .matches("statementExpression");
+    b.rule(JavaGrammar.STATEMENT_EXPRESSION).override(RuleMock.word(b, "statementExpression"));
+
+    assertThat(b, JavaGrammar.FOR_UPDATE)
+      .matches("statementExpression , statementExpression")
+      .matches("statementExpression");
   }
 
 }

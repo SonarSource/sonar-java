@@ -21,30 +21,26 @@ package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class StringLiteralTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    assertThat(g.rule(JavaTokenType.LITERAL))
-        .as("regular string").matches("\"string\"")
-        .as("empty string").matches("\"\"")
-        .as("escaped LF").matches("\"\\n\"")
-        .as("escaped double quotes").matches("\"string, which contains \\\"escaped double quotes\\\"\"")
-        .as("octal escape").matches("\"string \\177\"")
-        .as("unicode escape").matches("\"string \\u03a9\"");
+    assertThat(JavaTokenType.LITERAL)
+      .as("regular string").matches("\"string\"")
+      .as("empty string").matches("\"\"")
+      .as("escaped LF").matches("\"\\n\"")
+      .as("escaped double quotes").matches("\"string, which contains \\\"escaped double quotes\\\"\"")
+      .as("octal escape").matches("\"string \\177\"")
+      .as("unicode escape").matches("\"string \\u03a9\"");
   }
 
   @Test
   public void nok() {
-    assertThat(g.rule(JavaTokenType.LITERAL))
-        .notMatches("\"");
+    assertThat(JavaTokenType.LITERAL)
+      .notMatches("\"");
   }
 
 }

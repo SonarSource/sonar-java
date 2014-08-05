@@ -22,6 +22,7 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -33,13 +34,20 @@ import java.util.Iterator;
 import java.util.List;
 
 public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
-  private final List<CaseLabelTree> labels;
+  private final List<CaseLabelTreeImpl> labels;
   private final List<StatementTree> body;
 
-  public CaseGroupTreeImpl(AstNode astNode, List<CaseLabelTree> labels, List<StatementTree> body) {
-    super(astNode);
+  public CaseGroupTreeImpl(List<CaseLabelTreeImpl> labels, List<StatementTree> body, List<AstNode> children) {
+    super(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP);
     this.labels = Preconditions.checkNotNull(labels);
     this.body = Preconditions.checkNotNull(body);
+
+    for (CaseLabelTreeImpl label : labels) {
+      addChild(label);
+    }
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override
@@ -49,7 +57,8 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
 
   @Override
   public List<CaseLabelTree> labels() {
-    return labels;
+    // FIXME
+    return (List) labels;
   }
 
   @Override
@@ -66,7 +75,7 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
       labels.iterator(),
-      body.iterator()
-    );
+      body.iterator());
   }
+
 }

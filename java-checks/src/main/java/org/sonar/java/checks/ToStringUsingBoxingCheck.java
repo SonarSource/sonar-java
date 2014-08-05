@@ -21,12 +21,12 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.Set;
@@ -38,14 +38,14 @@ import java.util.Set;
 public class ToStringUsingBoxingCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final Set<String> PRIMITIVE_WRAPPERS = ImmutableSet.of(
-      "Byte",
-      "Short",
-      "Integer",
-      "Long",
-      "Float",
-      "Double",
-      "Character",
-      "Boolean");
+    "Byte",
+    "Short",
+    "Integer",
+    "Long",
+    "Float",
+    "Double",
+    "Character",
+    "Boolean");
 
   @Override
   public void init() {
@@ -59,9 +59,9 @@ public class ToStringUsingBoxingCheck extends SquidCheck<LexerlessGrammar> {
 
       if (PRIMITIVE_WRAPPERS.contains(newlyCreatedClassName)) {
         getContext().createLineViolation(
-            this,
-            "Call the static method " + newlyCreatedClassName + ".toString(...) instead of instantiating a temporary object to perform this to string conversion.",
-            node);
+          this,
+          "Call the static method " + newlyCreatedClassName + ".toString(...) instead of instantiating a temporary object to perform this to string conversion.",
+          node);
       }
     }
   }
@@ -76,9 +76,9 @@ public class ToStringUsingBoxingCheck extends SquidCheck<LexerlessGrammar> {
 
   private static String getNewlyCreatedClassName(AstNode node) {
     AstNode primary = node.getFirstChild(JavaGrammar.PRIMARY);
-    AstNode creator = primary.getFirstChild(JavaGrammar.CREATOR);
+    AstNode newExpression = primary.getFirstChild(JavaGrammar.NEW_EXPRESSION);
 
-    return creator == null ? null : getSimpleCreatedName(creator.getFirstChild(JavaGrammar.CREATED_NAME));
+    return newExpression == null ? null : getSimpleCreatedName(newExpression.getFirstChild(JavaGrammar.CREATOR).getFirstChild(JavaGrammar.CREATED_NAME));
   }
 
   private static String getSimpleCreatedName(AstNode node) {

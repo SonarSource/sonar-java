@@ -21,30 +21,31 @@ package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FormalParameterDeclsRestTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).mock();
-    g.rule(JavaGrammar.FORMAL_PARAMETER_DECLS).mock();
-    g.rule(JavaGrammar.ANNOTATION).mock();
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    assertThat(g.rule(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST))
-        .matches("variableDeclaratorId")
-        .matches("variableDeclaratorId , formalParameterDecls")
-        .matches("... variableDeclaratorId")
-        .matches("annotation ... variableDeclaratorId");
+    b.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).override(RuleMock.word(b, "variableDeclaratorId"));
+    b.rule(JavaGrammar.FORMAL_PARAMETER_DECLS).override(RuleMock.word(b, "formalParameterDecls"));
+    b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
+
+    assertThat(b, JavaGrammar.FORMAL_PARAMETERS_DECLS_REST)
+      .matches("variableDeclaratorId")
+      .matches("variableDeclaratorId , formalParameterDecls")
+      .matches("... variableDeclaratorId")
+      .matches("annotation ... variableDeclaratorId");
   }
 
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST))
-        .matches("@Foo ... variableDeclaratorId");
+    assertThat(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST)
+      .matches("@Foo ... variableDeclaratorId");
   }
 }

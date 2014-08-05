@@ -19,10 +19,16 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
+
+import java.util.List;
 
 public class SuppressWarningsAnnotationUtils {
 
@@ -35,14 +41,13 @@ public class SuppressWarningsAnnotationUtils {
 
   public static boolean isSuppressAllWarnings(AstNode astNode) {
     if (astNode.is(JavaGrammar.CLASS_DECLARATION, JavaGrammar.INTERFACE_DECLARATION, JavaGrammar.ENUM_DECLARATION, JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
-      AstNode modifierNode = astNode.getPreviousAstNode();
-      while (modifierNode != null && modifierNode.is(JavaGrammar.MODIFIER)) {
-        if (isAnnotationSupressAllWarnings(modifierNode)) {
-          return true;
-        }
-        modifierNode = modifierNode.getPreviousAstNode();
+      AstNode modifiersCandidate = astNode.getPreviousAstNode();
+      if (!modifiersCandidate.is(JavaGrammar.MODIFIERS)) {
+        return false;
       }
-      return false;
+
+      ModifiersTree modifiers = (ModifiersTree) modifiersCandidate;
+      return containsAnnotationSuppressAllWarnings(modifiers.annotations());
     }
     final AstNode node;
     if (astNode.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
@@ -54,23 +59,26 @@ public class SuppressWarningsAnnotationUtils {
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
     }
-    for (AstNode modifierNode : node.getChildren(JavaGrammar.MODIFIER)) {
-      if (isAnnotationSupressAllWarnings(modifierNode)) {
-        return true;
-      }
+    ModifiersTree modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.MODIFIERS);
+    return containsAnnotationSuppressAllWarnings(modifiers.annotations());
+  }
+
+  private static boolean containsAnnotationSuppressAllWarnings(List<AnnotationTree> annotations) {
+    for (AnnotationTree annotation : annotations) {
+      return isAnnotationSupressAllWarnings(((JavaTree) annotation).getAstNode());
     }
     return false;
   }
 
-  private static boolean isAnnotationSupressAllWarnings(AstNode modifierNode) {
-    AstNode annotationNode = modifierNode.getFirstChild();
-    if (annotationNode.is(JavaGrammar.ANNOTATION)) {
-      String name = getAnnotationName(annotationNode);
-      if (SUPPRESS_WARNINGS_ANNOTATION_NAME.equals(name) || SUPPRESS_WARNINGS_ANNOTATION_FQ_NAME.equals(name)) {
-        for (AstNode valueNode : annotationNode.getDescendants(JavaTokenType.LITERAL)) {
-          if (VALUE.equals(valueNode.getTokenValue())) {
-            return true;
-          }
+  // FIXME
+  private static boolean isAnnotationSupressAllWarnings(AstNode annotationNode) {
+    Preconditions.checkArgument(annotationNode.is(JavaGrammar.ANNOTATION));
+
+    String name = getAnnotationName(annotationNode);
+    if (SUPPRESS_WARNINGS_ANNOTATION_NAME.equals(name) || SUPPRESS_WARNINGS_ANNOTATION_FQ_NAME.equals(name)) {
+      for (AstNode valueNode : annotationNode.getDescendants(JavaTokenType.LITERAL)) {
+        if (VALUE.equals(valueNode.getTokenValue())) {
+          return true;
         }
       }
     }

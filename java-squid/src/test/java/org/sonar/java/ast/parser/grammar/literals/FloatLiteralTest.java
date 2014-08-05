@@ -21,113 +21,109 @@ package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class FloatLiteralTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    assertThat(g.rule(JavaTokenType.DOUBLE_LITERAL))
-        // Decimal
+    assertThat(JavaTokenType.DOUBLE_LITERAL)
+      // Decimal
 
-        // with dot at the end
-        .matches("1234.")
-        .matches("1234.E1")
-        .matches("1234.e+1")
-        .matches("1234.E-1");
-    assertThat(g.rule(JavaTokenType.FLOAT_LITERAL))
-        .matches("1234.f");
+      // with dot at the end
+      .matches("1234.")
+      .matches("1234.E1")
+      .matches("1234.e+1")
+      .matches("1234.E-1");
+    assertThat(JavaTokenType.FLOAT_LITERAL)
+      .matches("1234.f");
 
     // with dot between
-    assertThat(g.rule(JavaTokenType.DOUBLE_LITERAL))
-        .matches("12.34")
-        .matches("12.34E1")
-        .matches("12.34e+1")
-        .matches("12.34E-1");
-    assertThat(g.rule(JavaTokenType.FLOAT_LITERAL))
-        .matches("12.34f")
-        .matches("12.34E1F");
-    assertThat(g.rule(JavaTokenType.DOUBLE_LITERAL))
-        .matches("12.34E+1d")
-        .matches("12.34e-1D")
+    assertThat(JavaTokenType.DOUBLE_LITERAL)
+      .matches("12.34")
+      .matches("12.34E1")
+      .matches("12.34e+1")
+      .matches("12.34E-1");
+    assertThat(JavaTokenType.FLOAT_LITERAL)
+      .matches("12.34f")
+      .matches("12.34E1F");
+    assertThat(JavaTokenType.DOUBLE_LITERAL)
+      .matches("12.34E+1d")
+      .matches("12.34e-1D")
 
-        // with dot at the beginning
-        .matches(".1234")
-        .matches(".1234e1")
-        .matches(".1234E+1")
-        .matches(".1234E-1");
-    assertThat(g.rule(JavaTokenType.FLOAT_LITERAL))
-        .matches(".1234f")
-        .matches(".1234E1F");
-    assertThat(g.rule(JavaTokenType.DOUBLE_LITERAL))
-        .matches(".1234e+1d")
-        .matches(".1234E-1D")
+      // with dot at the beginning
+      .matches(".1234")
+      .matches(".1234e1")
+      .matches(".1234E+1")
+      .matches(".1234E-1");
+    assertThat(JavaTokenType.FLOAT_LITERAL)
+      .matches(".1234f")
+      .matches(".1234E1F");
+    assertThat(JavaTokenType.DOUBLE_LITERAL)
+      .matches(".1234e+1d")
+      .matches(".1234E-1D")
 
-        // without dot
-        .matches("1234D")
-        .matches("1234d");
-    assertThat(g.rule(JavaTokenType.FLOAT_LITERAL))
-        .matches("1234F")
-        .matches("1234f");
-    assertThat(g.rule(JavaTokenType.DOUBLE_LITERAL))
-        .matches("1234e1")
-        .matches("1234E+1")
-        .matches("1234E-1");
-    assertThat(g.rule(JavaTokenType.FLOAT_LITERAL))
-        .matches("1234E1f");
-    assertThat(g.rule(JavaTokenType.DOUBLE_LITERAL))
-        .matches("1234e+1d")
-        .matches("1234E-1D")
+      // without dot
+      .matches("1234D")
+      .matches("1234d");
+    assertThat(JavaTokenType.FLOAT_LITERAL)
+      .matches("1234F")
+      .matches("1234f");
+    assertThat(JavaTokenType.DOUBLE_LITERAL)
+      .matches("1234e1")
+      .matches("1234E+1")
+      .matches("1234E-1");
+    assertThat(JavaTokenType.FLOAT_LITERAL)
+      .matches("1234E1f");
+    assertThat(JavaTokenType.DOUBLE_LITERAL)
+      .matches("1234e+1d")
+      .matches("1234E-1D")
 
-        // Hexadecimal
+      // Hexadecimal
 
-        // with dot at the end
-        .matches("0XAF.P1")
-        .matches("0xAF.p+1")
-        .matches("0XAF.p-1")
+      // with dot at the end
+      .matches("0XAF.P1")
+      .matches("0xAF.p+1")
+      .matches("0XAF.p-1")
 
-        // with dot between
-        .matches("0xAF.BCP1")
-        .matches("0XAF.BCp+1")
-        .matches("0xAF.BCP-1");
+      // with dot between
+      .matches("0xAF.BCP1")
+      .matches("0XAF.BCp+1")
+      .matches("0xAF.BCP-1");
 
-    assertThat(g.rule(JavaTokenType.FLOAT_LITERAL))
-        .matches("0xAF.BCp1F");
-    assertThat(g.rule(JavaTokenType.DOUBLE_LITERAL))
-        .matches("0XAF.BCP+1d")
-        .matches("0XAF.BCp-1D")
+    assertThat(JavaTokenType.FLOAT_LITERAL)
+      .matches("0xAF.BCp1F");
+    assertThat(JavaTokenType.DOUBLE_LITERAL)
+      .matches("0XAF.BCP+1d")
+      .matches("0XAF.BCp-1D")
 
-        // without dot
-        .matches("0xAFp1")
-        .matches("0XAFp+1")
-        .matches("0xAFp-1");
+      // without dot
+      .matches("0xAFp1")
+      .matches("0XAFp+1")
+      .matches("0xAFp-1");
 
-    assertThat(g.rule(JavaTokenType.FLOAT_LITERAL))
-        .matches("0XAFp1f");
-    assertThat(g.rule(JavaTokenType.DOUBLE_LITERAL))
-        .matches("0xAFp+1d")
-        .matches("0XAFp-1D");
+    assertThat(JavaTokenType.FLOAT_LITERAL)
+      .matches("0XAFp1f");
+    assertThat(JavaTokenType.DOUBLE_LITERAL)
+      .matches("0xAFp+1d")
+      .matches("0XAFp-1D");
   }
 
   @Test
   public void nok() {
-    assertThat(g.rule(JavaTokenType.DOUBLE_LITERAL))
-        .notMatches("0xAF.f")
-        .notMatches("0xAF.BCf")
-        .notMatches("0xAF.")
-        .notMatches("0XAF.BC")
-        .notMatches("0xAF");
-    assertThat(g.rule(JavaTokenType.FLOAT_LITERAL))
-        .notMatches("0xAF.f")
-        .notMatches("0xAF.BCf")
-        .notMatches("0xAF.")
-        .notMatches("0XAF.BC")
-        .notMatches("0xAF");
+    assertThat(JavaTokenType.DOUBLE_LITERAL)
+      .notMatches("0xAF.f")
+      .notMatches("0xAF.BCf")
+      .notMatches("0xAF.")
+      .notMatches("0XAF.BC")
+      .notMatches("0xAF");
+    assertThat(JavaTokenType.FLOAT_LITERAL)
+      .notMatches("0xAF.f")
+      .notMatches("0xAF.BCf")
+      .notMatches("0xAF.")
+      .notMatches("0XAF.BC")
+      .notMatches("0xAF");
   }
 
 }

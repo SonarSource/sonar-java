@@ -21,10 +21,10 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Charsets;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
-import org.sonar.sslr.parser.ParserAdapter;
+import org.sonar.java.ast.parser.JavaParser;
 
 import java.lang.reflect.Constructor;
 
@@ -32,7 +32,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class SuppressWarningsAnnotationUtilsTest {
 
-  private ParserAdapter<LexerlessGrammar> p = new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, JavaGrammar.createGrammar());
+  private final Parser p = JavaParser.createParser(Charsets.UTF_8);
 
   @Test
   public void suppress_warnings_at_class_level() {

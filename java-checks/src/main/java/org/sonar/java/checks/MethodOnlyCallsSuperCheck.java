@@ -23,12 +23,12 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.ast.AstSelect;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -37,7 +37,7 @@ import java.util.List;
 @Rule(
   key = "S1185",
   priority = Priority.MINOR,
-  tags={"brain-overload"})
+  tags = {"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class MethodOnlyCallsSuperCheck extends SquidCheck<LexerlessGrammar> {
 
@@ -123,6 +123,7 @@ public class MethodOnlyCallsSuperCheck extends SquidCheck<LexerlessGrammar> {
   private static boolean hasAnnotationDifferentFromOverride(AstNode node) {
     AstSelect query = node.select()
       .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
+      .children(JavaGrammar.MODIFIERS)
       .children(JavaGrammar.MODIFIER)
       .children(JavaGrammar.ANNOTATION)
       .children(JavaGrammar.QUALIFIED_IDENTIFIER);

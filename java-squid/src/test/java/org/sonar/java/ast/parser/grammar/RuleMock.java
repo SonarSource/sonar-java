@@ -17,26 +17,18 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser.grammar.statements;
+package org.sonar.java.ast.parser.grammar;
 
-import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
-import static org.sonar.sslr.tests.Assertions.assertThat;
+public class RuleMock {
 
-public class SwitchBlockStatementGroupsTest {
-
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
-  @Test
-  public void ok() {
-    g.rule(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP).mock();
-
-    assertThat(g.rule(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUPS))
-        .matches("")
-        .matches("switchBlockStatementGroup")
-        .matches("switchBlockStatementGroup switchBlockStatementGroup");
+  public static Object word(LexerlessGrammarBuilder b, String word) {
+    return b.sequence(
+      word,
+      b.firstOf(
+        b.regexp("\\s++"),
+        b.endOfInput()));
   }
 
 }

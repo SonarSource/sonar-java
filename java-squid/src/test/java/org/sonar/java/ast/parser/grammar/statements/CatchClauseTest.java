@@ -21,21 +21,21 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CatchClauseTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.CATCH_FORMAL_PARAMETER).mock();
-    g.rule(JavaGrammar.BLOCK).mock();
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    assertThat(g.rule(JavaGrammar.CATCH_CLAUSE))
-        .matches("catch ( catchFormalParameter ) block");
+    b.rule(JavaGrammar.CATCH_FORMAL_PARAMETER).override(RuleMock.word(b, "catchFormalParameter"));
+
+    assertThat(b, JavaGrammar.CATCH_CLAUSE)
+      .matches("catch ( catchFormalParameter ) {}");
   }
 
 }

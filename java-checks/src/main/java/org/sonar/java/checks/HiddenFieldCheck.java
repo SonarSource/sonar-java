@@ -23,13 +23,15 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.ast.AstSelect;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -39,7 +41,7 @@ import java.util.Stack;
 @Rule(
   key = "HiddenFieldCheck",
   priority = Priority.MAJOR,
-  tags={"pitfall"})
+  tags = {"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class HiddenFieldCheck extends SquidCheck<LexerlessGrammar> {
 
@@ -73,10 +75,10 @@ public class HiddenFieldCheck extends SquidCheck<LexerlessGrammar> {
   private static boolean isInStaticBlock(AstNode node) {
     AstSelect query = node.select()
       .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION, JavaGrammar.CLASS_INIT_DECLARATION)
-      .children(JavaGrammar.MODIFIER, JavaKeyword.STATIC);
+      .children(JavaGrammar.MODIFIERS, JavaKeyword.STATIC);
 
-    for (AstNode modifierOrStatic : query) {
-      if (modifierOrStatic.is(JavaKeyword.STATIC) || modifierOrStatic.hasDirectChildren(JavaKeyword.STATIC)) {
+    for (AstNode modifiersOrStatic : query) {
+      if (modifiersOrStatic.is(JavaKeyword.STATIC) || ((ModifiersTree) modifiersOrStatic).modifiers().contains(Modifier.STATIC)) {
         return true;
       }
     }

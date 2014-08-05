@@ -21,27 +21,27 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.parser.grammar.RuleMock;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class BlockStatementTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    g.rule(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT).mock();
-    g.rule(JavaGrammar.STATEMENT).mock();
-    g.rule(JavaGrammar.MODIFIER).mock();
-    g.rule(JavaGrammar.CLASS_DECLARATION).mock();
-    g.rule(JavaGrammar.ENUM_DECLARATION).mock();
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    assertThat(g.rule(JavaGrammar.BLOCK_STATEMENT))
-        .matches("localVariableDeclarationStatement")
-        .matches("modifier classDeclaration")
-        .matches("modifier enumDeclaration")
-        .matches("statement");
+    b.rule(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT).override(RuleMock.word(b, "localVariableDeclarationStatement"));
+    b.rule(JavaGrammar.STATEMENT).override(RuleMock.word(b, "statement"));
+    b.rule(JavaGrammar.CLASS_DECLARATION).override(RuleMock.word(b, "classDeclaration"));
+    b.rule(JavaGrammar.ENUM_DECLARATION).override(RuleMock.word(b, "enumDeclaration"));
+
+    assertThat(b, JavaGrammar.BLOCK_STATEMENT)
+      .matches("localVariableDeclarationStatement")
+      .matches("public classDeclaration")
+      .matches("private enumDeclaration")
+      .matches("statement");
   }
 
 }

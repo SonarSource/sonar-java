@@ -25,6 +25,8 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.squidbridge.api.SourceMethod;
 import org.sonar.squidbridge.measures.Metric;
 
@@ -79,7 +81,7 @@ public class AccessorVisitor extends JavaAstVisitor {
 
   private boolean isValidSetter(MethodHelper method) {
     String methodName = method.getName().getTokenValue();
-    if (methodName.startsWith("set") && (method.getParameters().size() == 1) && method.getReturnType().is(JavaKeyword.VOID)) {
+    if (methodName.startsWith("set") && method.getParameters().size() == 1 && method.getReturnType().is(JavaKeyword.VOID)) {
       List<AstNode> statements = method.getStatements();
       if (statements.size() == 1) {
         AstNode blockStatement = statements.get(0);
@@ -121,9 +123,9 @@ public class AccessorVisitor extends JavaAstVisitor {
     if (astNode.is(JavaGrammar.RETURN_STATEMENT) && astNode.hasDirectChildren(JavaGrammar.EXPRESSION)) {
       AstNode expression = astNode.getFirstChild(JavaGrammar.EXPRESSION);
       if (expression.getNumberOfChildren() == 1 && expression.getFirstChild().is(JavaGrammar.PRIMARY)) {
-        AstNode primary = expression.getFirstChild();
-        if (primary.getNumberOfChildren() == 1 && primary.getFirstChild().is(JavaGrammar.QUALIFIED_IDENTIFIER)) {
-          AstNode qualifiedIdentifier = primary.getFirstChild();
+        AstNode qualifiedIdentifierExpression = expression.getFirstChild().getFirstChild();
+        if (qualifiedIdentifierExpression.is(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION) && qualifiedIdentifierExpression.getNumberOfChildren() == 1) {
+          AstNode qualifiedIdentifier = qualifiedIdentifierExpression.getFirstChild();
           if (qualifiedIdentifier.getNumberOfChildren() == 1) {
             AstNode varReturned = qualifiedIdentifier.getFirstChild();
             if (findPrivateClassVariable(varReturned)) {
@@ -158,12 +160,9 @@ public class AccessorVisitor extends JavaAstVisitor {
   }
 
   private boolean hasPrivateModifier(AstNode classBodyDeclaration) {
-    for (AstNode modifierNode : classBodyDeclaration.getChildren(JavaGrammar.MODIFIER)) {
-      if (modifierNode.getChild(0).is(JavaKeyword.PRIVATE)) {
-        return true;
-      }
-    }
-    return false;
+    ModifiersTree modifiers = (ModifiersTree) classBodyDeclaration.getFirstChild(JavaGrammar.MODIFIERS);
+    return modifiers != null &&
+      modifiers.modifiers().contains(Modifier.PRIVATE);
   }
 
   private boolean hasBooleanReturnType(MethodHelper method) {

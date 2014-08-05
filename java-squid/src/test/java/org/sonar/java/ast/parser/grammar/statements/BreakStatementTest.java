@@ -21,19 +21,16 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class BreakStatementTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void ok() {
-    assertThat(g.rule(JavaGrammar.BREAK_STATEMENT))
-        .matches("break;")
-        .matches("break identifier;");
+    assertThat(JavaGrammar.BREAK_STATEMENT)
+      .matches("break;")
+      .matches("break identifier;");
   }
 
 }

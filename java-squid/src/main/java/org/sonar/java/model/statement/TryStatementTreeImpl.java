@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -62,9 +63,9 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   @Override
   public SyntaxToken tryKeyword() {
     if (!resources.isEmpty()) {
-      return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.TRY_WITH_RESOURCES_STATEMENT).getFirstChild(JavaKeyword.TRY).getToken());
+      return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.TRY_WITH_RESOURCES_STATEMENT).getFirstChild(JavaKeyword.TRY).getToken());
     } else {
-      return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.TRY).getToken());
+      return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.TRY).getToken());
     }
   }
 
@@ -72,7 +73,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   @Override
   public SyntaxToken openParenToken() {
     if (!resources.isEmpty()) {
-      return new InternalSyntaxToken(astNode
+      return new InternalSyntaxToken(getAstNode()
         .getFirstChild(JavaGrammar.RESOURCE_SPECIFICATION)
         .getFirstChild(JavaPunctuator.LPAR)
         .getToken());
@@ -90,7 +91,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   @Override
   public SyntaxToken closeParenToken() {
     if (!resources.isEmpty()) {
-      return new InternalSyntaxToken(astNode
+      return new InternalSyntaxToken(getAstNode()
         .getFirstChild(JavaGrammar.RESOURCE_SPECIFICATION)
         .getFirstChild(JavaPunctuator.RPAR)
         .getToken());
@@ -112,7 +113,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   @Nullable
   @Override
   public SyntaxToken finallyKeyword() {
-    AstNode node = astNode.getFirstChild(JavaGrammar.FINALLY_);
+    AstNode node = getAstNode().getFirstChild(JavaGrammar.FINALLY_);
     return node == null ? null : new InternalSyntaxToken(node.getFirstChild(JavaKeyword.FINALLY).getToken());
   }
 
@@ -133,7 +134,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
       resources.iterator(),
       Iterators.singletonIterator(block),
       catches.iterator(),
-      Iterators.singletonIterator(finallyBlock)
-    );
+      Iterators.singletonIterator(finallyBlock));
   }
+
 }

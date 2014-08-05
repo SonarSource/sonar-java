@@ -45,7 +45,7 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
 
   @Override
   public SyntaxToken identifierToken() {
-    return new InternalSyntaxToken(astNode.getToken());
+    return new InternalSyntaxToken(getAstNode().getToken());
   }
 
   @Override
@@ -72,4 +72,5 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   public Iterator<Tree> childrenIterator() {
     throw new UnsupportedOperationException();
   }
+
 }

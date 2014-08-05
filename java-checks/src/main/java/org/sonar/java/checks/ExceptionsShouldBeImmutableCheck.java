@@ -20,19 +20,19 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1165",
   priority = Priority.MAJOR,
-  tags={"error-handling"})
+  tags = {"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ExceptionsShouldBeImmutableCheck extends SquidCheck<LexerlessGrammar> {
 
@@ -71,6 +71,7 @@ public class ExceptionsShouldBeImmutableCheck extends SquidCheck<LexerlessGramma
   private static boolean isFinal(AstNode node) {
     return node.select()
       .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
+      .children(JavaGrammar.MODIFIERS)
       .children(JavaGrammar.MODIFIER)
       .children(JavaKeyword.FINAL)
       .isNotEmpty();

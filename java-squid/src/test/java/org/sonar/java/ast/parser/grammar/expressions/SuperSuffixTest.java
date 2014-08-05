@@ -21,17 +21,14 @@ package org.sonar.java.ast.parser.grammar.expressions;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class SuperSuffixTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void realLife() {
-    assertThat(g.rule(JavaGrammar.SUPER_SUFFIX))
+    assertThat(JavaGrammar.SUPER_SUFFIX)
       .matches("(arguments)")
       .matches(".field")
       .matches(".method(arguments)")

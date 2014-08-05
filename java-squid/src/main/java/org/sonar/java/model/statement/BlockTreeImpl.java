@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -44,6 +45,16 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
     this.body = Preconditions.checkNotNull(body);
   }
 
+  public BlockTreeImpl(Kind kind, List<StatementTree> body, AstNode... children) {
+    super(JavaGrammar.BLOCK);
+    this.kind = kind;
+    this.body = Preconditions.checkNotNull(body);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
+
   @Override
   public Kind getKind() {
     return kind;
@@ -51,7 +62,7 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
 
   @Override
   public SyntaxToken openBraceToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.LWING).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LWING).getToken());
   }
 
   @Override
@@ -61,7 +72,7 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
 
   @Override
   public SyntaxToken closeBraceToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaPunctuator.RWING).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RWING).getToken());
   }
 
   @Override
@@ -74,7 +85,7 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
     return Iterators.concat(
       // (Godin): workaround for generics
       Iterators.<Tree>emptyIterator(),
-      body.iterator()
-    );
+      body.iterator());
   }
+
 }

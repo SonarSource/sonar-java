@@ -21,18 +21,15 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class ThrowStatementTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void okThrow() {
-    assertThat(g.rule(JavaGrammar.THROW_STATEMENT))
-        .matches("throw expression;");
+    assertThat(JavaGrammar.THROW_STATEMENT)
+      .matches("throw expression;");
   }
 
 }

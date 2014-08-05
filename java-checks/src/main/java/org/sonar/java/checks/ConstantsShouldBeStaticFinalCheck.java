@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
@@ -71,6 +71,7 @@ public class ConstantsShouldBeStaticFinalCheck extends SquidCheck<LexerlessGramm
 
   private static boolean isFinal(AstNode node) {
     return node.select()
+      .children(JavaGrammar.MODIFIERS)
       .children(JavaGrammar.MODIFIER)
       .children(JavaKeyword.FINAL)
       .isNotEmpty();
@@ -78,6 +79,7 @@ public class ConstantsShouldBeStaticFinalCheck extends SquidCheck<LexerlessGramm
 
   private static boolean isStatic(AstNode node) {
     return node.select()
+      .children(JavaGrammar.MODIFIERS)
       .children(JavaGrammar.MODIFIER)
       .children(JavaKeyword.STATIC)
       .isNotEmpty();

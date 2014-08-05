@@ -21,120 +21,116 @@ package org.sonar.java.ast.parser.grammar;
 
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CornerCasesTest {
 
-  private LexerlessGrammar g = JavaGrammar.createGrammar();
-
   @Test
   public void test() {
-    assertThat(g.rule(JavaPunctuator.AND))
-        .matches("&")
-        .notMatches("&&")
-        .notMatches("&=");
-    assertThat(g.rule(JavaPunctuator.ANDAND))
-        .matches("&&");
-    assertThat(g.rule(JavaPunctuator.ANDEQU))
-        .matches("&=");
+    assertThat(JavaPunctuator.AND)
+      .matches("&")
+      .notMatches("&&")
+      .notMatches("&=");
+    assertThat(JavaPunctuator.ANDAND)
+      .matches("&&");
+    assertThat(JavaPunctuator.ANDEQU)
+      .matches("&=");
 
-    assertThat(g.rule(JavaPunctuator.BANG))
-        .matches("!")
-        .notMatches("!=");
-    assertThat(g.rule(JavaPunctuator.NOTEQUAL))
-        .matches("!=");
+    assertThat(JavaPunctuator.BANG)
+      .matches("!")
+      .notMatches("!=");
+    assertThat(JavaPunctuator.NOTEQUAL)
+      .matches("!=");
 
-    assertThat(g.rule(JavaPunctuator.BSR))
-        .matches(">>>")
-        .notMatches(">>>=");
-    assertThat(g.rule(JavaPunctuator.BSREQU))
-        .matches(">>>=");
+    assertThat(JavaPunctuator.BSR)
+      .matches(">>>")
+      .notMatches(">>>=");
+    assertThat(JavaPunctuator.BSREQU)
+      .matches(">>>=");
 
-    assertThat(g.rule(JavaPunctuator.DIV))
-        .matches("/")
-        .notMatches("/=");
-    assertThat(g.rule(JavaPunctuator.DIVEQU))
-        .matches("/=");
+    assertThat(JavaPunctuator.DIV)
+      .matches("/")
+      .notMatches("/=");
+    assertThat(JavaPunctuator.DIVEQU)
+      .matches("/=");
 
-    assertThat(g.rule(JavaPunctuator.EQU))
-        .matches("=")
-        .notMatches("==");
-    assertThat(g.rule(JavaPunctuator.EQUAL))
-        .matches("==");
+    assertThat(JavaPunctuator.EQU)
+      .matches("=")
+      .notMatches("==");
+    assertThat(JavaPunctuator.EQUAL)
+      .matches("==");
 
-    assertThat(g.rule(JavaPunctuator.GT))
-        .matches(">")
-        .notMatches(">=")
-        .notMatches(">>");
-    assertThat(g.rule(JavaPunctuator.GE))
-        .matches(">=");
+    assertThat(JavaPunctuator.GT)
+      .matches(">")
+      .notMatches(">=")
+      .notMatches(">>");
+    assertThat(JavaPunctuator.GE)
+      .matches(">=");
 
-    assertThat(g.rule(JavaPunctuator.HAT))
-        .matches("^")
-        .notMatches("^=");
-    assertThat(g.rule(JavaPunctuator.HATEQU))
-        .matches("^=");
+    assertThat(JavaPunctuator.HAT)
+      .matches("^")
+      .notMatches("^=");
+    assertThat(JavaPunctuator.HATEQU)
+      .matches("^=");
 
-    assertThat(g.rule(JavaPunctuator.LT))
-        .matches("<")
-        .notMatches("<=")
-        .notMatches("<<");
-    assertThat(g.rule(JavaPunctuator.LE))
-        .matches("<=");
+    assertThat(JavaPunctuator.LT)
+      .matches("<")
+      .notMatches("<=")
+      .notMatches("<<");
+    assertThat(JavaPunctuator.LE)
+      .matches("<=");
 
-    assertThat(g.rule(JavaPunctuator.MINUS))
-        .matches("-")
-        .notMatches("-=")
-        .notMatches("--");
-    assertThat(g.rule(JavaPunctuator.MINUSEQU))
-        .matches("-=");
-    assertThat(g.rule(JavaPunctuator.DEC))
-        .matches("--");
+    assertThat(JavaPunctuator.MINUS)
+      .matches("-")
+      .notMatches("-=")
+      .notMatches("--");
+    assertThat(JavaPunctuator.MINUSEQU)
+      .matches("-=");
+    assertThat(JavaPunctuator.DEC)
+      .matches("--");
 
-    assertThat(g.rule(JavaPunctuator.MOD))
-        .matches("%")
-        .notMatches("%=");
-    assertThat(g.rule(JavaPunctuator.MODEQU))
-        .matches("%=");
+    assertThat(JavaPunctuator.MOD)
+      .matches("%")
+      .notMatches("%=");
+    assertThat(JavaPunctuator.MODEQU)
+      .matches("%=");
 
-    assertThat(g.rule(JavaPunctuator.OR))
-        .matches("|")
-        .notMatches("|=")
-        .notMatches("||");
-    assertThat(g.rule(JavaPunctuator.OREQU))
-        .matches("|=");
-    assertThat(g.rule(JavaPunctuator.OROR))
-        .matches("||");
+    assertThat(JavaPunctuator.OR)
+      .matches("|")
+      .notMatches("|=")
+      .notMatches("||");
+    assertThat(JavaPunctuator.OREQU)
+      .matches("|=");
+    assertThat(JavaPunctuator.OROR)
+      .matches("||");
 
-    assertThat(g.rule(JavaPunctuator.PLUS))
-        .matches("+")
-        .notMatches("+=")
-        .notMatches("++");
-    assertThat(g.rule(JavaPunctuator.PLUSEQU))
-        .matches("+=");
-    assertThat(g.rule(JavaPunctuator.INC))
-        .matches("++");
+    assertThat(JavaPunctuator.PLUS)
+      .matches("+")
+      .notMatches("+=")
+      .notMatches("++");
+    assertThat(JavaPunctuator.PLUSEQU)
+      .matches("+=");
+    assertThat(JavaPunctuator.INC)
+      .matches("++");
 
-    assertThat(g.rule(JavaPunctuator.SL))
-        .matches("<<")
-        .notMatches("<<=");
-    assertThat(g.rule(JavaPunctuator.SLEQU))
-        .matches("<<=");
+    assertThat(JavaPunctuator.SL)
+      .matches("<<")
+      .notMatches("<<=");
+    assertThat(JavaPunctuator.SLEQU)
+      .matches("<<=");
 
-    assertThat(g.rule(JavaPunctuator.SR))
-        .matches(">>")
-        .notMatches(">>=");
-    assertThat(g.rule(JavaPunctuator.SREQU))
-        .matches(">>=");
+    assertThat(JavaPunctuator.SR)
+      .matches(">>")
+      .notMatches(">>=");
+    assertThat(JavaPunctuator.SREQU)
+      .matches(">>=");
 
-    assertThat(g.rule(JavaPunctuator.STAR))
-        .matches("*")
-        .notMatches("*=");
-    assertThat(g.rule(JavaPunctuator.STAREQU))
-        .matches("*=");
+    assertThat(JavaPunctuator.STAR)
+      .matches("*")
+      .notMatches("*=");
+    assertThat(JavaPunctuator.STAREQU)
+      .matches("*=");
   }
 
 }

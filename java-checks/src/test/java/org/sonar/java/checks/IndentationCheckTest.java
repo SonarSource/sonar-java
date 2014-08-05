@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
@@ -37,16 +37,17 @@ public class IndentationCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IndentationCheck.java"), new IndentationCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Make this line start at column 3.")
-        .next().atLine(10)
-        .next().atLine(11)
-        .next().atLine(16)
-        .next().atLine(21)
-        .next().atLine(24).withMessage("Make this line start at column 9.")
-        .next().atLine(35)
-        .next().atLine(48)
-        .next().atLine(54)
-        .next().atLine(79);
+      .next().atLine(3).withMessage("Make this line start at column 3.")
+      .next().atLine(10)
+      .next().atLine(11)
+      .next().atLine(16)
+      .next().atLine(21)
+      .next().atLine(24).withMessage("Make this line start at column 9.")
+      .next().atLine(35)
+      .next().atLine(48)
+      .next().atLine(54)
+      .next().atLine(79)
+      .next().atLine(102);
   }
 
   @Test
@@ -56,9 +57,9 @@ public class IndentationCheckTest {
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IndentationCheck.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Make this line start at column 5.")
-        .next().atLine(7)
-        .next().atLine(10);
+      .next().atLine(2).withMessage("Make this line start at column 5.")
+      .next().atLine(7)
+      .next().atLine(10);
   }
 
 }

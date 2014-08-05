@@ -49,6 +49,7 @@ public interface SwitchStatementTree extends StatementTree {
 
   SyntaxToken openBraceToken();
 
+  // TODO groups() a better name?
   List<CaseGroupTree> cases();
 
   SyntaxToken closeBraceToken();

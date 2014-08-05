@@ -40,10 +40,14 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   private final ExpressionTree expression;
   private final BlockTree block;
 
-  public SynchronizedStatementTreeImpl(AstNode astNode, ExpressionTree expression, BlockTree block) {
-    super(astNode);
+  public SynchronizedStatementTreeImpl(ExpressionTree expression, BlockTree block, AstNode... children) {
+    super(JavaGrammar.SYNCHRONIZED_STATEMENT);
     this.expression = Preconditions.checkNotNull(expression);
     this.block = Preconditions.checkNotNull(block);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override
@@ -53,12 +57,12 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
 
   @Override
   public SyntaxToken synchronizedKeyword() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaKeyword.SYNCHRONIZED).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.SYNCHRONIZED).getToken());
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
   }
 
   @Override
@@ -68,7 +72,7 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(astNode.getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
   }
 
   @Override
@@ -85,7 +89,7 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
       expression,
-      block
-    );
+      block);
   }
+
 }
