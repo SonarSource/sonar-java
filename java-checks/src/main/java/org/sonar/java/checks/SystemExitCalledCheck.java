@@ -19,51 +19,68 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 @Rule(
   key = "S1147",
   priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class SystemExitCalledCheck extends SquidCheck<LexerlessGrammar> {
+public class SystemExitCalledCheck extends SubscriptionBaseVisitor {
+
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isMethodCall(node) && isCallToExitMethod(node)) {
-      getContext().createLineViolation(this, "Remove this exit() call or ensure it is really required.", node);
+  public void visitNode(Tree tree) {
+    MethodInvocationTree mit = (MethodInvocationTree)tree;
+    if (isCallToExitMethod(mit)) {
+      addIssue(tree, "Remove this exit() call or ensure it is really required.");
     }
   }
 
-  private static boolean isMethodCall(AstNode node) {
-    AstNode suffix = node.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
-    return suffix != null &&
-      suffix.hasDirectChildren(JavaGrammar.ARGUMENTS);
+  private boolean isCallToExitMethod(MethodInvocationTree tree) {
+    String selection = concatenate(tree.methodSelect());
+    return "System.exit".equals(selection) || "Runtime.getRuntime().exit".equals(selection);
   }
 
-  private static boolean isCallToExitMethod(AstNode node) {
-    AstNode qualifiedIdentifier = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-    return AstNodeTokensMatcher.matches(qualifiedIdentifier, "System.exit") ||
-      AstNodeTokensMatcher.matches(qualifiedIdentifier, "Runtime.getRuntime") &&
-      hasExitCallSuffix(node.getParent().getParent());
-  }
+  private String concatenate(ExpressionTree tree) {
+    Deque<String> pieces = new LinkedList<String>();
 
-  private static boolean hasExitCallSuffix(AstNode node) {
-    AstNode selector = node.getFirstChild(JavaGrammar.SELECTOR);
-    return selector != null &&
-      selector.hasDirectChildren(JavaGrammar.ARGUMENTS) &&
-      "exit".equals(selector.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue());
-  }
+    ExpressionTree expr = tree;
+    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
+      pieces.push(mse.identifier().name());
+      pieces.push(".");
+      expr = mse.expression();
+    }
+    if(expr.is(Tree.Kind.METHOD_INVOCATION)) {
+      pieces.push("()");
+      pieces.push(concatenate(((MethodInvocationTree)expr).methodSelect()));
+    }
+    if (expr.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree idt = (IdentifierTree) expr;
+      pieces.push(idt.name());
+    }
 
+    StringBuilder sb = new StringBuilder();
+    for (String piece: pieces) {
+      sb.append(piece);
+    }
+    return sb.toString();
+  }
 }
