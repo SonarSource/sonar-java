@@ -19,23 +19,25 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.List;
 import java.util.Set;
 
 @Rule(
-  key = "S1158",
-  priority = Priority.MAJOR)
+    key = "S1158",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ToStringUsingBoxingCheck extends SquidCheck<LexerlessGrammar> {
+public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
 
   private static final Set<String> PRIMITIVE_WRAPPERS = ImmutableSet.of(
     "Byte",
@@ -48,42 +50,39 @@ public class ToStringUsingBoxingCheck extends SquidCheck<LexerlessGrammar> {
     "Boolean");
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.UNARY_EXPRESSION, JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (hasToStringSelector(node)) {
-      String newlyCreatedClassName = getNewlyCreatedClassName(node);
-
+  public void visitNode(Tree tree) {
+    MethodInvocationTree mit = (MethodInvocationTree) tree;
+    if (isCallingToString(mit)) {
+      String newlyCreatedClassName = getNewlyCreatedClassName(mit);
       if (PRIMITIVE_WRAPPERS.contains(newlyCreatedClassName)) {
-        getContext().createLineViolation(
-          this,
-          "Call the static method " + newlyCreatedClassName + ".toString(...) instead of instantiating a temporary object to perform this to string conversion.",
-          node);
+        addIssue(((MemberSelectExpressionTree) mit.methodSelect()).expression(), "Call the static method " + newlyCreatedClassName + ".toString(...) instead of instantiating a temporary object to perform this to string conversion.");
       }
     }
   }
 
-  private static boolean hasToStringSelector(AstNode node) {
-    AstNode selector = node.getFirstChild(JavaGrammar.SELECTOR);
-
-    return selector != null &&
-      selector.hasDirectChildren(JavaTokenType.IDENTIFIER) &&
-      "toString".equals(selector.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue());
+  private String getNewlyCreatedClassName(MethodInvocationTree mit) {
+    MemberSelectExpressionTree mset = ((MemberSelectExpressionTree) mit.methodSelect());
+    if (mset.expression().is(Tree.Kind.NEW_CLASS)) {
+      Tree classId = ((NewClassTree) mset.expression()).identifier();
+      if (classId.is(Tree.Kind.IDENTIFIER)) {
+        return ((IdentifierTree) classId).name();
+      } else if (classId.is(Tree.Kind.MEMBER_SELECT)) {
+        return ((MemberSelectExpressionTree) classId).identifier().name();
+      }
+    }
+    return "";
   }
 
-  private static String getNewlyCreatedClassName(AstNode node) {
-    AstNode primary = node.getFirstChild(JavaGrammar.PRIMARY);
-    AstNode newExpression = primary.getFirstChild(JavaGrammar.NEW_EXPRESSION);
-
-    return newExpression == null ? null : getSimpleCreatedName(newExpression.getFirstChild(JavaGrammar.CREATOR).getFirstChild(JavaGrammar.CREATED_NAME));
+  private boolean isCallingToString(MethodInvocationTree mit) {
+    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mset = ((MemberSelectExpressionTree) mit.methodSelect());
+      return "toString".equals(mset.identifier().name());
+    }
+    return false;
   }
-
-  private static String getSimpleCreatedName(AstNode node) {
-    return node == null ||
-      !node.getToken().equals(node.getLastToken()) ? null : node.getTokenOriginalValue();
-  }
-
 }

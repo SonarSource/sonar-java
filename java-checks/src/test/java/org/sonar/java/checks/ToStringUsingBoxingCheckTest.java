@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
@@ -34,7 +35,7 @@ public class ToStringUsingBoxingCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ToStringUsingBoxingCheck.java"), new ToStringUsingBoxingCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ToStringUsingBoxingCheck.java"), new VisitorsBridge(new ToStringUsingBoxingCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(3).withMessage("Call the static method Byte.toString(...) instead of instantiating a temporary object to perform this to string conversion.")
       .next().atLine(4).withMessage("Call the static method Short.toString(...) instead of instantiating a temporary object to perform this to string conversion.")
