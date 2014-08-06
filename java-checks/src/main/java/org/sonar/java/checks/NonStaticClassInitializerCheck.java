@@ -19,35 +19,27 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
   key = "S1171",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class NonStaticClassInitializerCheck extends SquidCheck<LexerlessGrammar> {
+public class NonStaticClassInitializerCheck extends SubscriptionBaseVisitor{
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_INIT_DECLARATION);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.INITIALIZER);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (!isStatic(node)) {
-      getContext().createLineViolation(this, "Move the contents of this initializer to a standard constructor or to field initializers.", node);
-    }
+  public void visitNode(Tree tree) {
+    addIssue(tree, "Move the contents of this initializer to a standard constructor or to field initializers.");
   }
-
-  private static boolean isStatic(AstNode node) {
-    return node.hasDirectChildren(JavaKeyword.STATIC);
-  }
-
 }
