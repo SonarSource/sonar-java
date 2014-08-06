@@ -20,57 +20,59 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Iterator;
 import java.util.List;
 
 @Rule(
-  key = "SwitchLastCaseIsDefaultCheck",
-  priority = Priority.MAJOR)
+    key = "SwitchLastCaseIsDefaultCheck",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class SwitchLastCaseIsDefaultCheck extends SquidCheck<LexerlessGrammar> {
+public class SwitchLastCaseIsDefaultCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.SWITCH_STATEMENT);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.SWITCH_STATEMENT);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    AstNode defaultLabel = getDefaultLabel(node);
-    AstNode lastLabel = getLastLabel(node);
-
+  public void visitNode(Tree tree) {
+    SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
+    CaseLabelTree defaultLabel = getDefaultLabel(switchStatementTree);
+    CaseLabelTree lastLabel = getLastLabel(switchStatementTree);
     if (defaultLabel == null) {
-      getContext().createLineViolation(this, "Add a default case to this switch.", node);
+      addIssue(tree, "Add a default case to this switch.");
     } else if (!defaultLabel.equals(lastLabel)) {
-      getContext().createLineViolation(this, "Move this default to the end of the switch.", defaultLabel);
+      addIssue(defaultLabel, "Move this default to the end of the switch.");
     }
   }
 
-  private AstNode getDefaultLabel(AstNode node) {
-    Iterator<AstNode> it = node.select()
-      .children(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
-      .children(JavaGrammar.SWITCH_LABEL)
-      .children(JavaKeyword.DEFAULT)
-      .iterator();
 
-    return !it.hasNext() ? null : it.next().getParent();
+  private CaseLabelTree getDefaultLabel(SwitchStatementTree switchStatementTree) {
+    for (CaseGroupTree caseGroupTree : switchStatementTree.cases()) {
+      for (CaseLabelTree caseLabelTree : caseGroupTree.labels()) {
+        if (JavaKeyword.DEFAULT.getValue().equals(caseLabelTree.caseOrDefaultKeyword().text())) {
+          return caseLabelTree;
+        }
+      }
+    }
+    return null;
   }
 
-  private AstNode getLastLabel(AstNode node) {
-    List<AstNode> labels = ImmutableList.copyOf(node.select()
-      .children(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
-      .children(JavaGrammar.SWITCH_LABEL));
-
-    return labels.isEmpty() ? null : labels.get(labels.size() - 1);
+  private CaseLabelTree getLastLabel(SwitchStatementTree switchStatementTree) {
+    if (!switchStatementTree.cases().isEmpty()) {
+      List<CaseLabelTree> labels = switchStatementTree.cases().get(switchStatementTree.cases().size() - 1).labels();
+      if (!labels.isEmpty()) {
+        return labels.get(labels.size() - 1);
+      }
+    }
+    return null;
   }
-
 }
