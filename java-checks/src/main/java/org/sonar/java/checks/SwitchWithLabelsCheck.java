@@ -19,38 +19,39 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.LabeledStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
+
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CASE_GROUP;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.LABELED_STATEMENT;
 
 @Rule(
-  key = "S1219",
-  priority = Priority.CRITICAL)
+    key = "S1219",
+    priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class SwitchWithLabelsCheck extends SquidCheck<LexerlessGrammar> {
+public class SwitchWithLabelsCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(CASE_GROUP);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    for (AstNode blockStatement : node.getChildren(JavaGrammar.BLOCK_STATEMENT)) {
-      if (isLabeledBlockStatement(blockStatement)) {
-        getContext().createLineViolation(this, "Remove this misleading \"" + blockStatement.getTokenOriginalValue() + "\" label.", blockStatement);
+  public void visitNode(Tree tree) {
+    CaseGroupTree cgt = (CaseGroupTree) tree;
+    for (StatementTree statementTree : cgt.body()) {
+      if (statementTree.is(LABELED_STATEMENT)) {
+        LabeledStatementTree lst = (LabeledStatementTree) statementTree;
+        addIssue(lst, "Remove this misleading \"" + lst.label().name() + "\" label.");
       }
     }
   }
-
-  private static boolean isLabeledBlockStatement(AstNode node) {
-    AstNode statement = node.getFirstChild(JavaGrammar.STATEMENT);
-    return statement != null &&
-      statement.hasDirectChildren(JavaGrammar.LABELED_STATEMENT);
-  }
-
 }
