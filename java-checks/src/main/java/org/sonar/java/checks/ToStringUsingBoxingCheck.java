@@ -60,13 +60,14 @@ public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
     if (isCallingToString(mit)) {
       String newlyCreatedClassName = getNewlyCreatedClassName(mit);
       if (PRIMITIVE_WRAPPERS.contains(newlyCreatedClassName)) {
-        addIssue(((MemberSelectExpressionTree) mit.methodSelect()).expression(), "Call the static method " + newlyCreatedClassName + ".toString(...) instead of instantiating a temporary object to perform this to string conversion.");
+        addIssue(((MemberSelectExpressionTree) mit.methodSelect()).expression(),
+            "Call the static method " + newlyCreatedClassName + ".toString(...) instead of instantiating a temporary object to perform this to string conversion.");
       }
     }
   }
 
   private String getNewlyCreatedClassName(MethodInvocationTree mit) {
-    MemberSelectExpressionTree mset = ((MemberSelectExpressionTree) mit.methodSelect());
+    MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
     if (mset.expression().is(Tree.Kind.NEW_CLASS)) {
       Tree classId = ((NewClassTree) mset.expression()).identifier();
       if (classId.is(Tree.Kind.IDENTIFIER)) {
@@ -80,7 +81,7 @@ public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
 
   private boolean isCallingToString(MethodInvocationTree mit) {
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mset = ((MemberSelectExpressionTree) mit.methodSelect());
+      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
       return "toString".equals(mset.identifier().name());
     }
     return false;

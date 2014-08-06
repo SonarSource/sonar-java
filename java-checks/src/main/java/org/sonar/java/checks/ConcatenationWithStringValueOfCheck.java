@@ -66,7 +66,6 @@ public class ConcatenationWithStringValueOfCheck extends SquidCheck<LexerlessGra
     AstNode identifierSuffix = qualifiedIdExpression.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
 
     return node.is(JavaGrammar.PRIMARY) &&
-      qualifiedIdExpression != null &&
       identifierSuffix != null &&
       hasSingleArgumentIdentifierSuffix(identifierSuffix) &&
       isStringValueOfQualifiedIdentifier(qualifiedIdExpression.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
