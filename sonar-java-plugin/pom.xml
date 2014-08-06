@@ -13,7 +13,7 @@
 
   <name>SonarQube Java :: Plugin</name>
   <description>SonarQube rule engine.</description>
-  <url>http://docs.codehaus.org/display/SONAR/Java+Plugin</url>
+  <url>http://docs.codehaus.org/x/tZC7DQ</url>
 
   <properties>
     <!-- Configuration for sonar-packaging-maven-plugin -->
