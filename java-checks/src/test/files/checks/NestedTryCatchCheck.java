@@ -65,5 +65,12 @@ class A {
       }
     } finally {
     }
+
+    try {
+      try{
+        try (Resource r = new Resource()){
+        }
+      }catch (Exception e){}
+    } catch (Exception e) {}
   }
 }

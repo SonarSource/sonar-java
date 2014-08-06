@@ -19,53 +19,48 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 @Rule(
-  key = "S1141",
-  priority = Priority.MAJOR)
+    key = NestedTryCatchCheck.RULE_KEY,
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class NestedTryCatchCheck extends SquidCheck<LexerlessGrammar> {
+public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+
+  public static final String RULE_KEY = "S1141";
+  private static final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private JavaFileScannerContext context;
   private int nestingLevel;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.BLOCK);
-  }
-
-  @Override
-  public void visitFile(AstNode node) {
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
     nestingLevel = 0;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isTryCatchBlock(node)) {
+  public void visitTryStatement(TryStatementTree tree) {
+    scan(tree.resources());
+    if (!tree.catches().isEmpty()) {
       nestingLevel++;
-
       if (nestingLevel > 1) {
-        getContext().createLineViolation(this, "Extract this nested try block into a separate method.", node);
+        context.addIssue(tree.block(), ruleKey, "Extract this nested try block into a separate method.");
       }
     }
-  }
-
-  @Override
-  public void leaveNode(AstNode node) {
-    if (isTryCatchBlock(node)) {
+    scan(tree.block());
+    if (!tree.catches().isEmpty()) {
       nestingLevel--;
     }
+    scan(tree.catches());
+    scan(tree.finallyBlock());
   }
-
-  private static boolean isTryCatchBlock(AstNode node) {
-    return node.getParent().is(JavaGrammar.TRY_STATEMENT) &&
-      node.getParent().hasDirectChildren(JavaGrammar.CATCH_CLAUSE);
-  }
-
 }

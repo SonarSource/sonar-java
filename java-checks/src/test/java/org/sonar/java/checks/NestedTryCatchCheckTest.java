@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,11 +35,13 @@ public class NestedTryCatchCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedTryCatchCheck.java"), new NestedTryCatchCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedTryCatchCheck.java"), new VisitorsBridge(new NestedTryCatchCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(40).withMessage("Extract this nested try block into a separate method.")
         .next().atLine(44)
-        .next().atLine(46);
+        .next().atLine(46)
+        .next().atLine(70)
+    ;
   }
 
 }
