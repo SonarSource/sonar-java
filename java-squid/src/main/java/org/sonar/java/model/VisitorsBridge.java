@@ -136,12 +136,17 @@ public class VisitorsBridge extends JavaAstVisitor {
     public void addIssue(Tree tree, RuleKey ruleKey, String message) {
       Preconditions.checkNotNull(ruleKey);
       Preconditions.checkNotNull(message);
-      int line = ((JavaTree) tree).getLine();
-
+      int line;
+      if(InternalSyntaxToken.class.isAssignableFrom(tree.getClass())) {
+        line = ((InternalSyntaxToken)tree).getLine();
+      }else {
+        line = ((JavaTree) tree).getLine();
+      }
       CheckMessage checkMessage = new CheckMessage(ruleKey, message);
       checkMessage.setLine(line);
       sourceFile.log(checkMessage);
     }
+
 
     @Override
     @Nullable

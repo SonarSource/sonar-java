@@ -46,4 +46,8 @@ public class InternalSyntaxToken implements SyntaxToken {
     throw new UnsupportedOperationException();
   }
 
+  public int getLine() {
+    return token.getLine();
+  }
+
 }
