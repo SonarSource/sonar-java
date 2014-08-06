@@ -24,6 +24,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sonar.sslr.api.AstNode;
@@ -63,9 +64,9 @@ import java.util.Set;
 
 public class ActionParser extends Parser {
 
+  private final Set<String> FIELDS_TO_FIND = ImmutableSet.of("type", "name", "token", "children", "childIndex", "parent", "fromIndex", "toIndex");
+  private final Set<String> FIELDS_TO_COPY = ImmutableSet.of("token", "childIndex", "parent", "fromIndex", "toIndex");
   private final Field[] fields;
-  private final Field parentField;
-  private final Field childrenField;
 
   private final Object action;
 
@@ -78,27 +79,23 @@ public class ActionParser extends Parser {
     super(null);
 
     List<Field> fields = Lists.newArrayList();
-    Field parentField = null;
-    Field childrenField = null;
+    Set<String> foundFields = Sets.newHashSet();
 
     for (Field field : AstNode.class.getDeclaredFields()) {
-      if (!"type".equals(field.getName()) && !"name".equals(field.getName())) {
+      if (FIELDS_TO_FIND.contains(field.getName())) {
+        foundFields.add(field.getName());
+      }
+
+      if (FIELDS_TO_COPY.contains(field.getName())) {
         field.setAccessible(true);
-        if ("parent".equals(field.getName())) {
-          parentField = field;
-        } else if ("children".equals(field.getName())) {
-          childrenField = field;
-        }
         fields.add(field);
       }
     }
 
-    Preconditions.checkState(parentField != null, "Unable to find the parent field!");
-    Preconditions.checkState(childrenField != null, "Unable to find the children field!");
+    Preconditions.checkState(foundFields.size() == FIELDS_TO_FIND.size(), "Did not find all expected fields");
+    Preconditions.checkState(fields.size() == FIELDS_TO_COPY.size(), "Did not find all fields to copy");
 
     this.fields = fields.toArray(new Field[fields.size()]);
-    this.parentField = parentField;
-    this.childrenField = childrenField;
 
     this.action = action;
 
@@ -177,7 +174,7 @@ public class ActionParser extends Parser {
 
       try {
         AstNode typedNode = (AstNode) method.invoke(action, convertedChildren);
-        replaceAstNode(astNode, typedNode, false);
+        replaceAstNode(astNode, typedNode);
       } catch (InvocationTargetException e) {
         throw Throwables.propagate(e);
       } catch (IllegalAccessException e) {
@@ -189,30 +186,16 @@ public class ActionParser extends Parser {
       children = astNode.getChildren().toArray(new AstNode[astNode.getChildren().size()]);
       Preconditions.checkState(children.length == 1, "Unexpected number of children: " + children.length);
       AstNode typedNode = children[0];
-      replaceAstNode(astNode, typedNode, false);
+      replaceAstNode(astNode, typedNode);
     }
   }
 
-  private void replaceAstNode(AstNode o, AstNode n, boolean overwriteChildren) {
+  private void replaceAstNode(AstNode o, AstNode n) {
     for (Field field : fields) {
-      if (childrenField.equals(field) && !overwriteChildren) {
-        continue;
-      }
-
       try {
         field.set(n, field.get(o));
       } catch (IllegalAccessException e) {
         throw Throwables.propagate(e);
-      }
-    }
-
-    if (overwriteChildren) {
-      for (AstNode childAstNode : n.getChildren()) {
-        try {
-          parentField.set(childAstNode, n);
-        } catch (IllegalAccessException e) {
-          throw Throwables.propagate(e);
-        }
       }
     }
 
