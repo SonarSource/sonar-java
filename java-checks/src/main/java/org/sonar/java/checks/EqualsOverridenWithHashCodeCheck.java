@@ -55,7 +55,7 @@ public class EqualsOverridenWithHashCodeCheck extends BaseTreeVisitor implements
   public void visitClass(ClassTree tree) {
     super.visitClass(tree);
 
-    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.INTERFACE)) {
+    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE)) {
       MethodTree equalsMethod = null;
       MethodTree hashCodeMethod = null;
 
@@ -91,8 +91,6 @@ public class EqualsOverridenWithHashCodeCheck extends BaseTreeVisitor implements
 
     if (tree.is(Tree.Kind.CLASS)) {
       type = "class";
-    } else if (tree.is(Tree.Kind.ENUM)) {
-      type = "enum";
     } else if (tree.is(Tree.Kind.INTERFACE)) {
       type = "interface";
     } else {

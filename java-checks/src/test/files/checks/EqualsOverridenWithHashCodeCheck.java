@@ -30,8 +30,8 @@ class F {
 
 enum G {
   ;
-
-  public boolean equals(Object o) { // Noncompliant
+  //compile because it is not an override
+  public boolean equals(int i) { // Compliant
   }
 }
 
