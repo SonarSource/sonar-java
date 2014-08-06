@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
@@ -32,7 +33,7 @@ public class MissingCurlyBraces_S00121_CheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MissingCurlyBraces.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MissingCurlyBraces.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(4).withMessage("Missing curly brace.")
         .next().atLine(6)
@@ -41,6 +42,7 @@ public class MissingCurlyBraces_S00121_CheckTest {
         .next().atLine(23)
         .next().atLine(28)
         .next().atLine(33)
+        .next().atLine(39)
         .noMore();
   }
 

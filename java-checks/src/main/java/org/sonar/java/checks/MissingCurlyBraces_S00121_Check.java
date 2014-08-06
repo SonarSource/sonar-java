@@ -19,47 +19,64 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
+
+import java.util.List;
 
 @Rule(
-  key = "S00121",
-  priority = Priority.MAJOR,
-  tags={"convention"})
+    key = "S00121",
+    priority = Priority.MAJOR,
+    tags = {"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class MissingCurlyBraces_S00121_Check extends SquidCheck<LexerlessGrammar> {
+public class MissingCurlyBraces_S00121_Check extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(
-      JavaGrammar.IF_STATEMENT,
-      JavaGrammar.FOR_STATEMENT,
-      JavaGrammar.WHILE_STATEMENT,
-      JavaGrammar.DO_STATEMENT);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.IF_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT);
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
-    AstNode statement = astNode.getFirstChild(JavaGrammar.STATEMENT);
-    if (!statement.getFirstChild().is(JavaGrammar.BLOCK)) {
-      getContext().createLineViolation(this, "Missing curly brace.", astNode);
-    }
-
-    if (astNode.is(JavaGrammar.IF_STATEMENT)) {
-      AstNode elseClause = astNode.getFirstChild(JavaKeyword.ELSE);
-      if (elseClause != null) {
-        statement = elseClause.getNextSibling();
-        if (!statement.getFirstChild().is(JavaGrammar.BLOCK) && !statement.getFirstChild().is(JavaGrammar.IF_STATEMENT)) {
-          getContext().createLineViolation(this, "Missing curly brace.", elseClause);
+  public void visitNode(Tree tree) {
+    switch (((JavaTree) tree).getKind()) {
+      case WHILE_STATEMENT:
+        checkStatement(((WhileStatementTree) tree).statement(), tree);
+        break;
+      case DO_STATEMENT:
+        checkStatement(((DoWhileStatementTree) tree).statement(), tree);
+        break;
+      case FOR_STATEMENT:
+        checkStatement(((ForStatementTree) tree).statement(), tree);
+        break;
+      case FOR_EACH_STATEMENT:
+        checkStatement(((ForEachStatement) tree).statement(), tree);
+        break;
+      case IF_STATEMENT:
+        IfStatementTree ifStmt = (IfStatementTree) tree;
+        checkStatement(ifStmt.thenStatement(), tree);
+        StatementTree elseStmt = ifStmt.elseStatement();
+        if (elseStmt != null && !elseStmt.is(Tree.Kind.IF_STATEMENT)) {
+          checkStatement(elseStmt, ifStmt.elseKeyword());
         }
-      }
+        break;
+      default:
+        break;
     }
   }
 
+  private void checkStatement(StatementTree statement, Tree tree) {
+    if (!statement.is(Tree.Kind.BLOCK)) {
+      addIssue(tree, "Missing curly brace.");
+    }
+  }
 }

@@ -35,6 +35,9 @@ class MissingCurlyBraces {
     do { // OK
       something();
     } while (condition);
+    if (condition) { doSomething(); } // OK
+    else
+      doSomethingElse(); // NOK
   }
 
 }
