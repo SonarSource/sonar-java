@@ -21,6 +21,9 @@ package org.sonar.java;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.OrFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.ProjectClasspath;
@@ -30,7 +33,11 @@ import org.sonar.api.config.Settings;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.FileFilter;
+import java.util.Arrays;
 import java.util.List;
+
+import static org.apache.commons.io.filefilter.FileFilterUtils.suffixFileFilter;
 
 public class JavaClasspath implements BatchExtension {
   public static final String SONAR_JAVA_BINARIES = "sonar.java.binaries";
@@ -42,30 +49,55 @@ public class JavaClasspath implements BatchExtension {
 
 
   public JavaClasspath(Settings settings, FileSystem fileSystem, @Nullable ProjectClasspath projectClasspath) {
-    binaries = getFilesFromProperty(SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
-    libraries = getFilesFromProperty(SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
-    if(projectClasspath == null || !binaries.isEmpty() || !libraries.isEmpty()) {
+    binaries = getBinaryDirFromProperty(SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
+    libraries = getLibraryFilesFromProperty(SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
+    if (projectClasspath == null || !binaries.isEmpty() || !libraries.isEmpty()) {
       elements = Lists.newArrayList(binaries);
       elements.addAll(libraries);
-    }else {
+    } else {
       elements = projectClasspath.getElements();
     }
   }
 
-  private List<File> getFilesFromProperty(String property, Settings settings, File baseDir) {
+  private List<File> getBinaryDirFromProperty(String property, Settings settings, File baseDir) {
     List<File> result = Lists.newArrayList();
     String fileList = settings.getString(property);
     if (StringUtils.isNotEmpty(fileList)) {
       List<String> fileNames = Lists.newArrayList(StringUtils.split(fileList, SEPARATOR));
       for (String path : fileNames) {
-        File file = new File(path);
-        if (!file.isAbsolute()) {
-          file = new File(baseDir, path);
-        }
+        File file = resolvePath(baseDir, path);
         result.add(file);
       }
     }
     return result;
+  }
+
+  private List<File> getLibraryFilesFromProperty(String property, Settings settings, File baseDir) {
+    List<File> result = Lists.newArrayList();
+    String fileList = settings.getString(property);
+    if (StringUtils.isNotEmpty(fileList)) {
+      List<String> fileNames = Lists.newArrayList(StringUtils.split(fileList, SEPARATOR));
+      for (String pattern : fileNames) {
+        if (pattern.endsWith("*")) {
+          String dir = pattern.substring(0, pattern.length() - 1);
+          File jarDir = resolvePath(baseDir, dir);
+          List<IOFileFilter> filters = Lists.newArrayList(suffixFileFilter(".jar", IOCase.INSENSITIVE), suffixFileFilter(".zip", IOCase.INSENSITIVE));
+          result.addAll(Arrays.asList(jarDir.listFiles((FileFilter) new OrFileFilter(filters))));
+        } else {
+          File file = resolvePath(baseDir, pattern);
+          result.add(file);
+        }
+      }
+    }
+    return result;
+  }
+
+  private File resolvePath(File baseDir, String fileName) {
+    File file = new File(fileName);
+    if (!file.isAbsolute()) {
+      file = new File(baseDir, fileName);
+    }
+    return file;
   }
 
   public List<File> getElements() {
