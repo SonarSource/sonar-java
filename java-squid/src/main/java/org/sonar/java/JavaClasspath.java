@@ -22,8 +22,11 @@ package org.sonar.java;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.AndFileFilter;
+import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.ProjectClasspath;
@@ -77,14 +80,23 @@ public class JavaClasspath implements BatchExtension {
     String fileList = settings.getString(property);
     if (StringUtils.isNotEmpty(fileList)) {
       List<String> fileNames = Lists.newArrayList(StringUtils.split(fileList, SEPARATOR));
-      for (String pattern : fileNames) {
-        if (pattern.endsWith("*")) {
-          String dir = pattern.substring(0, pattern.length() - 1);
+      for (String fileName : fileNames) {
+        int wildcardIndex = fileName.indexOf('*');
+        if (wildcardIndex >= 0) {
+          int lastPathSeparator = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+          String dir = fileName.substring(0, lastPathSeparator);
+          String pattern = fileName.substring(lastPathSeparator+1);
+          FileFilter fileFilter;
+          if(pattern.isEmpty()) {
+            fileFilter = new OrFileFilter(Lists.newArrayList(suffixFileFilter(".jar", IOCase.INSENSITIVE), suffixFileFilter(".zip", IOCase.INSENSITIVE)));
+          } else {
+            fileFilter = new WildcardFileFilter(pattern);
+          }
           File jarDir = resolvePath(baseDir, dir);
-          List<IOFileFilter> filters = Lists.newArrayList(suffixFileFilter(".jar", IOCase.INSENSITIVE), suffixFileFilter(".zip", IOCase.INSENSITIVE));
-          result.addAll(Arrays.asList(jarDir.listFiles((FileFilter) new OrFileFilter(filters))));
+          List<File> jarFiles = Arrays.asList(jarDir.listFiles((FileFilter) new AndFileFilter((IOFileFilter) fileFilter, FileFileFilter.FILE)));
+          result.addAll(jarFiles);
         } else {
-          File file = resolvePath(baseDir, pattern);
+          File file = resolvePath(baseDir, fileName);
           result.add(file);
         }
       }
