@@ -25,6 +25,10 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -39,7 +43,7 @@ public class CloneMethodCallsSuperCloneCheck extends SquidCheck<LexerlessGrammar
   @Override
   public void init() {
     subscribeTo(JavaGrammar.MEMBER_DECL);
-    subscribeTo(JavaGrammar.SUPER_EXPRESSION);
+    subscribeTo(JavaGrammar.METHOD_INVOCATION_EXPRESSION);
   }
 
   @Override
@@ -68,22 +72,21 @@ public class CloneMethodCallsSuperCloneCheck extends SquidCheck<LexerlessGrammar
   }
 
   private static boolean isSuperCloneCall(AstNode node) {
-    return node.is(JavaGrammar.SUPER_EXPRESSION) &&
-      isCloneCallSuffix(node.getFirstChild(JavaGrammar.SUPER_SUFFIX));
+    if (!node.is(JavaGrammar.METHOD_INVOCATION_EXPRESSION)) {
+      return false;
+    }
+
+    MethodInvocationTree tree = (MethodInvocationTree) node;
+
+    return tree.arguments().isEmpty() &&
+      tree.methodSelect().is(Kind.MEMBER_SELECT) &&
+      isSuperClone((MemberSelectExpressionTree) tree.methodSelect());
   }
 
-  private static boolean isCloneCallSuffix(AstNode node) {
-    AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
-    AstNode arguments = node.getFirstChild(JavaGrammar.ARGUMENTS);
-
-    return identifier != null &&
-      "clone".equals(identifier.getTokenOriginalValue()) &&
-      arguments != null &&
-      isEmptyArguments(arguments);
-  }
-
-  private static boolean isEmptyArguments(AstNode node) {
-    return !node.hasDirectChildren(JavaGrammar.EXPRESSION);
+  private static boolean isSuperClone(MemberSelectExpressionTree tree) {
+    return "clone".equals(tree.identifier().name()) &&
+      tree.expression().is(Kind.IDENTIFIER) &&
+      "super".equals(((IdentifierTree) tree.expression()).name());
   }
 
 }

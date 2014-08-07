@@ -209,6 +209,11 @@ public class ActionGrammar {
       .is(f.thisExpression(b.invokeRule(JavaKeyword.THIS), b.optional(b.invokeRule(JavaGrammar.ARGUMENTS))));
   }
 
+  public ExpressionTree SUPER_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.SUPER_EXPRESSION)
+      .is(f.superExpression(b.invokeRule(JavaKeyword.SUPER), b.invokeRule(JavaGrammar.SUPER_SUFFIX)));
+  }
+
   // End of expressions
 
   public static class TreeFactory {
@@ -393,13 +398,16 @@ public class ActionGrammar {
     public ExpressionTree newExplicitGenericInvokation(AstNode explicitGenericInvocationSuffix) {
       if (explicitGenericInvocationSuffix.hasDirectChildren(JavaKeyword.SUPER)) {
         // <T>super...
-        AstNode expressionNode = explicitGenericInvocationSuffix.getFirstChild(JavaKeyword.SUPER);
-        return applySuperSuffix(treeMaker.identifier(expressionNode), expressionNode, explicitGenericInvocationSuffix.getFirstChild(JavaGrammar.SUPER_SUFFIX));
+        IdentifierTreeImpl identifier = new IdentifierTreeImpl(explicitGenericInvocationSuffix.getFirstChild(JavaKeyword.SUPER).getTokenValue(),
+          explicitGenericInvocationSuffix.getFirstChild(JavaKeyword.SUPER));
+
+        return applySuperSuffix(identifier, explicitGenericInvocationSuffix.getFirstChild(JavaGrammar.SUPER_SUFFIX));
       } else {
         // <T>id(arguments)
-        return new MethodInvocationTreeImpl(
-          treeMaker.identifier(explicitGenericInvocationSuffix.getFirstChild(JavaTokenType.IDENTIFIER)),
-          treeMaker.arguments(explicitGenericInvocationSuffix.getFirstChild(JavaGrammar.ARGUMENTS)));
+        IdentifierTreeImpl identifier = new IdentifierTreeImpl(explicitGenericInvocationSuffix.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
+          explicitGenericInvocationSuffix.getFirstChild(JavaTokenType.IDENTIFIER));
+
+        return new MethodInvocationTreeImpl(identifier, treeMaker.arguments(explicitGenericInvocationSuffix.getFirstChild(JavaGrammar.ARGUMENTS)));
       }
     }
 
@@ -422,11 +430,18 @@ public class ActionGrammar {
       }
     }
 
+    public ExpressionTree superExpression(AstNode superToken, AstNode superSuffix) {
+      IdentifierTreeImpl identifier = new IdentifierTreeImpl(superToken.getTokenValue(),
+        superToken);
+
+      return applySuperSuffix(identifier, superSuffix);
+    }
+
     // End of expressions
 
     // Helpers
 
-    private ExpressionTree applySuperSuffix(ExpressionTree expression, AstNode expressionNode, AstNode superSuffixNode) {
+    private ExpressionTree applySuperSuffix(IdentifierTreeImpl expression, AstNode superSuffixNode) {
       JavaTreeMaker.checkType(superSuffixNode, JavaGrammar.SUPER_SUFFIX);
       if (superSuffixNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
         // super(arguments)
@@ -436,14 +451,14 @@ public class ActionGrammar {
         ExpressionTree methodSelect = expression;
         if (superSuffixNode.hasDirectChildren(JavaTokenType.IDENTIFIER)) {
           methodSelect = new MemberSelectExpressionTreeImpl(expression, treeMaker.identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-            expressionNode, superSuffixNode);
+            expression, superSuffixNode);
         }
         return new MethodInvocationTreeImpl(methodSelect, treeMaker.arguments(superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)),
-          expressionNode, superSuffixNode);
+          expression, superSuffixNode);
       } else {
         // super.field
         return new MemberSelectExpressionTreeImpl(expression, treeMaker.identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-          expressionNode, superSuffixNode);
+          expression, superSuffixNode);
       }
     }
 

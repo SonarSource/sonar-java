@@ -25,6 +25,10 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.ast.AstSelect;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -41,7 +45,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<L
   @Override
   public void init() {
     subscribeTo(JavaGrammar.MEMBER_DECL);
-    subscribeTo(JavaGrammar.SUPER_EXPRESSION);
+    subscribeTo(JavaGrammar.METHOD_INVOCATION_EXPRESSION);
   }
 
   @Override
@@ -57,15 +61,20 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<L
   }
 
   private static boolean isSuperFinalize(AstNode node) {
-    return node.is(JavaGrammar.SUPER_EXPRESSION) &&
-      isFinalizeCallSuffix(node.getFirstChild(JavaGrammar.SUPER_SUFFIX));
+    if (!node.is(JavaGrammar.METHOD_INVOCATION_EXPRESSION)) {
+      return false;
+    }
+
+    MethodInvocationTree tree = (MethodInvocationTree) node;
+
+    return tree.methodSelect().is(Kind.MEMBER_SELECT) &&
+      isSuperFinalize((MemberSelectExpressionTree) tree.methodSelect());
   }
 
-  private static boolean isFinalizeCallSuffix(AstNode node) {
-    AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
-    return identifier != null &&
-      "finalize".equals(identifier.getTokenOriginalValue()) &&
-      node.hasDirectChildren(JavaGrammar.ARGUMENTS);
+  private static boolean isSuperFinalize(MemberSelectExpressionTree tree) {
+    return "finalize".equals(tree.identifier().name()) &&
+      tree.expression().is(Kind.IDENTIFIER) &&
+      "super".equals(((IdentifierTree) tree.expression()).name());
   }
 
   private boolean isObjectFinalize(AstNode node) {
