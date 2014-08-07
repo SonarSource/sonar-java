@@ -73,15 +73,28 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
     assertThat(javaClasspath.getLibraries()).isEmpty();
     assertThat(javaClasspath.getElements()).hasSize(1);
+    assertThat(javaClasspath.getElements().get(0)).exists();
   }
 
   @Test
   public void setting_library_prop_should_fill_elements() {
-    fs.setBaseDir(new File("src/test/files/bytecode/bin/lib"));
+    fs.setBaseDir(new File("src/test/files/bytecode/lib"));
     settings.setProperty(JavaClasspath.SONAR_JAVA_LIBRARIES, "hello.jar");
     javaClasspath = new JavaClasspath(settings, fs, null);
     assertThat(javaClasspath.getBinaryDirs()).isEmpty();
     assertThat(javaClasspath.getLibraries()).hasSize(1);
     assertThat(javaClasspath.getElements()).hasSize(1);
+    assertThat(javaClasspath.getElements().get(0)).exists();
+  }
+
+  @Test
+  public void absolute_file_name_should_be_resolved() {
+    fs.setBaseDir(new File("src/test/files/bytecode/lib"));
+    settings.setProperty(JavaClasspath.SONAR_JAVA_LIBRARIES, new File("src/test/files/bytecode/lib/hello.jar").getAbsolutePath());
+    javaClasspath = new JavaClasspath(settings, fs, null);
+    assertThat(javaClasspath.getBinaryDirs()).isEmpty();
+    assertThat(javaClasspath.getLibraries()).hasSize(1);
+    assertThat(javaClasspath.getElements()).hasSize(1);
+    assertThat(javaClasspath.getElements().get(0)).exists();
   }
 }

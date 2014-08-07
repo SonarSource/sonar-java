@@ -57,8 +57,12 @@ public class JavaClasspath implements BatchExtension {
     String fileList = settings.getString(property);
     if (StringUtils.isNotEmpty(fileList)) {
       List<String> fileNames = Lists.newArrayList(StringUtils.split(fileList, SEPARATOR));
-      for (String fileName : fileNames) {
-        result.add(new File(baseDir, fileName));
+      for (String path : fileNames) {
+        File file = new File(path);
+        if (!file.isAbsolute()) {
+          file = new File(baseDir, path);
+        }
+        result.add(file);
       }
     }
     return result;
@@ -76,6 +80,7 @@ public class JavaClasspath implements BatchExtension {
         .build()
     );
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_LIBRARIES)
+        .description("Comma-separated paths to libraries required by the project.")
         .hidden()
         .build()
     );
