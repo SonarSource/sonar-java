@@ -23,7 +23,6 @@ import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
-import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.AnnotationCheckFactory;
@@ -36,6 +35,7 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.scan.filesystem.FileQuery;
 import org.sonar.api.scan.filesystem.FileType;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.SonarComponents;
@@ -56,19 +56,19 @@ public class JavaSquidSensor implements Sensor {
 
   private final AnnotationCheckFactory annotationCheckFactory;
   private final NoSonarFilter noSonarFilter;
-  private final ProjectClasspath projectClasspath;
+  private final JavaClasspath javaClasspath;
   private final SonarComponents sonarComponents;
   private final ModuleFileSystem moduleFileSystem;
   private final DefaultJavaResourceLocator javaResourceLocator;
   private final RulesProfile profile;
   private Settings settings;
 
-  public JavaSquidSensor(RulesProfile profile, NoSonarFilter noSonarFilter, ProjectClasspath projectClasspath, SonarComponents sonarComponents, ModuleFileSystem moduleFileSystem,
+  public JavaSquidSensor(RulesProfile profile, NoSonarFilter noSonarFilter, JavaClasspath javaClasspath, SonarComponents sonarComponents, ModuleFileSystem moduleFileSystem,
                          DefaultJavaResourceLocator javaResourceLocator, Settings settings) {
     this.profile = profile;
     this.annotationCheckFactory = AnnotationCheckFactory.create(profile, CheckList.REPOSITORY_KEY, CheckList.getChecks());
     this.noSonarFilter = noSonarFilter;
-    this.projectClasspath = projectClasspath;
+    this.javaClasspath = javaClasspath;
     this.sonarComponents = sonarComponents;
     this.moduleFileSystem = moduleFileSystem;
     this.javaResourceLocator = javaResourceLocator;
@@ -102,7 +102,7 @@ public class JavaSquidSensor implements Sensor {
     if (settings.getBoolean(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)) {
       return Collections.emptyList();
     }
-    return projectClasspath.getElements();
+    return javaClasspath.getElements();
   }
 
   private JavaConfiguration createConfiguration() {

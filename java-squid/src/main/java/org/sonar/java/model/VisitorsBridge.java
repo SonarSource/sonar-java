@@ -104,7 +104,7 @@ public class VisitorsBridge extends JavaAstVisitor {
   private List<File> getProjectClasspath() {
     List<File> projectClasspath = Lists.newArrayList();
     if (sonarComponents != null) {
-      projectClasspath = sonarComponents.getProjectClasspath();
+      projectClasspath = sonarComponents.getJavaClasspath();
     }
     return projectClasspath;
   }

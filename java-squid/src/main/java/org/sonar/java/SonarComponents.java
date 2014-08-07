@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.api.BatchExtension;
-import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -43,20 +42,20 @@ public class SonarComponents implements BatchExtension {
   private final FileLinesContextFactory fileLinesContextFactory;
   private final ResourcePerspectives resourcePerspectives;
   private final JavaFileScannersFactory[] fileScannersFactories;
-  private final ProjectClasspath projectClasspath;
+  private final JavaClasspath javaClasspath;
   private final Project project;
 
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project, ProjectClasspath projectClasspath) {
-    this(fileLinesContextFactory, resourcePerspectives, project, projectClasspath, null);
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project, JavaClasspath javaClasspath) {
+    this(fileLinesContextFactory, resourcePerspectives, project, javaClasspath, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
-                         ProjectClasspath projectClasspath,
+                         JavaClasspath javaClasspath,
                          @Nullable JavaFileScannersFactory[] fileScannersFactories) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
     this.project = project;
-    this.projectClasspath = projectClasspath;
+    this.javaClasspath = javaClasspath;
     this.fileScannersFactories = fileScannersFactories;
   }
 
@@ -86,10 +85,10 @@ public class SonarComponents implements BatchExtension {
     return resourcePerspectives.as(Highlightable.class, resourceFromIOFile(file));
   }
 
-  public List<File> getProjectClasspath() {
-    if (projectClasspath == null) {
+  public List<File> getJavaClasspath() {
+    if (javaClasspath == null) {
       return Lists.newArrayList();
     }
-    return projectClasspath.getElements();
+    return javaClasspath.getElements();
   }
 }
