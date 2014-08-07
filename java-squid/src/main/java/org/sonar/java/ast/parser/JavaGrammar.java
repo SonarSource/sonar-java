@@ -323,7 +323,11 @@ public enum JavaGrammar implements GrammarRuleKey {
   UNARY_EXPRESSION_NOT_PLUS_MINUS,
   CAST_EXPRESSION,
 
-  MODIFIERS;
+  MODIFIERS,
+
+  // Fakes
+  METHOD_INVOCATION,
+  MEMBER_SELECT;
 
   public static LexerlessGrammarBuilder createGrammarBuilder() {
     LexerlessGrammarBuilder b = LexerlessGrammarBuilder.create();
@@ -810,11 +814,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       QUALIFIED_IDENTIFIER_EXPRESSION,
       BASIC_CLASS_EXPRESSION,
       VOID_CLASS_EXPRESSION));
-    b.rule(EXPLICIT_GENERIC_INVOCATION_EXPRESSION).is(
-      NON_WILDCARD_TYPE_ARGUMENTS,
-      b.firstOf(
-        EXPLICIT_GENERIC_INVOCATION_SUFFIX,
-        b.sequence(THIS, ARGUMENTS)));
     b.rule(THIS_EXPRESSION).is(THIS, b.optional(ARGUMENTS));
     b.rule(SUPER_EXPRESSION).is(SUPER, SUPER_SUFFIX);
     b.rule(NEW_EXPRESSION).is(NEW, b.zeroOrMore(ANNOTATION), CREATOR);

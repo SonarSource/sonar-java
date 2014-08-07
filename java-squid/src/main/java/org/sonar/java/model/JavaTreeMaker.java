@@ -96,7 +96,7 @@ public class JavaTreeMaker {
 
   private final KindMaps kindMaps = new KindMaps();
 
-  private static void checkType(AstNode astNode, AstNodeType... expected) {
+  public static void checkType(AstNode astNode, AstNodeType... expected) {
     Preconditions.checkArgument(astNode.is(expected), "Unexpected AstNodeType: %s", astNode.getType().toString());
   }
 
@@ -981,28 +981,8 @@ public class JavaTreeMaker {
     if (firstChildNode.is(JavaGrammar.PAR_EXPRESSION)) {
       // (expression)
       return expression(firstChildNode);
-    } else if (firstChildNode.is(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_EXPRESSION)) {
-      if (firstChildNode.hasDirectChildren(JavaKeyword.THIS)) {
-        // <T>this(arguments)
-        return new MethodInvocationTreeImpl(
-          firstChildNode,
-          identifier(firstChildNode.getFirstChild(JavaKeyword.THIS)),
-          arguments(firstChildNode.getFirstChild(JavaGrammar.ARGUMENTS)));
-      } else {
-        AstNode explicitGenericInvocationSuffixNode = firstChildNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX);
-        if (explicitGenericInvocationSuffixNode.hasDirectChildren(JavaKeyword.SUPER)) {
-          // <T>super...
-          return applySuperSuffix(
-            identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaKeyword.SUPER)),
-            explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
-        } else {
-          // <T>id(arguments)
-          return new MethodInvocationTreeImpl(
-            firstChildNode,
-            identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-            arguments(explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)));
-        }
-      }
+    } else if (firstChildNode.is(JavaGrammar.METHOD_INVOCATION)) {
+      return (ExpressionTree) firstChildNode;
     } else if (firstChildNode.is(JavaGrammar.THIS_EXPRESSION)) {
       IdentifierTree identifier = identifier(firstChildNode.getFirstChild());
       if (firstChildNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
@@ -1390,7 +1370,7 @@ public class JavaTreeMaker {
     }
   }
 
-  private List<ExpressionTree> arguments(AstNode astNode) {
+  public List<ExpressionTree> arguments(AstNode astNode) {
     checkType(astNode, JavaGrammar.ARGUMENTS);
     ImmutableList.Builder<ExpressionTree> arguments = ImmutableList.builder();
     for (AstNode argument : astNode.getChildren(JavaGrammar.EXPRESSION)) {
