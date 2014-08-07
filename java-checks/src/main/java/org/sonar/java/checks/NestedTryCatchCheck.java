@@ -36,7 +36,7 @@ public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScan
 
 
   public static final String RULE_KEY = "S1141";
-  private static final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private JavaFileScannerContext context;
   private int nestingLevel;
 
