@@ -29,6 +29,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
@@ -201,6 +202,11 @@ public class ActionGrammar {
           b.firstOf(
             f.newExplicitGenericInvokation(b.invokeRule(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX)),
             f.newExplicitGenericInvokation(b.invokeRule(JavaKeyword.THIS), b.invokeRule(JavaGrammar.ARGUMENTS)))));
+  }
+
+  public ExpressionTree THIS_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.THIS_EXPRESSION)
+      .is(f.thisExpression(b.invokeRule(JavaKeyword.THIS), b.optional(b.invokeRule(JavaGrammar.ARGUMENTS))));
   }
 
   // End of expressions
@@ -400,6 +406,20 @@ public class ActionGrammar {
     public ExpressionTree newExplicitGenericInvokation(AstNode thisToken, AstNode arguments) {
       return new MethodInvocationTreeImpl(treeMaker.identifier(thisToken), treeMaker.arguments(arguments),
         thisToken, arguments);
+    }
+
+    public ExpressionTree thisExpression(AstNode thisToken, Optional<AstNode> arguments) {
+      IdentifierTreeImpl identifier = new IdentifierTreeImpl(thisToken.getTokenValue(),
+        thisToken);
+
+      if (arguments.isPresent()) {
+        // this(arguments)
+        return new MethodInvocationTreeImpl(identifier, treeMaker.arguments(arguments.get()),
+          identifier, arguments.get());
+      } else {
+        // this
+        return identifier;
+      }
     }
 
     // End of expressions

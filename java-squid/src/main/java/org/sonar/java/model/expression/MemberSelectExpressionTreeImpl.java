@@ -39,7 +39,7 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   private final IdentifierTree identifier;
 
   public MemberSelectExpressionTreeImpl(ExpressionTree expression, IdentifierTree identifier, AstNode... children) {
-    super(JavaGrammar.MEMBER_SELECT);
+    super(JavaGrammar.MEMBER_SELECT_EXPRESSION);
     this.expression = Preconditions.checkNotNull(expression);
     this.identifier = Preconditions.checkNotNull(identifier);
 

@@ -40,7 +40,7 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   private final List<ExpressionTree> arguments;
 
   public MethodInvocationTreeImpl(ExpressionTree methodSelect, List<ExpressionTree> arguments, AstNode... children) {
-    super(JavaGrammar.METHOD_INVOCATION);
+    super(JavaGrammar.METHOD_INVOCATION_EXPRESSION);
     this.methodSelect = Preconditions.checkNotNull(methodSelect);
     this.arguments = Preconditions.checkNotNull(arguments);
 

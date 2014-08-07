@@ -981,20 +981,8 @@ public class JavaTreeMaker {
     if (firstChildNode.is(JavaGrammar.PAR_EXPRESSION)) {
       // (expression)
       return expression(firstChildNode);
-    } else if (firstChildNode.is(JavaGrammar.METHOD_INVOCATION)) {
+    } else if (firstChildNode.is(JavaGrammar.METHOD_INVOCATION_EXPRESSION, JavaGrammar.IDENTIFIER_EXPRESSION)) {
       return (ExpressionTree) firstChildNode;
-    } else if (firstChildNode.is(JavaGrammar.THIS_EXPRESSION)) {
-      IdentifierTree identifier = identifier(firstChildNode.getFirstChild());
-      if (firstChildNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
-        // this(arguments)
-        return new MethodInvocationTreeImpl(
-          firstChildNode,
-          identifier,
-          arguments(firstChildNode.getFirstChild(JavaGrammar.ARGUMENTS)));
-      } else {
-        // this
-        return identifier;
-      }
     } else if (firstChildNode.is(JavaGrammar.SUPER_EXPRESSION)) {
       // super...
       return applySuperSuffix(
