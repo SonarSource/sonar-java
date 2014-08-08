@@ -22,6 +22,7 @@ package org.sonar.java;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -151,8 +152,7 @@ public class JavaClasspath implements BatchExtension {
 
     public WilcardPatternFileFilter(File baseDir, String wildcardPattern) {
       this.baseDir = baseDir;
-
-      this.wildcardPattern = WildcardPattern.create(wildcardPattern);
+      this.wildcardPattern = WildcardPattern.create(FilenameUtils.separatorsToSystem(wildcardPattern), File.separator);
     }
 
     @Override

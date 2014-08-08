@@ -136,4 +136,21 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar","world.jar");
   }
 
+  @Test
+  public void both_path_separator_should_be_supported_on_one_JVM() {
+    fs.setBaseDir(new File("src/test/files/classpath"));
+    settings.setProperty(JavaClasspath.SONAR_JAVA_LIBRARIES, "**/*.jar");
+    javaClasspath = new JavaClasspath(settings, fs, null);
+    assertThat(javaClasspath.getElements()).hasSize(2);
+    File jar = javaClasspath.getElements().get(0);
+    assertThat(jar).exists();
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar","world.jar");
+    settings.setProperty(JavaClasspath.SONAR_JAVA_LIBRARIES, "**\\*.jar");
+    javaClasspath = new JavaClasspath(settings, fs, null);
+    assertThat(javaClasspath.getElements()).hasSize(2);
+    jar = javaClasspath.getElements().get(0);
+    assertThat(jar).exists();
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar","world.jar");
+  }
+
 }
