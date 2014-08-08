@@ -192,7 +192,8 @@ public final class CheckList {
       NullDereferenceInConditionalCheck.class,
       SelfAssignementCheck.class,
       MismatchPackageDirectoryCheck.class,
-      ReplaceLambdaByMethodRefCheck.class
+      ReplaceLambdaByMethodRefCheck.class,
+      StaticFinalArrayNotPrivateCheck.class
     );
   }
 
