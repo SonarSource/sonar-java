@@ -48,7 +48,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
 
   @Override
   public void visitMethod(AsmMethod asmMethod) {
-    if (asmMethod.isPublic() && !isOverriden(asmMethod)) {
+    if (asmMethod.isPublic() && !asmMethod.isSynthetic() && !isOverriden(asmMethod)) {
       List<String> thrownCheckedExceptions = getThrownCheckedExceptions(asmMethod);
 
       if (thrownCheckedExceptions.size() > 1) {

@@ -100,3 +100,12 @@ interface I {
   public void bar() throws IOException, SQLException; // Non-Compliant
 
 }
+
+class BaseClass<T> {
+  public T meth() throws IOException, SQLException{return null;}
+}
+class BaseChildClass<T> extends BaseClass<T>{}
+class Synth extends BaseChildClass<Integer> {
+  @Override
+  public Integer meth() throws IOException { return 1;}
+}

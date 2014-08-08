@@ -42,7 +42,7 @@ public class ThrowsSeveralCheckedExceptionCheckTest {
       .next()
       .atLine(51)
       .withMessage(
-        "Refactor this method to throw at most one checked exception instead of: java.io.IOException, org.sonar.java.checks.targets.ThrowsSeveralCheckedExceptionCheck$MyException")
+          "Refactor this method to throw at most one checked exception instead of: java.io.IOException, org.sonar.java.checks.targets.ThrowsSeveralCheckedExceptionCheck$MyException")
 
       .next()
       .atLine(54)
@@ -55,7 +55,11 @@ public class ThrowsSeveralCheckedExceptionCheckTest {
       .atLine(92)
 
       .next()
-      .atLine(100);
+      .atLine(100)
+
+      .next()
+      .atLine(105);
+
   }
 
   @Test
