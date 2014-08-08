@@ -19,68 +19,43 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
+import java.util.List;
+
 @Rule(
-  key = BooleanLiteralCheck.RULE_KEY,
+  key = "S1125",
   priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class BooleanLiteralCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1125";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
-  private JavaFileScannerContext context;
+public class BooleanLiteralCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-
-    scan(context.getTree());
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO, Kind.CONDITIONAL_AND, Kind.CONDITIONAL_OR, Kind.LOGICAL_COMPLEMENT);
   }
 
   @Override
-  public void visitBinaryExpression(BinaryExpressionTree tree) {
-    super.visitBinaryExpression(tree);
-    String literal = getBooleanLiteralOperands(tree);
-    if (hasCorrectOperator(tree) && literal != null) {
-      addIssue(tree, literal);
+  public void visitNode(Tree tree) {
+    String literal;
+    if(tree.is(Kind.LOGICAL_COMPLEMENT)) {
+      literal = getBooleanLiteral(((UnaryExpressionTree)tree).expression());
+    } else {
+      literal = getBooleanLiteralOperands((BinaryExpressionTree)tree);
+    }
+    if(literal != null) {
+      addIssue(tree, "Remove the literal \"" + literal + "\" boolean value.");
     }
   }
 
-  @Override
-  public void visitUnaryExpression(UnaryExpressionTree tree) {
-    super.visitUnaryExpression(tree);
-    String literal = getBooleanLiteral(tree.expression());
-    if ( hasCorrectOperator(tree) && literal != null) {
-      addIssue(tree, literal);
-    }
-  }
-
-  private void addIssue(Tree tree, String literal) {
-    context.addIssue(tree, RULE, "Remove the literal \"" + literal + "\" boolean value.");
-  }
-
-  private static String getBooleanLiteralOperands(BinaryExpressionTree tree) {
-    String result = getBooleanLiteral(tree.leftOperand());
-    if (result == null) {
-      result = getBooleanLiteral(tree.rightOperand());
-    }
-    return result;
-  }
-
-  private static String getBooleanLiteral(Tree tree) {
+  private String getBooleanLiteral(Tree tree) {
     String result = null;
     if (tree.is(Kind.BOOLEAN_LITERAL)) {
       result = ((LiteralTree) tree).value();
@@ -88,12 +63,11 @@ public class BooleanLiteralCheck extends BaseTreeVisitor implements JavaFileScan
     return result;
   }
 
-  private static boolean hasCorrectOperator(Tree tree) {
-    return tree.is(Kind.EQUAL_TO) ||
-      tree.is(Kind.NOT_EQUAL_TO) ||
-      tree.is(Kind.CONDITIONAL_AND) ||
-      tree.is(Kind.CONDITIONAL_OR) ||
-      tree.is(Kind.LOGICAL_COMPLEMENT);
+  private String getBooleanLiteralOperands(BinaryExpressionTree tree) {
+    String result = getBooleanLiteral(tree.leftOperand());
+    if (result == null) {
+      result = getBooleanLiteral(tree.rightOperand());
+    }
+    return result;
   }
-
 }
