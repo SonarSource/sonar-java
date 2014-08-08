@@ -124,4 +124,16 @@ public class JavaClasspathTest {
     assertThat(jar).exists();
     assertThat(jar.getName()).isEqualTo("hello.jar");
   }
+
+  @Test
+  public void directory_wildcard_should_be_resolved() {
+    fs.setBaseDir(new File("src/test/files/classpath"));
+    settings.setProperty(JavaClasspath.SONAR_JAVA_LIBRARIES, "**/*.jar");
+    javaClasspath = new JavaClasspath(settings, fs, null);
+    assertThat(javaClasspath.getElements()).hasSize(2);
+    File jar = javaClasspath.getElements().get(0);
+    assertThat(jar).exists();
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar","world.jar");
+  }
+
 }

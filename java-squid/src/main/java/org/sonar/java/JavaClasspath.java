@@ -21,23 +21,23 @@ package org.sonar.java;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.AndFileFilter;
-import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
+import org.sonar.api.utils.WildcardPattern;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.commons.io.filefilter.FileFilterUtils.suffixFileFilter;
@@ -81,27 +81,33 @@ public class JavaClasspath implements BatchExtension {
     if (StringUtils.isNotEmpty(fileList)) {
       List<String> fileNames = Lists.newArrayList(StringUtils.split(fileList, SEPARATOR));
       for (String fileName : fileNames) {
-        int wildcardIndex = fileName.indexOf('*');
-        if (wildcardIndex >= 0) {
-          int lastPathSeparator = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
-          String dir = fileName.substring(0, lastPathSeparator);
-          String pattern = fileName.substring(lastPathSeparator+1);
-          FileFilter fileFilter;
-          if(pattern.isEmpty()) {
-            fileFilter = new OrFileFilter(Lists.newArrayList(suffixFileFilter(".jar", IOCase.INSENSITIVE), suffixFileFilter(".zip", IOCase.INSENSITIVE)));
-          } else {
-            fileFilter = new WildcardFileFilter(pattern);
-          }
-          File jarDir = resolvePath(baseDir, dir);
-          List<File> jarFiles = Arrays.asList(jarDir.listFiles((FileFilter) new AndFileFilter((IOFileFilter) fileFilter, FileFileFilter.FILE)));
-          result.addAll(jarFiles);
-        } else {
-          File file = resolvePath(baseDir, fileName);
-          result.add(file);
+        String pattern = fileName;
+        File dir = baseDir;
+        int wildcardIndex = pattern.indexOf('*');
+        if (wildcardIndex > 0) {
+          pattern = pattern.substring(0, wildcardIndex);
         }
+        int lastPathSeparator = Math.max(pattern.lastIndexOf('/'), pattern.lastIndexOf('\\'));
+        File filenameDir = new File(pattern.substring(0, lastPathSeparator));
+        if (filenameDir.isAbsolute()) {
+          dir = filenameDir;
+          pattern = fileName.substring(dir.getAbsolutePath().length());
+        } else {
+          pattern = fileName;
+        }
+        result.addAll(getMatchingFiles(pattern, dir));
       }
     }
     return result;
+  }
+
+  private List<File> getMatchingFiles(String pattern, File dir) {
+    FileFilter fileFilter = new WilcardPatternFileFilter(dir, pattern);
+    if (pattern.endsWith("*")) {
+      fileFilter = new AndFileFilter((IOFileFilter) fileFilter,
+          new OrFileFilter(Lists.newArrayList(suffixFileFilter(".jar", IOCase.INSENSITIVE), suffixFileFilter(".zip", IOCase.INSENSITIVE))));
+    }
+    return Lists.newArrayList(FileUtils.listFiles(dir, (IOFileFilter) fileFilter, TrueFileFilter.TRUE));
   }
 
   private File resolvePath(File baseDir, String fileName) {
@@ -137,5 +143,28 @@ public class JavaClasspath implements BatchExtension {
 
   public List<File> getLibraries() {
     return libraries;
+  }
+
+  private static class WilcardPatternFileFilter implements IOFileFilter {
+    private File baseDir;
+    private WildcardPattern wildcardPattern;
+
+    public WilcardPatternFileFilter(File baseDir, String wildcardPattern) {
+      this.baseDir = baseDir;
+
+      this.wildcardPattern = WildcardPattern.create(wildcardPattern);
+    }
+
+    @Override
+    public boolean accept(File dir, String name) {
+      return accept(new File(dir, name));
+    }
+
+    @Override
+    public boolean accept(File file) {
+      String path = file.getAbsolutePath();
+      path = path.substring(baseDir.getAbsolutePath().length() + 1);
+      return wildcardPattern.match(path);
+    }
   }
 }
