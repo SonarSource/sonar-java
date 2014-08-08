@@ -51,7 +51,9 @@ public class JavaClasspath implements BatchExtension {
   private List<File> libraries;
   private List<File> elements;
 
-
+  public JavaClasspath(Settings settings, FileSystem fileSystem) {
+    this(settings, fileSystem, null);
+  }
   public JavaClasspath(Settings settings, FileSystem fileSystem, @Nullable ProjectClasspath projectClasspath) {
     binaries = getBinaryDirFromProperty(SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
     libraries = getLibraryFilesFromProperty(SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
