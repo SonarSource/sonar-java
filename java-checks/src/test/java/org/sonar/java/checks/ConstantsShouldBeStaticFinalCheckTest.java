@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,14 +35,16 @@ public class ConstantsShouldBeStaticFinalCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ConstantsShouldBeStaticFinalCheck.java"), new ConstantsShouldBeStaticFinalCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ConstantsShouldBeStaticFinalCheck.java"), new VisitorsBridge(new ConstantsShouldBeStaticFinalCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(2).withMessage("Make this final field static too.")
         .next().atLine(5)
         .next().atLine(12)
         .next().atLine(15)
         .next().atLine(19)
-        .next().atLine(20);
+        .next().atLine(20)
+        .next().atLine(33)
+    ;
   }
 
 }

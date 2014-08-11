@@ -19,76 +19,110 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.Iterator;
+import java.util.List;
 
 @Rule(
-  key = "S1170",
-  priority = Priority.MAJOR)
+    key = "S1170",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ConstantsShouldBeStaticFinalCheck extends SquidCheck<LexerlessGrammar> {
+public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
+
+  private int nestedClassesLevel;
+
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.FIELD_DECLARATION);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    AstNode classMemberDeclaration = node.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION);
+  public void scanFile(JavaFileScannerContext context) {
+    nestedClassesLevel = 0;
+    super.scanFile(context);
+  }
 
-    if (isFinal(classMemberDeclaration) && !isStatic(classMemberDeclaration)) {
-      for (AstNode variableDeclarator : node.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-        if (!isObjectInInnerClass(classMemberDeclaration) && hasConstantInitializer(variableDeclarator)) {
-          getContext().createLineViolation(this, "Make this final field static too.", variableDeclarator);
+  @Override
+  public void visitNode(Tree tree) {
+    nestedClassesLevel++;
+    for (Tree member : ((ClassTree) tree).members()) {
+      if (member.is(Tree.Kind.VARIABLE)) {
+        VariableTree variableTree = (VariableTree) member;
+        if (staticNonFinal(variableTree) && hasConstantInitializer(variableTree) && !isObjectInInnerClass(variableTree)) {
+          addIssue(variableTree, "Make this final field static too.");
         }
       }
     }
   }
 
-  private boolean isObjectInInnerClass(AstNode classMemberDeclaration) {
-    AstNode innerClassDeclaration = classMemberDeclaration.getFirstAncestor(JavaGrammar.CLASS_DECLARATION);
-    if (innerClassDeclaration != null) {
-      AstNode outerClassDeclaration = innerClassDeclaration.getFirstAncestor(JavaGrammar.CLASS_DECLARATION);
-      if (outerClassDeclaration != null) {
-        AstNode classType = classMemberDeclaration.getFirstDescendant(JavaGrammar.CLASS_TYPE);
-        return classType != null && !isClassTypeString(classType);
+  private boolean isObjectInInnerClass(VariableTree variableTree) {
+    if (nestedClassesLevel > 1) {
+      if (variableTree.type().is(Tree.Kind.IDENTIFIER)) {
+        return !"String".equals(((IdentifierTree) variableTree.type()).name());
+      } else {
+        return !variableTree.type().is(Tree.Kind.PRIMITIVE_TYPE);
       }
     }
     return false;
   }
 
-  private boolean isClassTypeString(AstNode classType) {
-    return "String".equals(classType.getTokenValue()) && classType.getNextSibling() == null;
+  private boolean staticNonFinal(VariableTree variableTree) {
+    return isFinal(variableTree) && !isStatic(variableTree);
   }
 
-  private static boolean isFinal(AstNode node) {
-    return node.select()
-      .children(JavaGrammar.MODIFIERS)
-      .children(JavaGrammar.MODIFIER)
-      .children(JavaKeyword.FINAL)
-      .isNotEmpty();
+  @Override
+  public void leaveNode(Tree tree) {
+    nestedClassesLevel--;
   }
 
-  private static boolean isStatic(AstNode node) {
-    return node.select()
-      .children(JavaGrammar.MODIFIERS)
-      .children(JavaGrammar.MODIFIER)
-      .children(JavaKeyword.STATIC)
-      .isNotEmpty();
+  private boolean hasConstantInitializer(VariableTree variableTree) {
+    Tree init = variableTree.initializer();
+    if (init != null) {
+      if (init.is(Tree.Kind.NEW_ARRAY)) {
+        //exclude allocations : new int[6] but allow initialization new int[]{1,2};
+        return ((NewArrayTree) init).dimensions().isEmpty();
+      }
+      return !containsChildrenOfKind((JavaTree) init, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    }
+    return false;
   }
 
-  private static boolean hasConstantInitializer(AstNode node) {
-    AstNode variableInitializer = node.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER);
-    return variableInitializer != null &&
-      !variableInitializer.hasDescendant(JavaPunctuator.LPAR, JavaPunctuator.LBRK);
+  private boolean containsChildrenOfKind(JavaTree tree, Tree.Kind... kinds) {
+    for (Tree.Kind kind : kinds) {
+      if (tree.is(kind)) {
+        return true;
+      }
+    }
+    if(!tree.isLeaf()) {
+      Iterator<Tree> treeIterator = tree.childrenIterator();
+      while (treeIterator.hasNext()) {
+        JavaTree javaTree = (JavaTree) treeIterator.next();
+        if(containsChildrenOfKind(javaTree, kinds)){
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
+  private static boolean isFinal(VariableTree variableTree) {
+    return variableTree.modifiers().modifiers().contains(Modifier.FINAL);
+  }
+
+  private static boolean isStatic(VariableTree variableTree) {
+    return variableTree.modifiers().modifiers().contains(Modifier.STATIC);
+  }
 }

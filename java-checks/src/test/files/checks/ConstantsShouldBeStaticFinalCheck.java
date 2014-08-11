@@ -21,6 +21,7 @@ class A {
 
     private final String[] NOT_POSSIBLE = {}; //Compliant
     private final Object NOT_POSSIBLE_2 = new Object(); //Compliant
+    private final Object NOT_POSSIBLE_3 = MY_CONSTANT; //Compliant
   }
   enum enumTest {
     TEST1(4);
@@ -29,6 +30,7 @@ class A {
       possible = test;
     }
   }
+  private final String[] NOT_POSSIBLE = {}; //Non-Compliant
 }
 
 interface B {
