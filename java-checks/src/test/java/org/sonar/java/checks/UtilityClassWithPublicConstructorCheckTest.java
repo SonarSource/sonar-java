@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,12 +35,14 @@ public class UtilityClassWithPublicConstructorCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UtilityClassWithPublicConstructorCheck.java"), new UtilityClassWithPublicConstructorCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UtilityClassWithPublicConstructorCheck.java"), new VisitorsBridge(new UtilityClassWithPublicConstructorCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(9).withMessage("Add a private constructor to hide the implicit public one.")
         .next().atLine(23).withMessage("Hide this public constructor.")
         .next().atLine(44)
-        .next().atLine(68);
+        .next().atLine(68)
+        .next().atLine(85)
+    ;
   }
 
 }

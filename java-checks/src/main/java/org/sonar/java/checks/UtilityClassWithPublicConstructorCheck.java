@@ -20,17 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.ast.AstSelect;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
@@ -38,105 +36,86 @@ import java.util.List;
   key = "S1118",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class UtilityClassWithPublicConstructorCheck extends SquidCheck<LexerlessGrammar> {
+public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisitor{
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_BODY);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (!extendsAnotherClass(node) && hasStaticMembers(node) && !hasInstanceMembers(node)) {
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    if (!extendsAnotherClass(classTree) && hasOnlyStaticMembers(classTree)) {
       boolean hasImplicitPublicConstructor = true;
-
-      for (AstNode explicitConstructor : getExplicitConstructors(node)) {
+      for (Tree explicitConstructor : getExplicitConstructors(classTree)) {
         hasImplicitPublicConstructor = false;
-
         if (isPublicConstructor(explicitConstructor)) {
-          getContext().createLineViolation(this, "Hide this public constructor.", explicitConstructor);
+          addIssue(explicitConstructor, "Hide this public constructor.");
         }
       }
-
       if (hasImplicitPublicConstructor) {
-        getContext().createLineViolation(this, "Add a private constructor to hide the implicit public one.", node);
+          addIssue(classTree, "Add a private constructor to hide the implicit public one.");
       }
     }
   }
 
-  private static boolean extendsAnotherClass(AstNode node) {
-    return node.getParent().hasDirectChildren(JavaKeyword.EXTENDS);
+  private static boolean extendsAnotherClass(ClassTree classTree) {
+    return classTree.superClass() != null;
   }
 
-  private static boolean hasStaticMembers(AstNode node) {
-    for (AstNode member : node.getChildren(JavaGrammar.CLASS_BODY_DECLARATION)) {
-      if (hasStaticModifier(member)) {
-        return true;
+  private static boolean hasOnlyStaticMembers(ClassTree classTree) {
+    if(classTree.members().isEmpty()) {
+      return false;
+    }
+    for (Tree member : classTree.members()) {
+      if (!isConstructor(member) && !isStatic(member)) {
+        return false;
       }
     }
-
-    return false;
+    return true;
   }
 
-  private static boolean hasStaticModifier(AstNode node) {
-    return hasModifier(node, Modifier.STATIC);
-  }
-
-  private static boolean hasInstanceMembers(AstNode node) {
-    for (AstNode member : node.getChildren(JavaGrammar.CLASS_BODY_DECLARATION)) {
-      if (!isExcludedInstanceMember(member) && !hasStaticModifier(member)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  private static boolean isExcludedInstanceMember(AstNode node) {
-    AstNode memberDecl = node.getFirstChild(JavaGrammar.MEMBER_DECL);
-    if (memberDecl == null) {
+  private static boolean isStatic(Tree member) {
+    if(member.is(Tree.Kind.STATIC_INITIALIZER)) {
       return true;
+    } else if(member.is(Tree.Kind.VARIABLE)) {
+      VariableTree variableTree = (VariableTree) member;
+      return  hasStaticModifier(variableTree.modifiers());
+    } else if(member.is(Tree.Kind.METHOD)) {
+      MethodTree methodTree = (MethodTree) member;
+      return  hasStaticModifier(methodTree.modifiers());
+    } else if(member.is(Tree.Kind.CLASS) || member.is(Tree.Kind.ANNOTATION_TYPE) || member.is(Tree.Kind.INTERFACE) || member.is(Tree.Kind.ENUM)) {
+      ClassTree classTree = (ClassTree) member;
+      return  hasStaticModifier(classTree.modifiers());
     }
-
-    AstNode constructorOrGeneric = memberDecl.getFirstChild(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST, JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
-
-    return constructorOrGeneric != null &&
-      isConstructor(constructorOrGeneric);
+    return false;
   }
 
-  private static List<AstNode> getExplicitConstructors(AstNode node) {
-    ImmutableList.Builder<AstNode> builder = ImmutableList.builder();
+  private static boolean hasStaticModifier(ModifiersTree modifiers){
+    return modifiers.modifiers().contains(Modifier.STATIC);
+  }
 
-    AstSelect query = node.select()
-      .children(JavaGrammar.CLASS_BODY_DECLARATION)
-      .children(JavaGrammar.MEMBER_DECL)
-      .children(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST, JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
-
-    for (AstNode methodOrGeneric : query) {
-      if (isConstructor(methodOrGeneric)) {
-        builder.add(methodOrGeneric);
+  private static List<Tree> getExplicitConstructors(ClassTree classTree) {
+    ImmutableList.Builder<Tree> builder = ImmutableList.builder();
+    for (Tree member : classTree.members()) {
+      if (isConstructor(member)) {
+        builder.add(member);
       }
     }
-
     return builder.build();
   }
 
-  private static boolean isConstructor(AstNode node) {
-    return node.is(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST) || node.hasDirectChildren(JavaGrammar.CONSTRUCTOR_DECLARATOR_REST);
+  private static boolean isConstructor(Tree tree) {
+    return tree.is(Tree.Kind.CONSTRUCTOR);
   }
 
-  private static boolean isPublicConstructor(AstNode node) {
-    return hasPublicModifier(node.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION));
+  private static boolean isPublicConstructor(Tree tree) {
+    return isConstructor(tree) && hasPublicModifier((MethodTree) tree);
   }
 
-  private static boolean hasPublicModifier(AstNode node) {
-    return hasModifier(node, Modifier.PUBLIC);
-  }
-
-  public static boolean hasModifier(AstNode node, Modifier modifier) {
-    ModifiersTree modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.MODIFIERS);
-
-    return modifiers != null && modifiers.modifiers().contains(modifier);
+  private static boolean hasPublicModifier(MethodTree methodTree) {
+    return methodTree.modifiers().modifiers().contains(Modifier.PUBLIC);
   }
 
 }

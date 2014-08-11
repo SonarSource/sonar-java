@@ -81,3 +81,9 @@ class Foo11 {
   public static int a;
 
 }
+
+class Foo12 { //Non-compliant
+  static class plop {
+    int a;
+  }
+}
