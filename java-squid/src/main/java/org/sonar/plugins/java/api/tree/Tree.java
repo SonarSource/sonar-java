@@ -593,8 +593,9 @@ public interface Tree {
      *An implementation-reserved node.
      *
      */
-    OTHER(Tree.class);
+    OTHER(Tree.class),
 
+    TOKEN(SyntaxToken.class);
 
     final Class<? extends Tree> associatedInterface;
 

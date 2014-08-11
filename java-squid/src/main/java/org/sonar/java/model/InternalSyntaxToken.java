@@ -21,13 +21,17 @@ package org.sonar.java.model;
 
 import com.sonar.sslr.api.Token;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-public class InternalSyntaxToken implements SyntaxToken {
+import java.util.Iterator;
+
+public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   private final Token token;
 
   public InternalSyntaxToken(Token token) {
+    super(token.getType());
     this.token = token;
   }
 
@@ -37,17 +41,28 @@ public class InternalSyntaxToken implements SyntaxToken {
   }
 
   @Override
-  public boolean is(Kind kind) {
-    return false;
-  }
-
-  @Override
   public void accept(TreeVisitor visitor) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public int getLine() {
     return token.getLine();
+  }
+
+  @Override
+  public Kind getKind() {
+    return Kind.TOKEN;
+  }
+
+  @Override
+  public boolean isLeaf() {
+    return true;
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    throw new UnsupportedOperationException();
   }
 
 }

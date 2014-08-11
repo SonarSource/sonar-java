@@ -23,9 +23,11 @@ import com.google.common.base.Objects;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public final class SyntacticEquivalence {
@@ -77,6 +79,8 @@ public final class SyntacticEquivalence {
       return Objects.equal(((LiteralTree) leftNode).value(), ((LiteralTree) rightNode).value());
     } else if (leftNode instanceof PrimitiveTypeTree) {
       return Objects.equal(((PrimitiveTypeTree) leftNode).keyword().text(), ((PrimitiveTypeTree) rightNode).keyword().text());
+    } else if (leftNode instanceof SyntaxToken) {
+      return Objects.equal(((SyntaxToken) leftNode).text(), ((SyntaxToken) rightNode).text());
     } else {
       throw new IllegalArgumentException();
     }

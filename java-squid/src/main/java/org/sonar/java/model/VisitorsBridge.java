@@ -39,6 +39,7 @@ import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +53,7 @@ public class VisitorsBridge extends JavaAstVisitor {
   private final List<JavaFileScanner> scanners;
 
   private SemanticModel semanticModel;
-  private SonarComponents sonarComponents;
+  private final SonarComponents sonarComponents;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -96,8 +97,9 @@ public class VisitorsBridge extends JavaAstVisitor {
   private boolean isNotJavaLangOrSerializable() {
     String[] path = peekSourceFile().getName().split(Pattern.quote(File.separator));
     boolean isJavaLang = path.length > 3 && "java".equals(path[path.length - 3]) && "lang".equals(path[path.length - 2]);
-    boolean isJavaLangAnnotation = path.length > 4 && "Annotation.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 4]) && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);
-    boolean isSerializable = path.length > 3 && "Serializable.java".equals(path[path.length-1]) && "java".equals(path[path.length-3]) && "io".equals(path[path.length-2]);
+    boolean isJavaLangAnnotation = path.length > 4 && "Annotation.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 4])
+      && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);
+    boolean isSerializable = path.length > 3 && "Serializable.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 3]) && "io".equals(path[path.length - 2]);
     return !(isJavaLang || isJavaLangAnnotation || isSerializable);
   }
 
@@ -136,17 +138,11 @@ public class VisitorsBridge extends JavaAstVisitor {
     public void addIssue(Tree tree, RuleKey ruleKey, String message) {
       Preconditions.checkNotNull(ruleKey);
       Preconditions.checkNotNull(message);
-      int line;
-      if(InternalSyntaxToken.class.isAssignableFrom(tree.getClass())) {
-        line = ((InternalSyntaxToken)tree).getLine();
-      }else {
-        line = ((JavaTree) tree).getLine();
-      }
+      int line = ((JavaTree) tree).getLine();
       CheckMessage checkMessage = new CheckMessage(ruleKey, message);
       checkMessage.setLine(line);
       sourceFile.log(checkMessage);
     }
-
 
     @Override
     @Nullable
