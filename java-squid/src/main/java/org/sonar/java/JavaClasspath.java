@@ -29,6 +29,8 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.batch.fs.FileSystem;
@@ -47,6 +49,8 @@ public class JavaClasspath implements BatchExtension {
   public static final String SONAR_JAVA_BINARIES = "sonar.java.binaries";
   public static final String SONAR_JAVA_LIBRARIES = "sonar.java.libraries";
   private static final char SEPARATOR = ',';
+  private static final Logger LOG = LoggerFactory.getLogger(JavaClasspath.class);
+
   private List<File> binaries;
   private List<File> libraries;
   private List<File> elements;
@@ -54,6 +58,7 @@ public class JavaClasspath implements BatchExtension {
   public JavaClasspath(Settings settings, FileSystem fileSystem) {
     this(settings, fileSystem, null);
   }
+
   public JavaClasspath(Settings settings, FileSystem fileSystem, @Nullable ProjectClasspath projectClasspath) {
     binaries = getBinaryDirFromProperty(SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
     libraries = getLibraryFilesFromProperty(SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
@@ -64,6 +69,7 @@ public class JavaClasspath implements BatchExtension {
     elements = Lists.newArrayList(binaries);
     elements.addAll(libraries);
   }
+
 
   private List<File> getBinaryDirFromProperty(String property, Settings settings, File baseDir) {
     List<File> result = Lists.newArrayList();
@@ -98,7 +104,16 @@ public class JavaClasspath implements BatchExtension {
         } else {
           pattern = fileName;
         }
-        result.addAll(getMatchingFiles(pattern, dir));
+        List<File> matchingFiles = getMatchingFiles(pattern, dir);
+        if (matchingFiles.isEmpty()) {
+          LOG.error("Invalid value for " + property);
+          String message = "No files nor directories matching '" + fileName + "' ";
+          if (!filenameDir.isAbsolute()) {
+            message += "in directory " + baseDir;
+          }
+          throw new IllegalStateException(message);
+        }
+        result.addAll(matchingFiles);
       }
     }
     return result;

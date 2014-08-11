@@ -28,6 +28,7 @@ import org.sonar.api.config.Settings;
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 public class JavaClasspathTest {
@@ -153,4 +154,21 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar","world.jar");
   }
 
+  @Test
+  public void non_existing_resources_should_fail() throws Exception {
+    File baseDir = new File("src/test/files/classpath");
+    fs.setBaseDir(baseDir);
+    settings.setProperty(JavaClasspath.SONAR_JAVA_LIBRARIES, "toto/**/hello.jar");
+    checkIllegalStateException("No files nor directories matching 'toto/**/hello.jar' in directory "+baseDir.getAbsolutePath());
+
+  }
+
+  private void checkIllegalStateException(String message) {
+    try {
+      javaClasspath = new JavaClasspath(settings, fs);
+      fail("Exception should have been raised");
+    }catch (IllegalStateException ise) {
+      assertThat(ise.getMessage()).isEqualTo(message);
+    }
+  }
 }
