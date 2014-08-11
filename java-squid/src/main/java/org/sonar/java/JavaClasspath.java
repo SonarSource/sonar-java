@@ -57,12 +57,12 @@ public class JavaClasspath implements BatchExtension {
   public JavaClasspath(Settings settings, FileSystem fileSystem, @Nullable ProjectClasspath projectClasspath) {
     binaries = getBinaryDirFromProperty(SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
     libraries = getLibraryFilesFromProperty(SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
-    if (projectClasspath == null || !binaries.isEmpty() || !libraries.isEmpty()) {
-      elements = Lists.newArrayList(binaries);
-      elements.addAll(libraries);
-    } else {
-      elements = projectClasspath.getElements();
+    if (projectClasspath != null && binaries.isEmpty() && libraries.isEmpty()) {
+      binaries = getBinaryDirFromProperty("sonar.binaries", settings, fileSystem.baseDir());
+      libraries = getLibraryFilesFromProperty("sonar.libraries", settings, fileSystem.baseDir());
     }
+    elements = Lists.newArrayList(binaries);
+    elements.addAll(libraries);
   }
 
   private List<File> getBinaryDirFromProperty(String property, Settings settings, File baseDir) {

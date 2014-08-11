@@ -19,7 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.ProjectClasspath;
@@ -27,11 +26,9 @@ import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.Settings;
 
 import java.io.File;
-import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class JavaClasspathTest {
 
@@ -57,12 +54,15 @@ public class JavaClasspathTest {
   }
 
   @Test
-  public void when_property_not_defined_getElements_should_be_list_of_project_classpath() {
-    ProjectClasspath projectClasspath = mock(ProjectClasspath.class);
-    List<File> elements = Lists.newArrayList(new File("plop"));
-    when(projectClasspath.getElements()).thenReturn(elements);
-    javaClasspath = new JavaClasspath(settings, fs, projectClasspath);
-    assertThat(javaClasspath.getElements()).isEqualTo(elements);
+  public void new_properties_not_set_should_fall_back_on_old_ones() throws Exception {
+    settings.setProperty("sonar.binaries", "bin");
+    settings.setProperty("sonar.libraries", "lib/hello.jar");
+    fs.setBaseDir(new File("src/test/files/classpath/"));
+    javaClasspath = new JavaClasspath(settings, fs, mock(ProjectClasspath.class));
+    assertThat(javaClasspath.getElements()).hasSize(2);
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
+    assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
+    assertThat(javaClasspath.getLibraries()).hasSize(1);
   }
 
   @Test
