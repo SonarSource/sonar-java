@@ -20,33 +20,13 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
-import org.sonar.plugins.java.api.tree.ArrayTypeTree;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.InstanceOfTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeCastTree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,27 +58,69 @@ public class ExpressionComplexityCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    ImmutableList.Builder<Class<? extends Tree>> builder = ImmutableList.builder();
-    builder.add(ArrayAccessExpressionTree.class);
-    builder.add(ArrayTypeTree.class);
-    builder.add(AssignmentExpressionTree.class);
-    builder.add(BinaryExpressionTree.class);
-    builder.add(ConditionalExpressionTree.class);
-    builder.add(IdentifierTree.class);
-    builder.add(InstanceOfTree.class);
-    builder.add(LambdaExpressionTree.class);
-    builder.add(LiteralTree.class);
-    builder.add(MemberSelectExpressionTree.class);
-    builder.add(MethodInvocationTree.class);
-    builder.add(NewArrayTree.class);
-    builder.add(NewClassTree.class);
-    builder.add(JavaTree.ParameterizedTypeTreeImpl.class);
-    builder.add(ParenthesizedTree.class);
-    builder.add(PrimitiveTypeTree.class);
-    builder.add(TypeCastTree.class);
-    builder.add(UnaryExpressionTree.class);
-    Collection<Tree.Kind> kinds = Lists.newArrayList(getKinds(builder.build()));
-    return ImmutableList.<Tree.Kind>builder().addAll(kinds).add(Tree.Kind.CLASS).add(Tree.Kind.NEW_ARRAY).add(Tree.Kind.CONDITIONAL_EXPRESSION).build();
+    return ImmutableList.<Tree.Kind>builder()
+        .add(Tree.Kind.CLASS)
+        .add(Tree.Kind.POSTFIX_INCREMENT)
+        .add(Tree.Kind.POSTFIX_DECREMENT)
+        .add(Tree.Kind.PREFIX_INCREMENT)
+        .add(Tree.Kind.PREFIX_DECREMENT)
+        .add(Tree.Kind.UNARY_PLUS)
+        .add(Tree.Kind.UNARY_MINUS)
+        .add(Tree.Kind.BITWISE_COMPLEMENT)
+        .add(Tree.Kind.LOGICAL_COMPLEMENT)
+        .add(Tree.Kind.MULTIPLY)
+        .add(Tree.Kind.DIVIDE)
+        .add(Tree.Kind.REMAINDER)
+        .add(Tree.Kind.PLUS)
+        .add(Tree.Kind.MINUS)
+        .add(Tree.Kind.LEFT_SHIFT)
+        .add(Tree.Kind.RIGHT_SHIFT)
+        .add(Tree.Kind.UNSIGNED_RIGHT_SHIFT)
+        .add(Tree.Kind.LESS_THAN)
+        .add(Tree.Kind.GREATER_THAN)
+        .add(Tree.Kind.LESS_THAN_OR_EQUAL_TO)
+        .add(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
+        .add(Tree.Kind.EQUAL_TO)
+        .add(Tree.Kind.NOT_EQUAL_TO)
+        .add(Tree.Kind.AND)
+        .add(Tree.Kind.XOR)
+        .add(Tree.Kind.OR)
+        .add(Tree.Kind.CONDITIONAL_AND)
+        .add(Tree.Kind.CONDITIONAL_OR)
+        .add(Tree.Kind.CONDITIONAL_EXPRESSION)
+        .add(Tree.Kind.ARRAY_ACCESS_EXPRESSION)
+        .add(Tree.Kind.MEMBER_SELECT)
+        .add(Tree.Kind.NEW_CLASS)
+        .add(Tree.Kind.NEW_ARRAY)
+        .add(Tree.Kind.METHOD_INVOCATION)
+        .add(Tree.Kind.TYPE_CAST)
+        .add(Tree.Kind.INSTANCE_OF)
+        .add(Tree.Kind.PARENTHESIZED_EXPRESSION)
+        .add(Tree.Kind.ASSIGNMENT)
+        .add(Tree.Kind.MULTIPLY_ASSIGNMENT)
+        .add(Tree.Kind.DIVIDE_ASSIGNMENT)
+        .add(Tree.Kind.REMAINDER_ASSIGNMENT)
+        .add(Tree.Kind.PLUS_ASSIGNMENT)
+        .add(Tree.Kind.MINUS_ASSIGNMENT)
+        .add(Tree.Kind.LEFT_SHIFT_ASSIGNMENT)
+        .add(Tree.Kind.RIGHT_SHIFT_ASSIGNMENT)
+        .add(Tree.Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT)
+        .add(Tree.Kind.AND_ASSIGNMENT)
+        .add(Tree.Kind.XOR_ASSIGNMENT)
+        .add(Tree.Kind.OR_ASSIGNMENT)
+        .add(Tree.Kind.INT_LITERAL)
+        .add(Tree.Kind.LONG_LITERAL)
+        .add(Tree.Kind.FLOAT_LITERAL)
+        .add(Tree.Kind.DOUBLE_LITERAL)
+        .add(Tree.Kind.BOOLEAN_LITERAL)
+        .add(Tree.Kind.CHAR_LITERAL)
+        .add(Tree.Kind.STRING_LITERAL)
+        .add(Tree.Kind.NULL_LITERAL)
+        .add(Tree.Kind.IDENTIFIER)
+        .add(Tree.Kind.ARRAY_TYPE)
+        .add(Tree.Kind.LAMBDA_EXPRESSION)
+        .add(Tree.Kind.PRIMITIVE_TYPE)
+        .build();
   }
 
   @Override

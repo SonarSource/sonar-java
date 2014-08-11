@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.java.model.JavaTree;
@@ -36,7 +35,7 @@ public abstract class SubscriptionBaseVisitor implements JavaFileScanner, CodeVi
 
 
   private JavaFileScannerContext context;
-  Collection<Tree.Kind> nodesToVisit;
+  private Collection<Tree.Kind> nodesToVisit;
 
   public abstract List<Tree.Kind> nodesToVisit();
 
@@ -85,13 +84,5 @@ public abstract class SubscriptionBaseVisitor implements JavaFileScanner, CodeVi
   public void addIssue(Tree tree, String message){
     context.addIssue(tree, RuleKey.of(CheckList.REPOSITORY_KEY, RuleAnnotationUtils.getRuleKey(this.getClass())), message);
   }
-  public static Collection<Tree.Kind> getKinds(Collection<Class<? extends Tree>> associatedInterfaces){
-    ImmutableList.Builder<Tree.Kind> result = ImmutableList.builder();
-    for (Tree.Kind kind : Tree.Kind.values()) {
-      if(associatedInterfaces.contains(kind.getAssociatedInterface())) {
-        result.add(kind);
-      }
-    }
-    return result.build();
-  }
+
 }
