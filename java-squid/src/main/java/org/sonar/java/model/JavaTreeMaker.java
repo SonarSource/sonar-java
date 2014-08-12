@@ -102,7 +102,7 @@ public class JavaTreeMaker {
 
   public IdentifierTree identifier(AstNode astNode) {
     checkType(astNode, JavaTokenType.IDENTIFIER, JavaKeyword.THIS, JavaKeyword.CLASS, JavaKeyword.SUPER);
-    return new IdentifierTreeImpl(astNode, astNode.getTokenValue());
+    return new IdentifierTreeImpl(astNode, new InternalSyntaxToken(astNode.getToken()));
   }
 
   private ExpressionTree qualifiedIdentifier(AstNode astNode) {
@@ -284,11 +284,12 @@ public class JavaTreeMaker {
       AstNode astNodeQualifiedIdentifier = importNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
       ExpressionTree qualifiedIdentifier = qualifiedIdentifier(astNodeQualifiedIdentifier);
       // star import : if there is a star then add it as an identifier.
-      if (astNodeQualifiedIdentifier.getNextSibling().is(JavaPunctuator.DOT) && astNodeQualifiedIdentifier.getNextSibling().getNextSibling().is(JavaPunctuator.STAR)) {
+      AstNode nextNextSibling = astNodeQualifiedIdentifier.getNextSibling().getNextSibling();
+      if (astNodeQualifiedIdentifier.getNextSibling().is(JavaPunctuator.DOT) && nextNextSibling.is(JavaPunctuator.STAR)) {
         qualifiedIdentifier = new MemberSelectExpressionTreeImpl(
           astNodeQualifiedIdentifier.getNextSibling().getNextSibling(),
           qualifiedIdentifier,
-          new IdentifierTreeImpl(astNodeQualifiedIdentifier.getNextSibling().getNextSibling(), JavaPunctuator.STAR.getValue())
+          new IdentifierTreeImpl(nextNextSibling, new InternalSyntaxToken(nextNextSibling.getToken()))
           );
       }
 

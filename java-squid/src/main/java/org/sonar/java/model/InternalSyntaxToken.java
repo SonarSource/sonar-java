@@ -31,7 +31,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   private final Token token;
 
   public InternalSyntaxToken(Token token) {
-    super(token.getType());
+    super(token.getType(), token);
     this.token = token;
   }
 

@@ -26,6 +26,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
@@ -398,14 +399,12 @@ public class ActionGrammar {
     public ExpressionTree newExplicitGenericInvokation(AstNode explicitGenericInvocationSuffix) {
       if (explicitGenericInvocationSuffix.hasDirectChildren(JavaKeyword.SUPER)) {
         // <T>super...
-        IdentifierTreeImpl identifier = new IdentifierTreeImpl(explicitGenericInvocationSuffix.getFirstChild(JavaKeyword.SUPER).getTokenValue(),
-          explicitGenericInvocationSuffix.getFirstChild(JavaKeyword.SUPER));
+        IdentifierTreeImpl identifier = new IdentifierTreeImpl(new InternalSyntaxToken(explicitGenericInvocationSuffix.getFirstChild(JavaKeyword.SUPER).getToken()));
 
         return applySuperSuffix(identifier, explicitGenericInvocationSuffix.getFirstChild(JavaGrammar.SUPER_SUFFIX));
       } else {
         // <T>id(arguments)
-        IdentifierTreeImpl identifier = new IdentifierTreeImpl(explicitGenericInvocationSuffix.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue(),
-          explicitGenericInvocationSuffix.getFirstChild(JavaTokenType.IDENTIFIER));
+        IdentifierTreeImpl identifier = new IdentifierTreeImpl(new InternalSyntaxToken(explicitGenericInvocationSuffix.getFirstChild(JavaTokenType.IDENTIFIER).getToken()));
 
         return new MethodInvocationTreeImpl(identifier, treeMaker.arguments(explicitGenericInvocationSuffix.getFirstChild(JavaGrammar.ARGUMENTS)));
       }
@@ -417,8 +416,7 @@ public class ActionGrammar {
     }
 
     public ExpressionTree thisExpression(AstNode thisToken, Optional<AstNode> arguments) {
-      IdentifierTreeImpl identifier = new IdentifierTreeImpl(thisToken.getTokenValue(),
-        thisToken);
+      IdentifierTreeImpl identifier = new IdentifierTreeImpl(new InternalSyntaxToken(thisToken.getToken()));
 
       if (arguments.isPresent()) {
         // this(arguments)
@@ -431,8 +429,7 @@ public class ActionGrammar {
     }
 
     public ExpressionTree superExpression(AstNode superToken, AstNode superSuffix) {
-      IdentifierTreeImpl identifier = new IdentifierTreeImpl(superToken.getTokenValue(),
-        superToken);
+      IdentifierTreeImpl identifier = new IdentifierTreeImpl(new InternalSyntaxToken(superToken.getToken()));
 
       return applySuperSuffix(identifier, superSuffix);
     }

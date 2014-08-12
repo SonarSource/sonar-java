@@ -32,20 +32,19 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierTree {
-  private final String name;
 
-  public IdentifierTreeImpl(String name, AstNode... children) {
-    super(JavaGrammar.IDENTIFIER_EXPRESSION);
-    this.name = Preconditions.checkNotNull(name);
+  private final InternalSyntaxToken nameToken;
 
-    for (AstNode child : children) {
-      addChild(child);
-    }
+  public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
+    super(JavaGrammar.IDENTIFIER_EXPRESSION, nameToken.getToken());
+    this.nameToken = Preconditions.checkNotNull(nameToken);
+
+    addChild(nameToken);
   }
 
-  public IdentifierTreeImpl(AstNode astNode, String name) {
+  public IdentifierTreeImpl(AstNode astNode, InternalSyntaxToken nameToken) {
     super(astNode);
-    this.name = Preconditions.checkNotNull(name);
+    this.nameToken = Preconditions.checkNotNull(nameToken);
   }
 
   @Override
@@ -55,12 +54,12 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
 
   @Override
   public SyntaxToken identifierToken() {
-    return new InternalSyntaxToken(getAstNode().getToken());
+    return nameToken;
   }
 
   @Override
   public String name() {
-    return name;
+    return identifierToken().text();
   }
 
   @Override
@@ -70,7 +69,7 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
 
   @Override
   public String toString() {
-    return name;
+    return name();
   }
 
   @Override

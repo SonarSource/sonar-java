@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
+import com.sonar.sslr.api.Token;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -56,6 +57,11 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   public JavaTree(AstNodeType type) {
     super(type, type.toString(), null);
+    this.astNode = this;
+  }
+
+  public JavaTree(AstNodeType type, Token token) {
+    super(type, type.toString(), token);
     this.astNode = this;
   }
 

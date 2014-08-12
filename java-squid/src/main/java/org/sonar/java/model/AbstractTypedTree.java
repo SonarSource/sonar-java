@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
+import com.sonar.sslr.api.Token;
 import org.sonar.java.resolve.Type;
 
 public abstract class AbstractTypedTree extends JavaTree {
@@ -37,6 +38,10 @@ public abstract class AbstractTypedTree extends JavaTree {
 
   public AbstractTypedTree(AstNodeType astNodeType) {
     super(astNodeType);
+  }
+
+  public AbstractTypedTree(AstNodeType astNodeType, Token token) {
+    super(astNodeType, token);
   }
 
   public Type getType2() {
