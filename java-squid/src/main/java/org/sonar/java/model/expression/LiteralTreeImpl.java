@@ -20,6 +20,7 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -56,13 +57,9 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
   }
 
   @Override
-  public boolean isLeaf() {
-    return true;
-  }
-
-  @Override
   public Iterator<Tree> childrenIterator() {
-    throw new UnsupportedOperationException();
+    return Iterators.<Tree>singletonIterator(
+      token);
   }
 
 }
