@@ -19,8 +19,6 @@
  */
 package org.sonar.java.ast.parser;
 
-import org.sonar.java.ast.parser.ActionGrammar.TreeFactory;
-
 import java.nio.charset.Charset;
 
 public class JavaParser {

@@ -25,9 +25,9 @@ import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.Rule;
 import org.fest.assertions.GenericAssert;
 import org.sonar.java.ast.parser.ActionGrammar;
-import org.sonar.java.ast.parser.ActionGrammar.TreeFactory;
 import org.sonar.java.ast.parser.ActionParser;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
