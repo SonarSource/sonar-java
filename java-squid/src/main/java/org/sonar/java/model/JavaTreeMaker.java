@@ -85,6 +85,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -93,6 +94,17 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class JavaTreeMaker {
+
+  // TODO To be replaced by members such as "STATEMENTS"
+  public static Kind[] getKindsAssociatedTo(Class<? extends Tree> associatedInterface) {
+    List<Kind> result = Lists.newArrayList();
+    for (Kind kind : Kind.values()) {
+      if (associatedInterface.equals(kind.getAssociatedInterface())) {
+        result.add(kind);
+      }
+    }
+    return result.toArray(new Kind[result.size()]);
+  }
 
   private final KindMaps kindMaps = new KindMaps();
 
@@ -126,13 +138,6 @@ public class JavaTreeMaker {
       result.add(qualifiedIdentifier(qualifiedIdentifierNode));
     }
     return result.build();
-  }
-
-  @VisibleForTesting
-  LiteralTree literal(AstNode astNode) {
-    checkType(astNode, JavaGrammar.LITERAL);
-    AstNode childNode = astNode.getFirstChild();
-    return new LiteralTreeImpl(childNode, kindMaps.getLiteral(childNode.getType()));
   }
 
   /*
@@ -989,9 +994,9 @@ public class JavaTreeMaker {
       return applySuperSuffix(
         identifier(firstChildNode.getFirstChild()),
         firstChildNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
-    } else if (firstChildNode.is(JavaGrammar.LITERAL)) {
+    } else if (firstChildNode.is(getKindsAssociatedTo(LiteralTree.class))) {
       // "literal"
-      return literal(firstChildNode);
+      return (LiteralTreeImpl) firstChildNode;
     } else if (firstChildNode.is(JavaGrammar.NEW_EXPRESSION)) {
       // new...
       return creator(firstChildNode.getFirstChild(JavaGrammar.CREATOR));

@@ -122,48 +122,39 @@ public class JavaTreeMakerTest {
 
   @Test
   public void literal() {
-    AstNode astNode = p.parse("class T { int m() { return 1; } }").getFirstDescendant(JavaGrammar.LITERAL);
-    LiteralTree tree = maker.literal(astNode);
+    LiteralTree tree = (LiteralTree) p.parse("class T { int m() { return 1; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.INT_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1");
 
-    astNode = p.parse("class T { long m() { return 1L; } }").getFirstDescendant(JavaGrammar.LITERAL);
-    tree = maker.literal(astNode);
+    tree = (LiteralTree) p.parse("class T { long m() { return 1L; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.LONG_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1L");
 
-    astNode = p.parse("class T { float m() { return 1F; } }").getFirstDescendant(JavaGrammar.LITERAL);
-    tree = maker.literal(astNode);
+    tree = (LiteralTree) p.parse("class T { float m() { return 1F; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.FLOAT_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1F");
 
-    astNode = p.parse("class T { double m() { return 1d; } }").getFirstDescendant(JavaGrammar.LITERAL);
-    tree = maker.literal(astNode);
+    tree = (LiteralTree) p.parse("class T { double m() { return 1d; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.DOUBLE_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1d");
 
-    astNode = p.parse("class T { boolean m() { return true; } }").getFirstDescendant(JavaGrammar.LITERAL);
-    tree = maker.literal(astNode);
+    tree = (LiteralTree) p.parse("class T { boolean m() { return true; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.BOOLEAN_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("true");
 
-    astNode = p.parse("class T { boolean m() { return false; } }").getFirstDescendant(JavaGrammar.LITERAL);
-    tree = maker.literal(astNode);
+    tree = (LiteralTree) p.parse("class T { boolean m() { return false; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.BOOLEAN_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("false");
 
-    astNode = p.parse("class T { char m() { return 'c'; } }").getFirstDescendant(JavaGrammar.LITERAL);
-    tree = maker.literal(astNode);
+    tree = (LiteralTree) p.parse("class T { char m() { return 'c'; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.CHAR_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("'c'");
 
-    astNode = p.parse("class T { String m() { return \"s\"; } }").getFirstDescendant(JavaGrammar.LITERAL);
-    tree = maker.literal(astNode);
+    tree = (LiteralTree) p.parse("class T { String m() { return \"s\"; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.STRING_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("\"s\"");
 
-    astNode = p.parse("class T { Object m() { return null; } }").getFirstDescendant(JavaGrammar.LITERAL);
-    tree = maker.literal(astNode);
+    tree = (LiteralTree) p.parse("class T { Object m() { return null; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.NULL_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("null");
   }

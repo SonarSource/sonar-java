@@ -38,7 +38,6 @@ import static org.sonar.java.ast.api.JavaKeyword.DEFAULT;
 import static org.sonar.java.ast.api.JavaKeyword.DOUBLE;
 import static org.sonar.java.ast.api.JavaKeyword.ENUM;
 import static org.sonar.java.ast.api.JavaKeyword.EXTENDS;
-import static org.sonar.java.ast.api.JavaKeyword.FALSE;
 import static org.sonar.java.ast.api.JavaKeyword.FINAL;
 import static org.sonar.java.ast.api.JavaKeyword.FINALLY;
 import static org.sonar.java.ast.api.JavaKeyword.FLOAT;
@@ -51,7 +50,6 @@ import static org.sonar.java.ast.api.JavaKeyword.INTERFACE;
 import static org.sonar.java.ast.api.JavaKeyword.LONG;
 import static org.sonar.java.ast.api.JavaKeyword.NATIVE;
 import static org.sonar.java.ast.api.JavaKeyword.NEW;
-import static org.sonar.java.ast.api.JavaKeyword.NULL;
 import static org.sonar.java.ast.api.JavaKeyword.PACKAGE;
 import static org.sonar.java.ast.api.JavaKeyword.PRIVATE;
 import static org.sonar.java.ast.api.JavaKeyword.PROTECTED;
@@ -64,7 +62,6 @@ import static org.sonar.java.ast.api.JavaKeyword.SYNCHRONIZED;
 import static org.sonar.java.ast.api.JavaKeyword.THIS;
 import static org.sonar.java.ast.api.JavaKeyword.THROWS;
 import static org.sonar.java.ast.api.JavaKeyword.TRANSIENT;
-import static org.sonar.java.ast.api.JavaKeyword.TRUE;
 import static org.sonar.java.ast.api.JavaKeyword.TRY;
 import static org.sonar.java.ast.api.JavaKeyword.VOID;
 import static org.sonar.java.ast.api.JavaKeyword.VOLATILE;
@@ -481,17 +478,6 @@ public enum JavaGrammar implements GrammarRuleKey {
         b.nextNot(KEYWORD)),
       javaIdentifier(b),
       SPACING);
-
-    b.rule(LITERAL).is(b.firstOf(
-      TRUE,
-      FALSE,
-      NULL,
-      CHARACTER_LITERAL,
-      JavaTokenType.LITERAL,
-      FLOAT_LITERAL,
-      DOUBLE_LITERAL,
-      LONG_LITERAL,
-      INTEGER_LITERAL));
   }
 
   private static Object characterLiteral(LexerlessGrammarBuilder b) {

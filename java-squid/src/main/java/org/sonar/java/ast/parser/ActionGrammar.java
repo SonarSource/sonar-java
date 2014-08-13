@@ -32,6 +32,7 @@ import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
+import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
@@ -79,6 +80,24 @@ public class ActionGrammar {
   public ModifiersTreeImpl DSL_MODIFIERS() {
     return b.<ModifiersTreeImpl>nonterminal(JavaGrammar.MODIFIERS)
       .is(f.modifiers(b.zeroOrMore(b.invokeRule(JavaGrammar.MODIFIER))));
+  }
+
+  // Literals
+
+  public ExpressionTree LITERAL() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.LITERAL)
+      .is(
+        f.literal(
+          b.firstOf(
+            b.invokeRule(JavaKeyword.TRUE),
+            b.invokeRule(JavaKeyword.FALSE),
+            b.invokeRule(JavaKeyword.NULL),
+            b.invokeRule(JavaTokenType.CHARACTER_LITERAL),
+            b.invokeRule(JavaTokenType.LITERAL),
+            b.invokeRule(JavaTokenType.FLOAT_LITERAL),
+            b.invokeRule(JavaTokenType.DOUBLE_LITERAL),
+            b.invokeRule(JavaTokenType.LONG_LITERAL),
+            b.invokeRule(JavaTokenType.INTEGER_LITERAL))));
   }
 
   // Statements
@@ -242,6 +261,13 @@ public class ActionGrammar {
       }
 
       return new ModifiersTreeImpl(modifierNodes.get(), modifiers.build(), annotations.build());
+    }
+
+    // Literals
+
+    public ExpressionTree literal(AstNode astNode) {
+      return new LiteralTreeImpl(kindMaps.getLiteral(astNode.getType()),
+        new InternalSyntaxToken(astNode.getToken()));
     }
 
     // Statements

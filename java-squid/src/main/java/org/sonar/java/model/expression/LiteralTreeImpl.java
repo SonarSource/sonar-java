@@ -20,8 +20,8 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -29,11 +29,15 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
-  private final Kind kind;
 
-  public LiteralTreeImpl(AstNode astNode, Kind kind) {
-    super(astNode);
+  private final Kind kind;
+  private final InternalSyntaxToken token;
+
+  public LiteralTreeImpl(Kind kind, InternalSyntaxToken token) {
+    super(kind, token.getToken());
     this.kind = Preconditions.checkNotNull(kind);
+    this.token = token;
+    addChild(token);
   }
 
   @Override
@@ -43,7 +47,7 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
 
   @Override
   public String value() {
-    return getAstNode().getTokenOriginalValue();
+    return token.text();
   }
 
   @Override
@@ -60,4 +64,5 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
   public Iterator<Tree> childrenIterator() {
     throw new UnsupportedOperationException();
   }
+
 }

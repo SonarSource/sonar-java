@@ -20,18 +20,18 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "StringEqualityComparisonCheck",
   priority = Priority.CRITICAL,
   status = "DEPRECATED",
-  tags={"bug"})
+  tags = {"bug"})
 public class StringEqualityComparisonCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
@@ -43,18 +43,17 @@ public class StringEqualityComparisonCheck extends SquidCheck<LexerlessGrammar> 
   public void visitNode(AstNode node) {
     if (hasStringLiteralOperand(node)) {
       getContext().createLineViolation(
-          this,
-          "Replace \"==\" and \"!=\" by \"equals()\" and \"!equals()\" respectively to compare these strings.",
-          node);
+        this,
+        "Replace \"==\" and \"!=\" by \"equals()\" and \"!equals()\" respectively to compare these strings.",
+        node);
     }
   }
 
   private static boolean hasStringLiteralOperand(AstNode node) {
     return node.select()
-        .children(JavaGrammar.PRIMARY)
-        .children(JavaGrammar.LITERAL)
-        .descendants(JavaTokenType.LITERAL)
-        .isNotEmpty();
+      .children(JavaGrammar.PRIMARY)
+      .children(Kind.STRING_LITERAL)
+      .isNotEmpty();
   }
 
 }

@@ -22,11 +22,11 @@ package org.sonar.java.ast.visitors;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
-import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.List;
 
@@ -76,7 +76,7 @@ public class SuppressWarningsAnnotationUtils {
 
     String name = getAnnotationName(annotationNode);
     if (SUPPRESS_WARNINGS_ANNOTATION_NAME.equals(name) || SUPPRESS_WARNINGS_ANNOTATION_FQ_NAME.equals(name)) {
-      for (AstNode valueNode : annotationNode.getDescendants(JavaTokenType.LITERAL)) {
+      for (AstNode valueNode : annotationNode.getDescendants(Kind.STRING_LITERAL)) {
         if (VALUE.equals(valueNode.getTokenValue())) {
           return true;
         }

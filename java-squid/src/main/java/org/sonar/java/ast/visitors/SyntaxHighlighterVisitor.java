@@ -31,8 +31,8 @@ import com.sonar.sslr.api.Trivia;
 import org.sonar.api.source.Highlightable;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -56,12 +56,12 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
     for (AstNodeType type : JavaKeyword.values()) {
       typesBuilder.put(type, "k");
     }
-    typesBuilder.put(JavaTokenType.CHARACTER_LITERAL, "s");
-    typesBuilder.put(JavaTokenType.LITERAL, "s");
-    typesBuilder.put(JavaTokenType.FLOAT_LITERAL, "c");
-    typesBuilder.put(JavaTokenType.DOUBLE_LITERAL, "c");
-    typesBuilder.put(JavaTokenType.LONG_LITERAL, "c");
-    typesBuilder.put(JavaTokenType.INTEGER_LITERAL, "c");
+    typesBuilder.put(Kind.STRING_LITERAL, "s");
+    typesBuilder.put(Kind.CHAR_LITERAL, "s");
+    typesBuilder.put(Kind.FLOAT_LITERAL, "c");
+    typesBuilder.put(Kind.DOUBLE_LITERAL, "c");
+    typesBuilder.put(Kind.LONG_LITERAL, "c");
+    typesBuilder.put(Kind.INT_LITERAL, "c");
     typesBuilder.put(JavaGrammar.ANNOTATION, "a");
     types = typesBuilder.build();
   }
@@ -91,7 +91,7 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
     }
     lineStart.add(0);
     for (int i = 0; i < content.length(); i++) {
-      if (content.charAt(i) == '\n' || (content.charAt(i) == '\r' && i + 1 < content.length() && content.charAt(i + 1) != '\n')) {
+      if (content.charAt(i) == '\n' || content.charAt(i) == '\r' && i + 1 < content.length() && content.charAt(i + 1) != '\n') {
         lineStart.add(i + 1);
       }
     }
