@@ -19,47 +19,42 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.List;
+
 @Rule(
-  key = EqualsOverridenWithHashCodeCheck.KEY,
+  key = "S1206",
   priority = Priority.BLOCKER,
   tags={"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
-public class EqualsOverridenWithHashCodeCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String KEY = "S1206";
-  private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
+public class EqualsOverridenWithHashCodeCheck extends SubscriptionBaseVisitor {
 
   private static final String HASHCODE = "hashCode";
   private static final String EQUALS = "equals";
 
-  private JavaFileScannerContext context;
-
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
-
   @Override
-  public void visitClass(ClassTree tree) {
-    super.visitClass(tree);
-
-    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE)) {
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    if (classTree.is(Tree.Kind.CLASS)) {
       MethodTree equalsMethod = null;
       MethodTree hashCodeMethod = null;
-
-      for (Tree memberTree : tree.members()) {
+      for (Tree memberTree : classTree.members()) {
         if (memberTree.is(Tree.Kind.METHOD)) {
           MethodTree methodTree = (MethodTree) memberTree;
           if (isEquals(methodTree)) {
@@ -71,37 +66,45 @@ public class EqualsOverridenWithHashCodeCheck extends BaseTreeVisitor implements
       }
 
       if (equalsMethod != null && hashCodeMethod == null) {
-        context.addIssue(equalsMethod, RULE_KEY, getMessage(classTreeType(tree), EQUALS, HASHCODE));
+        addIssue(equalsMethod, getMessage(EQUALS, HASHCODE));
       } else if (hashCodeMethod != null && equalsMethod == null) {
-        context.addIssue(hashCodeMethod, RULE_KEY, getMessage(classTreeType(tree), HASHCODE, EQUALS));
+        addIssue(hashCodeMethod, getMessage(HASHCODE, EQUALS));
       }
     }
   }
 
-  private static boolean isEquals(MethodTree methodTree) {
-    return EQUALS.equals(methodTree.simpleName().name()) && methodTree.parameters().size() == 1;
+  private boolean isEquals(MethodTree methodTree) {
+    return EQUALS.equals(methodTree.simpleName().name()) && hasObjectParam(methodTree) && returnsType(methodTree, Type.BOOLEAN);
   }
 
-  private static boolean isHashCode(MethodTree methodTree) {
-    return HASHCODE.equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty();
+  private boolean isHashCode(MethodTree methodTree) {
+    return HASHCODE.equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty() && returnsType(methodTree, Type.INT);
   }
 
-  private static String classTreeType(ClassTree tree) {
-    String type;
 
-    if (tree.is(Tree.Kind.CLASS)) {
-      type = "class";
-    } else if (tree.is(Tree.Kind.INTERFACE)) {
-      type = "interface";
-    } else {
-      throw new IllegalStateException();
+  private boolean hasObjectParam(MethodTree tree) {
+    if (tree.parameters().size() == 1) {
+      Tree type = tree.parameters().get(0).type();
+      //FIXME : should rely on type symbol when problem of expression visitor is solved.
+      String name = "";
+      if(type.is(Tree.Kind.MEMBER_SELECT)){
+        name = ((MemberSelectExpressionTree) type).identifier().name();
+      }else if(type.is(Tree.Kind.IDENTIFIER)) {
+        name = ((IdentifierTree) type).name();
+      }
+      return name.endsWith("Object");
     }
-
-    return type;
+    return false;
   }
 
-  private static String getMessage(String type, String overridenMethod, String methodToOverride) {
-    return "This " + type + " overrides \"" + overridenMethod + "()\" and should therefore also override \"" + methodToOverride + "()\".";
+  private boolean returnsType(MethodTree tree, int typeTag) {
+    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
+    return methodSymbol != null && methodSymbol.getReturnType().getType().isTagged(typeTag);
+  }
+
+
+  private String getMessage(String overridenMethod, String methodToOverride) {
+    return "This class overrides \"" + overridenMethod + "()\" and should therefore also override \"" + methodToOverride + "()\".";
   }
 
 }

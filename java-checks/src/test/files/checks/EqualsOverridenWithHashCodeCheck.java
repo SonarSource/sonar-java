@@ -36,10 +36,10 @@ enum G {
 }
 
 class H {
-  public boolean equals(Object o) {
+  public boolean equals(Object o) { // Noncompliant
   }
 
-  public boolean equals(A o) { // Noncompliant
+  public boolean equals(A o) {
   }
 }
 
@@ -51,9 +51,14 @@ class I {
 }
 
 interface J {
-  boolean equals(Object o); // Noncompliant
+  boolean equals(Object o); // Compliant
 }
 
 @interface K {
   int hashCode(); // Compliant
+}
+
+class L {
+  public boolean equals(java.lang.Object o) { // Noncompliant
+  }
 }

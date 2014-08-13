@@ -42,9 +42,10 @@ public class EqualsOverridenWithHashCodeCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(5).withMessage("This class overrides \"equals()\" and should therefore also override \"hashCode()\".")
       .next().atLine(10).withMessage("This class overrides \"hashCode()\" and should therefore also override \"equals()\".")
-      .next().atLine(42)
+      .next().atLine(39)
       .next().atLine(48)
-      .next().atLine(54).withMessage("This interface overrides \"equals()\" and should therefore also override \"hashCode()\".");
+      .next().atLine(62)
+    ;
   }
 
 }
