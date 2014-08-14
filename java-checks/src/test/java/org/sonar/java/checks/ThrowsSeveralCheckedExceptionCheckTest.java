@@ -19,10 +19,15 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
+import com.google.common.collect.Lists;
 import org.junit.Rule;
 import org.junit.Test;
+import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
+
+import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -35,36 +40,35 @@ public class ThrowsSeveralCheckedExceptionCheckTest {
 
   @Test
   public void test() {
-    SourceFile file = BytecodeFixture.scan("ThrowsSeveralCheckedExceptionCheck", check);
+    File bytecodeDir = new File("target/test-classes");
+    assertThat(bytecodeDir).exists();
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/checks/targets/ThrowsSeveralCheckedExceptionCheck.java"), new VisitorsBridge(check, Lists.newArrayList(bytecodeDir)));
     checkMessagesVerifier
       .verify(file.getCheckMessages())
 
-      .next()
-      .atLine(51)
+      .next().atLine(53)
       .withMessage(
-          "Refactor this method to throw at most one checked exception instead of: java.io.IOException, org.sonar.java.checks.targets.ThrowsSeveralCheckedExceptionCheck$MyException")
+          "Refactor this method to throw at most one checked exception instead of: java.io.IOException, ThrowsSeveralCheckedExceptionCheck.MyException")
 
-      .next()
-      .atLine(54)
+      .next().atLine(56)
       .withMessage("Refactor this method to throw at most one checked exception instead of: java.io.IOException, java.io.IOException, java.sql.SQLException")
-
-      .next()
-      .atLine(74)
-
-      .next()
-      .atLine(92)
-
-      .next()
-      .atLine(100)
-
-      .next()
-      .atLine(105);
-
-  }
-
-  @Test
-  public void test_toString() {
-    assertThat(check.toString()).isEqualTo("S1160 rule");
+      .next().atLine(76)
+      .next().atLine(94)
+      .next().atLine(102)
+      .next().atLine(107)
+      .next().atLine(116)
+      .next().atLine(117)
+      .next().atLine(118)
+      .next().atLine(121)
+      .next().atLine(124)
+      .next().atLine(127)
+      .next().atLine(134)
+      .next().atLine(140)
+      .next().atLine(147)
+      .next().atLine(150)
+      .next().atLine(153)
+      .next().atLine(157)
+    ;
   }
 
 }

@@ -21,100 +21,194 @@ package org.sonar.java.checks;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.bytecode.asm.AsmClass;
-import org.sonar.java.bytecode.asm.AsmMethod;
-import org.sonar.java.bytecode.visitor.BytecodeVisitor;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.api.SourceMethod;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-@Rule(key = ThrowsSeveralCheckedExceptionCheck.RULE_KEY, priority = Priority.MAJOR, tags={"error-handling"})
+@Rule(key = "S1160", priority = Priority.MAJOR, tags = {"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ThrowsSeveralCheckedExceptionCheck extends BytecodeVisitor {
-
-  public static final String RULE_KEY = "S1160";
-  private AsmClass asmClass;
+public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void visitClass(AsmClass asmClass) {
-    this.asmClass = asmClass;
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitMethod(AsmMethod asmMethod) {
-    if (asmMethod.isPublic() && !asmMethod.isSynthetic() && !isOverriden(asmMethod)) {
-      List<String> thrownCheckedExceptions = getThrownCheckedExceptions(asmMethod);
-
-      if (thrownCheckedExceptions.size() > 1) {
-        CheckMessage message = new CheckMessage(
-          this,
-          "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
-
-        SourceMethod sourceMethod = getSourceMethod(asmMethod);
-        if (sourceMethod != null) {
-          message.setLine(sourceMethod.getStartAtLine());
-        }
-        SourceFile file = getSourceFile(asmClass);
-        file.log(message);
+  public void visitNode(Tree tree) {
+    MethodTree methodTree = (MethodTree) tree;
+    if (hasSemantic() && isPublic(methodTree)) {
+      List<String> thrownCheckedExceptions = getThrownCheckedExceptions(methodTree);
+      if (thrownCheckedExceptions.size() > 1 && isNotOverriden(methodTree)) {
+        addIssue(methodTree, "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
       }
     }
   }
 
-  private List<String> getThrownCheckedExceptions(AsmMethod asmMethod) {
-    List<AsmClass> thrownClasses = asmMethod.getThrows();
+  private boolean isNotOverriden(MethodTree methodTree) {
+    //Static method are necessarily not overriden, no need to check.
+    return methodTree.modifiers().modifiers().contains(Modifier.STATIC) || BooleanUtils.isFalse(isOverriden(methodTree));
+  }
 
-    if (thrownClasses.size() > 1) {
-      ImmutableList.Builder<String> builder = ImmutableList.builder();
-
-      for (AsmClass thrownClass : thrownClasses) {
-        if (!isSubClassOfRuntimeException(thrownClass)) {
-          builder.add(thrownClass.getDisplayName());
-        }
-      }
-
-      return builder.build();
-    } else {
-      return Collections.emptyList();
+  /**
+   * Check if a methodTree is overriden.
+   *
+   * @param methodTree the methodTree to check.
+   * @return true if overriden, null if some super types are unknown.
+   */
+  private Boolean isOverriden(MethodTree methodTree) {
+    if (isAnnotatedOverride(methodTree)) {
+      return true;
     }
-  }
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) getSemanticModel().getSymbol(methodTree);
 
-  private static boolean isOverriden(AsmMethod method) {
-    return isOverridenFromClass(method) ||
-      isOverridenFromInterface(method);
-  }
-
-  private static boolean isOverridenFromClass(AsmMethod method) {
-    AsmClass superClass = method.getParent().getSuperClass();
-    return superClass != null && superClass.getMethod(method.getKey()) != null;
-  }
-
-  private static boolean isOverridenFromInterface(AsmMethod method) {
-    for (AsmClass implementedInterface : method.getParent().getImplementedInterfaces()) {
-      if (implementedInterface.getMethod(method.getKey()) != null) {
+    Boolean result = false;
+    Symbol.TypeSymbol enclosingClass = methodSymbol.enclosingClass();
+    if (StringUtils.isEmpty(enclosingClass.getName())) {
+      //FIXME : SONARJAVA-645 : exclude methods within anonymous classes
+      return null;
+    }
+    for (Type.ClassType type : superTypes(enclosingClass)) {
+      Boolean overrideFromType = overrideMethodFromSymbol(methodSymbol, type);
+      if (overrideFromType == null) {
+        result = null;
+      } else if (BooleanUtils.isTrue(overrideFromType)) {
         return true;
+      }
+    }
+    return result;
+  }
+
+  private Set<Type.ClassType> superTypes(Symbol.TypeSymbol enclosingClass) {
+    ImmutableSet.Builder<Type.ClassType> types = ImmutableSet.builder();
+    Type.ClassType superClassType = (Type.ClassType) enclosingClass.getSuperclass();
+    types.addAll(interfacesOfType(enclosingClass));
+    while (superClassType != null) {
+      types.add(superClassType);
+      Symbol.TypeSymbol superClassSymbol = superClassType.getSymbol();
+      types.addAll(interfacesOfType(superClassSymbol));
+      superClassType = (Type.ClassType) superClassSymbol.getSuperclass();
+    }
+    return types.build();
+  }
+
+  private Set<Type.ClassType> interfacesOfType(Symbol.TypeSymbol typeSymbol) {
+    ImmutableSet.Builder<Type.ClassType> builder = ImmutableSet.builder();
+    for (Type type : typeSymbol.getInterfaces()) {
+      Type.ClassType classType = (Type.ClassType) type;
+      builder.add(classType);
+      builder.addAll(interfacesOfType(classType.getSymbol()));
+    }
+    return builder.build();
+  }
+
+  private Boolean overrideMethodFromSymbol(Symbol.MethodSymbol methodSymbol, Type.ClassType classType) {
+    Boolean result = false;
+    if (classType.isTagged(Type.UNKNOWN)) {
+      return null;
+    }
+    List<Symbol> symbols = classType.getSymbol().members().lookup(methodSymbol.getName());
+    for (Symbol symbol : symbols) {
+      if (symbol.isKind(Symbol.MTH) && isOverridableBy((Symbol.MethodSymbol) symbol, methodSymbol)) {
+        Boolean isOverriding = isOverriding(methodSymbol, (Symbol.MethodSymbol) symbol);
+        if (isOverriding == null) {
+          result = null;
+        } else if (BooleanUtils.isTrue(isOverriding)) {
+          return true;
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Methods have the same name and overidee is in a supertype of the enclosing class of overrider.
+   */
+  private boolean isOverridableBy(Symbol.MethodSymbol overridee, Symbol.MethodSymbol overrider) {
+    if (overridee.isPackageVisibility()) {
+      return overridee.outermostClass().owner().equals(overrider.outermostClass().owner());
+    }
+    return !overridee.isPrivate();
+  }
+
+  private Boolean isOverriding(Symbol.MethodSymbol overrider, Symbol.MethodSymbol overridee) {
+    //same number and type of formal parameters
+    if (overrider.getParametersTypes().size() != overridee.getParametersTypes().size()) {
+      return false;
+    }
+    for (int i = 0; i < overrider.getParametersTypes().size(); i++) {
+      Type paramOverrider = overrider.getParametersTypes().get(i);
+      if (paramOverrider.isTagged(Type.UNKNOWN)) {
+        //FIXME : complete symbol table should not have unknown types.
+        return null;
+      }
+      if (!paramOverrider.equals(overridee.getParametersTypes().get(i))) {
+        return false;
+      }
+    }
+    //we assume code is compiling so no need to check return type at this point.
+    return true;
+  }
+
+  private boolean isAnnotatedOverride(MethodTree methodTree) {
+    for (AnnotationTree annotationTree : methodTree.modifiers().annotations()) {
+      if (annotationTree.annotationType().is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifier = (IdentifierTree) annotationTree.annotationType();
+        if (Override.class.getSimpleName().equals(identifier.name())) {
+          return true;
+        }
       }
     }
     return false;
   }
 
-  private static boolean isSubClassOfRuntimeException(AsmClass thrownClass) {
-    for (AsmClass current = thrownClass; current != null; current = current.getSuperClass()) {
-      if ("java/lang/RuntimeException".equals(current.getInternalName())) {
+  private boolean isPublic(MethodTree methodTree) {
+    return ((MethodTreeImpl) methodTree).getSymbol().isPublic();
+  }
+
+  private List<String> getThrownCheckedExceptions(MethodTree methodTree) {
+    List<Symbol.TypeSymbol> thrownClasses = ((MethodTreeImpl) methodTree).getSymbol().getThrownTypes();
+    ImmutableList.Builder<String> builder = ImmutableList.builder();
+    for (Symbol.TypeSymbol thrownClass : thrownClasses) {
+      if (!isSubClassOfRuntimeException(thrownClass)) {
+        builder.add(thrownClass.owner().getName() + "." + thrownClass.getName());
+      }
+    }
+    return builder.build();
+  }
+
+  private static boolean isSubClassOfRuntimeException(Symbol.TypeSymbol thrownClass) {
+    Symbol.TypeSymbol typeSymbol = thrownClass;
+    while (typeSymbol != null) {
+      if (isRuntimeException(typeSymbol)) {
         return true;
+      }
+      Type superType = typeSymbol.getSuperclass();
+      if (superType == null) {
+        typeSymbol = null;
+      } else {
+        typeSymbol = ((Type.ClassType) superType).getSymbol();
       }
     }
     return false;
   }
 
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
+  private static boolean isRuntimeException(Symbol.TypeSymbol thrownClass) {
+    return "RuntimeException".equals(thrownClass.getName()) && "java.lang".equals(thrownClass.owner().getName());
   }
 
 }

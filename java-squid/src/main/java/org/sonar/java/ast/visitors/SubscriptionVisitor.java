@@ -22,6 +22,7 @@ package org.sonar.java.ast.visitors;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -39,6 +40,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner, CodeVisito
 
   protected JavaFileScannerContext context;
   private Collection<Tree.Kind> nodesToVisit;
+  private SemanticModel semanticModel;
 
   public abstract List<Tree.Kind> nodesToVisit();
 
@@ -61,6 +63,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner, CodeVisito
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
+    semanticModel = (SemanticModel) context.getSemanticModel();
     scanTree(context.getTree());
     visitTokens(context.getTree());
   }
@@ -111,5 +114,13 @@ public abstract class SubscriptionVisitor implements JavaFileScanner, CodeVisito
         }
       }
     }
+  }
+
+  public SemanticModel getSemanticModel() {
+    return semanticModel;
+  }
+
+  public boolean hasSemantic(){
+    return semanticModel != null;
   }
 }

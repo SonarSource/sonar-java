@@ -19,6 +19,8 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.base.Preconditions;
+
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -209,6 +211,7 @@ public class Symbol {
     public MethodSymbol(int flags, String name, Type type, Symbol owner) {
       super(MTH, flags, name, owner);
       super.type = type;
+      this.type = ((Type.MethodType)type).resultType.symbol;
     }
 
     public MethodSymbol(int flags, String name, Symbol owner) {
@@ -221,6 +224,15 @@ public class Symbol {
 
     public List<TypeSymbol> getThrownTypes() {
       return thrown;
+    }
+
+    public List<Type> getParametersTypes() {
+      Preconditions.checkState(super.type != null);
+      return ((Type.MethodType) super.type).argTypes;
+    }
+
+    public void setMethodType(Type.MethodType methodType) {
+      super.type = methodType;
     }
 
   }

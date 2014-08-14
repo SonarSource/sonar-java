@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -136,9 +138,11 @@ public class SecondPass implements Symbol.Completer {
     Resolve.Env env = semanticModel.getEnv(symbol);
 
     ImmutableList.Builder<Symbol.TypeSymbol> thrown = ImmutableList.builder();
+    ImmutableList.Builder<Type> thrownTypes = ImmutableList.builder();
     for (ExpressionTree throwClause : methodTree.throwsClauses()) {
       Type thrownType = resolveType(env, throwClause);
       if (thrownType != null) {
+        thrownTypes.add(thrownType);
         ((AbstractTypedTree) throwClause).setType(thrownType);
         thrown.add(((Type.ClassType) thrownType).symbol);
       }
@@ -149,10 +153,22 @@ public class SecondPass implements Symbol.Completer {
       // no return type for constructor
       return;
     }
-    Type type = resolveType(env, methodTree.returnType());
-    if (type != null) {
-      symbol.type = type.symbol;
+    Type returnType = resolveType(env, methodTree.returnType());
+    if (returnType != null) {
+      symbol.type = returnType.symbol;
     }
+    List<Type> argTypes = Lists.newArrayList();
+    //Guarantee order of params.
+    for (VariableTree variableTree : methodTree.parameters()) {
+      for (Symbol param : symbol.parameters.scopeSymbols()) {
+        if (variableTree.simpleName().name().equals(param.getName())) {
+          param.complete();
+          argTypes.add(param.getType());
+        }
+      }
+    }
+    Type.MethodType methodType = new Type.MethodType(argTypes, returnType, thrownTypes.build() , (Symbol.TypeSymbol) symbol.owner);
+    symbol.setMethodType(methodType);
   }
 
   private void complete(Symbol.VariableSymbol symbol) {

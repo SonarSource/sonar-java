@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks.targets;
 
+import org.sonar.java.checks.targets.subpackage.ThrowSeveralCheckedExceptionCheckSubpackage;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -108,4 +110,52 @@ class BaseChildClass<T> extends BaseClass<T>{}
 class Synth extends BaseChildClass<Integer> {
   @Override
   public Integer meth() throws IOException { return 1;}
+}
+
+class J {
+  public void method(int a, String b) throws IOException, SQLException{}
+  public J method2(int a, String b) throws IOException, SQLException{return null;}
+  public String method3(int a, String b) throws IOException, SQLException{return null;}
+}
+class K extends J {
+  public void method(String a, String b) throws IOException, SQLException{}
+  public void method(int a, String b) throws IOException, SQLException{}
+  public K method2(int a, String b) throws IOException, SQLException{return null;}
+  public String method3(int a) throws IOException, SQLException{return null;}
+}
+interface L {
+  void method(String a, String b) throws IOException, SQLException;
+}
+interface M extends L {}
+class O implements M {
+  public void method(String a, String b) throws IOException, SQLException {}
+}
+class P {
+  public void method(Q a, String b) throws IOException, SQLException {}
+  private void privateMethod(Q a, String b) throws IOException, SQLException {}
+  class Q{}
+}
+class R extends P {
+  public void method(Q a, String b) throws IOException, SQLException {}
+  public static void foo(Q a, String b) throws IOException, SQLException {
+    P p = new P() { //Ignore anonymous classes: false negative SONARJAVA-645
+      public void method(Q a, String b) throws IOException, SQLException {}
+    };
+  }
+}
+class S<T> {
+  public T method(T a) throws IOException, SQLException { return null;}
+}
+class U extends S<String> {
+  public String method(String a) throws IOException, SQLException { return null; } //false positive
+}
+class V extends P {
+  public void privateMethod(Q a, String b) throws IOException, SQLException {} //Non-Compliant
+}
+class W extends ThrowSeveralCheckedExceptionCheckSubpackage {
+  String bar(int j) throws IOException, SQLException {return null;}
+  public String foo(int a) throws IOException, SQLException {return null;} //Non-Compliant : different package : does not overrides
+}
+class Y extends W {
+  public String bar(int j) throws IOException, SQLException  {return null;}//Compliant : same package : overrides
 }
