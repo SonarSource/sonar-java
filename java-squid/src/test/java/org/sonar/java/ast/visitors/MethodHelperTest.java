@@ -154,7 +154,7 @@ public class MethodHelperTest {
   }
 
   private static AstNode parse(String source) {
-    return JavaParser.createParser(Charsets.UTF_8).parse(source);
+    return JavaParser.createParser(Charsets.UTF_8, true).parse(source);
   }
 
 }

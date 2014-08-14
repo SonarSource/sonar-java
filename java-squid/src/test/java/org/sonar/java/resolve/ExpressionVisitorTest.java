@@ -389,7 +389,7 @@ public class ExpressionVisitorTest {
     ExpressionVisitor visitor = new ExpressionVisitor(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter));
 
     String p = "class Test { void wrapperMethod() { " + input + "; } }";
-    AstNode node = JavaParser.createParser(Charsets.UTF_8).parse(p);
+    AstNode node = JavaParser.createParser(Charsets.UTF_8, true).parse(p);
     CompilationUnitTree tree = new JavaTreeMaker().compilationUnit(node);
     tree.accept(visitor);
 

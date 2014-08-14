@@ -21,9 +21,9 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import org.sonar.java.ast.parser.ActionParser;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTreeMaker;
 
@@ -44,7 +44,7 @@ public class SafetyNetTest {
 
   @Test
   public void test() {
-    Parser parser = JavaParser.createParser(Charsets.UTF_8);
+    ActionParser parser = JavaParser.createParser(Charsets.UTF_8, true);
     for (String dir : dirs) {
       for (File file : FileUtils.listFiles(new File(dir), new String[] {"java"}, true)) {
         try {

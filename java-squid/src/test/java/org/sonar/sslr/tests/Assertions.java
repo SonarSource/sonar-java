@@ -43,7 +43,8 @@ public class Assertions {
       JavaGrammar.createGrammarBuilder(),
       ActionGrammar.class,
       new TreeFactory(),
-      rule));
+      rule,
+      true));
   }
 
   public static ParserAssert assertThat(LexerlessGrammarBuilder b, GrammarRuleKey rule) {
@@ -52,7 +53,8 @@ public class Assertions {
       b,
       ActionGrammar.class,
       new TreeFactory(),
-      rule));
+      rule,
+      true));
   }
 
   public static class ParserAssert extends GenericAssert<ParserAssert, ActionParser> {

@@ -82,7 +82,7 @@ public final class JavaAstScanner {
   }
 
   public static AstScanner create(JavaConfiguration conf, SquidAstVisitor<LexerlessGrammar>... visitors) {
-    final Parser parser = JavaParser.createParser(conf.getCharset());
+    final Parser parser = JavaParser.createParser(conf.getCharset(), conf.getVerifyAssertions());
 
     AstScanner builder = new AstScanner(parser);
 

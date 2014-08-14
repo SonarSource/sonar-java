@@ -38,6 +38,9 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.sonar.java.ast.parser.ActionGrammar.GrammarBuilder;
 import org.sonar.java.ast.parser.ActionGrammar.NonterminalBuilder;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.internal.vm.CompilationHandler;
@@ -59,6 +62,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -75,7 +79,9 @@ public class ActionParser extends Parser {
 
   private AstNode rootNode;
 
-  public ActionParser(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object action, GrammarRuleKey rootRule) {
+  private final boolean verifyAssertions;
+
+  public ActionParser(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object action, GrammarRuleKey rootRule, boolean verifyAssertions) {
     super(null);
 
     List<Field> fields = Lists.newArrayList();
@@ -129,6 +135,8 @@ public class ActionParser extends Parser {
 
     b.setRootRule(rootRule);
     this.parser = new ParserAdapter<LexerlessGrammar>(charset, b.build());
+
+    this.verifyAssertions = verifyAssertions;
   }
 
   @Override
@@ -139,21 +147,65 @@ public class ActionParser extends Parser {
   @Override
   public AstNode parse(File file) {
     AstNode astNode = parser.parse(file);
-
-    rootNode = astNode;
-    applyActions(astNode);
-
+    parse(astNode);
     return rootNode;
   }
 
   @Override
   public AstNode parse(String source) {
     AstNode astNode = parser.parse(source);
+    parse(astNode);
+    return rootNode;
+  }
 
+  private void parse(AstNode astNode) {
     rootNode = astNode;
     applyActions(astNode);
 
-    return rootNode;
+    if (verifyAssertions) {
+      verifySemanticModelInvariant(rootNode);
+    }
+  }
+
+  private void verifySemanticModelInvariant(AstNode astNode) {
+    if (!astNode.is(JavaGrammar.COMPILATION_UNIT)) {
+      return;
+    }
+
+    Set<AstNode> nodesSet = Sets.newHashSet(getDescendants(rootNode));
+    nodesSet.add(rootNode);
+    JavaTree compilationUnitTree = (JavaTree) new JavaTreeMaker().compilationUnit(rootNode);
+
+    for (JavaTree tree : getDescendants(compilationUnitTree)) {
+      for (AstNode node = tree.getAstNode(); node != null; node = node.getParent()) {
+        Preconditions.checkState(nodesSet.contains(node),
+          "The following associated AstNode is not present in tree: " + node
+            + (node.hasToken() ? " at line " + node.getTokenLine() : " [no line]")
+            + "\nReferenced from: " + tree.getClass().getSimpleName()
+            + "\n" + tree
+            + "\n" + PrinterVisitor.print(tree));
+      }
+    }
+  }
+
+  private static List<JavaTree> getDescendants(JavaTree tree) {
+    List<JavaTree> result = Lists.newArrayList();
+    addDescendants(result, tree);
+    return result;
+  }
+
+  private static void addDescendants(List<JavaTree> result, JavaTree tree) {
+    result.add(tree);
+    if (!tree.isLeaf()) {
+      Iterator<Tree> it = tree.childrenIterator();
+      while (it.hasNext()) {
+        JavaTree child = (JavaTree) it.next();
+        if (child != null) {
+          // TODO It's crappy, but classes such as ClassTreeImpl can return null in their children iterator
+          addDescendants(result, child);
+        }
+      }
+    }
   }
 
   private void applyActions(AstNode astNode) {
@@ -190,7 +242,40 @@ public class ActionParser extends Parser {
     }
   }
 
+  private static void verifyNoInjectionFromJavaTreeMaker(AstNode n) {
+    if (n instanceof JavaTree) {
+      JavaTree stNode = (JavaTree) n;
+      Preconditions.checkArgument(stNode.getAstNode() == n, "Unexpected injection of subtree from JavaTree: " + n
+        + "\n" + AstXmlPrinter.print(n));
+    }
+  }
+
+  private void verifyNoInjectionOfSeveralNewStronglyTypedNodes(AstNode o, AstNode n) {
+    Set<AstNode> stNodes = Sets.newHashSet();
+    for (AstNode astNode : getDescendants(o)) {
+      if (astNode instanceof JavaTree) {
+        stNodes.add(astNode);
+      }
+    }
+
+    Set<AstNode> newSets = Sets.newHashSet();
+    for (AstNode astNode : getDescendants(n)) {
+      if (astNode instanceof JavaTree) {
+        newSets.add(astNode);
+        Preconditions.checkArgument(
+          stNodes.contains(astNode),
+          "Injection of children strongly typed nodes is not supported: " + astNode.toString() + ", with parent " + astNode.getParent()
+            + "\n" + AstXmlPrinter.print(astNode));
+      }
+    }
+  }
+
   private void replaceAstNode(AstNode o, AstNode n) {
+    if (verifyAssertions) {
+      verifyNoInjectionFromJavaTreeMaker(n);
+      verifyNoInjectionOfSeveralNewStronglyTypedNodes(o, n);
+    }
+
     for (Field field : fields) {
       try {
         field.set(n, field.get(o));
@@ -211,6 +296,21 @@ public class ActionParser extends Parser {
       }
     } else {
       rootNode = n;
+    }
+  }
+
+  private static List<AstNode> getDescendants(AstNode astNode) {
+    List<AstNode> result = Lists.newArrayList();
+    for (AstNode child : astNode.getChildren()) {
+      addDescendants(result, child);
+    }
+    return result;
+  }
+
+  private static void addDescendants(List<AstNode> result, AstNode astNode) {
+    result.add(astNode);
+    for (AstNode child : astNode.getChildren()) {
+      addDescendants(result, child);
     }
   }
 

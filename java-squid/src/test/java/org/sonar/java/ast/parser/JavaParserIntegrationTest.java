@@ -35,7 +35,7 @@ import java.util.Collection;
 @RunWith(value = Parameterized.class)
 public class JavaParserIntegrationTest {
 
-  private final Parser parser = JavaParser.createParser(Charsets.UTF_8);
+  private final Parser parser = JavaParser.createParser(Charsets.UTF_8, true);
 
   private File file = null;
 

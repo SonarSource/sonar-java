@@ -42,6 +42,13 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
     addChild(nameToken);
   }
 
+  public IdentifierTreeImpl(InternalSyntaxToken nameToken, AstNode child) {
+    super(JavaGrammar.IDENTIFIER_EXPRESSION, nameToken.getToken());
+    this.nameToken = Preconditions.checkNotNull(nameToken);
+
+    addChild(child);
+  }
+
   public IdentifierTreeImpl(AstNode astNode, InternalSyntaxToken nameToken) {
     super(astNode);
     this.nameToken = Preconditions.checkNotNull(nameToken);

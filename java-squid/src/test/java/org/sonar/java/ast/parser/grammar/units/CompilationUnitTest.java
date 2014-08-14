@@ -22,28 +22,10 @@ package org.sonar.java.ast.parser.grammar.units;
 import com.google.common.base.Joiner;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class CompilationUnitTest {
-
-  @Test
-  public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
-    b.rule(JavaGrammar.PACKAGE_DECLARATION).override(RuleMock.word(b, "packageDeclaration"));
-    b.rule(JavaGrammar.IMPORT_DECLARATION).override(RuleMock.word(b, "importDeclaration"));
-    b.rule(JavaGrammar.TYPE_DECLARATION).override(RuleMock.word(b, "typeDeclaration"));
-
-    assertThat(b, JavaGrammar.COMPILATION_UNIT)
-      .matches("packageDeclaration importDeclaration importDeclaration typeDeclaration typeDeclaration")
-      .matches("packageDeclaration importDeclaration typeDeclaration")
-      .matches("packageDeclaration importDeclaration")
-      .matches("packageDeclaration")
-      .matches("");
-  }
 
   @Test
   public void realLife() {

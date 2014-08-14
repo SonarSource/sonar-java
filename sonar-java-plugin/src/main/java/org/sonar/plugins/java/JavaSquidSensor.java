@@ -61,10 +61,10 @@ public class JavaSquidSensor implements Sensor {
   private final ModuleFileSystem moduleFileSystem;
   private final DefaultJavaResourceLocator javaResourceLocator;
   private final RulesProfile profile;
-  private Settings settings;
+  private final Settings settings;
 
   public JavaSquidSensor(RulesProfile profile, NoSonarFilter noSonarFilter, JavaClasspath javaClasspath, SonarComponents sonarComponents, ModuleFileSystem moduleFileSystem,
-                         DefaultJavaResourceLocator javaResourceLocator, Settings settings) {
+    DefaultJavaResourceLocator javaResourceLocator, Settings settings) {
     this.profile = profile;
     this.annotationCheckFactory = AnnotationCheckFactory.create(profile, CheckList.REPOSITORY_KEY, CheckList.getChecks());
     this.noSonarFilter = noSonarFilter;
@@ -75,10 +75,12 @@ public class JavaSquidSensor implements Sensor {
     this.settings = settings;
   }
 
+  @Override
   public boolean shouldExecuteOnProject(Project project) {
     return !moduleFileSystem.files(FileQuery.on(FileType.values()).onLanguage(Java.KEY)).isEmpty();
   }
 
+  @Override
   public void analyse(Project project, SensorContext context) {
     Collection<CodeVisitor> checks = annotationCheckFactory.getChecks();
 
@@ -110,6 +112,7 @@ public class JavaSquidSensor implements Sensor {
     Charset charset = moduleFileSystem.sourceCharset();
     JavaConfiguration conf = new JavaConfiguration(charset);
     conf.setAnalyzePropertyAccessors(analyzePropertyAccessors);
+    conf.setVerifyAssertions(false);
     return conf;
   }
 

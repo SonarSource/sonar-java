@@ -85,7 +85,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaTreeMakerTest {
 
-  private final Parser p = JavaParser.createParser(Charsets.UTF_8);
+  private final Parser p = JavaParser.createParser(Charsets.UTF_8, true);
   private final JavaTreeMaker maker = new JavaTreeMaker();
 
   @Test
@@ -100,6 +100,11 @@ public class JavaTreeMakerTest {
       Tree tree = maker.compilationUnit(p.parse(file));
       tree.accept(visitor);
     }
+  }
+
+  @Test
+  public void explicit_generic_invocation() {
+    p.parse("class A { void f() { <A>foo(); } }");
   }
 
   @Test

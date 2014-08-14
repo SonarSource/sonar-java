@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.ast.parser;
 
 import com.sonar.sslr.api.AstNode;
 
@@ -80,7 +80,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
       }
       indent().append(nodeName);
       AstNode node = ((JavaTree) tree).getAstNode();
-      if (node != null) {
+      if (node != null && node.hasToken()) {
         sb.append(" ").append(node.getTokenLine());
       }
       sb.append("\n");

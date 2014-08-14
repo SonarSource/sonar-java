@@ -19,20 +19,29 @@
  */
 package org.sonar.java.model;
 
+import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import javax.annotation.Nullable;
 
 import java.util.Iterator;
 
 public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   private final Token token;
+  private final AstNodeType type;
 
   public InternalSyntaxToken(Token token) {
+    this(token, null);
+  }
+
+  public InternalSyntaxToken(Token token, @Nullable AstNodeType type) {
     super(token.getType(), token);
     this.token = token;
+    this.type = type;
   }
 
   @Override
@@ -42,7 +51,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   @Override
   public void accept(TreeVisitor visitor) {
-    throw new UnsupportedOperationException();
+    // FIXME do nothing at the moment
   }
 
   @Override
@@ -63,6 +72,14 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   @Override
   public Iterator<Tree> childrenIterator() {
     throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Not in API
+   */
+  @Nullable
+  public AstNodeType type() {
+    return type;
   }
 
 }

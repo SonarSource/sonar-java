@@ -32,7 +32,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class SuppressWarningsAnnotationUtilsTest {
 
-  private final Parser p = JavaParser.createParser(Charsets.UTF_8);
+  private final Parser p = JavaParser.createParser(Charsets.UTF_8, true);
 
   @Test
   public void suppress_warnings_at_class_level() {

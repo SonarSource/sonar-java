@@ -25,6 +25,7 @@ public class JavaConfiguration {
 
   private final Charset charset;
   private boolean analyzePropertyAccessors = true;
+  private boolean verifyAssertions = true;
 
   public JavaConfiguration(Charset charset) {
     this.charset = charset;
@@ -40,6 +41,14 @@ public class JavaConfiguration {
 
   public void setAnalyzePropertyAccessors(boolean analyzePropertyAccessors) {
     this.analyzePropertyAccessors = analyzePropertyAccessors;
+  }
+
+  public boolean getVerifyAssertions() {
+    return verifyAssertions;
+  }
+
+  public void setVerifyAssertions(boolean verifyAssertions) {
+    this.verifyAssertions = verifyAssertions;
   }
 
 }
