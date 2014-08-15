@@ -20,15 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.io.Files;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.api.utils.SonarException;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.CharsetAwareVisitor;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -38,28 +38,40 @@ import java.util.List;
   priority = Priority.MINOR,
   tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class TabCharacter_S00105_Check extends SquidCheck<LexerlessGrammar> implements CharsetAwareVisitor {
+public class TabCharacter_S00105_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
   private Charset charset;
 
+  @Override
   public void setCharset(Charset charset) {
     this.charset = charset;
   }
 
   @Override
-  public void visitFile(AstNode astNode) {
+  public List<Tree.Kind> nodesToVisit() {
+    return null;
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    super.context = context;
+    visitFile(context.getFile());
+  }
+
+  public void visitFile(File file) {
     List<String> lines;
     try {
-      lines = Files.readLines(getContext().getFile(), charset);
+      lines = Files.readLines(file, charset);
     } catch (IOException e) {
       throw new SonarException(e);
     }
     for (String line : lines) {
       if (line.contains("\t")) {
-        getContext().createFileViolation(this, "Replace all tab characters in this file by sequences of white-spaces.");
+        addIssueOnFile("Replace all tab characters in this file by sequences of white-spaces.");
         break;
       }
     }
   }
+
 
 }

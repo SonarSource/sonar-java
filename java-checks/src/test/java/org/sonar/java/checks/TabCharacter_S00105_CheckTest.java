@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
@@ -32,7 +33,7 @@ public class TabCharacter_S00105_CheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TabCharacter.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TabCharacter.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().withMessage("Replace all tab characters in this file by sequences of white-spaces.")
         .noMore();
@@ -40,7 +41,7 @@ public class TabCharacter_S00105_CheckTest {
 
   @Test
   public void test2() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NonEmptyFile.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NonEmptyFile.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
   }
