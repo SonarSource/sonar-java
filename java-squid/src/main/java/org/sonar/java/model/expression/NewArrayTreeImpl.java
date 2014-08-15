@@ -36,6 +36,18 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   private final List<ExpressionTree> dimensions;
   private final List<ExpressionTree> initializers;
 
+  public NewArrayTreeImpl(Tree type, List<ExpressionTree> dimensions, List<ExpressionTree> initializers, AstNode... children) {
+    super(Kind.NEW_ARRAY);
+    // TODO maybe type should not be null?
+    this.type = type;
+    this.dimensions = Preconditions.checkNotNull(dimensions);
+    this.initializers = Preconditions.checkNotNull(initializers);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
+
   public NewArrayTreeImpl(AstNode astNode, Tree type, List<ExpressionTree> dimensions, List<ExpressionTree> initializers) {
     super(astNode);
     // TODO maybe type should not be null?
@@ -75,6 +87,6 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
       Iterators.singletonIterator(type),
       dimensions.iterator(),
       initializers.iterator()
-    );
+      );
   }
 }

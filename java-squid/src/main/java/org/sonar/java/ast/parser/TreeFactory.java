@@ -29,12 +29,15 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.expression.NewArrayTreeImpl;
+import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
@@ -283,6 +286,45 @@ public class TreeFactory {
 
   public ExpressionTree superExpression(AstNode superToken, AstNode superSuffix) {
     return applySuperSuffix(superToken, superSuffix);
+  }
+
+  public ExpressionTree completeCreator(Optional<AstNode> nonWildcardTypeArguments, ExpressionTree partial) {
+    if (nonWildcardTypeArguments.isPresent()) {
+      ((JavaTree) partial).prependChildren(nonWildcardTypeArguments.get());
+    }
+    return partial;
+  }
+
+  public ExpressionTree newClassCreator(AstNode createdName, AstNode classCreatorRest) {
+    ClassTreeImpl classBody = null;
+    if (classCreatorRest.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
+      List<Tree> body = treeMaker.classBody(classCreatorRest.getFirstChild(JavaGrammar.CLASS_BODY));
+      classBody = new ClassTreeImpl(classCreatorRest, Tree.Kind.CLASS, ModifiersTreeImpl.EMPTY, null, null, ImmutableList.<Tree>of(), body);
+    }
+    return new NewClassTreeImpl(null, treeMaker.classType(createdName), treeMaker.arguments(classCreatorRest.getFirstChild(JavaGrammar.ARGUMENTS)), classBody,
+      createdName, classCreatorRest);
+  }
+
+  public ExpressionTree newArrayCreator(AstNode type, AstNode arrayCreatorRest) {
+    JavaTree typeTree = (JavaTree) (type.is(JavaGrammar.BASIC_TYPE) ? treeMaker.basicType(type) : treeMaker.classType(type));
+
+    AstNode arrayInitializer = arrayCreatorRest.getFirstChild(JavaGrammar.ARRAY_INITIALIZER);
+    if (arrayInitializer != null) {
+      ImmutableList.Builder<ExpressionTree> elems = ImmutableList.builder();
+      for (AstNode elem : arrayInitializer.getChildren(JavaGrammar.VARIABLE_INITIALIZER)) {
+        elems.add(treeMaker.variableInitializer(elem));
+      }
+      return new NewArrayTreeImpl(typeTree, ImmutableList.<ExpressionTree>of(), elems.build(),
+        type, arrayCreatorRest);
+    } else {
+      ImmutableList.Builder<ExpressionTree> dimensions = ImmutableList.builder();
+      dimensions.add(treeMaker.expression(arrayCreatorRest.getFirstChild(JavaGrammar.EXPRESSION)));
+      for (AstNode dimExpr : arrayCreatorRest.getChildren(JavaGrammar.DIM_EXPR)) {
+        dimensions.add(treeMaker.expression(dimExpr.getFirstChild(JavaGrammar.EXPRESSION)));
+      }
+      return new NewArrayTreeImpl(typeTree, dimensions.build(), ImmutableList.<ExpressionTree>of(),
+        type, arrayCreatorRest);
+    }
   }
 
   // End of expressions

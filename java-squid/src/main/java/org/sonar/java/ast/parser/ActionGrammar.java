@@ -215,6 +215,20 @@ public class ActionGrammar {
       .is(f.superExpression(b.invokeRule(JavaKeyword.SUPER), b.invokeRule(JavaGrammar.SUPER_SUFFIX)));
   }
 
+  public ExpressionTree CREATOR() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.CREATOR)
+      .is(
+        f.completeCreator(
+          b.optional(b.invokeRule(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)),
+          b.firstOf(
+            f.newClassCreator(b.invokeRule(JavaGrammar.CREATED_NAME), b.invokeRule(JavaGrammar.CLASS_CREATOR_REST)),
+            f.newArrayCreator(
+              b.firstOf(
+                b.invokeRule(JavaGrammar.CLASS_TYPE),
+                b.invokeRule(JavaGrammar.BASIC_TYPE)),
+              b.invokeRule(JavaGrammar.ARRAY_CREATOR_REST)))));
+  }
+
   // End of expressions
 
   public interface GrammarBuilder {

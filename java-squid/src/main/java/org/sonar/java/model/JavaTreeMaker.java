@@ -144,13 +144,12 @@ public class JavaTreeMaker {
    * 4. Types, Values and Variables
    */
 
-  @VisibleForTesting
-  PrimitiveTypeTree basicType(AstNode astNode) {
+  public PrimitiveTypeTree basicType(AstNode astNode) {
     checkType(astNode, JavaGrammar.BASIC_TYPE, JavaKeyword.VOID);
     return new JavaTree.PrimitiveTypeTreeImpl(astNode);
   }
 
-  private ExpressionTree classType(AstNode astNode) {
+  public ExpressionTree classType(AstNode astNode) {
     checkType(astNode, JavaGrammar.CLASS_TYPE, JavaGrammar.CREATED_NAME);
     AstNode child = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
     AstNode firstIdentifier = child;
@@ -384,7 +383,7 @@ public class JavaTreeMaker {
   /**
    * 8.1.6. Class Body and Member Declarations
    */
-  private List<Tree> classBody(AstNode astNode) {
+  public List<Tree> classBody(AstNode astNode) {
     checkType(astNode, JavaGrammar.CLASS_BODY, JavaGrammar.ENUM_BODY_DECLARATIONS);
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode classBodyDeclaration : astNode.getChildren(JavaGrammar.CLASS_BODY_DECLARATION)) {
@@ -1001,7 +1000,7 @@ public class JavaTreeMaker {
       return (LiteralTreeImpl) firstChildNode;
     } else if (firstChildNode.is(JavaGrammar.NEW_EXPRESSION)) {
       // new...
-      return creator(firstChildNode.getFirstChild(JavaGrammar.CREATOR));
+      return (ExpressionTree) firstChildNode.getLastChild();
     } else if (firstChildNode.is(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION)) {
       ExpressionTree identifier = qualifiedIdentifier(firstChildNode.getFirstChild());
       AstNode identifierSuffixNode = firstChildNode.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
@@ -1092,32 +1091,6 @@ public class JavaTreeMaker {
     }
   }
 
-  private ExpressionTree creator(AstNode astNode) {
-    // TODO NON_WILDCARD_TYPE_ARGUMENTS
-    if (astNode.hasDirectChildren(JavaGrammar.CLASS_CREATOR_REST)) {
-      return applyClassCreatorRest(
-        /* enclosing expression: */null,
-        classType(astNode.getFirstChild(JavaGrammar.CREATED_NAME)),
-        astNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST));
-    } else if (astNode.hasDirectChildren(JavaGrammar.ARRAY_CREATOR_REST)) {
-      AstNode arrayCreatorRestNode = astNode.getFirstChild(JavaGrammar.ARRAY_CREATOR_REST);
-      AstNode typeNode = arrayCreatorRestNode.getPreviousSibling();
-      Tree type = typeNode.is(JavaGrammar.BASIC_TYPE) ? basicType(typeNode) : classType(typeNode);
-      if (arrayCreatorRestNode.hasDirectChildren(JavaGrammar.ARRAY_INITIALIZER)) {
-        return arrayInitializer(type, arrayCreatorRestNode.getFirstChild(JavaGrammar.ARRAY_INITIALIZER));
-      } else {
-        ImmutableList.Builder<ExpressionTree> dimensions = ImmutableList.builder();
-        dimensions.add(expression(arrayCreatorRestNode.getFirstChild(JavaGrammar.EXPRESSION)));
-        for (AstNode dimExpr : arrayCreatorRestNode.getChildren(JavaGrammar.DIM_EXPR)) {
-          dimensions.add(expression(dimExpr.getFirstChild(JavaGrammar.EXPRESSION)));
-        }
-        return new NewArrayTreeImpl(astNode, type, dimensions.build(), ImmutableList.<ExpressionTree>of());
-      }
-    } else {
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode);
-    }
-  }
-
   private ExpressionTree arrayInitializer(@Nullable Tree t, AstNode astNode) {
     ImmutableList.Builder<ExpressionTree> elems = ImmutableList.builder();
     for (AstNode elem : astNode.getChildren(JavaGrammar.VARIABLE_INITIALIZER)) {
@@ -1126,7 +1099,7 @@ public class JavaTreeMaker {
     return new NewArrayTreeImpl(astNode, t, ImmutableList.<ExpressionTree>of(), elems.build());
   }
 
-  private ExpressionTree variableInitializer(AstNode astNode) {
+  public ExpressionTree variableInitializer(AstNode astNode) {
     if (astNode.getFirstChild().is(JavaGrammar.EXPRESSION)) {
       return expression(astNode.getFirstChild());
     } else {
