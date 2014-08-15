@@ -355,7 +355,6 @@ public class JavaTreeMakerTest {
 
   @Test
   public void class_method() {
-    // TODO test "int m(int p)[]"
     // TODO test "int m(int p[])"
 
     AstNode astNode = p.parse("class T { public int m(int p1, int... p2) throws Exception1, Exception2 {} }");
@@ -382,6 +381,23 @@ public class JavaTreeMakerTest {
     assertThat(tree.throwsClauses()).hasSize(2);
     assertThat(tree.block()).isNotNull();
     assertThat(tree.defaultValue()).isNull();
+
+    astNode = p.parse("class T { public int[] m(int p1, int... p2)[] throws Exception1, Exception2 {} }");
+    tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
+    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.returnType()).isNotNull();
+    assertThat(tree.returnType().is(Tree.Kind.ARRAY_TYPE));
+    assertThat(((ArrayTypeTree) tree.returnType()).type().is(Tree.Kind.INT_LITERAL));
+    assertThat(tree.simpleName().name()).isEqualTo("m");
+    assertThat(tree.parameters()).hasSize(2);
+    assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
+    assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
+    assertThat(tree.throwsClauses()).hasSize(2);
+    assertThat(tree.block()).isNotNull();
+    assertThat(tree.defaultValue()).isNull();
+
+
   }
 
   /*

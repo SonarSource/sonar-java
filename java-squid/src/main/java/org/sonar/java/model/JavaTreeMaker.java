@@ -208,8 +208,12 @@ public class JavaTreeMaker {
   @VisibleForTesting
   ExpressionTree referenceType(AstNode astNode) {
     checkType(astNode, JavaGrammar.TYPE);
+    return referenceType(astNode, 0);
+  }
+
+  ExpressionTree referenceType(AstNode astNode, int dimSize) {
     ExpressionTree result = astNode.getFirstChild().is(JavaGrammar.BASIC_TYPE) ? basicType(astNode.getFirstChild()) : classType(astNode.getFirstChild());
-    return applyDim(result, astNode.getChildren(JavaGrammar.DIM).size());
+    return applyDim(result, dimSize+astNode.getChildren(JavaGrammar.DIM).size());
   }
 
   public AnnotationTree annotation(AstNode astNode) {
@@ -471,7 +475,7 @@ public class JavaTreeMaker {
       if (returnTypeNode.is(JavaKeyword.VOID)) {
         returnType = basicType(returnTypeNode);
       } else {
-        returnType = referenceType(returnTypeNode);
+        returnType = referenceType(returnTypeNode, astNode.getChildren(JavaGrammar.DIM).size());
       }
     }
     BlockTree body = null;
