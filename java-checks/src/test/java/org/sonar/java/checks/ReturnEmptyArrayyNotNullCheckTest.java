@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class ReturnEmptyArrayyNotNullCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ReturnEmptyArrayyNotNullCheck.java"), new ReturnEmptyArrayyNotNullCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ReturnEmptyArrayyNotNullCheck.java"), new VisitorsBridge(new ReturnEmptyArrayyNotNullCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(16).withMessage("Return an empty array instead of null.")
         .next().atLine(25)

@@ -19,24 +19,30 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.Lists;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
+import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
 @Rule(
-  key = "S1168",
-  priority = Priority.MAJOR)
+    key = "S1168",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ReturnEmptyArrayyNotNullCheck extends SquidCheck<LexerlessGrammar> {
+public class ReturnEmptyArrayyNotNullCheck extends SubscriptionBaseVisitor {
 
   private static final Set<String> COLLECTION_TYPES = ImmutableSet.of(
       "Collection",
@@ -82,68 +88,77 @@ public class ReturnEmptyArrayyNotNullCheck extends SquidCheck<LexerlessGrammar> 
       "TreeSet",
       "Vector");
 
-  @Override
-  public void init() {
-    subscribeTo(JavaGrammar.RETURN_STATEMENT);
+  private Deque<Returns> returnType = Lists.newLinkedList();
+
+  private enum Returns {
+    ARRAY, COLLECTION, OTHERS;
+    public static Returns getReturnType(@Nullable Tree tree){
+      if (tree != null) {
+        Tree returnType = tree;
+        while(returnType.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+          returnType = ((ParameterizedTypeTree) returnType).type();
+        }
+        if (returnType.is(Tree.Kind.ARRAY_TYPE)) {
+          return ARRAY;
+        } else if (isCollection(returnType)) {
+          return COLLECTION;
+        }
+      }
+      return OTHERS;
+    }
+
+    private static boolean isCollection(Tree methodReturnType) {
+      IdentifierTree identifierTree = null;
+      if (methodReturnType.is(Tree.Kind.IDENTIFIER)) {
+        identifierTree = ((IdentifierTree) methodReturnType);
+      } else if (methodReturnType.is(Tree.Kind.MEMBER_SELECT)) {
+        identifierTree = ((MemberSelectExpressionTree) methodReturnType).identifier();
+      }
+      return identifierTree != null && COLLECTION_TYPES.contains(identifierTree.name());
+    }
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isReturningNull(node)) {
-      AstNode method = getMethod(node);
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
+    returnType.clear();
+  }
 
-      if (isReturningArray(method)) {
-        getContext().createLineViolation(this, "Return an empty array instead of null.", node);
-      } else if (isReturningCollection(method)) {
-        getContext().createLineViolation(this, "Return an empty collection instead of null.", node);
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.RETURN_STATEMENT);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      MethodTree methodTree = (MethodTree) tree;
+      returnType.push(Returns.getReturnType(methodTree.returnType()));
+    }else if (tree.is(Tree.Kind.CONSTRUCTOR)) {
+      returnType.push(Returns.OTHERS);
+    } else {
+
+      ReturnStatementTree returnStatement = (ReturnStatementTree) tree;
+      if (isReturningNull(returnStatement)) {
+        if (returnType.peek().equals(Returns.ARRAY)) {
+          addIssue(returnStatement, "Return an empty array instead of null.");
+        } else if (returnType.peek().equals(Returns.COLLECTION)) {
+          addIssue(tree, "Return an empty collection instead of null.");
+        }
       }
     }
   }
 
-  private static boolean isReturningNull(AstNode node) {
-    AstNode expression = node.getFirstChild(JavaGrammar.EXPRESSION);
-
-    return expression != null &&
-      expression.getToken().equals(expression.getLastToken()) &&
-      "null".equals(expression.getTokenOriginalValue());
-  }
-
-  private static AstNode getMethod(AstNode node) {
-    return node.getFirstAncestor(JavaGrammar.METHOD_DECLARATOR_REST,
-        JavaGrammar.CLASS_BODY_DECLARATION,
-        JavaGrammar.INTERFACE_METHOD_OR_FIELD_REST,
-        JavaGrammar.INTERFACE_GENERIC_METHOD_DECL);
-  }
-
-  private static boolean isReturningArray(AstNode node) {
-    AstNode type = getType(node);
-    return node.hasDirectChildren(JavaGrammar.DIM) ||
-      type != null && type.hasDirectChildren(JavaGrammar.DIM);
-  }
-
-  private static boolean isReturningCollection(AstNode node) {
-    AstNode type = getType(node);
-    if (type == null) {
-      return false;
+  @Override
+  public void leaveNode(Tree tree) {
+    if (!tree.is(Tree.Kind.RETURN_STATEMENT)) {
+      returnType.pop();
     }
-
-    AstNode classType = type.getFirstChild(JavaGrammar.CLASS_TYPE);
-    if (classType == null) {
-      return false;
-    }
-
-    List<AstNode> identifiers = classType.getChildren(JavaTokenType.IDENTIFIER);
-    String lastIdentifierValue = identifiers.get(identifiers.size() - 1).getTokenOriginalValue();
-
-    return COLLECTION_TYPES.contains(lastIdentifierValue);
   }
 
-  private static AstNode getType(AstNode node) {
-    AstNode type = node.getParent().getFirstChild(JavaGrammar.TYPE);
-    if(node.is(JavaGrammar.INTERFACE_GENERIC_METHOD_DECL)){
-      type = node.getFirstChild(JavaGrammar.TYPE);
-    }
-    return type;
+  private boolean isReturningNull(ReturnStatementTree tree) {
+    return tree.expression() != null && tree.expression().is(Tree.Kind.NULL_LITERAL);
   }
+
 
 }
