@@ -19,36 +19,43 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
   key = "ObjectFinalizeOverridenCheck",
   priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class ObjectFinalizeOverridenCheck extends SquidCheck<LexerlessGrammar> {
+public class ObjectFinalizeOverridenCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.MEMBER_DECL);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isFinalizeMethodMember(node)) {
-      getContext().createLineViolation(this, "Do not override the Object.finalize() method.", node.getFirstChild(JavaTokenType.IDENTIFIER));
+  public void visitNode(Tree tree) {
+    MethodTree methodTree = (MethodTree) tree;
+    if (isFinalize(methodTree)) {
+      addIssue(methodTree.simpleName(), "Do not override the Object.finalize() method.");
     }
   }
 
-  private static boolean isFinalizeMethodMember(AstNode node) {
-    return node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST) &&
-      "finalize".equals(node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue());
+  private boolean isFinalize(MethodTree methodTree) {
+    if("finalize".equals(methodTree.simpleName().name()) ) {
+      Tree returnType = methodTree.returnType();
+      if(returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
+        return "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
+      }
+    }
+    return false;
   }
 
 }
