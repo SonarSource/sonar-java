@@ -20,15 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.io.Files;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.CharsetAwareVisitor;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
@@ -38,7 +38,7 @@ import java.util.List;
   key = "S1451",
   priority = Priority.BLOCKER,
   tags={"convention"})
-public class FileHeaderCheck extends SquidCheck<LexerlessGrammar> implements CharsetAwareVisitor {
+public class FileHeaderCheck extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
   private static final String DEFAULT_HEADER_FORMAT = "";
 
@@ -57,21 +57,27 @@ public class FileHeaderCheck extends SquidCheck<LexerlessGrammar> implements Cha
   }
 
   @Override
-  public void init() {
-    expectedLines = headerFormat.split("(?:\r)?\n|\r");
+  public List<Tree.Kind> nodesToVisit() {
+    return null;
   }
 
   @Override
-  public void visitFile(AstNode astNode) {
+  public void scanFile(JavaFileScannerContext context) {
+    super.context = context;
+    expectedLines = headerFormat.split("(?:\r)?\n|\r");
+    visitFile(context.getFile());
+  }
+
+  public void visitFile(File file) {
     List<String> lines;
     try {
-      lines = Files.readLines(getContext().getFile(), charset);
+      lines = Files.readLines(file, charset);
     } catch (IOException e) {
       throw new SonarException(e);
     }
 
     if (!matches(expectedLines, lines)) {
-      getContext().createFileViolation(this, "Add or update the header of this file.");
+      addIssueOnFile("Add or update the header of this file.");
     }
   }
 

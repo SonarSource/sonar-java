@@ -19,10 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 import java.io.File;
 
@@ -33,70 +34,70 @@ public class FileHeaderCheckTest {
     FileHeaderCheck check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2005";
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class1.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class1.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .noMore();
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 20\\d\\d";
 
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class1.java"), check);
+    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class1.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(null);
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2005";
 
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), check);
+    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(null).withMessage("Add or update the header of this file.");
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012";
 
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), check);
+    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .noMore();
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\n// foo";
 
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), check);
+    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .noMore();
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\r\n// foo";
 
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), check);
+    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .noMore();
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\r// foo";
 
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), check);
+    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .noMore();
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\r\r// foo";
 
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), check);
+    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(null);
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\n// foo\n\n\n\n\n\n\n\n\n\ngfoo";
 
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), check);
+    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(null);
 
     check = new FileHeaderCheck();
     check.headerFormat = "/*foo http://www.example.org*/";
 
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class3.java"), check);
+    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class3.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .noMore();
   }
