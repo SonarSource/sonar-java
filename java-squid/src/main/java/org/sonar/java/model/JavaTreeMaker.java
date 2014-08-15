@@ -114,7 +114,7 @@ public class JavaTreeMaker {
 
   public IdentifierTree identifier(AstNode astNode) {
     checkType(astNode, JavaTokenType.IDENTIFIER, JavaKeyword.THIS, JavaKeyword.CLASS, JavaKeyword.SUPER);
-    return new IdentifierTreeImpl(astNode, new InternalSyntaxToken(astNode.getToken()));
+    return new IdentifierTreeImpl(astNode, new InternalSyntaxToken(astNode));
   }
 
   private ExpressionTree qualifiedIdentifier(AstNode astNode) {
@@ -294,7 +294,7 @@ public class JavaTreeMaker {
         qualifiedIdentifier = new MemberSelectExpressionTreeImpl(
           astNodeQualifiedIdentifier.getNextSibling().getNextSibling(),
           qualifiedIdentifier,
-          new IdentifierTreeImpl(nextNextSibling, new InternalSyntaxToken(nextNextSibling.getToken()))
+          new IdentifierTreeImpl(nextNextSibling, new InternalSyntaxToken(nextNextSibling))
           );
       }
 

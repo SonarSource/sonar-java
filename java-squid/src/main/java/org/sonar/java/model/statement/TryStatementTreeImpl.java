@@ -63,9 +63,9 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   @Override
   public SyntaxToken tryKeyword() {
     if (!resources.isEmpty()) {
-      return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.TRY_WITH_RESOURCES_STATEMENT).getFirstChild(JavaKeyword.TRY).getToken());
+      return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.TRY_WITH_RESOURCES_STATEMENT).getFirstChild(JavaKeyword.TRY));
     } else {
-      return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.TRY).getToken());
+      return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.TRY));
     }
   }
 
@@ -75,8 +75,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     if (!resources.isEmpty()) {
       return new InternalSyntaxToken(getAstNode()
         .getFirstChild(JavaGrammar.RESOURCE_SPECIFICATION)
-        .getFirstChild(JavaPunctuator.LPAR)
-        .getToken());
+        .getFirstChild(JavaPunctuator.LPAR));
     } else {
       return null;
     }
@@ -93,8 +92,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     if (!resources.isEmpty()) {
       return new InternalSyntaxToken(getAstNode()
         .getFirstChild(JavaGrammar.RESOURCE_SPECIFICATION)
-        .getFirstChild(JavaPunctuator.RPAR)
-        .getToken());
+        .getFirstChild(JavaPunctuator.RPAR));
     } else {
       return null;
     }
@@ -114,7 +112,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   @Override
   public SyntaxToken finallyKeyword() {
     AstNode node = getAstNode().getFirstChild(JavaGrammar.FINALLY_);
-    return node == null ? null : new InternalSyntaxToken(node.getFirstChild(JavaKeyword.FINALLY).getToken());
+    return node == null ? null : new InternalSyntaxToken(node.getFirstChild(JavaKeyword.FINALLY));
   }
 
   @Nullable

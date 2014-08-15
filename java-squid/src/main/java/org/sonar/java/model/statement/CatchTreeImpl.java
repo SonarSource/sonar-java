@@ -52,12 +52,12 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
 
   @Override
   public SyntaxToken catchKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.CATCH).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.CATCH));
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LPAR));
   }
 
   @Override
@@ -67,7 +67,7 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RPAR));
   }
 
   @Override

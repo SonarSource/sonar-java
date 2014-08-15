@@ -52,7 +52,7 @@ public class InternalPrefixUnaryExpression extends AbstractTypedTree implements 
 
   @Override
   public SyntaxToken operatorToken() {
-    return new InternalSyntaxToken(getAstNode().getToken());
+    return new InternalSyntaxToken(getAstNode());
   }
 
   @Override

@@ -19,29 +19,29 @@
  */
 package org.sonar.java.model;
 
-import com.sonar.sslr.api.AstNodeType;
+import com.google.common.base.Preconditions;
+import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
-
-import javax.annotation.Nullable;
 
 import java.util.Iterator;
 
 public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   private final Token token;
-  private final AstNodeType type;
 
-  public InternalSyntaxToken(Token token) {
-    this(token, null);
-  }
+  public InternalSyntaxToken(AstNode astNode) {
+    // Must pass token to super's constructor
+    super(astNode.getToken().getType(), astNode.getToken());
+    this.token = astNode.getToken();
 
-  public InternalSyntaxToken(Token token, @Nullable AstNodeType type) {
-    super(token.getType(), token);
-    this.token = token;
-    this.type = type;
+    Preconditions.checkArgument(astNode.hasToken(), "has no token");
+    Preconditions.checkArgument(astNode.getToken() == astNode.getLastToken(), "has several tokens");
+
+    setFromIndex(astNode.getFromIndex());
+    setToIndex(astNode.getToIndex());
   }
 
   @Override
@@ -72,14 +72,6 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   @Override
   public Iterator<Tree> childrenIterator() {
     throw new UnsupportedOperationException();
-  }
-
-  /**
-   * Not in API
-   */
-  @Nullable
-  public AstNodeType type() {
-    return type;
   }
 
 }

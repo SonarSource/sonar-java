@@ -289,26 +289,6 @@ public class ActionParser extends Parser {
     }
   }
 
-  private void verifyNoInjectionOfSeveralNewStronglyTypedNodes(AstNode o, AstNode n) {
-    Set<AstNode> stNodes = Sets.newHashSet();
-    for (AstNode astNode : getDescendants(o)) {
-      if (astNode instanceof JavaTree) {
-        stNodes.add(astNode);
-      }
-    }
-
-    Set<AstNode> newSets = Sets.newHashSet();
-    for (AstNode astNode : getDescendants(n)) {
-      if (astNode instanceof JavaTree) {
-        newSets.add(astNode);
-        Preconditions.checkArgument(
-          stNodes.contains(astNode),
-          "Injection of children strongly typed nodes is not supported: " + astNode.toString() + ", with parent " + astNode.getParent()
-            + "\n" + AstXmlPrinter.print(astNode));
-      }
-    }
-  }
-
   private void verifyTokens(AstNode o, AstNode n, List<Token> oldTokens) {
     List<Token> newTokens = n.getTokens();
 
@@ -341,7 +321,6 @@ public class ActionParser extends Parser {
   private void replaceAstNode(AstNode o, AstNode n, List<Token> oldTokens) {
     if (verifyAssertions) {
       verifyNoInjectionFromJavaTreeMaker(n);
-      verifyNoInjectionOfSeveralNewStronglyTypedNodes(o, n);
       verifyTokens(o, n, oldTokens);
     }
 

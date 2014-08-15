@@ -93,13 +93,10 @@ public class TreeFactory {
 
   // Literals
 
-  public ExpressionTree literal(InternalSyntaxToken token) {
-    return new LiteralTreeImpl(kindMaps.getLiteral(token.type()),
-      token);
-  }
+  public ExpressionTree literal(AstNode astNode) {
+    InternalSyntaxToken token = new InternalSyntaxToken(astNode);
 
-  public InternalSyntaxToken literalToken(AstNode astNode) {
-    return new InternalSyntaxToken(astNode.getToken(), astNode.getType());
+    return new LiteralTreeImpl(kindMaps.getLiteral(astNode.getType()), token);
   }
 
   // Statements
@@ -282,7 +279,7 @@ public class TreeFactory {
         thisToken, arguments.get());
     } else {
       // this
-      return new IdentifierTreeImpl(new InternalSyntaxToken(thisToken.getToken()), thisToken);
+      return new IdentifierTreeImpl(new InternalSyntaxToken(thisToken), thisToken);
     }
   }
 

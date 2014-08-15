@@ -23,7 +23,6 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
@@ -69,13 +68,7 @@ public class ActionGrammar {
   public ExpressionTree LITERAL() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.LITERAL)
       .is(
-        f.literal(LITERAL_TOKEN()));
-  }
-
-  public InternalSyntaxToken LITERAL_TOKEN() {
-    return b.<InternalSyntaxToken>nonterminal()
-      .is(
-        f.literalToken(
+        f.literal(
           b.firstOf(
             b.invokeRule(JavaKeyword.TRUE),
             b.invokeRule(JavaKeyword.FALSE),

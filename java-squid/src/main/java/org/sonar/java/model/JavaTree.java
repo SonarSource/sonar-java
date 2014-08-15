@@ -339,7 +339,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public SyntaxToken keyword() {
-      return new InternalSyntaxToken(getAstNode().getLastToken());
+      return new InternalSyntaxToken(getLastTokenAstNode(getAstNode()));
     }
 
     @Override
@@ -350,6 +350,23 @@ public abstract class JavaTree extends AstNode implements Tree {
     @Override
     public Iterator<Tree> childrenIterator() {
       throw new UnsupportedOperationException();
+    }
+
+    private static AstNode getLastTokenAstNode(AstNode astNode) {
+      if (!astNode.hasToken()) {
+        return null;
+      }
+      AstNode currentNode = astNode;
+      while (currentNode.hasChildren()) {
+        for (int i = currentNode.getChildren().size() - 1; i >= 0; i--) {
+          AstNode child = currentNode.getChildren().get(i);
+          if (child.hasToken()) {
+            currentNode = child;
+            break;
+          }
+        }
+      }
+      return currentNode;
     }
   }
 

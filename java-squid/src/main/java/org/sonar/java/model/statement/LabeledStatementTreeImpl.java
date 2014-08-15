@@ -61,7 +61,7 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
 
   @Override
   public SyntaxToken colonToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.COLON).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.COLON));
   }
 
   @Override

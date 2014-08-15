@@ -57,12 +57,12 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
 
   @Override
   public SyntaxToken whileKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.WHILE).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.WHILE));
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR));
   }
 
   @Override
@@ -72,7 +72,7 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR));
   }
 
   @Override

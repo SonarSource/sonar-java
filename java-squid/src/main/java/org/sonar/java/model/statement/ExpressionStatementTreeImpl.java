@@ -64,9 +64,9 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
   @Override
   public SyntaxToken semicolonToken() {
     if (getAstNode().is(JavaGrammar.EXPRESSION_STATEMENT)) {
-      return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI).getToken());
+      return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI));
     } else if (getAstNode().is(JavaGrammar.STATEMENT_EXPRESSION)) {
-      return new InternalSyntaxToken(getAstNode().getParent().getFirstChild(JavaPunctuator.SEMI).getToken());
+      return new InternalSyntaxToken(getAstNode().getParent().getFirstChild(JavaPunctuator.SEMI));
     } else {
       throw new IllegalStateException();
     }

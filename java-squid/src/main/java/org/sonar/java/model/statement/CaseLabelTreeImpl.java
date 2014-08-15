@@ -56,7 +56,7 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
 
   @Override
   public SyntaxToken caseOrDefaultKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.CASE, JavaKeyword.DEFAULT).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.CASE, JavaKeyword.DEFAULT));
   }
 
   @Nullable
@@ -67,7 +67,7 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
 
   @Override
   public SyntaxToken colonToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.COLON).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.COLON));
   }
 
   @Override

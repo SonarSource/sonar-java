@@ -56,7 +56,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
 
   @Override
   public SyntaxToken continueKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.CONTINUE).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.CONTINUE));
   }
 
   @Nullable
@@ -67,7 +67,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
 
   @Override
   public SyntaxToken semicolonToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI));
   }
 
   @Override

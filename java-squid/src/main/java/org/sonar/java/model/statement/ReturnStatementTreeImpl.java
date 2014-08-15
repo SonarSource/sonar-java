@@ -56,7 +56,7 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
 
   @Override
   public SyntaxToken returnKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.RETURN).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.RETURN));
   }
 
   @Nullable
@@ -67,7 +67,7 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
 
   @Override
   public SyntaxToken semicolonToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI));
   }
 
   @Override

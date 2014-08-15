@@ -57,7 +57,7 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
 
   @Override
   public SyntaxToken doKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.DO).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.DO));
   }
 
   @Override
@@ -67,12 +67,12 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
 
   @Override
   public SyntaxToken whileKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.WHILE).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.WHILE));
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR));
   }
 
   @Override
@@ -82,12 +82,12 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR));
   }
 
   @Override
   public SyntaxToken semicolonToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI).getToken());
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI));
   }
 
   @Override
