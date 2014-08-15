@@ -19,36 +19,69 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
+
+import java.util.Deque;
+import java.util.LinkedList;
 
 @Rule(
-    key = "S1143",
+    key = ReturnInFinallyCheck.RULE_KEY,
     priority = Priority.BLOCKER,
     tags = {"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
-public class ReturnInFinallyCheck extends SquidCheck<LexerlessGrammar> {
+public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileScanner{
+
+  public static final String RULE_KEY = "S1143";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private final Deque<Boolean> isInFinally = new LinkedList<Boolean>();
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.RETURN_STATEMENT);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    isInFinally.clear();
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isInFinally(node)) {
-      getContext().createLineViolation(this, "Remove this return statement from this finally block.", node);
+  public void visitTryStatement(TryStatementTree tree) {
+    scan(tree.resources());
+    scan(tree.block());
+    scan(tree.catches());
+    if(tree.finallyBlock()!=null) {
+      isInFinally.push(true);
+      scan(tree.finallyBlock());
+      isInFinally.pop();
     }
   }
 
-  private static boolean isInFinally(AstNode node) {
-    AstNode ancestor = node.getFirstAncestor(JavaGrammar.FINALLY_, JavaGrammar.CLASS_BODY);
-    return ancestor != null && ancestor.is(JavaGrammar.FINALLY_);
+  @Override
+  public void visitMethod(MethodTree tree) {
+    isInFinally.push(false);
+    super.visitMethod(tree);
+    isInFinally.pop();
   }
+
+  @Override
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    if(isInFinally()) {
+      context.addIssue(tree, ruleKey, "Remove this return statement from this finally block.");
+    }
+    super.visitReturnStatement(tree);
+  }
+
+  private boolean isInFinally() {
+    return !isInFinally.isEmpty() && isInFinally.peek();
+  }
+
 
 }

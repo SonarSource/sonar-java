@@ -1,4 +1,4 @@
-class A {
+class B {
   private void f() {
     try {
       return; // Compliant
@@ -20,7 +20,13 @@ class A {
     try {
       return; // Compliant
     } finally {
-
+    }
+    try {
+    }finally {
+      try {
+      }catch (Exception e){
+        return;
+      }
     }
   }
 }
