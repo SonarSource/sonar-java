@@ -27,6 +27,7 @@ import com.sonar.sslr.api.AstNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
@@ -40,11 +41,12 @@ import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class VisitorsBridge extends JavaAstVisitor {
+public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisitor {
 
   private static final Logger LOG = LoggerFactory.getLogger(VisitorsBridge.class);
 
@@ -68,6 +70,15 @@ public class VisitorsBridge extends JavaAstVisitor {
     }
     this.scanners = scannersBuilder.build();
     this.sonarComponents = sonarComponents;
+  }
+
+  @Override
+  public void setCharset(Charset charset) {
+    for (JavaFileScanner scanner : scanners) {
+      if(scanner instanceof CharsetAwareVisitor) {
+        ((CharsetAwareVisitor) scanner).setCharset(charset);
+      }
+    }
   }
 
   @Override
@@ -145,7 +156,8 @@ public class VisitorsBridge extends JavaAstVisitor {
       addIssue(-1, ruleKey, message);
     }
 
-    private void addIssue(int line, RuleKey ruleKey, String message) {
+    @Override
+    public void addIssue(int line, RuleKey ruleKey, String message) {
       Preconditions.checkNotNull(ruleKey);
       Preconditions.checkNotNull(message);
       CheckMessage checkMessage = new CheckMessage(ruleKey, message);

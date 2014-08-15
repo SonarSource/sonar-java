@@ -20,24 +20,25 @@
 package org.sonar.java.checks;
 
 import com.google.common.io.Files;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.CharsetAwareVisitor;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.List;
 
 @Rule(
   key = "S00103",
   priority = Priority.MINOR,
   tags={"convention"})
-public class TooLongLine_S00103_Check extends SquidCheck<LexerlessGrammar> implements CharsetAwareVisitor {
+public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
   private static final int DEFAULT_MAXIMUM_LINE_LENHGTH = 80;
 
@@ -48,24 +49,37 @@ public class TooLongLine_S00103_Check extends SquidCheck<LexerlessGrammar> imple
 
   private Charset charset;
 
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return null;
+  }
+
+  @Override
   public void setCharset(Charset charset) {
     this.charset = charset;
   }
 
   @Override
-  public void visitFile(AstNode astNode) {
+  public void scanFile(JavaFileScannerContext context) {
+    super.context = context;
+    visitFile(context.getFile());
+  }
+
+  public void visitFile(File file) {
     List<String> lines;
     try {
-      lines = Files.readLines(getContext().getFile(), charset);
+      lines = Files.readLines(file, charset);
     } catch (IOException e) {
       throw new SonarException(e);
     }
     for (int i = 0; i < lines.size(); i++) {
       String line = lines.get(i);
       if (line.length() > maximumLineLength) {
-        getContext().createLineViolation(this, "Split this {0} characters long line (which is greater than {1} authorized).", i + 1, line.length(), maximumLineLength);
+        addIssue(i+1, MessageFormat.format("Split this {0} characters long line (which is greater than {1} authorized).", line.length(), maximumLineLength));
       }
     }
   }
+
+
 
 }

@@ -36,6 +36,8 @@ public interface JavaFileScannerContext {
 
   void addIssueOnFile(RuleKey ruleKey, String message);
 
+  void addIssue(int line, RuleKey ruleKey, String message);
+
   @Nullable
   Object getSemanticModel();
 
