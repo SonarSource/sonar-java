@@ -19,52 +19,39 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
-  key = "S1214",
-  priority = Priority.MINOR)
+    key = "S1214",
+    priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class InterfaceAsConstantContainerCheck extends SquidCheck<LexerlessGrammar> {
+public class InterfaceAsConstantContainerCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.INTERFACE_BODY);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.INTERFACE);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (hasConstant(node)) {
-      getContext().createLineViolation(this, "Move constants to a class or enum.", node);
+  public void visitNode(Tree tree) {
+    if (hasConstant((ClassTree) tree)) {
+      addIssue(tree, "Move constants to a class or enum.");
     }
   }
 
-  private static boolean hasConstant(AstNode node) {
-    for (AstNode declaration : node.getChildren(JavaGrammar.INTERFACE_BODY_DECLARATION)) {
-      if (isConstant(declaration)) {
+  private boolean hasConstant(ClassTree tree) {
+    for (Tree member : tree.members()) {
+      if (member.is(Tree.Kind.VARIABLE)) {
         return true;
       }
     }
-
     return false;
   }
-
-  private static boolean isConstant(AstNode declaration) {
-    AstNode memberDecl = declaration.getFirstChild(JavaGrammar.INTERFACE_MEMBER_DECL);
-    if (memberDecl == null) {
-      return false;
-    }
-
-    AstNode methodOrFieldDecl = declaration.getFirstChild(JavaGrammar.INTERFACE_MEMBER_DECL).getFirstChild(JavaGrammar.INTERFACE_METHOD_OR_FIELD_DECL);
-
-    return methodOrFieldDecl != null &&
-      methodOrFieldDecl.getFirstChild(JavaGrammar.INTERFACE_METHOD_OR_FIELD_REST).hasDirectChildren(JavaGrammar.CONSTANT_DECLARATORS_REST);
-  }
-
 }
