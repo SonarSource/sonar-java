@@ -397,7 +397,6 @@ public class JavaTreeMakerTest {
     assertThat(tree.block()).isNotNull();
     assertThat(tree.defaultValue()).isNull();
 
-
   }
 
   /*

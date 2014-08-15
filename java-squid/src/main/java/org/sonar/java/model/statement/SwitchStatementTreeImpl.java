@@ -59,12 +59,12 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken switchKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.SWITCH));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.SWITCH));
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR));
   }
 
   @Override
@@ -74,12 +74,12 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR));
   }
 
   @Override
   public SyntaxToken openBraceToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LWING));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LWING));
   }
 
   @Override
@@ -90,7 +90,7 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken closeBraceToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RWING));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RWING));
   }
 
   @Override

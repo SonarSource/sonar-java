@@ -53,7 +53,7 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LPAR));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LPAR));
   }
 
   @Override
@@ -63,7 +63,7 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RPAR));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RPAR));
   }
 
   @Override

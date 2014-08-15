@@ -114,7 +114,7 @@ public class JavaTreeMaker {
 
   public IdentifierTree identifier(AstNode astNode) {
     checkType(astNode, JavaTokenType.IDENTIFIER, JavaKeyword.THIS, JavaKeyword.CLASS, JavaKeyword.SUPER);
-    return new IdentifierTreeImpl(astNode, new InternalSyntaxToken(astNode));
+    return new IdentifierTreeImpl(InternalSyntaxToken.createLegacy(astNode), astNode);
   }
 
   private ExpressionTree qualifiedIdentifier(AstNode astNode) {
@@ -213,7 +213,7 @@ public class JavaTreeMaker {
 
   ExpressionTree referenceType(AstNode astNode, int dimSize) {
     ExpressionTree result = astNode.getFirstChild().is(JavaGrammar.BASIC_TYPE) ? basicType(astNode.getFirstChild()) : classType(astNode.getFirstChild());
-    return applyDim(result, dimSize+astNode.getChildren(JavaGrammar.DIM).size());
+    return applyDim(result, dimSize + astNode.getChildren(JavaGrammar.DIM).size());
   }
 
   public AnnotationTree annotation(AstNode astNode) {
@@ -298,15 +298,13 @@ public class JavaTreeMaker {
         qualifiedIdentifier = new MemberSelectExpressionTreeImpl(
           astNodeQualifiedIdentifier.getNextSibling().getNextSibling(),
           qualifiedIdentifier,
-          new IdentifierTreeImpl(nextNextSibling, new InternalSyntaxToken(nextNextSibling))
-          );
+          new IdentifierTreeImpl(InternalSyntaxToken.createLegacy(nextNextSibling), nextNextSibling));
       }
 
       imports.add(new JavaTree.ImportTreeImpl(
         importNode,
         importNode.hasDirectChildren(JavaKeyword.STATIC),
-        qualifiedIdentifier
-        ));
+        qualifiedIdentifier));
     }
     ImmutableList.Builder<Tree> types = ImmutableList.builder();
     for (AstNode typeNode : astNode.getChildren(JavaGrammar.TYPE_DECLARATION)) {

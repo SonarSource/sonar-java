@@ -51,7 +51,7 @@ public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTr
 
   @Override
   public SyntaxToken semicolonToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
   }
 
   @Override

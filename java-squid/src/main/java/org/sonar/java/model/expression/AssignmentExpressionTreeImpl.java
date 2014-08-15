@@ -59,7 +59,7 @@ public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements A
 
   @Override
   public SyntaxToken operatorToken() {
-    return new InternalSyntaxToken(getAstNode());
+    return InternalSyntaxToken.createLegacy(getAstNode());
   }
 
   @Override

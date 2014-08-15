@@ -80,7 +80,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public SyntaxToken assertKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.ASSERT));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.ASSERT));
   }
 
   @Override
@@ -91,7 +91,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   @Nullable
   @Override
   public SyntaxToken colonToken() {
-    return detail == null ? null : new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.COLON));
+    return detail == null ? null : InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.COLON));
   }
 
   @Nullable
@@ -102,7 +102,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public SyntaxToken semicolonToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
   }
 
   @Override

@@ -54,7 +54,7 @@ public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTr
 
   @Override
   public SyntaxToken throwKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.THROW));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.THROW));
   }
 
   @Override
@@ -64,7 +64,7 @@ public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTr
 
   @Override
   public SyntaxToken semicolonToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
   }
 
   @Override

@@ -52,7 +52,7 @@ public class InternalPostfixUnaryExpression extends AbstractTypedTree implements
 
   @Override
   public SyntaxToken operatorToken() {
-    return new InternalSyntaxToken(getAstNode());
+    return InternalSyntaxToken.createLegacy(getAstNode());
   }
 
   @Override

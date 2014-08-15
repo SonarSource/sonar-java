@@ -37,11 +37,11 @@ import java.util.List;
 public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
   // TODO remove:
   public static final org.sonar.java.model.declaration.ModifiersTreeImpl EMPTY =
-    new org.sonar.java.model.declaration.ModifiersTreeImpl((AstNode) null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
+    new ModifiersTreeImpl((AstNode) null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
 
   /* FIXME */
   public static final org.sonar.java.model.declaration.ModifiersTreeImpl EMPTY_MODIFIERS =
-    new org.sonar.java.model.declaration.ModifiersTreeImpl(ImmutableList.<AstNode>of(), ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
+    new ModifiersTreeImpl(ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of(), ImmutableList.<AstNode>of());
 
   private final List<Modifier> modifiers;
   private final List<AnnotationTree> annotations;
@@ -52,13 +52,15 @@ public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
     this.annotations = Preconditions.checkNotNull(annotations);
   }
 
-  public ModifiersTreeImpl(List<AstNode> children, List<Modifier> modifiers, List<AnnotationTree> annotations) {
+  public ModifiersTreeImpl(List<Modifier> modifiers, List<AnnotationTree> annotations, List<AstNode> children) {
     super(JavaGrammar.MODIFIERS);
+
+    this.modifiers = Preconditions.checkNotNull(modifiers);
+    this.annotations = Preconditions.checkNotNull(annotations);
+
     for (AstNode child : children) {
       addChild(child);
     }
-    this.modifiers = Preconditions.checkNotNull(modifiers);
-    this.annotations = Preconditions.checkNotNull(annotations);
   }
 
   @Override
@@ -88,11 +90,6 @@ public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
       Iterators.<Tree>emptyIterator(),
       annotations.iterator()
       );
-  }
-
-  @Override
-  public String toString() {
-    return "ModifiersTreeImpl";
   }
 
 }

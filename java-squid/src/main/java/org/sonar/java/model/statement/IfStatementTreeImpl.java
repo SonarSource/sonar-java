@@ -84,12 +84,12 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
   @Override
   public SyntaxToken ifKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.IF));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.IF));
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR));
   }
 
   @Override
@@ -99,7 +99,7 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR));
   }
 
   @Override
@@ -110,7 +110,7 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   @Nullable
   @Override
   public SyntaxToken elseKeyword() {
-    return elseStatement == null ? null : new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.ELSE));
+    return elseStatement == null ? null : InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.ELSE));
   }
 
   @Nullable

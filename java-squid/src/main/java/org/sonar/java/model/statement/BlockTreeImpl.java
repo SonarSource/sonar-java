@@ -62,7 +62,7 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
 
   @Override
   public SyntaxToken openBraceToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LWING));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LWING));
   }
 
   @Override
@@ -72,7 +72,7 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
 
   @Override
   public SyntaxToken closeBraceToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RWING));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RWING));
   }
 
   @Override

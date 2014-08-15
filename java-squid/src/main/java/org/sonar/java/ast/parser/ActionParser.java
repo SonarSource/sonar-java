@@ -60,6 +60,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Collections;
@@ -164,16 +165,22 @@ public class ActionParser extends Parser {
     rootNode = astNode;
     applyActions(astNode);
 
-    setAstNodeFields(rootNode, null, 0);
+    setAstNodeFields(rootNode, null, 0, Sets.<AstNode>newHashSet());
 
     if (verifyAssertions) {
-      verifySemanticModelInvariant(rootNode);
+      verifyAllReferencesAstNodesFromStronglyTypedTreeAreInFinalAstNode(rootNode);
     }
   }
 
-  private static void setAstNodeFields(AstNode astNode, @Nullable AstNode parent, int childIndex) {
-    if (parent != null) {
-      Preconditions.checkArgument(AstNodeReflector.getChildIndex(astNode) == childIndex, "Bad childIndex");
+  private void setAstNodeFields(AstNode astNode, @Nullable AstNode parent, int childIndex, Set<AstNode> ancestors) {
+    if (verifyAssertions && parent != null) {
+      if (AstNodeReflector.getChildIndex(astNode) != childIndex) {
+        throw new IllegalArgumentException("Bad childIndex on node: " + nodeToString(astNode) + ": " + astNode
+          + "\nExpected: " + childIndex
+          + "\nActual: " + AstNodeReflector.getChildIndex(astNode)
+          + "\nParent:"
+          + "\n" + AstXmlPrinter.print(parent));
+      }
     }
     AstNodeReflector.setParent(astNode, parent);
 
@@ -183,9 +190,13 @@ public class ActionParser extends Parser {
       int fromIndex = -1;
       int toIndex = -1;
 
+      if (verifyAssertions) {
+        ancestors.add(astNode);
+      }
       for (int i = 0; i < children.size(); i++) {
         AstNode child = children.get(i);
-        setAstNodeFields(child, astNode, i);
+        Preconditions.checkState(!ancestors.contains(child), "Cycle in AstNode on node: " + child);
+        setAstNodeFields(child, astNode, i, ancestors);
 
         if (token == null && child.hasToken()) {
           token = child.getToken();
@@ -197,6 +208,9 @@ public class ActionParser extends Parser {
 
         toIndex = child.getToIndex();
       }
+      if (verifyAssertions) {
+        ancestors.remove(astNode);
+      }
 
       AstNodeReflector.setToken(astNode, token);
       astNode.setFromIndex(fromIndex);
@@ -204,7 +218,7 @@ public class ActionParser extends Parser {
     }
   }
 
-  private void verifySemanticModelInvariant(AstNode astNode) {
+  private void verifyAllReferencesAstNodesFromStronglyTypedTreeAreInFinalAstNode(AstNode astNode) {
     if (!astNode.is(JavaGrammar.COMPILATION_UNIT)) {
       return;
     }
@@ -214,35 +228,106 @@ public class ActionParser extends Parser {
     JavaTree compilationUnitTree = (JavaTree) new JavaTreeMaker().compilationUnit(rootNode);
 
     for (JavaTree tree : getDescendants(compilationUnitTree)) {
-      for (AstNode node = tree.getAstNode(); node != null; node = node.getParent()) {
-        Preconditions.checkState(nodesSet.contains(node),
-          "The following associated AstNode is not present in tree: " + node
-            + (node.hasToken() ? " at line " + node.getTokenLine() : " [no line]")
-            + "\nReferenced from: " + tree.getClass().getSimpleName()
-            + "\n" + tree
-            + "\n" + PrinterVisitor.print(tree));
+      AstNode node = tree.getAstNode();
+      if (node == null) {
+        continue;
+      }
+
+      if (!nodesSet.contains(node)) {
+        throw new IllegalStateException("The following AstNode is dangling:"
+          + "\n" + nodeToString(node)
+          + "\nAt line: " + (node.hasToken() ? node.getTokenLine() : "N/A")
+          + "\nToken: " + (node.hasToken() ? node.getTokenOriginalValue() : "N/A")
+          + "\nAssociated to: " + tree.getClass().getSimpleName()
+          + "\nAll nodes:"
+          + "\n" + AstXmlPrinter.print(rootNode));
+      }
+
+      StringBuilder sb = new StringBuilder();
+      sb.append(nodeToString(node));
+
+      for (node = node.getParent(); node != null; node = node.getParent()) {
+        if (node instanceof JavaTree && ((JavaTree) node).isLegacy()) {
+          // Legacy nodes are not re-injected, and so will not be found
+          continue;
+        }
+
+        if (!nodesSet.contains(node)) {
+          throw new IllegalStateException("The following AstNode is dangling:"
+            + "\n" + nodeToString(node)
+            + "\nAt line: " + (node.hasToken() ? node.getTokenLine() : "N/A")
+            + "\nToken: " + (node.hasToken() ? node.getTokenOriginalValue() : "N/A")
+            + "\nAssociated to: " + tree.getClass().getSimpleName()
+            + "\nThrough ancestors: " + sb.toString()
+            + "\nAll nodes:"
+            + "\n" + AstXmlPrinter.print(rootNode));
+        }
+
+        sb.append(" -> ");
+        sb.append(nodeToString(node));
       }
     }
   }
 
-  private static List<JavaTree> getDescendants(JavaTree tree) {
-    List<JavaTree> result = Lists.newArrayList();
-    addDescendants(result, tree);
-    return result;
+  private static String nodeToString(AstNode astNode) {
+    if (astNode.getClass() == AstNode.class) {
+      return astNode.getType().toString();
+    } else {
+      return astNode.getClass().getSimpleName();
+    }
   }
 
-  private static void addDescendants(List<JavaTree> result, JavaTree tree) {
-    result.add(tree);
+  private static Set<JavaTree> getDescendants(JavaTree rootTree) {
+    Deque<JavaTree> toVisit = Lists.newLinkedList();
+    Set<JavaTree> visited = Sets.newHashSet();
+
+    toVisit.push(rootTree);
+    while (!toVisit.isEmpty()) {
+      JavaTree tree = toVisit.pop();
+      if (!visited.contains(tree)) {
+        visited.add(tree);
+        toVisit.addAll(treesToVisit(tree));
+      }
+    }
+
+    return visited;
+  }
+
+  private static Set<JavaTree> treesToVisit(JavaTree tree) {
+    Set<JavaTree> result = Sets.newHashSet();
+
+    // Get children from iterator
     if (!tree.isLeaf()) {
       Iterator<Tree> it = tree.childrenIterator();
       while (it.hasNext()) {
         JavaTree child = (JavaTree) it.next();
         if (child != null) {
           // TODO It's crappy, but classes such as ClassTreeImpl can return null in their children iterator
-          addDescendants(result, child);
+          result.add(child);
         }
       }
     }
+
+    // Get children which are not exposed from the iterator, but stored in fields
+    for (Field field : tree.getClass().getDeclaredFields()) {
+      if (Modifier.isStatic(field.getModifiers())) {
+        // Skip static fields, only instance onces are of interest
+        continue;
+      }
+
+      field.setAccessible(true);
+      try {
+        Object obj = field.get(tree);
+
+        if (obj instanceof JavaTree) {
+          result.add((JavaTree) obj);
+        }
+      } catch (IllegalAccessException e) {
+        throw Throwables.propagate(e);
+      }
+    }
+
+    return result;
   }
 
   private void applyActions(AstNode astNode) {
@@ -256,10 +341,11 @@ public class ActionParser extends Parser {
       children = astNode.getChildren().toArray(new AstNode[astNode.getChildren().size()]);
       Object[] convertedChildren = convertTypes(children);
 
-      Preconditions.checkState(
-        convertedChildren.length == method.getParameterTypes().length,
-        "Argument mismatch! Expected: " + method.getParameterTypes().length + " parameters, but got: " + convertedChildren.length + "\n" +
-          AstXmlPrinter.print(astNode));
+      if (convertedChildren.length != method.getParameterTypes().length) {
+        throw new IllegalStateException(
+          "Argument mismatch! Expected: " + method.getParameterTypes().length + " parameters, but got: " + convertedChildren.length + "\n" +
+            AstXmlPrinter.print(astNode));
+      }
 
       try {
         List<Token> oldTokens = verifyAssertions ? astNode.getTokens() : Collections.<Token>emptyList();
@@ -284,28 +370,30 @@ public class ActionParser extends Parser {
   private static void verifyNoInjectionFromJavaTreeMaker(AstNode n) {
     if (n instanceof JavaTree) {
       JavaTree stNode = (JavaTree) n;
-      Preconditions.checkArgument(stNode.getAstNode() == n, "Unexpected injection of subtree from JavaTree: " + n
-        + "\n" + AstXmlPrinter.print(n));
+      if (stNode.getAstNode() != n) {
+        throw new IllegalArgumentException("Unexpected injection of subtree from JavaTree: " + n
+          + "\n" + AstXmlPrinter.print(n));
+      }
     }
   }
 
   private void verifyTokens(AstNode o, AstNode n, List<Token> oldTokens) {
     List<Token> newTokens = n.getTokens();
 
-    Preconditions.checkArgument(
-      oldTokens.size() == newTokens.size(),
-      "Different number of reinjected tokens: old = " + oldTokens.size() + " vs new = " + newTokens.size()
+    if (oldTokens.size() != newTokens.size()) {
+      throw new IllegalArgumentException("Different number of reinjected tokens: old = " + oldTokens.size() + " vs new = " + newTokens.size()
         + "\nOld node: " + o
         + "\nNew node: " + n
         + "\nOld tokens: " + firstTokens(oldTokens)
         + "\nNew tokens: " + firstTokens(newTokens));
+    }
 
     for (int i = 0; i < oldTokens.size(); i++) {
-      Preconditions.checkArgument(
-        oldTokens.get(i) == newTokens.get(i),
-        "Difference in tokens number " + i
+      if (oldTokens.get(i) != newTokens.get(i)) {
+        throw new IllegalArgumentException("Difference in tokens number " + i
           + "\nExpected: " + oldTokens.get(i).getOriginalValue()
           + "\nActual: " + newTokens.get(i).getOriginalValue());
+      }
     }
   }
 

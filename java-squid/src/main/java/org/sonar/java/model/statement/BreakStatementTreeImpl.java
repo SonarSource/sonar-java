@@ -56,7 +56,7 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
 
   @Override
   public SyntaxToken breakKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.BREAK));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.BREAK));
   }
 
   @Nullable
@@ -67,7 +67,7 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
 
   @Override
   public SyntaxToken semicolonToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
   }
 
   @Override

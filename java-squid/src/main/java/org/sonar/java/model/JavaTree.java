@@ -74,6 +74,10 @@ public abstract class JavaTree extends AstNode implements Tree {
     this.astNode = astNode;
   }
 
+  public boolean isLegacy() {
+    return getAstNode() != this;
+  }
+
   private void prependChild(AstNode astNode) {
     Preconditions.checkState(getAstNode() == this, "Legacy strongly typed node");
 
@@ -96,6 +100,12 @@ public abstract class JavaTree extends AstNode implements Tree {
     for (int i = astNodes.length - 1; i >= 0; i--) {
       prependChild(astNodes[i]);
     }
+  }
+
+  @Override
+  public void addChild(AstNode child) {
+    Preconditions.checkState(!isLegacy(), "Children should not be added to legacy nodes");
+    super.addChild(child);
   }
 
   public AstNode getAstNode() {
@@ -339,7 +349,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public SyntaxToken keyword() {
-      return new InternalSyntaxToken(getLastTokenAstNode(getAstNode()));
+      return InternalSyntaxToken.createLegacy(getLastTokenAstNode(getAstNode()));
     }
 
     @Override

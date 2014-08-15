@@ -23,7 +23,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -88,13 +87,14 @@ public class TreeFactory {
       }
     }
 
-    return new ModifiersTreeImpl(modifierNodes.get(), modifiers.build(), annotations.build());
+    return new ModifiersTreeImpl(modifiers.build(), annotations.build(),
+      modifierNodes.get());
   }
 
   // Literals
 
   public ExpressionTree literal(AstNode astNode) {
-    InternalSyntaxToken token = new InternalSyntaxToken(astNode);
+    InternalSyntaxToken token = InternalSyntaxToken.create(astNode);
 
     return new LiteralTreeImpl(kindMaps.getLiteral(astNode.getType()), token);
   }
@@ -247,9 +247,7 @@ public class TreeFactory {
   }
 
   public ExpressionTree completeExplicityGenericInvocation(AstNode nonWildcardTypeArguments, ExpressionTree partial) {
-    System.out.println("Before: " + AstXmlPrinter.print((AstNode) partial));
     ((JavaTree) partial).prependChildren(nonWildcardTypeArguments);
-    System.out.println("After: " + AstXmlPrinter.print((AstNode) partial));
     return partial;
   }
 
@@ -279,7 +277,7 @@ public class TreeFactory {
         thisToken, arguments.get());
     } else {
       // this
-      return new IdentifierTreeImpl(new InternalSyntaxToken(thisToken), thisToken);
+      return new IdentifierTreeImpl(InternalSyntaxToken.create(thisToken));
     }
   }
 

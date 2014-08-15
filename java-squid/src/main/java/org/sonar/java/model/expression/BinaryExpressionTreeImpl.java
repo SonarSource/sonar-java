@@ -54,7 +54,7 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
 
   @Override
   public SyntaxToken operatorToken() {
-    return new InternalSyntaxToken(super.getAstNode());
+    return InternalSyntaxToken.createLegacy(super.getAstNode());
   }
 
   @Override

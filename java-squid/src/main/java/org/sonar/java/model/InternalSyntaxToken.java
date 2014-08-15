@@ -32,16 +32,18 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   private final Token token;
 
-  public InternalSyntaxToken(AstNode astNode) {
+  public InternalSyntaxToken(Token token, int fromIndex, int toIndex) {
     // Must pass token to super's constructor
-    super(astNode.getToken().getType(), astNode.getToken());
+    super(token.getType(), token);
+    this.token = token;
+
+    setFromIndex(fromIndex);
+    setToIndex(toIndex);
+  }
+
+  private InternalSyntaxToken(AstNode astNode) {
+    super(astNode);
     this.token = astNode.getToken();
-
-    Preconditions.checkArgument(astNode.hasToken(), "has no token");
-    Preconditions.checkArgument(astNode.getToken() == astNode.getLastToken(), "has several tokens");
-
-    setFromIndex(astNode.getFromIndex());
-    setToIndex(astNode.getToIndex());
   }
 
   @Override
@@ -72,6 +74,16 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   @Override
   public Iterator<Tree> childrenIterator() {
     throw new UnsupportedOperationException();
+  }
+
+  public static InternalSyntaxToken create(AstNode astNode) {
+    Preconditions.checkArgument(astNode.hasToken(), "has no token");
+    Preconditions.checkArgument(astNode.getToken() == astNode.getLastToken(), "has several tokens");
+    return new InternalSyntaxToken(astNode.getToken(), astNode.getFromIndex(), astNode.getToIndex());
+  }
+
+  public static InternalSyntaxToken createLegacy(AstNode astNode) {
+    return new InternalSyntaxToken(astNode);
   }
 
 }

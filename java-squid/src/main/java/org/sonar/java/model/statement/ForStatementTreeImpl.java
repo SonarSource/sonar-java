@@ -61,12 +61,12 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
 
   @Override
   public SyntaxToken forKeyword() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaKeyword.FOR));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.FOR));
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LPAR));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LPAR));
   }
 
   @Override
@@ -76,7 +76,7 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
 
   @Override
   public SyntaxToken firstSemicolonToken() {
-    return new InternalSyntaxToken(getAstNode().getChildren(JavaPunctuator.SEMI).get(0));
+    return InternalSyntaxToken.createLegacy(getAstNode().getChildren(JavaPunctuator.SEMI).get(0));
   }
 
   @Nullable
@@ -87,7 +87,7 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
 
   @Override
   public SyntaxToken secondSemicolonToken() {
-    return new InternalSyntaxToken(getAstNode().getChildren(JavaPunctuator.SEMI).get(1));
+    return InternalSyntaxToken.createLegacy(getAstNode().getChildren(JavaPunctuator.SEMI).get(1));
   }
 
   @Override
@@ -97,7 +97,7 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
 
   @Override
   public SyntaxToken closeParenToken() {
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RPAR));
+    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RPAR));
   }
 
   @Override
