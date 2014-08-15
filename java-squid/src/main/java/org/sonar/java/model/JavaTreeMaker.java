@@ -1385,7 +1385,7 @@ public class JavaTreeMaker {
 
   private boolean isStronglyTyped(AstNode astNode) {
     return astNode instanceof JavaTree &&
-      ((JavaTree) astNode).getAstNode() == astNode;
+      !((JavaTree) astNode).isLegacy();
   }
 
 }
