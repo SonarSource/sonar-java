@@ -68,7 +68,9 @@ class A {
       }
     };
 
-    new Handler(){
+    new
+    Handler
+    (){
       @Override
       public String handle() {
         return A.this.toStr();

@@ -1,4 +1,3 @@
-
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
@@ -21,12 +20,12 @@
 
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
@@ -37,12 +36,12 @@ public class AnonymousClassShouldBeLambdaCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AnonymousClassShouldBeLambdaCheck.java"), new VisitorsBridge(new AnonymousClassShouldBeLambdaCheck()));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AnonymousClassShouldBeLambdaCheck.java"), new VisitorsBridge(
+      new AnonymousClassShouldBeLambdaCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(30).withMessage("Make this anonymous inner class a lambda")
-        .next().atLine(56).withMessage("Make this anonymous inner class a lambda")
-        .next().atLine(71).withMessage("Make this anonymous inner class a lambda")
-    ;
+      .next().atLine(30).withMessage("Make this anonymous inner class a lambda")
+      .next().atLine(56).withMessage("Make this anonymous inner class a lambda")
+      .next().atLine(72).withMessage("Make this anonymous inner class a lambda");
   }
 
 }

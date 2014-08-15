@@ -36,9 +36,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.List;
 
 @Rule(
-    key = AnonymousClassShouldBeLambdaCheck.RULE_KEY,
-    priority = Priority.MAJOR,
-    tags = {"java8"})
+  key = AnonymousClassShouldBeLambdaCheck.RULE_KEY,
+  priority = Priority.MAJOR,
+  tags = {"java8"})
 public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1604";
@@ -66,7 +66,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     if (tree.classBody() != null) {
       List<Tree> members = tree.classBody().members();
       if (!useThisIdentifier(tree.classBody()) && !enumConstants.contains(tree.identifier()) && members.size() == 1 && members.get(0).is(Tree.Kind.METHOD)) {
-        context.addIssue(tree, RULE, "Make this anonymous inner class a lambda");
+        context.addIssue(tree.identifier(), RULE, "Make this anonymous inner class a lambda");
       }
     }
   }
@@ -83,7 +83,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
 
     @Override
     public void visitClass(ClassTree tree) {
-      //visit the class body but ignore inner classes
+      // visit the class body but ignore inner classes
       if (!visitedClassTree) {
         visitedClassTree = true;
         super.visitClass(tree);
@@ -92,13 +92,13 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
 
     @Override
     public void visitNewClass(NewClassTree tree) {
-      //ignore anonymous classes
+      // ignore anonymous classes
     }
 
     @Override
     public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
       scan(tree.expression());
-      //ignore identifier, because if it is this, it is a qualified this.
+      // ignore identifier, because if it is this, it is a qualified this.
     }
 
     @Override
