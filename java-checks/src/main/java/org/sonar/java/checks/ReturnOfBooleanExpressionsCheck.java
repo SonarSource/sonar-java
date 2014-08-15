@@ -19,79 +19,56 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Rule(
-  key = "S1126",
-  priority = Priority.MAJOR)
+    key = "S1126",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ReturnOfBooleanExpressionsCheck extends SquidCheck<LexerlessGrammar> {
+public class ReturnOfBooleanExpressionsCheck extends SubscriptionBaseVisitor {
+
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.IF_STATEMENT);
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Kind.IF_STATEMENT);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (hasElse(node) && isReturnBooleanLiteral(getTrueStatement(node)) && isReturnBooleanLiteral(getFalseStatement(node))) {
-      getContext().createLineViolation(this, "Replace this if-then-else statement by a single return statement.", node);
+  public void visitNode(Tree tree) {
+    IfStatementTree ifStatementTree = (IfStatementTree) tree;
+    if (hasOneReturnBoolean(ifStatementTree.elseStatement()) && hasOneReturnBoolean(ifStatementTree.thenStatement())) {
+      addIssue(tree, "Replace this if-then-else statement by a single return statement.");
     }
   }
 
-  private static boolean hasElse(AstNode node) {
-    return node.hasDirectChildren(JavaKeyword.ELSE);
-  }
-
-  private static AstNode getTrueStatement(AstNode node) {
-    return node.getFirstChild(JavaGrammar.STATEMENT);
-  }
-
-  private static AstNode getFalseStatement(AstNode node) {
-    return node.getLastChild();
-  }
-
-  private static boolean isReturnBooleanLiteral(AstNode node) {
-    return isBlockReturnBooleanLiteral(node) ||
-      isSimpleReturnBooleanLiteral(node);
-  }
-
-  private static boolean isBlockReturnBooleanLiteral(AstNode node) {
-    AstNode block = node.getFirstChild(JavaGrammar.BLOCK);
-    if (block == null) {
+  private boolean hasOneReturnBoolean(@Nullable StatementTree statementTree) {
+    if (statementTree == null) {
       return false;
     }
-
-    List<AstNode> blockStatements = block.getFirstChild(JavaGrammar.BLOCK_STATEMENTS).getChildren(JavaGrammar.BLOCK_STATEMENT);
-    return blockStatements.size() == 1 &&
-      blockStatements.get(0).hasDirectChildren(JavaGrammar.STATEMENT) &&
-      isSimpleReturnBooleanLiteral(blockStatements.get(0).getFirstChild(JavaGrammar.STATEMENT));
+    if (statementTree.is(Kind.BLOCK)) {
+      BlockTree block = (BlockTree) statementTree;
+      return block.body().size() == 1 && isReturnBooleanLiteral(block.body().get(0));
+    }
+    return isReturnBooleanLiteral(statementTree);
   }
 
-  private static boolean isSimpleReturnBooleanLiteral(AstNode node) {
-    AstNode returnStatement = node.getFirstChild(JavaGrammar.RETURN_STATEMENT);
-    return returnStatement != null &&
-      returnStatement.hasDirectChildren(JavaGrammar.EXPRESSION) &&
-      isBooleanLiteral(returnStatement.getFirstChild(JavaGrammar.EXPRESSION));
+  private boolean isReturnBooleanLiteral(StatementTree statementTree) {
+    if(statementTree.is(Kind.RETURN_STATEMENT)) {
+      ReturnStatementTree returnStatement = (ReturnStatementTree) statementTree;
+      return returnStatement.expression() != null && returnStatement.expression().is(Kind.BOOLEAN_LITERAL);
+    }
+    return false;
   }
-
-  private static boolean isBooleanLiteral(AstNode node) {
-    return hasSingleToken(node) &&
-      node.hasDescendant(Kind.BOOLEAN_LITERAL);
-  }
-
-  private static boolean hasSingleToken(AstNode node) {
-    return node.getToken().equals(node.getLastToken());
-  }
-
 }

@@ -63,5 +63,9 @@ class A {
     } else {
       return false;
     }
+    if (something)
+      return true;
+    else
+      return false;
   }
 }

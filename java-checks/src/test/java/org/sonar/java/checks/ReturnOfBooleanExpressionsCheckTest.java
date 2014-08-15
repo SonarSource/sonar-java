@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,11 +35,13 @@ public class ReturnOfBooleanExpressionsCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ReturnOfBooleanExpressionsCheck.java"), new ReturnOfBooleanExpressionsCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ReturnOfBooleanExpressionsCheck.java"), new VisitorsBridge(new ReturnOfBooleanExpressionsCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("Replace this if-then-else statement by a single return statement.")
         .next().atLine(9)
-        .next().atLine(27);
+        .next().atLine(27)
+        .next().atLine(66)
+    ;
   }
 
 }
