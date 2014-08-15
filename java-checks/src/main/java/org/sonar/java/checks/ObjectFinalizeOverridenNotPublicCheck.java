@@ -19,46 +19,47 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
-  key = "S1174",
-  priority = Priority.MAJOR)
+    key = "S1174",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ObjectFinalizeOverridenNotPublicCheck extends SquidCheck<LexerlessGrammar> {
+public class ObjectFinalizeOverridenNotPublicCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.MEMBER_DECL);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isFinalizeMethodMember(node) && isPublic(node)) {
-      getContext().createLineViolation(this, "Make this finalize() method protected.", node.getFirstChild(JavaTokenType.IDENTIFIER));
+  public void visitNode(Tree tree) {
+    MethodTree methodTree = (MethodTree) tree;
+    if (isFinalize(methodTree) && isPublic(methodTree)) {
+      addIssue(methodTree.simpleName(), "Make this finalize() method protected.");
     }
   }
 
-  private static boolean isFinalizeMethodMember(AstNode node) {
-    return node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST) &&
-      "finalize".equals(node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue());
+  private boolean isPublic(MethodTree methodTree) {
+    return methodTree.modifiers().modifiers().contains(Modifier.PUBLIC);
   }
 
-  private static boolean isPublic(AstNode node) {
-    return node.select()
-      .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
-      .children(JavaGrammar.MODIFIERS)
-      .children(JavaGrammar.MODIFIER)
-      .children(JavaKeyword.PUBLIC)
-      .isNotEmpty();
+  private boolean isFinalize(MethodTree methodTree) {
+    if("finalize".equals(methodTree.simpleName().name()) ) {
+      Tree returnType = methodTree.returnType();
+      if(returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
+        return "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
+     }
+    }
+    return false;
   }
-
 }

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class ObjectFinalizeOverridenNotPublicCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ObjectFinalizeOverridenNotPublicCheck.java"), new ObjectFinalizeOverridenNotPublicCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ObjectFinalizeOverridenNotPublicCheck.java"), new VisitorsBridge(new ObjectFinalizeOverridenNotPublicCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(15).withMessage("Make this finalize() method protected.");
   }
