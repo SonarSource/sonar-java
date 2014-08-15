@@ -19,33 +19,36 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.visitors.MethodHelper;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
   key = "S1175",
   priority = Priority.MAJOR,
   tags={"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ObjectFinalizeOverloadedCheck extends SquidCheck<LexerlessGrammar> {
+public class ObjectFinalizeOverloadedCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    MethodHelper.subscribe(this);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    MethodHelper method = new MethodHelper(node);
-
-    if ("finalize".equals(method.getName().getTokenOriginalValue()) && !method.getParameters().isEmpty()) {
-      getContext().createLineViolation(this, "Rename this method to avoid any possible confusion with Object.finalize().", node);
+  public void visitNode(Tree tree) {
+    MethodTree methodTree = (MethodTree) tree;
+    if (isFinalizeOverload(methodTree)) {
+      addIssue(methodTree.simpleName(), "Rename this method to avoid any possible confusion with Object.finalize().");
     }
   }
 
+  private boolean isFinalizeOverload(MethodTree methodTree) {
+    return "finalize".equals(methodTree.simpleName().name()) && !methodTree.parameters().isEmpty();
+  }
 }
