@@ -29,12 +29,15 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(
-    key = NPEThrowCheck.RULE_KEY,
-    priority = Priority.MAJOR,
-    tags = {"pitfall"})
+  key = NPEThrowCheck.RULE_KEY,
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 public class NPEThrowCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1695";
@@ -58,16 +61,20 @@ public class NPEThrowCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    for (ExpressionTree throwClauses : tree.throwsClauses()) {
-      raiseIssueOnNpe((AbstractTypedTree) throwClauses);
+    for (ExpressionTree throwClause : tree.throwsClauses()) {
+      raiseIssueOnNpe((AbstractTypedTree) throwClause);
     }
     super.visitMethod(tree);
   }
 
   private void raiseIssueOnNpe(AbstractTypedTree tree) {
     if (isNPE(tree)) {
-      context.addIssue(tree, ruleKey, "Throw some other exception here, such as \"IllegalArgumentException\".");
+      context.addIssue(treeAtFault(tree), ruleKey, "Throw some other exception here, such as \"IllegalArgumentException\".");
     }
+  }
+
+  private Tree treeAtFault(AbstractTypedTree tree) {
+    return tree.is(Kind.NEW_CLASS) ? ((NewClassTree) tree).identifier() : tree;
   }
 
   private boolean isNPE(AbstractTypedTree tree) {

@@ -2,7 +2,9 @@ class A {
   void foo() throws NullPointerException {
   }
   void bar() {
-    throw new NullPointerException();
+    throw new
+    NullPointerException
+    ();
   }
   void baz() {
     throw new java.lang.NullPointerException();

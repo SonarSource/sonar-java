@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 import java.io.File;
 
@@ -35,9 +35,9 @@ public class NPEThrowCheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NPEThrowCheck.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Throw some other exception here, such as \"IllegalArgumentException\".")
-        .next().atLine(5).withMessage("Throw some other exception here, such as \"IllegalArgumentException\".")
-        .noMore();
+      .next().atLine(2).withMessage("Throw some other exception here, such as \"IllegalArgumentException\".")
+      .next().atLine(6).withMessage("Throw some other exception here, such as \"IllegalArgumentException\".")
+      .noMore();
   }
 
 }
