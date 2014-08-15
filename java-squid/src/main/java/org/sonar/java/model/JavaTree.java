@@ -20,11 +20,11 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
+import org.sonar.java.ast.parser.AstNodeReflector;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -40,7 +40,6 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
 
-import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
@@ -75,37 +74,20 @@ public abstract class JavaTree extends AstNode implements Tree {
     this.astNode = astNode;
   }
 
-  private static final Field CHILDREN_FIELD;
-  private static final Field CHILD_INDEX_FIELD;
-  private static final Field PARENT_FIELD;
-
-  static {
-    try {
-      CHILDREN_FIELD = AstNode.class.getDeclaredField("children");
-      CHILDREN_FIELD.setAccessible(true);
-      CHILD_INDEX_FIELD = AstNode.class.getDeclaredField("childIndex");
-      CHILD_INDEX_FIELD.setAccessible(true);
-      PARENT_FIELD = AstNode.class.getDeclaredField("parent");
-      PARENT_FIELD.setAccessible(true);
-    } catch (NoSuchFieldException e) {
-      throw Throwables.propagate(e);
-    }
-  }
-
   private void prependChild(AstNode astNode) {
     Preconditions.checkState(getAstNode() == this, "Legacy strongly typed node");
 
-    List<AstNode> children = (List<AstNode>) getField(CHILDREN_FIELD, this);
+    List<AstNode> children = getChildren();
     if (children.isEmpty()) {
       // addChild() will take care of everything
       addChild(astNode);
     } else {
-      setField(PARENT_FIELD, astNode, this);
+      AstNodeReflector.setParent(astNode, this);
       children.add(0, astNode);
 
       // Reset the childIndex field of all children
       for (int i = 0; i < children.size(); i++) {
-        setField(CHILD_INDEX_FIELD, children.get(i), i);
+        AstNodeReflector.setChildIndex(children.get(i), i);
       }
     }
   }
@@ -113,22 +95,6 @@ public abstract class JavaTree extends AstNode implements Tree {
   public void prependChildren(AstNode... astNodes) {
     for (int i = astNodes.length - 1; i >= 0; i--) {
       prependChild(astNodes[i]);
-    }
-  }
-
-  private static void setField(Field field, Object instance, Object value) {
-    try {
-      field.set(instance, value);
-    } catch (IllegalAccessException e) {
-      throw Throwables.propagate(e);
-    }
-  }
-
-  private static Object getField(Field field, Object instance) {
-    try {
-      return field.get(instance);
-    } catch (IllegalAccessException e) {
-      throw Throwables.propagate(e);
     }
   }
 

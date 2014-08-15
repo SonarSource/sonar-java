@@ -164,8 +164,43 @@ public class ActionParser extends Parser {
     rootNode = astNode;
     applyActions(astNode);
 
+    setAstNodeFields(rootNode, null, 0);
+
     if (verifyAssertions) {
       verifySemanticModelInvariant(rootNode);
+    }
+  }
+
+  private static void setAstNodeFields(AstNode astNode, @Nullable AstNode parent, int childIndex) {
+    if (parent != null) {
+      Preconditions.checkArgument(AstNodeReflector.getChildIndex(astNode) == childIndex, "Bad childIndex");
+    }
+    AstNodeReflector.setParent(astNode, parent);
+
+    List<AstNode> children = astNode.getChildren();
+    if (!children.isEmpty()) {
+      Token token = null;
+      int fromIndex = -1;
+      int toIndex = -1;
+
+      for (int i = 0; i < children.size(); i++) {
+        AstNode child = children.get(i);
+        setAstNodeFields(child, astNode, i);
+
+        if (token == null && child.hasToken()) {
+          token = child.getToken();
+        }
+
+        if (fromIndex == -1) {
+          fromIndex = child.getFromIndex();
+        }
+
+        toIndex = child.getToIndex();
+      }
+
+      AstNodeReflector.setToken(astNode, token);
+      astNode.setFromIndex(fromIndex);
+      astNode.setToIndex(toIndex);
     }
   }
 

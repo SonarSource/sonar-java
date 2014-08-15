@@ -20,6 +20,7 @@
 package org.sonar.sslr.tests;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.Rule;
@@ -74,6 +75,7 @@ public class Assertions {
 
     public ParserAssert matches(String input) {
       isNotNull();
+      Preconditions.checkArgument(!hasTrailingWhitespaces(input), "Trailing whitespaces in input are not supported");
       String expected = "Rule '" + getRuleName() + "' should match:\n" + input;
       try {
         parseTillEof(input);
@@ -82,6 +84,10 @@ public class Assertions {
         throw new ParsingResultComparisonFailure(expected, actual);
       }
       return this;
+    }
+
+    private static boolean hasTrailingWhitespaces(String input) {
+      return input.endsWith(" ") || input.endsWith("\n") || input.endsWith("\r") || input.endsWith("\t");
     }
 
     public ParserAssert notMatches(String input) {

@@ -29,11 +29,11 @@ public class ForStatementTest {
   @Test
   public void realLife() {
     assertThat(JavaGrammar.FOR_STATEMENT)
-      .matches("for (int i = 0; i < 10; i++) {} ")
-      .matches("for (; i < 10; i++) {} ")
-      .matches("for (;; i++) {} ")
-      .matches("for (;;) {} ")
-      .matches("for (File file : files) {} ");
+      .matches("for (int i = 0; i < 10; i++) {}")
+      .matches("for (; i < 10; i++) {}")
+      .matches("for (;; i++) {}")
+      .matches("for (;;) {}")
+      .matches("for (File file : files) {}");
   }
 
 }

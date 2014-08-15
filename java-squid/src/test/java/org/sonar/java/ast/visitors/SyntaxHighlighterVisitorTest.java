@@ -89,9 +89,9 @@ public class SyntaxHighlighterVisitorTest {
     Mockito.verify(highlighting).highlight(offset(5, 1), offset(7, 4), "cppd");
     Mockito.verify(highlighting).highlight(offset(8, 1), offset(8, 18), "a");
     Mockito.verify(highlighting).highlight(offset(8, 19), offset(8, 27), "s");
-    Mockito.verify(highlighting).highlight(offset(9, 1), offset(9, 7), "k");
-    Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 7), "k");
-    Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 12), "k");
+    Mockito.verify(highlighting).highlight(offset(9, 1), offset(9, 6), "k");
+    Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 6), "k");
+    Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 11), "k");
     Mockito.verify(highlighting).highlight(offset(12, 12), offset(12, 14), "c");
     Mockito.verify(highlighting).done();
     Mockito.verifyNoMoreInteractions(highlighting);
