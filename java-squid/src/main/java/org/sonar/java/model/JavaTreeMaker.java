@@ -987,7 +987,7 @@ public class JavaTreeMaker {
     if (firstChildNode.is(JavaGrammar.PAR_EXPRESSION)) {
       // (expression)
       return expression(firstChildNode);
-    } else if (firstChildNode.is(JavaGrammar.METHOD_INVOCATION_EXPRESSION, JavaGrammar.MEMBER_SELECT_EXPRESSION, JavaGrammar.IDENTIFIER_EXPRESSION)) {
+    } else if (isStronglyTyped(firstChildNode)) {
       return (ExpressionTree) firstChildNode;
     } else if (firstChildNode.is(JavaGrammar.SUPER_EXPRESSION)) {
       // super...
@@ -1379,6 +1379,11 @@ public class JavaTreeMaker {
       result = new JavaTree.ArrayTypeTreeImpl(/* FIXME should not be null */null, result);
     }
     return result;
+  }
+
+  private boolean isStronglyTyped(AstNode astNode) {
+    return astNode instanceof JavaTree &&
+      ((JavaTree) astNode).getAstNode() == astNode;
   }
 
 }

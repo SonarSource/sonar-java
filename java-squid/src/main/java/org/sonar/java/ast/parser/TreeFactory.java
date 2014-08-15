@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -249,7 +250,9 @@ public class TreeFactory {
   }
 
   public ExpressionTree completeExplicityGenericInvocation(AstNode nonWildcardTypeArguments, ExpressionTree partial) {
-    // TODO do not lose nonWildcardTypeArguments
+    System.out.println("Before: " + AstXmlPrinter.print((AstNode) partial));
+    ((JavaTree) partial).prependChildren(nonWildcardTypeArguments);
+    System.out.println("After: " + AstXmlPrinter.print((AstNode) partial));
     return partial;
   }
 

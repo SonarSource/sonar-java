@@ -43,8 +43,6 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   private ExpressionTree condition;
   private StatementTree thenStatement;
 
-  private AstNode[] children;
-
   @Nullable
   private final StatementTree elseStatement;
 
@@ -63,7 +61,9 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
     super(JavaGrammar.IF_STATEMENT);
     this.elseStatement = Preconditions.checkNotNull(elseStatement);
 
-    this.children = children;
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   public IfStatementTreeImpl complete(ExpressionTree condition, StatementTree thenStatement, AstNode... children) {
@@ -72,14 +72,7 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
     this.condition = Preconditions.checkNotNull(condition);
     this.thenStatement = Preconditions.checkNotNull(thenStatement);
 
-    for (AstNode child : children) {
-      addChild(child);
-    }
-
-    for (AstNode child : this.children) {
-      addChild(child);
-    }
-    this.children = null;
+    prependChildren(children);
 
     return this;
   }

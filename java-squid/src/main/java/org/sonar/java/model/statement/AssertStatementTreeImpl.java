@@ -43,9 +43,6 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   @Nullable
   private final ExpressionTree detail;
 
-  private AstNode colonToken;
-  private AstNode detailAstNode;
-
   public AssertStatementTreeImpl(ExpressionTree condition, AstNode assertToken, AstNode expression, AstNode semicolonToken) {
     super(JavaGrammar.ASSERT_STATEMENT);
     this.condition = Preconditions.checkNotNull(condition);
@@ -60,17 +57,17 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
     super(JavaGrammar.ASSERT_STATEMENT);
     this.detail = Preconditions.checkNotNull(detail);
 
-    this.colonToken = colonToken;
-    this.detailAstNode = expression;
+    addChild(colonToken);
+    addChild(expression);
   }
 
   public AssertStatementTreeImpl complete(ExpressionTree condition, AstNode assertToken, AstNode expression, AstNode semicolonToken) {
     this.condition = Preconditions.checkNotNull(condition);
 
-    addChild(assertToken);
-    addChild(expression);
-    addChild(colonToken);
-    addChild(detailAstNode);
+    prependChildren(
+      assertToken,
+      expression);
+    // optional: colonToken, expression
     addChild(semicolonToken);
 
     return this;

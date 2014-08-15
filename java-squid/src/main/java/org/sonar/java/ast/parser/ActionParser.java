@@ -30,6 +30,7 @@ import com.google.common.collect.Sets;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Rule;
+import com.sonar.sslr.api.Token;
 import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import com.sonar.sslr.impl.matcher.RuleDefinition;
@@ -61,6 +62,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
@@ -225,8 +227,9 @@ public class ActionParser extends Parser {
           AstXmlPrinter.print(astNode));
 
       try {
+        List<Token> oldTokens = verifyAssertions ? astNode.getTokens() : Collections.<Token>emptyList();
         AstNode typedNode = (AstNode) method.invoke(action, convertedChildren);
-        replaceAstNode(astNode, typedNode);
+        replaceAstNode(astNode, typedNode, oldTokens);
       } catch (InvocationTargetException e) {
         throw Throwables.propagate(e);
       } catch (IllegalAccessException e) {
@@ -235,10 +238,11 @@ public class ActionParser extends Parser {
     }
 
     if (grammarBuilderInterceptor.hasMethodForRuleKey(astNode.getType())) {
+      List<Token> oldTokens = verifyAssertions ? astNode.getTokens() : Collections.<Token>emptyList();
       children = astNode.getChildren().toArray(new AstNode[astNode.getChildren().size()]);
       Preconditions.checkState(children.length == 1, "Unexpected number of children: " + children.length);
       AstNode typedNode = children[0];
-      replaceAstNode(astNode, typedNode);
+      replaceAstNode(astNode, typedNode, oldTokens);
     }
   }
 
@@ -270,10 +274,40 @@ public class ActionParser extends Parser {
     }
   }
 
-  private void replaceAstNode(AstNode o, AstNode n) {
+  private void verifyTokens(AstNode o, AstNode n, List<Token> oldTokens) {
+    List<Token> newTokens = n.getTokens();
+
+    Preconditions.checkArgument(
+      oldTokens.size() == newTokens.size(),
+      "Different number of reinjected tokens: old = " + oldTokens.size() + " vs new = " + newTokens.size()
+        + "\nOld node: " + o
+        + "\nNew node: " + n
+        + "\nOld tokens: " + firstTokens(oldTokens)
+        + "\nNew tokens: " + firstTokens(newTokens));
+
+    for (int i = 0; i < oldTokens.size(); i++) {
+      Preconditions.checkArgument(
+        oldTokens.get(i) == newTokens.get(i),
+        "Difference in tokens number " + i
+          + "\nExpected: " + oldTokens.get(i).getOriginalValue()
+          + "\nActual: " + newTokens.get(i).getOriginalValue());
+    }
+  }
+
+  private static String firstTokens(List<Token> tokens) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < Math.min(10, tokens.size()); i++) {
+      sb.append(tokens.get(i).getOriginalValue());
+      sb.append(' ');
+    }
+    return sb.toString();
+  }
+
+  private void replaceAstNode(AstNode o, AstNode n, List<Token> oldTokens) {
     if (verifyAssertions) {
       verifyNoInjectionFromJavaTreeMaker(n);
       verifyNoInjectionOfSeveralNewStronglyTypedNodes(o, n);
+      verifyTokens(o, n, oldTokens);
     }
 
     for (Field field : fields) {
