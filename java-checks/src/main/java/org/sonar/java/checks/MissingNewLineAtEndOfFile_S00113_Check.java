@@ -20,26 +20,39 @@
 package org.sonar.java.checks;
 
 import com.google.common.io.Closeables;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.List;
 
-@Rule(key = "S00113", priority = Priority.MINOR,tags={"convention"})
-public class MissingNewLineAtEndOfFile_S00113_Check extends SquidCheck<LexerlessGrammar> {
+@Rule(key = "S00113", priority = Priority.MINOR, tags = {"convention"})
+public class MissingNewLineAtEndOfFile_S00113_Check extends SubscriptionBaseVisitor {
+
 
   @Override
-  public void visitFile(AstNode astNode) {
+  public List<Tree.Kind> nodesToVisit() {
+    return null;
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    super.context = context;
+    visitFile(context.getFile());
+  }
+
+  public void visitFile(File file) {
     RandomAccessFile randomAccessFile = null;
     try {
-      randomAccessFile = new RandomAccessFile(getContext().getFile(), "r");
+      randomAccessFile = new RandomAccessFile(file, "r");
       if (!endsWithNewline(randomAccessFile)) {
-        getContext().createFileViolation(this, "Add a new line at the end of this file.");
+
+        addIssueOnFile("Add a new line at the end of this file.");
       }
     } catch (IOException e) {
       throw new SonarException(e);
@@ -60,5 +73,4 @@ public class MissingNewLineAtEndOfFile_S00113_Check extends SquidCheck<Lexerless
     String ch = new String(chars);
     return "\n".equals(ch) || "\r".equals(ch);
   }
-
 }

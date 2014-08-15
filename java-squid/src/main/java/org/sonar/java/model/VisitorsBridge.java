@@ -39,7 +39,6 @@ import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -87,7 +86,7 @@ public class VisitorsBridge extends JavaAstVisitor {
       } else {
         SemanticModel.handleMissingTypes(tree);
       }
-      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), semanticModel);
+      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), getContext().getFile(), semanticModel);
       for (JavaFileScanner scanner : scanners) {
         scanner.scanFile(context);
       }
@@ -98,7 +97,7 @@ public class VisitorsBridge extends JavaAstVisitor {
     String[] path = peekSourceFile().getName().split(Pattern.quote(File.separator));
     boolean isJavaLang = path.length > 3 && "java".equals(path[path.length - 3]) && "lang".equals(path[path.length - 2]);
     boolean isJavaLangAnnotation = path.length > 4 && "Annotation.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 4])
-      && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);
+        && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);
     boolean isSerializable = path.length > 3 && "Serializable.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 3]) && "io".equals(path[path.length - 2]);
     return !(isJavaLang || isJavaLangAnnotation || isSerializable);
   }
@@ -122,10 +121,12 @@ public class VisitorsBridge extends JavaAstVisitor {
     private final CompilationUnitTree tree;
     private final SourceFile sourceFile;
     private final SemanticModel semanticModel;
+    private File file;
 
-    public DefaultJavaFileScannerContext(CompilationUnitTree tree, SourceFile sourceFile, SemanticModel semanticModel) {
+    public DefaultJavaFileScannerContext(CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel) {
       this.tree = tree;
       this.sourceFile = sourceFile;
+      this.file = file;
       this.semanticModel = semanticModel;
     }
 
@@ -136,11 +137,21 @@ public class VisitorsBridge extends JavaAstVisitor {
 
     @Override
     public void addIssue(Tree tree, RuleKey ruleKey, String message) {
+      addIssue(((JavaTree) tree).getLine(), ruleKey, message);
+    }
+
+    @Override
+    public void addIssueOnFile(RuleKey ruleKey, String message) {
+      addIssue(-1, ruleKey, message);
+    }
+
+    private void addIssue(int line, RuleKey ruleKey, String message) {
       Preconditions.checkNotNull(ruleKey);
       Preconditions.checkNotNull(message);
-      int line = ((JavaTree) tree).getLine();
       CheckMessage checkMessage = new CheckMessage(ruleKey, message);
-      checkMessage.setLine(line);
+      if (line > 0) {
+        checkMessage.setLine(line);
+      }
       sourceFile.log(checkMessage);
     }
 
@@ -153,6 +164,11 @@ public class VisitorsBridge extends JavaAstVisitor {
     @Override
     public String getFileName() {
       return sourceFile.getName();
+    }
+
+    @Override
+    public File getFile() {
+      return file;
     }
 
   }

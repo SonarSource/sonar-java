@@ -34,7 +34,7 @@ import java.util.List;
 public abstract class SubscriptionBaseVisitor implements JavaFileScanner, CodeVisitor {
 
 
-  private JavaFileScannerContext context;
+  protected JavaFileScannerContext context;
   private Collection<Tree.Kind> nodesToVisit;
 
   public abstract List<Tree.Kind> nodesToVisit();
@@ -85,4 +85,7 @@ public abstract class SubscriptionBaseVisitor implements JavaFileScanner, CodeVi
     context.addIssue(tree, RuleKey.of(CheckList.REPOSITORY_KEY, RuleAnnotationUtils.getRuleKey(this.getClass())), message);
   }
 
+  public void addIssueOnFile(String message) {
+    context.addIssueOnFile(RuleKey.of(CheckList.REPOSITORY_KEY, RuleAnnotationUtils.getRuleKey(this.getClass())), message);
+  }
 }

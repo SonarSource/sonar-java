@@ -25,6 +25,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+import java.io.File;
 
 @Beta
 public interface JavaFileScannerContext {
@@ -33,9 +34,13 @@ public interface JavaFileScannerContext {
 
   void addIssue(Tree tree, RuleKey ruleKey, String message);
 
+  void addIssueOnFile(RuleKey ruleKey, String message);
+
   @Nullable
   Object getSemanticModel();
 
   String getFileName();
+
+  File getFile();
 
 }

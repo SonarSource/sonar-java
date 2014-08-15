@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
@@ -28,7 +29,7 @@ import java.io.File;
 
 public class MissingNewLineAtEndOfFile_S00113_CheckTest {
 
-  private MissingNewLineAtEndOfFile_S00113_Check check = new MissingNewLineAtEndOfFile_S00113_Check();
+  private VisitorsBridge check = new VisitorsBridge(new MissingNewLineAtEndOfFile_S00113_Check());
 
   @Test
   public void test() {
