@@ -102,6 +102,10 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
   }
 
+  public void prependChildren(List<AstNode> astNodes) {
+    prependChildren(astNodes.toArray(new AstNode[astNodes.size()]));
+  }
+
   @Override
   public void addChild(AstNode child) {
     Preconditions.checkState(!isLegacy(), "Children should not be added to legacy nodes");

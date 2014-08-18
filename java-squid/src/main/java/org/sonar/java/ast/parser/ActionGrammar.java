@@ -24,6 +24,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
@@ -226,7 +227,21 @@ public class ActionGrammar {
               b.firstOf(
                 b.invokeRule(JavaGrammar.CLASS_TYPE),
                 b.invokeRule(JavaGrammar.BASIC_TYPE)),
-              b.invokeRule(JavaGrammar.ARRAY_CREATOR_REST)))));
+              ARRAY_CREATOR_REST()))));
+  }
+
+  public NewArrayTreeImpl ARRAY_CREATOR_REST() {
+    return b.<NewArrayTreeImpl>nonterminal(JavaGrammar.ARRAY_CREATOR_REST)
+      .is(
+        f.completeArrayCreator(
+          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.firstOf(
+            f.newArrayCreatorWithInitializer(
+              b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), b.invokeRule(JavaGrammar.ARRAY_INITIALIZER)),
+            f.newArrayCreatorWithDimension(
+              b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RBRK),
+              b.zeroOrMore(b.invokeRule(JavaGrammar.DIM_EXPR)),
+              b.zeroOrMore(f.newWrapperAstNode(b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)), b.invokeRule(JavaGrammar.DIM)))))));
   }
 
   // End of expressions

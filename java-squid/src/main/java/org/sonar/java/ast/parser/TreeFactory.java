@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -305,25 +306,82 @@ public class TreeFactory {
       createdName, classCreatorRest);
   }
 
-  public ExpressionTree newArrayCreator(AstNode type, AstNode arrayCreatorRest) {
+  public ExpressionTree newArrayCreator(AstNode type, NewArrayTreeImpl partial) {
     JavaTree typeTree = (JavaTree) (type.is(JavaGrammar.BASIC_TYPE) ? treeMaker.basicType(type) : treeMaker.classType(type));
 
-    AstNode arrayInitializer = arrayCreatorRest.getFirstChild(JavaGrammar.ARRAY_INITIALIZER);
-    if (arrayInitializer != null) {
-      ImmutableList.Builder<ExpressionTree> elems = ImmutableList.builder();
-      for (AstNode elem : arrayInitializer.getChildren(JavaGrammar.VARIABLE_INITIALIZER)) {
-        elems.add(treeMaker.variableInitializer(elem));
-      }
-      return new NewArrayTreeImpl(typeTree, ImmutableList.<ExpressionTree>of(), elems.build(),
-        type, arrayCreatorRest);
-    } else {
-      ImmutableList.Builder<ExpressionTree> dimensions = ImmutableList.builder();
-      dimensions.add(treeMaker.expression(arrayCreatorRest.getFirstChild(JavaGrammar.EXPRESSION)));
-      for (AstNode dimExpr : arrayCreatorRest.getChildren(JavaGrammar.DIM_EXPR)) {
+    return partial.complete(typeTree,
+      type);
+  }
+
+  public NewArrayTreeImpl completeArrayCreator(Optional<List<AstNode>> annotations, NewArrayTreeImpl partial) {
+    if (annotations.isPresent()) {
+      partial.prependChildren(annotations.get());
+    }
+    return partial;
+  }
+
+  public NewArrayTreeImpl newArrayCreatorWithInitializer(AstNode openBracketToken, AstNode closeBracketToken, Optional<List<AstNode>> dims, AstNode arrayInitializer) {
+    ImmutableList.Builder<ExpressionTree> elems = ImmutableList.builder();
+    for (AstNode elem : arrayInitializer.getChildren(JavaGrammar.VARIABLE_INITIALIZER)) {
+      elems.add(treeMaker.variableInitializer(elem));
+    }
+
+    List<AstNode> children = Lists.newArrayList();
+    children.add(openBracketToken);
+    children.add(closeBracketToken);
+    if (dims.isPresent()) {
+      children.addAll(dims.get());
+    }
+    children.add(arrayInitializer);
+
+    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), elems.build(),
+      children);
+  }
+
+  public NewArrayTreeImpl newArrayCreatorWithDimension(AstNode openBracketToken, AstNode expression, AstNode closeBracketToken,
+    Optional<List<AstNode>> dimExpressions,
+    Optional<List<AstNode>> dims) {
+
+    ImmutableList.Builder<ExpressionTree> dimensions = ImmutableList.builder();
+    dimensions.add(treeMaker.expression(expression));
+    if (dimExpressions.isPresent()) {
+      for (AstNode dimExpr : dimExpressions.get()) {
         dimensions.add(treeMaker.expression(dimExpr.getFirstChild(JavaGrammar.EXPRESSION)));
       }
-      return new NewArrayTreeImpl(typeTree, dimensions.build(), ImmutableList.<ExpressionTree>of(),
-        type, arrayCreatorRest);
+    }
+
+    List<AstNode> children = Lists.newArrayList();
+    children.add(openBracketToken);
+    children.add(expression);
+    children.add(closeBracketToken);
+    if (dimExpressions.isPresent()) {
+      children.addAll(dimExpressions.get());
+    }
+    if (dims.isPresent()) {
+      children.addAll(dims.get());
+    }
+
+    return new NewArrayTreeImpl(dimensions.build(), ImmutableList.<ExpressionTree>of(),
+      children);
+  }
+
+  private static final AstNodeType WRAPPER_AST_NODE = new AstNodeType() {
+    @Override
+    public String toString() {
+      return "WRAPPER_AST_NODE";
+    }
+  };
+
+  public AstNode newWrapperAstNode(Optional<List<AstNode>> annotations, AstNode dim) {
+    if (annotations.isPresent()) {
+      AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
+      for (AstNode child : annotations.get()) {
+        astNode.addChild(child);
+      }
+      astNode.addChild(dim);
+      return astNode;
+    } else {
+      return dim;
     }
   }
 

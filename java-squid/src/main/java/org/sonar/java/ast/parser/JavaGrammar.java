@@ -860,9 +860,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(CREATED_NAME).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS),
       b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS)));
     b.rule(INNER_CREATOR).is(JavaTokenType.IDENTIFIER, CLASS_CREATOR_REST);
-    b.rule(ARRAY_CREATOR_REST).is(b.zeroOrMore(ANNOTATION), LBRK, b.firstOf(
-      b.sequence(RBRK, b.zeroOrMore(DIM), ARRAY_INITIALIZER),
-      b.sequence(EXPRESSION, RBRK, b.zeroOrMore(DIM_EXPR), b.zeroOrMore(b.zeroOrMore(ANNOTATION), DIM))));
     b.rule(CLASS_CREATOR_REST).is(b.optional(b.firstOf(DIAMOND, TYPE_ARGUMENTS)), ARGUMENTS, b.optional(CLASS_BODY));
     b.rule(DIAMOND).is(LT, GT);
     b.rule(ARRAY_INITIALIZER).is(LWING, b.optional(VARIABLE_INITIALIZER, b.zeroOrMore(COMMA, VARIABLE_INITIALIZER)), b.optional(COMMA), RWING);

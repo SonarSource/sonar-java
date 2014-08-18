@@ -32,20 +32,29 @@ import java.util.Iterator;
 import java.util.List;
 
 public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
-  private final Tree type;
+  private Tree type;
   private final List<ExpressionTree> dimensions;
   private final List<ExpressionTree> initializers;
 
-  public NewArrayTreeImpl(Tree type, List<ExpressionTree> dimensions, List<ExpressionTree> initializers, AstNode... children) {
+  public NewArrayTreeImpl(List<ExpressionTree> dimensions, List<ExpressionTree> initializers, List<AstNode> children) {
     super(Kind.NEW_ARRAY);
     // TODO maybe type should not be null?
-    this.type = type;
+    this.type = null;
     this.dimensions = Preconditions.checkNotNull(dimensions);
     this.initializers = Preconditions.checkNotNull(initializers);
 
     for (AstNode child : children) {
       addChild(child);
     }
+  }
+
+  public NewArrayTreeImpl complete(Tree type, AstNode... children) {
+    Preconditions.checkState(this.type == null);
+    this.type = type;
+
+    prependChildren(children);
+
+    return this;
   }
 
   public NewArrayTreeImpl(AstNode astNode, Tree type, List<ExpressionTree> dimensions, List<ExpressionTree> initializers) {
