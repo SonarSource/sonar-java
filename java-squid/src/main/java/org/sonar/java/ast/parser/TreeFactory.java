@@ -413,6 +413,12 @@ public class TreeFactory {
       children.toArray(new AstNode[children.size()]));
   }
 
+  public ExpressionTree voidClassExpression(AstNode voidToken, AstNode dotToken, AstNode classToken) {
+    // void.class
+    return new MemberSelectExpressionTreeImpl(treeMaker.basicType(voidToken), treeMaker.identifier(classToken),
+      voidToken, dotToken, classToken);
+  }
+
   // End of expressions
 
   // Helpers

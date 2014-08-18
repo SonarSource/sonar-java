@@ -1054,12 +1054,6 @@ public class JavaTreeMaker {
           throw new IllegalArgumentException("Unexpected AstNodeType: " + identifierSuffixNode.getFirstChild());
         }
       }
-    } else if (firstChildNode.is(JavaGrammar.VOID_CLASS_EXPRESSION)) {
-      // void.class
-      return new MemberSelectExpressionTreeImpl(
-        astNode,
-        basicType(firstChildNode.getFirstChild()),
-        identifier(firstChildNode.getFirstChild(JavaKeyword.CLASS)));
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + firstChildNode.getType());
     }

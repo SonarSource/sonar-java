@@ -257,6 +257,11 @@ public class ActionGrammar {
         f.basicClassExpression(b.invokeRule(JavaGrammar.BASIC_TYPE), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
   }
 
+  public ExpressionTree VOID_CLASS_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.VOID_CLASS_EXPRESSION)
+      .is(f.voidClassExpression(b.invokeRule(JavaKeyword.VOID), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
+  }
+
   // End of expressions
 
   public interface GrammarBuilder {
