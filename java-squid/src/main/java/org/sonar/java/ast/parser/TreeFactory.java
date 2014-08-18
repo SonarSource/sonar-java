@@ -291,6 +291,14 @@ public class TreeFactory {
     return applySuperSuffix(superToken, superSuffix);
   }
 
+  public ExpressionTree newExpression(AstNode newToken, Optional<List<AstNode>> annotations, ExpressionTree partial) {
+    if (annotations.isPresent()) {
+      ((JavaTree) partial).prependChildren(annotations.get());
+    }
+    ((JavaTree) partial).prependChildren(newToken);
+    return partial;
+  }
+
   public ExpressionTree completeCreator(Optional<AstNode> nonWildcardTypeArguments, ExpressionTree partial) {
     if (nonWildcardTypeArguments.isPresent()) {
       ((JavaTree) partial).prependChildren(nonWildcardTypeArguments.get());

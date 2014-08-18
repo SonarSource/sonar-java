@@ -217,6 +217,11 @@ public class ActionGrammar {
       .is(f.superExpression(b.invokeRule(JavaKeyword.SUPER), b.invokeRule(JavaGrammar.SUPER_SUFFIX)));
   }
 
+  public ExpressionTree NEW_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.NEW_EXPRESSION)
+      .is(f.newExpression(b.invokeRule(JavaKeyword.NEW), b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)), CREATOR()));
+  }
+
   public ExpressionTree CREATOR() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.CREATOR)
       .is(
