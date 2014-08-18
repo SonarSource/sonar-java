@@ -19,116 +19,162 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.ast.AstSelect;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Map;
-import java.util.Stack;
+import javax.annotation.Nullable;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 @Rule(
-  key = "HiddenFieldCheck",
-  priority = Priority.MAJOR,
-  tags = {"pitfall"})
+    key = "HiddenFieldCheck",
+    priority = Priority.MAJOR,
+    tags = {"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class HiddenFieldCheck extends SquidCheck<LexerlessGrammar> {
+public class HiddenFieldCheck extends SubscriptionBaseVisitor {
 
-  private static final AstNodeType[] LOCAL_VARIABLE_TYPES = new AstNodeType[] {
-    JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
-    JavaGrammar.FOR_INIT
-  };
-
-  private final Stack<Map<String, Integer>> fields = new Stack<Map<String, Integer>>();
+  private final LinkedList<ImmutableMap<String, VariableTree>> fields = Lists.newLinkedList();
+  private final Deque<List<VariableTree>> excludedVariables = Lists.newLinkedList();
+  private final List<VariableTree> flattenExcludedVariables = Lists.newArrayList();
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_BODY);
-    subscribeTo(LOCAL_VARIABLE_TYPES);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(
+        Tree.Kind.CLASS,
+        Tree.Kind.ENUM,
+        Tree.Kind.INTERFACE,
+        Tree.Kind.ANNOTATION_TYPE,
+        Tree.Kind.VARIABLE,
+        Tree.Kind.METHOD,
+        Tree.Kind.CONSTRUCTOR,
+        Tree.Kind.STATIC_INITIALIZER
+    );
   }
 
   @Override
-  public void visitFile(AstNode node) {
+  public void scanFile(JavaFileScannerContext context) {
     fields.clear();
+    excludedVariables.clear();
+    flattenExcludedVariables.clear();
+    super.scanFile(context);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.CLASS_BODY)) {
-      fields.push(getFields(node));
-    } else if (!isInStaticBlock(node)) {
-      checkLocalVariables(node);
-    }
-  }
-
-  private static boolean isInStaticBlock(AstNode node) {
-    AstSelect query = node.select()
-      .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION, JavaGrammar.CLASS_INIT_DECLARATION)
-      .children(JavaGrammar.MODIFIERS, JavaKeyword.STATIC);
-
-    for (AstNode modifiersOrStatic : query) {
-      if (modifiersOrStatic.is(JavaKeyword.STATIC) || ((ModifiersTree) modifiersOrStatic).modifiers().contains(Modifier.STATIC)) {
-        return true;
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ANNOTATION_TYPE)) {
+      ClassTree classTree = (ClassTree) tree;
+      ImmutableMap.Builder<String, VariableTree> builder = ImmutableMap.builder();
+      for (Tree member : classTree.members()) {
+        if (member.is(Tree.Kind.VARIABLE)) {
+          VariableTree variableTree = (VariableTree) member;
+          builder.put(variableTree.simpleName().name(), variableTree);
+        }
+      }
+      fields.push(builder.build());
+      excludedVariables.push(Lists.<VariableTree>newArrayList());
+    } else if (tree.is(Tree.Kind.VARIABLE)) {
+      VariableTree variableTree = (VariableTree) tree;
+      for (ImmutableMap<String, VariableTree> variables : fields) {
+        if (variables.values().contains(variableTree)) {
+          return;
+        }
+        String identifier = variableTree.simpleName().name();
+        VariableTree hiddenVariable = variables.get(identifier);
+        if (!flattenExcludedVariables.contains(variableTree) && hiddenVariable != null) {
+          addIssue(variableTree, "Rename \"" + identifier + "\" which hides the field declared at line " + ((JavaTree) hiddenVariable).getLine() + ".");
+          return;
+        }
+      }
+    } else if (tree.is(Tree.Kind.STATIC_INITIALIZER)) {
+      excludeVariablesFromBlock((BlockTree) tree);
+    } else {
+      MethodTree methodTree = (MethodTree) tree;
+      excludedVariables.peek().addAll(methodTree.parameters());
+      flattenExcludedVariables.addAll(methodTree.parameters());
+      if (methodTree.modifiers().modifiers().contains(Modifier.STATIC)) {
+        excludeVariablesFromBlock(methodTree.block());
       }
     }
-
-    return false;
   }
 
   @Override
-  public void leaveNode(AstNode node) {
-    if (node.is(JavaGrammar.CLASS_BODY)) {
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ANNOTATION_TYPE)) {
       fields.pop();
+      flattenExcludedVariables.removeAll(excludedVariables.pop());
     }
   }
 
-  private void checkLocalVariables(AstNode node) {
-    AstNode variableDeclarators = node.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS);
-    if (variableDeclarators != null) {
-      for (AstNode variableDeclarator : variableDeclarators.getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-        checkLocalVariable(variableDeclarator.getFirstChild(JavaTokenType.IDENTIFIER));
+  private void excludeVariablesFromBlock(@Nullable BlockTree blockTree) {
+    if (blockTree != null) {
+      List<VariableTree> variableTrees = new VariableList().scan(blockTree);
+      excludedVariables.peek().addAll(variableTrees);
+      flattenExcludedVariables.addAll(variableTrees);
+    }
+  }
+
+  private static class VariableList {
+
+    private List<VariableTree> variables;
+    private List<Tree.Kind> visitNodes;
+    private List<Tree.Kind> excludedNodes;
+
+    List<VariableTree> scan(Tree tree) {
+      visitNodes = nodesToVisit();
+      excludedNodes = excludedNodes();
+      variables = Lists.newArrayList();
+      visit(tree);
+      return variables;
+    }
+
+    public List<Tree.Kind> nodesToVisit() {
+      return ImmutableList.of(Tree.Kind.VARIABLE);
+    }
+
+    public List<Tree.Kind> excludedNodes() {
+      return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.NEW_CLASS);
+    }
+
+    private void visit(Tree tree) {
+      if (isSubscribed(tree)) {
+        variables.add((VariableTree) tree);
+      }
+      visitChildren(tree);
+    }
+
+    private void visitChildren(Tree tree) {
+      JavaTree javaTree = (JavaTree) tree;
+      if (!javaTree.isLeaf()) {
+        for (Iterator<Tree> iter = javaTree.childrenIterator(); iter.hasNext(); ) {
+          Tree next = iter.next();
+          if (next != null && !isExcluded(next)) {
+            visit(next);
+          }
+        }
       }
     }
-  }
 
-  private void checkLocalVariable(AstNode node) {
-    for (Map<String, Integer> classFields : Lists.reverse(fields)) {
-      String identifier = node.getTokenOriginalValue();
-      Integer hiddenFieldLine = classFields.get(identifier);
-      if (hiddenFieldLine != null) {
-        getContext().createLineViolation(this, "Rename \"" + identifier + "\" which hides the field declared at line " + hiddenFieldLine + ".", node);
-        return;
-      }
-    }
-  }
-
-  private static Map<String, Integer> getFields(AstNode node) {
-    AstSelect fieldIdentifiers = node.select()
-      .children(JavaGrammar.CLASS_BODY_DECLARATION)
-      .children(JavaGrammar.MEMBER_DECL)
-      .children(JavaGrammar.FIELD_DECLARATION)
-      .children(JavaGrammar.VARIABLE_DECLARATORS)
-      .children(JavaGrammar.VARIABLE_DECLARATOR)
-      .children(JavaTokenType.IDENTIFIER);
-
-    ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
-
-    for (AstNode fieldIdentifier : fieldIdentifiers) {
-      builder.put(fieldIdentifier.getTokenOriginalValue(), fieldIdentifier.getTokenLine());
+    private boolean isSubscribed(Tree tree) {
+      return visitNodes.contains(((JavaTree) tree).getKind());
     }
 
-    return builder.build();
+    private boolean isExcluded(Tree tree) {
+      return excludedNodes.contains(((JavaTree) tree).getKind());
+    }
   }
 
 }

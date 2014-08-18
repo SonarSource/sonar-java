@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class HiddenFieldCheckTest {
   public void test() {
     new HiddenFieldCheck();
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/HiddenFieldCheck.java"), new HiddenFieldCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/HiddenFieldCheck.java"), new VisitorsBridge(new HiddenFieldCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(7).withMessage("Rename \"foo\" which hides the field declared at line 3.")
         .next().atLine(42).withMessage("Rename \"bar\" which hides the field declared at line 4.")

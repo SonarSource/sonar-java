@@ -142,3 +142,7 @@ class Foo {
     int i = 0; // Compliant
   }
 }
+
+public @interface AnnotationType {
+ String[] value();
+}
