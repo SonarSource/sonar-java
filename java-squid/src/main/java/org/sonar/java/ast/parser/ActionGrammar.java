@@ -25,6 +25,7 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
+import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
@@ -102,20 +103,20 @@ public class ActionGrammar {
     return b.<IfStatementTreeImpl>nonterminal(JavaGrammar.IF_STATEMENT)
       .is(
         f.completeIf(
-          b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaGrammar.PAR_EXPRESSION), b.invokeRule(JavaGrammar.STATEMENT),
+          b.invokeRule(JavaKeyword.IF), PARENTHESIZED_EXPRESSION(), b.invokeRule(JavaGrammar.STATEMENT),
           b.optional(
             f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), b.invokeRule(JavaGrammar.STATEMENT)))));
   }
 
   public WhileStatementTreeImpl WHILE_STATEMENT() {
     return b.<WhileStatementTreeImpl>nonterminal(JavaGrammar.WHILE_STATEMENT)
-      .is(f.whileStatement(b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaGrammar.PAR_EXPRESSION), b.invokeRule(JavaGrammar.STATEMENT)));
+      .is(f.whileStatement(b.invokeRule(JavaKeyword.WHILE), PARENTHESIZED_EXPRESSION(), b.invokeRule(JavaGrammar.STATEMENT)));
   }
 
   public DoWhileStatementTreeImpl DO_WHILE_STATEMENT() {
     return b.<DoWhileStatementTreeImpl>nonterminal(JavaGrammar.DO_STATEMENT)
       .is(
-        f.doWhileStatement(b.invokeRule(JavaKeyword.DO), b.invokeRule(JavaGrammar.STATEMENT), b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaGrammar.PAR_EXPRESSION),
+        f.doWhileStatement(b.invokeRule(JavaKeyword.DO), b.invokeRule(JavaGrammar.STATEMENT), b.invokeRule(JavaKeyword.WHILE), PARENTHESIZED_EXPRESSION(),
           b.invokeRule(JavaPunctuator.SEMI)));
   }
 
@@ -123,7 +124,7 @@ public class ActionGrammar {
     return b.<SwitchStatementTreeImpl>nonterminal(JavaGrammar.SWITCH_STATEMENT)
       .is(
         f.switchStatement(
-          b.invokeRule(JavaKeyword.SWITCH), b.invokeRule(JavaGrammar.PAR_EXPRESSION), b.invokeRule(JavaPunctuator.LWING),
+          b.invokeRule(JavaKeyword.SWITCH), PARENTHESIZED_EXPRESSION(), b.invokeRule(JavaPunctuator.LWING),
           b.zeroOrMore(SWITCH_GROUP()),
           b.invokeRule(JavaPunctuator.RWING)));
   }
@@ -143,7 +144,7 @@ public class ActionGrammar {
 
   public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
     return b.<SynchronizedStatementTreeImpl>nonterminal(JavaGrammar.SYNCHRONIZED_STATEMENT)
-      .is(f.synchronizedStatement(b.invokeRule(JavaKeyword.SYNCHRONIZED), b.invokeRule(JavaGrammar.PAR_EXPRESSION), BLOCK()));
+      .is(f.synchronizedStatement(b.invokeRule(JavaKeyword.SYNCHRONIZED), PARENTHESIZED_EXPRESSION(), BLOCK()));
   }
 
   public BreakStatementTreeImpl BREAK_STATEMENT() {
@@ -190,8 +191,8 @@ public class ActionGrammar {
       .is(f.lambdaExpression(b.invokeRule(JavaGrammar.LAMBDA_PARAMETERS), b.invokeRule(JavaGrammar.ARROW), b.invokeRule(JavaGrammar.LAMBDA_BODY)));
   }
 
-  public ExpressionTree PARENTHESIZED_EXPRESSION() {
-    return b.<ExpressionTree>nonterminal(JavaGrammar.PAR_EXPRESSION)
+  public ParenthesizedTreeImpl PARENTHESIZED_EXPRESSION() {
+    return b.<ParenthesizedTreeImpl>nonterminal(JavaGrammar.PAR_EXPRESSION)
       .is(f.parenthesizedExpression(b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR)));
   }
 

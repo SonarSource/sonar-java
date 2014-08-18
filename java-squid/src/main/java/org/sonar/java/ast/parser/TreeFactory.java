@@ -122,11 +122,13 @@ public class TreeFactory {
       colonToken, expression);
   }
 
-  public IfStatementTreeImpl completeIf(AstNode ifToken, AstNode condition, AstNode statement, Optional<IfStatementTreeImpl> elseClause) {
+  public IfStatementTreeImpl completeIf(AstNode ifToken, ParenthesizedTreeImpl condition, AstNode statement, Optional<IfStatementTreeImpl> elseClause) {
     if (elseClause.isPresent()) {
-      return elseClause.get().complete(treeMaker.expression(condition), treeMaker.statement(statement), ifToken, condition, statement);
+      return elseClause.get().complete(condition, treeMaker.statement(statement),
+        ifToken, condition, statement);
     } else {
-      return new IfStatementTreeImpl(treeMaker.expression(condition), treeMaker.statement(statement), ifToken, condition, statement);
+      return new IfStatementTreeImpl(condition, treeMaker.statement(statement),
+        ifToken, condition, statement);
     }
   }
 
@@ -134,18 +136,18 @@ public class TreeFactory {
     return new IfStatementTreeImpl(treeMaker.statement(elseStatement), elseToken, elseStatement);
   }
 
-  public WhileStatementTreeImpl whileStatement(AstNode whileToken, AstNode expression, AstNode statement) {
-    return new WhileStatementTreeImpl(treeMaker.expression(expression), treeMaker.statement(statement),
+  public WhileStatementTreeImpl whileStatement(AstNode whileToken, ParenthesizedTreeImpl expression, AstNode statement) {
+    return new WhileStatementTreeImpl(expression, treeMaker.statement(statement),
       whileToken, expression, statement);
   }
 
-  public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, AstNode statement, AstNode whileToken, AstNode expression, AstNode semicolonToken) {
-    return new DoWhileStatementTreeImpl(treeMaker.statement(statement), treeMaker.expression(expression),
+  public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, AstNode statement, AstNode whileToken, ParenthesizedTreeImpl expression, AstNode semicolonToken) {
+    return new DoWhileStatementTreeImpl(treeMaker.statement(statement), expression,
       doToken, statement, whileToken, expression, semicolonToken);
   }
 
   public SwitchStatementTreeImpl switchStatement(
-    AstNode switchToken, AstNode expression, AstNode leftCurlyBraceToken, Optional<List<CaseGroupTreeImpl>> optionalGroups, AstNode rightCurlyBraceToken) {
+    AstNode switchToken, ParenthesizedTreeImpl expression, AstNode leftCurlyBraceToken, Optional<List<CaseGroupTreeImpl>> optionalGroups, AstNode rightCurlyBraceToken) {
 
     List<CaseGroupTreeImpl> groups = optionalGroups.isPresent() ? optionalGroups.get() : Collections.<CaseGroupTreeImpl>emptyList();
 
@@ -154,7 +156,7 @@ public class TreeFactory {
     children.addAll(groups);
     children.add(rightCurlyBraceToken);
 
-    return new SwitchStatementTreeImpl(treeMaker.expression(expression), groups,
+    return new SwitchStatementTreeImpl(expression, groups,
       children.build());
   }
 
@@ -179,8 +181,8 @@ public class TreeFactory {
       defaultToken, colonToken);
   }
 
-  public SynchronizedStatementTreeImpl synchronizedStatement(AstNode synchronizedToken, AstNode expression, BlockTreeImpl block) {
-    return new SynchronizedStatementTreeImpl(treeMaker.expression(expression), block,
+  public SynchronizedStatementTreeImpl synchronizedStatement(AstNode synchronizedToken, ParenthesizedTreeImpl expression, BlockTreeImpl block) {
+    return new SynchronizedStatementTreeImpl(expression, block,
       synchronizedToken, expression, block);
   }
 
@@ -245,7 +247,7 @@ public class TreeFactory {
       parameters, arrowToken, body);
   }
 
-  public ExpressionTree parenthesizedExpression(AstNode leftParenthesisToken, AstNode expression, AstNode rightParenthesisToken) {
+  public ParenthesizedTreeImpl parenthesizedExpression(AstNode leftParenthesisToken, AstNode expression, AstNode rightParenthesisToken) {
     return new ParenthesizedTreeImpl(treeMaker.expression(expression),
       leftParenthesisToken, expression, rightParenthesisToken);
   }
