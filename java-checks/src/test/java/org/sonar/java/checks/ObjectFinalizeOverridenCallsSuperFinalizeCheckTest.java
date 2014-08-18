@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(
         new File("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java"),
-        new ObjectFinalizeOverridenCallsSuperFinalizeCheck());
+        new VisitorsBridge(new ObjectFinalizeOverridenCallsSuperFinalizeCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(10).withMessage("Move this super.finalize() call to the end of this Object.finalize() implementation.")
         .next().atLine(15).withMessage("Add a call to super.finalize() at the end of this Object.finalize() implementation.")

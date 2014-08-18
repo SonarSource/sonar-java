@@ -19,114 +19,101 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.ast.AstSelect;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 @Rule(
-  key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck",
-  priority = Priority.BLOCKER,
-  tags = {"bug"})
+    key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck",
+    priority = Priority.BLOCKER,
+    tags = {"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
-public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SquidCheck<LexerlessGrammar> {
+public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SubscriptionBaseVisitor {
 
-  private AstNode lastSuperFinalizeStatement;
+
+  private MethodInvocationTree lastStatementTree;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.MEMBER_DECL);
-    subscribeTo(JavaGrammar.METHOD_INVOCATION_EXPRESSION);
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD, Kind.METHOD_INVOCATION);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
-
-      if (isObjectFinalize(node)) {
-        lastSuperFinalizeStatement = null;
+  public void visitNode(Tree tree) {
+    if (tree.is(Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
+      if (methodInvocationTree.methodSelect().is(Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
+        if ("finalize".equals(mset.identifier().name()) && mset.expression().is(Kind.IDENTIFIER) && "super".equals(((IdentifierTree) mset.expression()).name())) {
+          lastStatementTree = methodInvocationTree;
+        }
       }
-    } else if (isSuperFinalize(node)) {
-      lastSuperFinalizeStatement = node.getFirstAncestor(JavaGrammar.STATEMENT);
-    }
-  }
-
-  private static boolean isSuperFinalize(AstNode node) {
-    if (!node.is(JavaGrammar.METHOD_INVOCATION_EXPRESSION)) {
-      return false;
-    }
-
-    MethodInvocationTree tree = (MethodInvocationTree) node;
-
-    return tree.methodSelect().is(Kind.MEMBER_SELECT) &&
-      isSuperFinalize((MemberSelectExpressionTree) tree.methodSelect());
-  }
-
-  private static boolean isSuperFinalize(MemberSelectExpressionTree tree) {
-    return "finalize".equals(tree.identifier().name()) &&
-      tree.expression().is(Kind.IDENTIFIER) &&
-      "super".equals(((IdentifierTree) tree.expression()).name());
-  }
-
-  private boolean isObjectFinalize(AstNode node) {
-    AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
-    return "finalize".equals(identifier.getTokenValue()) &&
-      !node.getFirstDescendant(JavaGrammar.FORMAL_PARAMETERS).hasDirectChildren(JavaGrammar.FORMAL_PARAMETER_DECLS);
-  }
-
-  @Override
-  public void leaveNode(AstNode node) {
-    if (node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST) && isObjectFinalize(node)) {
-      AstSelect methodBlockStatement = node.select()
-        .children(JavaGrammar.VOID_METHOD_DECLARATOR_REST)
-        .children(JavaGrammar.METHOD_BODY)
-        .children(JavaGrammar.BLOCK)
-        .children(JavaGrammar.BLOCK_STATEMENTS)
-        .children(JavaGrammar.BLOCK_STATEMENT);
-
-      if (lastSuperFinalizeStatement == null) {
-        getContext().createLineViolation(this, "Add a call to super.finalize() at the end of this Object.finalize() implementation.", node.getFirstChild(JavaTokenType.IDENTIFIER));
-      } else if (!lastSuperFinalizeStatement.equals(getLastEffectiveStatement(getLastBlockStatement(methodBlockStatement)))) {
-        getContext().createLineViolation(this, "Move this super.finalize() call to the end of this Object.finalize() implementation.", lastSuperFinalizeStatement);
+    } else {
+      if (isFinalize((MethodTree) tree)) {
+        lastStatementTree = null;
       }
     }
   }
 
-  private static AstNode getLastBlockStatement(Iterable<AstNode> blockStatements) {
-    AstNode result = null;
-
-    for (AstNode blockStatement : blockStatements) {
-      AstNode statement = blockStatement.getFirstChild(JavaGrammar.STATEMENT);
-      if (statement != null) {
-        result = statement;
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree.is(Kind.METHOD) && isFinalize((MethodTree) tree)) {
+      MethodTree methodTree = (MethodTree) tree;
+      if (lastStatementTree == null) {
+        addIssue(methodTree.simpleName(), "Add a call to super.finalize() at the end of this Object.finalize() implementation.");
+      } else if (!isLastStatement(methodTree, lastStatementTree)) {
+        addIssue(lastStatementTree, "Move this super.finalize() call to the end of this Object.finalize() implementation.");
       }
     }
-
-    return result;
   }
 
-  private static AstNode getLastEffectiveStatement(AstNode node) {
-    AstNode tryStatement = node.getFirstChild(JavaGrammar.TRY_STATEMENT);
-    if (tryStatement == null) {
-      return node;
+  private boolean isLastStatement(MethodTree methodTree, MethodInvocationTree lastStatementTree) {
+    BlockTree blockTree = methodTree.block();
+    if(blockTree != null) {
+      for (StatementTree statementTree : blockTree.body()) {
+        if(statementTree.is(Kind.TRY_STATEMENT) && isLastStatement(((TryStatementTree) statementTree).finallyBlock(), lastStatementTree)) {
+          return true;
+        }
+      }
     }
-
-    AstSelect query = tryStatement.select()
-      .children(JavaGrammar.FINALLY_)
-      .children(JavaGrammar.BLOCK)
-      .children(JavaGrammar.BLOCK_STATEMENTS)
-      .children(JavaGrammar.BLOCK_STATEMENT);
-
-    return getLastBlockStatement(query);
+    return isLastStatement(blockTree, lastStatementTree);
   }
 
+  private boolean isLastStatement(@Nullable BlockTree blockTree, MethodInvocationTree lastStatementTree) {
+    if (blockTree != null) {
+      StatementTree last = Iterables.getLast(blockTree.body());
+      if (last.is(Kind.EXPRESSION_STATEMENT)) {
+        return lastStatementTree.equals(((ExpressionStatementTree) last).expression());
+      } else if (last.is(Kind.TRY_STATEMENT)) {
+        return isLastStatement(((TryStatementTree) last).finallyBlock(), lastStatementTree);
+      }
+    }
+    return false;
+  }
+
+  private boolean isFinalize(MethodTree methodTree) {
+    if ("finalize".equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty()) {
+      Tree returnType = methodTree.returnType();
+      if (returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
+        return "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
+      }
+    }
+    return false;
+  }
 }
