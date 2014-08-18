@@ -1054,14 +1054,6 @@ public class JavaTreeMaker {
           throw new IllegalArgumentException("Unexpected AstNodeType: " + identifierSuffixNode.getFirstChild());
         }
       }
-    } else if (firstChildNode.is(JavaGrammar.BASIC_CLASS_EXPRESSION)) {
-      // 15.8.2. Class Literals
-      // int.class
-      // int[].class
-      return new MemberSelectExpressionTreeImpl(
-        astNode,
-        applyDim(basicType(firstChildNode.getFirstChild()), firstChildNode.getChildren(JavaGrammar.DIM).size()),
-        identifier(firstChildNode.getFirstChild(JavaKeyword.CLASS)));
     } else if (firstChildNode.is(JavaGrammar.VOID_CLASS_EXPRESSION)) {
       // void.class
       return new MemberSelectExpressionTreeImpl(
@@ -1330,7 +1322,7 @@ public class JavaTreeMaker {
     return arguments.build();
   }
 
-  private ExpressionTree applyDim(ExpressionTree expression, int count) {
+  public ExpressionTree applyDim(ExpressionTree expression, int count) {
     ExpressionTree result = expression;
     for (int i = 0; i < count; i++) {
       result = new JavaTree.ArrayTypeTreeImpl(/* FIXME should not be null */null, result);

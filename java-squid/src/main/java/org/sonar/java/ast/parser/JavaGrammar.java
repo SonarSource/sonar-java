@@ -803,7 +803,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       BASIC_CLASS_EXPRESSION,
       VOID_CLASS_EXPRESSION));
     b.rule(QUALIFIED_IDENTIFIER_EXPRESSION).is(QUALIFIED_IDENTIFIER, b.optional(IDENTIFIER_SUFFIX));
-    b.rule(BASIC_CLASS_EXPRESSION).is(BASIC_TYPE, b.zeroOrMore(DIM), DOT, CLASS);
     b.rule(VOID_CLASS_EXPRESSION).is(VOID, DOT, CLASS);
 
     b.rule(METHOD_REFERENCE).is(b.firstOf(

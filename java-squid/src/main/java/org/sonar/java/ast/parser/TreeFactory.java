@@ -395,6 +395,24 @@ public class TreeFactory {
     }
   }
 
+  public ExpressionTree basicClassExpression(AstNode basicType, Optional<List<AstNode>> dims, AstNode dotToken, AstNode classToken) {
+    // 15.8.2. Class Literals
+    // int.class
+    // int[].class
+
+    List<AstNode> children = Lists.newArrayList();
+    children.add(basicType);
+    if (dims.isPresent()) {
+      children.addAll(dims.get());
+    }
+    children.add(dotToken);
+    children.add(classToken);
+
+    return new MemberSelectExpressionTreeImpl(
+      treeMaker.applyDim(treeMaker.basicType(basicType), dims.isPresent() ? dims.get().size() : 0), treeMaker.identifier(classToken),
+      children.toArray(new AstNode[children.size()]));
+  }
+
   // End of expressions
 
   // Helpers

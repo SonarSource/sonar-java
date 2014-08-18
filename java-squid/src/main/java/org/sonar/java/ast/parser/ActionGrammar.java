@@ -250,6 +250,13 @@ public class ActionGrammar {
               b.zeroOrMore(f.newWrapperAstNode(b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)), b.invokeRule(JavaGrammar.DIM)))))));
   }
 
+  public ExpressionTree BASIC_CLASS_EXPRESSION() {
+    return b
+      .<ExpressionTree>nonterminal(JavaGrammar.BASIC_CLASS_EXPRESSION)
+      .is(
+        f.basicClassExpression(b.invokeRule(JavaGrammar.BASIC_TYPE), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
+  }
+
   // End of expressions
 
   public interface GrammarBuilder {
