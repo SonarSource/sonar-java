@@ -44,7 +44,6 @@ import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InstanceOfTreeImpl;
 import org.sonar.java.model.expression.InternalPostfixUnaryExpression;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
-import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
@@ -75,7 +74,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -985,22 +983,8 @@ public class JavaTreeMaker {
   @VisibleForTesting
   ExpressionTree primary(AstNode astNode) {
     AstNode firstChildNode = astNode.getFirstChild();
-    if (firstChildNode.is(JavaGrammar.PAR_EXPRESSION)) {
-      // (expression)
-      return expression(firstChildNode);
-    } else if (isStronglyTyped(firstChildNode)) {
+    if (isStronglyTyped(firstChildNode)) {
       return (ExpressionTree) firstChildNode;
-    } else if (firstChildNode.is(JavaGrammar.SUPER_EXPRESSION)) {
-      // super...
-      return applySuperSuffix(
-        identifier(firstChildNode.getFirstChild()),
-        firstChildNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
-    } else if (firstChildNode.is(getKindsAssociatedTo(LiteralTree.class))) {
-      // "literal"
-      return (LiteralTreeImpl) firstChildNode;
-    } else if (firstChildNode.is(JavaGrammar.NEW_EXPRESSION)) {
-      // new...
-      return (ExpressionTree) firstChildNode.getLastChild();
     } else if (firstChildNode.is(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION)) {
       ExpressionTree identifier = qualifiedIdentifier(firstChildNode.getFirstChild());
       AstNode identifierSuffixNode = firstChildNode.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
@@ -1084,8 +1068,6 @@ public class JavaTreeMaker {
         astNode,
         basicType(firstChildNode.getFirstChild()),
         identifier(firstChildNode.getFirstChild(JavaKeyword.CLASS)));
-    } else if (firstChildNode.is(JavaGrammar.LAMBDA_EXPRESSION)) {
-      return (ExpressionTree) firstChildNode;
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + firstChildNode.getType());
     }
