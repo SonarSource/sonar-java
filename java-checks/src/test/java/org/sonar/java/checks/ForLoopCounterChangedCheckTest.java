@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,8 +34,7 @@ public class ForLoopCounterChangedCheckTest {
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ForLoopCounterChangedCheck.java"), new ForLoopCounterChangedCheck());
+  public void detected() {    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ForLoopCounterChangedCheck.java"), new VisitorsBridge(new ForLoopCounterChangedCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(10).withMessage("Refactor the code in order to not assign to this loop counter from within the loop body.")
         .next().atLine(18)

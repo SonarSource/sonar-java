@@ -19,41 +19,89 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import org.sonar.squidbridge.checks.SquidCheck;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.ast.AstSelect;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Collections;
 import java.util.Set;
 
 @Rule(
-  key = "ForLoopCounterChangedCheck",
+  key = ForLoopCounterChangedCheck.RULE_KEY,
   priority = Priority.MAJOR,
   tags={"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
+public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private Set<String> pendingLoopCounters = Collections.emptySet();
+  public static final String RULE_KEY = "ForLoopCounterChangedCheck";
   private final Set<String> loopCounters = Sets.newHashSet();
+  private JavaFileScannerContext context;
+  private RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.FOR_STATEMENT);
-    subscribeTo(JavaGrammar.ASSIGNMENT_EXPRESSION);
-    subscribeTo(JavaGrammar.UNARY_EXPRESSION);
-    subscribeTo(JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS);
-    subscribeTo(JavaGrammar.STATEMENT);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    loopCounters.clear();
+    scan(context.getTree());
   }
+
+
+  @Override
+  public void visitForStatement(ForStatementTree tree) {
+    Set<String> pendingLoopCounters = Sets.newHashSet();
+    for (StatementTree statementTree : tree.initializer()) {
+      if(statementTree.is(Tree.Kind.VARIABLE)){
+        pendingLoopCounters.add(((VariableTree) statementTree).simpleName().name());
+      }
+    }
+    scan(tree.initializer());
+    scan(tree.condition());
+    scan(tree.update());
+    loopCounters.addAll(pendingLoopCounters);
+    scan(tree.statement());
+    loopCounters.removeAll(pendingLoopCounters);
+  }
+
+  @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    if(tree.variable().is(Tree.Kind.IDENTIFIER)) {
+        checkIdentifier((IdentifierTree) tree.variable());
+    }
+    super.visitAssignmentExpression(tree);
+  }
+
+  @Override
+  public void visitUnaryExpression(UnaryExpressionTree tree) {
+    if(tree.is( Tree.Kind.PREFIX_INCREMENT) ||
+        tree.is(Tree.Kind.POSTFIX_INCREMENT) ||
+            tree.is(Tree.Kind.POSTFIX_DECREMENT) ||
+                tree.is(Tree.Kind.PREFIX_DECREMENT)) {
+      if(tree.expression().is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifierTree = (IdentifierTree) tree.expression();
+        checkIdentifier(identifierTree);
+      }
+    }
+    super.visitUnaryExpression(tree);
+  }
+
+  private void checkIdentifier(IdentifierTree identifierTree) {
+    if(loopCounters.contains(identifierTree.name())) {
+      context.addIssue(identifierTree, ruleKey, "Refactor the code in order to not assign to this loop counter from within the loop body.");
+    }
+  }
+
+  /*
 
   @Override
   public void visitFile(AstNode astNode) {
@@ -62,6 +110,8 @@ public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void visitNode(AstNode node) {
+
+
     if (node.is(JavaGrammar.FOR_STATEMENT)) {
       pendingLoopCounters = getLoopCounters(node);
     } else if (node.is(JavaGrammar.STATEMENT) && node.getParent().is(JavaGrammar.FOR_STATEMENT)) {
@@ -134,5 +184,5 @@ public class ForLoopCounterChangedCheck extends SquidCheck<LexerlessGrammar> {
 
     return sb.toString();
   }
-
+*/
 }
