@@ -19,79 +19,47 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
+import java.util.List;
 
 @Rule(
-  key = "S106",
-  priority = Priority.MAJOR)
+    key = "S106",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class SystemOutOrErrUsageCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
-
-  private static enum State {
-    EXPECTING_SYSTEM,
-    EXPECTING_DOT,
-    EXPECTING_OUT_OR_ERR,
-    FOUND_ISSUE
-  }
-
-  private static enum Symbol {
-    OTHER,
-    SYSTEM,
-    DOT,
-    OUT_OR_ERR
-  }
-
-  private static final State[][] TRANSITIONS = new State[State.values().length][Symbol.values().length];
-  static {
-    for (int i = 0; i < TRANSITIONS.length; i++) {
-      for (int j = 0; j < TRANSITIONS[i].length; j++) {
-        TRANSITIONS[i][j] = State.EXPECTING_SYSTEM;
-      }
-    }
-
-    TRANSITIONS[State.EXPECTING_SYSTEM.ordinal()][Symbol.SYSTEM.ordinal()] = State.EXPECTING_DOT;
-    TRANSITIONS[State.EXPECTING_DOT.ordinal()][Symbol.DOT.ordinal()] = State.EXPECTING_OUT_OR_ERR;
-    TRANSITIONS[State.EXPECTING_OUT_OR_ERR.ordinal()][Symbol.OUT_OR_ERR.ordinal()] = State.FOUND_ISSUE;
-  }
-
-  private State currentState;
+public class SystemOutOrErrUsageCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void visitFile(@Nullable AstNode node) {
-    currentState = State.EXPECTING_SYSTEM;
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.MEMBER_SELECT);
   }
 
   @Override
-  public void visitToken(Token token) {
-    currentState = TRANSITIONS[currentState.ordinal()][getSymbol(token.getOriginalValue()).ordinal()];
-
-    if (currentState == State.FOUND_ISSUE) {
-      getContext().createLineViolation(this, "Replace this usage of System.out or System.err by a logger.", token);
-      currentState = State.EXPECTING_SYSTEM;
+  public void visitNode(Tree tree) {
+    MemberSelectExpressionTree mset = (MemberSelectExpressionTree) tree;
+    if (isOutOrErr(mset) && isSystem(mset.expression())) {
+      addIssue(tree, "Replace this usage of System.out or System.err by a logger.");
     }
   }
 
-  private static Symbol getSymbol(String value) {
-    Symbol result = Symbol.OTHER;
-
-    if (".".equals(value)) {
-      result = Symbol.DOT;
-    } else if ("System".equals(value)) {
-      result = Symbol.SYSTEM;
-    } else if ("out".equals(value) || "err".equals(value)) {
-      result = Symbol.OUT_OR_ERR;
+  private boolean isSystem(ExpressionTree expression) {
+    IdentifierTree identifierTree = null;
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
+      identifierTree = (IdentifierTree) expression;
+    } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      identifierTree = ((MemberSelectExpressionTree) expression).identifier();
     }
-
-    return result;
+    return identifierTree != null && "System".equals(identifierTree.name());
   }
 
+  private boolean isOutOrErr(MemberSelectExpressionTree mset) {
+    return "out".equals(mset.identifier().name()) || "err".equals(mset.identifier().name());
+  }
 }

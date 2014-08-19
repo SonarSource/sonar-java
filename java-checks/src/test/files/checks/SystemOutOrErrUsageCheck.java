@@ -7,6 +7,7 @@ class A {
     f(System.out);                           // Non-Compliant
 
     System.arraycopy(null, 0, null, 0, 0);   // Compliant
+    java.lang.System.out.println("");        // Non-Compliant
   }
 
 }

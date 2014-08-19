@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,11 +35,13 @@ public class SystemOutOrErrUsageCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SystemOutOrErrUsageCheck.java"), new SystemOutOrErrUsageCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SystemOutOrErrUsageCheck.java"), new VisitorsBridge(new SystemOutOrErrUsageCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(4).withMessage("Replace this usage of System.out or System.err by a logger.")
         .next().atLine(5)
-        .next().atLine(7);
+        .next().atLine(7)
+        .next().atLine(10)
+    ;
   }
 
 }
