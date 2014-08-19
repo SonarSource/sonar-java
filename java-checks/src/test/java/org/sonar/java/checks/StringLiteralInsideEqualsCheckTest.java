@@ -19,11 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
@@ -34,11 +35,12 @@ public class StringLiteralInsideEqualsCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringLiteralInsideEqualsCheck.java"), new StringLiteralInsideEqualsCheck());
+    SourceFile file = JavaAstScanner
+      .scanSingleFile(new File("src/test/files/checks/StringLiteralInsideEqualsCheck.java"), new VisitorsBridge(new StringLiteralInsideEqualsCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Move the \"bar\" string literal on the left side of this string comparison.")
-        .next().atLine(4).withMessage("Move the \"qux\" string literal on the left side of this string comparison.")
-        .next().atLine(11).withMessage("Move the \"\" string literal on the left side of this string comparison.");
+      .next().atLine(3).withMessage("Move the \"bar\" string literal on the left side of this string comparison.")
+      .next().atLine(4).withMessage("Move the \"qux\" string literal on the left side of this string comparison.")
+      .next().atLine(11).withMessage("Move the \"\" string literal on the left side of this string comparison.");
   }
 
 }

@@ -19,82 +19,55 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
+
+import java.util.List;
 
 @Rule(
   key = "S1132",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class StringLiteralInsideEqualsCheck extends SquidCheck<LexerlessGrammar> {
+public class StringLiteralInsideEqualsCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.SELECTOR);
-    subscribeTo(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION);
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Kind.METHOD_INVOCATION);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isEquals(node)) {
-      String literal = getStringLiteralArgument(node);
-      if (literal != null) {
-        getContext().createLineViolation(this, "Move the " + literal + " string literal on the left side of this string comparison.", node);
-      }
+  public void visitNode(Tree tree) {
+    check((MethodInvocationTree) tree);
+  }
+
+  private void check(MethodInvocationTree tree) {
+    if (isEquals(tree.methodSelect()) && tree.arguments().size() == 1 && tree.arguments().get(0).is(Kind.STRING_LITERAL)) {
+      addIssue(tree, "Move the " + ((LiteralTree) tree.arguments().get(0)).value() + " string literal on the left side of this string comparison.");
     }
   }
 
-  private static boolean isEquals(AstNode node) {
-    return isSelectorEquals(node) || isQualifiedIdentifierEquals(node);
-  }
-
-  private static boolean isSelectorEquals(AstNode node) {
-    AstNode identifier = node.getFirstChild(JavaTokenType.IDENTIFIER);
-    return identifier != null && isEqualsMethod(identifier.getTokenOriginalValue());
-  }
-
-  private static boolean isQualifiedIdentifierEquals(AstNode node) {
-    AstNode qualifiedIdentifier = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
-    return qualifiedIdentifier != null && isEqualsMethod(qualifiedIdentifier.getLastToken().getOriginalValue());
-  }
-
-  private static boolean isEqualsMethod(String s) {
-    return "equals".equals(s) ||
-      "equalsIgnoreCase".equals(s);
-  }
-
-  private static String getStringLiteralArgument(AstNode node) {
-    AstNode arguments = getArgumentsNode(node);
-    if (arguments == null || arguments.hasDirectChildren(JavaPunctuator.COMMA)) {
-      return null;
-    }
-
-    AstNode expression = arguments.getFirstChild(JavaGrammar.EXPRESSION);
-
-    return expression != null &&
-      expression.getToken().getOriginalValue().startsWith("\"") &&
-      expression.getToken().equals(expression.getLastToken()) ?
-      expression.getTokenOriginalValue() : null;
-  }
-
-  private static AstNode getArgumentsNode(AstNode node) {
-    AstNode result;
-
-    if (node.is(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION)) {
-      AstNode identifierSuffix = node.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
-      result = identifierSuffix == null ? null : identifierSuffix.getFirstChild(JavaGrammar.ARGUMENTS);
+  private static boolean isEquals(ExpressionTree tree) {
+    if (tree.is(Kind.IDENTIFIER)) {
+      return isEquals((IdentifierTree) tree);
+    } else if (tree.is(Kind.MEMBER_SELECT)) {
+      return isEquals(((MemberSelectExpressionTree) tree).identifier());
     } else {
-      result = node.getFirstChild(JavaGrammar.ARGUMENTS);
+      return false;
     }
+  }
 
-    return result;
+  private static boolean isEquals(IdentifierTree tree) {
+    return "equals".equals(tree.name()) ||
+      "equalsIgnoreCase".equals(tree.name());
   }
 
 }
