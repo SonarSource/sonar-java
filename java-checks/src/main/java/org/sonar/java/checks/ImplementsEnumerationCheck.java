@@ -19,37 +19,46 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 @Rule(
-  key = "S1150",
-  priority = Priority.MAJOR)
+    key = "S1150",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ImplementsEnumerationCheck extends SquidCheck<LexerlessGrammar> {
+public class ImplementsEnumerationCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_TYPE_LIST);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    for (AstNode classType : node.getChildren(JavaGrammar.CLASS_TYPE)) {
-      if (hasSingleIdentifier(classType) && "Enumeration".equals(classType.getTokenOriginalValue())) {
-        getContext().createLineViolation(this, "Implement Iterator rather than Enumeration.", classType);
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    for (Tree superInterface : classTree.superInterfaces()) {
+      IdentifierTree identifierTree = null;
+      if (superInterface.is(Tree.Kind.IDENTIFIER)) {
+        identifierTree = (IdentifierTree) superInterface;
+      } else if (superInterface.is(Tree.Kind.PARAMETERIZED_TYPE) && ((ParameterizedTypeTree) superInterface).type().is(Tree.Kind.IDENTIFIER)) {
+        identifierTree = (IdentifierTree) ((ParameterizedTypeTree) superInterface).type();
+      }
+      if (isEnumeration(identifierTree)) {
+        addIssue(superInterface, "Implement Iterator rather than Enumeration.");
       }
     }
   }
 
-  private static boolean hasSingleIdentifier(AstNode node) {
-    return !node.hasDirectChildren(JavaPunctuator.DOT);
+  private boolean isEnumeration(@Nullable IdentifierTree tree) {
+    return tree != null && "Enumeration".equals(tree.name());
   }
-
 }
