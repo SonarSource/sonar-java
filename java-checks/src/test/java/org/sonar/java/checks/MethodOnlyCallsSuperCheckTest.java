@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class MethodOnlyCallsSuperCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodOnlyCallsSuperCheck.java"), new MethodOnlyCallsSuperCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodOnlyCallsSuperCheck.java"), new VisitorsBridge(new MethodOnlyCallsSuperCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(11).withMessage("Remove this method to simply inherit it.")
         .next().atLine(15)

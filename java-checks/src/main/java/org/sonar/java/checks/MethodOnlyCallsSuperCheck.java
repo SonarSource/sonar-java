@@ -19,127 +19,108 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.ast.AstSelect;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
 @Rule(
-  key = "S1185",
-  priority = Priority.MINOR,
-  tags = {"brain-overload"})
+    key = "S1185",
+    priority = Priority.MINOR,
+    tags = {"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class MethodOnlyCallsSuperCheck extends SquidCheck<LexerlessGrammar> {
+public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.VOID_METHOD_DECLARATOR_REST);
-    subscribeTo(JavaGrammar.METHOD_DECLARATOR_REST);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    AstNode singleBlockStatement = getSingleBlockStatement(node);
-    if (singleBlockStatement != null && isSuperOrReturnOfSuperReference(singleBlockStatement)) {
-      String methodName = getMethodName(node);
-      List<String> parameters = getParameters(node);
+  public void visitNode(Tree tree) {
+    MethodTree methodTree = (MethodTree) tree;
+    if (isSingleStatementMethod(methodTree) && isUselessSuperCall(methodTree) && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations())) {
+      addIssue(methodTree, "Remove this method to simply inherit it.");
+    }
+  }
 
-      if (isUselessSuperCall(singleBlockStatement, methodName, parameters) && !hasAnnotationDifferentFromOverride(node)) {
-        getContext().createLineViolation(this, "Remove this method to simply inherit it.", node);
+  private boolean isSingleStatementMethod(MethodTree methodTree) {
+    BlockTree block = methodTree.block();
+    return block != null && block.body().size() == 1;
+  }
+
+  private boolean isUselessSuperCall(MethodTree methodTree) {
+    ExpressionTree callToSuper = null;
+    StatementTree statementTree = methodTree.block().body().get(0);
+    if (returnsVoid(methodTree) && statementTree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+      callToSuper = ((ExpressionStatementTree) statementTree).expression();
+    } else if (statementTree.is(Tree.Kind.RETURN_STATEMENT)) {
+      callToSuper = ((ReturnStatementTree) statementTree).expression();
+    }
+    return callToSuper != null && isCallToSuper(methodTree, callToSuper);
+  }
+
+  private boolean isCallToSuper(MethodTree methodTree, Tree callToSuper) {
+    if (callToSuper.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) callToSuper;
+      if (methodInvocationTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
+        if (callSuperMethodWithSameName(mset, methodTree) && callsWithSameParameters(methodInvocationTree.arguments(), methodTree.parameters())) {
+          return true;
+        }
       }
     }
-  }
-
-  private static AstNode getSingleBlockStatement(AstNode node) {
-    AstNode methodBody = node.getFirstChild(JavaGrammar.METHOD_BODY);
-    if (methodBody == null) {
-      return null;
-    }
-
-    AstNode blockStatements = methodBody.getFirstChild(JavaGrammar.BLOCK).getFirstChild(JavaGrammar.BLOCK_STATEMENTS);
-    return blockStatements.getNumberOfChildren() == 1 ?
-      blockStatements.getFirstChild() :
-      null;
-  }
-
-  private static boolean isSuperOrReturnOfSuperReference(AstNode node) {
-    return isSuperReference(node) ||
-      isReturnOfSuperReference(node);
-  }
-
-  private static boolean isSuperReference(AstNode node) {
-    return "super".equals(node.getTokenOriginalValue());
-  }
-
-  private static boolean isReturnOfSuperReference(AstNode node) {
-    return "return".equals(node.getTokenOriginalValue()) && hasSuperReferenceReturnedExpression(node);
-  }
-
-  private static boolean hasSuperReferenceReturnedExpression(AstNode node) {
-    AstNode returnStatement = node.getFirstDescendant(JavaGrammar.RETURN_STATEMENT);
-    AstNode expression = returnStatement.getFirstChild(JavaGrammar.EXPRESSION);
-
-    return expression != null &&
-      isSuperReference(expression);
-  }
-
-  private static String getMethodName(AstNode node) {
-    return node.getParent().getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue();
-  }
-
-  private static List<String> getParameters(AstNode node) {
-    ImmutableList.Builder<String> builder = ImmutableList.builder();
-
-    for (AstNode parameter : node.getFirstChild(JavaGrammar.FORMAL_PARAMETERS).getDescendants(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
-      builder.add(parameter.getTokenOriginalValue());
-    }
-
-    return builder.build();
-  }
-
-  private static boolean isUselessSuperCall(AstNode node, String methodName, List<String> parameters) {
-    StringBuilder sb = new StringBuilder();
-    for (Token token : node.getTokens()) {
-      sb.append(token.getOriginalValue());
-    }
-
-    String actual = sb.toString();
-    String expected = "super." + methodName + "(" + Joiner.on(',').join(parameters) + ");";
-
-    return actual.equals(expected) ||
-      actual.equals("return" + expected);
-  }
-
-  private static boolean hasAnnotationDifferentFromOverride(AstNode node) {
-    AstSelect query = node.select()
-      .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
-      .children(JavaGrammar.MODIFIERS)
-      .children(JavaGrammar.MODIFIER)
-      .children(JavaGrammar.ANNOTATION)
-      .children(JavaGrammar.QUALIFIED_IDENTIFIER);
-
-    for (AstNode qualifiedIdentifier : query) {
-      if (!isOverride(qualifiedIdentifier)) {
-        return true;
-      }
-    }
-
     return false;
   }
 
-  private static boolean isOverride(AstNode node) {
-    return node.getToken().equals(node.getLastToken()) &&
-      "Override".equals(node.getTokenOriginalValue());
+  private boolean callSuperMethodWithSameName(MemberSelectExpressionTree mset, MethodTree methodTree) {
+    return mset.expression().is(Tree.Kind.IDENTIFIER)
+        && "super".equals(((IdentifierTree) mset.expression()).name())
+        && mset.identifier().name().equals(methodTree.simpleName().name());
   }
+
+  private boolean callsWithSameParameters(List<ExpressionTree> arguments, List<VariableTree> parameters) {
+    if (arguments.size() != parameters.size()) {
+      return false;
+    }
+    for (int i = 0; i < arguments.size(); i++) {
+      ExpressionTree arg = arguments.get(i);
+      VariableTree param = parameters.get(i);
+      if (!(arg.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) arg).name().equals(param.simpleName().name()))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean returnsVoid(MethodTree methodTree) {
+    Tree returnType = methodTree.returnType();
+    return returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
+  }
+
+  private boolean hasAnnotationDifferentFromOverride(List<AnnotationTree> annotations) {
+    for (AnnotationTree annotation : annotations) {
+      if (!(annotation.annotationType().is(Tree.Kind.IDENTIFIER) && "Override".equals(((IdentifierTree) annotation.annotationType()).name()))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 
 }
