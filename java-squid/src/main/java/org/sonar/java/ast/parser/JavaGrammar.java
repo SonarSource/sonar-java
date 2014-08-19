@@ -802,7 +802,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       QUALIFIED_IDENTIFIER_EXPRESSION,
       BASIC_CLASS_EXPRESSION,
       VOID_CLASS_EXPRESSION));
-    b.rule(QUALIFIED_IDENTIFIER_EXPRESSION).is(QUALIFIED_IDENTIFIER, b.optional(IDENTIFIER_SUFFIX));
 
     b.rule(METHOD_REFERENCE).is(b.firstOf(
       b.sequence(SUPER, DBLECOLON),
@@ -822,9 +821,10 @@ public enum JavaGrammar implements GrammarRuleKey {
         b.sequence(NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR)))));
     b.rule(EXPLICIT_GENERIC_INVOCATION).is(NON_WILDCARD_TYPE_ARGUMENTS, EXPLICIT_GENERIC_INVOCATION_SUFFIX);
     b.rule(NON_WILDCARD_TYPE_ARGUMENTS).is(LPOINT, TYPE, b.zeroOrMore(COMMA, TYPE), RPOINT);
-    b.rule(EXPLICIT_GENERIC_INVOCATION_SUFFIX).is(b.firstOf(
-      b.sequence(SUPER, SUPER_SUFFIX),
-      b.sequence(JavaTokenType.IDENTIFIER, ARGUMENTS)));
+    b.rule(EXPLICIT_GENERIC_INVOCATION_SUFFIX).is(
+      b.firstOf(
+        b.sequence(SUPER, SUPER_SUFFIX),
+        b.sequence(JavaTokenType.IDENTIFIER, ARGUMENTS)));
     b.rule(PREFIX_OP).is(b.firstOf(
       INC,
       DEC,

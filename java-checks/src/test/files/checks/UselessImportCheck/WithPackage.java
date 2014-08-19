@@ -54,6 +54,8 @@ class Foo2 extends Foo {
 
     tottttt a;
 
+    System.out.println(something.t);
+
     return new a.b.c.NonCompliant();
   }
 

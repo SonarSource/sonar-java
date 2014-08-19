@@ -25,8 +25,8 @@ import com.google.common.collect.Sets;
 import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
+import com.sonar.sslr.api.TokenType;
 import com.sonar.sslr.api.Trivia;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -34,6 +34,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.Collection;
@@ -45,9 +46,15 @@ import java.util.Set;
 @Rule(
   key = "UselessImportCheck",
   priority = Priority.MINOR,
-  tags={"unused"})
+  tags = {"unused"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+
+  private static final TokenType[] IDENTIFIER_TYPES = ImmutableList.<TokenType>builder()
+    .add(JavaKeyword.values())
+    .add(JavaTokenType.IDENTIFIER)
+    .build()
+    .toArray(new TokenType[0]);
 
   private final Map<String, Integer> lineByImportReference = Maps.newHashMap();
   private final Set<String> pendingImports = Sets.newHashSet();
@@ -64,6 +71,8 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
     subscribeTo(JavaGrammar.ANNOTATION);
     subscribeTo(JavaKeyword.THROWS);
     subscribeTo(JavaGrammar.QUALIFIED_IDENTIFIER);
+    subscribeTo(JavaGrammar.IDENTIFIER_EXPRESSION);
+    subscribeTo(JavaGrammar.MEMBER_SELECT_EXPRESSION);
   }
 
   @Override
@@ -98,7 +107,7 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
           }
         }
       }
-    } else if (!node.getParent().is(JavaGrammar.IMPORT_DECLARATION)) {
+    } else if (!node.getParent().is(JavaGrammar.IMPORT_DECLARATION, JavaGrammar.MEMBER_SELECT_EXPRESSION)) {
       pendingReferences.addAll(getReferences(node));
     }
   }
@@ -167,7 +176,7 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
 
   private static String mergeIdentifiers(AstNode node) {
     StringBuilder sb = new StringBuilder();
-    for (AstNode child : node.getChildren(JavaTokenType.IDENTIFIER)) {
+    for (AstNode child : node.getDescendants(IDENTIFIER_TYPES)) {
       sb.append(child.getTokenOriginalValue());
       sb.append('.');
     }

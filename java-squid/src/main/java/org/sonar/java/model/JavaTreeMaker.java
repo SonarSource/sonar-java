@@ -1284,7 +1284,7 @@ public class JavaTreeMaker {
       classBody);
   }
 
-  private ExpressionTree applyExplicitGenericInvocation(ExpressionTree expression, AstNode astNode) {
+  public ExpressionTree applyExplicitGenericInvocation(ExpressionTree expression, AstNode astNode) {
     checkType(astNode, JavaGrammar.EXPLICIT_GENERIC_INVOCATION);
     // TODO NON_WILDCARD_TYPE_ARGUMENTS
     AstNode explicitGenericInvocationSuffixNode = astNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX);

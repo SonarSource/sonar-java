@@ -21,12 +21,12 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
@@ -40,16 +40,15 @@ public class SunPackagesUsedCheck extends SquidCheck<LexerlessGrammar> {
   private static final String DEFAULT_EXCLUDE = "";
 
   @RuleProperty(
-      key = "exclude",
-      defaultValue = "" + DEFAULT_EXCLUDE)
+    key = "exclude",
+    defaultValue = "" + DEFAULT_EXCLUDE)
   public String exclude = DEFAULT_EXCLUDE;
   private String[] excludePackages = null;
-
-
 
   @Override
   public void init() {
     subscribeTo(JavaGrammar.QUALIFIED_IDENTIFIER);
+    subscribeTo(JavaGrammar.MEMBER_SELECT_EXPRESSION);
     subscribeTo(JavaGrammar.CLASS_TYPE);
     subscribeTo(JavaGrammar.CREATED_NAME);
   }
@@ -82,8 +81,8 @@ public class SunPackagesUsedCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private boolean isExcluded(String reference) {
-    for(String str: excludePackages) {
-      if(!str.isEmpty() && reference.startsWith(str)) {
+    for (String str : excludePackages) {
+      if (!str.isEmpty() && reference.startsWith(str)) {
         return true;
       }
     }

@@ -250,6 +250,11 @@ public class ActionGrammar {
               b.zeroOrMore(f.newWrapperAstNode(b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)), b.invokeRule(JavaGrammar.DIM)))))));
   }
 
+  public ExpressionTree QUALIFIED_IDENTIFIER_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION)
+      .is(f.newQualifiedIdentifierExpression(b.invokeRule(JavaGrammar.QUALIFIED_IDENTIFIER), b.optional(b.invokeRule(JavaGrammar.IDENTIFIER_SUFFIX))));
+  }
+
   public ExpressionTree BASIC_CLASS_EXPRESSION() {
     return b
       .<ExpressionTree>nonterminal(JavaGrammar.BASIC_CLASS_EXPRESSION)

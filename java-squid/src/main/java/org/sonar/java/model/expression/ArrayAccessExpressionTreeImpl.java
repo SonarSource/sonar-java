@@ -35,6 +35,16 @@ public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements 
   private final ExpressionTree expression;
   private final ExpressionTree index;
 
+  public ArrayAccessExpressionTreeImpl(ExpressionTree expression, ExpressionTree index, AstNode... children) {
+    super(Kind.ARRAY_ACCESS_EXPRESSION);
+    this.expression = Preconditions.checkNotNull(expression);
+    this.index = Preconditions.checkNotNull(index);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
+
   public ArrayAccessExpressionTreeImpl(AstNode astNode, ExpressionTree expression, ExpressionTree index) {
     super(astNode);
     this.expression = Preconditions.checkNotNull(expression);
@@ -76,6 +86,6 @@ public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements 
     return Iterators.<Tree>forArray(
       expression,
       index
-    );
+      );
   }
 }
