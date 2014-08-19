@@ -88,7 +88,7 @@ class Result {
     column -= 1;
     for (Symbol symbol : semanticModel.getSymbolUsed()) {
       for (IdentifierTree usage : semanticModel.getUsages(symbol)) {
-        Token token = ((JavaTree) usage).getAstNode().getToken();
+        Token token = ((JavaTree) usage.identifierToken()).getAstNode().getToken();
         if (token.getLine() == line && token.getColumn() == column) {
           return symbol;
         }

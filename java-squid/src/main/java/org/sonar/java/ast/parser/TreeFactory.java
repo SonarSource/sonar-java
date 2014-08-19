@@ -553,8 +553,6 @@ public class TreeFactory {
         InternalSyntaxToken identifierToken = InternalSyntaxToken.create(child);
 
         if (result == null) {
-          // TODO SemanticModel should work on the tokens, rather than on IdentifierTree, or the grammar should be updated
-          Preconditions.checkState(pendingChildren.size() == 0, "Cannot add several children to identifier tree");
           pendingChildren.add(identifierToken);
           result = new IdentifierTreeImpl(identifierToken, pendingChildren);
         } else {

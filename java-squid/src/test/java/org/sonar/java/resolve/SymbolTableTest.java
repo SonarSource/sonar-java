@@ -39,8 +39,8 @@ public class SymbolTableTest {
     assertThat(typeSymbol.flags()).isEqualTo(Flags.PRIVATE);
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass").type);
     assertThat(typeSymbol.getInterfaces()).containsExactly(
-        result.symbol("FirstInterface").type,
-        result.symbol("SecondInterface").type);
+      result.symbol("FirstInterface").type,
+      result.symbol("SecondInterface").type);
     assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Superclass");
@@ -89,8 +89,8 @@ public class SymbolTableTest {
 
     Symbol.TypeSymbol typeSymbol;
     // TODO no forward references here, for the moment considered as a really rare situation
-//    typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 14);
-//    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 9));
+    // typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 14);
+    // assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 9));
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration", 22);
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass", 22 - 2).type);
@@ -109,8 +109,8 @@ public class SymbolTableTest {
     assertThat(interfaceSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.INTERFACE);
     assertThat(interfaceSymbol.getSuperclass()).isNull(); // TODO should it be java.lang.Object?
     assertThat(interfaceSymbol.getInterfaces()).containsExactly(
-        result.symbol("FirstInterface").type,
-        result.symbol("SecondInterface").type);
+      result.symbol("FirstInterface").type,
+      result.symbol("SecondInterface").type);
     assertThat(interfaceSymbol.members.lookup("this")).isEmpty();
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
@@ -152,8 +152,8 @@ public class SymbolTableTest {
     assertThat(superclass.owner.getName()).isEqualTo("java.lang");
 
     assertThat(enumSymbol.getInterfaces()).containsExactly(
-        result.symbol("FirstInterface").type,
-        result.symbol("SecondInterface").type);
+      result.symbol("FirstInterface").type,
+      result.symbol("SecondInterface").type);
     assertThat(enumSymbol.members.lookup("this")).isNotEmpty();
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
@@ -237,8 +237,8 @@ public class SymbolTableTest {
     assertThat(methodSymbol.flags()).isEqualTo(Flags.PROTECTED);
     assertThat(methodSymbol.getReturnType()).isSameAs(result.symbol("ReturnType"));
     assertThat(methodSymbol.getThrownTypes()).containsExactly(
-        result.symbol("FirstExceptionType"),
-        result.symbol("SecondExceptionType"));
+      result.symbol("FirstExceptionType"),
+      result.symbol("SecondExceptionType"));
   }
 
   @Test
@@ -250,8 +250,8 @@ public class SymbolTableTest {
     assertThat(methodSymbol.flags()).isEqualTo(0);
     assertThat(methodSymbol.getReturnType()).isNull(); // TODO should it be result.symbol("ConstructorDeclaration")?
     assertThat(methodSymbol.getThrownTypes()).containsExactly(
-        result.symbol("FirstExceptionType"),
-        result.symbol("SecondExceptionType"));
+      result.symbol("FirstExceptionType"),
+      result.symbol("SecondExceptionType"));
   }
 
   @Test
@@ -288,12 +288,12 @@ public class SymbolTableTest {
   public void TypesOfDeclarations() {
     Result result = Result.createFor("TypesOfDeclarations");
     assertThat(result.symbol("Class2").kind == Symbol.TYP);
-    Symbol.TypeSymbol class1 =(Symbol.TypeSymbol)result.symbol("Class1");
-    Symbol.TypeSymbol class2 =(Symbol.TypeSymbol)result.symbol("Class2");
+    Symbol.TypeSymbol class1 = (Symbol.TypeSymbol) result.symbol("Class1");
+    Symbol.TypeSymbol class2 = (Symbol.TypeSymbol) result.symbol("Class2");
     assertThat(class2.getSuperclass().symbol).isEqualTo(class1);
     assertThat(class1.getSuperclass()).isNotNull();
     assertThat(class1.getSuperclass().symbol.name).isEqualTo("Collection");
-    Symbol.TypeSymbol interface1 =(Symbol.TypeSymbol)result.symbol("Interface1");
+    Symbol.TypeSymbol interface1 = (Symbol.TypeSymbol) result.symbol("Interface1");
     assertThat(interface1.getInterfaces()).isNotEmpty();
     assertThat(interface1.getInterfaces().get(0).symbol.name).isEqualTo("List");
   }
@@ -319,7 +319,7 @@ public class SymbolTableTest {
     assertThat(result.reference(11, 17)).isSameAs(result.symbol("field"));
 
     // FIXME
-//    assertThat(result.reference(12, 5)).isSameAs(/*package "references"*/);
+    // assertThat(result.reference(12, 5)).isSameAs(/*package "references"*/);
 
     assertThat(result.reference(14, 5)).isSameAs(result.symbol("FirstStaticNestedClass"));
     assertThat(result.reference(14, 28)).isSameAs(result.symbol("field_in_FirstStaticNestedClass"));
@@ -333,6 +333,8 @@ public class SymbolTableTest {
 
     assertThat(result.reference(17, 5)).isSameAs(result.symbol("field"));
     assertThat(result.reference(17, 11)).isSameAs(result.symbol("field_in_Superclass"));
+
+    assertThat(result.reference(32, 16)).isSameAs(result.symbol("field_in_Superclass"));
   }
 
   @Test
@@ -366,7 +368,7 @@ public class SymbolTableTest {
     Result result = Result.createFor("FieldTypes");
     assertThat(result.symbol("fieldBoolean").type.symbol.name).isEqualTo("Boolean");
     assertThat(result.symbol("fieldBoolean").type.symbol.owner().name).isEqualTo("java.lang");
-    assertThat(result.symbol("fieldList").type.toString()).isEqualTo("!unknown!"); //FIXME type should be resolved properly
+    assertThat(result.symbol("fieldList").type.toString()).isEqualTo("!unknown!"); // FIXME type should be resolved properly
     assertThat(result.symbol("fieldInt").type).isNotNull();
     assertThat(result.symbol("fieldInt").type.symbol.name).isEqualTo("int");
   }
