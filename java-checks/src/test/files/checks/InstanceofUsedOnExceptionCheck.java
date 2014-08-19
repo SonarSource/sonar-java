@@ -15,6 +15,9 @@ class A {
 
       if (e.foo instanceof IOException) { // Compliant
       }
+      if (e
+          instanceof IOException) { // Non-Compliant
+      }
     }
 
     int e = 0;

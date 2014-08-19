@@ -19,65 +19,59 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.InstanceOfTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.List;
 import java.util.Set;
 
 @Rule(
-  key = "S1193",
-  priority = Priority.MAJOR,
-  tags={"error-handling"})
+    key = "S1193",
+    priority = Priority.MAJOR,
+    tags = {"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class InstanceofUsedOnExceptionCheck extends SquidCheck<LexerlessGrammar> {
+public class InstanceofUsedOnExceptionCheck extends SubscriptionBaseVisitor {
 
   private final Set<String> caughtVariables = Sets.newHashSet();
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CATCH_CLAUSE);
-    subscribeTo(JavaKeyword.INSTANCEOF);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CATCH, Tree.Kind.INSTANCE_OF);
   }
 
   @Override
-  public void visitFile(AstNode node) {
+  public void scanFile(JavaFileScannerContext context) {
     caughtVariables.clear();
+    super.scanFile(context);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.CATCH_CLAUSE)) {
-      caughtVariables.add(getCaughtVariable(node));
-    } else if (isLeftOperandAnException(node)) {
-      getContext().createLineViolation(this, "Replace the usage of the \"instanceof\" operator by a catch block.", node);
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.CATCH)) {
+      CatchTree catchTree = (CatchTree) tree;
+      caughtVariables.add(catchTree.parameter().simpleName().name());
+    } else if (isLeftOperandAnException((InstanceOfTree) tree)) {
+      addIssue(((InstanceOfTree) tree).instanceofKeyword(), "Replace the usage of the \"instanceof\" operator by a catch block.");
     }
   }
 
   @Override
-  public void leaveNode(AstNode node) {
-    if (node.is(JavaGrammar.CATCH_CLAUSE)) {
-      caughtVariables.remove(getCaughtVariable(node));
+  public void leaveNode(Tree tree) {
+    if(tree.is(Tree.Kind.CATCH)) {
+      CatchTree catchTree = (CatchTree) tree;
+      caughtVariables.remove(catchTree.parameter().simpleName().name());
     }
   }
 
-  private static String getCaughtVariable(AstNode catchClause) {
-    return catchClause.getFirstChild(JavaGrammar.CATCH_FORMAL_PARAMETER)
-        .getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID)
-        .getTokenOriginalValue();
+  private boolean isLeftOperandAnException(InstanceOfTree tree) {
+    return tree.expression().is(Tree.Kind.IDENTIFIER) && caughtVariables.contains(((IdentifierTree) tree.expression()).name());
   }
-
-  private boolean isLeftOperandAnException(AstNode node) {
-    AstNode leftOperand = node.getPreviousSibling();
-
-    return leftOperand.getToken().equals(leftOperand.getLastToken()) &&
-      caughtVariables.contains(leftOperand.getTokenOriginalValue());
-  }
-
 }

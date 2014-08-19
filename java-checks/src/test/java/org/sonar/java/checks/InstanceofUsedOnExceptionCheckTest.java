@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,9 +35,11 @@ public class InstanceofUsedOnExceptionCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/InstanceofUsedOnExceptionCheck.java"), new InstanceofUsedOnExceptionCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/InstanceofUsedOnExceptionCheck.java"), new VisitorsBridge(new InstanceofUsedOnExceptionCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(7).withMessage("Replace the usage of the \"instanceof\" operator by a catch block.");
+        .next().atLine(7).withMessage("Replace the usage of the \"instanceof\" operator by a catch block.")
+        .next().atLine(19).withMessage("Replace the usage of the \"instanceof\" operator by a catch block.")
+    ;
   }
 
 }
