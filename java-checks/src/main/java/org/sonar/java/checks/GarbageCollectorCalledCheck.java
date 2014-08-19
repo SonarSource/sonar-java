@@ -19,38 +19,58 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
-  key = "S1215",
-  priority = Priority.CRITICAL,
-  tags={"bug"})
+    key = "S1215",
+    priority = Priority.CRITICAL,
+    tags = {"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class GarbageCollectorCalledCheck extends SquidCheck<LexerlessGrammar> {
+public class GarbageCollectorCalledCheck extends SubscriptionBaseVisitor {
+
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.PRIMARY);
-    subscribeTo(JavaGrammar.UNARY_EXPRESSION);
-    subscribeTo(JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isGarbageCollectorCall(node)) {
-      getContext().createLineViolation(this, "Don't try to be smarter than the JVM, remove this call to run the garbage collector.", node);
+  public void visitNode(Tree tree) {
+    MethodInvocationTree mit = (MethodInvocationTree) tree;
+    if (mit.arguments().isEmpty() && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
+      if (isGarbageCollectorCall(mset)) {
+        addIssue(tree, "Don't try to be smarter than the JVM, remove this call to run the garbage collector.");
+      }
     }
   }
 
-  private static boolean isGarbageCollectorCall(AstNode node) {
-    return AstNodeTokensMatcher.matches(node, "System.gc()") ||
-      AstNodeTokensMatcher.matches(node, "Runtime.getRuntime().gc()");
+  private boolean isGarbageCollectorCall(MemberSelectExpressionTree mset) {
+    if ("gc".equals(mset.identifier().name())) {
+      if (mset.expression().is(Tree.Kind.IDENTIFIER)) {
+        //detect call to System.gc()
+        return "System".equals(((IdentifierTree) mset.expression()).name());
+      } else if (mset.expression().is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree mit = (MethodInvocationTree) mset.expression();
+        if(mit.arguments().isEmpty() && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+          MemberSelectExpressionTree subMset = (MemberSelectExpressionTree) mit.methodSelect();
+          //detect call to Runtime.getRuntime().gc()
+          return "getRuntime".equals(subMset.identifier().name())
+              && subMset.expression().is(Tree.Kind.IDENTIFIER)
+              && "Runtime".equals(((IdentifierTree) subMset.expression()).name());
+        }
+      }
+    }
+    return false;
   }
 
 }

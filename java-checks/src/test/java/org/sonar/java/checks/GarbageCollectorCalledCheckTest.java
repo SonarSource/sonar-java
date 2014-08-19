@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class GarbageCollectorCalledCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/GarbageCollectorCalledCheck.java"), new GarbageCollectorCalledCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/GarbageCollectorCalledCheck.java"), new VisitorsBridge(new GarbageCollectorCalledCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("Don't try to be smarter than the JVM, remove this call to run the garbage collector.")
         .next().atLine(8);
