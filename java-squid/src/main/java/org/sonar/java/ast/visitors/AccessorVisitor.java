@@ -27,6 +27,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.api.SourceMethod;
 import org.sonar.squidbridge.measures.Metric;
 
@@ -124,7 +125,7 @@ public class AccessorVisitor extends JavaAstVisitor {
       AstNode expression = astNode.getFirstChild(JavaGrammar.EXPRESSION);
       if (expression.getNumberOfChildren() == 1 && expression.getFirstChild().is(JavaGrammar.PRIMARY)) {
         AstNode qualifiedIdentifierExpression = expression.getFirstChild().getFirstChild();
-        if (qualifiedIdentifierExpression.is(JavaGrammar.IDENTIFIER_EXPRESSION)) {
+        if (qualifiedIdentifierExpression.is(Kind.IDENTIFIER)) {
           if (findPrivateClassVariable(qualifiedIdentifierExpression)) {
             return true;
           }

@@ -43,7 +43,7 @@ public class CloneMethodCallsSuperCloneCheck extends SquidCheck<LexerlessGrammar
   @Override
   public void init() {
     subscribeTo(JavaGrammar.MEMBER_DECL);
-    subscribeTo(JavaGrammar.METHOD_INVOCATION_EXPRESSION);
+    subscribeTo(Kind.METHOD_INVOCATION);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CloneMethodCallsSuperCloneCheck extends SquidCheck<LexerlessGrammar
   }
 
   private static boolean isSuperCloneCall(AstNode node) {
-    if (!node.is(JavaGrammar.METHOD_INVOCATION_EXPRESSION)) {
+    if (!node.is(Kind.METHOD_INVOCATION)) {
       return false;
     }
 

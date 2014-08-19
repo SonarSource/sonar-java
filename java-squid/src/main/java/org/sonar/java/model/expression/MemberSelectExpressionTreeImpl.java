@@ -22,7 +22,6 @@ package org.sonar.java.model.expression;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -39,7 +38,7 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   private final IdentifierTree identifier;
 
   public MemberSelectExpressionTreeImpl(ExpressionTree expression, IdentifierTree identifier, AstNode... children) {
-    super(JavaGrammar.MEMBER_SELECT_EXPRESSION);
+    super(Kind.MEMBER_SELECT);
     this.expression = Preconditions.checkNotNull(expression);
     this.identifier = Preconditions.checkNotNull(identifier);
 

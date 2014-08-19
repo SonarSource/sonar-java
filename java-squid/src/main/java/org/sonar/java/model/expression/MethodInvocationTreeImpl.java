@@ -23,7 +23,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -40,11 +39,11 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   private final List<ExpressionTree> arguments;
 
   public MethodInvocationTreeImpl(ExpressionTree methodSelect, List<ExpressionTree> arguments, AstNode... children) {
-    super(JavaGrammar.METHOD_INVOCATION_EXPRESSION);
+    super(Kind.METHOD_INVOCATION);
     this.methodSelect = Preconditions.checkNotNull(methodSelect);
     this.arguments = Preconditions.checkNotNull(arguments);
 
-    for (AstNode child: children) {
+    for (AstNode child : children) {
       addChild(child);
     }
   }

@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -37,14 +36,14 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   private final InternalSyntaxToken nameToken;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
-    super(JavaGrammar.IDENTIFIER_EXPRESSION, nameToken.getToken());
+    super(Kind.IDENTIFIER, nameToken.getToken());
     this.nameToken = Preconditions.checkNotNull(nameToken);
 
     addChild(nameToken);
   }
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken, List<AstNode> children) {
-    super(JavaGrammar.IDENTIFIER_EXPRESSION, nameToken.getToken());
+    super(Kind.IDENTIFIER, nameToken.getToken());
     this.nameToken = Preconditions.checkNotNull(nameToken);
 
     for (AstNode child : children) {

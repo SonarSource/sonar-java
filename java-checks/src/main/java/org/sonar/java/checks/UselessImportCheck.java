@@ -34,6 +34,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -71,8 +72,8 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
     subscribeTo(JavaGrammar.ANNOTATION);
     subscribeTo(JavaKeyword.THROWS);
     subscribeTo(JavaGrammar.QUALIFIED_IDENTIFIER);
-    subscribeTo(JavaGrammar.IDENTIFIER_EXPRESSION);
-    subscribeTo(JavaGrammar.MEMBER_SELECT_EXPRESSION);
+    subscribeTo(Kind.IDENTIFIER);
+    subscribeTo(Kind.MEMBER_SELECT);
   }
 
   @Override
@@ -107,7 +108,7 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
           }
         }
       }
-    } else if (!node.getParent().is(JavaGrammar.IMPORT_DECLARATION, JavaGrammar.MEMBER_SELECT_EXPRESSION)) {
+    } else if (!node.getParent().is(JavaGrammar.IMPORT_DECLARATION, Kind.MEMBER_SELECT)) {
       pendingReferences.addAll(getReferences(node));
     }
   }

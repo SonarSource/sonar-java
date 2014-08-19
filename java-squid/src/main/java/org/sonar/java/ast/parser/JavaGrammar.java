@@ -319,13 +319,10 @@ public enum JavaGrammar implements GrammarRuleKey {
   UNARY_EXPRESSION_NOT_PLUS_MINUS,
   CAST_EXPRESSION,
 
-  MODIFIERS,
+  // Helpers
+  // TODO Introduce ANNOTATIONS?
 
-  // Fakes
-
-  METHOD_INVOCATION_EXPRESSION,
-  MEMBER_SELECT_EXPRESSION,
-  IDENTIFIER_EXPRESSION;
+  MODIFIERS;
 
   public static LexerlessGrammarBuilder createGrammarBuilder() {
     LexerlessGrammarBuilder b = LexerlessGrammarBuilder.create();
