@@ -19,20 +19,22 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
-  key = "S138",
-  priority = Priority.MAJOR,
-  tags={"brain-overload"})
-public class MethodTooBigCheck extends SquidCheck<LexerlessGrammar> {
+    key = "S138",
+    priority = Priority.MAJOR,
+    tags = {"brain-overload"})
+public class MethodTooBigCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 100;
 
@@ -40,26 +42,23 @@ public class MethodTooBigCheck extends SquidCheck<LexerlessGrammar> {
   public int max = DEFAULT_MAX;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.METHOD_BODY);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    int lines = getLines(node);
-
-    if (lines > max) {
-      getContext().createLineViolation(this, "This method has " + lines + " lines, which is greater than the " + max + " lines authorized. Split it into smaller methods.", node);
+  public void visitNode(Tree tree) {
+    MethodTree methodTree = (MethodTree) tree;
+    BlockTree block = methodTree.block();
+    if (block != null) {
+      int lines = getLines(block);
+      if (lines > max) {
+        addIssue(block.openBraceToken(), "This method has " + lines + " lines, which is greater than the " + max + " lines authorized. Split it into smaller methods.");
+      }
     }
   }
 
-  private static int getLines(AstNode node) {
-    AstNode block = node.getFirstChild(JavaGrammar.BLOCK);
-
-    AstNode leftCurlyBrace = block.getFirstChild(JavaPunctuator.LWING);
-    AstNode rightCurlyBrace = block.getFirstChild(JavaPunctuator.RWING);
-
-    return rightCurlyBrace.getTokenLine() - leftCurlyBrace.getTokenLine() + 1;
+  private int getLines(BlockTree block) {
+    return 1 + ((InternalSyntaxToken) block.closeBraceToken()).getLine() - ((InternalSyntaxToken) block.openBraceToken()).getLine();
   }
-
 }
