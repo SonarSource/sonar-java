@@ -19,69 +19,96 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(
-  key = "S1153",
+  key = ConcatenationWithStringValueOfCheck.RULE_KEY,
   priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class ConcatenationWithStringValueOfCheck extends SquidCheck<LexerlessGrammar> {
+public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  public static final String RULE_KEY = "S1153";
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+
+  private JavaFileScannerContext context;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.ADDITIVE_EXPRESSION);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    boolean seenStringLiteral = false;
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    if (!tree.is(Kind.PLUS)) {
+      super.visitBinaryExpression(tree);
+      return;
+    }
 
-    for (AstNode child : node.getChildren()) {
+    // TODO This code exploits the associativity bug SONARJAVA-610
+    boolean seenStringLiteral = false;
+    ExpressionTree current = tree;
+    while (current.is(Kind.PLUS)) {
+      BinaryExpressionTree binOp = (BinaryExpressionTree) current;
+      scan(binOp.leftOperand());
+
       if (!seenStringLiteral) {
-        seenStringLiteral = isStringLiteral(child);
-      } else if (isStringValueOfCall(child)) {
-        getContext().createLineViolation(this, "Directly append the argument of String.valueOf().", child);
+        if (binOp.leftOperand().is(Kind.STRING_LITERAL)) {
+          seenStringLiteral = true;
+          check(binOp.rightOperand());
+        }
+      } else if (isStringValueOf(binOp.leftOperand())) {
+        check(binOp.leftOperand());
       }
+
+      current = ((BinaryExpressionTree) current).rightOperand();
+    }
+
+    scan(current);
+  }
+
+  private void check(ExpressionTree tree) {
+    if (isStringValueOf(tree)) {
+      context.addIssue(tree, ruleKey, "Directly append the argument of String.valueOf().");
     }
   }
 
-  private static boolean isStringLiteral(AstNode node) {
-    return node.getToken().equals(node.getLastToken()) &&
-      node.getTokenValue().startsWith("\"");
-  }
-
-  private static boolean isStringValueOfCall(AstNode node) {
-    AstNode qualifiedIdExpression = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION);
-    if (qualifiedIdExpression == null) {
+  private static boolean isStringValueOf(ExpressionTree tree) {
+    if (!tree.is(Kind.METHOD_INVOCATION)) {
       return false;
     }
 
-    AstNode identifierSuffix = qualifiedIdExpression.getFirstChild(JavaGrammar.IDENTIFIER_SUFFIX);
-
-    return node.is(JavaGrammar.PRIMARY) &&
-      identifierSuffix != null &&
-      hasSingleArgumentIdentifierSuffix(identifierSuffix) &&
-      isStringValueOfQualifiedIdentifier(qualifiedIdExpression.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
+    return isStringValueOf((MethodInvocationTree) tree);
   }
 
-  private static boolean hasSingleArgumentIdentifierSuffix(AstNode node) {
-    AstNode arguments = node.getFirstChild(JavaGrammar.ARGUMENTS);
-    return arguments != null &&
-      arguments.hasDirectChildren(JavaGrammar.EXPRESSION) &&
-      !arguments.hasDirectChildren(JavaPunctuator.COMMA);
+  private static boolean isStringValueOf(MethodInvocationTree tree) {
+    if (!tree.methodSelect().is(Kind.MEMBER_SELECT)) {
+      return false;
+    }
+
+    return tree.arguments().size() == 1 &&
+      isStringValueOf((MemberSelectExpressionTree) tree.methodSelect());
   }
 
-  private static boolean isStringValueOfQualifiedIdentifier(AstNode node) {
-    return node.getNumberOfChildren() == 3 &&
-      "String".equals(node.getTokenOriginalValue()) &&
-      "valueOf".equals(node.getLastChild().getTokenOriginalValue());
+  private static boolean isStringValueOf(MemberSelectExpressionTree tree) {
+    if (!tree.expression().is(Kind.IDENTIFIER)) {
+      return false;
+    }
+
+    return "valueOf".equals(tree.identifier().name()) &&
+      "String".equals(((IdentifierTree) tree.expression()).name());
   }
 
 }

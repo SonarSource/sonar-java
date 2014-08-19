@@ -7,6 +7,7 @@ class A {
     System.out.println(String.valueOf(0) + ""); // Compliant
     System.out.println("" + "foo" +
       String.valueOf('a') + // Non-Compliant
+      String.valueOf('b') + // Non-Compliant
       "");
     System.out.println("" + String.valueOf()); // Compliant
     System.out.println("" + String.foo(0)); // Compliant
@@ -14,5 +15,10 @@ class A {
     System.out.println("" + String.valueOf); // Compliant
     System.out.println("" + String.valueOf[0]); // Compliant
     System.out.println("" + String.valueOf.bar(0)); // Compliant
+
+    ("" + String.valueOf('a')) + ""; // Noncompliant
+    "" + ("" + String.valueOf('a')); // Noncompliant
+
+    0 + String.valueOf('a'); // Compliant
   }
 }
