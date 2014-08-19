@@ -19,62 +19,49 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.List;
 
 @Rule(
-  key = "S1165",
-  priority = Priority.MAJOR,
-  tags = {"error-handling"})
+    key = "S1165",
+    priority = Priority.MAJOR,
+    tags = {"error-handling"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ExceptionsShouldBeImmutableCheck extends SquidCheck<LexerlessGrammar> {
+public class ExceptionsShouldBeImmutableCheck extends SubscriptionBaseVisitor {
+
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_DECLARATION);
-  }
-
-  @Override
-  public void visitNode(AstNode node) {
-    if (isException(node)) {
-      for (AstNode field : getFields(node)) {
-        if (!isFinal(field)) {
-          for (AstNode variableDeclarator : field.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS).getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-            getContext().createLineViolation(this, "Make this \"" + variableDeclarator.getTokenOriginalValue() + "\" field final.", field);
-          }
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    if (isException(classTree)) {
+      for (Tree member : classTree.members()) {
+        if(member.is(Tree.Kind.VARIABLE) && !isFinal((VariableTree) member)){
+          addIssue(member, "Make this \"" + ((VariableTree) member).simpleName().name()+ "\" field final.");
         }
       }
     }
   }
 
-  private static boolean isException(AstNode node) {
-    String name = node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue();
-    return name.endsWith("Exception") ||
-      name.endsWith("Error");
+  private boolean isFinal(VariableTree member) {
+    return member.modifiers().modifiers().contains(Modifier.FINAL);
   }
 
-  private static Iterable<AstNode> getFields(AstNode node) {
-    return node.select()
-      .children(JavaGrammar.CLASS_BODY)
-      .children(JavaGrammar.CLASS_BODY_DECLARATION)
-      .children(JavaGrammar.MEMBER_DECL)
-      .children(JavaGrammar.FIELD_DECLARATION);
+  private boolean isException(ClassTree classTree) {
+    IdentifierTree simpleName = classTree.simpleName();
+    return simpleName != null && (simpleName.name().endsWith("Exception") || simpleName.name().endsWith("Error"));
   }
 
-  private static boolean isFinal(AstNode node) {
-    return node.select()
-      .firstAncestor(JavaGrammar.CLASS_BODY_DECLARATION)
-      .children(JavaGrammar.MODIFIERS)
-      .children(JavaGrammar.MODIFIER)
-      .children(JavaKeyword.FINAL)
-      .isNotEmpty();
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
-
 }

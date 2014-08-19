@@ -17,6 +17,6 @@ class FooError extends Error {
   int foo; // Noncompliant
 }
 
-class FooError {
+class FooBisError {
   int foo; // Noncompliant - limitation
 }

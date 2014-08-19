@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class ExceptionsShouldBeImmutableCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ExceptionsShouldBeImmutableCheck.java"), new ExceptionsShouldBeImmutableCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ExceptionsShouldBeImmutableCheck.java"), new VisitorsBridge(new ExceptionsShouldBeImmutableCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(2).withMessage("Make this \"foo\" field final.")
       .next().atLine(5).withMessage("Make this \"a\" field final.")
