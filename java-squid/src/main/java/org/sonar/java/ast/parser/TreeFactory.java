@@ -382,38 +382,6 @@ public class TreeFactory {
       children);
   }
 
-  private static final AstNodeType WRAPPER_AST_NODE = new AstNodeType() {
-    @Override
-    public String toString() {
-      return "WRAPPER_AST_NODE";
-    }
-  };
-
-  public AstNode newWrapperAstNode(Optional<List<AstNode>> e1, AstNode e2) {
-    if (e1.isPresent()) {
-      AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
-      for (AstNode child : e1.get()) {
-        astNode.addChild(child);
-      }
-      astNode.addChild(e2);
-      return astNode;
-    } else {
-      return e2;
-    }
-  }
-
-  public AstNode newWrapperAstNode(AstNode e1, Optional<List<AstNode>> e2, AstNode e3) {
-    AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
-    astNode.addChild(e1);
-    if (e2.isPresent()) {
-      for (AstNode child : e2.get()) {
-        astNode.addChild(child);
-      }
-    }
-    astNode.addChild(e3);
-    return astNode;
-  }
-
   public ExpressionTree newQualifiedIdentifierExpression(ExpressionTree qualifiedIdentifier, Optional<AstNode> identifierSuffix) {
     if (!identifierSuffix.isPresent()) {
       // id
@@ -531,6 +499,32 @@ public class TreeFactory {
     return new JavaTree.PrimitiveTypeTreeImpl(token, children);
   }
 
+  public ArgumentListTreeImpl completeArguments(AstNode openParenthesisTokenAstNode, Optional<ArgumentListTreeImpl> expressions, AstNode closeParenthesisTokenAstNode) {
+    InternalSyntaxToken openParenthesisToken = InternalSyntaxToken.create(openParenthesisTokenAstNode);
+    InternalSyntaxToken closeParenthesisToken = InternalSyntaxToken.create(closeParenthesisTokenAstNode);
+
+    return expressions.isPresent() ?
+      expressions.get().complete(openParenthesisToken, closeParenthesisToken) :
+      new ArgumentListTreeImpl(openParenthesisToken, closeParenthesisToken);
+  }
+
+  public ArgumentListTreeImpl newArguments(AstNode expression, Optional<List<AstNode>> rests) {
+    List<AstNode> children = Lists.newArrayList();
+    ImmutableList.Builder<ExpressionTree> expressions = ImmutableList.builder();
+
+    children.add(expression);
+    expressions.add(treeMaker.expression(expression));
+
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        children.addAll(rest.getChildren());
+        expressions.add(treeMaker.expression(rest.getFirstChild(JavaGrammar.EXPRESSION)));
+      }
+    }
+
+    return new ArgumentListTreeImpl(expressions.build(), children);
+  }
+
   public ExpressionTree qualifiedIdentifier(Optional<List<AstNode>> annotations, AstNode firstIdentifier, Optional<List<AstNode>> rests) {
     List<AstNode> children = Lists.newArrayList();
     if (annotations.isPresent()) {
@@ -625,6 +619,45 @@ public class TreeFactory {
         memberSelect, treeMaker.arguments(explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)),
         memberSelect, explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS));
     }
+  }
+
+  private static final AstNodeType WRAPPER_AST_NODE = new AstNodeType() {
+    @Override
+    public String toString() {
+      return "WRAPPER_AST_NODE";
+    }
+  };
+
+  public AstNode newWrapperAstNode(Optional<List<AstNode>> e1, AstNode e2) {
+    if (e1.isPresent()) {
+      AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
+      for (AstNode child : e1.get()) {
+        astNode.addChild(child);
+      }
+      astNode.addChild(e2);
+      return astNode;
+    } else {
+      return e2;
+    }
+  }
+
+  public AstNode newWrapperAstNode(AstNode e1, Optional<List<AstNode>> e2, AstNode e3) {
+    AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
+    astNode.addChild(e1);
+    if (e2.isPresent()) {
+      for (AstNode child : e2.get()) {
+        astNode.addChild(child);
+      }
+    }
+    astNode.addChild(e3);
+    return astNode;
+  }
+
+  public AstNode newWrapperAstNode(AstNode e1, AstNode e2) {
+    AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
+    astNode.addChild(e1);
+    astNode.addChild(e2);
+    return astNode;
   }
 
 }

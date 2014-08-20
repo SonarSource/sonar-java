@@ -33,15 +33,14 @@ public class EnumConstantTest {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
     b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
-    b.rule(JavaGrammar.ARGUMENTS).override(RuleMock.word(b, "arguments"));
     b.rule(JavaGrammar.CLASS_BODY).override(RuleMock.word(b, "classBody"));
 
     assertThat(b, JavaGrammar.ENUM_CONSTANT)
       .matches("identifier")
       .matches("annotation identifier")
-      .matches("annotation identifier arguments")
+      .matches("annotation identifier()")
       .matches("annotation identifier classBody")
-      .matches("annotation identifier arguments classBody");
+      .matches("annotation identifier() classBody");
   }
 
 }

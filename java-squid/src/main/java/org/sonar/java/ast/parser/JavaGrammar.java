@@ -833,7 +833,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       ARGUMENTS,
       b.sequence(DOT, JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS)),
       b.sequence(DOT, NON_WILDCARD_TYPE_ARGUMENTS, JavaTokenType.IDENTIFIER, ARGUMENTS)));
-    b.rule(ARGUMENTS).is(LPAR, b.optional(EXPRESSION, b.zeroOrMore(COMMA, EXPRESSION)), RPAR);
     b.rule(CREATED_NAME).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS),
       b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS)));
     b.rule(INNER_CREATOR).is(JavaTokenType.IDENTIFIER, CLASS_CREATOR_REST);

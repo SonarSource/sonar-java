@@ -284,6 +284,18 @@ public class ActionGrammar {
             b.invokeRule(JavaKeyword.BOOLEAN))));
   }
 
+  public ArgumentListTreeImpl ARGUMENTS() {
+    return b.<ArgumentListTreeImpl>nonterminal(JavaGrammar.ARGUMENTS)
+      .is(
+        f.completeArguments(
+          b.invokeRule(JavaPunctuator.LPAR),
+          b.optional(
+            f.newArguments(
+              b.invokeRule(JavaGrammar.EXPRESSION),
+              b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.COMMA), b.invokeRule(JavaGrammar.EXPRESSION))))),
+          b.invokeRule(JavaPunctuator.RPAR)));
+  }
+
   public ExpressionTree QUALIFIED_IDENTIFIER() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.QUALIFIED_IDENTIFIER)
       .is(
