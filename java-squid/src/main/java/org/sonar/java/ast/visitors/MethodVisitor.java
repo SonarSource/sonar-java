@@ -32,6 +32,8 @@ import org.sonar.java.signature.JvmJavaType;
 import org.sonar.java.signature.MethodSignature;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.Parameter;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.api.SourceClass;
 import org.sonar.squidbridge.api.SourceMethod;
 
@@ -92,7 +94,7 @@ public class MethodVisitor extends JavaAstVisitor {
       AstNode type = astNode.getFirstChild(JavaGrammar.TYPE);
       boolean isArray = type.hasDirectChildren(JavaGrammar.DIM)
         || astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST).getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID)
-            .hasDirectChildren(JavaGrammar.DIM);
+          .hasDirectChildren(JavaGrammar.DIM);
       argumentTypes.add(extractArgumentAndReturnType(type, isArray));
     }
     return argumentTypes;
@@ -103,8 +105,9 @@ public class MethodVisitor extends JavaAstVisitor {
     if (astNode.is(JavaKeyword.VOID)) {
       return new Parameter(JvmJavaType.V, false);
     }
-    if (astNode.getFirstChild().is(JavaGrammar.BASIC_TYPE)) {
-      return new Parameter(JAVA_TYPE_MAPPING.get(astNode.getFirstChild().getFirstChild().getType()), isArray);
+    if (astNode.getFirstChild().is(Kind.PRIMITIVE_TYPE)) {
+      PrimitiveTypeTree primitve = (PrimitiveTypeTree) astNode.getFirstChild();
+      return new Parameter(JAVA_TYPE_MAPPING.get(((AstNode) primitve.keyword()).getType()), isArray);
     } else if (astNode.getFirstChild().is(JavaGrammar.CLASS_TYPE)) {
       return new Parameter(extractClassName(astNode.getFirstChild()), isArray);
     } else {

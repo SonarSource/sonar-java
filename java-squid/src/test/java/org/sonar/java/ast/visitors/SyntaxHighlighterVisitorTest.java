@@ -62,23 +62,11 @@ public class SyntaxHighlighterVisitorTest {
     Mockito.verifyZeroInteractions(highlightable);
   }
 
+  // TODO Factorize duplicated methods, but still allow double click on failures to jump to the right line
+
   @Test
   public void test_LF() throws Exception {
-    test("\n");
-  }
-
-  @Test
-  public void test_CR_LF() throws Exception {
-    test("\r\n");
-  }
-
-  @Test
-  public void test_CR() throws Exception {
-    test("\r");
-  }
-
-  private void test(String eol) throws Exception {
-    this.eol = eol;
+    this.eol = "\n";
     File file = temp.newFile();
     Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, Charsets.UTF_8);
 
@@ -90,7 +78,49 @@ public class SyntaxHighlighterVisitorTest {
     Mockito.verify(highlighting).highlight(offset(8, 1), offset(8, 18), "a");
     Mockito.verify(highlighting).highlight(offset(8, 19), offset(8, 27), "s");
     Mockito.verify(highlighting).highlight(offset(9, 1), offset(9, 6), "k");
-    Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 6), "k");
+    Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 7), "k");
+    Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 11), "k");
+    Mockito.verify(highlighting).highlight(offset(12, 12), offset(12, 14), "c");
+    Mockito.verify(highlighting).done();
+    Mockito.verifyNoMoreInteractions(highlighting);
+  }
+
+  @Test
+  public void test_CR_LF() throws Exception {
+    this.eol = "\r\n";
+    File file = temp.newFile();
+    Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, Charsets.UTF_8);
+
+    JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
+
+    lines = Files.readLines(file, Charsets.UTF_8);
+    Mockito.verify(highlighting).highlight(offset(1, 1), offset(3, 4), "cppd");
+    Mockito.verify(highlighting).highlight(offset(5, 1), offset(7, 4), "cppd");
+    Mockito.verify(highlighting).highlight(offset(8, 1), offset(8, 18), "a");
+    Mockito.verify(highlighting).highlight(offset(8, 19), offset(8, 27), "s");
+    Mockito.verify(highlighting).highlight(offset(9, 1), offset(9, 6), "k");
+    Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 7), "k");
+    Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 11), "k");
+    Mockito.verify(highlighting).highlight(offset(12, 12), offset(12, 14), "c");
+    Mockito.verify(highlighting).done();
+    Mockito.verifyNoMoreInteractions(highlighting);
+  }
+
+  @Test
+  public void test_CR() throws Exception {
+    this.eol = "\r";
+    File file = temp.newFile();
+    Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, Charsets.UTF_8);
+
+    JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
+
+    lines = Files.readLines(file, Charsets.UTF_8);
+    Mockito.verify(highlighting).highlight(offset(1, 1), offset(3, 4), "cppd");
+    Mockito.verify(highlighting).highlight(offset(5, 1), offset(7, 4), "cppd");
+    Mockito.verify(highlighting).highlight(offset(8, 1), offset(8, 18), "a");
+    Mockito.verify(highlighting).highlight(offset(8, 19), offset(8, 27), "s");
+    Mockito.verify(highlighting).highlight(offset(9, 1), offset(9, 6), "k");
+    Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 7), "k");
     Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 11), "k");
     Mockito.verify(highlighting).highlight(offset(12, 12), offset(12, 14), "c");
     Mockito.verify(highlighting).done();

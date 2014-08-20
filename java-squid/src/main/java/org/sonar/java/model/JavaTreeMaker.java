@@ -133,7 +133,7 @@ public class JavaTreeMaker {
    */
 
   public PrimitiveTypeTree basicType(AstNode astNode) {
-    checkType(astNode, JavaGrammar.BASIC_TYPE, JavaKeyword.VOID);
+    checkType(astNode, JavaKeyword.VOID);
     return new JavaTree.PrimitiveTypeTreeImpl(astNode);
   }
 
@@ -199,7 +199,7 @@ public class JavaTreeMaker {
   }
 
   ExpressionTree referenceType(AstNode astNode, int dimSize) {
-    ExpressionTree result = astNode.getFirstChild().is(JavaGrammar.BASIC_TYPE) ? basicType(astNode.getFirstChild()) : classType(astNode.getFirstChild());
+    ExpressionTree result = astNode.getFirstChild().is(Kind.PRIMITIVE_TYPE) ? (PrimitiveTypeTree) astNode.getFirstChild() : classType(astNode.getFirstChild());
     return applyDim(result, dimSize + astNode.getChildren(JavaGrammar.DIM).size());
   }
 
@@ -1004,8 +1004,8 @@ public class JavaTreeMaker {
       // 15.16. Cast Expressions
       AstNode typeNode = astNode.getFirstChild(JavaPunctuator.LPAR).getNextSibling();
       Tree type;
-      if (typeNode.is(JavaGrammar.BASIC_TYPE)) {
-        type = basicType(typeNode);
+      if (typeNode.is(Kind.PRIMITIVE_TYPE)) {
+        type = (PrimitiveTypeTree) typeNode;
       } else {
         type = referenceType(typeNode);
       }

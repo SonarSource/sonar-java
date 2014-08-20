@@ -337,8 +337,21 @@ public abstract class JavaTree extends AstNode implements Tree {
   }
 
   public static class PrimitiveTypeTreeImpl extends AbstractTypedTree implements PrimitiveTypeTree {
+
+    private final InternalSyntaxToken token;
+
+    public PrimitiveTypeTreeImpl(InternalSyntaxToken token, List<AstNode> children) {
+      super(Kind.PRIMITIVE_TYPE);
+      this.token = token;
+
+      for (AstNode child : children) {
+        addChild(child);
+      }
+    }
+
     public PrimitiveTypeTreeImpl(AstNode astNode) {
       super(astNode);
+      this.token = null;
     }
 
     @Override
@@ -353,7 +366,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public SyntaxToken keyword() {
-      return InternalSyntaxToken.createLegacy(getLastTokenAstNode(getAstNode()));
+      return token != null ? token : InternalSyntaxToken.createLegacy(getLastTokenAstNode(getAstNode()));
     }
 
     @Override

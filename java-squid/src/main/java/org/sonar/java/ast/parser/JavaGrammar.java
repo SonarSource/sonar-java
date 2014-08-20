@@ -29,32 +29,24 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import java.util.Arrays;
 
 import static org.sonar.java.ast.api.JavaKeyword.ABSTRACT;
-import static org.sonar.java.ast.api.JavaKeyword.BOOLEAN;
-import static org.sonar.java.ast.api.JavaKeyword.BYTE;
 import static org.sonar.java.ast.api.JavaKeyword.CATCH;
-import static org.sonar.java.ast.api.JavaKeyword.CHAR;
 import static org.sonar.java.ast.api.JavaKeyword.CLASS;
 import static org.sonar.java.ast.api.JavaKeyword.DEFAULT;
-import static org.sonar.java.ast.api.JavaKeyword.DOUBLE;
 import static org.sonar.java.ast.api.JavaKeyword.ENUM;
 import static org.sonar.java.ast.api.JavaKeyword.EXTENDS;
 import static org.sonar.java.ast.api.JavaKeyword.FINAL;
 import static org.sonar.java.ast.api.JavaKeyword.FINALLY;
-import static org.sonar.java.ast.api.JavaKeyword.FLOAT;
 import static org.sonar.java.ast.api.JavaKeyword.FOR;
 import static org.sonar.java.ast.api.JavaKeyword.IMPLEMENTS;
 import static org.sonar.java.ast.api.JavaKeyword.IMPORT;
 import static org.sonar.java.ast.api.JavaKeyword.INSTANCEOF;
-import static org.sonar.java.ast.api.JavaKeyword.INT;
 import static org.sonar.java.ast.api.JavaKeyword.INTERFACE;
-import static org.sonar.java.ast.api.JavaKeyword.LONG;
 import static org.sonar.java.ast.api.JavaKeyword.NATIVE;
 import static org.sonar.java.ast.api.JavaKeyword.NEW;
 import static org.sonar.java.ast.api.JavaKeyword.PACKAGE;
 import static org.sonar.java.ast.api.JavaKeyword.PRIVATE;
 import static org.sonar.java.ast.api.JavaKeyword.PROTECTED;
 import static org.sonar.java.ast.api.JavaKeyword.PUBLIC;
-import static org.sonar.java.ast.api.JavaKeyword.SHORT;
 import static org.sonar.java.ast.api.JavaKeyword.STATIC;
 import static org.sonar.java.ast.api.JavaKeyword.STRICTFP;
 import static org.sonar.java.ast.api.JavaKeyword.SUPER;
@@ -841,15 +833,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       ARGUMENTS,
       b.sequence(DOT, JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS)),
       b.sequence(DOT, NON_WILDCARD_TYPE_ARGUMENTS, JavaTokenType.IDENTIFIER, ARGUMENTS)));
-    b.rule(BASIC_TYPE).is(b.zeroOrMore(ANNOTATION), b.firstOf(
-      BYTE,
-      SHORT,
-      CHAR,
-      INT,
-      LONG,
-      FLOAT,
-      DOUBLE,
-      BOOLEAN));
     b.rule(ARGUMENTS).is(LPAR, b.optional(EXPRESSION, b.zeroOrMore(COMMA, EXPRESSION)), RPAR);
     b.rule(CREATED_NAME).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS),
       b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS)));

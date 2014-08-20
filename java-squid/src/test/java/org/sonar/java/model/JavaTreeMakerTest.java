@@ -70,6 +70,7 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -109,8 +110,8 @@ public class JavaTreeMakerTest {
 
   @Test
   public void basic_type() {
-    AstNode astNode = p.parse("class T { int m() { return null; } }").getFirstDescendant(JavaGrammar.BASIC_TYPE);
-    PrimitiveTypeTree tree = maker.basicType(astNode);
+    AstNode astNode = p.parse("class T { int m() { return null; } }").getFirstDescendant(Kind.PRIMITIVE_TYPE);
+    PrimitiveTypeTree tree = (PrimitiveTypeTree) astNode;
     assertThat(tree.keyword().text()).isEqualTo("int");
 
     astNode = p.parse("class T { void m() { return null; } }").getFirstDescendant(JavaKeyword.VOID);

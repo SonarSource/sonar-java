@@ -23,6 +23,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
@@ -232,7 +233,7 @@ public class ActionGrammar {
             f.newArrayCreator(
               b.firstOf(
                 b.invokeRule(JavaGrammar.CLASS_TYPE),
-                b.invokeRule(JavaGrammar.BASIC_TYPE)),
+                BASIC_TYPE()),
               ARRAY_CREATOR_REST()))));
   }
 
@@ -259,7 +260,7 @@ public class ActionGrammar {
     return b
       .<ExpressionTree>nonterminal(JavaGrammar.BASIC_CLASS_EXPRESSION)
       .is(
-        f.basicClassExpression(b.invokeRule(JavaGrammar.BASIC_TYPE), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
+        f.basicClassExpression(BASIC_TYPE(), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
   }
 
   public ExpressionTree VOID_CLASS_EXPRESSION() {
@@ -267,10 +268,26 @@ public class ActionGrammar {
       .is(f.voidClassExpression(b.invokeRule(JavaKeyword.VOID), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
   }
 
+  public PrimitiveTypeTreeImpl BASIC_TYPE() {
+    return b.<PrimitiveTypeTreeImpl>nonterminal(JavaGrammar.BASIC_TYPE)
+      .is(
+        f.newBasicType(
+          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.firstOf(
+            b.invokeRule(JavaKeyword.BYTE),
+            b.invokeRule(JavaKeyword.SHORT),
+            b.invokeRule(JavaKeyword.CHAR),
+            b.invokeRule(JavaKeyword.INT),
+            b.invokeRule(JavaKeyword.LONG),
+            b.invokeRule(JavaKeyword.FLOAT),
+            b.invokeRule(JavaKeyword.DOUBLE),
+            b.invokeRule(JavaKeyword.BOOLEAN))));
+  }
+
   public ExpressionTree QUALIFIED_IDENTIFIER() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.QUALIFIED_IDENTIFIER)
       .is(
-        f.qualifiedExpression(
+        f.qualifiedIdentifier(
           b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
           b.invokeRule(JavaTokenType.IDENTIFIER),
           b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.DOT), b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)), b.invokeRule(JavaTokenType.IDENTIFIER)))));

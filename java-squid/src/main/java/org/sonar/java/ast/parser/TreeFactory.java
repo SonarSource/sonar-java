@@ -29,6 +29,7 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -65,6 +66,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collections;
@@ -322,7 +324,7 @@ public class TreeFactory {
   }
 
   public ExpressionTree newArrayCreator(AstNode type, NewArrayTreeImpl partial) {
-    JavaTree typeTree = (JavaTree) (type.is(JavaGrammar.BASIC_TYPE) ? treeMaker.basicType(type) : treeMaker.classType(type));
+    JavaTree typeTree = (JavaTree) (type.is(Kind.PRIMITIVE_TYPE) ? (PrimitiveTypeTreeImpl) type : treeMaker.classType(type));
 
     return partial.complete(typeTree,
       type);
@@ -493,7 +495,7 @@ public class TreeFactory {
     }
   }
 
-  public ExpressionTree basicClassExpression(AstNode basicType, Optional<List<AstNode>> dims, AstNode dotToken, AstNode classToken) {
+  public ExpressionTree basicClassExpression(PrimitiveTypeTreeImpl basicType, Optional<List<AstNode>> dims, AstNode dotToken, AstNode classToken) {
     // 15.8.2. Class Literals
     // int.class
     // int[].class
@@ -507,7 +509,7 @@ public class TreeFactory {
     children.add(classToken);
 
     return new MemberSelectExpressionTreeImpl(
-      treeMaker.applyDim(treeMaker.basicType(basicType), dims.isPresent() ? dims.get().size() : 0), treeMaker.identifier(classToken),
+      treeMaker.applyDim(basicType, dims.isPresent() ? dims.get().size() : 0), treeMaker.identifier(classToken),
       children.toArray(new AstNode[children.size()]));
   }
 
@@ -517,7 +519,19 @@ public class TreeFactory {
       voidToken, dotToken, classToken);
   }
 
-  public ExpressionTree qualifiedExpression(Optional<List<AstNode>> annotations, AstNode firstIdentifier, Optional<List<AstNode>> rests) {
+  public PrimitiveTypeTreeImpl newBasicType(Optional<List<AstNode>> annotations, AstNode basicType) {
+    InternalSyntaxToken token = InternalSyntaxToken.create(basicType);
+
+    List<AstNode> children = Lists.newArrayList();
+    if (annotations.isPresent()) {
+      children.addAll(annotations.get());
+    }
+    children.add(token);
+
+    return new JavaTree.PrimitiveTypeTreeImpl(token, children);
+  }
+
+  public ExpressionTree qualifiedIdentifier(Optional<List<AstNode>> annotations, AstNode firstIdentifier, Optional<List<AstNode>> rests) {
     List<AstNode> children = Lists.newArrayList();
     if (annotations.isPresent()) {
       children.addAll(annotations.get());
