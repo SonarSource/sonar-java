@@ -44,7 +44,7 @@ public class AccessorVisitorST extends SubscriptionVisitor {
   }
 
   public boolean isAccessor(ClassTree classTree, MethodTree methodTree) {
-    return methodTree.is(Tree.Kind.METHOD) && methodTree.block() != null && (isGetter(classTree, methodTree) || isSetter(classTree, methodTree));
+    return methodTree.is(Tree.Kind.METHOD) && methodTree.modifiers().modifiers().contains(Modifier.PUBLIC) && methodTree.block() != null && (isGetter(classTree, methodTree) || isSetter(classTree, methodTree));
   }
 
   private boolean isSetter(ClassTree classTree, MethodTree methodTree) {
@@ -58,7 +58,7 @@ public class AccessorVisitorST extends SubscriptionVisitor {
   }
 
   private boolean referencePrivateProperty(AssignmentExpressionTree assignmentExpressionTree, ClassTree classTree) {
-    return referencePrivateProperty(assignmentExpressionTree.expression(), classTree);
+    return referencePrivateProperty(assignmentExpressionTree.variable(), classTree);
   }
 
   private boolean isGetter(ClassTree classTree, MethodTree methodTree) {
@@ -81,10 +81,13 @@ public class AccessorVisitorST extends SubscriptionVisitor {
 
   private boolean referencePrivateProperty(ReturnStatementTree returnStatementTree, ClassTree classTree) {
     ExpressionTree expression = returnStatementTree.expression();
+    String variableName = "";
     if (expression == null) {
       return false;
+    } else if(expression.is(Tree.Kind.IDENTIFIER)) {
+      variableName = ((IdentifierTree)expression).name();
     }
-    return referencePrivateProperty(expression, classTree);
+    return !StringUtils.isEmpty(variableName) && referencePrivateProperty(variableName, classTree);
   }
 
   private boolean referencePrivateProperty(ExpressionTree expression, ClassTree classTree) {
@@ -94,10 +97,7 @@ public class AccessorVisitorST extends SubscriptionVisitor {
     } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       variableReturned = ((MemberSelectExpressionTree) expression).identifier().name();
     }
-    if (StringUtils.isEmpty(variableReturned)) {
-      return false;
-    }
-    return referencePrivateProperty(variableReturned, classTree);
+    return !StringUtils.isEmpty(variableReturned) && referencePrivateProperty(variableReturned, classTree);
   }
 
   private boolean referencePrivateProperty(String variableName, ClassTree classTree) {

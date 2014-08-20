@@ -46,17 +46,17 @@ public class AccessorVisitorSTTest {
 
   @Test
   public void method_named_properly_is_getter() {
-    assertThat(isAccessor("class T { private int a; int getA() { return a; } }")).isTrue();
+    assertThat(isAccessor("class T { private int a; public int getA() { return a; } }")).isTrue();
   }
 
   @Test
   public void method_named_properly_is_setter() {
-    assertThat(isAccessor("class T { private int a; void setA(int a) { this.a = a; } }")).isTrue();
+    assertThat(isAccessor("class T { private int a; public void setA(int a) { this.a = a; } }")).isTrue();
   }
 
   @Test
   public void boolean_method_named_properly_is_getter() {
-    assertThat(isAccessor("class T { private  boolean a; boolean isA() { return a; } }")).isTrue();
+    assertThat(isAccessor("class T { private  boolean a; public boolean isA() { return a; } }")).isTrue();
   }
 
   @Test
@@ -66,33 +66,33 @@ public class AccessorVisitorSTTest {
 
   @Test
   public void is_getter_if_has_one_return_statement() {
-    assertThat(isAccessor("class T { private boolean a; boolean isA() { a=!a;return a; } }")).isFalse();
-    assertThat(isAccessor("class T { private int a; int getA() { a++;return a; } }")).isFalse();
-    assertThat(isAccessor("class T { private boolean a; boolean isA() { return a; } }")).isTrue();
-    assertThat(isAccessor("class T { private int a; int getA() { return a; } }")).isTrue();
-    assertThat(isAccessor("class T { private int a; void getA() { a++; } }")).isFalse();
+    assertThat(isAccessor("class T { private boolean a; public boolean isA() { a=!a;return a; } }")).isFalse();
+    assertThat(isAccessor("class T { private int a; public int getA() { a++;return a; } }")).isFalse();
+    assertThat(isAccessor("class T { private boolean a; public boolean isA() { return a; } }")).isTrue();
+    assertThat(isAccessor("class T { private int a; public int getA() { return a; } }")).isTrue();
+    assertThat(isAccessor("class T { private int a; public void getA() { a++; } }")).isFalse();
   }
 
   @Test
   public void constructor_is_not_accessor() {
-    assertThat(isAccessor("class getA {private int a; getA() {} }")).isFalse();
+    assertThat(isAccessor("class getA {private int a; public getA() {} }")).isFalse();
   }
 
   @Test
   public void getter_should_reference_private_property() {
-    assertThat(isAccessor("class T { private boolean a; boolean isA() { return true;} }")).isFalse();
-    assertThat(isAccessor("class T { boolean a; boolean isA() { return a;} }")).isFalse();
-    assertThat(isAccessor("class T { private boolean a; boolean isA() { return a;} }")).isTrue();
-    assertThat(isAccessor("class T { private int a; int getA() { return 1; } }")).isFalse();
-    assertThat(isAccessor("class T { int a; int getA() { return a; } }")).isFalse();
-    assertThat(isAccessor("class T { int a; void getA() { return; } }")).isFalse();
-    assertThat(isAccessor("class T { private int a; int getA() { return a; } }")).isTrue();
+    assertThat(isAccessor("class T { private boolean a; public boolean isA() { return true;} }")).isFalse();
+    assertThat(isAccessor("class T { boolean a; public boolean isA() { return a;} }")).isFalse();
+    assertThat(isAccessor("class T { private boolean a; public boolean isA() { return a;} }")).isTrue();
+    assertThat(isAccessor("class T { private int a; public int getA() { return 1; } }")).isFalse();
+    assertThat(isAccessor("class T { int a; public int getA() { return a; } }")).isFalse();
+    assertThat(isAccessor("class T { int a; public void getA() { return; } }")).isFalse();
+    assertThat(isAccessor("class T { private int a; public int getA() { return a; } }")).isTrue();
   }
 
   @Test
   public void getter_should_have_no_parameters() {
-    assertThat(isAccessor("class T { private boolean a; boolean isA(boolean b) { return a;} }")).isFalse();
-    assertThat(isAccessor("class T { private int a; int getA(int b) { return 1; } }")).isFalse();
+    assertThat(isAccessor("class T { private boolean a; public boolean isA(boolean b) { return a;} }")).isFalse();
+    assertThat(isAccessor("class T { private int a; public int getA(int b) { return 1; } }")).isFalse();
   }
 
   @Test
@@ -102,19 +102,35 @@ public class AccessorVisitorSTTest {
 
   @Test
   public void setter_should_have_one_parameter() {
-    assertThat(isAccessor("class T { private int a; void setA() { this.a = a; } }")).isFalse();
-    assertThat(isAccessor("class T { private int a; void setA(int a, int b) { this.a = a; } }")).isFalse();
+    assertThat(isAccessor("class T { private int a; public void setA() { this.a = a; } }")).isFalse();
+    assertThat(isAccessor("class T { private int a; public void setA(int a, int b) { this.a = a; } }")).isFalse();
   }
 
   @Test
   public void setter_should_have_void_return_type() {
-    assertThat(isAccessor("class T { private int a; int setA(int a) { return a; } }")).isFalse();
+    assertThat(isAccessor("class T { private int a; public int setA(int a) { return a; } }")).isFalse();
   }
 
   @Test
   public void setter_body_is_an_assignement_statement_referencing_private_var() {
-    assertThat(isAccessor("class T { private int a; void setA(int a) { a++; } }")).isFalse();
-    assertThat(isAccessor("class T { private int a; void setA(int a) { b=0; } }")).isFalse();
+    assertThat(isAccessor("class T { private int a; public void setA(int a) { a++; } }")).isFalse();
+    assertThat(isAccessor("class T { private int a; public void setA(int a) { b=0; } }")).isFalse();
+    assertThat(isAccessor("class T { private int a; public void setA(int a) { b = a; } }")).isFalse();
+    //limitation
+    assertThat(isAccessor("class T { private int a; public void setA(int a) { a = b; } }")).isTrue();
+    assertThat(isAccessor("class T { private int a; public void setA(int a) { this.a = b; } }")).isTrue();
+  }
+
+  @Test
+  public void getter_using_this_are_not_accessor() throws Exception {
+    //FIXME : those getters should be considered as accessors
+    assertThat(isAccessor("class T { private int a; public int getA() { return this.a; } }")).isFalse();
+  }
+
+  @Test
+  public void accessor_should_be_public() {
+    assertThat(isAccessor("class T { private int a; void setA(int a) { this.a=a; } }")).isFalse();
+    assertThat(isAccessor("class T { private int a; public void setA(int a) { this.a=a; } }")).isTrue();
   }
 
   private boolean isAccessor(String code) {
