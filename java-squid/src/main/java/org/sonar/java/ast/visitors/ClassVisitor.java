@@ -40,7 +40,8 @@ public class ClassVisitor extends JavaAstVisitor {
         JavaGrammar.CLASS_DECLARATION,
         JavaGrammar.INTERFACE_DECLARATION,
         JavaGrammar.ENUM_DECLARATION,
-        JavaGrammar.ANNOTATION_TYPE_DECLARATION);
+        JavaGrammar.ANNOTATION_TYPE_DECLARATION,
+        JavaGrammar.ENUM_CONSTANT);
   }
 
   @Override
@@ -52,7 +53,9 @@ public class ClassVisitor extends JavaAstVisitor {
   public void visitNode(AstNode astNode) {
     String className = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
     final SourceClass sourceClass;
-    if (getContext().peekSourceCode().isType(SourceClass.class)) {
+    if(astNode.is(JavaGrammar.ENUM_CONSTANT)) {
+      sourceClass  = createSourceClass(peekSourceClass(), className);
+    }else if (getContext().peekSourceCode().isType(SourceClass.class)) {
       sourceClass = createSourceClass((SourceClass) getContext().peekSourceCode(), className);
     } else if (getContext().peekSourceCode().isType(SourceMethod.class)) {
       localNameCounter++;
@@ -62,9 +65,12 @@ public class ClassVisitor extends JavaAstVisitor {
     }
 
     sourceClass.setStartAtLine(astNode.getTokenLine());
-    sourceClass.setMeasure(JavaMetric.CLASSES, 1);
-    sourceClass.setSuppressWarnings(SuppressWarningsAnnotationUtils.isSuppressAllWarnings(astNode));
+    if(!astNode.is(JavaGrammar.ENUM_CONSTANT)) {
+      sourceClass.setMeasure(JavaMetric.CLASSES, 1);
+      sourceClass.setSuppressWarnings(SuppressWarningsAnnotationUtils.isSuppressAllWarnings(astNode));
+    }
     getContext().addSourceCode(sourceClass);
+
   }
 
   @Override

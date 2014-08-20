@@ -19,3 +19,17 @@ interface MyInterface {
 @interface MyAnnotation {
   String method();
 }
+
+enum MyEnum {
+  ONE(){
+    int method(){
+      return 1;
+    }
+  },
+  TWO(){
+    int method(){
+      return 2;
+    }
+  };
+  abstract int method();
+}
