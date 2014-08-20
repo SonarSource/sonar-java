@@ -19,22 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.ChecksHelper;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.squidbridge.api.SourceClass;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.visitors.ComplexityVisitorST;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.text.MessageFormat;
+import java.util.List;
 
 @Rule(key = "ClassCyclomaticComplexity", priority = Priority.MAJOR,
-  tags={"brain-overload"})
+    tags = {"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class ClassComplexityCheck extends SquidCheck<LexerlessGrammar> {
+public class ClassComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 200;
 
@@ -42,20 +41,15 @@ public class ClassComplexityCheck extends SquidCheck<LexerlessGrammar> {
   private int max = DEFAULT_MAX;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.CLASS_DECLARATION);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override
-  public void leaveNode(AstNode node) {
-    SourceClass sourceClass = (SourceClass) getContext().peekSourceCode();
-    int complexity = ChecksHelper.getRecursiveMeasureInt(sourceClass, JavaMetric.COMPLEXITY);
+  public void visitNode(Tree tree) {
+    int complexity = new ComplexityVisitorST().scan(tree);
     if (complexity > max) {
-      getContext().createLineViolation(this,
-        "The Cyclomatic Complexity of this class is {0,number,integer} which is greater than {1,number,integer} authorized.",
-        node,
-        complexity,
-        max);
+      addIssue(tree, MessageFormat.format("The Cyclomatic Complexity of this class is {0,number,integer} which is greater than {1,number,integer} authorized.", complexity, max));
     }
   }
 

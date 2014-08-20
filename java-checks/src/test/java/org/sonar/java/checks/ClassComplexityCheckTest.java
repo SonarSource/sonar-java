@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
@@ -32,7 +33,7 @@ public class ClassComplexityCheckTest {
 
   @Test
   public void defaults() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassComplexity.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassComplexity.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
   }
@@ -40,7 +41,7 @@ public class ClassComplexityCheckTest {
   @Test
   public void test() {
     check.setMax(1);
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassComplexity.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassComplexity.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(1).withMessage("The Cyclomatic Complexity of this class is 2 which is greater than 1 authorized.")
         .noMore();

@@ -36,7 +36,7 @@ class ScopesAndSymbols {
       System.out.println("class method");
     }
 
-    void method(int @Foo @Bar ... varArg) throws Exception {
+    void method(String a, int @Foo @Bar ... varArg) throws Exception {
       int localVariable;
       System.out.println("class method");
     }

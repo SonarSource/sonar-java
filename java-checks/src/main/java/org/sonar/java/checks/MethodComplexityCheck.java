@@ -19,22 +19,22 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.ChecksHelper;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.java.ast.visitors.MethodHelper;
-import org.sonar.squidbridge.api.SourceMethod;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.ast.visitors.ComplexityVisitorST;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.text.MessageFormat;
+import java.util.List;
 
 @Rule(key = "MethodCyclomaticComplexity", priority = Priority.MAJOR,
-  tags={"brain-overload"})
+    tags = {"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class MethodComplexityCheck extends SquidCheck<LexerlessGrammar> {
+public class MethodComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 10;
 
@@ -42,26 +42,22 @@ public class MethodComplexityCheck extends SquidCheck<LexerlessGrammar> {
   private int max = DEFAULT_MAX;
 
   @Override
-  public void init() {
-    MethodHelper.subscribe(this);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override
-  public void leaveNode(AstNode node) {
-    SourceMethod sourceMethod = (SourceMethod) getContext().peekSourceCode();
-    int complexity = ChecksHelper.getRecursiveMeasureInt(sourceMethod, JavaMetric.COMPLEXITY);
+  public void visitNode(Tree tree) {
+    MethodTree methodTree = (MethodTree) tree;
+    int complexity = new ComplexityVisitorST().scan(tree);
     if (complexity > max) {
-      getContext().createLineViolation(this,
-        "The Cyclomatic Complexity of this method \"{0}\" is {1,number,integer} which is greater than {2,number,integer} authorized.",
-        node,
-        (new MethodHelper(node)).getName().getTokenValue(),
-        complexity,
-        max);
+      addIssue(tree, MessageFormat.format(
+          "The Cyclomatic Complexity of this method \"{0}\" is {1,number,integer} which is greater than {2,number,integer} authorized.",
+          methodTree.simpleName().name(), complexity, max));
     }
   }
 
   public void setMax(int max) {
     this.max = max;
   }
-
 }

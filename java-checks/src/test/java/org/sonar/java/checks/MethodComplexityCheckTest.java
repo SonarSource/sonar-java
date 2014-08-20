@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
@@ -32,7 +33,7 @@ public class MethodComplexityCheckTest {
 
   @Test
   public void defaults() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodComplexity.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodComplexity.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
   }
@@ -40,7 +41,7 @@ public class MethodComplexityCheckTest {
   @Test
   public void test() {
     check.setMax(1);
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodComplexity.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodComplexity.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("The Cyclomatic Complexity of this method \"sayHello\" is 2 which is greater than 1 authorized.")
         .noMore();
