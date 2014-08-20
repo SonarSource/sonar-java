@@ -205,12 +205,12 @@ public class ActionGrammar {
           b.invokeRule(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS),
           b.firstOf(
             f.newExplicitGenericInvokation(b.invokeRule(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX)),
-            f.newExplicitGenericInvokation(b.invokeRule(JavaKeyword.THIS), b.invokeRule(JavaGrammar.ARGUMENTS)))));
+            f.newExplicitGenericInvokation(b.invokeRule(JavaKeyword.THIS), ARGUMENTS()))));
   }
 
   public ExpressionTree THIS_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.THIS_EXPRESSION)
-      .is(f.thisExpression(b.invokeRule(JavaKeyword.THIS), b.optional(b.invokeRule(JavaGrammar.ARGUMENTS))));
+      .is(f.thisExpression(b.invokeRule(JavaKeyword.THIS), b.optional(ARGUMENTS())));
   }
 
   public ExpressionTree SUPER_EXPRESSION() {

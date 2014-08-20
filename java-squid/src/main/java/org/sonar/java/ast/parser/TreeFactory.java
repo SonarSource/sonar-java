@@ -273,20 +273,20 @@ public class TreeFactory {
       AstNode identifierNode = explicitGenericInvocationSuffix.getFirstChild(JavaTokenType.IDENTIFIER);
 
       // TODO Detect that no children are lost
-      return new MethodInvocationTreeImpl(treeMaker.identifier(identifierNode), treeMaker.arguments(explicitGenericInvocationSuffix.getFirstChild(JavaGrammar.ARGUMENTS)),
+      return new MethodInvocationTreeImpl(treeMaker.identifier(identifierNode), (ArgumentListTreeImpl) explicitGenericInvocationSuffix.getFirstChild(JavaGrammar.ARGUMENTS),
         identifierNode, explicitGenericInvocationSuffix.getFirstChild(JavaGrammar.ARGUMENTS));
     }
   }
 
-  public ExpressionTree newExplicitGenericInvokation(AstNode thisToken, AstNode arguments) {
-    return new MethodInvocationTreeImpl(treeMaker.identifier(thisToken), treeMaker.arguments(arguments),
+  public ExpressionTree newExplicitGenericInvokation(AstNode thisToken, ArgumentListTreeImpl arguments) {
+    return new MethodInvocationTreeImpl(treeMaker.identifier(thisToken), arguments,
       thisToken, arguments);
   }
 
-  public ExpressionTree thisExpression(AstNode thisToken, Optional<AstNode> arguments) {
+  public ExpressionTree thisExpression(AstNode thisToken, Optional<ArgumentListTreeImpl> arguments) {
     if (arguments.isPresent()) {
       // this(arguments)
-      return new MethodInvocationTreeImpl(treeMaker.identifier(thisToken), treeMaker.arguments(arguments.get()),
+      return new MethodInvocationTreeImpl(treeMaker.identifier(thisToken), arguments.get(),
         thisToken, arguments.get());
     } else {
       // this
@@ -319,7 +319,7 @@ public class TreeFactory {
       List<Tree> body = treeMaker.classBody(classCreatorRest.getFirstChild(JavaGrammar.CLASS_BODY));
       classBody = new ClassTreeImpl(classCreatorRest, Tree.Kind.CLASS, ModifiersTreeImpl.EMPTY, null, null, ImmutableList.<Tree>of(), body);
     }
-    return new NewClassTreeImpl(null, treeMaker.classType(createdName), treeMaker.arguments(classCreatorRest.getFirstChild(JavaGrammar.ARGUMENTS)), classBody,
+    return new NewClassTreeImpl(null, treeMaker.classType(createdName), (ArgumentListTreeImpl) classCreatorRest.getFirstChild(JavaGrammar.ARGUMENTS), classBody,
       createdName, classCreatorRest);
   }
 
@@ -405,7 +405,7 @@ public class TreeFactory {
       } else if (identifierSuffixNode.getFirstChild().is(JavaGrammar.ARGUMENTS)) {
         // id(arguments)
         return new MethodInvocationTreeImpl(
-          qualifiedIdentifier, treeMaker.arguments(identifierSuffixNode.getFirstChild()),
+          qualifiedIdentifier, (ArgumentListTreeImpl) identifierSuffixNode.getFirstChild(),
           (AstNode) qualifiedIdentifier, identifierSuffixNode);
       } else if (identifierSuffixNode.getFirstChild().is(JavaPunctuator.DOT)) {
         if (identifierSuffixNode.hasDirectChildren(JavaKeyword.CLASS)) {
@@ -432,7 +432,7 @@ public class TreeFactory {
             (AstNode) qualifiedIdentifier, identifierSuffixNode.getFirstChild(JavaPunctuator.DOT), superIdentifier);
 
           return new MethodInvocationTreeImpl(
-            memberSelect, treeMaker.arguments(identifierSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)),
+            memberSelect, (ArgumentListTreeImpl) identifierSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS),
             memberSelect, identifierSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS));
         } else if (identifierSuffixNode.hasDirectChildren(JavaKeyword.NEW)) {
           // id.new...
@@ -451,7 +451,7 @@ public class TreeFactory {
           return new NewClassTreeImpl(
             qualifiedIdentifier,
             treeMaker.identifier(innerCreatorNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-            treeMaker.arguments(classCreatorRestNode.getFirstChild(JavaGrammar.ARGUMENTS)),
+            (ArgumentListTreeImpl) classCreatorRestNode.getFirstChild(JavaGrammar.ARGUMENTS),
             classBody,
             (AstNode) qualifiedIdentifier, identifierSuffixNode);
         } else {
@@ -584,10 +584,10 @@ public class TreeFactory {
           expression, treeMaker.identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)),
           (AstNode) expression);
 
-        return new MethodInvocationTreeImpl(memberSelect, treeMaker.arguments(superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)),
+        return new MethodInvocationTreeImpl(memberSelect, (ArgumentListTreeImpl) superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS),
           memberSelect, superSuffixNode);
       } else {
-        return new MethodInvocationTreeImpl(expression, treeMaker.arguments(superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)),
+        return new MethodInvocationTreeImpl(expression, (ArgumentListTreeImpl) superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS),
           (AstNode) expression, superSuffixNode);
       }
     } else {
@@ -616,7 +616,7 @@ public class TreeFactory {
         (AstNode) expression, dotToken, nonWildcardTypeArguments, identifier);
 
       return new MethodInvocationTreeImpl(
-        memberSelect, treeMaker.arguments(explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)),
+        memberSelect, (ArgumentListTreeImpl) explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS),
         memberSelect, explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS));
     }
   }

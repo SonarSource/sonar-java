@@ -47,7 +47,7 @@ public abstract class ListTreeImpl<T> extends JavaTree implements List<T> {
   @Override
   public boolean isLeaf() {
     // TODO
-    throw new UnsupportedOperationException();
+    return true;
   }
 
   @Override

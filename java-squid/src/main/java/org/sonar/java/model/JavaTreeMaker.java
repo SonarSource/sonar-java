@@ -29,6 +29,7 @@ import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -523,7 +524,7 @@ public class JavaTreeMaker {
             enumConstantNode,
             /* enclosing expression: */null,
             enumIdentifier,
-            argumentsNode != null ? arguments(argumentsNode) : ImmutableList.<ExpressionTree>of(),
+            argumentsNode != null ? (ArgumentListTreeImpl) argumentsNode : ImmutableList.<ExpressionTree>of(),
             classBodyNode == null ? null : new ClassTreeImpl(
               classBodyNode,
               Tree.Kind.CLASS,
@@ -1119,7 +1120,7 @@ public class JavaTreeMaker {
           expression,
           identifier(selectorNode.getFirstChild(JavaTokenType.IDENTIFIER))
         ),
-        arguments(selectorNode.getFirstChild(JavaGrammar.ARGUMENTS)));
+        (ArgumentListTreeImpl) selectorNode.getFirstChild(JavaGrammar.ARGUMENTS));
     } else if (selectorNode.hasDirectChildren(JavaTokenType.IDENTIFIER)) {
       return new MemberSelectExpressionTreeImpl(
         selectorNode,
@@ -1174,7 +1175,7 @@ public class JavaTreeMaker {
       return new MethodInvocationTreeImpl(
         superSuffixNode,
         methodSelect,
-        arguments(superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)));
+        (ArgumentListTreeImpl) superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS));
     } else {
       // super.field
       return new MemberSelectExpressionTreeImpl(
@@ -1199,7 +1200,7 @@ public class JavaTreeMaker {
       classCreatorRestNode,
       enclosingExpression,
       identifier,
-      arguments(classCreatorRestNode.getFirstChild(JavaGrammar.ARGUMENTS)),
+      (ArgumentListTreeImpl) classCreatorRestNode.getFirstChild(JavaGrammar.ARGUMENTS),
       classBody);
   }
 
@@ -1222,17 +1223,8 @@ public class JavaTreeMaker {
           expression,
           identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER))
         ),
-        arguments(explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS)));
+        (ArgumentListTreeImpl) explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS));
     }
-  }
-
-  public List<ExpressionTree> arguments(AstNode astNode) {
-    checkType(astNode, JavaGrammar.ARGUMENTS);
-    ImmutableList.Builder<ExpressionTree> arguments = ImmutableList.builder();
-    for (AstNode argument : astNode.getChildren(JavaGrammar.EXPRESSION)) {
-      arguments.add(expression(argument));
-    }
-    return arguments.build();
   }
 
   public ExpressionTree applyDim(ExpressionTree expression, int count) {
