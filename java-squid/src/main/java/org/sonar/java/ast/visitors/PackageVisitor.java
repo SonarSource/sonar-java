@@ -22,7 +22,9 @@ package org.sonar.java.ast.visitors;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.GenericTokenType;
+import org.sonar.java.ast.parser.AstNodeHacks;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourcePackage;
 import org.sonar.squidbridge.api.SourceProject;
@@ -37,7 +39,6 @@ public class PackageVisitor extends JavaAstVisitor {
     SourcePackage sourcePackage = findOrCreateSourcePackage(sourceProject, getPackageKey(astNode));
     getContext().addSourceCode(sourcePackage);
   }
-
 
   @Override
   public void leaveFile(AstNode astNode) {
@@ -61,7 +62,7 @@ public class PackageVisitor extends JavaAstVisitor {
       // Cannot resolve package for empty file and parse error.
       return UNRESOLVED_PACKAGE;
     } else if (astNode.getFirstChild().is(JavaGrammar.PACKAGE_DECLARATION)) {
-      AstNode packageNameNode = astNode.getFirstChild().getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
+      AstNode packageNameNode = astNode.getFirstChild().getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
       return getAstNodeValue(packageNameNode).replace('.', '/');
     } else {
       // unnamed package
@@ -75,8 +76,10 @@ public class PackageVisitor extends JavaAstVisitor {
 
   private static String getAstNodeValue(AstNode astNode) {
     StringBuilder sb = new StringBuilder();
-    for (AstNode child : astNode.getChildren()) {
-      sb.append(child.getTokenValue());
+    for (AstNode child : AstNodeHacks.getDescendants(astNode)) {
+      if (!child.hasChildren() && child.hasToken()) {
+        sb.append(child.getTokenValue());
+      }
     }
     return sb.toString();
   }

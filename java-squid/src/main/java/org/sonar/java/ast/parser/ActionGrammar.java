@@ -252,7 +252,7 @@ public class ActionGrammar {
 
   public ExpressionTree QUALIFIED_IDENTIFIER_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION)
-      .is(f.newQualifiedIdentifierExpression(b.invokeRule(JavaGrammar.QUALIFIED_IDENTIFIER), b.optional(b.invokeRule(JavaGrammar.IDENTIFIER_SUFFIX))));
+      .is(f.newQualifiedIdentifierExpression(QUALIFIED_IDENTIFIER(), b.optional(b.invokeRule(JavaGrammar.IDENTIFIER_SUFFIX))));
   }
 
   public ExpressionTree BASIC_CLASS_EXPRESSION() {
@@ -265,6 +265,15 @@ public class ActionGrammar {
   public ExpressionTree VOID_CLASS_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.VOID_CLASS_EXPRESSION)
       .is(f.voidClassExpression(b.invokeRule(JavaKeyword.VOID), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
+  }
+
+  public ExpressionTree QUALIFIED_IDENTIFIER() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.QUALIFIED_IDENTIFIER)
+      .is(
+        f.qualifiedExpression(
+          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.DOT), b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)), b.invokeRule(JavaTokenType.IDENTIFIER)))));
   }
 
   // End of expressions

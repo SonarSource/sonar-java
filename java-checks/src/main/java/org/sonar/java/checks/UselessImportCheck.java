@@ -34,6 +34,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -71,9 +72,7 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
     subscribeTo(JavaGrammar.CREATED_NAME);
     subscribeTo(JavaGrammar.ANNOTATION);
     subscribeTo(JavaKeyword.THROWS);
-    subscribeTo(JavaGrammar.QUALIFIED_IDENTIFIER);
-    subscribeTo(Kind.IDENTIFIER);
-    subscribeTo(Kind.MEMBER_SELECT);
+    subscribeTo(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
   }
 
   @Override
@@ -88,10 +87,10 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
   @Override
   public void visitNode(AstNode node) {
     if (node.is(JavaGrammar.PACKAGE_DECLARATION)) {
-      currentPackage = mergeIdentifiers(node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
+      currentPackage = mergeIdentifiers(node.getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS));
     } else if (node.is(JavaGrammar.IMPORT_DECLARATION)) {
       if (!isStaticImport(node)) {
-        String reference = mergeIdentifiers(node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER));
+        String reference = mergeIdentifiers(node.getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS));
 
         if ("java.lang".equals(reference)) {
           getContext().createLineViolation(this, "Remove this unnecessary import: java.lang classes are always implicitly imported.", node);
@@ -160,7 +159,7 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
     if (node.is(JavaKeyword.THROWS)) {
       ImmutableList.Builder<String> builder = ImmutableList.builder();
 
-      for (AstNode qualifiedIdentifier : node.getNextSibling().getChildren(JavaGrammar.QUALIFIED_IDENTIFIER)) {
+      for (AstNode qualifiedIdentifier : node.getNextSibling().getChildren(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS)) {
         builder.add(mergeIdentifiers(qualifiedIdentifier));
       }
 
@@ -168,7 +167,7 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
     } else {
       AstNode actualNode = node;
       if (node.is(JavaGrammar.ANNOTATION)) {
-        actualNode = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
+        actualNode = node.getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
       }
 
       return Collections.singleton(mergeIdentifiers(actualNode));

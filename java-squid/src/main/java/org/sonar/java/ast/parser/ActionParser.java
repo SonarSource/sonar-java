@@ -174,15 +174,15 @@ public class ActionParser extends Parser {
 
   private void setAstNodeFields(AstNode astNode, @Nullable AstNode parent, int childIndex, Set<AstNode> ancestors) {
     if (verifyAssertions && parent != null) {
-      if (AstNodeReflector.getChildIndex(astNode) != childIndex) {
+      if (AstNodeHacks.getChildIndex(astNode) != childIndex) {
         throw new IllegalArgumentException("Bad childIndex on node: " + nodeToString(astNode) + ": " + astNode
           + "\nExpected: " + childIndex
-          + "\nActual: " + AstNodeReflector.getChildIndex(astNode)
+          + "\nActual: " + AstNodeHacks.getChildIndex(astNode)
           + "\nParent:"
           + "\n" + AstXmlPrinter.print(parent));
       }
     }
-    AstNodeReflector.setParent(astNode, parent);
+    AstNodeHacks.setParent(astNode, parent);
 
     List<AstNode> children = astNode.getChildren();
     if (!children.isEmpty()) {
@@ -212,7 +212,7 @@ public class ActionParser extends Parser {
         ancestors.remove(astNode);
       }
 
-      AstNodeReflector.setToken(astNode, token);
+      AstNodeHacks.setToken(astNode, token);
       astNode.setFromIndex(fromIndex);
       astNode.setToIndex(toIndex);
     }
@@ -223,7 +223,7 @@ public class ActionParser extends Parser {
       return;
     }
 
-    Set<AstNode> nodesSet = Sets.newHashSet(getDescendants(rootNode));
+    Set<AstNode> nodesSet = Sets.newHashSet(AstNodeHacks.getDescendants(rootNode));
     nodesSet.add(rootNode);
     JavaTree compilationUnitTree = (JavaTree) new JavaTreeMaker().compilationUnit(rootNode);
 
@@ -432,21 +432,6 @@ public class ActionParser extends Parser {
       }
     } else {
       rootNode = n;
-    }
-  }
-
-  private static List<AstNode> getDescendants(AstNode astNode) {
-    List<AstNode> result = Lists.newArrayList();
-    for (AstNode child : astNode.getChildren()) {
-      addDescendants(result, child);
-    }
-    return result;
-  }
-
-  private static void addDescendants(List<AstNode> result, AstNode astNode) {
-    result.add(astNode);
-    for (AstNode child : astNode.getChildren()) {
-      addDescendants(result, child);
     }
   }
 

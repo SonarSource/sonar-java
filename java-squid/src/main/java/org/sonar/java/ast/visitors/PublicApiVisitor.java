@@ -24,6 +24,7 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Trivia;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -121,7 +122,7 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
       AstNode annotation = ((JavaTree) annotationTree).getAstNode();
       if (annotation != null) {
         StringBuilder value = new StringBuilder();
-        for (AstNode identifier : annotation.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER).getChildren()) {
+        for (AstNode identifier : annotation.getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS).getChildren()) {
           value.append(identifier.getTokenValue());
         }
         if (value.toString().equals(expected)) {

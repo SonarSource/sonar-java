@@ -24,6 +24,7 @@ import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.ast.AstSelect;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -41,7 +42,7 @@ public class AbstractDeprecatedChecker extends SquidCheck<LexerlessGrammar> {
   }
 
   public static boolean isDeprecated(AstNode node) {
-    AstNode qualifiedIdentifier = node.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER);
+    AstNode qualifiedIdentifier = node.getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
     return qualifiedIdentifier.getNumberOfChildren() == 1 &&
       "Deprecated".equals(qualifiedIdentifier.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue());
   }

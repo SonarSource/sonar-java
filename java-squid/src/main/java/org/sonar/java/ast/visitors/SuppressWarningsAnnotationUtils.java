@@ -24,6 +24,7 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -87,7 +88,7 @@ public class SuppressWarningsAnnotationUtils {
 
   private static String getAnnotationName(AstNode astNode) {
     StringBuilder sb = new StringBuilder();
-    for (Token token : astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER).getTokens()) {
+    for (Token token : astNode.getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS).getTokens()) {
       sb.append(token.getValue());
     }
     return sb.toString();
