@@ -27,13 +27,17 @@ import org.sonar.plugins.java.api.tree.Tree;
 public abstract class SubscriptionBaseVisitor extends SubscriptionVisitor {
 
   public void addIssue(Tree tree, String message){
-    context.addIssue(tree, RuleKey.of(CheckList.REPOSITORY_KEY, RuleAnnotationUtils.getRuleKey(this.getClass())), message);
+    context.addIssue(tree, getRuleKey(), message);
   }
   public void addIssue(int line, String message){
-    context.addIssue(line, RuleKey.of(CheckList.REPOSITORY_KEY, RuleAnnotationUtils.getRuleKey(this.getClass())), message);
+    context.addIssue(line, getRuleKey(), message);
   }
 
   public void addIssueOnFile(String message) {
-    context.addIssueOnFile(RuleKey.of(CheckList.REPOSITORY_KEY, RuleAnnotationUtils.getRuleKey(this.getClass())), message);
+    context.addIssueOnFile(getRuleKey(), message);
+  }
+
+  private RuleKey getRuleKey() {
+    return RuleKey.of(CheckList.REPOSITORY_KEY, RuleAnnotationUtils.getRuleKey(this.getClass()));
   }
 }
