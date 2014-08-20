@@ -21,65 +21,10 @@ package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
-import org.sonar.java.model.JavaTree;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.CodeVisitor;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-public abstract class SubscriptionBaseVisitor implements JavaFileScanner, CodeVisitor {
-
-
-  protected JavaFileScannerContext context;
-  private Collection<Tree.Kind> nodesToVisit;
-
-  public abstract List<Tree.Kind> nodesToVisit();
-
-  public void visitNode(Tree tree) {
-    //Default behavior : do nothing.
-  }
-
-  public void leaveNode(Tree tree) {
-    //Default behavior : do nothing.
-  }
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    nodesToVisit = nodesToVisit();
-    visit(context.getTree());
-  }
-
-  private void visit(Tree tree) {
-    boolean isSubscribed = isSubscribed(tree);
-    if(isSubscribed) {
-      visitNode(tree);
-    }
-    visitChildren(tree);
-    if(isSubscribed) {
-      leaveNode(tree);
-    }
-  }
-
-  protected boolean isSubscribed(Tree tree) {
-    return nodesToVisit.contains(((JavaTree) tree).getKind());
-  }
-
-  private void visitChildren(Tree tree) {
-    JavaTree javaTree = (JavaTree) tree;
-    if (!javaTree.isLeaf()) {
-      for (Iterator<Tree> iter = javaTree.childrenIterator(); iter.hasNext(); ) {
-        Tree next = iter.next();
-        if (next != null) {
-          visit(next);
-        }
-      }
-    }
-  }
+public abstract class SubscriptionBaseVisitor extends SubscriptionVisitor {
 
   public void addIssue(Tree tree, String message){
     context.addIssue(tree, RuleKey.of(CheckList.REPOSITORY_KEY, RuleAnnotationUtils.getRuleKey(this.getClass())), message);
