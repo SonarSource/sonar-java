@@ -34,17 +34,22 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Collections;
 import java.util.List;
 
 public class AccessorVisitorST extends SubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return null;
+    return Collections.emptyList();
   }
 
   public boolean isAccessor(ClassTree classTree, MethodTree methodTree) {
-    return methodTree.is(Tree.Kind.METHOD) && methodTree.modifiers().modifiers().contains(Modifier.PUBLIC) && methodTree.block() != null && (isGetter(classTree, methodTree) || isSetter(classTree, methodTree));
+    return isPublicMethod(methodTree) && methodTree.block() != null && (isGetter(classTree, methodTree) || isSetter(classTree, methodTree));
+  }
+
+  private boolean isPublicMethod(MethodTree methodTree) {
+    return methodTree.is(Tree.Kind.METHOD) && methodTree.modifiers().modifiers().contains(Modifier.PUBLIC);
   }
 
   private boolean isSetter(ClassTree classTree, MethodTree methodTree) {

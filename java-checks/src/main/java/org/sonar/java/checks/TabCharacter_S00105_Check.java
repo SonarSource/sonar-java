@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(
@@ -49,7 +50,7 @@ public class TabCharacter_S00105_Check extends SubscriptionBaseVisitor implement
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

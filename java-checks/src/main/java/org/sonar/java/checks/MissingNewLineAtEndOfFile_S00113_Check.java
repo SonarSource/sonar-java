@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S00113", priority = Priority.MINOR, tags = {"convention"})
@@ -37,7 +38,7 @@ public class MissingNewLineAtEndOfFile_S00113_Check extends SubscriptionBaseVisi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

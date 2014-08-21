@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(
@@ -51,7 +52,7 @@ public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

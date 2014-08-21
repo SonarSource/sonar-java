@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class FileHeaderCheck extends SubscriptionBaseVisitor implements CharsetA
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

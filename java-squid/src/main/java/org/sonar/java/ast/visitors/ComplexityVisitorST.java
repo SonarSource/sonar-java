@@ -69,23 +69,10 @@ public class ComplexityVisitorST extends SubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS) ||
-        tree.is(Tree.Kind.ENUM) ||
-        tree.is(Tree.Kind.ANNOTATION_TYPE)) {
-
+    if (isClass(tree)) {
       classTrees.push((ClassTree) tree);
-    } else if (tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR)) {
-      MethodTree methodTree = (MethodTree) tree;
-      BlockTree block = methodTree.block();
-      if (block != null) {
-        if (classTrees.isEmpty() || !accessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
-          complexity++;
-        }
-        if (!block.body().isEmpty() && Iterables.getLast(block.body()).is(Tree.Kind.RETURN_STATEMENT)) {
-          //minus one because we are going to count the return with +1
-          complexity--;
-        }
-      }
+    } else if (isMethod(tree)) {
+      computeMethodComplexity((MethodTree) tree);
     } else if (tree.is(Tree.Kind.CASE_LABEL)) {
       CaseLabelTree caseLabelTree = (CaseLabelTree) tree;
       if (!"default".equals(caseLabelTree.caseOrDefaultKeyword().text())) {
@@ -96,11 +83,34 @@ public class ComplexityVisitorST extends SubscriptionVisitor {
     }
   }
 
+  private boolean isMethod(Tree tree) {
+    return tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR);
+  }
+
+  private boolean isClass(Tree tree) {
+    return tree.is(Tree.Kind.CLASS) ||
+        tree.is(Tree.Kind.ENUM) ||
+        tree.is(Tree.Kind.ANNOTATION_TYPE);
+  }
+
+  private void computeMethodComplexity(MethodTree methodTree) {
+    BlockTree block = methodTree.block();
+    if (block != null) {
+      if (classTrees.isEmpty() || !accessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
+        complexity++;
+      }
+      if (!block.body().isEmpty() && Iterables.getLast(block.body()).is(Tree.Kind.RETURN_STATEMENT)) {
+        //minus one because we are going to count the return with +1
+        complexity--;
+      }
+    }
+  }
+
+
+
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS) ||
-        tree.is(Tree.Kind.ENUM) ||
-        tree.is(Tree.Kind.ANNOTATION_TYPE)) {
+    if (isClass(tree)) {
       classTrees.pop();
     }
   }
