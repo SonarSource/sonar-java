@@ -19,55 +19,28 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.model.InternalSyntaxTrivia;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
-import org.sonar.squidbridge.checks.SquidCheck;
 
 public class CommentContainsPatternChecker {
 
-  private final SquidCheck<?> check;
   private final SubscriptionBaseVisitor newCheck;
   private final String pattern;
   private final String message;
 
   public CommentContainsPatternChecker(SubscriptionBaseVisitor check, String pattern, String message) {
-    this.check = null;
     this.newCheck = check;
     this.pattern = pattern;
     this.message = message;
-  }
-
-  public CommentContainsPatternChecker(SquidCheck<?> check, String pattern, String message) {
-    this.newCheck = null;
-    this.check = check;
-    this.pattern = pattern;
-    this.message = message;
-  }
-
-  public void visitToken(Token token) {
-    for (Trivia trivia : token.getTrivia()) {
-      String comment = trivia.getToken().getOriginalValue();
-      if (StringUtils.containsIgnoreCase(comment, pattern)) {
-        String[] lines = comment.split("\r\n?|\n");
-
-        for (int i = 0; i < lines.length; i++) {
-          if (StringUtils.containsIgnoreCase(lines[i], pattern) && !isLetterAround(lines[i], pattern)) {
-            check.getContext().createLineViolation(check, message, trivia.getToken().getLine() + i);
-          }
-        }
-      }
-    }
   }
 
   private boolean isLetterAround(String line, String pattern) {
     int start = StringUtils.indexOfIgnoreCase(line, pattern);
     int end = start + pattern.length();
 
-    boolean pre = start > 0 ? Character.isLetter(line.charAt(start - 1)) : false;
-    boolean post = end < line.length() - 1 ? Character.isLetter(line.charAt(end)) : false;
+    boolean pre = start > 0 && Character.isLetter(line.charAt(start - 1));
+    boolean post = end < line.length() - 1 && Character.isLetter(line.charAt(end));
 
     return pre || post;
   }
