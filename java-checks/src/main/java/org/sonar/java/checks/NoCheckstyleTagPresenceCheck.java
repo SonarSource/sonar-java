@@ -19,17 +19,18 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.Token;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
   key = "S1315",
   priority = Priority.MINOR)
-public class NoCheckstyleTagPresenceCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class NoCheckstyleTagPresenceCheck extends SubscriptionBaseVisitor {
 
   private static final String PATTERN = "CHECKSTYLE:OFF";
   private static final String MESSAGE = "Remove usage of this \"CHECKSTYLE:OFF\" suppression comment filter.";
@@ -37,8 +38,12 @@ public class NoCheckstyleTagPresenceCheck extends SquidCheck<LexerlessGrammar> i
   private final CommentContainsPatternChecker checker = new CommentContainsPatternChecker(this, PATTERN, MESSAGE);
 
   @Override
-  public void visitToken(Token token) {
-    checker.visitToken(token);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.TRIVIA);
   }
 
+  @Override
+  public void visitTrivia(SyntaxTrivia syntaxTrivia) {
+    checker.checkTrivia(syntaxTrivia);
+  }
 }
