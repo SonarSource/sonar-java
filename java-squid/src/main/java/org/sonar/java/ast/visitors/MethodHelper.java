@@ -28,6 +28,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -108,7 +109,7 @@ public class MethodHelper {
     if (node == null) {
       return Collections.emptyList();
     }
-    return node.getFirstChild(JavaGrammar.BLOCK).getFirstChild(JavaGrammar.BLOCK_STATEMENTS).getChildren();
+    return node.getFirstChild(Kind.BLOCK).getFirstChild(JavaGrammar.BLOCK_STATEMENTS).getChildren();
   }
 
   public static List<MethodHelper> getMethods(AstNode classOrEnumNode) {

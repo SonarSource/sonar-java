@@ -311,11 +311,15 @@ public class JavaTreeMakerTest {
     BlockTree tree = (BlockTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.INITIALIZER)).isTrue();
     assertThat(tree.body()).hasSize(2);
+    assertThat(tree.openBraceToken().text()).isEqualTo("{");
+    assertThat(tree.closeBraceToken().text()).isEqualTo("}");
 
     astNode = p.parse("class T { static { ; ; } }");
     tree = (BlockTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.STATIC_INITIALIZER)).isTrue();
     assertThat(tree.body()).hasSize(2);
+    assertThat(tree.openBraceToken().text()).isEqualTo("{");
+    assertThat(tree.closeBraceToken().text()).isEqualTo("}");
   }
 
   @Test
@@ -633,7 +637,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void blocks() {
-    BlockTree tree = (BlockTree) p.parse("class T { void m() { ; ; } }").getFirstDescendant(JavaGrammar.BLOCK);
+    BlockTree tree = (BlockTree) p.parse("class T { void m() { ; ; } }").getFirstDescendant(Kind.BLOCK);
     assertThat(tree.is(Tree.Kind.BLOCK)).isTrue();
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.body()).hasSize(2);
@@ -645,13 +649,13 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void local_class_declaration() {
-    BlockTree block = (BlockTree) p.parse("class T { void m() { abstract class Local { } } }").getFirstDescendant(JavaGrammar.BLOCK);
+    BlockTree block = (BlockTree) p.parse("class T { void m() { abstract class Local { } } }").getFirstDescendant(Kind.BLOCK);
     ClassTree tree = (ClassTree) block.body().get(0);
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     assertThat(tree.modifiers().modifiers()).containsOnly(Modifier.ABSTRACT);
     assertThat(tree).isNotNull();
 
-    block = (BlockTree) p.parse("class T { void m() { static enum Local { ; } } }").getFirstDescendant(JavaGrammar.BLOCK);
+    block = (BlockTree) p.parse("class T { void m() { static enum Local { ; } } }").getFirstDescendant(Kind.BLOCK);
     tree = (ClassTree) block.body().get(0);
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).containsOnly(Modifier.STATIC);
@@ -663,7 +667,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void local_variable_declaration() {
-    BlockTree block = (BlockTree) p.parse("class T { void m() { int a = 42, b[]; final @Nullable int c = 42; } }").getFirstDescendant(JavaGrammar.BLOCK);
+    BlockTree block = (BlockTree) p.parse("class T { void m() { int a = 42, b[]; final @Nullable int c = 42; } }").getFirstDescendant(Kind.BLOCK);
     List<StatementTree> declarations = block.body();
     assertThat(declarations).hasSize(3);
 

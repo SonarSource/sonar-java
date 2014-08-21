@@ -22,8 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -36,23 +34,32 @@ import java.util.Iterator;
 import java.util.List;
 
 public class BlockTreeImpl extends JavaTree implements BlockTree {
+
   private final Kind kind;
+  private final InternalSyntaxToken openBraceToken;
   private final List<StatementTree> body;
+  private final InternalSyntaxToken closeBraceToken;
 
-  public BlockTreeImpl(AstNode astNode, Kind kind, List<StatementTree> body) {
-    super(astNode);
-    this.kind = kind;
-    this.body = Preconditions.checkNotNull(body);
-  }
+  public BlockTreeImpl(InternalSyntaxToken openBraceToken, List<StatementTree> body, InternalSyntaxToken closeBraceToken, AstNode... children) {
+    super(Kind.BLOCK);
 
-  public BlockTreeImpl(Kind kind, List<StatementTree> body, AstNode... children) {
-    super(JavaGrammar.BLOCK);
-    this.kind = kind;
+    this.kind = Kind.BLOCK;
+    this.openBraceToken = openBraceToken;
     this.body = Preconditions.checkNotNull(body);
+    this.closeBraceToken = closeBraceToken;
 
     for (AstNode child : children) {
       addChild(child);
     }
+  }
+
+  public BlockTreeImpl(AstNode astNode, Kind newKind, BlockTreeImpl block) {
+    super(astNode);
+
+    this.kind = newKind;
+    this.openBraceToken = block.openBraceToken;
+    this.body = block.body;
+    this.closeBraceToken = block.closeBraceToken;
   }
 
   @Override
@@ -62,7 +69,7 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
 
   @Override
   public SyntaxToken openBraceToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LWING));
+    return openBraceToken;
   }
 
   @Override
@@ -72,7 +79,7 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
 
   @Override
   public SyntaxToken closeBraceToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RWING));
+    return closeBraceToken;
   }
 
   @Override

@@ -28,6 +28,7 @@ import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -43,7 +44,7 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
     JavaGrammar.CLASS_BODY,
     JavaGrammar.ENUM_BODY,
     JavaGrammar.INTERFACE_BODY,
-    JavaGrammar.BLOCK,
+    Kind.BLOCK,
     JavaGrammar.SWITCH_STATEMENT,
     JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP
   };

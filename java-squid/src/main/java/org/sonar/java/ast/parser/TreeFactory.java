@@ -115,8 +115,12 @@ public class TreeFactory {
 
   // Statements
 
-  public BlockTreeImpl block(AstNode leftCurlyBraceToken, AstNode statements, AstNode rightCurlyBraceToken) {
-    return new BlockTreeImpl(Tree.Kind.BLOCK, treeMaker.blockStatements(statements), leftCurlyBraceToken, statements, rightCurlyBraceToken);
+  public BlockTreeImpl block(AstNode openBraceTokenAstNode, AstNode statements, AstNode closeBraceTokenAstNode) {
+    InternalSyntaxToken openBraceToken = InternalSyntaxToken.create(openBraceTokenAstNode);
+    InternalSyntaxToken closeBraceToken = InternalSyntaxToken.create(closeBraceTokenAstNode);
+
+    return new BlockTreeImpl(openBraceToken, treeMaker.blockStatements(statements), closeBraceToken,
+      openBraceToken, statements, closeBraceToken);
   }
 
   public AssertStatementTreeImpl completeAssertStatement(AstNode assertToken, AstNode expression, Optional<AssertStatementTreeImpl> detailExpression, AstNode semicolonToken) {
@@ -343,8 +347,8 @@ public class TreeFactory {
 
   public ExpressionTree lambdaExpression(AstNode parameters, AstNode arrowToken, AstNode body) {
     Tree bodyTree;
-    if (body.hasDirectChildren(JavaGrammar.BLOCK)) {
-      bodyTree = (BlockTree) body.getFirstChild(JavaGrammar.BLOCK);
+    if (body.hasDirectChildren(Kind.BLOCK)) {
+      bodyTree = (BlockTree) body.getFirstChild(Kind.BLOCK);
     } else {
       bodyTree = treeMaker.expression(body.getFirstChild());
     }

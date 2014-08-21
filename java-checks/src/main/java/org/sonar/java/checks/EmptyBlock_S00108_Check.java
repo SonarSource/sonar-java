@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -39,7 +40,7 @@ public class EmptyBlock_S00108_Check extends SquidCheck<LexerlessGrammar> {
   @Override
   public void init() {
     subscribeTo(
-      JavaGrammar.BLOCK,
+      Kind.BLOCK,
       JavaGrammar.SWITCH_STATEMENT);
   }
 
