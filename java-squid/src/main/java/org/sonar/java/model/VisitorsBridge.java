@@ -164,6 +164,7 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
       if (line > 0) {
         checkMessage.setLine(line);
       }
+      checkMessage.setBypassExclusion(ruleKey.rule().equals("NoSonar"));
       sourceFile.log(checkMessage);
     }
 

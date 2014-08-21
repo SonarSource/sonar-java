@@ -19,51 +19,33 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 /**
  * Note that {@link org.sonar.squidbridge.checks.AbstractNoSonarCheck} can't be used because of bug SSLRSQBR-16.
  */
 @Rule(key = "NoSonar", priority = Priority.INFO)
-public class NoSonarCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class NoSonarCheck extends SubscriptionBaseVisitor {
+
+  private static final String PATTERN = "NOSONAR";
+  private static final String MESSAGE = "Is //NOSONAR used to exclude false-positive or to hide real quality flaw ?";
+
+  private final CommentContainsPatternChecker checker = new CommentContainsPatternChecker(this, PATTERN, MESSAGE);
 
   @Override
-  public void visitToken(Token token) {
-    SourceFile sourceFile = getSourceFile();
-
-    for (Trivia trivia : token.getTrivia()) {
-      if (trivia.isComment()) {
-        String[] commentLines = getContext().getCommentAnalyser().getContents(trivia.getToken().getOriginalValue()).split("(\r)?\n|\r", -1);
-        int line = trivia.getToken().getLine();
-
-        for (String commentLine : commentLines) {
-          if (commentLine.contains("NOSONAR")) {
-            CheckMessage checkMessage = new CheckMessage(this, "Is //NOSONAR used to exclude false-positive or to hide real quality flaw ?");
-            checkMessage.setBypassExclusion(true);
-            checkMessage.setLine(line);
-            sourceFile.log(checkMessage);
-          }
-
-          line++;
-        }
-      }
-    }
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.TRIVIA);
   }
 
-  private SourceFile getSourceFile() {
-    if (getContext().peekSourceCode() instanceof SourceFile) {
-      return (SourceFile) getContext().peekSourceCode();
-    } else {
-      return getContext().peekSourceCode().getParent(SourceFile.class);
-    }
+  @Override
+  public void visitTrivia(SyntaxTrivia syntaxTrivia) {
+    checker.checkTrivia(syntaxTrivia);
   }
 
 }
