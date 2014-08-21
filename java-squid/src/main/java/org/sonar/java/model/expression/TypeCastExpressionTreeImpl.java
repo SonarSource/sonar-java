@@ -32,15 +32,41 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements TypeCastTree {
+
+  private InternalSyntaxToken openParenToken;
+  private InternalSyntaxToken closeParenToken;
+
   private final Tree type;
   private final ExpressionTree expression;
+
+  public TypeCastExpressionTreeImpl(Tree type, ExpressionTree expression, InternalSyntaxToken closeParenToken, List<AstNode> children) {
+    super(Kind.TYPE_CAST);
+    this.type = Preconditions.checkNotNull(type);
+    this.expression = Preconditions.checkNotNull(expression);
+
+    this.closeParenToken = closeParenToken;
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
 
   public TypeCastExpressionTreeImpl(AstNode astNode, Tree type, ExpressionTree expression) {
     super(astNode);
     this.type = Preconditions.checkNotNull(type);
     this.expression = Preconditions.checkNotNull(expression);
+  }
+
+  public TypeCastExpressionTreeImpl complete(InternalSyntaxToken openParenToken) {
+    Preconditions.checkState(this.openParenToken == null && closeParenToken != null);
+    this.openParenToken = openParenToken;
+
+    prependChildren(openParenToken);
+
+    return this;
   }
 
   @Override

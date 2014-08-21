@@ -764,21 +764,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(SHIFT_EXPRESSION).is(ADDITIVE_EXPRESSION, b.zeroOrMore(b.firstOf(SL, BSR, SR), ADDITIVE_EXPRESSION)).skipIfOneChild();
     b.rule(ADDITIVE_EXPRESSION).is(MULTIPLICATIVE_EXPRESSION, b.zeroOrMore(b.firstOf(PLUS, MINUS), MULTIPLICATIVE_EXPRESSION)).skipIfOneChild();
     b.rule(MULTIPLICATIVE_EXPRESSION).is(UNARY_EXPRESSION, b.zeroOrMore(b.firstOf(STAR, DIV, MOD), UNARY_EXPRESSION)).skipIfOneChild();
-    b.rule(UNARY_EXPRESSION_NOT_PLUS_MINUS).is(b.firstOf(
-      CAST_EXPRESSION,
-      METHOD_REFERENCE,
-      b.sequence(PRIMARY, b.zeroOrMore(SELECTOR), b.zeroOrMore(POST_FIX_OP)),
-      b.sequence(TILDA, UNARY_EXPRESSION),
-      b.sequence(BANG, UNARY_EXPRESSION)
-      )).skipIfOneChild();
-    b.rule(CAST_EXPRESSION).is(LPAR, b.firstOf(
-      b.sequence(BASIC_TYPE, RPAR, UNARY_EXPRESSION),
-      b.sequence(TYPE, b.zeroOrMore(AND, CLASS_TYPE), RPAR, UNARY_EXPRESSION_NOT_PLUS_MINUS)
-      ));
-    b.rule(UNARY_EXPRESSION).is(b.firstOf(
-      b.sequence(PREFIX_OP, UNARY_EXPRESSION),
-      UNARY_EXPRESSION_NOT_PLUS_MINUS
-      )).skipIfOneChild();
 
     b.rule(IDENTIFIER_SUFFIX).is(b.firstOf(
       b.sequence(LBRK, b.firstOf(b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), b.sequence(EXPRESSION, RBRK))),
@@ -795,11 +780,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       b.firstOf(
         b.sequence(SUPER, SUPER_SUFFIX),
         b.sequence(JavaTokenType.IDENTIFIER, ARGUMENTS)));
-    b.rule(PREFIX_OP).is(b.firstOf(
-      INC,
-      DEC,
-      PLUS,
-      MINUS));
     b.rule(POST_FIX_OP).is(b.firstOf(
       INC,
       DEC));

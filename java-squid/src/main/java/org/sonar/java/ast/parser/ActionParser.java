@@ -391,8 +391,12 @@ public class ActionParser extends Parser {
     for (int i = 0; i < oldTokens.size(); i++) {
       if (oldTokens.get(i) != newTokens.get(i)) {
         throw new IllegalArgumentException("Difference in tokens number " + i
+          + "\nOld node: " + o
+          + "\nNew node: " + n
           + "\nExpected: " + oldTokens.get(i).getOriginalValue()
-          + "\nActual: " + newTokens.get(i).getOriginalValue());
+          + "\nActual: " + newTokens.get(i).getOriginalValue()
+          + "\nFirst old: " + firstTokens(oldTokens)
+          + "\nFirst new: " + firstTokens(newTokens));
       }
     }
   }

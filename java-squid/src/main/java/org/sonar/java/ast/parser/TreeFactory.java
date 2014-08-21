@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
+import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
@@ -37,6 +38,8 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.model.expression.InternalPostfixUnaryExpression;
+import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
@@ -44,6 +47,7 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
+import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
@@ -239,6 +243,73 @@ public class TreeFactory {
 
   // Expressions
 
+  public ExpressionTree newPrefixedExpression(AstNode operatorTokenAstNode, ExpressionTree expression) {
+    InternalSyntaxToken operatorToken = InternalSyntaxToken.create(operatorTokenAstNode);
+    return new InternalPrefixUnaryExpression(kindMaps.getPrefixOperator((JavaPunctuator) operatorTokenAstNode.getType()), operatorToken, expression);
+  }
+
+  public ExpressionTree newPostfixExpression(ExpressionTree primary, Optional<List<AstNode>> selectors, Optional<List<AstNode>> postfixOperatorAstNodes) {
+    ExpressionTree result = primary;
+
+    if (selectors.isPresent()) {
+      for (AstNode selector : selectors.get()) {
+        result = applySelector(result, selector);
+      }
+    }
+
+    if (postfixOperatorAstNodes.isPresent()) {
+      for (AstNode postfixOperatorAstNode : postfixOperatorAstNodes.get()) {
+        InternalSyntaxToken postfixOperatorToken = InternalSyntaxToken.create(postfixOperatorAstNode);
+        result = new InternalPostfixUnaryExpression(kindMaps.getPostfixOperator((JavaPunctuator) postfixOperatorAstNode.getType()), result, postfixOperatorToken);
+      }
+    }
+
+    return result;
+  }
+
+  public ExpressionTree newTildaExpression(AstNode tildaTokenAstNode, ExpressionTree expression) {
+    InternalSyntaxToken operatorToken = InternalSyntaxToken.create(tildaTokenAstNode);
+    return new InternalPrefixUnaryExpression(Kind.BITWISE_COMPLEMENT, operatorToken, expression);
+  }
+
+  public ExpressionTree newBangExpression(AstNode bangTokenAstNode, ExpressionTree expression) {
+    InternalSyntaxToken operatorToken = InternalSyntaxToken.create(bangTokenAstNode);
+    return new InternalPrefixUnaryExpression(Kind.LOGICAL_COMPLEMENT, operatorToken, expression);
+  }
+
+  public ExpressionTree completeCastExpression(AstNode openParenTokenAstNode, TypeCastExpressionTreeImpl partial) {
+    return partial.complete(InternalSyntaxToken.create(openParenTokenAstNode));
+  }
+
+  public TypeCastExpressionTreeImpl newBasicTypeCastExpression(PrimitiveTypeTreeImpl basicType, AstNode closeParenTokenAstNode, ExpressionTree expression) {
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+
+    List<AstNode> children = Lists.newArrayList();
+    children.add(basicType);
+    children.add(closeParenToken);
+    children.add((AstNode) expression);
+
+    return new TypeCastExpressionTreeImpl(basicType, expression, closeParenToken,
+      children);
+  }
+
+  public TypeCastExpressionTreeImpl newClassCastExpression(AstNode type, Optional<List<AstNode>> classTypes, AstNode closeParenTokenAstNode, ExpressionTree expression) {
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+
+    List<AstNode> children = Lists.newArrayList();
+    children.add(type);
+    if (classTypes.isPresent()) {
+      for (AstNode classType : classTypes.get()) {
+        children.addAll(classType.getChildren());
+      }
+    }
+    children.add(closeParenToken);
+    children.add((AstNode) expression);
+
+    return new TypeCastExpressionTreeImpl(treeMaker.referenceType(type), expression, closeParenToken,
+      children);
+  }
+
   public ExpressionTree completeMethodReference(NotImplementedTreeImpl partial, Optional<AstNode> typeArguments, AstNode newOrIdentifierToken) {
     // TODO SONARJAVA-613
     if (typeArguments.isPresent()) {
@@ -304,7 +375,6 @@ public class TreeFactory {
       // <T>id(arguments)
       AstNode identifierNode = explicitGenericInvocationSuffix.getFirstChild(JavaTokenType.IDENTIFIER);
 
-      // TODO Detect that no children are lost
       return new MethodInvocationTreeImpl(treeMaker.identifier(identifierNode), (ArgumentListTreeImpl) explicitGenericInvocationSuffix.getFirstChild(JavaGrammar.ARGUMENTS),
         identifierNode, explicitGenericInvocationSuffix.getFirstChild(JavaGrammar.ARGUMENTS));
     }
@@ -602,57 +672,6 @@ public class TreeFactory {
 
   // Helpers
 
-  private ExpressionTree applySuperSuffix(ExpressionTree expression, AstNode superSuffixNode) {
-    Preconditions.checkArgument(!((JavaTree) expression).isLegacy());
-    JavaTreeMaker.checkType(superSuffixNode, JavaGrammar.SUPER_SUFFIX);
-
-    if (superSuffixNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
-      // super(arguments)
-      // super.method(arguments)
-      // super.<T>method(arguments)
-      // TODO typeArguments
-      if (superSuffixNode.hasDirectChildren(JavaTokenType.IDENTIFIER)) {
-        MemberSelectExpressionTreeImpl memberSelect = new MemberSelectExpressionTreeImpl(
-          expression, treeMaker.identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-          (AstNode) expression);
-
-        return new MethodInvocationTreeImpl(memberSelect, (ArgumentListTreeImpl) superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS),
-          memberSelect, superSuffixNode);
-      } else {
-        return new MethodInvocationTreeImpl(expression, (ArgumentListTreeImpl) superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS),
-          (AstNode) expression, superSuffixNode);
-      }
-    } else {
-      // super.field
-      return new MemberSelectExpressionTreeImpl(expression, treeMaker.identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-        (AstNode) expression, superSuffixNode);
-    }
-  }
-
-  public ExpressionTree applyExplicitGenericInvocation(ExpressionTree expression, AstNode dotToken, AstNode astNode) {
-    JavaTreeMaker.checkType(astNode, JavaGrammar.EXPLICIT_GENERIC_INVOCATION);
-    // TODO NON_WILDCARD_TYPE_ARGUMENTS
-    AstNode nonWildcardTypeArguments = astNode.getFirstChild(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS);
-
-    AstNode explicitGenericInvocationSuffixNode = astNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX);
-    if (explicitGenericInvocationSuffixNode.hasDirectChildren(JavaGrammar.SUPER_SUFFIX)) {
-      IdentifierTreeImpl superIdentifier = new IdentifierTreeImpl(InternalSyntaxToken.create(explicitGenericInvocationSuffixNode.getFirstChild(JavaKeyword.SUPER)));
-      expression = new MemberSelectExpressionTreeImpl(expression, superIdentifier,
-        (AstNode) expression, dotToken, nonWildcardTypeArguments, superIdentifier);
-      return applySuperSuffix(expression, explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
-    } else {
-      IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(explicitGenericInvocationSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)));
-
-      MemberSelectExpressionTreeImpl memberSelect = new MemberSelectExpressionTreeImpl(
-        expression, identifier,
-        (AstNode) expression, dotToken, nonWildcardTypeArguments, identifier);
-
-      return new MethodInvocationTreeImpl(
-        memberSelect, (ArgumentListTreeImpl) explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS),
-        memberSelect, explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS));
-    }
-  }
-
   private static final AstNodeType WRAPPER_AST_NODE = new AstNodeType() {
     @Override
     public String toString() {
@@ -690,6 +709,127 @@ public class TreeFactory {
     astNode.addChild(e1);
     astNode.addChild(e2);
     return astNode;
+  }
+
+  // TODO Enable the same method call multiple times
+  public AstNode newWrapperAstNode2(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  // Crappy methods which must go away
+
+  private ExpressionTree applySuperSuffix(ExpressionTree expression, AstNode superSuffixNode) {
+    Preconditions.checkArgument(!((JavaTree) expression).isLegacy());
+    JavaTreeMaker.checkType(superSuffixNode, JavaGrammar.SUPER_SUFFIX);
+
+    if (superSuffixNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
+      // super(arguments)
+      // super.method(arguments)
+      // super.<T>method(arguments)
+      // TODO typeArguments
+      if (superSuffixNode.hasDirectChildren(JavaTokenType.IDENTIFIER)) {
+        MemberSelectExpressionTreeImpl memberSelect = new MemberSelectExpressionTreeImpl(
+          expression, treeMaker.identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)),
+          (AstNode) expression);
+
+        return new MethodInvocationTreeImpl(memberSelect, (ArgumentListTreeImpl) superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS),
+          memberSelect, superSuffixNode);
+      } else {
+        return new MethodInvocationTreeImpl(expression, (ArgumentListTreeImpl) superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS),
+          (AstNode) expression, superSuffixNode);
+      }
+    } else {
+      // super.field
+      return new MemberSelectExpressionTreeImpl(expression, treeMaker.identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)),
+        (AstNode) expression, superSuffixNode);
+    }
+  }
+
+  public ExpressionTree applyExplicitGenericInvocation(ExpressionTree expression, AstNode dotToken, AstNode astNode) {
+    Preconditions.checkArgument(!((JavaTree) expression).isLegacy());
+    JavaTreeMaker.checkType(astNode, JavaGrammar.EXPLICIT_GENERIC_INVOCATION);
+    // TODO NON_WILDCARD_TYPE_ARGUMENTS
+    AstNode nonWildcardTypeArguments = astNode.getFirstChild(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS);
+
+    AstNode explicitGenericInvocationSuffixNode = astNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX);
+    if (explicitGenericInvocationSuffixNode.hasDirectChildren(JavaGrammar.SUPER_SUFFIX)) {
+      IdentifierTreeImpl superIdentifier = new IdentifierTreeImpl(InternalSyntaxToken.create(explicitGenericInvocationSuffixNode.getFirstChild(JavaKeyword.SUPER)));
+      expression = new MemberSelectExpressionTreeImpl(expression, superIdentifier,
+        (AstNode) expression, dotToken, nonWildcardTypeArguments, superIdentifier);
+      return applySuperSuffix(expression, explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
+    } else {
+      IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(explicitGenericInvocationSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)));
+
+      MemberSelectExpressionTreeImpl memberSelect = new MemberSelectExpressionTreeImpl(
+        expression, identifier,
+        (AstNode) expression, dotToken, nonWildcardTypeArguments, identifier);
+
+      return new MethodInvocationTreeImpl(
+        memberSelect, (ArgumentListTreeImpl) explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS),
+        memberSelect, explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS));
+    }
+  }
+
+  private ExpressionTree applySelector(ExpressionTree expression, AstNode selectorNode) {
+    JavaTreeMaker.checkType(selectorNode, JavaGrammar.SELECTOR);
+
+    AstNodeType[] identifierTypes = new AstNodeType[] {JavaTokenType.IDENTIFIER, JavaKeyword.THIS, JavaKeyword.SUPER};
+    if (selectorNode.hasDirectChildren(identifierTypes)) {
+      InternalSyntaxToken identifierToken = InternalSyntaxToken.create(selectorNode.getFirstChild(identifierTypes));
+
+      IdentifierTreeImpl identifier = new IdentifierTreeImpl(identifierToken);
+
+      ExpressionTree result = new MemberSelectExpressionTreeImpl(
+        expression, identifier,
+        (AstNode) expression, selectorNode.getFirstChild(JavaPunctuator.DOT), identifier);
+
+      if (selectorNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
+        ArgumentListTreeImpl arguments = (ArgumentListTreeImpl) selectorNode.getFirstChild(JavaGrammar.ARGUMENTS);
+        result = new MethodInvocationTreeImpl(result, arguments,
+          (AstNode) result, arguments);
+      } else if (selectorNode.hasDirectChildren(JavaGrammar.SUPER_SUFFIX)) {
+        result = applySuperSuffix(result, selectorNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
+      }
+
+      return result;
+    } else if (selectorNode.hasDirectChildren(JavaGrammar.EXPLICIT_GENERIC_INVOCATION)) {
+      return applyExplicitGenericInvocation(expression, selectorNode.getFirstChild(JavaPunctuator.DOT), selectorNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION));
+    } else if (selectorNode.hasDirectChildren(JavaKeyword.NEW)) {
+      AstNode innerCreatorNode = selectorNode.getFirstChild(JavaGrammar.INNER_CREATOR);
+      IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(innerCreatorNode.getFirstChild(JavaTokenType.IDENTIFIER)));
+
+      AstNode classCreatorRestNode = innerCreatorNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST);
+      ArgumentListTreeImpl arguments = (ArgumentListTreeImpl) classCreatorRestNode.getFirstChild(JavaGrammar.ARGUMENTS);
+
+      ClassTree classBody = null;
+      if (classCreatorRestNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
+        classBody = new ClassTreeImpl(
+          classCreatorRestNode,
+          Tree.Kind.CLASS,
+          ModifiersTreeImpl.EMPTY,
+          treeMaker.classBody(classCreatorRestNode.getFirstChild(JavaGrammar.CLASS_BODY)));
+      }
+
+      List<AstNode> children = Lists.newArrayList();
+      children.add((AstNode) expression);
+      children.add(selectorNode.getFirstChild(JavaPunctuator.DOT));
+      children.add(selectorNode.getFirstChild(JavaKeyword.NEW));
+      if (selectorNode.hasDirectChildren(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
+        children.add(selectorNode.getFirstChild(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS));
+      }
+      children.add(identifier);
+      children.add(classCreatorRestNode);
+
+      return new NewClassTreeImpl(
+        expression, identifier, arguments, classBody,
+        children.toArray(new AstNode[children.size()]));
+    } else if (selectorNode.hasDirectChildren(JavaGrammar.DIM_EXPR)) {
+      return new ArrayAccessExpressionTreeImpl(
+        expression, treeMaker.expression(selectorNode.getFirstChild(JavaGrammar.DIM_EXPR).getFirstChild(JavaGrammar.EXPRESSION)),
+        (AstNode) expression, selectorNode.getFirstChild(JavaGrammar.DIM_EXPR));
+    } else {
+      throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
+    }
   }
 
 }

@@ -33,16 +33,19 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import java.util.Iterator;
 
 public class InternalPrefixUnaryExpression extends AbstractTypedTree implements UnaryExpressionTree {
+
   private final Kind kind;
+  private final InternalSyntaxToken operatorToken;
   private final ExpressionTree expression;
 
-  /**
-   * @param astNode node associated with operator
-   */
-  public InternalPrefixUnaryExpression(AstNode astNode, Kind kind, ExpressionTree expression) {
-    super(astNode);
+  public InternalPrefixUnaryExpression(Kind kind, InternalSyntaxToken operatorToken, ExpressionTree expression) {
+    super(kind);
     this.kind = Preconditions.checkNotNull(kind);
+    this.operatorToken = operatorToken;
     this.expression = Preconditions.checkNotNull(expression);
+
+    addChild(operatorToken);
+    addChild((AstNode) expression);
   }
 
   @Override
@@ -52,7 +55,7 @@ public class InternalPrefixUnaryExpression extends AbstractTypedTree implements 
 
   @Override
   public SyntaxToken operatorToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode());
+    return operatorToken;
   }
 
   @Override

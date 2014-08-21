@@ -40,7 +40,8 @@ public class StringLiteralInsideEqualsCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(3).withMessage("Move the \"bar\" string literal on the left side of this string comparison.")
       .next().atLine(4).withMessage("Move the \"qux\" string literal on the left side of this string comparison.")
-      .next().atLine(11).withMessage("Move the \"\" string literal on the left side of this string comparison.");
+      .next().atLine(11).withMessage("Move the \"\" string literal on the left side of this string comparison.")
+      .next().atLine(17);
   }
 
 }

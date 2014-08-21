@@ -187,6 +187,52 @@ public class ActionGrammar {
 
   // Expressions
 
+  public ExpressionTree UNARY_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.UNARY_EXPRESSION)
+      .is(
+        b.firstOf(
+          f.newPrefixedExpression(
+            b.firstOf(
+              b.invokeRule(JavaPunctuator.INC),
+              b.invokeRule(JavaPunctuator.DEC),
+              b.invokeRule(JavaPunctuator.PLUS),
+              b.invokeRule(JavaPunctuator.MINUS)),
+            UNARY_EXPRESSION()),
+          UNARY_EXPRESSION_NOT_PLUS_MINUS()));
+  }
+
+  public ExpressionTree UNARY_EXPRESSION_NOT_PLUS_MINUS() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS)
+      .is(
+        b.firstOf(
+          CAST_EXPRESSION(),
+          METHOD_REFERENCE(),
+          // TODO Extract postfix expressions somewhere else
+          f.newPostfixExpression(
+            PRIMARY(),
+            b.zeroOrMore(b.invokeRule(JavaGrammar.SELECTOR)),
+            b.zeroOrMore(
+              b.firstOf(
+                b.invokeRule(JavaPunctuator.INC),
+                b.invokeRule(JavaPunctuator.DEC)))),
+          f.newTildaExpression(b.invokeRule(JavaPunctuator.TILDA), UNARY_EXPRESSION()),
+          f.newBangExpression(b.invokeRule(JavaPunctuator.BANG), UNARY_EXPRESSION())));
+  }
+
+  public ExpressionTree CAST_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.CAST_EXPRESSION)
+      .is(
+        f.completeCastExpression(
+          b.invokeRule(JavaPunctuator.LPAR),
+          b.firstOf(
+            f.newBasicTypeCastExpression(BASIC_TYPE(), b.invokeRule(JavaPunctuator.RPAR), UNARY_EXPRESSION()),
+            f.newClassCastExpression(
+              b.invokeRule(JavaGrammar.TYPE),
+              b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.AND), b.invokeRule(JavaGrammar.CLASS_TYPE))),
+              b.invokeRule(JavaPunctuator.RPAR),
+              UNARY_EXPRESSION_NOT_PLUS_MINUS()))));
+  }
+
   public ExpressionTree METHOD_REFERENCE() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.METHOD_REFERENCE)
       .is(
@@ -322,7 +368,7 @@ public class ActionGrammar {
           b.optional(
             f.newArguments(
               b.invokeRule(JavaGrammar.EXPRESSION),
-              b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.COMMA), b.invokeRule(JavaGrammar.EXPRESSION))))),
+              b.zeroOrMore(f.newWrapperAstNode2(b.invokeRule(JavaPunctuator.COMMA), b.invokeRule(JavaGrammar.EXPRESSION))))),
           b.invokeRule(JavaPunctuator.RPAR)));
   }
 

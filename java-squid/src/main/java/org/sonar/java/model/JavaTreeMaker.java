@@ -25,7 +25,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
@@ -37,20 +36,16 @@ import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InstanceOfTreeImpl;
-import org.sonar.java.model.expression.InternalPostfixUnaryExpression;
-import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
-import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.CatchTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
@@ -193,8 +188,7 @@ public class JavaTreeMaker {
     return result.build();
   }
 
-  @VisibleForTesting
-  ExpressionTree referenceType(AstNode astNode) {
+  public ExpressionTree referenceType(AstNode astNode) {
     checkType(astNode, JavaGrammar.TYPE);
     return referenceType(astNode, 0);
   }
@@ -957,8 +951,6 @@ public class JavaTreeMaker {
       return conditionalExpression(astNode);
     } else if (astNode.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
       return assignmentExpression(astNode);
-    } else if (astNode.is(JavaGrammar.UNARY_EXPRESSION, JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS, JavaGrammar.CAST_EXPRESSION)) {
-      return unaryExpression(astNode);
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType().toString());
     }
@@ -977,53 +969,6 @@ public class JavaTreeMaker {
       return expression(astNode.getFirstChild());
     } else {
       return arrayInitializer(null, astNode.getFirstChild());
-    }
-  }
-
-  /**
-   * 15.14. Postfix Expressions
-   * 15.15. Unary Operators
-   * 15.16. Cast Expressions
-   */
-  private ExpressionTree unaryExpression(AstNode astNode) {
-    if (astNode.is(JavaGrammar.CAST_EXPRESSION)) {
-      // 15.16. Cast Expressions
-      AstNode typeNode = astNode.getFirstChild(JavaPunctuator.LPAR).getNextSibling();
-      Tree type;
-      if (typeNode.is(Kind.PRIMITIVE_TYPE)) {
-        type = (PrimitiveTypeTree) typeNode;
-      } else {
-        type = referenceType(typeNode);
-      }
-      return new TypeCastExpressionTreeImpl(
-        astNode,
-        type,
-        expression(astNode.getFirstChild(JavaPunctuator.RPAR).getNextSibling()));
-    } else if (astNode.hasDirectChildren(JavaGrammar.PREFIX_OP, JavaPunctuator.TILDA, JavaPunctuator.BANG)) {
-      // 15.15. Unary Operators
-      AstNode operatorNode;
-      if (astNode.hasDirectChildren(JavaPunctuator.TILDA, JavaPunctuator.BANG)) {
-        operatorNode = astNode.getFirstChild(JavaPunctuator.TILDA, JavaPunctuator.BANG);
-      } else {
-        operatorNode = astNode.getFirstChild(JavaGrammar.PREFIX_OP).getFirstChild();
-      }
-      Tree.Kind kind = kindMaps.getPrefixOperator((JavaPunctuator) operatorNode.getType());
-      return new InternalPrefixUnaryExpression(
-        operatorNode,
-        kind,
-        expression(astNode.getChild(1)));
-    } else {
-      // 15.14. Postfix Expressions
-      ExpressionTree result = expression(astNode.getFirstChild());
-      for (AstNode selectorNode : astNode.getChildren(JavaGrammar.SELECTOR)) {
-        result = applySelector(result, selectorNode);
-      }
-      for (AstNode postfixOpNode : astNode.getChildren(JavaGrammar.POST_FIX_OP)) {
-        JavaPunctuator punctuator = (JavaPunctuator) postfixOpNode.getFirstChild().getType();
-        Tree.Kind kind = kindMaps.getPostfixOperator(punctuator);
-        result = new InternalPostfixUnaryExpression(postfixOpNode, kind, result);
-      }
-      return result;
     }
   }
 
@@ -1093,53 +1038,6 @@ public class JavaTreeMaker {
         );
     }
     return expression;
-  }
-
-  private ExpressionTree applySelector(ExpressionTree expression, AstNode selectorNode) {
-    checkType(selectorNode, JavaGrammar.SELECTOR);
-    if (selectorNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
-      return new MethodInvocationTreeImpl(
-        selectorNode,
-        new MemberSelectExpressionTreeImpl(
-          selectorNode,
-          expression,
-          identifier(selectorNode.getFirstChild(JavaTokenType.IDENTIFIER))
-        ),
-        (ArgumentListTreeImpl) selectorNode.getFirstChild(JavaGrammar.ARGUMENTS));
-    } else if (selectorNode.hasDirectChildren(JavaTokenType.IDENTIFIER)) {
-      return new MemberSelectExpressionTreeImpl(
-        selectorNode,
-        expression,
-        identifier(selectorNode.getFirstChild(JavaTokenType.IDENTIFIER)));
-    } else if (selectorNode.hasDirectChildren(JavaGrammar.EXPLICIT_GENERIC_INVOCATION)) {
-      return applyExplicitGenericInvocation(expression, selectorNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION));
-    } else if (selectorNode.hasDirectChildren(JavaKeyword.THIS)) {
-      return new MemberSelectExpressionTreeImpl(
-        selectorNode,
-        expression,
-        identifier(selectorNode.getFirstChild(JavaKeyword.THIS)));
-    } else if (selectorNode.hasDirectChildren(JavaGrammar.SUPER_SUFFIX)) {
-      return applySuperSuffix(
-        new MemberSelectExpressionTreeImpl(
-          selectorNode,
-          expression,
-          identifier(selectorNode.getFirstChild(JavaKeyword.SUPER))
-        ),
-        selectorNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
-    } else if (selectorNode.hasDirectChildren(JavaKeyword.NEW)) {
-      AstNode innerCreatorNode = selectorNode.getFirstChild(JavaGrammar.INNER_CREATOR);
-      return applyClassCreatorRest(
-        expression,
-        identifier(innerCreatorNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-        innerCreatorNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST));
-    } else if (selectorNode.hasDirectChildren(JavaGrammar.DIM_EXPR)) {
-      return new ArrayAccessExpressionTreeImpl(
-        selectorNode,
-        expression,
-        expression(selectorNode.getFirstChild(JavaGrammar.DIM_EXPR).getFirstChild(JavaGrammar.EXPRESSION)));
-    } else {
-      throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
-    }
   }
 
   private ExpressionTree applySuperSuffix(ExpressionTree expression, AstNode superSuffixNode) {

@@ -51,7 +51,8 @@ public class StringLiteralInsideEqualsCheck extends SubscriptionBaseVisitor {
 
   private void check(MethodInvocationTree tree) {
     if (isEquals(tree.methodSelect()) && tree.arguments().size() == 1 && tree.arguments().get(0).is(Kind.STRING_LITERAL)) {
-      addIssue(tree, "Move the " + ((LiteralTree) tree.arguments().get(0)).value() + " string literal on the left side of this string comparison.");
+      LiteralTree stringLiteral = (LiteralTree) tree.arguments().get(0);
+      addIssue(stringLiteral, "Move the " + stringLiteral.value() + " string literal on the left side of this string comparison.");
     }
   }
 

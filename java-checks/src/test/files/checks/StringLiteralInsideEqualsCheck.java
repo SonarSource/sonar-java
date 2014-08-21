@@ -10,5 +10,10 @@ class Foo {
     int a = foo.equals;         // Compliant
     "foo".equalsIgnoreCase(""); // Non-Compliant
     StringUtils.equals("", ""); // Compliant
+
+    foo()
+    .bar().
+    equals
+    ("");                       // Noncompliant
   }
 }
