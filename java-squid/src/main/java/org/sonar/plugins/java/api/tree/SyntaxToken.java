@@ -21,6 +21,8 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
+import java.util.List;
+
 /**
  * Represents a token in the syntax tree.
  *
@@ -30,5 +32,7 @@ import com.google.common.annotations.Beta;
 public interface SyntaxToken extends Tree {
 
   String text();
+
+  List<SyntaxTrivia> trivias();
 
 }

@@ -20,24 +20,29 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
+import com.sonar.sslr.api.Trivia;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   private final Token token;
+  private List<SyntaxTrivia> trivias;
 
   public InternalSyntaxToken(AstNodeType astNodeType, Token token, int fromIndex, int toIndex) {
     // Must pass token to super's constructor
     super(astNodeType, token);
     this.token = token;
-
+    this.trivias = createTrivias(token);
     setFromIndex(fromIndex);
     setToIndex(toIndex);
   }
@@ -45,11 +50,31 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   private InternalSyntaxToken(AstNode astNode) {
     super(astNode);
     this.token = astNode.getToken();
+    this.trivias = createTrivias(token);
+  }
+
+  public InternalSyntaxToken(Token token) {
+    super((AstNode)null);
+    this.token = token;
+    this.trivias = createTrivias(token);
   }
 
   @Override
   public String text() {
     return token.getValue();
+  }
+
+  @Override
+  public List<SyntaxTrivia> trivias() {
+    return trivias;
+  }
+
+  private List<SyntaxTrivia> createTrivias(Token token) {
+    List<SyntaxTrivia> result = Lists.newArrayList();
+    for (Trivia trivia : token.getTrivia()) {
+      result.add(InternalSyntaxTrivia.create(this, trivia.getToken().getValue(), trivia.getToken().getLine()));
+    }
+    return result;
   }
 
   @Override

@@ -19,15 +19,18 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+import com.google.common.annotations.Beta;
 
-import static org.fest.assertions.Assertions.assertThat;
+/**
+ * Represents a Trivia in the SyntaxTree.
+ *
+ * @since plugin 2.5
+ */
+@Beta
+public interface SyntaxTrivia extends Tree {
 
-public class TreeTest {
+  String comment();
 
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(101);
-  }
+  SyntaxToken token();
 
 }

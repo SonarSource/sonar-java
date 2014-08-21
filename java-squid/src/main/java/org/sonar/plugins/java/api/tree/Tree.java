@@ -596,7 +596,9 @@ public interface Tree {
      */
     OTHER(Tree.class),
 
-    TOKEN(SyntaxToken.class);
+    TOKEN(SyntaxToken.class),
+
+    TRIVIA(SyntaxTrivia.class);
 
     final Class<? extends Tree> associatedInterface;
 

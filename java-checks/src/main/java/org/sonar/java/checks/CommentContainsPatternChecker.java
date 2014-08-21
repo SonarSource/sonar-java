@@ -21,16 +21,27 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.apache.commons.lang.StringUtils;
+import org.sonar.java.model.InternalSyntaxTrivia;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.squidbridge.checks.SquidCheck;
 
 public class CommentContainsPatternChecker {
 
   private final SquidCheck<?> check;
+  private final SubscriptionBaseVisitor newCheck;
   private final String pattern;
   private final String message;
 
+  public CommentContainsPatternChecker(SubscriptionBaseVisitor check, String pattern, String message) {
+    this.check = null;
+    this.newCheck = check;
+    this.pattern = pattern;
+    this.message = message;
+  }
+
   public CommentContainsPatternChecker(SquidCheck<?> check, String pattern, String message) {
+    this.newCheck = null;
     this.check = check;
     this.pattern = pattern;
     this.message = message;
@@ -61,4 +72,15 @@ public class CommentContainsPatternChecker {
     return pre || post;
   }
 
+  public void checkTrivia(SyntaxTrivia syntaxTrivia) {
+    String comment = syntaxTrivia.comment();
+    if (StringUtils.containsIgnoreCase(comment, pattern)) {
+      String[] lines = comment.split("\r\n?|\n");
+      for (int i = 0; i < lines.length; i++) {
+        if (StringUtils.containsIgnoreCase(lines[i], pattern) && !isLetterAround(lines[i], pattern)) {
+          newCheck.addIssue(((InternalSyntaxTrivia)syntaxTrivia).getLine()+i, message);
+        }
+      }
+    }
+  }
 }

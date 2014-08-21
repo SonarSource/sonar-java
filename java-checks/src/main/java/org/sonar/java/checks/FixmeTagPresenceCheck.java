@@ -19,28 +19,32 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.Token;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
   key = "S1134",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class FixmeTagPresenceCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class FixmeTagPresenceCheck extends SubscriptionBaseVisitor {
 
   private static final String PATTERN = "FIXME";
   private static final String MESSAGE = "Take the required action to fix the issue indicated by this comment.";
-
   private final CommentContainsPatternChecker checker = new CommentContainsPatternChecker(this, PATTERN, MESSAGE);
 
   @Override
-  public void visitToken(Token token) {
-    checker.visitToken(token);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.TRIVIA);
   }
 
+  @Override
+  public void visitTrivia(SyntaxTrivia syntaxTrivia) {
+    checker.checkTrivia(syntaxTrivia);
+  }
 }

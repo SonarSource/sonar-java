@@ -1,7 +1,7 @@
 // foo
 
 // fixME
-
+class A{
 /*
 
   fixme
@@ -15,3 +15,4 @@
 // PreFixMe
 // FixMePost
 // PreFixMePost
+}

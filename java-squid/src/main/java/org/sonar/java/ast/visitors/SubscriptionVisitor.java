@@ -19,9 +19,14 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.sonar.sslr.api.Token;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.api.CodeVisitor;
 
@@ -45,16 +50,41 @@ public abstract class SubscriptionVisitor implements JavaFileScanner, CodeVisito
     //Default behavior : do nothing.
   }
 
+  public void visitToken(SyntaxToken syntaxToken) {
+    //default behaviour is to do nothing
+  }
+
+  public void visitTrivia(SyntaxTrivia syntaxTrivia) {
+    //default behaviour is to do nothing
+  }
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     scanTree(context.getTree());
+    visitTokens(context.getTree());
   }
 
   protected void scanTree(Tree tree) {
     nodesToVisit = nodesToVisit();
     visit(tree);
   }
+
+  private void visitTokens(CompilationUnitTree compilationUnitTree) {
+    if (nodesToVisit().contains(Tree.Kind.TOKEN) || nodesToVisit().contains(Tree.Kind.TRIVIA)) {
+      //FIXME relying on ASTNode to iterate over tokens.
+      for (Token token : ((JavaTree) compilationUnitTree).getAstNode().getTokens()) {
+        SyntaxToken syntaxToken = new InternalSyntaxToken(token);
+        visitToken(syntaxToken);
+        if (nodesToVisit().contains(Tree.Kind.TRIVIA)) {
+          for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
+            visitTrivia(syntaxTrivia);
+          }
+        }
+      }
+    }
+  }
+
 
   private void visit(Tree tree) {
     boolean isSubscribed = isSubscribed(tree);
