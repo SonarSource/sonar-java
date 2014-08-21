@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
 public class ProgressReportTest {
 
   @Rule
-  public final Timeout timeout = new Timeout(5000);
+  public final Timeout timeout = new Timeout(15000);
 
   @Test
   public void test() throws Exception {
@@ -44,9 +44,9 @@ public class ProgressReportTest {
     ProgressReport report = new ProgressReport(ProgressReport.class.getName(), 500, logger);
     report.message("progress");
     report.start("foo start");
-    Thread.sleep(800);
+    Thread.sleep(2000);
     report.stop("foo stop");
-    Thread.sleep(300);
+    Thread.sleep(2000);
 
     ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
     verify(logger, atLeast(3)).info(captor.capture());
