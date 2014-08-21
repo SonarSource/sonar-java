@@ -51,7 +51,6 @@ public class StringEqualityComparisonCheck extends SquidCheck<LexerlessGrammar> 
 
   private static boolean hasStringLiteralOperand(AstNode node) {
     return node.select()
-      .children(JavaGrammar.PRIMARY)
       .children(Kind.STRING_LITERAL)
       .isNotEmpty();
   }

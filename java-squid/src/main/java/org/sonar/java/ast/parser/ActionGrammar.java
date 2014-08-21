@@ -194,11 +194,27 @@ public class ActionGrammar {
           b.firstOf(
             f.newSuperMethodReference(b.invokeRule(JavaKeyword.SUPER), b.invokeRule(JavaPunctuator.DBLECOLON)),
             f.newTypeMethodReference(b.invokeRule(JavaGrammar.TYPE), b.invokeRule(JavaPunctuator.DBLECOLON)),
-            f.newPrimaryMethodReference(b.invokeRule(JavaGrammar.PRIMARY), b.zeroOrMore(b.invokeRule(JavaGrammar.SELECTOR)), b.invokeRule(JavaPunctuator.DBLECOLON))),
+            f.newPrimaryMethodReference(PRIMARY(), b.zeroOrMore(b.invokeRule(JavaGrammar.SELECTOR)), b.invokeRule(JavaPunctuator.DBLECOLON))),
           b.optional(b.invokeRule(JavaGrammar.TYPE_ARGUMENTS)),
           b.firstOf(
             b.invokeRule(JavaKeyword.NEW),
             b.invokeRule(JavaTokenType.IDENTIFIER))));
+  }
+
+  public ExpressionTree PRIMARY() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.PRIMARY)
+      .is(
+        b.firstOf(
+          LAMBDA_EXPRESSION(),
+          PARENTHESIZED_EXPRESSION(),
+          EXPLICIT_GENERIC_INVOCATION_EXPRESSION(),
+          THIS_EXPRESSION(),
+          SUPER_EXPRESSION(),
+          LITERAL(),
+          NEW_EXPRESSION(),
+          QUALIFIED_IDENTIFIER_EXPRESSION(),
+          BASIC_CLASS_EXPRESSION(),
+          VOID_CLASS_EXPRESSION()));
   }
 
   public ExpressionTree LAMBDA_EXPRESSION() {

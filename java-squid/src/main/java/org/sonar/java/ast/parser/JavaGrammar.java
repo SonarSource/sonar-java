@@ -780,18 +780,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       UNARY_EXPRESSION_NOT_PLUS_MINUS
       )).skipIfOneChild();
 
-    b.rule(PRIMARY).is(b.firstOf(
-      LAMBDA_EXPRESSION,
-      PAR_EXPRESSION,
-      EXPLICIT_GENERIC_INVOCATION_EXPRESSION,
-      THIS_EXPRESSION,
-      SUPER_EXPRESSION,
-      LITERAL,
-      NEW_EXPRESSION,
-      QUALIFIED_IDENTIFIER_EXPRESSION,
-      BASIC_CLASS_EXPRESSION,
-      VOID_CLASS_EXPRESSION));
-
     b.rule(IDENTIFIER_SUFFIX).is(b.firstOf(
       b.sequence(LBRK, b.firstOf(b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), b.sequence(EXPRESSION, RBRK))),
       ARGUMENTS,

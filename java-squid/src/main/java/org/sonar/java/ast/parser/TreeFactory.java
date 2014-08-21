@@ -258,10 +258,10 @@ public class TreeFactory {
     return new NotImplementedTreeImpl(type, doubleColonToken);
   }
 
-  public NotImplementedTreeImpl newPrimaryMethodReference(AstNode primary, Optional<List<AstNode>> selectors, AstNode doubleColonToken) {
+  public NotImplementedTreeImpl newPrimaryMethodReference(ExpressionTree primary, Optional<List<AstNode>> selectors, AstNode doubleColonToken) {
     // TODO SONARJAVA-613
     List<AstNode> children = Lists.newArrayList();
-    children.add(primary);
+    children.add((AstNode) primary);
     if (selectors.isPresent()) {
       children.addAll(selectors.get());
     }

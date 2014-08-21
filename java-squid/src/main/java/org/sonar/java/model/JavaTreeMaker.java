@@ -942,8 +942,6 @@ public class JavaTreeMaker {
       return (ExpressionTree) astNode;
     } else if (astNode.is(JavaGrammar.PAR_EXPRESSION)) {
       return (ParenthesizedTreeImpl) astNode;
-    } else if (astNode.is(JavaGrammar.PRIMARY)) {
-      return primary(astNode);
     } else if (astNode.is(JavaGrammar.CONDITIONAL_OR_EXPRESSION,
       JavaGrammar.CONDITIONAL_AND_EXPRESSION,
       JavaGrammar.INCLUSIVE_OR_EXPRESSION,
@@ -964,19 +962,6 @@ public class JavaTreeMaker {
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType().toString());
     }
-  }
-
-  /**
-   * 15.11. Field Access Expressions
-   * 15.12. Method Invocation Expressions
-   * 15.13. Array Access Expressions
-   */
-  @VisibleForTesting
-  ExpressionTree primary(AstNode astNode) {
-    AstNode firstChildNode = astNode.getFirstChild();
-    Preconditions.checkArgument(isStronglyTyped(firstChildNode));
-
-    return (ExpressionTree) firstChildNode;
   }
 
   private ExpressionTree arrayInitializer(@Nullable Tree t, AstNode astNode) {
@@ -1233,11 +1218,6 @@ public class JavaTreeMaker {
       result = new JavaTree.ArrayTypeTreeImpl(/* FIXME should not be null */null, result);
     }
     return result;
-  }
-
-  private boolean isStronglyTyped(AstNode astNode) {
-    return astNode instanceof JavaTree &&
-      !((JavaTree) astNode).isLegacy();
   }
 
 }
