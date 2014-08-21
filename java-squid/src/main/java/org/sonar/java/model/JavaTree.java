@@ -305,6 +305,15 @@ public abstract class JavaTree extends AstNode implements Tree {
   public static class NotImplementedTreeImpl extends AbstractTypedTree implements ExpressionTree {
     private final String name;
 
+    public NotImplementedTreeImpl(AstNode... children) {
+      super(Kind.OTHER);
+      this.name = "TODO";
+
+      for (AstNode child : children) {
+        addChild(child);
+      }
+    }
+
     public NotImplementedTreeImpl(AstNode astNode, String name) {
       super(astNode);
       this.name = name;

@@ -187,6 +187,20 @@ public class ActionGrammar {
 
   // Expressions
 
+  public ExpressionTree METHOD_REFERENCE() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.METHOD_REFERENCE)
+      .is(
+        f.completeMethodReference(
+          b.firstOf(
+            f.newSuperMethodReference(b.invokeRule(JavaKeyword.SUPER), b.invokeRule(JavaPunctuator.DBLECOLON)),
+            f.newTypeMethodReference(b.invokeRule(JavaGrammar.TYPE), b.invokeRule(JavaPunctuator.DBLECOLON)),
+            f.newPrimaryMethodReference(b.invokeRule(JavaGrammar.PRIMARY), b.zeroOrMore(b.invokeRule(JavaGrammar.SELECTOR)), b.invokeRule(JavaPunctuator.DBLECOLON))),
+          b.optional(b.invokeRule(JavaGrammar.TYPE_ARGUMENTS)),
+          b.firstOf(
+            b.invokeRule(JavaKeyword.NEW),
+            b.invokeRule(JavaTokenType.IDENTIFIER))));
+  }
+
   public ExpressionTree LAMBDA_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.LAMBDA_EXPRESSION)
       .is(f.lambdaExpression(b.invokeRule(JavaGrammar.LAMBDA_PARAMETERS), b.invokeRule(JavaGrammar.ARROW), b.invokeRule(JavaGrammar.LAMBDA_BODY)));

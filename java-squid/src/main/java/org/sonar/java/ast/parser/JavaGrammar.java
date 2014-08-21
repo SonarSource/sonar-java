@@ -792,13 +792,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       BASIC_CLASS_EXPRESSION,
       VOID_CLASS_EXPRESSION));
 
-    b.rule(METHOD_REFERENCE).is(b.firstOf(
-      b.sequence(SUPER, DBLECOLON),
-      b.sequence(TYPE, DBLECOLON),
-      b.sequence(PRIMARY, b.zeroOrMore(SELECTOR), DBLECOLON)
-      ),
-      b.optional(TYPE_ARGUMENTS), b.firstOf(NEW, JavaTokenType.IDENTIFIER)
-      );
     b.rule(IDENTIFIER_SUFFIX).is(b.firstOf(
       b.sequence(LBRK, b.firstOf(b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), b.sequence(EXPRESSION, RBRK))),
       ARGUMENTS,

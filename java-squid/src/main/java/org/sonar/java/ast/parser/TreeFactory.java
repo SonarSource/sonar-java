@@ -29,6 +29,7 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaTree.NotImplementedTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
@@ -237,6 +238,37 @@ public class TreeFactory {
   // End of statements
 
   // Expressions
+
+  public ExpressionTree completeMethodReference(NotImplementedTreeImpl partial, Optional<AstNode> typeArguments, AstNode newOrIdentifierToken) {
+    // TODO SONARJAVA-613
+    if (typeArguments.isPresent()) {
+      partial.addChild(typeArguments.get());
+    }
+    partial.addChild(newOrIdentifierToken);
+    return partial;
+  }
+
+  public NotImplementedTreeImpl newSuperMethodReference(AstNode superToken, AstNode doubleColonToken) {
+    // TODO SONARJAVA-613
+    return new NotImplementedTreeImpl(superToken, doubleColonToken);
+  }
+
+  public NotImplementedTreeImpl newTypeMethodReference(AstNode type, AstNode doubleColonToken) {
+    // TODO SONARJAVA-613
+    return new NotImplementedTreeImpl(type, doubleColonToken);
+  }
+
+  public NotImplementedTreeImpl newPrimaryMethodReference(AstNode primary, Optional<List<AstNode>> selectors, AstNode doubleColonToken) {
+    // TODO SONARJAVA-613
+    List<AstNode> children = Lists.newArrayList();
+    children.add(primary);
+    if (selectors.isPresent()) {
+      children.addAll(selectors.get());
+    }
+    children.add(doubleColonToken);
+
+    return new NotImplementedTreeImpl(children.toArray(new AstNode[children.size()]));
+  }
 
   public ExpressionTree lambdaExpression(AstNode parameters, AstNode arrowToken, AstNode body) {
     Tree bodyTree;

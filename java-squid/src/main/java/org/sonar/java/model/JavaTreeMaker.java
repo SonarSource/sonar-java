@@ -938,7 +938,9 @@ public class JavaTreeMaker {
       astNode = astNode.getFirstChild();
     }
 
-    if (astNode.is(JavaGrammar.PAR_EXPRESSION)) {
+    if (astNode instanceof ExpressionTree && !((JavaTree) astNode).isLegacy()) {
+      return (ExpressionTree) astNode;
+    } else if (astNode.is(JavaGrammar.PAR_EXPRESSION)) {
       return (ParenthesizedTreeImpl) astNode;
     } else if (astNode.is(JavaGrammar.PRIMARY)) {
       return primary(astNode);
@@ -959,8 +961,6 @@ public class JavaTreeMaker {
       return assignmentExpression(astNode);
     } else if (astNode.is(JavaGrammar.UNARY_EXPRESSION, JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS, JavaGrammar.CAST_EXPRESSION)) {
       return unaryExpression(astNode);
-    } else if (astNode.is(JavaGrammar.METHOD_REFERENCE)) {
-      return new JavaTree.NotImplementedTreeImpl(astNode, "METHOD REFERENCE");
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType().toString());
     }
