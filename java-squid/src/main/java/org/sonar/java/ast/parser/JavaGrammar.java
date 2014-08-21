@@ -780,9 +780,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       b.firstOf(
         b.sequence(SUPER, SUPER_SUFFIX),
         b.sequence(JavaTokenType.IDENTIFIER, ARGUMENTS)));
-    b.rule(POST_FIX_OP).is(b.firstOf(
-      INC,
-      DEC));
     b.rule(SELECTOR).is(b.firstOf(
       b.sequence(DOT, JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS)),
       b.sequence(DOT, EXPLICIT_GENERIC_INVOCATION),
