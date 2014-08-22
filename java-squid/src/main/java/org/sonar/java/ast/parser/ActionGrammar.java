@@ -187,6 +187,17 @@ public class ActionGrammar {
 
   // Expressions
 
+  public ExpressionTree AND_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.AND_EXPRESSION)
+      .is(
+        f.binaryExpression6(
+          EQUALITY_EXPRESSION(),
+          b.zeroOrMore(
+            f.newOperatorAndOperand6(
+              b.invokeRule(JavaPunctuator.AND),
+              EQUALITY_EXPRESSION()))));
+  }
+
   public ExpressionTree EQUALITY_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.EQUALITY_EXPRESSION)
       .is(
