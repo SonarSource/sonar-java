@@ -187,6 +187,19 @@ public class ActionGrammar {
 
   // Expressions
 
+  public ExpressionTree EQUALITY_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.EQUALITY_EXPRESSION)
+      .is(
+        f.binaryExpression5(
+          INSTANCEOF_EXPRESSION(),
+          b.zeroOrMore(
+            f.newOperatorAndOperand5(
+              b.firstOf(
+                b.invokeRule(JavaPunctuator.EQUAL),
+                b.invokeRule(JavaPunctuator.NOTEQUAL)),
+              INSTANCEOF_EXPRESSION()))));
+  }
+
   public ExpressionTree INSTANCEOF_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.RELATIONAL_EXPRESSION)
       .is(
@@ -198,7 +211,6 @@ public class ActionGrammar {
   public ExpressionTree RELATIONAL_EXPRESSION() {
     return b.<ExpressionTree>nonterminal()
       .is(
-        // TODO SONARJAVA-610
         f.binaryExpression4(
           SHIFT_EXPRESSION(),
           b.zeroOrMore(
@@ -214,7 +226,6 @@ public class ActionGrammar {
   public ExpressionTree SHIFT_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.SHIFT_EXPRESSION)
       .is(
-        // TODO SONARJAVA-610
         f.binaryExpression3(
           ADDITIVE_EXPRESSION(),
           b.zeroOrMore(
@@ -229,7 +240,6 @@ public class ActionGrammar {
   public ExpressionTree ADDITIVE_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.ADDITIVE_EXPRESSION)
       .is(
-        // TODO SONARJAVA-610
         f.binaryExpression2(
           MULTIPLICATIVE_EXPRESSION(),
           b.zeroOrMore(
@@ -243,7 +253,6 @@ public class ActionGrammar {
   public ExpressionTree MULTIPLICATIVE_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.MULTIPLICATIVE_EXPRESSION)
       .is(
-        // TODO SONARJAVA-610
         f.binaryExpression1(
           UNARY_EXPRESSION(),
           b.zeroOrMore(

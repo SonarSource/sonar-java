@@ -1493,8 +1493,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void equality_expression() {
-    AstNode astNode = p.parse("class T { boolean m() { return false == false != true; } }").getFirstDescendant(JavaGrammar.EQUALITY_EXPRESSION);
-    BinaryExpressionTree tree = (BinaryExpressionTree) maker.expression(astNode);
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return false == false != true; } }").getFirstDescendant(Kind.EQUAL_TO);
     assertThat(tree.is(Tree.Kind.EQUAL_TO)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("==");

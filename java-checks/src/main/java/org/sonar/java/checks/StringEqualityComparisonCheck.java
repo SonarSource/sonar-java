@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -36,7 +35,8 @@ public class StringEqualityComparisonCheck extends SquidCheck<LexerlessGrammar> 
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.EQUALITY_EXPRESSION);
+    subscribeTo(Kind.EQUAL_TO);
+    subscribeTo(Kind.NOT_EQUAL_TO);
   }
 
   @Override
