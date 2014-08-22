@@ -602,7 +602,11 @@ public class JavaTreeMaker {
     for (AstNode annotationTypeElementDeclarationNode : astNode.getFirstChild(JavaGrammar.ANNOTATION_TYPE_BODY).getChildren(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)) {
       AstNode annotationTypeElementRestNode = annotationTypeElementDeclarationNode.getFirstChild(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST);
       if (annotationTypeElementRestNode != null) {
-        appendAnnotationTypeElementDeclaration(members, annotationTypeElementRestNode);
+        ModifiersTree modifiersTree = (ModifiersTree) annotationTypeElementDeclarationNode.getFirstChild(JavaGrammar.MODIFIERS);
+        if(modifiersTree == null) {
+          modifiersTree = ModifiersTreeImpl.EMPTY;
+        }
+        appendAnnotationTypeElementDeclaration(members, modifiersTree, annotationTypeElementRestNode);
       }
     }
     return new ClassTreeImpl(astNode, Tree.Kind.ANNOTATION_TYPE,
@@ -617,7 +621,7 @@ public class JavaTreeMaker {
   /**
    * 9.6.1. Annotation Type Elements
    */
-  private void appendAnnotationTypeElementDeclaration(ImmutableList.Builder<Tree> members, AstNode astNode) {
+  private void appendAnnotationTypeElementDeclaration(ImmutableList.Builder<Tree> members, ModifiersTree modifiers, AstNode astNode) {
     checkType(astNode, JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST);
     AstNode declarationNode = astNode.getFirstChild(
       JavaGrammar.INTERFACE_DECLARATION,
@@ -626,7 +630,7 @@ public class JavaTreeMaker {
       JavaGrammar.ANNOTATION_TYPE_DECLARATION
       );
     if (declarationNode != null) {
-      members.add(typeDeclaration(ModifiersTreeImpl.EMPTY, declarationNode));
+      members.add(typeDeclaration(modifiers, declarationNode));
       return;
     }
     AstNode typeNode = astNode.getFirstChild(TYPE_KINDS);
@@ -635,7 +639,7 @@ public class JavaTreeMaker {
     if (annotationMethodRestNode != null) {
       members.add(new MethodTreeImpl(
         annotationMethodRestNode,
-        /* modifiers */ModifiersTreeImpl.EMPTY,
+        /* modifiers */modifiers,
         /* type parameters */ImmutableList.<TypeParameterTree>of(),
         /* return type */(Tree) typeNode,
         /* name */identifier(identifierNode),
@@ -646,7 +650,7 @@ public class JavaTreeMaker {
         /* default value */null
         ));
     } else {
-      appendConstantDeclarations(ModifiersTreeImpl.EMPTY, members, astNode);
+      appendConstantDeclarations(modifiers, members, astNode);
     }
   }
 

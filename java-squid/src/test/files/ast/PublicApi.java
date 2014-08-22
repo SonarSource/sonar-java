@@ -1,3 +1,5 @@
+import java.lang.Override;
+
 //All identifier ending with public are expected to be public API per publicApiVisitorST
 class A {
 
@@ -29,7 +31,7 @@ public class documentedClassPublic {
   /**
    * Documented Method.
    */
-  public void documentedMethodPublic(){}
+  public void documentedMethodInClassPublic(){}
   public static void method2Public(){}
 
   /**
@@ -39,7 +41,11 @@ public class documentedClassPublic {
   public documentedClassPublic(int param){}
 }
 public class undocumentedClassPublic {
-
+  public Type undocumentedVarPublic, undocumentedVarPublic;
+  /**
+   * Doc.
+   */
+  public Type documentedVarPublic, documentedVarPublic;
 }
 
 enum B{}
@@ -54,12 +60,40 @@ public enum undocumentedEnumPublic{
   A;
 }
 
-interface interfaze{}
+interface interfaze{
+  String[] undocumentedMethodPublic();
+
+  /**
+   * Documented method in interface.
+   */
+  String[][] documentedDbleArrayMethodPublic();
+
+  @Override
+  String method();
+
+  public int constant = 0;
+}
 /**
  * Documented Class.
  */
 public interface documentedInterfacePublic {
   void methodPublic();
+
+  /**
+   * Documentation.
+   */
+  java.lang.String documentedMethodPublic();
+
+  /**
+   * Documented.
+   * @return a map.
+   */
+  Map<String,String> documentedGetPublic();
+
+  /**
+   * Documented method.
+   */
+  java.util.Map<String,String>[] documentedGetPublic();
 }
 public interface undocumentedInterfacePublic {
 
@@ -71,6 +105,7 @@ public interface undocumentedInterfacePublic {
  */
 public @interface documentedAnnotationPublic {
   String fooPublic();
+  String constantInAnnotation = "";
 }
 public @interface undocumentedAnnotationPublic {
 
@@ -82,4 +117,11 @@ public @interface undocumentedAnnotationPublic {
 @MyAnnotation()
 public @TypeAnnot class documentedClassWithAnnotationPublic {
 
+}
+interface deprec {
+  /**
+  * Documented public method.
+  */
+  @Deprecated
+  void documentedMethodPublic();
 }

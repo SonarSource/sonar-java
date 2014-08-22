@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     assertThat(check.forClasses).isEqualTo("**");
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(5)
       .next().atLine(11)
@@ -62,7 +63,10 @@ public class UndocumentedApiCheckTest {
       .next().atLine(162).withMessage("Document this method return value.")
       .next().atLine(167).withMessage("Document this public method.")
       .next().atLine(177).withMessage("Document this public method.")
-      .next().atLine(183).withMessage("Document this method return value.");
+      .next().atLine(183).withMessage("Document this method return value.")
+    //  .next().atLine(193).withMessage("Document this public method.") false negative for getter
+      .next().atLine(208).withMessage("Document this public class.")
+    ;
   }
 
   @Test
@@ -70,7 +74,7 @@ public class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages());
   }
 

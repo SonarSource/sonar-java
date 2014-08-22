@@ -20,14 +20,19 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
+import com.sonar.sslr.api.Token;
+import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,50 +41,50 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class PublicApiChecker {
 
-  private static final Tree.Kind[] CLASS_KINDS = {
+  public static final Tree.Kind[] CLASS_KINDS = {
       Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE
   };
 
-  private static final Tree.Kind[] METHOD_KINDS = {
+  public static final Tree.Kind[] METHOD_KINDS = {
       Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR
   };
-  private static final Tree.Kind[] API_KINDS = {
+
+  public static final Tree.Kind[] API_KINDS = {
       Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE,
       Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR,
       Tree.Kind.VARIABLE
   };
 
 
-  public boolean isPublicApi(ClassTree classTree) {
-    return hasPublic(classTree.modifiers());
+  public boolean isPublicApi(ClassTree currentClass, ClassTree classTree) {
+    return (currentClass != null && currentClass.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) || hasPublic(classTree.modifiers());
   }
 
   public boolean isPublicApi(ClassTree classTree, MethodTree methodTree) {
     Preconditions.checkNotNull(classTree);
     if (classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
-      return true;
+      return !hasOverrideAnnotation(methodTree);
     } else if (isEmptyDefaultConstructor(methodTree) || hasOverrideAnnotation(methodTree)) {
       return false;
     }
     return hasPublic(methodTree.modifiers());
   }
 
-  public boolean isPublicApi(VariableTree variableTree) {
-    return !isStaticFinal(variableTree) && hasPublic(variableTree.modifiers());
+  public boolean isPublicApi(ClassTree classTree, VariableTree variableTree) {
+    return !classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) && !isStaticFinal(variableTree) && hasPublic(variableTree.modifiers());
   }
-
 
   private boolean hasPublic(ModifiersTree modifiers) {
     return hasModifier(modifiers, Modifier.PUBLIC);
   }
 
-  public boolean isPublicApi(ClassTree currentClass, Tree tree) {
-    if (tree.is(CLASS_KINDS)) {
-      return isPublicApi((ClassTree) tree);
+  public boolean isPublicApi(Tree currentParent, Tree tree) {
+    if (tree.is(CLASS_KINDS) && (currentParent == null || currentParent.is(PublicApiChecker.CLASS_KINDS))) {
+      return isPublicApi((ClassTree) currentParent, (ClassTree) tree);
     } else if (tree.is(METHOD_KINDS)) {
-      return isPublicApi(currentClass, (MethodTree) tree);
-    } else if (tree.is(Tree.Kind.VARIABLE)) {
-      return isPublicApi((VariableTree) tree);
+      return isPublicApi((ClassTree) currentParent, (MethodTree) tree);
+    } else if (tree.is(Tree.Kind.VARIABLE) && !currentParent.is(METHOD_KINDS)) {
+      return isPublicApi((ClassTree) currentParent, (VariableTree) tree);
     }
     return false;
   }
@@ -107,8 +112,7 @@ public class PublicApiChecker {
     return constructor.is(Tree.Kind.CONSTRUCTOR) && constructor.parameters().size() == 0 && constructor.block().body().size() == 0;
   }
 
-
-  public static String getApiJavadoc(Tree tree) {
+  public String getApiJavadoc(Tree tree) {
     if (tree.is(API_KINDS)) {
       ModifiersTree modifiersTree = null;
       if (tree.is(CLASS_KINDS)) {
@@ -118,19 +122,49 @@ public class PublicApiChecker {
       } else if (tree.is(Tree.Kind.VARIABLE)) {
         modifiersTree = ((VariableTree) tree).modifiers();
       }
-
-      Tree tokenTree = tree;
-      if (modifiersTree != null && !modifiersTree.modifiers().isEmpty()) {
+      //FIXME token should be retrieved in a much simpler way.
+      Tree tokenTree = null;
+      if (modifiersTree != null && !(modifiersTree.modifiers().isEmpty() && modifiersTree.annotations().isEmpty())) {
         tokenTree = modifiersTree;
       }
-        SyntaxToken syntaxToken = new InternalSyntaxToken(((JavaTree)tokenTree).getToken());
-        for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
-          if (syntaxTrivia.comment().startsWith("/**")) {
-            return syntaxTrivia.comment();
+      if (tokenTree == null && tree.is(Tree.Kind.METHOD)) {
+        MethodTree methodTree = (MethodTree) tree;
+        if (methodTree.typeParameters().isEmpty()) {
+          tokenTree = methodTree.returnType();
+          while (tokenTree != null && tokenTree.is(Tree.Kind.ARRAY_TYPE, Tree.Kind.PARAMETERIZED_TYPE, Tree.Kind.MEMBER_SELECT)) {
+            if (tokenTree.is(Tree.Kind.ARRAY_TYPE)) {
+              tokenTree = ((ArrayTypeTree) tokenTree).type();
+            } else if (tokenTree.is(Tree.Kind.MEMBER_SELECT)) {
+              tokenTree = ((MemberSelectExpressionTree) tokenTree).expression();
+            } else if (tokenTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+              tokenTree = ((ParameterizedTypeTree) tokenTree).type();
+            }
           }
+        } else {
+          SyntaxToken syntaxToken = ((TypeParameterListTreeImpl) ((JavaTree) methodTree.typeParameters().get(0)).getAstNode().getParent()).openBracketToken();
+          return getCommentFromSyntaxToken(syntaxToken);
         }
+      }
+      if (tokenTree == null) {
+        tokenTree = tree;
+      }
+      Token token = ((JavaTree) tokenTree).getToken();
+      return getCommentFromToken(token);
     }
     return null;
   }
 
+  public String getCommentFromToken(Token token) {
+    SyntaxToken syntaxToken = new InternalSyntaxToken(token);
+    return getCommentFromSyntaxToken(syntaxToken);
+  }
+
+  private String getCommentFromSyntaxToken(SyntaxToken syntaxToken) {
+    for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
+      if (syntaxTrivia.comment().startsWith("/**")) {
+        return syntaxTrivia.comment();
+      }
+    }
+    return null;
+  }
 }

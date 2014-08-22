@@ -57,6 +57,7 @@ public class PublicApiCheckerTest {
     new SubscriptionVisitor() {
 
       private Deque<ClassTree> classTrees = Lists.newLinkedList();
+      private Deque<MethodTree> methodTrees = Lists.newLinkedList();
 
       @Override
       public List<Tree.Kind> nodesToVisit() {
@@ -68,15 +69,20 @@ public class PublicApiCheckerTest {
         if (tree.is(Tree.Kind.VARIABLE)) {
           VariableTree variableTree = (VariableTree) tree;
           String name = variableTree.simpleName().name();
-          assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public"));
-        } else if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
+          Tree parent = classTrees.peek();
+          if(!methodTrees.isEmpty()) {
+            parent = methodTrees.peek();
+          }
+          assertThat(publicApiChecker.isPublicApi(parent, tree)).as(name).isEqualTo(name.endsWith("Public"));
+        } else if (tree.is(PublicApiChecker.METHOD_KINDS)) {
           MethodTree methodTree = (MethodTree) tree;
+          methodTrees.push(methodTree);
           String name = methodTree.simpleName().name();
           assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public"));
-        } else if (tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
+        } else if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+          IdentifierTree className = ((ClassTree)tree).simpleName();
+          assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(className.name()).isEqualTo(className != null && className.name().endsWith("Public"));
           classTrees.push((ClassTree) tree);
-          IdentifierTree className = classTrees.peek().simpleName();
-          assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).isEqualTo(className != null && className.name().endsWith("Public"));
         } else {
           assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).isFalse();
         }
@@ -84,8 +90,10 @@ public class PublicApiCheckerTest {
 
       @Override
       public void leaveNode(Tree tree) {
-        if (tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
+        if (tree.is(PublicApiChecker.CLASS_KINDS)) {
           classTrees.pop();
+        } else if(tree.is(PublicApiChecker.METHOD_KINDS)) {
+          methodTrees.pop();
         }
       }
     }.scanTree(cut);

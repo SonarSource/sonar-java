@@ -43,16 +43,16 @@ public class UndocumentedApi { // Compliant - documented
 
 }
 
-public enum Foo { // Non-Compliant
+public enum FooEnum { // Non-Compliant
 }
 
-public interface A { // Non-Compliant
+public interface Ainterface { // Non-Compliant
 }
 
-public @interface Foo { // Non-Compliant
+public @interface FooAnnotation { // Non-Compliant
 }
 
-public class A { // Non-Compliant
+public class AClass { // Non-Compliant
 
   public int a; // Non-Compliant
 
@@ -111,7 +111,7 @@ public class MyClass<T> implements Runnable {    // Non-Compliant - missing '@pa
 
 /**
  */
-interface Foo {
+interface FooInterface {
   /**
    */
   void foo(); // Compliant
@@ -133,25 +133,25 @@ interface Foo {
 /**
  *
  */
-class Foo {
+class FooClass {
   /**
    */
-  public Foo(int a) { // Non-Compliant
+  public FooClass(int a) { // Non-Compliant
     System.out.println(a);
   }
 
   /**
    * @param a
    */
-  public Foo(int a) { // Compliant
+  public FooClass(int a) { // Compliant
     System.out.println(a);
   }
 }
 
-private class Foo { // Compliant - non pubic
+private class FooPrivate { // Compliant - non pubic
 }
 
-class Foo { // Compliant - non public
+class FooPackage { // Compliant - non public
 }
 
 /**
@@ -193,3 +193,53 @@ public class Foo { // Compliant
   public void getThisThingDone() { //false negative this is interpreted as a getter.
   }
 }
+/**
+ * */
+public interface bar {
+  /**
+  * @param <A>  the annotation type
+  * @param annotationType  the <tt>Class</tt> object corresponding to
+  *          the annotation type
+  * @return the annotation of this declaration having the specified type
+  *
+  * @see #getAnnotationMirrors()
+  */
+  <A extends Annotation> A getAnnotation(Class<A> annotationType);
+  static class A{}
+  public int i = 0;
+
+  /**
+   * documentMethod.
+   */
+  default void method(){
+    int j = 1;
+  }
+}
+
+@interface nested{
+  /**
+   *
+   */
+  static final class DEFAULT {}
+  public int i = 0;
+}
+/**
+ * Documented
+ */
+@Deprecated
+public interface deprecatedInterface{
+  /**
+   * Doc
+   */
+  @Deprecated
+  enum Location {
+    CLASS_TREE;
+  }
+
+  public static final Object constant = new AnonymousClass(){
+    public void undocumentedMethod(){};
+  };
+
+}
+
+

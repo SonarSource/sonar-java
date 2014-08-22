@@ -21,89 +21,176 @@ package org.sonar.java.checks;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.Lists;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.visitors.MethodHelper;
-import org.sonar.java.ast.visitors.PublicApiVisitor;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
-import org.sonar.squidbridge.api.SourceClass;
-import org.sonar.squidbridge.api.SourceCode;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-@Rule(key = "UndocumentedApi", priority = Priority.MAJOR,
-  tags = {"convention"})
-public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
+@Rule(key = UndocumentedApiCheck.RULE_KEY, priority = Priority.MAJOR,
+    tags = {"convention"})
+public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String DEFAULT_FOR_CLASSES = "**";
-  private final Pattern setterPattern = Pattern.compile("set[A-Z].*");
-  private final Pattern getterPattern = Pattern.compile("(get|is)[A-Z].*");
+  public static final String RULE_KEY = "UndocumentedApi";
 
   @RuleProperty(
-    key = "forClasses",
-    defaultValue = DEFAULT_FOR_CLASSES)
+      key = "forClasses",
+      defaultValue = DEFAULT_FOR_CLASSES)
   public String forClasses = DEFAULT_FOR_CLASSES;
 
   private WildcardPattern[] patterns;
+  private Deque<ClassTree> classTrees = Lists.newLinkedList();
+  private Deque<Tree> currentParents = Lists.newLinkedList();
+
+  private PublicApiChecker publicApiChecker;
+  private String packageName;
+  private Pattern setterPattern = Pattern.compile("set[A-Z].*");
+  private Pattern getterPattern = Pattern.compile("(get|is)[A-Z].*");
+  private JavaFileScannerContext context;
+  private RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
-  public void init() {
-    PublicApiVisitor.subscribe(this);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    classTrees.clear();
+    currentParents.clear();
+    publicApiChecker = new PublicApiChecker();
+    packageName = "";
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (!isExcluded(node)) {
-      String javadoc = PublicApiVisitor.getApiJavadoc(node);
+  public void visitCompilationUnit(CompilationUnitTree tree) {
+    if (tree.packageName() != null) {
+      packageName = concatenate(tree.packageName());
+    }
+    super.visitCompilationUnit(tree);
+  }
+
+  @Override
+  public void visitNewClass(NewClassTree tree) {
+    //don't visit anonymous classes, nothing in an anonymous class is part of public api.
+  }
+
+  @Override
+  public void visitClass(ClassTree tree) {
+    visitNode(tree);
+    super.visitClass(tree);
+    classTrees.pop();
+    currentParents.pop();
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    visitNode(tree);
+    super.visitVariable(tree);
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    visitNode(tree);
+    super.visitMethod(tree);
+    currentParents.pop();
+  }
+
+  private void visitNode(Tree tree) {
+    if (!isExcluded(tree)) {
+      String javadoc = publicApiChecker.getApiJavadoc(tree);
 
       if (javadoc == null) {
-        getContext().createLineViolation(this, "Document this public " + PublicApiVisitor.getType(node) + ".", node);
+        context.addIssue(tree, ruleKey, "Document this public " + getType(tree) + ".");
       } else {
-        List<String> undocumentedParameters = getUndocumentedParameters(javadoc, getParameters(node));
+        List<String> undocumentedParameters = getUndocumentedParameters(javadoc, getParameters(tree));
         if (!undocumentedParameters.isEmpty()) {
-          getContext().createLineViolation(this, "Document the parameter(s): " + Joiner.on(", ").join(undocumentedParameters), node);
+          context.addIssue(tree, ruleKey, "Document the parameter(s): " + Joiner.on(", ").join(undocumentedParameters));
         }
-
-        if (hasNonVoidReturnType(node) && !hasReturnJavadoc(javadoc)) {
-          getContext().createLineViolation(this, "Document this method return value.", node);
+        if (hasNonVoidReturnType(tree) && !hasReturnJavadoc(javadoc)) {
+          context.addIssue(tree, ruleKey, "Document this method return value.");
         }
       }
     }
   }
 
-  private boolean isExcluded(AstNode node) {
-    return isAccessor(node) ||
-      !isPublicApi(node) ||
-      !isMatchingPattern();
-  }
-
-  private boolean isAccessor(AstNode node) {
-    boolean result = false;
-    // setter resolution based solely on names and parameters number : generate false negative. But for undocumented API we tolerate it.
-    if (node.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
-      MethodHelper methodHelper = new MethodHelper(node);
-      String methodName = methodHelper.getName().getTokenOriginalValue();
-      result = setterPattern.matcher(methodName).matches() && methodHelper.getParameters().size() == 1
-        || getterPattern.matcher(methodName).matches() && !methodHelper.hasParameters();
+  private String getType(Tree tree) {
+    String result = "";
+    if (tree.is(Tree.Kind.CLASS)) {
+      result = "class";
+    } else if (tree.is(Tree.Kind.INTERFACE)) {
+      result = "interface";
+    } else if (tree.is(Tree.Kind.ENUM)) {
+      result = "enum";
+    } else if (tree.is(Tree.Kind.ANNOTATION_TYPE)) {
+      result = "annotation";
+    } else if (tree.is(Tree.Kind.CONSTRUCTOR)) {
+      result = "constructor";
+    } else if (tree.is(Tree.Kind.METHOD)) {
+      result = "method";
+    } else if (tree.is(Tree.Kind.VARIABLE)) {
+      result = "field";
     }
     return result;
   }
 
-  private boolean isPublicApi(AstNode node) {
-    return PublicApiVisitor.isPublicApi(node);
+  private boolean isExcluded(Tree tree) {
+    return !isPublicApi(tree) || isAccessor(tree) || !isMatchingPattern();
+  }
+
+  private boolean isAccessor(Tree tree) {
+    if (!classTrees.isEmpty() && !classTrees.peek().is(Tree.Kind.INTERFACE) && tree.is(Tree.Kind.METHOD)) {
+      MethodTree methodTree = (MethodTree) tree;
+      String name = methodTree.simpleName().name();
+      return (setterPattern.matcher(name).matches() && methodTree.parameters().size() == 1) ||
+          (getterPattern.matcher(name).matches() && methodTree.parameters().isEmpty());
+    }
+    return false;
+  }
+
+  private boolean isPublicApi(Tree tree) {
+    Tree currentParent = currentParents.peek();
+    if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+      classTrees.push((ClassTree) tree);
+      currentParents.push(tree);
+    } else if (tree.is(PublicApiChecker.METHOD_KINDS)) {
+      currentParents.push(tree);
+    }
+
+    return publicApiChecker.isPublicApi(currentParent, tree);
   }
 
   private boolean isMatchingPattern() {
-    return WildcardPattern.match(getPatterns(), peekSourceClass().getKey());
+    return WildcardPattern.match(getPatterns(), className());
+  }
+
+  private String className() {
+    String className = packageName;
+    IdentifierTree identifierTree = classTrees.peek().simpleName();
+    if (identifierTree != null) {
+      className += "/" + identifierTree.name();
+    }
+    return className;
   }
 
   private WildcardPattern[] getPatterns() {
@@ -113,35 +200,29 @@ public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
     return patterns;
   }
 
-  private static List<String> getUndocumentedParameters(String javadoc, List<String> parameters) {
+  private List<String> getUndocumentedParameters(String javadoc, List<String> parameters) {
     ImmutableList.Builder<String> builder = ImmutableList.builder();
-
     for (String parameter : parameters) {
       if (!hasParamJavadoc(javadoc, parameter)) {
         builder.add(parameter);
       }
     }
-
     return builder.build();
   }
 
-  private static List<String> getParameters(AstNode node) {
+  private List<String> getParameters(Tree tree) {
     ImmutableList.Builder<String> builder = ImmutableList.builder();
-
-    AstNode formalParameters = node.getFirstChild(JavaGrammar.FORMAL_PARAMETERS);
-    if (formalParameters != null) {
-      for (AstNode parameter : formalParameters.getDescendants(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
-        builder.add(parameter.getTokenOriginalValue());
+    if (tree.is(PublicApiChecker.METHOD_KINDS)) {
+      MethodTree methodTree = (MethodTree) tree;
+      for (VariableTree variableTree : methodTree.parameters()) {
+        builder.add(variableTree.simpleName().name());
+      }
+      //don't check type paramters documentation for methods
+    } else if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+      for (TypeParameterTree typeParam : ((ClassTree) tree).typeParameters()) {
+        builder.add("<" + typeParam.identifier().name() + ">");
       }
     }
-
-    AstNode typeParameters = node.getFirstChild(JavaGrammar.TYPE_PARAMETERS);
-    if (typeParameters != null) {
-      for (AstNode parameter : typeParameters.getChildren(Kind.TYPE_PARAMETER)) {
-        builder.add("<" + ((TypeParameterTree) parameter).identifier().name() + ">");
-      }
-    }
-
     return builder.build();
   }
 
@@ -149,26 +230,38 @@ public class UndocumentedApiCheck extends SquidCheck<LexerlessGrammar> {
     return comment.matches("(?s).*@param\\s++" + parameter + ".*");
   }
 
-  private static boolean hasNonVoidReturnType(AstNode node) {
-    return node.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST) &&
-      !isGenericMethodReturningVoid(node);
+  private boolean hasNonVoidReturnType(Tree tree) {
+    //Backward compatibility : ignore methods from annotations.
+    if (tree.is(Tree.Kind.METHOD) && !classTrees.peek().is(Tree.Kind.ANNOTATION_TYPE)) {
+      Tree returnType = ((MethodTree) tree).returnType();
+      return returnType == null || !(returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text()));
+    }
+    return false;
   }
 
-  private static boolean isGenericMethodReturningVoid(AstNode node) {
-    return node.getParent().is(JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST) &&
-      node.getParent().hasDirectChildren(JavaKeyword.VOID);
-  }
-
-  private static boolean hasReturnJavadoc(String comment) {
+  private boolean hasReturnJavadoc(String comment) {
     return comment.contains("@return");
   }
 
-  private final SourceClass peekSourceClass() {
-    SourceCode sourceCode = getContext().peekSourceCode();
-    if (sourceCode.isType(SourceClass.class)) {
-      return (SourceClass) sourceCode;
-    }
-    return sourceCode.getParent(SourceClass.class);
-  }
+  private String concatenate(ExpressionTree tree) {
+    Deque<String> pieces = new LinkedList<String>();
 
+    ExpressionTree expr = tree;
+    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
+      pieces.push(mse.identifier().name());
+      pieces.push("/");
+      expr = mse.expression();
+    }
+    if (expr.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree idt = (IdentifierTree) expr;
+      pieces.push(idt.name());
+    }
+
+    StringBuilder sb = new StringBuilder();
+    for (String piece : pieces) {
+      sb.append(piece);
+    }
+    return sb.toString();
+  }
 }
