@@ -754,7 +754,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(CONDITIONAL_OR_EXPRESSION).is(CONDITIONAL_AND_EXPRESSION, b.zeroOrMore(OROR, CONDITIONAL_AND_EXPRESSION)).skipIfOneChild();
     b.rule(CONDITIONAL_AND_EXPRESSION).is(INCLUSIVE_OR_EXPRESSION, b.zeroOrMore(ANDAND, INCLUSIVE_OR_EXPRESSION)).skipIfOneChild();
     b.rule(INCLUSIVE_OR_EXPRESSION).is(EXCLUSIVE_OR_EXPRESSION, b.zeroOrMore(OR, EXCLUSIVE_OR_EXPRESSION)).skipIfOneChild();
-    b.rule(EXCLUSIVE_OR_EXPRESSION).is(AND_EXPRESSION, b.zeroOrMore(HAT, AND_EXPRESSION)).skipIfOneChild();
 
     b.rule(IDENTIFIER_SUFFIX).is(b.firstOf(
       b.sequence(LBRK, b.firstOf(b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), b.sequence(EXPRESSION, RBRK))),

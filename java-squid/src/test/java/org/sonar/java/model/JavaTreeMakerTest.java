@@ -1521,8 +1521,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.operatorToken().text()).isEqualTo("&");
     assertThat(tree.rightOperand()).isNotNull();
 
-    AstNode astNode = p.parse("class T { int m() { return 1 ^ 2 ^ 3; } }").getFirstDescendant(JavaGrammar.EXCLUSIVE_OR_EXPRESSION);
-    tree = (BinaryExpressionTree) maker.expression(astNode);
+    tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 ^ 2 ^ 3; } }").getFirstDescendant(Kind.XOR);
     assertThat(tree.is(Tree.Kind.XOR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("^");
@@ -1533,7 +1532,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.operatorToken().text()).isEqualTo("^");
     assertThat(tree.rightOperand()).isNotNull();
 
-    astNode = p.parse("class T { int m() { return 1 | 2 | 3; } }").getFirstDescendant(JavaGrammar.INCLUSIVE_OR_EXPRESSION);
+    AstNode astNode = p.parse("class T { int m() { return 1 | 2 | 3; } }").getFirstDescendant(JavaGrammar.INCLUSIVE_OR_EXPRESSION);
     tree = (BinaryExpressionTree) maker.expression(astNode);
     assertThat(tree.is(Tree.Kind.OR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
