@@ -40,7 +40,6 @@ import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.model.expression.InstanceOfTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
@@ -894,8 +893,7 @@ public class JavaTreeMaker {
       JavaGrammar.INCLUSIVE_OR_EXPRESSION,
       JavaGrammar.EXCLUSIVE_OR_EXPRESSION,
       JavaGrammar.AND_EXPRESSION,
-      JavaGrammar.EQUALITY_EXPRESSION,
-      JavaGrammar.RELATIONAL_EXPRESSION)) {
+      JavaGrammar.EQUALITY_EXPRESSION)) {
       return binaryExpression(astNode);
     } else if (astNode.is(JavaGrammar.CONDITIONAL_EXPRESSION)) {
       return conditionalExpression(astNode);
@@ -933,15 +931,6 @@ public class JavaTreeMaker {
    * 15.24. Conditional-Or Operator ||
    */
   private ExpressionTree binaryExpression(AstNode astNode) {
-    if (astNode.hasDirectChildren(JavaKeyword.INSTANCEOF)) {
-      // 15.20.2. Type Comparison Operator instanceof
-      // TODO fix grammar - instanceof can't be chained
-      return new InstanceOfTreeImpl(
-        astNode,
-        expression(astNode.getFirstChild()),
-        referenceType(astNode.getFirstChild(JavaGrammar.TYPE)));
-    }
-
     ExpressionTree expression = expression(astNode.getLastChild());
     for (int i = astNode.getNumberOfChildren() - 3; i >= 0; i -= 2) {
       AstNode operatorNode = astNode.getChild(i + 1);

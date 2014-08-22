@@ -1464,8 +1464,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void relational_expression() {
-    AstNode astNode = p.parse("class T { boolean m() { return 1 < 2 > 3; } }").getFirstDescendant(JavaGrammar.RELATIONAL_EXPRESSION);
-    BinaryExpressionTree tree = (BinaryExpressionTree) maker.expression(astNode);
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return 1 < 2 > 3; } }").getFirstDescendant(Kind.LESS_THAN);
     assertThat(tree.is(Tree.Kind.LESS_THAN)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("<");
@@ -1482,8 +1481,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void instanceof_expression() {
-    AstNode astNode = p.parse("class T { boolean m() { return null instanceof Object; } }").getFirstDescendant(JavaGrammar.RELATIONAL_EXPRESSION);
-    InstanceOfTree tree = (InstanceOfTree) maker.expression(astNode);
+    InstanceOfTree tree = (InstanceOfTree) p.parse("class T { boolean m() { return null instanceof Object; } }").getFirstDescendant(Kind.INSTANCE_OF);
     assertThat(tree.is(Tree.Kind.INSTANCE_OF)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.instanceofKeyword().text()).isEqualTo("instanceof");

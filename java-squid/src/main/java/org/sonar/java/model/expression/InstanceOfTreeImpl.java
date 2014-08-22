@@ -22,7 +22,6 @@ package org.sonar.java.model.expression;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -34,13 +33,27 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfTree {
-  private final ExpressionTree expression;
+
+  private ExpressionTree expression;
+  private final InternalSyntaxToken instanceofToken;
   private final Tree type;
 
-  public InstanceOfTreeImpl(AstNode astNode, ExpressionTree expression, Tree type) {
-    super(astNode);
-    this.expression = Preconditions.checkNotNull(expression);
+  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, Tree type, AstNode child) {
+    super(Kind.INSTANCE_OF);
+    this.instanceofToken = instanceofToken;
     this.type = Preconditions.checkNotNull(type);
+
+    addChild(instanceofToken);
+    addChild(child);
+  }
+
+  public InstanceOfTreeImpl complete(ExpressionTree expression) {
+    Preconditions.checkState(this.expression == null);
+    this.expression = expression;
+
+    prependChildren((AstNode) expression);
+
+    return this;
   }
 
   @Override
@@ -55,7 +68,7 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
 
   @Override
   public SyntaxToken instanceofKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.INSTANCEOF));
+    return instanceofToken;
   }
 
   @Override

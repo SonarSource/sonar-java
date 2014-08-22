@@ -39,6 +39,7 @@ import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.model.expression.InstanceOfTreeImpl;
 import org.sonar.java.model.expression.InternalPostfixUnaryExpression;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
@@ -309,6 +310,14 @@ public class TreeFactory {
   }
 
   // TODO Use same method several times
+
+  public ExpressionTree binaryExpression4(ExpressionTree expression, Optional<List<OperatorAndOperand>> operatorAndOperands) {
+    return binaryExpression(expression, operatorAndOperands);
+  }
+
+  public OperatorAndOperand newOperatorAndOperand4(AstNode operator, ExpressionTree operand) {
+    return newOperatorAndOperand(operator, operand);
+  }
 
   public ExpressionTree binaryExpression3(ExpressionTree expression, Optional<List<OperatorAndOperand>> operatorAndOperands) {
     return binaryExpression(expression, operatorAndOperands);
@@ -921,6 +930,18 @@ public class TreeFactory {
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }
+  }
+
+  public ExpressionTree completeInstanceofExpression(ExpressionTree expression, Optional<InstanceOfTreeImpl> partial) {
+    return partial.isPresent() ?
+      partial.get().complete(expression) :
+      expression;
+  }
+
+  public InstanceOfTreeImpl newInstanceofExpression(AstNode instanceofTokenAstNode, AstNode type) {
+    InternalSyntaxToken instanceofToken = InternalSyntaxToken.create(instanceofTokenAstNode);
+    return new InstanceOfTreeImpl(instanceofToken, treeMaker.referenceType(type),
+      type);
   }
 
 }

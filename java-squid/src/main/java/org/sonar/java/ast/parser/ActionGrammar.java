@@ -187,6 +187,30 @@ public class ActionGrammar {
 
   // Expressions
 
+  public ExpressionTree INSTANCEOF_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.RELATIONAL_EXPRESSION)
+      .is(
+        f.completeInstanceofExpression(
+          RELATIONAL_EXPRESSION(),
+          b.optional(f.newInstanceofExpression(b.invokeRule(JavaKeyword.INSTANCEOF), b.invokeRule(JavaGrammar.TYPE)))));
+  }
+
+  public ExpressionTree RELATIONAL_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal()
+      .is(
+        // TODO SONARJAVA-610
+        f.binaryExpression4(
+          SHIFT_EXPRESSION(),
+          b.zeroOrMore(
+            f.newOperatorAndOperand4(
+              b.firstOf(
+                b.invokeRule(JavaPunctuator.GE),
+                b.invokeRule(JavaPunctuator.GT),
+                b.invokeRule(JavaPunctuator.LE),
+                b.invokeRule(JavaPunctuator.LT)),
+              SHIFT_EXPRESSION()))));
+  }
+
   public ExpressionTree SHIFT_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.SHIFT_EXPRESSION)
       .is(

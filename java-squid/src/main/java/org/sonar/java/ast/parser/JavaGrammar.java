@@ -39,7 +39,6 @@ import static org.sonar.java.ast.api.JavaKeyword.FINALLY;
 import static org.sonar.java.ast.api.JavaKeyword.FOR;
 import static org.sonar.java.ast.api.JavaKeyword.IMPLEMENTS;
 import static org.sonar.java.ast.api.JavaKeyword.IMPORT;
-import static org.sonar.java.ast.api.JavaKeyword.INSTANCEOF;
 import static org.sonar.java.ast.api.JavaKeyword.INTERFACE;
 import static org.sonar.java.ast.api.JavaKeyword.NATIVE;
 import static org.sonar.java.ast.api.JavaKeyword.NEW;
@@ -758,9 +757,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(EXCLUSIVE_OR_EXPRESSION).is(AND_EXPRESSION, b.zeroOrMore(HAT, AND_EXPRESSION)).skipIfOneChild();
     b.rule(AND_EXPRESSION).is(EQUALITY_EXPRESSION, b.zeroOrMore(AND, EQUALITY_EXPRESSION)).skipIfOneChild();
     b.rule(EQUALITY_EXPRESSION).is(RELATIONAL_EXPRESSION, b.zeroOrMore(b.firstOf(EQUAL, NOTEQUAL), RELATIONAL_EXPRESSION)).skipIfOneChild();
-    b.rule(RELATIONAL_EXPRESSION).is(SHIFT_EXPRESSION, b.zeroOrMore(b.firstOf(
-      b.sequence(b.firstOf(GE, GT, LE, LT), SHIFT_EXPRESSION),
-      b.sequence(INSTANCEOF, TYPE)))).skipIfOneChild();
 
     b.rule(IDENTIFIER_SUFFIX).is(b.firstOf(
       b.sequence(LBRK, b.firstOf(b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), b.sequence(EXPRESSION, RBRK))),
