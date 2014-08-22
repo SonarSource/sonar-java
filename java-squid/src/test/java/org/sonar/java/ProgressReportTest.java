@@ -35,18 +35,27 @@ import static org.mockito.Mockito.verify;
 public class ProgressReportTest {
 
   @Rule
-  public final Timeout timeout = new Timeout(15000);
+  public final Timeout timeout = new Timeout(10000);
 
   @Test
   public void test() throws Exception {
     Logger logger = mock(Logger.class);
 
-    ProgressReport report = new ProgressReport(ProgressReport.class.getName(), 500, logger);
+    ProgressReport report = new ProgressReport(ProgressReport.class.getName(), 100, logger);
     report.message("progress");
     report.start("foo start");
-    Thread.sleep(2000);
+
+    // Wait for start message
+    waitForMessage(logger);
+
+    // Wait for at least one progress message
+    waitForMessage(logger);
+
     report.stop("foo stop");
-    Thread.sleep(2000);
+
+    // Waits for the thread to die
+    // Note: We cannot simply wait for a message here, because it could either be a progress or a stop one
+    report.join();
 
     ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
     verify(logger, atLeast(3)).info(captor.capture());
@@ -58,6 +67,12 @@ public class ProgressReportTest {
       assertThat(messages.get(i)).isEqualTo("progress");
     }
     assertThat(messages.get(messages.size() - 1)).isEqualTo("foo stop");
+  }
+
+  private static void waitForMessage(Logger logger) throws InterruptedException {
+    synchronized (logger) {
+      logger.wait();
+    }
   }
 
 }

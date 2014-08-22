@@ -46,16 +46,16 @@ public class ProgressReport implements Runnable {
     while (!Thread.interrupted()) {
       try {
         Thread.sleep(period);
-        logger.info(message);
+        log(message);
       } catch (InterruptedException e) {
         thread.interrupt();
       }
     }
-    logger.info(stopMessage);
+    log(stopMessage);
   }
 
   public void start(String startMessage) {
-    logger.info(startMessage);
+    log(startMessage);
     thread.start();
   }
 
@@ -66,6 +66,17 @@ public class ProgressReport implements Runnable {
   public void stop(String stopMessage) {
     this.stopMessage = stopMessage;
     thread.interrupt();
+  }
+
+  public void join() throws InterruptedException {
+    thread.join();
+  }
+
+  private void log(String message) {
+    synchronized (logger) {
+      logger.info(message);
+      logger.notifyAll();
+    }
   }
 
 }
