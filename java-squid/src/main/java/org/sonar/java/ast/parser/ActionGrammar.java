@@ -187,6 +187,17 @@ public class ActionGrammar {
 
   // Expressions
 
+  public ExpressionTree CONDITIONAL_OR_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.CONDITIONAL_OR_EXPRESSION)
+      .is(
+        f.binaryExpression10(
+          CONDITIONAL_AND_EXPRESSION(),
+          b.zeroOrMore(
+            f.newOperatorAndOperand10(
+              b.invokeRule(JavaPunctuator.OROR),
+              CONDITIONAL_AND_EXPRESSION()))));
+  }
+
   public ExpressionTree CONDITIONAL_AND_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.CONDITIONAL_AND_EXPRESSION)
       .is(

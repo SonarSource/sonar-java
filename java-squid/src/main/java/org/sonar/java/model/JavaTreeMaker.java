@@ -37,7 +37,6 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
-import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
@@ -888,8 +887,6 @@ public class JavaTreeMaker {
       return (ExpressionTree) astNode;
     } else if (astNode.is(JavaGrammar.PAR_EXPRESSION)) {
       return (ParenthesizedTreeImpl) astNode;
-    } else if (astNode.is(JavaGrammar.CONDITIONAL_OR_EXPRESSION)) {
-      return binaryExpression(astNode);
     } else if (astNode.is(JavaGrammar.CONDITIONAL_EXPRESSION)) {
       return conditionalExpression(astNode);
     } else if (astNode.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
@@ -913,31 +910,6 @@ public class JavaTreeMaker {
     } else {
       return arrayInitializer(null, astNode.getFirstChild());
     }
-  }
-
-  /**
-   * 15.17. Multiplicative Operators
-   * 15.18. Additive Operators
-   * 15.19. Shift Operators
-   * 15.20. Relational Operators
-   * 15.21. Equality Operators
-   * 15.22. Bitwise and Logical Operators
-   * 15.23. Conditional-And Operator &&
-   * 15.24. Conditional-Or Operator ||
-   */
-  private ExpressionTree binaryExpression(AstNode astNode) {
-    ExpressionTree expression = expression(astNode.getLastChild());
-    for (int i = astNode.getNumberOfChildren() - 3; i >= 0; i -= 2) {
-      AstNode operatorNode = astNode.getChild(i + 1);
-      Tree.Kind kind = kindMaps.getBinaryOperator((JavaPunctuator) operatorNode.getType());
-      expression = new BinaryExpressionTreeImpl(
-        operatorNode,
-        expression(astNode.getChild(i)),
-        kind,
-        expression
-        );
-    }
-    return expression;
   }
 
   /**

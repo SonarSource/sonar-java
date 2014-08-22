@@ -1566,8 +1566,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void conditional_or_expression() {
-    AstNode astNode = p.parse("class T { boolean m() { return false || false || true; } }").getFirstDescendant(JavaGrammar.CONDITIONAL_OR_EXPRESSION);
-    BinaryExpressionTree tree = (BinaryExpressionTree) maker.expression(astNode);
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return false || false || true; } }").getFirstDescendant(Kind.CONDITIONAL_OR);
     assertThat(tree.is(Tree.Kind.CONDITIONAL_OR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("||");
