@@ -73,4 +73,14 @@ class EmptyBlock {
 
   void anotherMethod() /* OK */ {
   }
+
+  static {
+    try {
+      stream = new ObjectOutputStream(new OutputStream() {
+        public void write(int b) {}
+      });
+    } catch (IOException cannotHappen) /*NOK*/
+    {
+    }
+  }
 }

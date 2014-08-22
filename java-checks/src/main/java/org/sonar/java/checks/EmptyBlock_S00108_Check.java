@@ -19,51 +19,66 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
-  key = "S00108",
-  priority = Priority.MAJOR,
-  tags = {"bug"})
+    key = "S00108",
+    priority = Priority.MAJOR,
+    tags = {"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class EmptyBlock_S00108_Check extends SquidCheck<LexerlessGrammar> {
+public class EmptyBlock_S00108_Check extends SubscriptionBaseVisitor {
+
+
+  private boolean isMethodBlock;
 
   @Override
-  public void init() {
-    subscribeTo(
-      Kind.BLOCK,
-      JavaGrammar.SWITCH_STATEMENT);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR,
+        Tree.Kind.BLOCK,
+        Tree.Kind.INITIALIZER,
+        Tree.Kind.STATIC_INITIALIZER,
+        Tree.Kind.SWITCH_STATEMENT);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.is(JavaGrammar.SWITCH_STATEMENT)) {
-      SwitchStatementTree tree = (SwitchStatementTree) node;
-      if (tree.cases().isEmpty()) {
-        getContext().createLineViolation(this, "Either remove or fill this block of code.", node.getParent());
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.SWITCH_STATEMENT)) {
+      SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
+      if (switchStatementTree.cases().isEmpty()) {
+        addIssue(switchStatementTree, "Either remove or fill this block of code.");
       }
+    } else if (tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR)) {
+      isMethodBlock = true;
     } else {
-      if (node.getParent().isNot(JavaGrammar.METHOD_BODY) && !hasStatements(node) && !hasCommentInside(node)) {
-        getContext().createLineViolation(this, "Either remove or fill this block of code.", node.getParent());
+      if (isMethodBlock) {
+        isMethodBlock = false;
+      } else if (!hasStatements((BlockTree) tree) && !hasCommentInside((BlockTree) tree)) {
+        addIssue(tree, "Either remove or fill this block of code.");
       }
     }
   }
 
-  private static boolean hasStatements(AstNode node) {
-    return node.getFirstChild(JavaGrammar.BLOCK_STATEMENTS).hasDirectChildren(JavaGrammar.BLOCK_STATEMENT);
+  private boolean hasCommentInside(BlockTree tree) {
+    return tree.closeBraceToken() == null || !tree.closeBraceToken().trivias().isEmpty();
   }
 
-  private static boolean hasCommentInside(AstNode node) {
-    return !node.getFirstChild(JavaPunctuator.RWING).getToken().getTrivia().isEmpty();
+  private boolean hasStatements(BlockTree tree) {
+    return !tree.body().isEmpty();
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR)) {
+      isMethodBlock = false;
+    }
   }
 
 }
