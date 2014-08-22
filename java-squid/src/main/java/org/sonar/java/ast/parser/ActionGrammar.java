@@ -187,6 +187,17 @@ public class ActionGrammar {
 
   // Expressions
 
+  public ExpressionTree INCLUSIVE_OR_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.INCLUSIVE_OR_EXPRESSION)
+      .is(
+        f.binaryExpression8(
+          EXCLUSIVE_OR_EXPRESSION(),
+          b.zeroOrMore(
+            f.newOperatorAndOperand8(
+              b.invokeRule(JavaPunctuator.OR),
+              EXCLUSIVE_OR_EXPRESSION()))));
+  }
+
   public ExpressionTree EXCLUSIVE_OR_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.EXCLUSIVE_OR_EXPRESSION)
       .is(
