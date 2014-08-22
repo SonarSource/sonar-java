@@ -37,6 +37,7 @@ import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
+import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InternalPostfixUnaryExpression;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
@@ -834,6 +835,53 @@ public class TreeFactory {
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }
+  }
+
+  public ExpressionTree binaryExpression(Optional<List<OperatorAndOperand>> operatorAndOperands, ExpressionTree expression) {
+    if (!operatorAndOperands.isPresent()) {
+      return expression;
+    }
+
+    // TODO SONARJAVA-610
+    ExpressionTree result = expression;
+    for (OperatorAndOperand operatorAndOperand : Lists.reverse(operatorAndOperands.get())) {
+      result = new BinaryExpressionTreeImpl(
+        kindMaps.getBinaryOperator((JavaPunctuator) operatorAndOperand.operator().getType()),
+        operatorAndOperand.operand(),
+        operatorAndOperand.operator(),
+        result);
+    }
+
+    return result;
+  }
+
+  private static class OperatorAndOperand extends AstNode {
+
+    private final ExpressionTree operand;
+    private final InternalSyntaxToken operator;
+
+    public OperatorAndOperand(ExpressionTree operand, InternalSyntaxToken operator) {
+      super(null, null, null);
+
+      this.operand = operand;
+      this.operator = operator;
+
+      addChild((AstNode) operand);
+      addChild(operator);
+    }
+
+    public InternalSyntaxToken operator() {
+      return operator;
+    }
+
+    public ExpressionTree operand() {
+      return operand;
+    }
+
+  }
+
+  public OperatorAndOperand newOperatorAndOperand(ExpressionTree operand, AstNode operator) {
+    return new OperatorAndOperand(operand, InternalSyntaxToken.create(operator));
   }
 
 }

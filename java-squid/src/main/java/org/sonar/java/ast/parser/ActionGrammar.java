@@ -187,6 +187,21 @@ public class ActionGrammar {
 
   // Expressions
 
+  public ExpressionTree MULTIPLICATIVE_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.MULTIPLICATIVE_EXPRESSION)
+      .is(
+        // TODO SONARJAVA-610
+        f.binaryExpression(
+          b.zeroOrMore(
+            f.newOperatorAndOperand(
+              UNARY_EXPRESSION(),
+              b.firstOf(
+                b.invokeRule(JavaPunctuator.STAR),
+                b.invokeRule(JavaPunctuator.DIV),
+                b.invokeRule(JavaPunctuator.MOD)))),
+          UNARY_EXPRESSION()));
+  }
+
   public ExpressionTree UNARY_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.UNARY_EXPRESSION)
       .is(

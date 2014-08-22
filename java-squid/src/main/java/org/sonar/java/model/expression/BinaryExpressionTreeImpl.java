@@ -33,17 +33,30 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class BinaryExpressionTreeImpl extends AbstractTypedTree implements BinaryExpressionTree {
-  private final ExpressionTree leftOperand;
+
   private final Kind kind;
+
+  private final ExpressionTree leftOperand;
+  private final InternalSyntaxToken operator;
   private final ExpressionTree rightOperand;
 
-  /**
-   * @param astNode node associated with operator
-   */
+  public BinaryExpressionTreeImpl(Kind kind, ExpressionTree leftOperand, InternalSyntaxToken operator, ExpressionTree rightOperand) {
+    super(kind);
+    this.kind = Preconditions.checkNotNull(kind);
+    this.leftOperand = Preconditions.checkNotNull(leftOperand);
+    this.operator = operator;
+    this.rightOperand = Preconditions.checkNotNull(rightOperand);
+
+    addChild((AstNode) leftOperand);
+    addChild(operator);
+    addChild((AstNode) rightOperand);
+  }
+
   public BinaryExpressionTreeImpl(AstNode astNode, ExpressionTree leftOperand, Kind kind, ExpressionTree rightOperand) {
     super(astNode);
-    this.leftOperand = Preconditions.checkNotNull(leftOperand);
     this.kind = Preconditions.checkNotNull(kind);
+    this.leftOperand = Preconditions.checkNotNull(leftOperand);
+    this.operator = InternalSyntaxToken.createLegacy(super.getAstNode());
     this.rightOperand = Preconditions.checkNotNull(rightOperand);
   }
 
@@ -54,7 +67,7 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
 
   @Override
   public SyntaxToken operatorToken() {
-    return InternalSyntaxToken.createLegacy(super.getAstNode());
+    return operator;
   }
 
   @Override
@@ -74,8 +87,14 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
 
   @Override
   public AstNode getAstNode() {
+    // TODO Dinesh: Do not override at all
+
     // TODO(Godin): provides behavioral compatibility, because this method used by AnonymousClassesTooBigCheck, but should not
-    return super.getAstNode().getParent();
+    if (isLegacy()) {
+      return super.getAstNode().getParent();
+    } else {
+      return super.getAstNode();
+    }
   }
 
   @Override

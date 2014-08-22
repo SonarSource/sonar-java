@@ -1403,8 +1403,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void multiplicative_expression() {
-    AstNode astNode = p.parse("class T { int m() { return 1 * 2 / 3 % 4; } }").getFirstDescendant(JavaGrammar.MULTIPLICATIVE_EXPRESSION);
-    BinaryExpressionTree tree = (BinaryExpressionTree) maker.expression(astNode);
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 * 2 / 3 % 4; } }").getFirstDescendant(Kind.MULTIPLY);
     assertThat(tree.is(Tree.Kind.MULTIPLY)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("*");

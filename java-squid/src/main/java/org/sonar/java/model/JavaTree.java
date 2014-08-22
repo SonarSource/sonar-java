@@ -75,7 +75,7 @@ public abstract class JavaTree extends AstNode implements Tree {
   }
 
   public boolean isLegacy() {
-    return getAstNode() != this;
+    return astNode != this;
   }
 
   private void prependChild(AstNode astNode) {
