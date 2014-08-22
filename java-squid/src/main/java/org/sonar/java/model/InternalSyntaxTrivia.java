@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -29,13 +28,11 @@ import java.util.Iterator;
 
 public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
-  private SyntaxToken token;
   private final String comment;
   private int startLine;
 
-  public InternalSyntaxTrivia(SyntaxToken token, String comment, int startLine) {
+  public InternalSyntaxTrivia(String comment, int startLine) {
     super((AstNode)null);
-    this.token = token;
     this.comment = comment;
     this.startLine = startLine;
   }
@@ -43,11 +40,6 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   @Override
   public String comment() {
     return comment;
-  }
-
-  @Override
-  public SyntaxToken token() {
-    return token;
   }
 
   @Override
@@ -70,8 +62,8 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
     //FIXME do nothing
   }
 
-  public static SyntaxTrivia create(SyntaxToken token, String comment, int startLine) {
-    return new InternalSyntaxTrivia(token, comment, startLine);
+  public static SyntaxTrivia create (String comment, int startLine) {
+    return new InternalSyntaxTrivia(comment, startLine);
   }
 
   @Override

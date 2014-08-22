@@ -31,6 +31,4 @@ public interface SyntaxTrivia extends Tree {
 
   String comment();
 
-  SyntaxToken token();
-
 }

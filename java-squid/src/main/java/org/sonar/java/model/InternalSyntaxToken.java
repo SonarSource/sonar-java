@@ -72,7 +72,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   private List<SyntaxTrivia> createTrivias(Token token) {
     List<SyntaxTrivia> result = Lists.newArrayList();
     for (Trivia trivia : token.getTrivia()) {
-      result.add(InternalSyntaxTrivia.create(this, trivia.getToken().getValue(), trivia.getToken().getLine()));
+      result.add(InternalSyntaxTrivia.create(trivia.getToken().getValue(), trivia.getToken().getLine()));
     }
     return result;
   }
