@@ -249,6 +249,18 @@ public class TreeFactory {
 
   // Expressions
 
+  public ExpressionTree completeInstanceofExpression(ExpressionTree expression, Optional<InstanceOfTreeImpl> partial) {
+    return partial.isPresent() ?
+      partial.get().complete(expression) :
+      expression;
+  }
+
+  public InstanceOfTreeImpl newInstanceofExpression(AstNode instanceofTokenAstNode, AstNode type) {
+    InternalSyntaxToken instanceofToken = InternalSyntaxToken.create(instanceofTokenAstNode);
+    return new InstanceOfTreeImpl(instanceofToken, treeMaker.referenceType(type),
+      type);
+  }
+
   private static class OperatorAndOperand extends AstNode {
 
     private final InternalSyntaxToken operator;
@@ -930,18 +942,6 @@ public class TreeFactory {
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }
-  }
-
-  public ExpressionTree completeInstanceofExpression(ExpressionTree expression, Optional<InstanceOfTreeImpl> partial) {
-    return partial.isPresent() ?
-      partial.get().complete(expression) :
-      expression;
-  }
-
-  public InstanceOfTreeImpl newInstanceofExpression(AstNode instanceofTokenAstNode, AstNode type) {
-    InternalSyntaxToken instanceofToken = InternalSyntaxToken.create(instanceofTokenAstNode);
-    return new InstanceOfTreeImpl(instanceofToken, treeMaker.referenceType(type),
-      type);
   }
 
 }
