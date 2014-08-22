@@ -42,10 +42,6 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class PublicApiCheckerTest {
 
-  private List<ClassTree> classTrees;
-  private List<VariableTree> variableTrees;
-  private List<MethodTree> methodTrees;
-
   private PublicApiChecker publicApiChecker;
   private CompilationUnitTree cut;
 
@@ -54,11 +50,6 @@ public class PublicApiCheckerTest {
     Parser p = JavaParser.createParser(Charsets.UTF_8, true);
     publicApiChecker = new PublicApiChecker();
     cut = new JavaTreeMaker().compilationUnit(p.parse(new File("src/test/files/ast/PublicApi.java")));
-
-    variableTrees = Lists.newArrayList();
-    methodTrees = Lists.newArrayList();
-    classTrees = Lists.newArrayList();
-
   }
 
   @Test
@@ -98,5 +89,41 @@ public class PublicApiCheckerTest {
         }
       }
     }.scanTree(cut);
+  }
+
+  @Test
+  public void retrieveJavadoc() {
+    new SubscriptionVisitor() {
+
+      @Override
+      public List<Tree.Kind> nodesToVisit() {
+        return Arrays.asList(Tree.Kind.values());
+      }
+
+      @Override
+      public void visitNode(Tree tree) {
+        if (tree.is(Tree.Kind.VARIABLE)) {
+          VariableTree variableTree = (VariableTree) tree;
+          checkApi(tree, variableTree.simpleName().name());
+        } else if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
+          MethodTree methodTree = (MethodTree) tree;
+          checkApi(tree, methodTree.simpleName().name());
+        } else if (tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
+          IdentifierTree idTree = ((ClassTree) tree).simpleName();
+          checkApi(tree, idTree==null ? "":idTree.name() );
+        }else {
+          checkApi(tree, "");
+        }
+      }
+    }.scanTree(cut);
+
+  }
+
+  private void checkApi(Tree tree, String name) {
+    if(name.startsWith("documented")) {
+      assertThat(publicApiChecker.getApiJavadoc(tree)).as(name).isNotNull();
+    }else {
+      assertThat(publicApiChecker.getApiJavadoc(tree)).isNull();
+    }
   }
 }

@@ -20,20 +20,35 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.List;
 
 public class PublicApiChecker {
+
+  private static final Tree.Kind[] CLASS_KINDS = {
+      Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE
+  };
+
+  private static final Tree.Kind[] METHOD_KINDS = {
+      Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR
+  };
+  private static final Tree.Kind[] API_KINDS = {
+      Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE,
+      Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR,
+      Tree.Kind.VARIABLE
+  };
+
 
   public boolean isPublicApi(ClassTree classTree) {
     return hasPublic(classTree.modifiers());
@@ -59,11 +74,11 @@ public class PublicApiChecker {
   }
 
   public boolean isPublicApi(ClassTree currentClass, Tree tree) {
-    if(tree.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE)) {
-      return isPublicApi((ClassTree)tree);
-    }else if(tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)){
+    if (tree.is(CLASS_KINDS)) {
+      return isPublicApi((ClassTree) tree);
+    } else if (tree.is(METHOD_KINDS)) {
       return isPublicApi(currentClass, (MethodTree) tree);
-    } else if(tree.is(Tree.Kind.VARIABLE)) {
+    } else if (tree.is(Tree.Kind.VARIABLE)) {
       return isPublicApi((VariableTree) tree);
     }
     return false;
@@ -94,28 +109,28 @@ public class PublicApiChecker {
 
 
   public static String getApiJavadoc(Tree tree) {
-//    AstNode declaration = getDeclaration(astNode);
-//    for (Trivia trivia : declaration.getToken().getTrivia()) {
-//      if (trivia.isComment()) {
-//        String value = trivia.getToken().getOriginalValue();
-//        if (value.startsWith("/**")) {
-//          return value;
-//        }
-//      }
-//    }
+    if (tree.is(API_KINDS)) {
+      ModifiersTree modifiersTree = null;
+      if (tree.is(CLASS_KINDS)) {
+        modifiersTree = ((ClassTree) tree).modifiers();
+      } else if (tree.is(METHOD_KINDS)) {
+        modifiersTree = ((MethodTree) tree).modifiers();
+      } else if (tree.is(Tree.Kind.VARIABLE)) {
+        modifiersTree = ((VariableTree) tree).modifiers();
+      }
+
+      Tree tokenTree = tree;
+      if (modifiersTree != null && !modifiersTree.modifiers().isEmpty()) {
+        tokenTree = modifiersTree;
+      }
+        SyntaxToken syntaxToken = new InternalSyntaxToken(((JavaTree)tokenTree).getToken());
+        for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
+          if (syntaxTrivia.comment().startsWith("/**")) {
+            return syntaxTrivia.comment();
+          }
+        }
+    }
     return null;
   }
 
-private static class VisitTrivia extends SubscriptionVisitor {
-
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TRIVIA);
-  }
-
-  @Override
-  public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-
-  }
-}
 }
