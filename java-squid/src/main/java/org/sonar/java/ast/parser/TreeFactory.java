@@ -250,17 +250,17 @@ public class TreeFactory {
 
   private static class OperatorAndOperand extends AstNode {
 
-    private final ExpressionTree operand;
     private final InternalSyntaxToken operator;
+    private final ExpressionTree operand;
 
-    public OperatorAndOperand(ExpressionTree operand, InternalSyntaxToken operator) {
+    public OperatorAndOperand(InternalSyntaxToken operator, ExpressionTree operand) {
       super(null, null, null);
 
-      this.operand = operand;
       this.operator = operator;
+      this.operand = operand;
 
-      addChild((AstNode) operand);
       addChild(operator);
+      addChild((AstNode) operand);
     }
 
     public InternalSyntaxToken operator() {
@@ -273,52 +273,65 @@ public class TreeFactory {
 
   }
 
-  private ExpressionTree binaryExpression(Optional<List<OperatorAndOperand>> operatorAndOperands, ExpressionTree expression) {
+  private ExpressionTree binaryExpression(ExpressionTree expression, Optional<List<OperatorAndOperand>> operatorAndOperands) {
     if (!operatorAndOperands.isPresent()) {
       return expression;
     }
 
     // TODO SONARJAVA-610
-    ExpressionTree result = expression;
+    ExpressionTree result = null;
+    InternalSyntaxToken lastOperator = null;
     for (OperatorAndOperand operatorAndOperand : Lists.reverse(operatorAndOperands.get())) {
-      result = new BinaryExpressionTreeImpl(
-        kindMaps.getBinaryOperator((JavaPunctuator) operatorAndOperand.operator().getType()),
-        operatorAndOperand.operand(),
-        operatorAndOperand.operator(),
-        result);
+      if (lastOperator == null) {
+        result = operatorAndOperand.operand();
+      } else {
+        result = new BinaryExpressionTreeImpl(
+          kindMaps.getBinaryOperator((JavaPunctuator) lastOperator.getType()),
+          operatorAndOperand.operand(),
+          lastOperator,
+          result);
+      }
+
+      lastOperator = operatorAndOperand.operator();
     }
+
+    result = new BinaryExpressionTreeImpl(
+      kindMaps.getBinaryOperator((JavaPunctuator) lastOperator.getType()),
+      expression,
+      lastOperator,
+      result);
 
     return result;
   }
 
-  private OperatorAndOperand newOperatorAndOperand(ExpressionTree operand, AstNode operator) {
-    return new OperatorAndOperand(operand, InternalSyntaxToken.create(operator));
+  private OperatorAndOperand newOperatorAndOperand(AstNode operator, ExpressionTree operand) {
+    return new OperatorAndOperand(InternalSyntaxToken.create(operator), operand);
   }
 
   // TODO Use same method several times
 
-  public ExpressionTree binaryExpression3(Optional<List<OperatorAndOperand>> operatorAndOperands, ExpressionTree expression) {
-    return binaryExpression(operatorAndOperands, expression);
+  public ExpressionTree binaryExpression3(ExpressionTree expression, Optional<List<OperatorAndOperand>> operatorAndOperands) {
+    return binaryExpression(expression, operatorAndOperands);
   }
 
-  public OperatorAndOperand newOperatorAndOperand3(ExpressionTree operand, AstNode operator) {
-    return newOperatorAndOperand(operand, operator);
+  public OperatorAndOperand newOperatorAndOperand3(AstNode operator, ExpressionTree operand) {
+    return newOperatorAndOperand(operator, operand);
   }
 
-  public ExpressionTree binaryExpression2(Optional<List<OperatorAndOperand>> operatorAndOperands, ExpressionTree expression) {
-    return binaryExpression(operatorAndOperands, expression);
+  public ExpressionTree binaryExpression2(ExpressionTree expression, Optional<List<OperatorAndOperand>> operatorAndOperands) {
+    return binaryExpression(expression, operatorAndOperands);
   }
 
-  public OperatorAndOperand newOperatorAndOperand2(ExpressionTree operand, AstNode operator) {
-    return newOperatorAndOperand(operand, operator);
+  public OperatorAndOperand newOperatorAndOperand2(AstNode operator, ExpressionTree operand) {
+    return newOperatorAndOperand(operator, operand);
   }
 
-  public ExpressionTree binaryExpression1(Optional<List<OperatorAndOperand>> operatorAndOperands, ExpressionTree expression) {
-    return binaryExpression(operatorAndOperands, expression);
+  public ExpressionTree binaryExpression1(ExpressionTree expression, Optional<List<OperatorAndOperand>> operatorAndOperands) {
+    return binaryExpression(expression, operatorAndOperands);
   }
 
-  public OperatorAndOperand newOperatorAndOperand1(ExpressionTree operand, AstNode operator) {
-    return newOperatorAndOperand(operand, operator);
+  public OperatorAndOperand newOperatorAndOperand1(AstNode operator, ExpressionTree operand) {
+    return newOperatorAndOperand(operator, operand);
   }
 
   public ExpressionTree newPrefixedExpression(AstNode operatorTokenAstNode, ExpressionTree expression) {

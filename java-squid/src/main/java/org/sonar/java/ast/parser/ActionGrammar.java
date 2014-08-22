@@ -192,14 +192,14 @@ public class ActionGrammar {
       .is(
         // TODO SONARJAVA-610
         f.binaryExpression3(
+          ADDITIVE_EXPRESSION(),
           b.zeroOrMore(
             f.newOperatorAndOperand3(
-              ADDITIVE_EXPRESSION(),
               b.firstOf(
                 b.invokeRule(JavaPunctuator.SL),
                 b.invokeRule(JavaPunctuator.BSR),
-                b.invokeRule(JavaPunctuator.SR)))),
-          ADDITIVE_EXPRESSION()));
+                b.invokeRule(JavaPunctuator.SR)),
+              ADDITIVE_EXPRESSION()))));
   }
 
   public ExpressionTree ADDITIVE_EXPRESSION() {
@@ -207,13 +207,13 @@ public class ActionGrammar {
       .is(
         // TODO SONARJAVA-610
         f.binaryExpression2(
+          MULTIPLICATIVE_EXPRESSION(),
           b.zeroOrMore(
             f.newOperatorAndOperand2(
-              MULTIPLICATIVE_EXPRESSION(),
               b.firstOf(
                 b.invokeRule(JavaPunctuator.PLUS),
-                b.invokeRule(JavaPunctuator.MINUS)))),
-          MULTIPLICATIVE_EXPRESSION()));
+                b.invokeRule(JavaPunctuator.MINUS)),
+              MULTIPLICATIVE_EXPRESSION()))));
   }
 
   public ExpressionTree MULTIPLICATIVE_EXPRESSION() {
@@ -221,14 +221,14 @@ public class ActionGrammar {
       .is(
         // TODO SONARJAVA-610
         f.binaryExpression1(
+          UNARY_EXPRESSION(),
           b.zeroOrMore(
             f.newOperatorAndOperand1(
-              UNARY_EXPRESSION(),
               b.firstOf(
                 b.invokeRule(JavaPunctuator.STAR),
                 b.invokeRule(JavaPunctuator.DIV),
-                b.invokeRule(JavaPunctuator.MOD)))),
-          UNARY_EXPRESSION()));
+                b.invokeRule(JavaPunctuator.MOD)),
+              UNARY_EXPRESSION()))));
   }
 
   public ExpressionTree UNARY_EXPRESSION() {
