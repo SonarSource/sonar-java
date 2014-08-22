@@ -297,6 +297,14 @@ public class TreeFactory {
 
   // TODO Use same method several times
 
+  public ExpressionTree binaryExpression3(Optional<List<OperatorAndOperand>> operatorAndOperands, ExpressionTree expression) {
+    return binaryExpression(operatorAndOperands, expression);
+  }
+
+  public OperatorAndOperand newOperatorAndOperand3(ExpressionTree operand, AstNode operator) {
+    return newOperatorAndOperand(operand, operator);
+  }
+
   public ExpressionTree binaryExpression2(Optional<List<OperatorAndOperand>> operatorAndOperands, ExpressionTree expression) {
     return binaryExpression(operatorAndOperands, expression);
   }

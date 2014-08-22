@@ -761,7 +761,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(RELATIONAL_EXPRESSION).is(SHIFT_EXPRESSION, b.zeroOrMore(b.firstOf(
       b.sequence(b.firstOf(GE, GT, LE, LT), SHIFT_EXPRESSION),
       b.sequence(INSTANCEOF, TYPE)))).skipIfOneChild();
-    b.rule(SHIFT_EXPRESSION).is(ADDITIVE_EXPRESSION, b.zeroOrMore(b.firstOf(SL, BSR, SR), ADDITIVE_EXPRESSION)).skipIfOneChild();
 
     b.rule(IDENTIFIER_SUFFIX).is(b.firstOf(
       b.sequence(LBRK, b.firstOf(b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), b.sequence(EXPRESSION, RBRK))),

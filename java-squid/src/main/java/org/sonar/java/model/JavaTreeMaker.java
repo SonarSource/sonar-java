@@ -895,8 +895,7 @@ public class JavaTreeMaker {
       JavaGrammar.EXCLUSIVE_OR_EXPRESSION,
       JavaGrammar.AND_EXPRESSION,
       JavaGrammar.EQUALITY_EXPRESSION,
-      JavaGrammar.RELATIONAL_EXPRESSION,
-      JavaGrammar.SHIFT_EXPRESSION)) {
+      JavaGrammar.RELATIONAL_EXPRESSION)) {
       return binaryExpression(astNode);
     } else if (astNode.is(JavaGrammar.CONDITIONAL_EXPRESSION)) {
       return conditionalExpression(astNode);

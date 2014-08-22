@@ -1442,8 +1442,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void shift_expression() {
-    AstNode astNode = p.parse("class T { int m() { return 1 >> 2 << 3 >>> 4; } }").getFirstDescendant(JavaGrammar.SHIFT_EXPRESSION);
-    BinaryExpressionTree tree = (BinaryExpressionTree) maker.expression(astNode);
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 >> 2 << 3 >>> 4; } }").getFirstDescendant(Kind.RIGHT_SHIFT);
     assertThat(tree.is(Tree.Kind.RIGHT_SHIFT)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo(">>");

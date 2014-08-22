@@ -187,6 +187,21 @@ public class ActionGrammar {
 
   // Expressions
 
+  public ExpressionTree SHIFT_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.SHIFT_EXPRESSION)
+      .is(
+        // TODO SONARJAVA-610
+        f.binaryExpression3(
+          b.zeroOrMore(
+            f.newOperatorAndOperand3(
+              ADDITIVE_EXPRESSION(),
+              b.firstOf(
+                b.invokeRule(JavaPunctuator.SL),
+                b.invokeRule(JavaPunctuator.BSR),
+                b.invokeRule(JavaPunctuator.SR)))),
+          ADDITIVE_EXPRESSION()));
+  }
+
   public ExpressionTree ADDITIVE_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.ADDITIVE_EXPRESSION)
       .is(
