@@ -1549,8 +1549,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void conditional_and_expression() {
-    AstNode astNode = p.parse("class T { boolean m() { return false && false && true; } }").getFirstDescendant(JavaGrammar.CONDITIONAL_AND_EXPRESSION);
-    BinaryExpressionTree tree = (BinaryExpressionTree) maker.expression(astNode);
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return false && false && true; } }").getFirstDescendant(Kind.CONDITIONAL_AND);
     assertThat(tree.is(Tree.Kind.CONDITIONAL_AND)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("&&");

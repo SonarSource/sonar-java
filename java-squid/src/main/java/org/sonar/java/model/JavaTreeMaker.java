@@ -888,8 +888,7 @@ public class JavaTreeMaker {
       return (ExpressionTree) astNode;
     } else if (astNode.is(JavaGrammar.PAR_EXPRESSION)) {
       return (ParenthesizedTreeImpl) astNode;
-    } else if (astNode.is(JavaGrammar.CONDITIONAL_OR_EXPRESSION,
-      JavaGrammar.CONDITIONAL_AND_EXPRESSION)) {
+    } else if (astNode.is(JavaGrammar.CONDITIONAL_OR_EXPRESSION)) {
       return binaryExpression(astNode);
     } else if (astNode.is(JavaGrammar.CONDITIONAL_EXPRESSION)) {
       return conditionalExpression(astNode);

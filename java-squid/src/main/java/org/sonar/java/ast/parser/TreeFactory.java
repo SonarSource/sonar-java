@@ -321,7 +321,15 @@ public class TreeFactory {
     return new OperatorAndOperand(InternalSyntaxToken.create(operator), operand);
   }
 
-  // TODO Use same method several times
+  // TODO Allow to use the same method several times
+
+  public ExpressionTree binaryExpression9(ExpressionTree expression, Optional<List<OperatorAndOperand>> operatorAndOperands) {
+    return binaryExpression(expression, operatorAndOperands);
+  }
+
+  public OperatorAndOperand newOperatorAndOperand9(AstNode operator, ExpressionTree operand) {
+    return newOperatorAndOperand(operator, operand);
+  }
 
   public ExpressionTree binaryExpression8(ExpressionTree expression, Optional<List<OperatorAndOperand>> operatorAndOperands) {
     return binaryExpression(expression, operatorAndOperands);
