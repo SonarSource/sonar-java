@@ -19,54 +19,52 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.InternalSyntaxTrivia;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.recognizer.CodeRecognizer;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "CommentedOutCodeLine", priority = Priority.MAJOR,
-  tags={"unused"})
+    tags = {"unused"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class CommentedOutCodeLineCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class CommentedOutCodeLineCheck extends SubscriptionBaseVisitor {
 
   private static final double THRESHOLD = 0.9;
 
   private final CodeRecognizer codeRecognizer;
 
-  private List<Token> comments;
+  private List<SyntaxTrivia> comments;
 
   public CommentedOutCodeLineCheck() {
     codeRecognizer = new CodeRecognizer(THRESHOLD, new JavaFootprint());
   }
 
   @Override
-  public void visitFile(AstNode astNode) {
-    comments = Lists.newArrayList();
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.TRIVIA);
   }
 
-  /**
-   * Creates candidates for commented-out code - all comment blocks.
-   */
   @Override
-  public void visitToken(Token token) {
-    for (Trivia trivia : token.getTrivia()) {
-      if (trivia.isComment()) {
-        Token comment = trivia.getToken();
-        if (!isHeader(comment) && !isJavadoc(comment.getOriginalValue()) && !isJSNI(comment.getOriginalValue())) {
-          comments.add(trivia.getToken());
-        }
-      }
+  public void scanFile(JavaFileScannerContext context) {
+    comments = Lists.newArrayList();
+    super.scanFile(context);
+    leaveFile();
+  }
+
+  @Override
+  public void visitTrivia(SyntaxTrivia syntaxTrivia) {
+    if (!isHeader(syntaxTrivia) && !isJavadoc(syntaxTrivia.comment()) && !isJSNI(syntaxTrivia.comment())) {
+      comments.add(syntaxTrivia);
     }
   }
 
@@ -75,23 +73,22 @@ public class CommentedOutCodeLineCheck extends SquidCheck<LexerlessGrammar> impl
    * However possible to imagine corner case: file may contain commented-out code starting from first line.
    * But we assume that probability of this is really low.
    */
-  private static boolean isHeader(Token comment) {
-    return comment.getLine() == 1;
+  private static boolean isHeader(SyntaxTrivia syntaxTrivia) {
+    return ((InternalSyntaxTrivia) syntaxTrivia).getLine() == 1;
   }
 
   /**
    * Detects commented-out code in remaining candidates.
    */
-  @Override
-  public void leaveFile(AstNode astNode) {
+  private void leaveFile() {
     List<Integer> commentedOutCodeLines = Lists.newArrayList();
-    for (Token comment : comments) {
-      String[] lines = getContext().getCommentAnalyser().getContents(comment.getOriginalValue()).split("(\r)?\n|\r", -1);
+    for (SyntaxTrivia syntaxTrivia : comments) {
+      String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
       for (int i = 0; i < lines.length; i++) {
         if (codeRecognizer.isLineOfCode(lines[i])) {
           // Mark all remaining lines from this comment as a commented out lines of code
           for (int j = i; j < lines.length; j++) {
-            commentedOutCodeLines.add(comment.getLine() + j);
+            commentedOutCodeLines.add(((InternalSyntaxTrivia) syntaxTrivia).getLine() + j);
           }
           break;
         }
@@ -104,7 +101,7 @@ public class CommentedOutCodeLineCheck extends SquidCheck<LexerlessGrammar> impl
     for (int i = 0; i < commentedOutCodeLines.size(); i++) {
       int current = commentedOutCodeLines.get(i);
       if (prev + 1 < current) {
-        getContext().createLineViolation(this, "This block of commented-out lines of code should be removed.", current);
+        addIssue(current, "This block of commented-out lines of code should be removed.");
       }
       prev = current;
     }
