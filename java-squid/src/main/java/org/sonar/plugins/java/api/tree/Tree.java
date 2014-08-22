@@ -30,7 +30,7 @@ import com.sonar.sslr.api.AstNodeType;
 @Beta
 public interface Tree {
 
-  boolean is(Kind kind);
+  boolean is(Kind... kind);
 
   void accept(TreeVisitor visitor);
 
