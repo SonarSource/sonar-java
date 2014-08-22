@@ -36,9 +36,9 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(
-    key = AnonymousClassesTooBigCheck.RULE_KEY,
-    priority = Priority.MAJOR,
-    tags = {"brain-overload"})
+  key = AnonymousClassesTooBigCheck.RULE_KEY,
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -54,6 +54,7 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
    * Flag to skip check for class bodies of EnumConstants.
    */
   private boolean isEnumConstantBody;
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
@@ -90,14 +91,14 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
 
   private int getNumberOfLines(ClassTree classTree) {
     AstNode node = ((JavaTree) classTree).getAstNode();
-    if(!node.is(JavaGrammar.CLASS_BODY)){
+    if (!node.is(JavaGrammar.CLASS_BODY)) {
       node = node.getFirstChild(JavaGrammar.CLASS_BODY);
     }
     return getNumberOfLines(node);
   }
 
   private int getNumberOfLines(AstNode node) {
-    return node.getLastChild().getTokenLine() - node.getTokenLine() + 1;
+    return node.getLastToken().getLine() - node.getTokenLine() + 1;
   }
 
 }

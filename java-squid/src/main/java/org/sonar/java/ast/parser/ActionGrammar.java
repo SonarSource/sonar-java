@@ -187,13 +187,27 @@ public class ActionGrammar {
 
   // Expressions
 
+  public ExpressionTree ADDITIVE_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.ADDITIVE_EXPRESSION)
+      .is(
+        // TODO SONARJAVA-610
+        f.binaryExpression2(
+          b.zeroOrMore(
+            f.newOperatorAndOperand2(
+              MULTIPLICATIVE_EXPRESSION(),
+              b.firstOf(
+                b.invokeRule(JavaPunctuator.PLUS),
+                b.invokeRule(JavaPunctuator.MINUS)))),
+          MULTIPLICATIVE_EXPRESSION()));
+  }
+
   public ExpressionTree MULTIPLICATIVE_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.MULTIPLICATIVE_EXPRESSION)
       .is(
         // TODO SONARJAVA-610
-        f.binaryExpression(
+        f.binaryExpression1(
           b.zeroOrMore(
-            f.newOperatorAndOperand(
+            f.newOperatorAndOperand1(
               UNARY_EXPRESSION(),
               b.firstOf(
                 b.invokeRule(JavaPunctuator.STAR),

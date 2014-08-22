@@ -1425,8 +1425,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void additive_expression() {
-    AstNode astNode = p.parse("class T { int m() { return 1 + 2 - 3; } }").getFirstDescendant(JavaGrammar.ADDITIVE_EXPRESSION);
-    BinaryExpressionTree tree = (BinaryExpressionTree) maker.expression(astNode);
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 + 2 - 3; } }").getFirstDescendant(Kind.PLUS);
     assertThat(tree.is(Tree.Kind.PLUS)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("+");

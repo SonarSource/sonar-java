@@ -248,6 +248,71 @@ public class TreeFactory {
 
   // Expressions
 
+  private static class OperatorAndOperand extends AstNode {
+
+    private final ExpressionTree operand;
+    private final InternalSyntaxToken operator;
+
+    public OperatorAndOperand(ExpressionTree operand, InternalSyntaxToken operator) {
+      super(null, null, null);
+
+      this.operand = operand;
+      this.operator = operator;
+
+      addChild((AstNode) operand);
+      addChild(operator);
+    }
+
+    public InternalSyntaxToken operator() {
+      return operator;
+    }
+
+    public ExpressionTree operand() {
+      return operand;
+    }
+
+  }
+
+  private ExpressionTree binaryExpression(Optional<List<OperatorAndOperand>> operatorAndOperands, ExpressionTree expression) {
+    if (!operatorAndOperands.isPresent()) {
+      return expression;
+    }
+
+    // TODO SONARJAVA-610
+    ExpressionTree result = expression;
+    for (OperatorAndOperand operatorAndOperand : Lists.reverse(operatorAndOperands.get())) {
+      result = new BinaryExpressionTreeImpl(
+        kindMaps.getBinaryOperator((JavaPunctuator) operatorAndOperand.operator().getType()),
+        operatorAndOperand.operand(),
+        operatorAndOperand.operator(),
+        result);
+    }
+
+    return result;
+  }
+
+  private OperatorAndOperand newOperatorAndOperand(ExpressionTree operand, AstNode operator) {
+    return new OperatorAndOperand(operand, InternalSyntaxToken.create(operator));
+  }
+
+  // TODO Use same method several times
+
+  public ExpressionTree binaryExpression2(Optional<List<OperatorAndOperand>> operatorAndOperands, ExpressionTree expression) {
+    return binaryExpression(operatorAndOperands, expression);
+  }
+
+  public OperatorAndOperand newOperatorAndOperand2(ExpressionTree operand, AstNode operator) {
+    return newOperatorAndOperand(operand, operator);
+  }
+
+  public ExpressionTree binaryExpression1(Optional<List<OperatorAndOperand>> operatorAndOperands, ExpressionTree expression) {
+    return binaryExpression(operatorAndOperands, expression);
+  }
+
+  public OperatorAndOperand newOperatorAndOperand1(ExpressionTree operand, AstNode operator) {
+    return newOperatorAndOperand(operand, operator);
+  }
+
   public ExpressionTree newPrefixedExpression(AstNode operatorTokenAstNode, ExpressionTree expression) {
     InternalSyntaxToken operatorToken = InternalSyntaxToken.create(operatorTokenAstNode);
     return new InternalPrefixUnaryExpression(kindMaps.getPrefixOperator((JavaPunctuator) operatorTokenAstNode.getType()), operatorToken, expression);
@@ -835,53 +900,6 @@ public class TreeFactory {
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }
-  }
-
-  public ExpressionTree binaryExpression(Optional<List<OperatorAndOperand>> operatorAndOperands, ExpressionTree expression) {
-    if (!operatorAndOperands.isPresent()) {
-      return expression;
-    }
-
-    // TODO SONARJAVA-610
-    ExpressionTree result = expression;
-    for (OperatorAndOperand operatorAndOperand : Lists.reverse(operatorAndOperands.get())) {
-      result = new BinaryExpressionTreeImpl(
-        kindMaps.getBinaryOperator((JavaPunctuator) operatorAndOperand.operator().getType()),
-        operatorAndOperand.operand(),
-        operatorAndOperand.operator(),
-        result);
-    }
-
-    return result;
-  }
-
-  private static class OperatorAndOperand extends AstNode {
-
-    private final ExpressionTree operand;
-    private final InternalSyntaxToken operator;
-
-    public OperatorAndOperand(ExpressionTree operand, InternalSyntaxToken operator) {
-      super(null, null, null);
-
-      this.operand = operand;
-      this.operator = operator;
-
-      addChild((AstNode) operand);
-      addChild(operator);
-    }
-
-    public InternalSyntaxToken operator() {
-      return operator;
-    }
-
-    public ExpressionTree operand() {
-      return operand;
-    }
-
-  }
-
-  public OperatorAndOperand newOperatorAndOperand(ExpressionTree operand, AstNode operator) {
-    return new OperatorAndOperand(operand, InternalSyntaxToken.create(operator));
   }
 
 }

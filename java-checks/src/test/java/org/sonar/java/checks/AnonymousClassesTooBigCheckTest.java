@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
@@ -37,7 +37,7 @@ public class AnonymousClassesTooBigCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AnonymousClassesTooBigCheck.java"), new VisitorsBridge(new AnonymousClassesTooBigCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(20).withMessage("Reduce this anonymous class number of lines from 21 to at most 20, or make it a named class.");
+      .next().atLine(20).withMessage("Reduce this anonymous class number of lines from 21 to at most 20, or make it a named class.");
   }
 
   @Test
@@ -47,10 +47,10 @@ public class AnonymousClassesTooBigCheckTest {
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AnonymousClassesTooBigCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(12).withMessage("Reduce this anonymous class number of lines from 7 to at most 6, or make it a named class.")
-        .next().atLine(20).withMessage("Reduce this anonymous class number of lines from 21 to at most 6, or make it a named class.")
-        .next().atLine(45).withMessage("Reduce this lambda expression number of lines from 8 to at most 6.")
-        .next().atLine(55).withMessage("Reduce this lambda expression number of lines from 7 to at most 6.");
+      .next().atLine(12).withMessage("Reduce this anonymous class number of lines from 7 to at most 6, or make it a named class.")
+      .next().atLine(20).withMessage("Reduce this anonymous class number of lines from 21 to at most 6, or make it a named class.")
+      .next().atLine(45).withMessage("Reduce this lambda expression number of lines from 8 to at most 6.")
+      .next().atLine(55).withMessage("Reduce this lambda expression number of lines from 7 to at most 6.");
   }
 
 }
