@@ -19,19 +19,21 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.InternalSyntaxTrivia;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -40,7 +42,7 @@ import java.util.regex.Pattern;
   priority = Priority.MINOR,
   tags={"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class TrailingCommentCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class TrailingCommentCheck extends SubscriptionBaseVisitor {
 
   private static final String DEFAULT_LEGAL_COMMENT_PATTERN = "^\\s*+[^\\s]++$";
   private static final Set<String> EXCLUDED_PATTERNS = ImmutableSet.of("NOSONAR", "NOPMD", "CHECKSTYLE:");
@@ -54,29 +56,36 @@ public class TrailingCommentCheck extends SquidCheck<LexerlessGrammar> implement
   private int previousTokenLine;
 
   @Override
-  public void visitFile(AstNode astNode) {
-    previousTokenLine = -1;
-    pattern = Pattern.compile(legalCommentPattern);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.TRIVIA);
   }
 
   @Override
-  public void visitToken(Token token) {
-    if (token.getLine() != previousTokenLine) {
-      for (Trivia trivia : token.getTrivia()) {
-        if (trivia.isComment() && trivia.getToken().getLine() == previousTokenLine) {
-          String comment = trivia.getToken().getValue();
+  public void scanFile(JavaFileScannerContext context) {
+    previousTokenLine = -1;
+    pattern = Pattern.compile(legalCommentPattern);
+    super.scanFile(context);
+  }
+
+  @Override
+  public void visitToken(SyntaxToken syntaxToken) {
+    int tokenLine = ((InternalSyntaxToken) syntaxToken).getLine();
+    if (tokenLine != previousTokenLine) {
+      for (SyntaxTrivia trivia : syntaxToken.trivias()) {
+        if (((InternalSyntaxTrivia)trivia).getLine() == previousTokenLine) {
+          String comment = trivia.comment();
 
           comment = comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
           comment = comment.trim();
 
           if (!pattern.matcher(comment).matches() && !containsExcludedPattern(comment)) {
-            getContext().createLineViolation(this, "Move this trailing comment on the previous empty line.", previousTokenLine);
+            addIssue(previousTokenLine, "Move this trailing comment on the previous empty line.");
           }
         }
       }
     }
 
-    previousTokenLine = token.getLine();
+    previousTokenLine = tokenLine;
   }
 
   private boolean containsExcludedPattern(String comment) {

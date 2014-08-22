@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class TrailingCommentCheckTest {
     TrailingCommentCheck check = new TrailingCommentCheck();
     assertThat(check.legalCommentPattern).isEqualTo("^\\s*+[^\\s]++$");
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TrailingCommentCheck.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TrailingCommentCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(5).withMessage("Move this trailing comment on the previous empty line.")
         .next().atLine(6);
@@ -50,7 +51,7 @@ public class TrailingCommentCheckTest {
     TrailingCommentCheck check = new TrailingCommentCheck();
     check.legalCommentPattern = "";
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TrailingCommentCheck.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TrailingCommentCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3)
         .next().atLine(4)
