@@ -24,34 +24,41 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 public class ComplexityVisitor extends JavaAstVisitor {
 
   @Override
   public void init() {
     subscribeTo(
-        // Entry points
-        JavaGrammar.METHOD_BODY,
-        // Branching nodes
-        JavaGrammar.IF_STATEMENT,
-        JavaGrammar.FOR_STATEMENT,
-        JavaGrammar.WHILE_STATEMENT,
-        JavaGrammar.DO_STATEMENT,
-        JavaKeyword.CASE,
-        JavaGrammar.RETURN_STATEMENT,
-        JavaGrammar.THROW_STATEMENT,
-        JavaGrammar.CATCH_CLAUSE,
-        // Expressions
-        JavaGrammar.CONDITIONAL_EXPRESSION,
-        JavaPunctuator.ANDAND,
-        JavaPunctuator.OROR);
+      // Entry points
+      JavaGrammar.METHOD_BODY,
+      // Branching nodes
+      JavaGrammar.IF_STATEMENT,
+      JavaGrammar.FOR_STATEMENT,
+      JavaGrammar.WHILE_STATEMENT,
+      JavaGrammar.DO_STATEMENT,
+      JavaKeyword.CASE,
+      JavaGrammar.RETURN_STATEMENT,
+      JavaGrammar.THROW_STATEMENT,
+      JavaGrammar.CATCH_CLAUSE,
+      // Expressions
+      Kind.CONDITIONAL_EXPRESSION,
+      JavaPunctuator.ANDAND,
+      JavaPunctuator.OROR);
   }
 
   @Override
   public void visitNode(AstNode astNode) {
+    if (astNode.is(Kind.CONDITIONAL_EXPRESSION) && astNode.getFirstAncestor(JavaGrammar.EXPRESSION).getParent().is(Kind.CONDITIONAL_EXPRESSION)) {
+      // Reproduce SONARJAVA-626
+      return;
+    }
+
     if (astNode.is(JavaGrammar.RETURN_STATEMENT) && isLastReturnStatement(astNode)) {
       return;
     }
+
     getContext().peekSourceCode().add(JavaMetric.COMPLEXITY, 1);
   }
 

@@ -750,7 +750,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       SLEQU,
       SREQU,
       BSREQU));
-    b.rule(CONDITIONAL_EXPRESSION).is(CONDITIONAL_OR_EXPRESSION, b.zeroOrMore(QUERY, EXPRESSION, COLON, CONDITIONAL_OR_EXPRESSION)).skipIfOneChild();
 
     b.rule(IDENTIFIER_SUFFIX).is(b.firstOf(
       b.sequence(LBRK, b.firstOf(b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), b.sequence(EXPRESSION, RBRK))),

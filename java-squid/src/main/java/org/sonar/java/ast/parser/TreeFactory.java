@@ -38,6 +38,7 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InstanceOfTreeImpl;
 import org.sonar.java.model.expression.InternalPostfixUnaryExpression;
@@ -248,6 +249,20 @@ public class TreeFactory {
   // End of statements
 
   // Expressions
+
+  public ExpressionTree completeTernaryExpression(ExpressionTree expression, Optional<ConditionalExpressionTreeImpl> partial) {
+    return partial.isPresent() ?
+      partial.get().complete(expression) :
+      expression;
+  }
+
+  public ConditionalExpressionTreeImpl newTernaryExpression(AstNode queryTokenAstNode, AstNode trueExpression, AstNode colonTokenAstNode, AstNode falseExpression) {
+    InternalSyntaxToken queryToken = InternalSyntaxToken.create(queryTokenAstNode);
+    InternalSyntaxToken colonToken = InternalSyntaxToken.create(colonTokenAstNode);
+
+    return new ConditionalExpressionTreeImpl(queryToken, treeMaker.expression(trueExpression), colonToken, treeMaker.expression(falseExpression),
+      trueExpression, falseExpression);
+  }
 
   public ExpressionTree completeInstanceofExpression(ExpressionTree expression, Optional<InstanceOfTreeImpl> partial) {
     return partial.isPresent() ?

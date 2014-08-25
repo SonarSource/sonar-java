@@ -22,7 +22,6 @@ package org.sonar.java.model.expression;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -34,15 +33,35 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements ConditionalExpressionTree {
-  private final ExpressionTree condition;
+
+  private ExpressionTree condition;
+  private final InternalSyntaxToken queryToken;
   private final ExpressionTree trueExpression;
+  private final InternalSyntaxToken colonToken;
   private final ExpressionTree falseExpression;
 
-  public ConditionalExpressionTreeImpl(AstNode astNode, ExpressionTree condition, ExpressionTree trueExpression, ExpressionTree falseExpression) {
-    super(astNode);
-    this.condition = Preconditions.checkNotNull(condition);
+  public ConditionalExpressionTreeImpl(InternalSyntaxToken queryToken, ExpressionTree trueExpression, InternalSyntaxToken colonToken, ExpressionTree falseExpression,
+    AstNode trueExpressionChild, AstNode falseExpressionChild) {
+
+    super(Kind.CONDITIONAL_EXPRESSION);
+    this.queryToken = queryToken;
     this.trueExpression = Preconditions.checkNotNull(trueExpression);
+    this.colonToken = colonToken;
     this.falseExpression = Preconditions.checkNotNull(falseExpression);
+
+    addChild(queryToken);
+    addChild(trueExpressionChild);
+    addChild(colonToken);
+    addChild(falseExpressionChild);
+  }
+
+  public ConditionalExpressionTreeImpl complete(ExpressionTree condition) {
+    Preconditions.checkState(this.condition == null);
+    this.condition = condition;
+
+    prependChildren((AstNode) condition);
+
+    return this;
   }
 
   @Override
@@ -57,7 +76,7 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
 
   @Override
   public SyntaxToken questionToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.QUERY));
+    return queryToken;
   }
 
   @Override
@@ -67,7 +86,7 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
 
   @Override
   public SyntaxToken colonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.COLON));
+    return colonToken;
   }
 
   @Override

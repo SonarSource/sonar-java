@@ -37,7 +37,6 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
-import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
@@ -887,8 +886,6 @@ public class JavaTreeMaker {
       return (ExpressionTree) astNode;
     } else if (astNode.is(JavaGrammar.PAR_EXPRESSION)) {
       return (ParenthesizedTreeImpl) astNode;
-    } else if (astNode.is(JavaGrammar.CONDITIONAL_EXPRESSION)) {
-      return conditionalExpression(astNode);
     } else if (astNode.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
       return assignmentExpression(astNode);
     } else {
@@ -910,22 +907,6 @@ public class JavaTreeMaker {
     } else {
       return arrayInitializer(null, astNode.getFirstChild());
     }
-  }
-
-  /**
-   * 15.25. Conditional Operator ? :
-   */
-  private ExpressionTree conditionalExpression(AstNode astNode) {
-    ExpressionTree expression = expression(astNode.getLastChild());
-    for (int i = astNode.getNumberOfChildren() - 5; i >= 0; i -= 4) {
-      expression = new ConditionalExpressionTreeImpl(
-        astNode,
-        expression(astNode.getChild(i)),
-        expression(astNode.getChild(i + 2)),
-        expression
-        );
-    }
-    return expression;
   }
 
   /**

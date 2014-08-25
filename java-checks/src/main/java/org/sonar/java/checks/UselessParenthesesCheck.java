@@ -24,6 +24,8 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -41,6 +43,13 @@ public class UselessParenthesesCheck extends SquidCheck<LexerlessGrammar> {
   @Override
   public void visitNode(AstNode node) {
     if (node.getParent().is(JavaGrammar.EXPRESSION)) {
+      if (node.getParent().getParent().is(Kind.CONDITIONAL_EXPRESSION)) {
+        ConditionalExpressionTree tree = (ConditionalExpressionTree) node.getParent().getParent();
+        if (tree.falseExpression().equals(node)) {
+          return;
+        }
+      }
+
       getContext().createLineViolation(this, "Remove those useless parentheses.", node);
     }
   }

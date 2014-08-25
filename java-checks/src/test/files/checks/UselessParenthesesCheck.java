@@ -8,5 +8,8 @@ class Foo {
 
     if (0) {              // Compliant
     }
+
+    System.out.println(false ? (true ? 1 : 2) : 2); // Was previously noncompliant
+    System.out.println(false ? 0 : (true ? 1 : 2)); // Was previously compliant
   }
 }

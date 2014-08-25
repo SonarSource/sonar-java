@@ -36,7 +36,7 @@ public class HelloWorld  {
   }
 
   public void conditional_expression(List<?> list) { // question mark should not be treated as a conditional-expression, so only +1 for method
-    int i = list == null ? 0 : 1; // +1 conditional-expression
+    int i = list == null ? 0 : false ? 1 : 2; // +1 conditional-expression (bug, just once: SONARJAVA-626)
   }
 
 }
