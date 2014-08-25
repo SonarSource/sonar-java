@@ -115,6 +115,34 @@ public class TreeFactory {
     return new LiteralTreeImpl(kindMaps.getLiteral(astNode.getType()), token);
   }
 
+  // End of literals
+
+  // Types
+
+  public ClassTypeListTreeImpl newClassTypeList(AstNode classType, Optional<List<AstNode>> rests) {
+    ImmutableList.Builder<Tree> classTypes = ImmutableList.builder();
+    List<AstNode> children = Lists.newArrayList();
+
+    classTypes.add(treeMaker.classType(classType));
+    children.add(classType);
+
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        for (AstNode child : rest.getChildren()) {
+          if (!child.is(JavaPunctuator.COMMA)) {
+            classTypes.add(treeMaker.classType(child));
+          }
+
+          children.add(child);
+        }
+      }
+    }
+
+    return new ClassTypeListTreeImpl(classTypes.build(), children);
+  }
+
+  // End of types
+
   // Statements
 
   public BlockTreeImpl block(AstNode openBraceTokenAstNode, AstNode statements, AstNode closeBraceTokenAstNode) {
@@ -920,7 +948,12 @@ public class TreeFactory {
   }
 
   // TODO Enable the same method call multiple times
+
   public AstNode newWrapperAstNode2(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  public AstNode newWrapperAstNode3(AstNode e1, AstNode e2) {
     return newWrapperAstNode(e1, e2);
   }
 

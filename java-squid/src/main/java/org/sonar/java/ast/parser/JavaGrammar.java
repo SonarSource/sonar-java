@@ -493,7 +493,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(TYPE).is(b.firstOf(BASIC_TYPE, CLASS_TYPE), b.zeroOrMore(b.zeroOrMore(ANNOTATION), DIM));
     b.rule(CLASS_TYPE).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(TYPE_ARGUMENTS),
       b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(TYPE_ARGUMENTS)));
-    b.rule(CLASS_TYPE_LIST).is(CLASS_TYPE, b.zeroOrMore(COMMA, CLASS_TYPE));
     b.rule(TYPE_ARGUMENTS).is(LPOINT, TYPE_ARGUMENT, b.zeroOrMore(COMMA, TYPE_ARGUMENT), RPOINT);
     b.rule(TYPE_ARGUMENT).is(
       b.zeroOrMore(ANNOTATION),

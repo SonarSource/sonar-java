@@ -104,6 +104,14 @@ public class ActionGrammar {
 
   // Types
 
+  public ClassTypeListTreeImpl CLASS_TYPE_LIST() {
+    return b.<ClassTypeListTreeImpl>nonterminal(JavaGrammar.CLASS_TYPE_LIST)
+      .is(
+        f.newClassTypeList(
+          b.invokeRule(JavaGrammar.CLASS_TYPE),
+          b.zeroOrMore(f.newWrapperAstNode3(b.invokeRule(JavaPunctuator.COMMA), b.invokeRule(JavaGrammar.CLASS_TYPE)))));
+  }
+
   // End of types
 
   // Statements

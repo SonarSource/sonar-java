@@ -32,11 +32,10 @@ public class EnumDeclarationTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.CLASS_TYPE_LIST).override(RuleMock.word(b, "classTypeList"));
     b.rule(JavaGrammar.ENUM_BODY).override(RuleMock.word(b, "enumBody"));
 
     assertThat(b, JavaGrammar.ENUM_DECLARATION)
-      .matches("enum identifier implements classTypeList enumBody");
+      .matches("enum identifier implements Foo, Bar<Integer> enumBody");
   }
 
   @Test

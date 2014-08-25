@@ -33,13 +33,11 @@ public class ClassDeclarationTest {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
     b.rule(JavaGrammar.TYPE_PARAMETERS).override(RuleMock.word(b, "typeParameters"));
-    b.rule(JavaGrammar.CLASS_TYPE).override(RuleMock.word(b, "classType"));
-    b.rule(JavaGrammar.CLASS_TYPE_LIST).override(RuleMock.word(b, "classTypeList"));
     b.rule(JavaGrammar.CLASS_BODY).override(RuleMock.word(b, "classBody"));
 
     assertThat(b, JavaGrammar.CLASS_DECLARATION)
-      .matches("class identifier typeParameters extends classType implements classTypeList classBody")
-      .matches("class identifier typeParameters extends classType classBody")
+      .matches("class identifier typeParameters extends Foo implements Foo, Bar<Integer> classBody")
+      .matches("class identifier typeParameters extends Foo classBody")
       .matches("class identifier typeParameters classBody")
       .matches("class identifier classBody");
   }

@@ -17,23 +17,17 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser.grammar.types;
+package org.sonar.java.ast.parser;
 
-import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
+import com.sonar.sslr.api.AstNode;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.sslr.tests.Assertions.assertThat;
+import java.util.List;
 
-public class ClassTypeListTest {
+public class ClassTypeListTreeImpl extends ListTreeImpl<Tree> {
 
-  @Test
-  public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
-    assertThat(b, JavaGrammar.CLASS_TYPE_LIST)
-      .matches("Foo")
-      .matches("Foo , Bar<Integer>");
+  public ClassTypeListTreeImpl(List<Tree> classTypes, List<AstNode> children) {
+    super(JavaGrammar.CLASS_TYPE_LIST, classTypes, children);
   }
 
 }
