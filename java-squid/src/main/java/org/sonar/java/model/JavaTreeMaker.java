@@ -882,8 +882,6 @@ public class JavaTreeMaker {
 
     if (astNode instanceof ExpressionTree && !((JavaTree) astNode).isLegacy()) {
       return (ExpressionTree) astNode;
-    } else if (astNode.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
-      return assignmentExpression(astNode);
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType().toString());
     }
@@ -903,24 +901,6 @@ public class JavaTreeMaker {
     } else {
       return arrayInitializer(null, astNode.getFirstChild());
     }
-  }
-
-  /**
-   * 15.26. Assignment Operators
-   */
-  private ExpressionTree assignmentExpression(AstNode astNode) {
-    ExpressionTree expression = expression(astNode.getLastChild());
-    for (int i = astNode.getNumberOfChildren() - 3; i >= 0; i -= 2) {
-      AstNode operator = astNode.getChild(i + 1).getFirstChild();
-      Tree.Kind kind = kindMaps.getAssignmentOperator((JavaPunctuator) operator.getType());
-      expression = new AssignmentExpressionTreeImpl(
-        operator,
-        expression(astNode.getChild(i)),
-        kind,
-        expression
-        );
-    }
-    return expression;
   }
 
   public ExpressionTree applyDim(ExpressionTree expression, int count) {

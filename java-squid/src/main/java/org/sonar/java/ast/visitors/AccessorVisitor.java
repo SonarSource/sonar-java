@@ -25,6 +25,8 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -97,7 +99,7 @@ public class AccessorVisitor extends JavaAstVisitor {
     if (astNode.is(JavaGrammar.EXPRESSION_STATEMENT)) {
       AstNode expression = astNode.getFirstChild(JavaGrammar.STATEMENT_EXPRESSION).getFirstChild(JavaGrammar.EXPRESSION);
       AstNode assignmentExpression = expression.getFirstChild();
-      if (assignmentExpression.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
+      if (assignmentExpression.is(JavaTreeMaker.getKindsAssociatedTo(AssignmentExpressionTree.class))) {
         // TODO in previous version we had a more complex check
         // TODO try to avoid usage of "getFirstDescendant" by refactoring grammar
         AstNode varToAssign = assignmentExpression.getFirstDescendant(JavaTokenType.IDENTIFIER);

@@ -37,6 +37,7 @@ import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
+import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -250,6 +251,36 @@ public class TreeFactory {
 
   // Expressions
 
+  public ExpressionTree assignmentExpression(ExpressionTree expression, Optional<List<OperatorAndOperand>> operatorAndOperands) {
+    if (!operatorAndOperands.isPresent()) {
+      return expression;
+    }
+
+    ExpressionTree result = null;
+    InternalSyntaxToken lastOperator = null;
+    for (OperatorAndOperand operatorAndOperand : Lists.reverse(operatorAndOperands.get())) {
+      if (lastOperator == null) {
+        result = operatorAndOperand.operand();
+      } else {
+        result = new AssignmentExpressionTreeImpl(
+          kindMaps.getAssignmentOperator((JavaPunctuator) lastOperator.getType()),
+          operatorAndOperand.operand(),
+          lastOperator,
+          result);
+      }
+
+      lastOperator = operatorAndOperand.operator();
+    }
+
+    result = new AssignmentExpressionTreeImpl(
+      kindMaps.getAssignmentOperator((JavaPunctuator) lastOperator.getType()),
+      expression,
+      lastOperator,
+      result);
+
+    return result;
+  }
+
   public ExpressionTree completeTernaryExpression(ExpressionTree expression, Optional<ConditionalExpressionTreeImpl> partial) {
     return partial.isPresent() ?
       partial.get().complete(expression) :
@@ -337,6 +368,10 @@ public class TreeFactory {
   }
 
   // TODO Allow to use the same method several times
+
+  public OperatorAndOperand newOperatorAndOperand11(AstNode operator, ExpressionTree operand) {
+    return newOperatorAndOperand(operator, operand);
+  }
 
   public ExpressionTree binaryExpression10(ExpressionTree expression, Optional<List<OperatorAndOperand>> operatorAndOperands) {
     return binaryExpression(expression, operatorAndOperands);

@@ -736,20 +736,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(STATEMENT_EXPRESSION).is(EXPRESSION);
     b.rule(CONSTANT_EXPRESSION).is(EXPRESSION);
     b.rule(EXPRESSION).is(ASSIGNMENT_EXPRESSION);
-    b.rule(ASSIGNMENT_EXPRESSION).is(CONDITIONAL_EXPRESSION, b.zeroOrMore(ASSIGNMENT_OPERATOR, CONDITIONAL_EXPRESSION)).skipIfOneChild();
-    b.rule(ASSIGNMENT_OPERATOR).is(b.firstOf(
-      EQU,
-      PLUSEQU,
-      MINUSEQU,
-      STAREQU,
-      DIVEQU,
-      ANDEQU,
-      OREQU,
-      HATEQU,
-      MODEQU,
-      SLEQU,
-      SREQU,
-      BSREQU));
 
     b.rule(IDENTIFIER_SUFFIX).is(b.firstOf(
       b.sequence(LBRK, b.firstOf(b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), b.sequence(EXPRESSION, RBRK))),

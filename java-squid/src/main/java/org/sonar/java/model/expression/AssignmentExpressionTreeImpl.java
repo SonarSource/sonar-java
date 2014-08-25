@@ -33,17 +33,31 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements AssignmentExpressionTree {
-  private final ExpressionTree variable;
+
   private final Kind kind;
+
+  private final ExpressionTree variable;
+  private final InternalSyntaxToken operatorToken;
   private final ExpressionTree expression;
 
-  /**
-   * @param astNode node associated with operator
-   */
+  public AssignmentExpressionTreeImpl(Kind kind, ExpressionTree variable, InternalSyntaxToken operatorToken, ExpressionTree expression) {
+    super(kind);
+    this.kind = kind;
+
+    this.variable = variable;
+    this.operatorToken = operatorToken;
+    this.expression = Preconditions.checkNotNull(expression);
+
+    addChild((AstNode) variable);
+    addChild(operatorToken);
+    addChild((AstNode) expression);
+  }
+
   public AssignmentExpressionTreeImpl(AstNode astNode, ExpressionTree variable, Kind kind, ExpressionTree expression) {
     super(astNode);
     this.variable = Preconditions.checkNotNull(variable);
     this.kind = Preconditions.checkNotNull(kind);
+    this.operatorToken = InternalSyntaxToken.createLegacy(getAstNode());
     this.expression = Preconditions.checkNotNull(expression);
   }
 
@@ -59,7 +73,7 @@ public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements A
 
   @Override
   public SyntaxToken operatorToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode());
+    return operatorToken;
   }
 
   @Override

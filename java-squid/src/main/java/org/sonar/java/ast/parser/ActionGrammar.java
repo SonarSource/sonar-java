@@ -187,6 +187,29 @@ public class ActionGrammar {
 
   // Expressions
 
+  public ExpressionTree ASSIGNMENT_EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.ASSIGNMENT_EXPRESSION)
+      .is(
+        f.assignmentExpression(
+          CONDITIONAL_EXPRESSION(),
+          b.zeroOrMore(
+            f.newOperatorAndOperand11(
+              b.firstOf(
+                b.invokeRule(JavaPunctuator.EQU),
+                b.invokeRule(JavaPunctuator.PLUSEQU),
+                b.invokeRule(JavaPunctuator.MINUSEQU),
+                b.invokeRule(JavaPunctuator.STAREQU),
+                b.invokeRule(JavaPunctuator.DIVEQU),
+                b.invokeRule(JavaPunctuator.ANDEQU),
+                b.invokeRule(JavaPunctuator.OREQU),
+                b.invokeRule(JavaPunctuator.HATEQU),
+                b.invokeRule(JavaPunctuator.MODEQU),
+                b.invokeRule(JavaPunctuator.SLEQU),
+                b.invokeRule(JavaPunctuator.SREQU),
+                b.invokeRule(JavaPunctuator.BSREQU)),
+              CONDITIONAL_EXPRESSION()))));
+  }
+
   public ExpressionTree CONDITIONAL_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.CONDITIONAL_EXPRESSION)
       .is(
