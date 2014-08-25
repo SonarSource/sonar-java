@@ -1610,8 +1610,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void assignment_expression() {
-    AstNode astNode = p.parse("class T { void m() { a += 42; } }").getFirstDescendant(JavaGrammar.EXPRESSION);
-    AssignmentExpressionTree tree = (AssignmentExpressionTree) maker.expression(astNode);
+    AssignmentExpressionTree tree = (AssignmentExpressionTree) p.parse("class T { void m() { a += 42; } }").getFirstDescendant(Kind.PLUS_ASSIGNMENT);
     assertThat(tree.is(Tree.Kind.PLUS_ASSIGNMENT)).isTrue();
     assertThat(tree.variable()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("+=");
