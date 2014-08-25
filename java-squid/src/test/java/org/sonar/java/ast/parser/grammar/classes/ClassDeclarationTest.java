@@ -32,13 +32,12 @@ public class ClassDeclarationTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.TYPE_PARAMETERS).override(RuleMock.word(b, "typeParameters"));
     b.rule(JavaGrammar.CLASS_BODY).override(RuleMock.word(b, "classBody"));
 
     assertThat(b, JavaGrammar.CLASS_DECLARATION)
-      .matches("class identifier typeParameters extends Foo implements Foo, Bar<Integer> classBody")
-      .matches("class identifier typeParameters extends Foo classBody")
-      .matches("class identifier typeParameters classBody")
+      .matches("class identifier <T, U extends Foo & Bar> extends Foo implements Foo, Bar<Integer> classBody")
+      .matches("class identifier <T, U extends Foo & Bar> extends Foo classBody")
+      .matches("class identifier <T, U extends Foo & Bar> classBody")
       .matches("class identifier classBody");
   }
 

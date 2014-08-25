@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,11 +31,10 @@ public class TypeParameterTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.BOUND).override(RuleMock.word(b, "bound"));
-
     assertThat(b, JavaGrammar.TYPE_PARAMETER)
       .matches("identifier")
-      .matches("identifier extends bound");
+      .matches("identifier extends Foo")
+      .matches("identifier extends Foo & Bar");
   }
 
 }

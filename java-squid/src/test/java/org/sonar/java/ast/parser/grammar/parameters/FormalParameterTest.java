@@ -33,16 +33,15 @@ public class FormalParameterTest {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
     b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
-    b.rule(JavaGrammar.TYPE).override(RuleMock.word(b, "type"));
     b.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).override(RuleMock.word(b, "variableDeclaratorId"));
 
     assertThat(b, JavaGrammar.FORMAL_PARAMETER)
-      .matches("type variableDeclaratorId")
-      .matches("final type variableDeclaratorId")
-      .matches("annotation type variableDeclaratorId")
-      .matches("final final type variableDeclaratorId")
-      .matches("annotation annotation type variableDeclaratorId")
-      .matches("annotation final annotation final type variableDeclaratorId");
+      .matches("int variableDeclaratorId")
+      .matches("final List<Integer> variableDeclaratorId")
+      .matches("annotation int variableDeclaratorId")
+      .matches("final final int variableDeclaratorId")
+      .matches("annotation annotation int variableDeclaratorId")
+      .matches("annotation final annotation final int variableDeclaratorId");
   }
 
 }

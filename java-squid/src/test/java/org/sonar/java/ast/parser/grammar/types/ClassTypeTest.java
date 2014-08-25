@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,14 +31,12 @@ public class ClassTypeTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.TYPE_ARGUMENTS).override(RuleMock.word(b, "typeArguments"));
-
     assertThat(b, JavaGrammar.CLASS_TYPE)
       .matches("identifier")
-      .matches("identifier typeArguments")
-      .matches("identifier typeArguments . identifier typeArguments")
-      .matches("identifier typeArguments . identifier typeArguments . identifier typeArguments")
-      .matches("identifier typeArguments . @Annotated identifier typeArguments . identifier typeArguments");
+      .matches("identifier < @Foo typeArgument , @Foo typeArgument >")
+      .matches("identifier <Integer> . identifier <Integer>")
+      .matches("identifier <Integer> . identifier <Integer> . identifier <Integer>")
+      .matches("identifier <Integer> . @Annotated identifier <Integer> . identifier <Integer>");
   }
 
 }

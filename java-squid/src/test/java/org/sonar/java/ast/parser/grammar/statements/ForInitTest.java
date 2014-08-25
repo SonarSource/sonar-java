@@ -32,12 +32,12 @@ public class ForInitTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.TYPE).override(RuleMock.word(b, "type"));
     b.rule(JavaGrammar.VARIABLE_DECLARATORS).override(RuleMock.word(b, "variableDeclarators"));
     b.rule(JavaGrammar.STATEMENT_EXPRESSION).override(RuleMock.word(b, "statementExpression"));
 
     assertThat(b, JavaGrammar.FOR_INIT)
-      .matches("final type variableDeclarators")
+      .matches("final int variableDeclarators")
+      .matches("final List<Integer> variableDeclarators")
       .matches("statementExpression , statementExpression")
       .matches("statementExpression");
   }

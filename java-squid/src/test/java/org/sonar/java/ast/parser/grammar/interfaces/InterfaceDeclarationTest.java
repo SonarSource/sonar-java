@@ -32,12 +32,11 @@ public class InterfaceDeclarationTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.TYPE_PARAMETERS).override(RuleMock.word(b, "typeParameters"));
     b.rule(JavaGrammar.INTERFACE_BODY).override(RuleMock.word(b, "interfaceBody"));
 
     assertThat(b, JavaGrammar.INTERFACE_DECLARATION)
-      .matches("interface identifier typeParameters extends Foo, Bar<Integer> interfaceBody")
-      .matches("interface identifier typeParameters interfaceBody")
+      .matches("interface identifier <T, U extends Foo & Bar> extends Foo, Bar<Integer> interfaceBody")
+      .matches("interface identifier <T, U extends Foo & Bar> interfaceBody")
       .matches("interface identifier interfaceBody");
   }
 

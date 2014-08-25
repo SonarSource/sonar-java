@@ -32,14 +32,13 @@ public class LocalVariableDeclarationStatementTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.TYPE).override(RuleMock.word(b, "type"));
     b.rule(JavaGrammar.VARIABLE_DECLARATORS).override(RuleMock.word(b, "variableDeclarators"));
     b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
 
     assertThat(b, JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)
-      .matches("final type variableDeclarators ;")
-      .matches("annotation type variableDeclarators ;")
-      .matches("type variableDeclarators ;");
+      .matches("final int variableDeclarators ;")
+      .matches("annotation List<Integer> variableDeclarators ;")
+      .matches("int variableDeclarators ;");
   }
 
 }
