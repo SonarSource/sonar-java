@@ -38,6 +38,7 @@ import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
+import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.api.JavaUtils;
 import org.sonar.java.checks.CheckList;
@@ -83,8 +84,7 @@ public class JavaSquidSensor implements Sensor {
   @Override
   public void analyse(Project project, SensorContext context) {
     Collection<CodeVisitor> checks = annotationCheckFactory.getChecks();
-
-    JavaSquid squid = new JavaSquid(createConfiguration(), sonarComponents, checks.toArray(new CodeVisitor[checks.size()]));
+    JavaSquid squid = new JavaSquid(createConfiguration(), sonarComponents, new Measurer(project, context), checks.toArray(new CodeVisitor[checks.size()]));
     squid.scan(getSourceFiles(project), getTestFiles(project), getBytecodeFiles());
 
     javaResourceLocator.setSquidIndex(squid.getIndex());

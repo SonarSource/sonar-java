@@ -71,14 +71,18 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
 
   @VisibleForTesting
   public JavaSquid(JavaConfiguration conf, CodeVisitor... visitors) {
-    this(conf, null, visitors);
+    this(conf, null, null, visitors);
   }
 
-  public JavaSquid(JavaConfiguration conf, @Nullable SonarComponents sonarComponents, CodeVisitor... visitors) {
+  public JavaSquid(JavaConfiguration conf, @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer, CodeVisitor... visitors) {
 
     astScanner = JavaAstScanner.create(conf);
 
     Iterable<CodeVisitor> visitorsToBridge = Arrays.asList(visitors);
+    if(measurer != null) {
+      Iterable<CodeVisitor> measurers = Arrays.asList((CodeVisitor)measurer);
+      visitorsToBridge =  Iterables.concat(visitorsToBridge, measurers);
+    }
     if (sonarComponents != null) {
       visitorsToBridge = Iterables.concat(
           sonarComponents.createJavaFileScanners(),

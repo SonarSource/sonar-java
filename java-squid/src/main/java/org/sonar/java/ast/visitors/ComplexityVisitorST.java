@@ -60,6 +60,14 @@ public class ComplexityVisitorST extends SubscriptionVisitor {
         .build();
   }
 
+  public int scan(ClassTree classTree, MethodTree tree) {
+    complexity = 0;
+    classTrees.clear();
+    classTrees.push(classTree);
+    super.scanTree(tree);
+    return complexity;
+  }
+
   public int scan(Tree tree) {
     complexity = 0;
     classTrees.clear();
