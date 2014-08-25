@@ -21,21 +21,18 @@ package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
-public class ModifierTest {
+public class ModifiersTest {
 
   @Test
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
-
-    assertThat(b, JavaGrammar.MODIFIER)
-      .matches("annotation")
+    assertThat(b, JavaGrammar.MODIFIERS)
+      .matches("@Nullable")
       .matches("public")
       .matches("protected")
       .matches("private")
@@ -46,7 +43,8 @@ public class ModifierTest {
       .matches("synchronized")
       .matches("transient")
       .matches("volatile")
-      .matches("strictfp");
+      .matches("strictfp")
+      .matches("@NotNull public static @Nullable final");
   }
 
 }

@@ -63,7 +63,23 @@ public class ActionGrammar {
 
   public ModifiersTreeImpl MODIFIERS() {
     return b.<ModifiersTreeImpl>nonterminal(JavaGrammar.MODIFIERS)
-      .is(f.modifiers(b.zeroOrMore(b.invokeRule(JavaGrammar.MODIFIER))));
+      .is(
+        f.modifiers(
+          b.zeroOrMore(
+            b.firstOf(
+              b.invokeRule(JavaGrammar.ANNOTATION),
+              b.invokeRule(JavaKeyword.PUBLIC),
+              b.invokeRule(JavaKeyword.PROTECTED),
+              b.invokeRule(JavaKeyword.PRIVATE),
+              b.invokeRule(JavaKeyword.ABSTRACT),
+              b.invokeRule(JavaKeyword.STATIC),
+              b.invokeRule(JavaKeyword.FINAL),
+              b.invokeRule(JavaKeyword.TRANSIENT),
+              b.invokeRule(JavaKeyword.VOLATILE),
+              b.invokeRule(JavaKeyword.SYNCHRONIZED),
+              b.invokeRule(JavaKeyword.NATIVE),
+              b.invokeRule(JavaKeyword.DEFAULT),
+              b.invokeRule(JavaKeyword.STRICTFP)))));
   }
 
   // Literals
@@ -83,6 +99,12 @@ public class ActionGrammar {
             b.invokeRule(JavaTokenType.LONG_LITERAL),
             b.invokeRule(JavaTokenType.INTEGER_LITERAL))));
   }
+
+  // End of literals
+
+  // Types
+
+  // End of types
 
   // Statements
 

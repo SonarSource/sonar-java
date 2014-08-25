@@ -28,7 +28,6 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import java.util.Arrays;
 
-import static org.sonar.java.ast.api.JavaKeyword.ABSTRACT;
 import static org.sonar.java.ast.api.JavaKeyword.CATCH;
 import static org.sonar.java.ast.api.JavaKeyword.CLASS;
 import static org.sonar.java.ast.api.JavaKeyword.DEFAULT;
@@ -40,22 +39,14 @@ import static org.sonar.java.ast.api.JavaKeyword.FOR;
 import static org.sonar.java.ast.api.JavaKeyword.IMPLEMENTS;
 import static org.sonar.java.ast.api.JavaKeyword.IMPORT;
 import static org.sonar.java.ast.api.JavaKeyword.INTERFACE;
-import static org.sonar.java.ast.api.JavaKeyword.NATIVE;
 import static org.sonar.java.ast.api.JavaKeyword.NEW;
 import static org.sonar.java.ast.api.JavaKeyword.PACKAGE;
-import static org.sonar.java.ast.api.JavaKeyword.PRIVATE;
-import static org.sonar.java.ast.api.JavaKeyword.PROTECTED;
-import static org.sonar.java.ast.api.JavaKeyword.PUBLIC;
 import static org.sonar.java.ast.api.JavaKeyword.STATIC;
-import static org.sonar.java.ast.api.JavaKeyword.STRICTFP;
 import static org.sonar.java.ast.api.JavaKeyword.SUPER;
-import static org.sonar.java.ast.api.JavaKeyword.SYNCHRONIZED;
 import static org.sonar.java.ast.api.JavaKeyword.THIS;
 import static org.sonar.java.ast.api.JavaKeyword.THROWS;
-import static org.sonar.java.ast.api.JavaKeyword.TRANSIENT;
 import static org.sonar.java.ast.api.JavaKeyword.TRY;
 import static org.sonar.java.ast.api.JavaKeyword.VOID;
-import static org.sonar.java.ast.api.JavaKeyword.VOLATILE;
 import static org.sonar.java.ast.api.JavaPunctuator.AND;
 import static org.sonar.java.ast.api.JavaPunctuator.ANDAND;
 import static org.sonar.java.ast.api.JavaPunctuator.ANDEQU;
@@ -124,7 +115,6 @@ public enum JavaGrammar implements GrammarRuleKey {
   QUALIFIED_IDENTIFIER,
   QUALIFIED_IDENTIFIER_LIST,
 
-  MODIFIER,
   CLASS_DECLARATION,
   ENUM_DECLARATION,
   INTERFACE_DECLARATION,
@@ -514,20 +504,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(TYPE_PARAMETERS).is(LPOINT, TYPE_PARAMETER, b.zeroOrMore(COMMA, TYPE_PARAMETER), RPOINT);
     b.rule(TYPE_PARAMETER).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(EXTENDS, BOUND));
     b.rule(BOUND).is(CLASS_TYPE, b.zeroOrMore(AND, b.zeroOrMore(ANNOTATION), CLASS_TYPE));
-    b.rule(MODIFIER).is(b.firstOf(
-      ANNOTATION,
-      PUBLIC,
-      PROTECTED,
-      PRIVATE,
-      ABSTRACT,
-      STATIC,
-      FINAL,
-      TRANSIENT,
-      VOLATILE,
-      SYNCHRONIZED,
-      NATIVE,
-      DEFAULT,
-      STRICTFP));
   }
 
   /**

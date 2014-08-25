@@ -19,23 +19,20 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
-
-import java.util.List;
 
 @Rule(
   key = "ModifiersOrderCheck",
   priority = Priority.MINOR,
-  tags={"convention"})
+  tags = {"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class ModifiersOrderCheck extends SquidCheck<LexerlessGrammar> {
 
@@ -57,14 +54,13 @@ public class ModifiersOrderCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.MODIFIER);
+    subscribeTo(JavaGrammar.MODIFIERS);
   }
 
   @Override
   public void visitNode(AstNode node) {
     if (isFirstModifer(node)) {
-      List<AstNode> modifiers = getModifiers(node);
-      AstNode badlyOrderedModifier = isBadlyOrdered(modifiers);
+      AstNode badlyOrderedModifier = getFirstBadlyOrdered(node);
       if (badlyOrderedModifier != null) {
         getContext().createLineViolation(this, "Reorder the modifiers to comply with the Java Language Specification.", badlyOrderedModifier);
       }
@@ -75,28 +71,18 @@ public class ModifiersOrderCheck extends SquidCheck<LexerlessGrammar> {
     return node.getPreviousSibling() == null;
   }
 
-  private static List<AstNode> getModifiers(AstNode node) {
-    ImmutableList.Builder<AstNode> builder = ImmutableList.builder();
-    builder.add(node);
-
-    for (AstNode nextSibling = node.getNextSibling(); nextSibling != null && nextSibling.is(JavaGrammar.MODIFIER); nextSibling = nextSibling.getNextSibling()) {
-      builder.add(nextSibling);
-    }
-
-    return builder.build();
-  }
-
-  private static AstNode isBadlyOrdered(List<AstNode> modifiers) {
+  private static AstNode getFirstBadlyOrdered(AstNode node) {
     int expectedIndex = 0;
 
-    for (AstNode modifier : modifiers) {
-      for (; expectedIndex < EXPECTED_ORDER.length && !modifier.getFirstChild().is(EXPECTED_ORDER[expectedIndex]); expectedIndex++) {
+    for (AstNode modifier : node.getChildren()) {
+      for (; expectedIndex < EXPECTED_ORDER.length && !modifier.is(EXPECTED_ORDER[expectedIndex]); expectedIndex++) {
         // We're just interested in the final value of 'expectedIndex'
       }
-      if(expectedIndex==EXPECTED_ORDER.length) {
+      if (expectedIndex == EXPECTED_ORDER.length) {
         return modifier;
       }
     }
+
     return null;
   }
 

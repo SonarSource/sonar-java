@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
@@ -36,9 +36,9 @@ public class ModifiersOrderCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ModifiersOrderCheck.java"), new ModifiersOrderCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("Reorder the modifiers to comply with the Java Language Specification.")
-        .next().atLine(12).withMessage("Reorder the modifiers to comply with the Java Language Specification.")
-        .next().atLine(17).withMessage("Reorder the modifiers to comply with the Java Language Specification.");
+      .next().atLine(5).withMessage("Reorder the modifiers to comply with the Java Language Specification.")
+      .next().atLine(12).withMessage("Reorder the modifiers to comply with the Java Language Specification.")
+      .next().atLine(17).withMessage("Reorder the modifiers to comply with the Java Language Specification.");
   }
 
 }

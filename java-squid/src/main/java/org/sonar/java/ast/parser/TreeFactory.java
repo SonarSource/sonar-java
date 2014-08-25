@@ -95,8 +95,6 @@ public class TreeFactory {
     ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
     ImmutableList.Builder<AnnotationTree> annotations = ImmutableList.builder();
     for (AstNode astNode : modifierNodes.get()) {
-      Preconditions.checkArgument(astNode.is(JavaGrammar.MODIFIER), "Unexpected AstNodeType: %s", astNode.getType().toString());
-      astNode = astNode.getFirstChild();
       if (astNode.is(JavaGrammar.ANNOTATION)) {
         annotations.add(treeMaker.annotation(astNode));
       } else {
