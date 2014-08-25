@@ -39,10 +39,8 @@ import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
-import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.CatchTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
@@ -884,8 +882,6 @@ public class JavaTreeMaker {
 
     if (astNode instanceof ExpressionTree && !((JavaTree) astNode).isLegacy()) {
       return (ExpressionTree) astNode;
-    } else if (astNode.is(JavaGrammar.PAR_EXPRESSION)) {
-      return (ParenthesizedTreeImpl) astNode;
     } else if (astNode.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
       return assignmentExpression(astNode);
     } else {
@@ -925,57 +921,6 @@ public class JavaTreeMaker {
         );
     }
     return expression;
-  }
-
-  private ExpressionTree applySuperSuffix(ExpressionTree expression, AstNode superSuffixNode) {
-    checkType(superSuffixNode, JavaGrammar.SUPER_SUFFIX);
-    if (superSuffixNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
-      // super(arguments)
-      // super.method(arguments)
-      // super.<T>method(arguments)
-      // TODO typeArguments
-      ExpressionTree methodSelect = expression;
-      if (superSuffixNode.hasDirectChildren(JavaTokenType.IDENTIFIER)) {
-        methodSelect = new MemberSelectExpressionTreeImpl(
-          superSuffixNode,
-          expression,
-          identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER))
-          );
-      }
-      return new MethodInvocationTreeImpl(
-        superSuffixNode,
-        methodSelect,
-        (ArgumentListTreeImpl) superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS));
-    } else {
-      // super.field
-      return new MemberSelectExpressionTreeImpl(
-        superSuffixNode,
-        expression,
-        identifier(superSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER)));
-    }
-  }
-
-  public ExpressionTree applyExplicitGenericInvocation(ExpressionTree expression, AstNode astNode) {
-    checkType(astNode, JavaGrammar.EXPLICIT_GENERIC_INVOCATION);
-    // TODO NON_WILDCARD_TYPE_ARGUMENTS
-    AstNode explicitGenericInvocationSuffixNode = astNode.getFirstChild(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_SUFFIX);
-    if (explicitGenericInvocationSuffixNode.hasDirectChildren(JavaGrammar.SUPER_SUFFIX)) {
-      expression = new MemberSelectExpressionTreeImpl(
-        astNode,
-        expression,
-        identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaKeyword.SUPER))
-        );
-      return applySuperSuffix(expression, explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.SUPER_SUFFIX));
-    } else {
-      return new MethodInvocationTreeImpl(
-        astNode,
-        new MemberSelectExpressionTreeImpl(
-          astNode,
-          expression,
-          identifier(explicitGenericInvocationSuffixNode.getFirstChild(JavaTokenType.IDENTIFIER))
-        ),
-        (ArgumentListTreeImpl) explicitGenericInvocationSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS));
-    }
   }
 
   public ExpressionTree applyDim(ExpressionTree expression, int count) {
