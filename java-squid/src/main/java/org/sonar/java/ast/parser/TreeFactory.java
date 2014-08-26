@@ -37,6 +37,7 @@ import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.JavaTree.WildcardTreeImpl;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
+import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
@@ -287,6 +288,43 @@ public class TreeFactory {
       extendsOrSuperToken,
       annotations.isPresent() ? annotations.get() : ImmutableList.<AstNode>of(),
       type);
+  }
+
+  public TypeParameterTreeImpl completeTypeParameter(Optional<List<AstNode>> annotations, AstNode identifierAstNode, Optional<TypeParameterTreeImpl> partial) {
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+    if (annotations.isPresent()) {
+      identifier.prependChildren(annotations.get());
+    }
+
+    return partial.isPresent() ?
+      partial.get().complete(identifier) :
+      new TypeParameterTreeImpl(identifier);
+  }
+
+  public TypeParameterTreeImpl newTypeParameter(AstNode extendsTokenAstNode, BoundListTreeImpl bounds) {
+    return new TypeParameterTreeImpl(InternalSyntaxToken.create(extendsTokenAstNode), bounds);
+  }
+
+  public BoundListTreeImpl newBounds(ExpressionTree classType, Optional<List<AstNode>> rests) {
+    ImmutableList.Builder<Tree> classTypes = ImmutableList.builder();
+    List<AstNode> children = Lists.newArrayList();
+
+    classTypes.add(classType);
+    children.add((AstNode) classType);
+
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        for (AstNode child : rest.getChildren()) {
+          if (!child.is(JavaPunctuator.AND)) {
+            classTypes.add((Tree) child);
+          }
+
+          children.add(child);
+        }
+      }
+    }
+
+    return new BoundListTreeImpl(classTypes.build(), children);
   }
 
   // End of types
@@ -1108,6 +1146,10 @@ public class TreeFactory {
   }
 
   public AstNode newWrapperAstNode5(Optional<List<AstNode>> e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  public AstNode newWrapperAstNode6(AstNode e1, AstNode e2) {
     return newWrapperAstNode(e1, e2);
   }
 

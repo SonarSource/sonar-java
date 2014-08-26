@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -285,10 +286,12 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(tree.initializer());
   }
 
+  @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
     // no subtrees
   }
 
+  @Override
   public void visitArrayType(ArrayTypeTree tree) {
     scan(tree.type());
   }
@@ -333,8 +336,14 @@ public class BaseTreeVisitor implements TreeVisitor {
   }
 
   @Override
+  public void visitTypeParameter(TypeParameterTree typeParameter) {
+    scan(typeParameter.identifier());
+    scan(typeParameter.bounds());
+  }
+
+  @Override
   public void visitOther(Tree tree) {
-   //nop
+    // nop
   }
 
 }

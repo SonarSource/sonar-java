@@ -17,29 +17,17 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.java.ast.parser;
 
-import com.google.common.annotations.Beta;
+import com.sonar.sslr.api.AstNode;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
-/**
- * Type parameter.
- *
- * JLS 4.4
- *
- * <pre>
- *   {@link #identifier()}
- *   {@link #identifier()} extends {@link #bounds()}
- * </pre>
- *
- * @since Java 1.3
- */
-@Beta
-public interface TypeParameterTree extends Tree {
+public class BoundListTreeImpl extends ListTreeImpl<Tree> {
 
-  IdentifierTree identifier();
-
-  List<Tree> bounds();
+  public BoundListTreeImpl(List<Tree> classTypes, List<AstNode> children) {
+    super(JavaGrammar.BOUND, classTypes, children);
+  }
 
 }

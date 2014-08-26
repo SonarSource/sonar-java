@@ -575,21 +575,30 @@ public interface Tree {
      * @since Java 1.5
      */
     ANNOTATION(AnnotationTree.class),
+
     /**
      * {@link ModifiersTree}
      *
      */
     MODIFIERS(ModifiersTree.class),
+
     /**
      * {@link LambdaExpressionTree}
      *
      * @since Java 1.8
      */
     LAMBDA_EXPRESSION(LambdaExpressionTree.class),
+
     /**
      * {@link PrimitiveTypeTree}
      */
     PRIMITIVE_TYPE(PrimitiveTypeTree.class),
+
+    /**
+     * {@link TypeParameterTree}
+     */
+    TYPE_PARAMETER(TypeParameterTree.class),
+
     /**
      *An implementation-reserved node.
      *

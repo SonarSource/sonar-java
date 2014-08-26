@@ -123,5 +123,7 @@ public interface TreeVisitor {
 
   void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree);
 
+  void visitTypeParameter(TypeParameterTree typeParameter);
+
   void visitOther(Tree tree);
 }

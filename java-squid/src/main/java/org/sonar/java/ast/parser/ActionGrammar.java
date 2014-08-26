@@ -24,6 +24,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
+import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
@@ -164,6 +165,24 @@ public class ActionGrammar {
                     b.invokeRule(JavaKeyword.SUPER)),
                   b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
                   TYPE()))))));
+  }
+
+  public TypeParameterTreeImpl TYPE_PARAMETER() {
+    return b.<TypeParameterTreeImpl>nonterminal(JavaGrammar.TYPE_PARAMETER)
+      .is(
+        f.completeTypeParameter(
+          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.optional(
+            f.newTypeParameter(b.invokeRule(JavaKeyword.EXTENDS), BOUND()))));
+  }
+
+  public BoundListTreeImpl BOUND() {
+    return b.<BoundListTreeImpl>nonterminal(JavaGrammar.BOUND)
+      .is(
+        f.newBounds(
+          CLASS_TYPE(),
+          b.zeroOrMore(f.newWrapperAstNode6(b.invokeRule(JavaPunctuator.AND), (AstNode) CLASS_TYPE()))));
   }
 
   // End of types

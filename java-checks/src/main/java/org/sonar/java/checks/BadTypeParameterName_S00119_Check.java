@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.regex.Pattern;
@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 @Rule(
   key = "S00119",
   priority = Priority.MAJOR,
-  tags={"convention"})
+  tags = {"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class BadTypeParameterName_S00119_Check extends SquidCheck<LexerlessGrammar> {
 
@@ -49,13 +49,13 @@ public class BadTypeParameterName_S00119_Check extends SquidCheck<LexerlessGramm
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.TYPE_PARAMETER);
+    subscribeTo(Kind.TYPE_PARAMETER);
     pattern = Pattern.compile(format, Pattern.DOTALL);
   }
 
   @Override
   public void visitNode(AstNode astNode) {
-    String name = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
+    String name = ((TypeParameterTree) astNode).identifier().name();
     if (!pattern.matcher(name).matches()) {
       getContext().createLineViolation(this, "Rename this generic name to match the regular expression '" + format + "'.", astNode);
     }
