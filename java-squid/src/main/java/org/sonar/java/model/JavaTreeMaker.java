@@ -310,6 +310,7 @@ public class JavaTreeMaker {
    */
   private ClassTree classDeclaration(ModifiersTree modifiers, AstNode astNode) {
     checkType(astNode, JavaGrammar.CLASS_DECLARATION);
+    // TODO TYPE_PARAMETERS
     IdentifierTree simpleName = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
     Tree superClass = extendsNode != null ? (Tree) extendsNode.getNextSibling() : null;
