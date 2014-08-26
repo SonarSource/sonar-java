@@ -29,6 +29,7 @@ import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.api.SourceMethod;
 import org.sonar.squidbridge.measures.Metric;
@@ -163,7 +164,7 @@ public class AccessorVisitor extends JavaAstVisitor {
 
   private boolean hasBooleanReturnType(MethodHelper method) {
     AstNode typeNode = method.getReturnType();
-    return typeNode.isNot(JavaKeyword.VOID) && typeNode.getChildren().size() == 1 && typeNode.getChild(0).getChild(0).is(JavaKeyword.BOOLEAN);
+    return typeNode instanceof PrimitiveTypeTree && ((PrimitiveTypeTree) typeNode).keyword().text().equals(JavaKeyword.BOOLEAN.getValue());
   }
 
 }

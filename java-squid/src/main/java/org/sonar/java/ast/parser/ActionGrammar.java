@@ -44,6 +44,7 @@ import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.List;
@@ -104,12 +105,65 @@ public class ActionGrammar {
 
   // Types
 
+  public ExpressionTree TYPE() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.TYPE)
+      .is(
+        f.newType(
+          b.firstOf(
+            BASIC_TYPE(),
+            CLASS_TYPE()),
+          b.zeroOrMore(f.newWrapperAstNode5(b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)), b.invokeRule(JavaGrammar.DIM)))));
+  }
+
+  public ExpressionTree CLASS_TYPE() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.CLASS_TYPE)
+      .is(
+        f.newClassType(
+          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.optional(TYPE_ARGUMENTS()),
+          b.zeroOrMore(
+            f.newClassTypeComplement(
+              b.invokeRule(JavaPunctuator.DOT),
+              b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+              b.invokeRule(JavaTokenType.IDENTIFIER),
+              b.optional(TYPE_ARGUMENTS())))));
+  }
+
   public ClassTypeListTreeImpl CLASS_TYPE_LIST() {
     return b.<ClassTypeListTreeImpl>nonterminal(JavaGrammar.CLASS_TYPE_LIST)
       .is(
         f.newClassTypeList(
-          b.invokeRule(JavaGrammar.CLASS_TYPE),
-          b.zeroOrMore(f.newWrapperAstNode3(b.invokeRule(JavaPunctuator.COMMA), b.invokeRule(JavaGrammar.CLASS_TYPE)))));
+          CLASS_TYPE(),
+          b.zeroOrMore(f.newWrapperAstNode3(b.invokeRule(JavaPunctuator.COMMA), (AstNode) CLASS_TYPE()))));
+  }
+
+  public TypeArgumentListTreeImpl TYPE_ARGUMENTS() {
+    return b.<TypeArgumentListTreeImpl>nonterminal(JavaGrammar.TYPE_ARGUMENTS)
+      .is(
+        f.newTypeArgumentList(
+          b.invokeRule(JavaPunctuator.LPOINT),
+          TYPE_ARGUMENT(),
+          b.zeroOrMore(f.newWrapperAstNode4(b.invokeRule(JavaPunctuator.COMMA), (AstNode) TYPE_ARGUMENT())),
+          b.invokeRule(JavaPunctuator.RPOINT)));
+  }
+
+  public Tree TYPE_ARGUMENT() {
+    return b.<Tree>nonterminal(JavaGrammar.TYPE_ARGUMENT)
+      .is(
+        f.completeTypeArgument(
+          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.firstOf(
+            f.newBasicTypeArgument(TYPE()),
+            f.completeWildcardTypeArgument(
+              b.invokeRule(JavaPunctuator.QUERY),
+              b.optional(
+                f.newWildcardTypeArguments(
+                  b.firstOf(
+                    b.invokeRule(JavaKeyword.EXTENDS),
+                    b.invokeRule(JavaKeyword.SUPER)),
+                  b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+                  TYPE()))))));
   }
 
   // End of types
@@ -326,7 +380,7 @@ public class ActionGrammar {
       .is(
         f.completeInstanceofExpression(
           RELATIONAL_EXPRESSION(),
-          b.optional(f.newInstanceofExpression(b.invokeRule(JavaKeyword.INSTANCEOF), b.invokeRule(JavaGrammar.TYPE)))));
+          b.optional(f.newInstanceofExpression(b.invokeRule(JavaKeyword.INSTANCEOF), TYPE()))));
   }
 
   public ExpressionTree RELATIONAL_EXPRESSION() {
@@ -425,8 +479,8 @@ public class ActionGrammar {
           b.firstOf(
             f.newBasicTypeCastExpression(BASIC_TYPE(), b.invokeRule(JavaPunctuator.RPAR), UNARY_EXPRESSION()),
             f.newClassCastExpression(
-              b.invokeRule(JavaGrammar.TYPE),
-              b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.AND), b.invokeRule(JavaGrammar.CLASS_TYPE))),
+              TYPE(),
+              b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.AND), (AstNode) CLASS_TYPE())),
               b.invokeRule(JavaPunctuator.RPAR),
               UNARY_EXPRESSION_NOT_PLUS_MINUS()))));
   }
@@ -437,7 +491,7 @@ public class ActionGrammar {
         f.completeMethodReference(
           b.firstOf(
             f.newSuperMethodReference(b.invokeRule(JavaKeyword.SUPER), b.invokeRule(JavaPunctuator.DBLECOLON)),
-            f.newTypeMethodReference(b.invokeRule(JavaGrammar.TYPE), b.invokeRule(JavaPunctuator.DBLECOLON)),
+            f.newTypeMethodReference(TYPE(), b.invokeRule(JavaPunctuator.DBLECOLON)),
             f.newPrimaryMethodReference(PRIMARY(), b.zeroOrMore(b.invokeRule(JavaGrammar.SELECTOR)), b.invokeRule(JavaPunctuator.DBLECOLON))),
           b.optional(b.invokeRule(JavaGrammar.TYPE_ARGUMENTS)),
           b.firstOf(
@@ -506,7 +560,7 @@ public class ActionGrammar {
             f.newClassCreator(b.invokeRule(JavaGrammar.CREATED_NAME), b.invokeRule(JavaGrammar.CLASS_CREATOR_REST)),
             f.newArrayCreator(
               b.firstOf(
-                b.invokeRule(JavaGrammar.CLASS_TYPE),
+                CLASS_TYPE(),
                 BASIC_TYPE()),
               ARRAY_CREATOR_REST()))));
   }

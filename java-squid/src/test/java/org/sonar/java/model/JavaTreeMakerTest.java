@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -121,8 +122,7 @@ public class JavaTreeMakerTest {
 
   @Test
   public void type() {
-    AstNode astNode = p.parse("class T { int[] m() { return null; } }").getFirstDescendant(JavaGrammar.TYPE);
-    ArrayTypeTree tree = (ArrayTypeTree) maker.referenceType(astNode);
+    ArrayTypeTree tree = (ArrayTypeTree) p.parse("class T { int[] m() { return null; } }").getFirstDescendant(JavaTreeMaker.TYPE_KINDS);
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
   }
 
@@ -210,8 +210,8 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void type_arguments() {
-    AstNode astNode = p.parse("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }").getFirstDescendant(JavaGrammar.TYPE_ARGUMENTS);
-    List<Tree> typeArguments = maker.typeArguments(astNode);
+    List<Tree> typeArguments = (TypeArgumentListTreeImpl) p.parse("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }")
+      .getFirstDescendant(JavaGrammar.TYPE_ARGUMENTS);
     assertThat(typeArguments).hasSize(4);
 
     WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
@@ -1116,7 +1116,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void this_expression() {
-    IdentifierTree tree = (IdentifierTree) p.parse("class T { Object m() { return this; } }").getFirstDescendant(Kind.IDENTIFIER);
+    IdentifierTree tree = (IdentifierTree) p.parse("class T { Object m() { return this; } }").getDescendants(Kind.IDENTIFIER).get(1);
     assertThat(tree.is(Tree.Kind.IDENTIFIER)).isTrue();
     assertThat(tree).isNotNull();
     assertThat(tree.identifierToken().text()).isEqualTo("this");

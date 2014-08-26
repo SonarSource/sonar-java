@@ -20,19 +20,22 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.signature.JvmJavaType;
 import org.sonar.java.signature.MethodSignature;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.Parameter;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.api.SourceClass;
 import org.sonar.squidbridge.api.SourceMethod;
@@ -84,15 +87,15 @@ public class MethodVisitor extends JavaAstVisitor {
       return new Parameter(JvmJavaType.V, false);
     }
     AstNode returnType = methodHelper.getReturnType();
-    boolean isArray = returnType.hasDirectChildren(JavaGrammar.DIM);
+    boolean isArray = !returnType.is(JavaKeyword.VOID) && ((Tree) returnType).is(Kind.ARRAY_TYPE);
     return new Parameter(extractArgumentAndReturnType(returnType, isArray));
   }
 
   private List<Parameter> extractMethodArgumentTypes(MethodHelper methodHelper) {
     List<Parameter> argumentTypes = Lists.newArrayList();
     for (AstNode astNode : methodHelper.getParameters()) {
-      AstNode type = astNode.getFirstChild(JavaGrammar.TYPE);
-      boolean isArray = type.hasDirectChildren(JavaGrammar.DIM)
+      AstNode type = astNode.getFirstChild(JavaTreeMaker.TYPE_KINDS);
+      boolean isArray = ((Tree) type).is(Kind.ARRAY_TYPE)
         || astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST).getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID)
           .hasDirectChildren(JavaGrammar.DIM);
       argumentTypes.add(extractArgumentAndReturnType(type, isArray));
@@ -101,24 +104,34 @@ public class MethodVisitor extends JavaAstVisitor {
   }
 
   private Parameter extractArgumentAndReturnType(AstNode astNode, boolean isArray) {
-    Preconditions.checkArgument(astNode.is(JavaKeyword.VOID, JavaGrammar.TYPE));
+    Preconditions.checkArgument(astNode.is(JavaTreeMaker.TYPE_KINDS) || astNode.is(JavaKeyword.VOID));
+
+    while (astNode instanceof Tree && ((Tree) astNode).is(Kind.ARRAY_TYPE)) {
+      astNode = (AstNode) ((ArrayTypeTree) astNode).type();
+    }
+
     if (astNode.is(JavaKeyword.VOID)) {
       return new Parameter(JvmJavaType.V, false);
     }
-    if (astNode.getFirstChild().is(Kind.PRIMITIVE_TYPE)) {
-      PrimitiveTypeTree primitve = (PrimitiveTypeTree) astNode.getFirstChild();
+    if (astNode.is(Kind.PRIMITIVE_TYPE)) {
+      PrimitiveTypeTree primitve = (PrimitiveTypeTree) astNode;
       return new Parameter(JAVA_TYPE_MAPPING.get(((AstNode) primitve.keyword()).getType()), isArray);
-    } else if (astNode.getFirstChild().is(JavaGrammar.CLASS_TYPE)) {
-      return new Parameter(extractClassName(astNode.getFirstChild()), isArray);
     } else {
-      throw new IllegalStateException();
+      return new Parameter(extractClassName(astNode), isArray);
     }
   }
 
   private String extractClassName(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.CLASS_TYPE));
     // TODO Godin: verify
-    return Iterables.getLast(astNode.getChildren(JavaTokenType.IDENTIFIER)).getTokenValue();
+    AstNode identifier = null;
+    for (AstNode descendant : astNode.getDescendants(JavaTokenType.IDENTIFIER)) {
+      if (!descendant.hasAncestor(JavaGrammar.TYPE_ARGUMENTS)) {
+        identifier = descendant;
+      }
+    }
+    Preconditions.checkArgument(identifier != null, "Bad identifier: " + AstXmlPrinter.print(astNode));
+
+    return identifier.getTokenValue();
   }
 
   private static final Map<JavaKeyword, JvmJavaType> JAVA_TYPE_MAPPING = Maps.newHashMap();

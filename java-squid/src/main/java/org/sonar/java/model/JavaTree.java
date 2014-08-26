@@ -25,6 +25,7 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.AstNodeHacks;
+import org.sonar.java.ast.parser.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -235,9 +236,43 @@ public abstract class JavaTree extends AstNode implements Tree {
   }
 
   public static class WildcardTreeImpl extends JavaTree implements WildcardTree {
+
     private final Kind kind;
     @Nullable
     private final Tree bound;
+
+    public WildcardTreeImpl(Kind kind, InternalSyntaxToken queryToken) {
+      super(kind);
+
+      Preconditions.checkArgument(kind == Kind.UNBOUNDED_WILDCARD);
+
+      this.kind = Preconditions.checkNotNull(kind);
+      this.bound = null;
+
+      addChild(queryToken);
+    }
+
+    public WildcardTreeImpl(Kind kind, InternalSyntaxToken extendsOrSuperToken, List<AstNode> annotations, ExpressionTree bound) {
+      super(kind);
+
+      Preconditions.checkArgument(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
+
+      this.kind = Preconditions.checkNotNull(kind);
+      this.bound = bound;
+
+      addChild(extendsOrSuperToken);
+      for (AstNode annotation : annotations) {
+        addChild(annotation);
+      }
+      addChild((AstNode) bound);
+    }
+
+    public WildcardTreeImpl complete(InternalSyntaxToken queryToken) {
+      Preconditions.checkState(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
+      prependChildren(queryToken);
+
+      return this;
+    }
 
     public WildcardTreeImpl(AstNode astNode, Kind kind, @Nullable Tree bound) {
       super(astNode);
@@ -407,8 +442,18 @@ public abstract class JavaTree extends AstNode implements Tree {
   }
 
   public static class ParameterizedTypeTreeImpl extends AbstractTypedTree implements ParameterizedTypeTree, ExpressionTree {
+
     private final ExpressionTree type;
     private final List<Tree> typeArguments;
+
+    public ParameterizedTypeTreeImpl(ExpressionTree type, TypeArgumentListTreeImpl typeArguments) {
+      super(Kind.PARAMETERIZED_TYPE);
+      this.type = Preconditions.checkNotNull(type);
+      this.typeArguments = Preconditions.checkNotNull(typeArguments);
+
+      addChild((AstNode) type);
+      addChild(typeArguments);
+    }
 
     public ParameterizedTypeTreeImpl(AstNode child, ExpressionTree type, List<Tree> typeArguments) {
       super(child);
@@ -447,6 +492,15 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   public static class ArrayTypeTreeImpl extends AbstractTypedTree implements ArrayTypeTree {
     private final Tree type;
+
+    public ArrayTypeTreeImpl(Tree type, List<AstNode> children) {
+      super(Kind.ARRAY_TYPE);
+      this.type = Preconditions.checkNotNull(type);
+
+      for (AstNode child : children) {
+        addChild(child);
+      }
+    }
 
     public ArrayTypeTreeImpl(AstNode astNode, Tree type) {
       super(astNode);

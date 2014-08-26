@@ -26,6 +26,7 @@ import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -75,7 +76,7 @@ public class MethodHelper {
 
   public AstNode getReturnType() {
     final AstNode typeNode = getName().getPreviousAstNode();
-    Preconditions.checkState(typeNode.is(JavaKeyword.VOID, JavaGrammar.TYPE));
+    Preconditions.checkState(typeNode.is(JavaTreeMaker.TYPE_KINDS) || typeNode.is(JavaKeyword.VOID));
     return typeNode;
   }
 

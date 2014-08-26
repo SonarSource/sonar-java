@@ -30,8 +30,11 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaTree.ArrayTypeTreeImpl;
 import org.sonar.java.model.JavaTree.NotImplementedTreeImpl;
+import org.sonar.java.model.JavaTree.ParameterizedTypeTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
+import org.sonar.java.model.JavaTree.WildcardTreeImpl;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -119,18 +122,109 @@ public class TreeFactory {
 
   // Types
 
-  public ClassTypeListTreeImpl newClassTypeList(AstNode classType, Optional<List<AstNode>> rests) {
+  public ExpressionTree newType(ExpressionTree basicOrClassType, Optional<List<AstNode>> dims) {
+    if (!dims.isPresent()) {
+      return basicOrClassType;
+    } else {
+      ExpressionTree result = basicOrClassType;
+
+      for (AstNode dim : dims.get()) {
+        List<AstNode> children = Lists.newArrayList();
+        children.add((AstNode) result);
+        children.addAll(dim.getChildren());
+
+        result = new ArrayTypeTreeImpl(result,
+          children);
+      }
+
+      return result;
+    }
+  }
+
+  public ExpressionTree newClassType(Optional<List<AstNode>> annotations, AstNode identifierAstNode, Optional<TypeArgumentListTreeImpl> typeArguments,
+    Optional<List<ClassTypeComplement>> classTypeComplements) {
+
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+    if (annotations.isPresent()) {
+      identifier.prependChildren(annotations.get());
+    }
+
+    ExpressionTree result = identifier;
+    if (typeArguments.isPresent()) {
+      result = new ParameterizedTypeTreeImpl(result, typeArguments.get());
+    }
+
+    if (classTypeComplements.isPresent()) {
+      for (ClassTypeComplement classTypeComplement : classTypeComplements.get()) {
+        result = new MemberSelectExpressionTreeImpl(result, classTypeComplement.identifier(),
+          (AstNode) result, classTypeComplement.dotToken(), classTypeComplement.identifier());
+
+        if (classTypeComplement.typeArguments().isPresent()) {
+          result = new ParameterizedTypeTreeImpl(result, classTypeComplement.typeArguments().get());
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private static class ClassTypeComplement extends AstNode {
+
+    private final InternalSyntaxToken dotToken;
+    private final IdentifierTreeImpl identifier;
+    private final Optional<TypeArgumentListTreeImpl> typeArguments;
+
+    public ClassTypeComplement(InternalSyntaxToken dotToken, IdentifierTreeImpl identifier, Optional<TypeArgumentListTreeImpl> typeArguments) {
+      super(null, null, null);
+
+      this.dotToken = dotToken;
+      this.identifier = identifier;
+      this.typeArguments = typeArguments;
+
+      addChild(dotToken);
+      addChild(identifier);
+      if (typeArguments.isPresent()) {
+        addChild(typeArguments.get());
+      }
+    }
+
+    public InternalSyntaxToken dotToken() {
+      return dotToken;
+    }
+
+    public IdentifierTreeImpl identifier() {
+      return identifier;
+    }
+
+    public Optional<TypeArgumentListTreeImpl> typeArguments() {
+      return typeArguments;
+    }
+
+  }
+
+  public ClassTypeComplement newClassTypeComplement(AstNode dotTokenAstNode, Optional<List<AstNode>> annotations, AstNode identifierAstNode,
+    Optional<TypeArgumentListTreeImpl> typeArguments) {
+
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+    if (annotations.isPresent()) {
+      identifier.prependChildren(annotations.get());
+    }
+
+    return new ClassTypeComplement(InternalSyntaxToken.create(dotTokenAstNode), identifier, typeArguments);
+  }
+
+  public ClassTypeListTreeImpl newClassTypeList(ExpressionTree classType, Optional<List<AstNode>> rests) {
     ImmutableList.Builder<Tree> classTypes = ImmutableList.builder();
     List<AstNode> children = Lists.newArrayList();
 
-    classTypes.add(treeMaker.classType(classType));
-    children.add(classType);
+    classTypes.add(classType);
+    children.add((AstNode) classType);
 
     if (rests.isPresent()) {
       for (AstNode rest : rests.get()) {
         for (AstNode child : rest.getChildren()) {
           if (!child.is(JavaPunctuator.COMMA)) {
-            classTypes.add(treeMaker.classType(child));
+            classTypes.add((Tree) child);
           }
 
           children.add(child);
@@ -139,6 +233,60 @@ public class TreeFactory {
     }
 
     return new ClassTypeListTreeImpl(classTypes.build(), children);
+  }
+
+  public TypeArgumentListTreeImpl newTypeArgumentList(AstNode openBracketTokenAstNode, Tree typeArgument, Optional<List<AstNode>> rests, AstNode closeBracketTokenAstNode) {
+    InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(openBracketTokenAstNode);
+    InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(closeBracketTokenAstNode);
+
+    ImmutableList.Builder<Tree> typeArguments = ImmutableList.builder();
+    List<AstNode> children = Lists.newArrayList();
+
+    typeArguments.add(typeArgument);
+    children.add((AstNode) typeArgument);
+
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        for (AstNode child : rest.getChildren()) {
+          if (!child.is(JavaPunctuator.COMMA)) {
+            typeArguments.add((Tree) child);
+          }
+
+          children.add(child);
+        }
+      }
+    }
+
+    return new TypeArgumentListTreeImpl(openBracketToken, typeArguments.build(), children, closeBracketToken);
+  }
+
+  public Tree completeTypeArgument(Optional<List<AstNode>> annotations, Tree partial) {
+    if (annotations.isPresent()) {
+      ((JavaTree) partial).prependChildren(annotations.get());
+    }
+
+    return partial;
+  }
+
+  public ExpressionTree newBasicTypeArgument(ExpressionTree type) {
+    return type;
+  }
+
+  public WildcardTreeImpl completeWildcardTypeArgument(AstNode queryTokenAstNode, Optional<WildcardTreeImpl> partial) {
+    InternalSyntaxToken queryToken = InternalSyntaxToken.create(queryTokenAstNode);
+
+    return partial.isPresent() ?
+      partial.get().complete(queryToken) :
+      new WildcardTreeImpl(Kind.UNBOUNDED_WILDCARD, queryToken);
+  }
+
+  public WildcardTreeImpl newWildcardTypeArguments(AstNode extendsOrSuperTokenAstNode, Optional<List<AstNode>> annotations, ExpressionTree type) {
+    InternalSyntaxToken extendsOrSuperToken = InternalSyntaxToken.create(extendsOrSuperTokenAstNode);
+    return new WildcardTreeImpl(
+      JavaKeyword.EXTENDS.getValue().equals(extendsOrSuperToken.text()) ? Kind.EXTENDS_WILDCARD : Kind.SUPER_WILDCARD,
+      extendsOrSuperToken,
+      annotations.isPresent() ? annotations.get() : ImmutableList.<AstNode>of(),
+      type);
   }
 
   // End of types
@@ -327,10 +475,10 @@ public class TreeFactory {
       expression;
   }
 
-  public InstanceOfTreeImpl newInstanceofExpression(AstNode instanceofTokenAstNode, AstNode type) {
+  public InstanceOfTreeImpl newInstanceofExpression(AstNode instanceofTokenAstNode, Tree type) {
     InternalSyntaxToken instanceofToken = InternalSyntaxToken.create(instanceofTokenAstNode);
-    return new InstanceOfTreeImpl(instanceofToken, treeMaker.referenceType(type),
-      type);
+    return new InstanceOfTreeImpl(instanceofToken, type,
+      (AstNode) type);
   }
 
   private static class OperatorAndOperand extends AstNode {
@@ -529,11 +677,11 @@ public class TreeFactory {
       children);
   }
 
-  public TypeCastExpressionTreeImpl newClassCastExpression(AstNode type, Optional<List<AstNode>> classTypes, AstNode closeParenTokenAstNode, ExpressionTree expression) {
+  public TypeCastExpressionTreeImpl newClassCastExpression(Tree type, Optional<List<AstNode>> classTypes, AstNode closeParenTokenAstNode, ExpressionTree expression) {
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
 
     List<AstNode> children = Lists.newArrayList();
-    children.add(type);
+    children.add((AstNode) type);
     if (classTypes.isPresent()) {
       for (AstNode classType : classTypes.get()) {
         children.addAll(classType.getChildren());
@@ -542,7 +690,7 @@ public class TreeFactory {
     children.add(closeParenToken);
     children.add((AstNode) expression);
 
-    return new TypeCastExpressionTreeImpl(treeMaker.referenceType(type), expression, closeParenToken,
+    return new TypeCastExpressionTreeImpl(type, expression, closeParenToken,
       children);
   }
 
@@ -560,9 +708,9 @@ public class TreeFactory {
     return new NotImplementedTreeImpl(superToken, doubleColonToken);
   }
 
-  public NotImplementedTreeImpl newTypeMethodReference(AstNode type, AstNode doubleColonToken) {
+  public NotImplementedTreeImpl newTypeMethodReference(Tree type, AstNode doubleColonToken) {
     // TODO SONARJAVA-613
-    return new NotImplementedTreeImpl(type, doubleColonToken);
+    return new NotImplementedTreeImpl((AstNode) type, doubleColonToken);
   }
 
   public NotImplementedTreeImpl newPrimaryMethodReference(ExpressionTree primary, Optional<List<AstNode>> selectors, AstNode doubleColonToken) {
@@ -661,11 +809,9 @@ public class TreeFactory {
       createdName, classCreatorRest);
   }
 
-  public ExpressionTree newArrayCreator(AstNode type, NewArrayTreeImpl partial) {
-    JavaTree typeTree = (JavaTree) (type.is(Kind.PRIMITIVE_TYPE) ? (PrimitiveTypeTreeImpl) type : treeMaker.classType(type));
-
-    return partial.complete(typeTree,
-      type);
+  public ExpressionTree newArrayCreator(Tree type, NewArrayTreeImpl partial) {
+    return partial.complete(type,
+      (AstNode) type);
   }
 
   public NewArrayTreeImpl completeArrayCreator(Optional<List<AstNode>> annotations, NewArrayTreeImpl partial) {
@@ -954,6 +1100,14 @@ public class TreeFactory {
   }
 
   public AstNode newWrapperAstNode3(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  public AstNode newWrapperAstNode4(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  public AstNode newWrapperAstNode5(Optional<List<AstNode>> e1, AstNode e2) {
     return newWrapperAstNode(e1, e2);
   }
 
