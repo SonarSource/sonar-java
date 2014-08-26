@@ -492,7 +492,7 @@ public enum JavaGrammar implements GrammarRuleKey {
   private static void types(LexerlessGrammarBuilder b) {
     b.rule(TYPE_PARAMETERS).is(LPOINT, TYPE_PARAMETER, b.zeroOrMore(COMMA, TYPE_PARAMETER), RPOINT);
     b.rule(TYPE_PARAMETER).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(EXTENDS, BOUND));
-    b.rule(BOUND).is(CLASS_TYPE, b.zeroOrMore(AND, b.zeroOrMore(ANNOTATION), CLASS_TYPE));
+    b.rule(BOUND).is(CLASS_TYPE, b.zeroOrMore(AND, CLASS_TYPE));
   }
 
   /**
