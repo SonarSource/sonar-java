@@ -199,6 +199,43 @@ public class ActionGrammar {
 
   // Annotations
 
+  public AstNode ANNOTATION_TYPE_DECLARATION() {
+    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_TYPE_DECLARATION)
+      .is(
+        f.newAnnotationTypeDeclaration(
+          b.invokeRule(JavaPunctuator.AT),
+          b.invokeRule(JavaKeyword.INTERFACE),
+          b.invokeRule(JavaTokenType.IDENTIFIER),
+          ANNOTATION_TYPE_BODY()));
+  }
+
+  public AstNode ANNOTATION_TYPE_BODY() {
+    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_TYPE_BODY)
+      .is(
+        f.newAnnotationTypeBody(
+          b.invokeRule(JavaPunctuator.LWING), b.zeroOrMore(ANNOTATION_TYPE_ELEMENT_DECLARATION()), b.invokeRule(JavaPunctuator.RWING)));
+  }
+
+  public AstNode ANNOTATION_TYPE_ELEMENT_DECLARATION() {
+    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)
+      .is(
+        b.firstOf(
+          f.newAnnotationTypeElementDeclaration1(MODIFIERS(), ANNOTATION_TYPE_ELEMENT_REST()),
+          f.newAnnotationTypeElementDeclaration2(b.invokeRule(JavaPunctuator.SEMI))));
+  }
+
+  public AstNode ANNOTATION_TYPE_ELEMENT_REST() {
+    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST)
+      .is(
+        b.firstOf(
+          f.newAnnotationTypeElementRest1(
+            TYPE(), b.invokeRule(JavaTokenType.IDENTIFIER), ANNOTATION_METHOD_OR_CONSTANT_REST(), b.invokeRule(JavaPunctuator.SEMI)),
+          f.newAnnotationTypeElementRest2(b.invokeRule(JavaGrammar.CLASS_DECLARATION)),
+          f.newAnnotationTypeElementRest3(b.invokeRule(JavaGrammar.ENUM_DECLARATION)),
+          f.newAnnotationTypeElementRest4(b.invokeRule(JavaGrammar.INTERFACE_DECLARATION)),
+          f.newAnnotationTypeElementRest5(ANNOTATION_TYPE_DECLARATION())));
+  }
+
   public AstNode ANNOTATION_METHOD_OR_CONSTANT_REST() {
     return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_METHOD_OR_CONSTANT_REST)
       .is(

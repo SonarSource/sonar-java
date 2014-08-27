@@ -317,7 +317,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     formalParameters(b);
     blocksAndStatements(b);
     expressions(b);
-    annotations(b);
     literals(b);
 
     b.setRootRule(COMPILATION_UNIT);
@@ -583,23 +582,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       b.sequence(VARIABLE_DECLARATOR_ID, b.optional(COMMA, FORMAL_PARAMETER_DECLS)),
       b.sequence(b.zeroOrMore(ANNOTATION), ELLIPSIS, VARIABLE_DECLARATOR_ID)));
     b.rule(VARIABLE_DECLARATOR_ID).is(JavaTokenType.IDENTIFIER, b.zeroOrMore(b.zeroOrMore(ANNOTATION), DIM));
-  }
-
-  /**
-   * 9.7. Annotations
-   */
-  private static void annotations(LexerlessGrammarBuilder b) {
-    b.rule(ANNOTATION_TYPE_DECLARATION).is(AT, INTERFACE, JavaTokenType.IDENTIFIER, ANNOTATION_TYPE_BODY);
-    b.rule(ANNOTATION_TYPE_BODY).is(LWING, b.zeroOrMore(ANNOTATION_TYPE_ELEMENT_DECLARATION), RWING);
-    b.rule(ANNOTATION_TYPE_ELEMENT_DECLARATION).is(b.firstOf(
-      b.sequence(MODIFIERS, ANNOTATION_TYPE_ELEMENT_REST),
-      SEMI));
-    b.rule(ANNOTATION_TYPE_ELEMENT_REST).is(b.firstOf(
-      b.sequence(TYPE, JavaTokenType.IDENTIFIER, ANNOTATION_METHOD_OR_CONSTANT_REST, SEMI),
-      CLASS_DECLARATION,
-      ENUM_DECLARATION,
-      INTERFACE_DECLARATION,
-      ANNOTATION_TYPE_DECLARATION));
   }
 
   /**
