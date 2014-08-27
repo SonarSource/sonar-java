@@ -290,6 +290,32 @@ public class TreeFactory {
       type);
   }
 
+  public TypeParameterListTreeImpl newTypeParameterList(AstNode openBracketTokenAstNode, TypeParameterTreeImpl typeParameter, Optional<List<AstNode>> rests,
+    AstNode closeBracketTokenAstNode) {
+    InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(openBracketTokenAstNode);
+    InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(closeBracketTokenAstNode);
+
+    ImmutableList.Builder<TypeParameterTreeImpl> typeParameters = ImmutableList.builder();
+    List<AstNode> children = Lists.newArrayList();
+
+    typeParameters.add(typeParameter);
+    children.add(typeParameter);
+
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        for (AstNode child : rest.getChildren()) {
+          if (!child.is(JavaPunctuator.COMMA)) {
+            typeParameters.add((TypeParameterTreeImpl) child);
+          }
+
+          children.add(child);
+        }
+      }
+    }
+
+    return new TypeParameterListTreeImpl(openBracketToken, typeParameters.build(), children, closeBracketToken);
+  }
+
   public TypeParameterTreeImpl completeTypeParameter(Optional<List<AstNode>> annotations, AstNode identifierAstNode, Optional<TypeParameterTreeImpl> partial) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
     if (annotations.isPresent()) {
@@ -1150,6 +1176,10 @@ public class TreeFactory {
   }
 
   public AstNode newWrapperAstNode6(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  public AstNode newWrapperAstNode7(AstNode e1, AstNode e2) {
     return newWrapperAstNode(e1, e2);
   }
 

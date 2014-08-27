@@ -167,6 +167,16 @@ public class ActionGrammar {
                   TYPE()))))));
   }
 
+  public TypeParameterListTreeImpl TYPE_PARAMETERS() {
+    return b.<TypeParameterListTreeImpl>nonterminal(JavaGrammar.TYPE_PARAMETERS)
+      .is(
+        f.newTypeParameterList(
+          b.invokeRule(JavaPunctuator.LPOINT),
+          TYPE_PARAMETER(),
+          b.zeroOrMore(f.newWrapperAstNode7(b.invokeRule(JavaPunctuator.COMMA), TYPE_PARAMETER())),
+          b.invokeRule(JavaPunctuator.RPOINT)));
+  }
+
   public TypeParameterTreeImpl TYPE_PARAMETER() {
     return b.<TypeParameterTreeImpl>nonterminal(JavaGrammar.TYPE_PARAMETER)
       .is(

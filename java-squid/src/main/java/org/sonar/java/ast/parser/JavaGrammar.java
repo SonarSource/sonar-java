@@ -318,7 +318,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     formalParameters(b);
     blocksAndStatements(b);
     expressions(b);
-    types(b);
     annotations(b);
     literals(b);
 
@@ -484,13 +483,6 @@ public enum JavaGrammar implements GrammarRuleKey {
 
   private static Object javaIdentifierPart(LexerlessGrammarBuilder b) {
     return b.regexp("\\p{javaJavaIdentifierPart}");
-  }
-
-  /**
-   * 4. Types, Values and Variables
-   */
-  private static void types(LexerlessGrammarBuilder b) {
-    b.rule(TYPE_PARAMETERS).is(LPOINT, TYPE_PARAMETER, b.zeroOrMore(COMMA, TYPE_PARAMETER), RPOINT);
   }
 
   /**
