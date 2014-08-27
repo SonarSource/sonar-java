@@ -38,9 +38,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import java.util.Set;
 
 @Rule(
-  key = ForLoopCounterChangedCheck.RULE_KEY,
-  priority = Priority.MAJOR,
-  tags={"bug"})
+    key = ForLoopCounterChangedCheck.RULE_KEY,
+    priority = Priority.MAJOR,
+    tags = {"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -56,12 +56,11 @@ public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaF
     scan(context.getTree());
   }
 
-
   @Override
   public void visitForStatement(ForStatementTree tree) {
     Set<String> pendingLoopCounters = Sets.newHashSet();
     for (StatementTree statementTree : tree.initializer()) {
-      if(statementTree.is(Tree.Kind.VARIABLE)){
+      if (statementTree.is(Tree.Kind.VARIABLE)) {
         pendingLoopCounters.add(((VariableTree) statementTree).simpleName().name());
       }
     }
@@ -75,114 +74,33 @@ public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    if(tree.variable().is(Tree.Kind.IDENTIFIER)) {
-        checkIdentifier((IdentifierTree) tree.variable());
+    if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
+      checkIdentifier((IdentifierTree) tree.variable());
     }
     super.visitAssignmentExpression(tree);
   }
 
   @Override
   public void visitUnaryExpression(UnaryExpressionTree tree) {
-    if(tree.is( Tree.Kind.PREFIX_INCREMENT) ||
-        tree.is(Tree.Kind.POSTFIX_INCREMENT) ||
-            tree.is(Tree.Kind.POSTFIX_DECREMENT) ||
-                tree.is(Tree.Kind.PREFIX_DECREMENT)) {
-      if(tree.expression().is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifierTree = (IdentifierTree) tree.expression();
-        checkIdentifier(identifierTree);
-      }
+    if ((isIncrement(tree) || isDecrement(tree)) && tree.expression().is(Tree.Kind.IDENTIFIER)) {
+      checkIdentifier((IdentifierTree) tree.expression());
     }
     super.visitUnaryExpression(tree);
   }
 
+  private boolean isIncrement(UnaryExpressionTree tree) {
+    return tree.is(Tree.Kind.PREFIX_INCREMENT) || tree.is(Tree.Kind.POSTFIX_INCREMENT);
+  }
+
+  private boolean isDecrement(UnaryExpressionTree tree) {
+    return tree.is(Tree.Kind.POSTFIX_DECREMENT) || tree.is(Tree.Kind.PREFIX_DECREMENT);
+  }
+
   private void checkIdentifier(IdentifierTree identifierTree) {
-    if(loopCounters.contains(identifierTree.name())) {
+    if (loopCounters.contains(identifierTree.name())) {
       context.addIssue(identifierTree, ruleKey, "Refactor the code in order to not assign to this loop counter from within the loop body.");
     }
   }
 
-  /*
 
-  @Override
-  public void visitFile(AstNode astNode) {
-    loopCounters.clear();
-  }
-
-  @Override
-  public void visitNode(AstNode node) {
-
-
-    if (node.is(JavaGrammar.FOR_STATEMENT)) {
-      pendingLoopCounters = getLoopCounters(node);
-    } else if (node.is(JavaGrammar.STATEMENT) && node.getParent().is(JavaGrammar.FOR_STATEMENT)) {
-      loopCounters.addAll(pendingLoopCounters);
-      pendingLoopCounters = Collections.emptySet();
-    } else if (!loopCounters.isEmpty()) {
-      if (node.is(JavaGrammar.ASSIGNMENT_EXPRESSION)) {
-        for (int i = 0; i < node.getNumberOfChildren() - 1; i++) {
-          check(merge(node.getChild(i)), node.getChild(i).getTokenLine());
-        }
-      } else if (isIncrementOrDecrementExpression(node)) {
-        for (AstNode child : node.getChildren()) {
-          check(merge(child), child.getTokenLine());
-        }
-      }
-    }
-  }
-
-  @Override
-  public void leaveNode(AstNode node) {
-    if (node.is(JavaGrammar.FOR_STATEMENT)) {
-      loopCounters.removeAll(getLoopCounters(node));
-    }
-  }
-
-  private static boolean isIncrementOrDecrementExpression(AstNode node) {
-    return node.is(JavaGrammar.UNARY_EXPRESSION, JavaGrammar.UNARY_EXPRESSION_NOT_PLUS_MINUS) &&
-      node.select()
-          .children(JavaGrammar.PREFIX_OP, JavaGrammar.POST_FIX_OP)
-          .children(JavaPunctuator.INC, JavaPunctuator.DEC)
-          .isNotEmpty();
-  }
-
-  private Set<String> getLoopCounters(AstNode node) {
-    Set<String> result;
-
-    AstSelect identifiers = node.select()
-        .children(JavaGrammar.FOR_INIT)
-        .children(JavaGrammar.VARIABLE_DECLARATORS)
-        .children(JavaGrammar.VARIABLE_DECLARATOR)
-        .children(JavaTokenType.IDENTIFIER);
-
-    if (identifiers.isNotEmpty()) {
-      ImmutableSet.Builder<String> builder = ImmutableSet.builder();
-
-      for (AstNode identifier : identifiers) {
-        builder.add(identifier.getTokenOriginalValue());
-      }
-
-      result = builder.build();
-    } else {
-      result = Collections.emptySet();
-    }
-
-    return result;
-  }
-
-  private void check(String string, int line) {
-    if (loopCounters.contains(string)) {
-      getContext().createLineViolation(this, "Refactor the code in order to not assign to this loop counter from within the loop body.", line);
-    }
-  }
-
-  private static String merge(AstNode node) {
-    StringBuilder sb = new StringBuilder();
-
-    for (Token token : node.getTokens()) {
-      sb.append(token.getOriginalValue());
-    }
-
-    return sb.toString();
-  }
-*/
 }
