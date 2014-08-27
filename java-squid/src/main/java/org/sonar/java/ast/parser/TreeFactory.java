@@ -356,6 +356,22 @@ public class TreeFactory {
 
   // End of types
 
+  // Annotations
+
+  public AstNode newSingleElementAnnotationRest(AstNode openParenTokenAstNode, AstNode elementValue, AstNode closeParenTokenAstNode) {
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+
+    AstNode astNode = new AstNode(JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST, JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST.toString(), null);
+    astNode.addChild(openParenToken);
+    astNode.addChild(elementValue);
+    astNode.addChild(closeParenToken);
+
+    return astNode;
+  }
+
+  // End of annotations
+
   // Statements
 
   public BlockTreeImpl block(AstNode openBraceTokenAstNode, AstNode statements, AstNode closeBraceTokenAstNode) {

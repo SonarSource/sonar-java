@@ -619,7 +619,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       ELEMENT_VALUE_ARRAY_INITIALIZER));
     b.rule(ELEMENT_VALUE_ARRAY_INITIALIZER).is(LWING, b.optional(ELEMENT_VALUES), b.optional(COMMA), RWING);
     b.rule(ELEMENT_VALUES).is(ELEMENT_VALUE, b.zeroOrMore(COMMA, ELEMENT_VALUE));
-    b.rule(SINGLE_ELEMENT_ANNOTATION_REST).is(LPAR, ELEMENT_VALUE, RPAR);
   }
 
   /**

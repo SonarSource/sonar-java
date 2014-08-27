@@ -214,7 +214,7 @@ public class JavaTreeMaker {
     return new AnnotationTreeImpl(astNode, annotationType, arguments.build());
   }
 
-  private ExpressionTree elementValue(AstNode astNode) {
+  public ExpressionTree elementValue(AstNode astNode) {
     AstNode elementValue = astNode.getFirstChild();
     ExpressionTree result;
     if (elementValue.is(JavaGrammar.ANNOTATION)) {

@@ -197,6 +197,15 @@ public class ActionGrammar {
 
   // End of types
 
+  // Annotations
+
+  public AstNode SINGLE_ELEMENT_ANNOTATION_REST() {
+    return b.<AstNode>nonterminal(JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST)
+      .is(f.newSingleElementAnnotationRest(b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.ELEMENT_VALUE), b.invokeRule(JavaPunctuator.RPAR)));
+  }
+
+  // End of annotations
+
   // Statements
 
   public BlockTreeImpl BLOCK() {
