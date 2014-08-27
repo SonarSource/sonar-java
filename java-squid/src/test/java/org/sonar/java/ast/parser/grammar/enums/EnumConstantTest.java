@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.parser.grammar.enums;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.grammar.RuleMock;
@@ -30,20 +29,17 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 public class EnumConstantTest {
 
   @Test
-  @Ignore("FIXME")
-  // FIXME
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
     b.rule(JavaGrammar.CLASS_BODY).override(RuleMock.word(b, "classBody"));
 
     assertThat(b, JavaGrammar.ENUM_CONSTANT)
       .matches("identifier")
-      .matches("annotation identifier")
-      .matches("annotation identifier()")
-      .matches("annotation identifier classBody")
-      .matches("annotation identifier() classBody");
+      .matches("@Foo identifier")
+      .matches("@Foo identifier()")
+      .matches("@Foo identifier classBody")
+      .matches("@Foo identifier() classBody");
   }
 
 }

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.parser.grammar.parameters;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.grammar.RuleMock;
@@ -30,21 +29,18 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 public class FormalParameterDeclsTest {
 
   @Test
-  @Ignore("FIXME")
-  // FIXME
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
     b.rule(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST).override(RuleMock.word(b, "formalParametersDeclsRest"));
 
     assertThat(b, JavaGrammar.FORMAL_PARAMETER_DECLS)
       .matches("type formalParametersDeclsRest")
       .matches("final type formalParametersDeclsRest")
-      .matches("annotation type formalParametersDeclsRest")
+      .matches("@Foo type formalParametersDeclsRest")
       .matches("final final type formalParametersDeclsRest")
-      .matches("annotation annotation type formalParametersDeclsRest")
-      .matches("annotation final annotation final type formalParametersDeclsRest");
+      .matches("@Foo @Bar type formalParametersDeclsRest")
+      .matches("@Foo final @Bar final type formalParametersDeclsRest");
   }
 
 }

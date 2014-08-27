@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.parser.grammar.units;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.grammar.RuleMock;
@@ -30,20 +29,18 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 public class TypeDeclarationTest {
 
   @Test
-  @Ignore("FIXME")
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
     b.rule(JavaGrammar.CLASS_DECLARATION).override(RuleMock.word(b, "classDeclaration"));
     b.rule(JavaGrammar.ENUM_DECLARATION).override(RuleMock.word(b, "enumDeclaration"));
     b.rule(JavaGrammar.INTERFACE_DECLARATION).override(RuleMock.word(b, "interfaceDeclaration"));
-    b.rule(JavaGrammar.ANNOTATION_TYPE_DECLARATION).override(RuleMock.word(b, "annotationTypeDeclaration"));
 
     assertThat(b, JavaGrammar.TYPE_DECLARATION)
       .matches("classDeclaration")
       .matches("enumDeclaration")
       .matches("interfaceDeclaration")
-      .matches("annotationTypeDeclaration")
+      .matches("@interface Foo {}")
       .matches("public classDeclaration")
       .matches("public private classDeclaration")
       .matches(";");

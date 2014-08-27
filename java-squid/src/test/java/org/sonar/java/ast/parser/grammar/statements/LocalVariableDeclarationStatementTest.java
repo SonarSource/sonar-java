@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.parser.grammar.statements;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.grammar.RuleMock;
@@ -30,17 +29,14 @@ import static org.sonar.sslr.tests.Assertions.assertThat;
 public class LocalVariableDeclarationStatementTest {
 
   @Test
-  @Ignore("FIXME")
-  // FIXME
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
     b.rule(JavaGrammar.VARIABLE_DECLARATORS).override(RuleMock.word(b, "variableDeclarators"));
-    b.rule(JavaGrammar.ANNOTATION).override(RuleMock.word(b, "annotation"));
 
     assertThat(b, JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)
       .matches("final int variableDeclarators ;")
-      .matches("annotation List<Integer> variableDeclarators ;")
+      .matches("@Foo List<Integer> variableDeclarators ;")
       .matches("int variableDeclarators ;");
   }
 
