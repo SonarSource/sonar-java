@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import javax.annotation.Nullable;
 
@@ -37,9 +38,11 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ClassTreeImpl extends JavaTree implements ClassTree {
+
   private final Kind kind;
   private final ModifiersTree modifiers;
   private final IdentifierTree simpleName;
+  private final List<TypeParameterTree> typeParameters;
   @Nullable
   private final Tree superClass;
   private final List<Tree> superInterfaces;
@@ -49,12 +52,14 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private Symbol.TypeSymbol symbol;
 
-  public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable IdentifierTree simpleName, @Nullable Tree superClass, List<Tree> superInterfaces,
-    List<Tree> members) {
+  public ClassTreeImpl(
+    AstNode astNode, Kind kind,
+    ModifiersTree modifiers, @Nullable IdentifierTree simpleName, List<TypeParameterTree> typeParameters, @Nullable Tree superClass, List<Tree> superInterfaces, List<Tree> members) {
     super(astNode);
     this.kind = Preconditions.checkNotNull(kind);
     this.modifiers = Preconditions.checkNotNull(modifiers);
     this.simpleName = simpleName;
+    this.typeParameters = typeParameters;
     this.superClass = superClass;
     this.superInterfaces = Preconditions.checkNotNull(superInterfaces);
     this.members = Preconditions.checkNotNull(members);
@@ -62,7 +67,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   // TODO remove:
   public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, List<Tree> members) {
-    this(astNode, kind, modifiers, null, null, ImmutableList.<Tree>of(), members);
+    this(astNode, kind, modifiers, null, ImmutableList.<TypeParameterTree>of(), null, ImmutableList.<Tree>of(), members);
   }
 
   @Override
@@ -77,9 +82,8 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   @Override
-  public List<Tree> typeParameters() {
-    // TODO implement
-    return ImmutableList.of();
+  public List<TypeParameterTree> typeParameters() {
+    return typeParameters;
   }
 
   @Override
@@ -123,11 +127,13 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return Iterators.concat(
       Iterators.forArray(
         modifiers,
-        simpleName,
-        superClass
+        simpleName
         ),
+      typeParameters.iterator(),
+      Iterators.singletonIterator(superClass),
       superInterfaces.iterator(),
       members.iterator()
       );
   }
+
 }

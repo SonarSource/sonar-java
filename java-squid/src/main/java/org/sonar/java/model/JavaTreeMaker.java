@@ -64,6 +64,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
@@ -310,15 +311,18 @@ public class JavaTreeMaker {
    */
   private ClassTree classDeclaration(ModifiersTree modifiers, AstNode astNode) {
     checkType(astNode, JavaGrammar.CLASS_DECLARATION);
-    // TODO TYPE_PARAMETERS
     IdentifierTree simpleName = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
     AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
     Tree superClass = extendsNode != null ? (Tree) extendsNode.getNextSibling() : null;
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
     List<Tree> superInterfaces = implementsNode != null ? (ClassTypeListTreeImpl) implementsNode.getNextSibling() : ImmutableList.<Tree>of();
-    return new ClassTreeImpl(astNode, Tree.Kind.CLASS,
+    return new ClassTreeImpl(
+      astNode, Tree.Kind.CLASS,
       modifiers,
       simpleName,
+      astNode.hasDirectChildren(JavaGrammar.TYPE_PARAMETERS) ?
+        (List<TypeParameterTree>) astNode.getFirstChild(JavaGrammar.TYPE_PARAMETERS) :
+        ImmutableList.<TypeParameterTree>of(),
       superClass,
       superInterfaces,
       classBody(astNode.getFirstChild(JavaGrammar.CLASS_BODY)));
@@ -372,7 +376,6 @@ public class JavaTreeMaker {
     }
     declaration = astNode.getFirstChild(JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST);
     if (declaration != null) {
-      // TODO TYPE_PARAMETERS
       AstNode typeAstNode = declaration.getFirstChild(TYPE_KINDS);
       if (typeAstNode == null) {
         typeAstNode = declaration.getFirstChild(JavaKeyword.VOID);
@@ -380,6 +383,9 @@ public class JavaTreeMaker {
 
       return methodDeclarator(
         modifiers,
+        astNode.hasDirectChildren(JavaGrammar.TYPE_PARAMETERS) ?
+          (List<TypeParameterTree>) astNode.getFirstChild(JavaGrammar.TYPE_PARAMETERS) :
+          ImmutableList.<TypeParameterTree>of(),
         /* type */typeAstNode,
         /* name */declaration.getFirstChild(JavaTokenType.IDENTIFIER),
         declaration.getFirstChild(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST));
@@ -416,13 +422,17 @@ public class JavaTreeMaker {
    * 8.4. Method Declarations
    */
   private MethodTree methodDeclarator(ModifiersTree modifiers, @Nullable AstNode returnTypeNode, AstNode name, AstNode astNode) {
+    return methodDeclarator(modifiers, ImmutableList.<TypeParameterTree>of(), returnTypeNode, name, astNode);
+  }
+
+  private MethodTree methodDeclarator(ModifiersTree modifiers, List<TypeParameterTree> typeParameters, @Nullable AstNode returnTypeNode, AstNode name, AstNode astNode) {
     checkType(name, JavaTokenType.IDENTIFIER);
     checkType(astNode, JavaGrammar.METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_METHOD_DECLARATOR_REST,
       JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
       JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
       JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST);
-    // TODO type parameters
+
     Tree returnType = null;
     if (returnTypeNode != null) {
       if (returnTypeNode.is(JavaKeyword.VOID)) {
@@ -439,6 +449,7 @@ public class JavaTreeMaker {
     return new MethodTreeImpl(
       astNode,
       modifiers,
+      typeParameters,
       returnType,
       identifier(name),
       formalParameters(astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS)),
@@ -508,7 +519,7 @@ public class JavaTreeMaker {
     }
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
     List<Tree> superInterfaces = implementsNode != null ? (ClassTypeListTreeImpl) implementsNode.getNextSibling() : ImmutableList.<Tree>of();
-    return new ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType, /* super class: */null, superInterfaces, members.build());
+    return new ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType, ImmutableList.<TypeParameterTree>of(), /* super class: */null, superInterfaces, members.build());
   }
 
   /*
@@ -531,7 +542,14 @@ public class JavaTreeMaker {
     }
     AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
     List<Tree> superInterfaces = extendsNode != null ? (ClassTypeListTreeImpl) extendsNode.getNextSibling() : ImmutableList.<Tree>of();
-    return new ClassTreeImpl(astNode, Tree.Kind.INTERFACE, modifiers, simpleName, null, superInterfaces, members.build());
+    return new ClassTreeImpl(
+      astNode, Tree.Kind.INTERFACE,
+      modifiers,
+      simpleName,
+      astNode.hasDirectChildren(JavaGrammar.TYPE_PARAMETERS) ?
+        (List<TypeParameterTree>) astNode.getFirstChild(JavaGrammar.TYPE_PARAMETERS) :
+        ImmutableList.<TypeParameterTree>of(),
+      null, superInterfaces, members.build());
   }
 
   /**
@@ -581,6 +599,9 @@ public class JavaTreeMaker {
 
       members.add(methodDeclarator(
         modifiers,
+        declarationNode.hasDirectChildren(JavaGrammar.TYPE_PARAMETERS) ?
+          (List<TypeParameterTree>) declarationNode.getFirstChild(JavaGrammar.TYPE_PARAMETERS) :
+          ImmutableList.<TypeParameterTree>of(),
         /* type */typeAstNode,
         /* name */declarationNode.getFirstChild(JavaTokenType.IDENTIFIER),
         declarationNode.getFirstChild(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST)
@@ -636,6 +657,7 @@ public class JavaTreeMaker {
     return new ClassTreeImpl(astNode, Tree.Kind.ANNOTATION_TYPE,
       modifiers,
       simpleName,
+      ImmutableList.<TypeParameterTree>of(),
       /* super class: */null,
       ImmutableList.<Tree>of(),
       members.build());
@@ -663,6 +685,7 @@ public class JavaTreeMaker {
       members.add(new MethodTreeImpl(
         annotationMethodRestNode,
         /* modifiers */ModifiersTreeImpl.EMPTY,
+        /* type parameters */ImmutableList.<TypeParameterTree>of(),
         /* return type */(Tree) typeNode,
         /* name */identifier(identifierNode),
         /* parameters */ImmutableList.<VariableTree>of(),

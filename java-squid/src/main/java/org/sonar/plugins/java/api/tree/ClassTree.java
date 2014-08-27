@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -61,7 +62,7 @@ public interface ClassTree extends StatementTree {
   @Nullable
   IdentifierTree simpleName();
 
-  List<Tree> typeParameters();
+  List<TypeParameterTree> typeParameters();
 
   ModifiersTree modifiers();
 

@@ -80,6 +80,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collections;
@@ -867,7 +868,7 @@ public class TreeFactory {
     ClassTreeImpl classBody = null;
     if (classCreatorRest.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
       List<Tree> body = treeMaker.classBody(classCreatorRest.getFirstChild(JavaGrammar.CLASS_BODY));
-      classBody = new ClassTreeImpl(classCreatorRest, Tree.Kind.CLASS, ModifiersTreeImpl.EMPTY, null, null, ImmutableList.<Tree>of(), body);
+      classBody = new ClassTreeImpl(classCreatorRest, Tree.Kind.CLASS, ModifiersTreeImpl.EMPTY, null, ImmutableList.<TypeParameterTree>of(), null, ImmutableList.<Tree>of(), body);
     }
     return new NewClassTreeImpl(null, treeMaker.classType(createdName), (ArgumentListTreeImpl) classCreatorRest.getFirstChild(JavaGrammar.ARGUMENTS), classBody,
       createdName, classCreatorRest);

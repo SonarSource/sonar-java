@@ -20,7 +20,6 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.JavaTree;
@@ -32,14 +31,17 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
 public class MethodTreeImpl extends JavaTree implements MethodTree {
   private final ModifiersTree modifiers;
+  private final List<TypeParameterTree> typeParameters;
   @Nullable
   private final Tree returnType;
   private final IdentifierTree simpleName;
@@ -51,11 +53,13 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   private Symbol.MethodSymbol symbol;
 
-  public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, @Nullable Tree returnType, IdentifierTree simpleName, List<VariableTree> parameters,
-                        @Nullable BlockTree block,
-                        List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
+  public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, List<TypeParameterTree> typeParameters, @Nullable Tree returnType, IdentifierTree simpleName,
+    List<VariableTree> parameters,
+    @Nullable BlockTree block,
+    List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
     super(astNode);
     this.modifiers = Preconditions.checkNotNull(modifiers);
+    this.typeParameters = typeParameters;
     this.returnType = returnType;
     this.simpleName = Preconditions.checkNotNull(simpleName);
     this.parameters = Preconditions.checkNotNull(parameters);
@@ -75,9 +79,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   @Override
-  public List<Tree> typeParameters() {
-    // TODO implement
-    return ImmutableList.of();
+  public List<TypeParameterTree> typeParameters() {
+    return typeParameters;
   }
 
   @Nullable
@@ -130,15 +133,16 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
+      Iterators.singletonIterator(modifiers),
+      typeParameters.iterator(),
       Iterators.forArray(
-        modifiers,
         returnType,
         simpleName
-      ),
+        ),
       parameters.iterator(),
       Iterators.singletonIterator(block),
       throwsClauses.iterator(),
       Iterators.singletonIterator(defaultValue)
-    );
+      );
   }
 }

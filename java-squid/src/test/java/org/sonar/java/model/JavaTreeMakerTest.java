@@ -29,6 +29,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.parser.TypeArgumentListTreeImpl;
+import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -74,6 +75,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -235,11 +237,12 @@ public class JavaTreeMakerTest {
 
   @Test
   public void class_declaration() {
-    AstNode astNode = p.parse("public class T extends C implements I1, I2 { }");
+    AstNode astNode = p.parse("public class T<U> extends C implements I1, I2 { }");
     ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
+    assertThat(tree.typeParameters()).isNotEmpty();
     assertThat(tree.superClass()).isNotNull();
     assertThat(tree.superInterfaces()).hasSize(2);
 
@@ -248,6 +251,7 @@ public class JavaTreeMakerTest {
     tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
+    assertThat(tree.typeParameters()).isEmpty();
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).isEmpty();
 
@@ -362,10 +366,11 @@ public class JavaTreeMakerTest {
   public void class_method() {
     // TODO test "int m(int p[])"
 
-    AstNode astNode = p.parse("class T { public int m(int p1, int... p2) throws Exception1, Exception2 {} }");
+    AstNode astNode = p.parse("class T { public <T> int m(int p1, int... p2) throws Exception1, Exception2 {} }");
     MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.typeParameters()).isNotEmpty();
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(2);
@@ -380,6 +385,7 @@ public class JavaTreeMakerTest {
     tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.typeParameters()).isEmpty();
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(1);
@@ -516,11 +522,12 @@ public class JavaTreeMakerTest {
 
   @Test
   public void interface_declaration() {
-    AstNode astNode = p.parse("public interface T extends I1, I2 { }");
+    AstNode astNode = p.parse("public interface T<U> extends I1, I2 { }");
     ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
+    assertThat(tree.typeParameters()).isNotEmpty();
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).hasSize(2);
 
@@ -529,6 +536,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
+    assertThat(tree.typeParameters()).isEmpty();
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).isEmpty();
   }
@@ -556,9 +564,10 @@ public class JavaTreeMakerTest {
 
   @Test
   public void interface_method() {
-    AstNode astNode = p.parse("interface T { int m(int p1, int... p2) throws Exception1, Exception2; }");
+    AstNode astNode = p.parse("interface T { <T> int m(int p1, int... p2) throws Exception1, Exception2; }");
     MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
+    assertThat(tree.typeParameters()).isNotEmpty();
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(2);
@@ -572,6 +581,7 @@ public class JavaTreeMakerTest {
     astNode = p.parse("interface T { void m(int p) throws Exception1, Exception2; }");
     tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
+    assertThat(tree.typeParameters()).isEmpty();
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(1);
@@ -1630,6 +1640,25 @@ public class JavaTreeMakerTest {
     AstNode astNode = p.parse("class T { public void meth(){IntStream.range(1,12).map(x->x*x).map((int a)-> {return a*a;});}}").getFirstDescendant(JavaGrammar.EXPRESSION);
     ExpressionTree expressionTree = maker.expression(astNode);
     assertThat(expressionTree).isNotNull();
-
   }
+
+  @Test
+  public void type_parameters_and_bounds() {
+    TypeParameterListTreeImpl tree = (TypeParameterListTreeImpl) p.parse("class Foo<T, U extends Object & Number> {}").getFirstDescendant(JavaGrammar.TYPE_PARAMETERS);
+    assertThat(tree.openBracketToken().text()).isEqualTo("<");
+    assertThat(tree.closeBracketToken().text()).isEqualTo(">");
+
+    assertThat(tree).hasSize(2);
+
+    TypeParameterTree param = tree.get(0);
+    assertThat(param.identifier().name()).isEqualTo("T");
+    assertThat(param.bounds()).isEmpty();
+
+    param = tree.get(1);
+    assertThat(param.identifier().name()).isEqualTo("U");
+    assertThat(param.bounds()).hasSize(2);
+    assertThat(((IdentifierTree) param.bounds().get(0)).name()).isEqualTo("Object");
+    assertThat(((IdentifierTree) param.bounds().get(1)).name()).isEqualTo("Number");
+  }
+
 }
