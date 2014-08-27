@@ -49,21 +49,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private Symbol.TypeSymbol symbol;
 
-  public ClassTreeImpl(Kind kind, ModifiersTree modifiers, @Nullable IdentifierTree simpleName, @Nullable Tree superClass, List<Tree> superInterfaces, List<Tree> members,
-    AstNode... children) {
-    super(kind);
-    this.kind = Preconditions.checkNotNull(kind);
-    this.modifiers = Preconditions.checkNotNull(modifiers);
-    this.simpleName = simpleName;
-    this.superClass = superClass;
-    this.superInterfaces = Preconditions.checkNotNull(superInterfaces);
-    this.members = Preconditions.checkNotNull(members);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
-  }
-
   public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, @Nullable IdentifierTree simpleName, @Nullable Tree superClass, List<Tree> superInterfaces,
     List<Tree> members) {
     super(astNode);
