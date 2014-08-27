@@ -199,6 +199,59 @@ public class ActionGrammar {
 
   // Annotations
 
+  public AstNode ANNOTATION_METHOD_OR_CONSTANT_REST() {
+    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_METHOD_OR_CONSTANT_REST)
+      .is(
+        f.newAnnotationMethodOrConstantRest(
+          b.firstOf(
+            ANNOTATION_METHOD_REST(),
+            b.invokeRule(JavaGrammar.CONSTANT_DECLARATORS_REST))));
+  }
+
+  public AstNode ANNOTATION_METHOD_REST() {
+    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_METHOD_REST)
+      .is(
+        f.newAnnotationMethodRest(
+          b.invokeRule(JavaPunctuator.LPAR),
+          b.invokeRule(JavaPunctuator.RPAR),
+          b.optional(DEFAULT_VALUE())));
+  }
+
+  public AstNode DEFAULT_VALUE() {
+    return b.<AstNode>nonterminal(JavaGrammar.DEFAULT_VALUE)
+      .is(
+        f.newDefaultValue(
+          b.invokeRule(JavaKeyword.DEFAULT),
+          ELEMENT_VALUE()));
+  }
+
+  public AstNode ANNOTATION() {
+    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION)
+      .is(
+        f.newAnnotation(
+          b.invokeRule(JavaPunctuator.AT),
+          QUALIFIED_IDENTIFIER(),
+          b.optional(ANNOTATION_REST())));
+  }
+
+  public AstNode ANNOTATION_REST() {
+    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_REST)
+      .is(
+        f.newAnnotationRest(
+          b.firstOf(
+            NORMAL_ANNOTATION_REST(),
+            SINGLE_ELEMENT_ANNOTATION_REST())));
+  }
+
+  public AstNode NORMAL_ANNOTATION_REST() {
+    return b.<AstNode>nonterminal(JavaGrammar.NORMAL_ANNOTATION_REST)
+      .is(
+        f.newNormalAnnotationRest(
+          b.invokeRule(JavaPunctuator.LPAR),
+          b.optional(ELEMENT_VALUE_PAIRS()),
+          b.invokeRule(JavaPunctuator.RPAR)));
+  }
+
   public AstNode ELEMENT_VALUE_PAIRS() {
     return b.<AstNode>nonterminal(JavaGrammar.ELEMENT_VALUE_PAIRS)
       .is(
@@ -221,8 +274,8 @@ public class ActionGrammar {
         f.newElementValue(
           b.firstOf(
             (AstNode) CONDITIONAL_EXPRESSION(),
-            b.invokeRule(JavaGrammar.ANNOTATION),
-            b.invokeRule(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER))));
+            ANNOTATION(),
+            ELEMENT_VALUE_ARRAY_INITIALIZER())));
   }
 
   public AstNode ELEMENT_VALUE_ARRAY_INITIALIZER() {

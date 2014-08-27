@@ -30,7 +30,6 @@ import java.util.Arrays;
 
 import static org.sonar.java.ast.api.JavaKeyword.CATCH;
 import static org.sonar.java.ast.api.JavaKeyword.CLASS;
-import static org.sonar.java.ast.api.JavaKeyword.DEFAULT;
 import static org.sonar.java.ast.api.JavaKeyword.ENUM;
 import static org.sonar.java.ast.api.JavaKeyword.EXTENDS;
 import static org.sonar.java.ast.api.JavaKeyword.FINAL;
@@ -601,16 +600,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       ENUM_DECLARATION,
       INTERFACE_DECLARATION,
       ANNOTATION_TYPE_DECLARATION));
-    b.rule(ANNOTATION_METHOD_OR_CONSTANT_REST).is(b.firstOf(
-      ANNOTATION_METHOD_REST,
-      CONSTANT_DECLARATORS_REST));
-    b.rule(ANNOTATION_METHOD_REST).is(LPAR, RPAR, b.optional(DEFAULT_VALUE));
-    b.rule(DEFAULT_VALUE).is(DEFAULT, ELEMENT_VALUE);
-    b.rule(ANNOTATION).is(AT, QUALIFIED_IDENTIFIER, b.optional(ANNOTATION_REST));
-    b.rule(ANNOTATION_REST).is(b.firstOf(
-      NORMAL_ANNOTATION_REST,
-      SINGLE_ELEMENT_ANNOTATION_REST));
-    b.rule(NORMAL_ANNOTATION_REST).is(LPAR, b.optional(ELEMENT_VALUE_PAIRS), RPAR);
   }
 
   /**

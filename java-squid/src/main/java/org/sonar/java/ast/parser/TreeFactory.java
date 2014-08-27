@@ -358,6 +358,61 @@ public class TreeFactory {
 
   // Annotations
 
+  public AstNode newAnnotationMethodOrConstantRest(AstNode astNode) {
+    AstNodeType type = JavaGrammar.ANNOTATION_METHOD_OR_CONSTANT_REST;
+    AstNode result = new AstNode(type, type.toString(), null);
+    result.addChild(astNode);
+    return result;
+  }
+
+  public AstNode newAnnotationMethodRest(AstNode openParenTokenAstNode, AstNode closeParenTokenAstNode, Optional<AstNode> defaultValue) {
+    AstNodeType type = JavaGrammar.ANNOTATION_METHOD_REST;
+    AstNode result = new AstNode(type, type.toString(), null);
+    result.addChild(openParenTokenAstNode);
+    result.addChild(closeParenTokenAstNode);
+    if (defaultValue.isPresent()) {
+      result.addChild(defaultValue.get());
+    }
+    return result;
+  }
+
+  public AstNode newDefaultValue(AstNode defaultTokenAstNode, AstNode elementValue) {
+    AstNodeType type = JavaGrammar.DEFAULT_VALUE;
+    AstNode result = new AstNode(type, type.toString(), null);
+    result.addChild(defaultTokenAstNode);
+    result.addChild(elementValue);
+    return result;
+  }
+
+  public AstNode newAnnotation(AstNode atTokenAstNode, ExpressionTree qualifiedIdentifier, Optional<AstNode> annotationRest) {
+    AstNodeType type = JavaGrammar.ANNOTATION;
+    AstNode result = new AstNode(type, type.toString(), null);
+    result.addChild(atTokenAstNode);
+    result.addChild((AstNode) qualifiedIdentifier);
+    if (annotationRest.isPresent()) {
+      result.addChild(annotationRest.get());
+    }
+    return result;
+  }
+
+  public AstNode newAnnotationRest(AstNode astNode) {
+    AstNodeType type = JavaGrammar.ANNOTATION_REST;
+    AstNode result = new AstNode(type, type.toString(), null);
+    result.addChild(astNode);
+    return result;
+  }
+
+  public AstNode newNormalAnnotationRest(AstNode openParenTokenAstNode, Optional<AstNode> elementValuePairs, AstNode closeParenTokenAstNode) {
+    AstNodeType type = JavaGrammar.NORMAL_ANNOTATION_REST;
+    AstNode result = new AstNode(type, type.toString(), null);
+    result.addChild(openParenTokenAstNode);
+    if (elementValuePairs.isPresent()) {
+      result.addChild(elementValuePairs.get());
+    }
+    result.addChild(closeParenTokenAstNode);
+    return result;
+  }
+
   public AstNode newElementValuePairs(AstNode elementValuePair, Optional<List<AstNode>> rests) {
     AstNode astNode = new AstNode(JavaGrammar.ELEMENT_VALUE_PAIRS, JavaGrammar.ELEMENT_VALUE_PAIRS.toString(), null);
     astNode.addChild(elementValuePair);
