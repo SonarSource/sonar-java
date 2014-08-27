@@ -85,11 +85,15 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
     } else if(member.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) member;
       return  hasStaticModifier(methodTree.modifiers());
-    } else if(member.is(Tree.Kind.CLASS) || member.is(Tree.Kind.ANNOTATION_TYPE) || member.is(Tree.Kind.INTERFACE) || member.is(Tree.Kind.ENUM)) {
+    } else if(isClassTree(member)) {
       ClassTree classTree = (ClassTree) member;
       return  hasStaticModifier(classTree.modifiers());
     }
     return false;
+  }
+
+  private static boolean isClassTree(Tree member) {
+    return member.is(Tree.Kind.CLASS) || member.is(Tree.Kind.ANNOTATION_TYPE) || member.is(Tree.Kind.INTERFACE) || member.is(Tree.Kind.ENUM);
   }
 
   private static boolean hasStaticModifier(ModifiersTree modifiers){

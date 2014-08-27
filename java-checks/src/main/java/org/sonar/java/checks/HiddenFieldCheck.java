@@ -75,7 +75,7 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ANNOTATION_TYPE)) {
+    if (isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
       ImmutableMap.Builder<String, VariableTree> builder = ImmutableMap.builder();
       for (Tree member : classTree.members()) {
@@ -88,17 +88,7 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
       excludedVariables.push(Lists.<VariableTree>newArrayList());
     } else if (tree.is(Tree.Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) tree;
-      for (ImmutableMap<String, VariableTree> variables : fields) {
-        if (variables.values().contains(variableTree)) {
-          return;
-        }
-        String identifier = variableTree.simpleName().name();
-        VariableTree hiddenVariable = variables.get(identifier);
-        if (!flattenExcludedVariables.contains(variableTree) && hiddenVariable != null) {
-          addIssue(variableTree, "Rename \"" + identifier + "\" which hides the field declared at line " + ((JavaTree) hiddenVariable).getLine() + ".");
-          return;
-        }
-      }
+      isVariableHidingField(variableTree);
     } else if (tree.is(Tree.Kind.STATIC_INITIALIZER)) {
       excludeVariablesFromBlock((BlockTree) tree);
     } else {
@@ -111,9 +101,27 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
     }
   }
 
+  private void isVariableHidingField(VariableTree variableTree) {
+    for (ImmutableMap<String, VariableTree> variables : fields) {
+      if (variables.values().contains(variableTree)) {
+        return;
+      }
+      String identifier = variableTree.simpleName().name();
+      VariableTree hiddenVariable = variables.get(identifier);
+      if (!flattenExcludedVariables.contains(variableTree) && hiddenVariable != null) {
+        addIssue(variableTree, "Rename \"" + identifier + "\" which hides the field declared at line " + ((JavaTree) hiddenVariable).getLine() + ".");
+        return;
+      }
+    }
+  }
+
+  private boolean isClassTree(Tree tree) {
+    return tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ANNOTATION_TYPE);
+  }
+
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ANNOTATION_TYPE)) {
+    if (isClassTree(tree)) {
       fields.pop();
       flattenExcludedVariables.removeAll(excludedVariables.pop());
     }

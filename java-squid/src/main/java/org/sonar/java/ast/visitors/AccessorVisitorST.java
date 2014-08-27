@@ -53,7 +53,8 @@ public class AccessorVisitorST extends SubscriptionVisitor {
   }
 
   private boolean isSetter(ClassTree classTree, MethodTree methodTree) {
-    return methodTree.simpleName().name().startsWith("set") && methodTree.parameters().size() == 1 && returnTypeIs(methodTree, "void") && hasOneAssignementStatement(methodTree, classTree);
+    return methodTree.simpleName().name().startsWith("set") && methodTree.parameters().size() == 1
+        && returnTypeIs(methodTree, "void") && hasOneAssignementStatement(methodTree, classTree);
   }
 
   private boolean hasOneAssignementStatement(MethodTree methodTree, ClassTree classTree) {
