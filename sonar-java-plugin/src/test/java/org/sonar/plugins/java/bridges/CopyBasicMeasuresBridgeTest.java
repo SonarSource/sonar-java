@@ -59,7 +59,6 @@ public class CopyBasicMeasuresBridgeTest {
     Resource sonarFile = mock(Resource.class);
     SourceFile squidFile = new SourceFile("file");
     squidFile.setMeasure(JavaMetric.LINES_OF_CODE, 1);
-    squidFile.setMeasure(JavaMetric.LINES, 2);
     squidFile.setMeasure(JavaMetric.COMMENT_LINES_WITHOUT_HEADER, 3);
     squidFile.setMeasure(JavaMetric.STATEMENTS, 4);
     squidFile.setMeasure(JavaMetric.CLASSES, 6);
@@ -69,7 +68,7 @@ public class CopyBasicMeasuresBridgeTest {
     bridge.onFile(squidFile, sonarFile);
 
     ArgumentCaptor<Measure> measureCaptor = ArgumentCaptor.forClass(Measure.class);
-    verify(context, times(10)).saveMeasure(eq(sonarFile), measureCaptor.capture());
+    verify(context, times(9)).saveMeasure(eq(sonarFile), measureCaptor.capture());
     verifyNoMoreInteractions(context);
 
     List<Measure> measures = measureCaptor.getAllValues();
@@ -77,29 +76,26 @@ public class CopyBasicMeasuresBridgeTest {
     assertThat(measures.get(0).getMetric()).isSameAs(CoreMetrics.NCLOC);
     assertThat(measures.get(0).getValue()).isEqualTo(1);
 
-    assertThat(measures.get(1).getMetric()).isSameAs(CoreMetrics.LINES);
-    assertThat(measures.get(1).getValue()).isEqualTo(2);
+    assertThat(measures.get(1).getMetric()).isSameAs(CoreMetrics.COMMENT_LINES);
+    assertThat(measures.get(1).getValue()).isEqualTo(3);
 
-    assertThat(measures.get(2).getMetric()).isSameAs(CoreMetrics.COMMENT_LINES);
-    assertThat(measures.get(2).getValue()).isEqualTo(3);
+    assertThat(measures.get(2).getMetric()).isSameAs(CoreMetrics.STATEMENTS);
+    assertThat(measures.get(2).getValue()).isEqualTo(4);
 
-    assertThat(measures.get(3).getMetric()).isSameAs(CoreMetrics.STATEMENTS);
-    assertThat(measures.get(3).getValue()).isEqualTo(4);
+    assertThat(measures.get(3).getMetric()).isSameAs(CoreMetrics.CLASSES);
+    assertThat(measures.get(3).getValue()).isEqualTo(6);
 
-    assertThat(measures.get(4).getMetric()).isSameAs(CoreMetrics.CLASSES);
-    assertThat(measures.get(4).getValue()).isEqualTo(6);
+    assertThat(measures.get(4).getMetric()).isSameAs(CoreMetrics.COMPLEXITY);
+    assertThat(measures.get(4).getValue()).isEqualTo(7);
 
-    assertThat(measures.get(5).getMetric()).isSameAs(CoreMetrics.COMPLEXITY);
-    assertThat(measures.get(5).getValue()).isEqualTo(7);
+    assertThat(measures.get(5).getMetric()).isSameAs(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION);
 
-    assertThat(measures.get(6).getMetric()).isSameAs(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION);
+    assertThat(measures.get(6).getMetric()).isSameAs(CoreMetrics.PUBLIC_API);
+    assertThat(measures.get(6).getValue()).isEqualTo(8);
 
-    assertThat(measures.get(7).getMetric()).isSameAs(CoreMetrics.PUBLIC_API);
-    assertThat(measures.get(7).getValue()).isEqualTo(8);
+    assertThat(measures.get(7).getMetric()).isSameAs(CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY);
 
-    assertThat(measures.get(8).getMetric()).isSameAs(CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY);
-
-    assertThat(measures.get(9).getMetric()).isSameAs(CoreMetrics.PUBLIC_UNDOCUMENTED_API);
+    assertThat(measures.get(8).getMetric()).isSameAs(CoreMetrics.PUBLIC_UNDOCUMENTED_API);
   }
 
 }

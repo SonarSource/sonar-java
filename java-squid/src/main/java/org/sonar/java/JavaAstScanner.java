@@ -34,7 +34,6 @@ import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.ast.visitors.EndAtLineVisitor;
 import org.sonar.java.ast.visitors.FileVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
-import org.sonar.java.ast.visitors.LinesVisitor;
 import org.sonar.java.ast.visitors.MethodVisitor;
 import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.java.ast.visitors.PublicApiVisitor;
@@ -128,8 +127,6 @@ public final class JavaAstScanner {
       });
 
     /* Metrics */
-
-    builder.withSquidAstVisitor(new LinesVisitor(conf.getCharset()));
 
     builder.withSquidAstVisitor(new LinesOfCodeVisitor());
     builder.withSquidAstVisitor(new CommentLinesVisitor());

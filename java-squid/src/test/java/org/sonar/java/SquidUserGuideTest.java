@@ -20,10 +20,18 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.sonar.api.batch.SensorContext;
+import org.sonar.api.measures.Measure;
+import org.sonar.api.resources.Project;
+import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.java.ast.api.JavaMetric;
+import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
@@ -35,11 +43,18 @@ import java.io.File;
 import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SquidUserGuideTest {
 
   private static JavaSquid squid;
   private static SourceProject project;
+  private static SensorContext context;
+  private static Measurer measurer;
 
   @BeforeClass
   public static void init() {
@@ -48,7 +63,13 @@ public class SquidUserGuideTest {
     File binDir = new File(prjDir, "bin");
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    squid = new JavaSquid(conf);
+    context = mock(SensorContext.class);
+    Project sonarProject = mock(Project.class);
+    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
+    when(pfs.getBasedir()).thenReturn(prjDir);
+    when(sonarProject.getFileSystem()).thenReturn(pfs);
+    measurer = new Measurer(sonarProject, context);
+    squid = new JavaSquid(conf, null, measurer, new CodeVisitor[0]);
     squid.scanDirectories(Collections.singleton(srcDir), Collections.singleton(binDir));
 
     SourceCodeSearchEngine index = squid.getIndex();
@@ -57,11 +78,20 @@ public class SquidUserGuideTest {
 
   @Test
   public void measures_on_project() throws Exception {
+    ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
+    verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());
+    Multiset<String> metrics = HashMultiset.create();
+    for (Measure measure : captor.getAllValues()) {
+      if(measure.getIntValue() != null ){
+        metrics.add(measure.getMetricKey(), measure.getIntValue());
+      }
+    }
+
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(412);
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(3805 + 69);
     assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(3805);
     assertThat(project.getInt(Metric.ACCESSORS)).isEqualTo(69);
-    assertThat(project.getInt(JavaMetric.LINES)).isEqualTo(64125);
+    assertThat(metrics.count("lines")).isEqualTo(64125);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(26323);
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(12047);
     assertThat(project.getInt(JavaMetric.COMPLEXITY)).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);

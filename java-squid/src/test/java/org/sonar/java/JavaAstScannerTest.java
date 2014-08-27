@@ -32,12 +32,6 @@ import static org.fest.assertions.Assertions.assertThat;
 public class JavaAstScannerTest {
 
   @Test
-  public void lines() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Lines.java"));
-    assertThat(file.getInt(JavaMetric.LINES)).isEqualTo(7);
-  }
-
-  @Test
   public void lines_of_code() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/LinesOfCode.java"));
     assertThat(file.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(2);

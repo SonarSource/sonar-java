@@ -19,7 +19,9 @@
  */
 package org.sonar.java;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.Files;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
@@ -36,11 +38,13 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Measurer extends SubscriptionVisitor {
+public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor {
 
   private static final Number[] LIMITS = {1, 2, 4, 6, 8, 10, 12};
 
@@ -55,6 +59,7 @@ public class Measurer extends SubscriptionVisitor {
   private final Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
   private final AccessorVisitorST accessorVisitorST;
   private final ComplexityVisitorST complexityVisitorST;
+  private Charset charset;
 
   public Measurer(Project project, SensorContext context) {
     this.project = project;
@@ -84,7 +89,17 @@ public class Measurer extends SubscriptionVisitor {
     saveMetricOnFile(CoreMetrics.ACCESSORS, accessors);
     saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_FUNCTIONS, complexityInMethods);
     sensorContext.saveMeasure(sonarFile, methodComplexityDistribution.build(true).setPersistenceMode(PersistenceMode.MEMORY));
+    saveLinesMetric();
 
+  }
+
+  private void saveLinesMetric() {
+    try {
+      String content = Files.toString(context.getFile(), charset);
+      saveMetricOnFile(CoreMetrics.LINES, content.split("(\r)?\n|\r", -1).length);
+    } catch (IOException e) {
+      Throwables.propagate(e);
+    }
   }
 
   @Override
@@ -122,4 +137,8 @@ public class Measurer extends SubscriptionVisitor {
   }
 
 
+  @Override
+  public void setCharset(Charset charset) {
+    this.charset = charset;
+  }
 }

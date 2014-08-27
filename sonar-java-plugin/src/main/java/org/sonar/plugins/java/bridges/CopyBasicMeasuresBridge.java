@@ -38,7 +38,7 @@ public final class CopyBasicMeasuresBridge extends Bridge {
   @Override
   public void onFile(SourceFile squidFile, Resource sonarResource) {
     copy(squidFile, sonarResource, JavaMetric.LINES_OF_CODE, CoreMetrics.NCLOC);
-    copy(squidFile, sonarResource, JavaMetric.LINES, CoreMetrics.LINES);
+    //copy(squidFile, sonarResource, JavaMetric.LINES, CoreMetrics.LINES);
     copy(squidFile, sonarResource, JavaMetric.COMMENT_LINES_WITHOUT_HEADER, CoreMetrics.COMMENT_LINES);
     copy(squidFile, sonarResource, JavaMetric.STATEMENTS, CoreMetrics.STATEMENTS);
     copy(squidFile, sonarResource, JavaMetric.CLASSES, CoreMetrics.CLASSES);

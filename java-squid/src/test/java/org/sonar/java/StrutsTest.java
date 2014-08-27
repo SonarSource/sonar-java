@@ -20,11 +20,12 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
@@ -38,21 +39,14 @@ import org.sonar.squidbridge.api.SourceProject;
 import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.squidbridge.measures.Metric;
 
-import javax.lang.model.util.Types;
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -88,22 +82,21 @@ public class StrutsTest {
   @Test
   public void measures_on_project() throws Exception {
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
-    ArgumentCaptor<org.sonar.api.resources.File> sonarFilescaptor = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
-    verify(context, atLeastOnce()).saveMeasure(sonarFilescaptor.capture(), captor.capture());
-    List<Measure> measures = captor.getAllValues();
-    int functions = 0;
-    for (Measure measure : measures) {
-      if(measure.getMetricKey().equals("functions")) {
-        functions += measure.getIntValue();
+    verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());
+    Multiset<String> metrics = HashMultiset.create();
+    for (Measure measure : captor.getAllValues()) {
+      if(measure.getIntValue() != null ){
+        metrics.add(measure.getMetricKey(), measure.getIntValue());
       }
     }
+
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(146);
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(1437 + 48);
     assertThat(project.getInt(Metric.ACCESSORS)).isEqualTo(48);
     assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(1437);
     //56 methods in anonymous classes: not part of metric but part of number of methods in project.
-    assertThat(functions).isEqualTo(1437-56);
-    assertThat(project.getInt(JavaMetric.LINES)).isEqualTo(32878);
+    assertThat(metrics.count("functions")).isEqualTo(1437-56);
+    assertThat(metrics.count("lines")).isEqualTo(32878);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(14007);
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(6403);
     assertThat(project.getInt(JavaMetric.COMPLEXITY)).isEqualTo(3957 - 145 /* SONAR-3793 */- 1 /* SONAR-3794 */);
