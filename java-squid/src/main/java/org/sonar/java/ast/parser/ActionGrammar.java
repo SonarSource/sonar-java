@@ -199,9 +199,52 @@ public class ActionGrammar {
 
   // Annotations
 
+  public AstNode ELEMENT_VALUE_PAIRS() {
+    return b.<AstNode>nonterminal(JavaGrammar.ELEMENT_VALUE_PAIRS)
+      .is(
+        f.newElementValuePairs(
+          ELEMENT_VALUE_PAIR(), b.zeroOrMore(f.newWrapperAstNode9(b.invokeRule(JavaPunctuator.COMMA), ELEMENT_VALUE_PAIR()))));
+  }
+
+  public AstNode ELEMENT_VALUE_PAIR() {
+    return b.<AstNode>nonterminal(JavaGrammar.ELEMENT_VALUE_PAIR)
+      .is(
+        f.newElementValuePair(
+          b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.invokeRule(JavaPunctuator.EQU),
+          ELEMENT_VALUE()));
+  }
+
+  public AstNode ELEMENT_VALUE() {
+    return b.<AstNode>nonterminal(JavaGrammar.ELEMENT_VALUE)
+      .is(
+        f.newElementValue(
+          b.firstOf(
+            (AstNode) CONDITIONAL_EXPRESSION(),
+            b.invokeRule(JavaGrammar.ANNOTATION),
+            b.invokeRule(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER))));
+  }
+
+  public AstNode ELEMENT_VALUE_ARRAY_INITIALIZER() {
+    return b.<AstNode>nonterminal(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER)
+      .is(
+        f.newElementValueArrayInitializer(
+          b.invokeRule(JavaPunctuator.LWING),
+          b.optional(ELEMENT_VALUES()),
+          b.optional(b.invokeRule(JavaPunctuator.COMMA)),
+          b.invokeRule(JavaPunctuator.RWING)));
+  }
+
+  public AstNode ELEMENT_VALUES() {
+    return b.<AstNode>nonterminal(JavaGrammar.ELEMENT_VALUES)
+      .is(
+        f.newElementValues(
+          ELEMENT_VALUE(), b.zeroOrMore(f.newWrapperAstNode8(b.invokeRule(JavaPunctuator.COMMA), ELEMENT_VALUE()))));
+  }
+
   public AstNode SINGLE_ELEMENT_ANNOTATION_REST() {
     return b.<AstNode>nonterminal(JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST)
-      .is(f.newSingleElementAnnotationRest(b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.ELEMENT_VALUE), b.invokeRule(JavaPunctuator.RPAR)));
+      .is(f.newSingleElementAnnotationRest(b.invokeRule(JavaPunctuator.LPAR), ELEMENT_VALUE(), b.invokeRule(JavaPunctuator.RPAR)));
   }
 
   // End of annotations

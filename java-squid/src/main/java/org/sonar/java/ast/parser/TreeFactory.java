@@ -358,6 +358,61 @@ public class TreeFactory {
 
   // Annotations
 
+  public AstNode newElementValuePairs(AstNode elementValuePair, Optional<List<AstNode>> rests) {
+    AstNode astNode = new AstNode(JavaGrammar.ELEMENT_VALUE_PAIRS, JavaGrammar.ELEMENT_VALUE_PAIRS.toString(), null);
+    astNode.addChild(elementValuePair);
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        for (AstNode child : rest.getChildren()) {
+          astNode.addChild(child);
+        }
+      }
+    }
+    return astNode;
+  }
+
+  public AstNode newElementValuePair(AstNode identifierAstNode, AstNode equalTokenAstNode, AstNode elementValue) {
+    AstNode astNode = new AstNode(JavaGrammar.ELEMENT_VALUE_PAIR, JavaGrammar.ELEMENT_VALUE_PAIR.toString(), null);
+    astNode.addChild(identifierAstNode);
+    astNode.addChild(equalTokenAstNode);
+    astNode.addChild(elementValue);
+    return astNode;
+  }
+
+  public AstNode newElementValue(AstNode element) {
+    AstNode astNode = new AstNode(JavaGrammar.ELEMENT_VALUE, JavaGrammar.ELEMENT_VALUE.toString(), null);
+    astNode.addChild(element);
+    return astNode;
+  }
+
+  public AstNode newElementValueArrayInitializer(AstNode openBraceTokenAstNode, Optional<AstNode> elementValue, Optional<AstNode> commaTokenAstNode, AstNode closeBraceTokenAstNode) {
+    AstNode astNode = new AstNode(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER, JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER.toString(), null);
+    astNode.addChild(openBraceTokenAstNode);
+    if (elementValue.isPresent()) {
+      astNode.addChild(elementValue.get());
+    }
+    if (commaTokenAstNode.isPresent()) {
+      astNode.addChild(commaTokenAstNode.get());
+    }
+    astNode.addChild(closeBraceTokenAstNode);
+    return astNode;
+  }
+
+  public AstNode newElementValues(AstNode elementValue, Optional<List<AstNode>> rests) {
+    AstNode astNode = new AstNode(JavaGrammar.ELEMENT_VALUES, JavaGrammar.ELEMENT_VALUES.toString(), null);
+    astNode.addChild(elementValue);
+
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        for (AstNode child : rest.getChildren()) {
+          astNode.addChild(child);
+        }
+      }
+    }
+
+    return astNode;
+  }
+
   public AstNode newSingleElementAnnotationRest(AstNode openParenTokenAstNode, AstNode elementValue, AstNode closeParenTokenAstNode) {
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
@@ -1197,6 +1252,14 @@ public class TreeFactory {
   }
 
   public AstNode newWrapperAstNode7(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  public AstNode newWrapperAstNode8(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  public AstNode newWrapperAstNode9(AstNode e1, AstNode e2) {
     return newWrapperAstNode(e1, e2);
   }
 
