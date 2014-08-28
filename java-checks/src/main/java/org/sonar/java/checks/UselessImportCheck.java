@@ -35,6 +35,7 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -70,7 +71,7 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
     subscribeTo(JavaGrammar.IMPORT_DECLARATION);
     subscribeTo(JavaGrammar.CLASS_TYPE);
     subscribeTo(JavaGrammar.CREATED_NAME);
-    subscribeTo(JavaGrammar.ANNOTATION);
+    subscribeTo(Kind.ANNOTATION);
     subscribeTo(JavaKeyword.THROWS);
     subscribeTo(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
   }
@@ -166,8 +167,8 @@ public class UselessImportCheck extends SquidCheck<LexerlessGrammar> implements 
       return builder.build();
     } else {
       AstNode actualNode = node;
-      if (node.is(JavaGrammar.ANNOTATION)) {
-        actualNode = node.getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
+      if (node.is(Kind.ANNOTATION)) {
+        actualNode = (AstNode) ((AnnotationTree) node).annotationType();
       }
 
       return Collections.singleton(mergeIdentifiers(actualNode));

@@ -419,7 +419,7 @@ public class JavaTreeMaker {
     for (AstNode variableDeclaratorIdNode : astNode.getDescendants(JavaGrammar.VARIABLE_DECLARATOR_ID)) {
       AstNode typeNode = variableDeclaratorIdNode.getPreviousAstNode();
       AstNode referenceTypeNode = typeNode.getPreviousAstNode();
-      while (referenceTypeNode.is(JavaGrammar.ANNOTATION)) {
+      while (referenceTypeNode.is(Kind.ANNOTATION)) {
         referenceTypeNode = referenceTypeNode.getPreviousAstNode();
       }
       Tree type = typeNode.is(JavaPunctuator.ELLIPSIS) ? new JavaTree.ArrayTypeTreeImpl(typeNode, (Tree) referenceTypeNode) : (Tree) typeNode;
