@@ -31,7 +31,7 @@ import com.sonar.sslr.api.Trivia;
 import org.sonar.api.source.Highlightable;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.io.IOException;
@@ -100,7 +100,7 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
   @Override
   public void visitNode(AstNode astNode) {
     if (astNode.is(Kind.ANNOTATION)) {
-      highlighting.highlight(astNode.getFromIndex(), astNode.getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS).getToIndex(), types.get(astNode.getType()));
+      highlighting.highlight(astNode.getFromIndex(), ((AstNode) ((AnnotationTree) astNode).annotationType()).getToIndex(), types.get(astNode.getType()));
     } else {
       highlighting.highlight(astNode.getFromIndex(), astNode.getToIndex(), types.get(astNode.getType()));
     }
