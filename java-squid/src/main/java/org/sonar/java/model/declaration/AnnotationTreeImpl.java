@@ -21,19 +21,36 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import javax.annotation.Nullable;
+
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationTree {
 
-  private final List<ExpressionTree> arguments;
   private final Tree annotationType;
+  private final List<ExpressionTree> arguments;
+
+  public AnnotationTreeImpl(InternalSyntaxToken atToken, Tree annotationType, @Nullable ArgumentListTreeImpl arguments) {
+    super(Kind.ANNOTATION);
+    this.annotationType = annotationType;
+    this.arguments = arguments == null ? Collections.<ExpressionTree>emptyList() : arguments;
+
+    addChild(atToken);
+    addChild((AstNode) annotationType);
+    if (arguments != null) {
+      addChild(arguments);
+    }
+  }
 
   public AnnotationTreeImpl(AstNode astNode, Tree annotationType, List<ExpressionTree> arguments) {
     super(astNode);

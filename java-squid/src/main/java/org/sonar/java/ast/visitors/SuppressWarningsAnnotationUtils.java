@@ -19,13 +19,12 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -66,19 +65,16 @@ public class SuppressWarningsAnnotationUtils {
 
   private static boolean containsAnnotationSuppressAllWarnings(List<AnnotationTree> annotations) {
     for (AnnotationTree annotation : annotations) {
-      return isAnnotationSupressAllWarnings(((JavaTree) annotation).getAstNode());
+      return isAnnotationSupressAllWarnings(annotation);
     }
     return false;
   }
 
-  // FIXME
-  private static boolean isAnnotationSupressAllWarnings(AstNode annotationNode) {
-    Preconditions.checkArgument(annotationNode.is(JavaGrammar.ANNOTATION));
-
-    String name = getAnnotationName(annotationNode);
+  private static boolean isAnnotationSupressAllWarnings(AnnotationTree annotation) {
+    String name = getAnnotationName((AstNode) annotation.annotationType());
     if (SUPPRESS_WARNINGS_ANNOTATION_NAME.equals(name) || SUPPRESS_WARNINGS_ANNOTATION_FQ_NAME.equals(name)) {
-      for (AstNode valueNode : annotationNode.getDescendants(Kind.STRING_LITERAL)) {
-        if (VALUE.equals(valueNode.getTokenValue())) {
+      for (ExpressionTree expression : annotation.arguments()) {
+        if (expression.is(Kind.STRING_LITERAL) && VALUE.equals(((LiteralTree) expression).value())) {
           return true;
         }
       }
@@ -88,7 +84,7 @@ public class SuppressWarningsAnnotationUtils {
 
   private static String getAnnotationName(AstNode astNode) {
     StringBuilder sb = new StringBuilder();
-    for (Token token : astNode.getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS).getTokens()) {
+    for (Token token : astNode.getTokens()) {
       sb.append(token.getValue());
     }
     return sb.toString();

@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 import java.io.File;
 
@@ -35,10 +35,9 @@ public class RepeatAnnotationCheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RepeatAnnotationCheck.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Remove the 'SomeAnnotations' wrapper from this annotation group")
-        .next().atLine(16).withMessage("Remove the 'some.pck.SomeAnnotations' wrapper from this annotation group")
-        .noMore();
-    ;
+      .next().atLine(2).withMessage("Remove the 'SomeAnnotations' wrapper from this annotation group")
+      .next().atLine(16).withMessage("Remove the 'some.pck.SomeAnnotations' wrapper from this annotation group")
+      .noMore();
   }
 
 }

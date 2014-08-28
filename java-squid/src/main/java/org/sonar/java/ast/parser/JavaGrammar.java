@@ -302,7 +302,9 @@ public enum JavaGrammar implements GrammarRuleKey {
   // Helpers
   // TODO Introduce ANNOTATIONS?
 
-  MODIFIERS;
+  MODIFIERS,
+
+  ANNOTATION_ARGUMENTS;
 
   public static LexerlessGrammarBuilder createGrammarBuilder() {
     LexerlessGrammarBuilder b = LexerlessGrammarBuilder.create();

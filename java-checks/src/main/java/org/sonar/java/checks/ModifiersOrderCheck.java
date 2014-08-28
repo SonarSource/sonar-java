@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -37,7 +38,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 public class ModifiersOrderCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final AstNodeType[] EXPECTED_ORDER = new AstNodeType[] {
-    JavaGrammar.ANNOTATION,
+    Kind.ANNOTATION,
     JavaKeyword.PUBLIC,
     JavaKeyword.PROTECTED,
     JavaKeyword.PRIVATE,

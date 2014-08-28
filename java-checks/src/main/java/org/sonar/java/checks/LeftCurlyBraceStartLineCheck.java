@@ -20,17 +20,18 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "LeftCurlyBraceStartLineCheck",
   priority = Priority.MAJOR,
-  tags={"convention"})
+  tags = {"convention"})
 public class LeftCurlyBraceStartLineCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
@@ -47,8 +48,8 @@ public class LeftCurlyBraceStartLineCheck extends SquidCheck<LexerlessGrammar> {
 
   private static boolean isExcluded(AstNode node) {
     return node.getParent().is(
-        JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER,
-        JavaGrammar.ARRAY_INITIALIZER);
+      Kind.NEW_ARRAY,
+      JavaGrammar.ARRAY_INITIALIZER);
   }
 
 }

@@ -31,13 +31,11 @@ import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.ClassTypeListTreeImpl;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.TypeArgumentListTreeImpl;
-import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
@@ -138,7 +136,7 @@ public class JavaTreeMaker {
         result = new JavaTree.ParameterizedTypeTreeImpl(child, result, (TypeArgumentListTreeImpl) child);
       } else if (child.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
         result = new JavaTree.ParameterizedTypeTreeImpl(child, result, nonWildcardTypeArguments(child));
-      } else if (!(child.is(JavaPunctuator.DOT) || child.is(JavaGrammar.ANNOTATION))) {
+      } else if (!(child.is(JavaPunctuator.DOT) || child.is(Kind.ANNOTATION))) {
         throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString()
           + " at line " + astNode.getTokenLine() + " column " + astNode.getToken().getColumn());
       }
@@ -187,53 +185,6 @@ public class JavaTreeMaker {
     return result.build();
   }
 
-  public AnnotationTree annotation(AstNode astNode) {
-    ImmutableList.Builder<ExpressionTree> arguments = ImmutableList.builder();
-    ExpressionTree annotationType = (ExpressionTree) astNode.getFirstChild(QUALIFIED_EXPRESSION_KINDS);
-    if (astNode.hasDirectChildren(JavaGrammar.ANNOTATION_REST)) {
-      AstNode annotationRest = astNode.getFirstChild(JavaGrammar.ANNOTATION_REST).getFirstChild();
-      if (annotationRest.is(JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST)) {
-        arguments.add(elementValue(annotationRest.getFirstChild(JavaGrammar.ELEMENT_VALUE)));
-      } else if (annotationRest.is(JavaGrammar.NORMAL_ANNOTATION_REST)) {
-        AstNode elementValuePairs = annotationRest.getFirstChild(JavaGrammar.ELEMENT_VALUE_PAIRS);
-        if (elementValuePairs != null) {
-          List<AstNode> values = elementValuePairs.getChildren(JavaGrammar.ELEMENT_VALUE_PAIR);
-          for (AstNode value : values) {
-            AstNode identifier = value.getFirstChild(JavaTokenType.IDENTIFIER);
-            AstNode operator = value.getFirstChild(JavaPunctuator.EQU);
-            arguments.add(new AssignmentExpressionTreeImpl(
-              operator,
-              identifier(identifier),
-              kindMaps.getAssignmentOperator(JavaPunctuator.EQU),
-              elementValue(value.getFirstChild(JavaGrammar.ELEMENT_VALUE))
-              ));
-          }
-        }
-      }
-    }
-    return new AnnotationTreeImpl(astNode, annotationType, arguments.build());
-  }
-
-  public ExpressionTree elementValue(AstNode astNode) {
-    AstNode elementValue = astNode.getFirstChild();
-    ExpressionTree result;
-    if (elementValue.is(JavaGrammar.ANNOTATION)) {
-      result = annotation(elementValue);
-    } else if (elementValue.is(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER)) {
-      List<ExpressionTree> elementValues = Lists.newArrayList();
-      if (elementValue.hasDirectChildren(JavaGrammar.ELEMENT_VALUES)) {
-        AstNode elementValuesNode = elementValue.getFirstChild(JavaGrammar.ELEMENT_VALUES);
-        for (AstNode node : elementValuesNode.getChildren(JavaGrammar.ELEMENT_VALUE)) {
-          elementValues.add(elementValue(node));
-        }
-      }
-      result = new NewArrayTreeImpl(elementValue, null, ImmutableList.<ExpressionTree>of(), elementValues);
-    } else {
-      result = expression(elementValue);
-    }
-    return result;
-  }
-
   /*
    * 7.3. Compilation Units
    */
@@ -276,8 +227,8 @@ public class JavaTreeMaker {
     if (astNode.hasDirectChildren(JavaGrammar.PACKAGE_DECLARATION)) {
       AstNode packageDeclarationNode = astNode.getFirstChild(JavaGrammar.PACKAGE_DECLARATION);
       packageDeclaration = (ExpressionTree) packageDeclarationNode.getFirstChild(QUALIFIED_EXPRESSION_KINDS);
-      for (AstNode annotationNode : packageDeclarationNode.getChildren(JavaGrammar.ANNOTATION)) {
-        packageAnnotations.add(annotation(annotationNode));
+      for (AstNode annotationNode : packageDeclarationNode.getChildren(Kind.ANNOTATION)) {
+        packageAnnotations.add((AnnotationTree) annotationNode);
       }
     }
     return new JavaTree.CompilationUnitTreeImpl(
@@ -746,8 +697,8 @@ public class JavaTreeMaker {
     ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
     ImmutableList.Builder<AnnotationTree> annotations = ImmutableList.builder();
     for (AstNode modifierAstNode : astNode.getChildren()) {
-      if (modifierAstNode.is(JavaGrammar.ANNOTATION)) {
-        annotations.add(annotation(modifierAstNode));
+      if (modifierAstNode.is(Kind.ANNOTATION)) {
+        annotations.add((AnnotationTree) modifierAstNode);
       } else {
         JavaKeyword keyword = (JavaKeyword) modifierAstNode.getType();
         modifiers.add(kindMaps.getModifier(keyword));

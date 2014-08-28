@@ -29,39 +29,50 @@ import java.util.List;
 
 public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> {
 
-  private InternalSyntaxToken openParenthesisToken;
-  private InternalSyntaxToken closeParenthesisToken;
+  private InternalSyntaxToken openParenToken;
+  private InternalSyntaxToken closeParenToken;
 
-  public ArgumentListTreeImpl(InternalSyntaxToken openParenthesisToken, InternalSyntaxToken closeParenthesisToken) {
+  public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
     super(JavaGrammar.ARGUMENTS, ImmutableList.<ExpressionTree>of(), ImmutableList.<AstNode>of());
 
-    this.openParenthesisToken = openParenthesisToken;
-    this.closeParenthesisToken = closeParenthesisToken;
+    this.openParenToken = openParenToken;
+    this.closeParenToken = closeParenToken;
 
-    addChild(openParenthesisToken);
-    addChild(closeParenthesisToken);
+    addChild(openParenToken);
+    addChild(closeParenToken);
+  }
+
+  public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken) {
+    super(JavaGrammar.ARGUMENTS, ImmutableList.of(expression), ImmutableList.<AstNode>of());
+
+    this.openParenToken = openParenToken;
+    this.closeParenToken = closeParenToken;
+
+    addChild(openParenToken);
+    addChild((AstNode) expression);
+    addChild(closeParenToken);
   }
 
   public ArgumentListTreeImpl(List<ExpressionTree> expressions, List<AstNode> children) {
     super(JavaGrammar.ARGUMENTS, expressions, children);
   }
 
-  public ArgumentListTreeImpl complete(InternalSyntaxToken openParenthesisToken, InternalSyntaxToken closeParenthesisToken) {
-    this.openParenthesisToken = openParenthesisToken;
-    this.closeParenthesisToken = closeParenthesisToken;
+  public ArgumentListTreeImpl complete(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
+    this.openParenToken = openParenToken;
+    this.closeParenToken = closeParenToken;
 
-    prependChildren(openParenthesisToken);
-    addChild(closeParenthesisToken);
+    prependChildren(openParenToken);
+    addChild(closeParenToken);
 
     return this;
   }
 
-  public SyntaxToken openParenthesisToken() {
-    return openParenthesisToken;
+  public SyntaxToken openParenToken() {
+    return openParenToken;
   }
 
-  public SyntaxToken closeParenthesisToken() {
-    return closeParenthesisToken;
+  public SyntaxToken closeParenToken() {
+    return closeParenToken;
   }
 
 }

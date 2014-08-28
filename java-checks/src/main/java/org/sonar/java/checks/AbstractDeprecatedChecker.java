@@ -22,9 +22,10 @@ package org.sonar.java.checks;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
-import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.ast.AstSelect;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -39,12 +40,6 @@ public class AbstractDeprecatedChecker extends SquidCheck<LexerlessGrammar> {
       JavaGrammar.INTERFACE_BODY_DECLARATION,
       JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION,
       JavaGrammar.BLOCK_STATEMENT);
-  }
-
-  public static boolean isDeprecated(AstNode node) {
-    AstNode qualifiedIdentifier = node.getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
-    return qualifiedIdentifier.getNumberOfChildren() == 1 &&
-      "Deprecated".equals(qualifiedIdentifier.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue());
   }
 
   public static boolean hasJavadocDeprecatedTag(AstNode node) {
@@ -65,7 +60,7 @@ public class AbstractDeprecatedChecker extends SquidCheck<LexerlessGrammar> {
   public static boolean hasDeprecatedAnnotationExcludingLocalVariables(AstNode node) {
     AstSelect annotations = node.select()
       .children(JavaGrammar.MODIFIERS)
-      .children(JavaGrammar.ANNOTATION);
+      .children(Kind.ANNOTATION);
 
     return hasDeprecatedAnnotation(annotations);
   }
@@ -74,19 +69,25 @@ public class AbstractDeprecatedChecker extends SquidCheck<LexerlessGrammar> {
     AstSelect annotations = node.select()
       .children(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)
       .children(JavaGrammar.VARIABLE_MODIFIERS)
-      .children(JavaGrammar.ANNOTATION);
+      .children(Kind.ANNOTATION);
 
     return hasDeprecatedAnnotation(annotations);
   }
 
   public static boolean hasDeprecatedAnnotation(Iterable<AstNode> query) {
-    for (AstNode annotation : query) {
+    for (AstNode annotationAstNode : query) {
+      AnnotationTree annotation = (AnnotationTree) annotationAstNode;
       if (isDeprecated(annotation)) {
         return true;
       }
     }
 
     return false;
+  }
+
+  public static boolean isDeprecated(AnnotationTree tree) {
+    return tree.annotationType().is(Kind.IDENTIFIER) &&
+      "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());
   }
 
 }

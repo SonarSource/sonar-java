@@ -38,6 +38,7 @@ import org.sonar.java.model.JavaTree.WildcardTreeImpl;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.TypeParameterTreeImpl;
+import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
@@ -100,8 +101,8 @@ public class TreeFactory {
     ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
     ImmutableList.Builder<AnnotationTree> annotations = ImmutableList.builder();
     for (AstNode astNode : modifierNodes.get()) {
-      if (astNode.is(JavaGrammar.ANNOTATION)) {
-        annotations.add(treeMaker.annotation(astNode));
+      if (astNode.is(Kind.ANNOTATION)) {
+        annotations.add((AnnotationTree) astNode);
       } else {
         JavaKeyword keyword = (JavaKeyword) astNode.getType();
         modifiers.add(kindMaps.getModifier(keyword));
@@ -452,108 +453,117 @@ public class TreeFactory {
     return result;
   }
 
-  public AstNode newDefaultValue(AstNode defaultTokenAstNode, AstNode elementValue) {
+  public AstNode newDefaultValue(AstNode defaultTokenAstNode, ExpressionTree elementValue) {
     AstNodeType type = JavaGrammar.DEFAULT_VALUE;
     AstNode result = new AstNode(type, type.toString(), null);
     result.addChild(defaultTokenAstNode);
-    result.addChild(elementValue);
+    result.addChild((AstNode) elementValue);
     return result;
   }
 
-  public AstNode newAnnotation(AstNode atTokenAstNode, ExpressionTree qualifiedIdentifier, Optional<AstNode> annotationRest) {
-    AstNodeType type = JavaGrammar.ANNOTATION;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(atTokenAstNode);
-    result.addChild((AstNode) qualifiedIdentifier);
-    if (annotationRest.isPresent()) {
-      result.addChild(annotationRest.get());
-    }
-    return result;
+  public AnnotationTreeImpl newAnnotation(AstNode atTokenAstNode, ExpressionTree qualifiedIdentifier, Optional<ArgumentListTreeImpl> arguments) {
+    InternalSyntaxToken atToken = InternalSyntaxToken.create(atTokenAstNode);
+
+    return new AnnotationTreeImpl(
+      atToken,
+      qualifiedIdentifier,
+      arguments.isPresent() ?
+        arguments.get() :
+        null);
   }
 
-  public AstNode newAnnotationRest(AstNode astNode) {
-    AstNodeType type = JavaGrammar.ANNOTATION_REST;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(astNode);
-    return result;
-  }
-
-  public AstNode newNormalAnnotationRest(AstNode openParenTokenAstNode, Optional<AstNode> elementValuePairs, AstNode closeParenTokenAstNode) {
-    AstNodeType type = JavaGrammar.NORMAL_ANNOTATION_REST;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(openParenTokenAstNode);
-    if (elementValuePairs.isPresent()) {
-      result.addChild(elementValuePairs.get());
-    }
-    result.addChild(closeParenTokenAstNode);
-    return result;
-  }
-
-  public AstNode newElementValuePairs(AstNode elementValuePair, Optional<List<AstNode>> rests) {
-    AstNode astNode = new AstNode(JavaGrammar.ELEMENT_VALUE_PAIRS, JavaGrammar.ELEMENT_VALUE_PAIRS.toString(), null);
-    astNode.addChild(elementValuePair);
-    if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        for (AstNode child : rest.getChildren()) {
-          astNode.addChild(child);
-        }
-      }
-    }
-    return astNode;
-  }
-
-  public AstNode newElementValuePair(AstNode identifierAstNode, AstNode equalTokenAstNode, AstNode elementValue) {
-    AstNode astNode = new AstNode(JavaGrammar.ELEMENT_VALUE_PAIR, JavaGrammar.ELEMENT_VALUE_PAIR.toString(), null);
-    astNode.addChild(identifierAstNode);
-    astNode.addChild(equalTokenAstNode);
-    astNode.addChild(elementValue);
-    return astNode;
-  }
-
-  public AstNode newElementValue(AstNode element) {
-    AstNode astNode = new AstNode(JavaGrammar.ELEMENT_VALUE, JavaGrammar.ELEMENT_VALUE.toString(), null);
-    astNode.addChild(element);
-    return astNode;
-  }
-
-  public AstNode newElementValueArrayInitializer(AstNode openBraceTokenAstNode, Optional<AstNode> elementValue, Optional<AstNode> commaTokenAstNode, AstNode closeBraceTokenAstNode) {
-    AstNode astNode = new AstNode(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER, JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER.toString(), null);
-    astNode.addChild(openBraceTokenAstNode);
-    if (elementValue.isPresent()) {
-      astNode.addChild(elementValue.get());
-    }
-    if (commaTokenAstNode.isPresent()) {
-      astNode.addChild(commaTokenAstNode.get());
-    }
-    astNode.addChild(closeBraceTokenAstNode);
-    return astNode;
-  }
-
-  public AstNode newElementValues(AstNode elementValue, Optional<List<AstNode>> rests) {
-    AstNode astNode = new AstNode(JavaGrammar.ELEMENT_VALUES, JavaGrammar.ELEMENT_VALUES.toString(), null);
-    astNode.addChild(elementValue);
-
-    if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        for (AstNode child : rest.getChildren()) {
-          astNode.addChild(child);
-        }
-      }
-    }
-
-    return astNode;
-  }
-
-  public AstNode newSingleElementAnnotationRest(AstNode openParenTokenAstNode, AstNode elementValue, AstNode closeParenTokenAstNode) {
+  public ArgumentListTreeImpl completeNormalAnnotation(AstNode openParenTokenAstNode, Optional<ArgumentListTreeImpl> partial, AstNode closeParenTokenAstNode) {
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
 
-    AstNode astNode = new AstNode(JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST, JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST.toString(), null);
-    astNode.addChild(openParenToken);
-    astNode.addChild(elementValue);
-    astNode.addChild(closeParenToken);
+    if (!partial.isPresent()) {
+      return new ArgumentListTreeImpl(openParenToken, closeParenToken);
+    }
 
-    return astNode;
+    ArgumentListTreeImpl elementValuePairs = partial.get();
+    elementValuePairs.prependChildren(openParenToken);
+    elementValuePairs.addChild(closeParenToken);
+
+    return elementValuePairs;
+  }
+
+  public ArgumentListTreeImpl newNormalAnnotation(AssignmentExpressionTreeImpl elementValuePair, Optional<List<AstNode>> rests) {
+    ImmutableList.Builder<ExpressionTree> expressions = ImmutableList.builder();
+    List<AstNode> children = Lists.newArrayList();
+
+    expressions.add(elementValuePair);
+    children.add(elementValuePair);
+
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        for (AstNode child : rest.getChildren()) {
+          if (!child.is(JavaPunctuator.COMMA)) {
+            expressions.add((ExpressionTree) child);
+          }
+          children.add(child);
+        }
+      }
+    }
+
+    return new ArgumentListTreeImpl(expressions.build(), children);
+  }
+
+  public AssignmentExpressionTreeImpl newElementValuePair(AstNode identifierAstNode, AstNode equalTokenAstNode, ExpressionTree elementValue) {
+    InternalSyntaxToken operator = InternalSyntaxToken.create(equalTokenAstNode);
+
+    return new AssignmentExpressionTreeImpl(
+      kindMaps.getAssignmentOperator((JavaPunctuator) operator.getType()),
+      new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode)),
+      operator,
+      elementValue);
+  }
+
+  public NewArrayTreeImpl completeElementValueArrayInitializer(
+    AstNode openBraceTokenAstNode, Optional<NewArrayTreeImpl> partial, Optional<AstNode> commaTokenAstNode, AstNode closeBraceTokenAstNode) {
+
+    InternalSyntaxToken openBraceToken = InternalSyntaxToken.create(openBraceTokenAstNode);
+    InternalSyntaxToken commaToken = commaTokenAstNode.isPresent() ? InternalSyntaxToken.create(commaTokenAstNode.get()) : null;
+    InternalSyntaxToken closeBraceToken = InternalSyntaxToken.create(closeBraceTokenAstNode);
+
+    NewArrayTreeImpl elementValues = partial.isPresent() ?
+      partial.get() :
+      new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), ImmutableList.<ExpressionTree>of(), ImmutableList.<AstNode>of());
+
+    elementValues.prependChildren(openBraceToken);
+    if (commaToken != null) {
+      elementValues.addChild(commaToken);
+    }
+    elementValues.addChild(closeBraceToken);
+
+    return elementValues;
+  }
+
+  public NewArrayTreeImpl newElementValueArrayInitializer(ExpressionTree elementValue, Optional<List<AstNode>> rests) {
+    ImmutableList.Builder<ExpressionTree> expressions = ImmutableList.builder();
+    List<AstNode> children = Lists.newArrayList();
+
+    expressions.add(elementValue);
+    children.add((AstNode) elementValue);
+
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        for (AstNode child : rest.getChildren()) {
+          if (!child.is(JavaPunctuator.COMMA)) {
+            expressions.add((ExpressionTree) child);
+          }
+          children.add(child);
+        }
+      }
+    }
+
+    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), expressions.build(), children);
+  }
+
+  public ArgumentListTreeImpl newSingleElementAnnotation(AstNode openParenTokenAstNode, ExpressionTree elementValue, AstNode closeParenTokenAstNode) {
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+
+    return new ArgumentListTreeImpl(openParenToken, elementValue, closeParenToken);
   }
 
   // End of annotations

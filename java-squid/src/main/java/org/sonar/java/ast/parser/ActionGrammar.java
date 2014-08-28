@@ -25,7 +25,9 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.TypeParameterTreeImpl;
+import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
@@ -262,8 +264,8 @@ public class ActionGrammar {
           ELEMENT_VALUE()));
   }
 
-  public AstNode ANNOTATION() {
-    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION)
+  public AnnotationTreeImpl ANNOTATION() {
+    return b.<AnnotationTreeImpl>nonterminal(JavaGrammar.ANNOTATION)
       .is(
         f.newAnnotation(
           b.invokeRule(JavaPunctuator.AT),
@@ -271,33 +273,32 @@ public class ActionGrammar {
           b.optional(ANNOTATION_REST())));
   }
 
-  public AstNode ANNOTATION_REST() {
-    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_REST)
+  public ArgumentListTreeImpl ANNOTATION_REST() {
+    return b.<ArgumentListTreeImpl>nonterminal(JavaGrammar.ANNOTATION_REST)
       .is(
-        f.newAnnotationRest(
-          b.firstOf(
-            NORMAL_ANNOTATION_REST(),
-            SINGLE_ELEMENT_ANNOTATION_REST())));
+        b.firstOf(
+          NORMAL_ANNOTATION_REST(),
+          SINGLE_ELEMENT_ANNOTATION_REST()));
   }
 
-  public AstNode NORMAL_ANNOTATION_REST() {
-    return b.<AstNode>nonterminal(JavaGrammar.NORMAL_ANNOTATION_REST)
+  public ArgumentListTreeImpl NORMAL_ANNOTATION_REST() {
+    return b.<ArgumentListTreeImpl>nonterminal(JavaGrammar.NORMAL_ANNOTATION_REST)
       .is(
-        f.newNormalAnnotationRest(
+        f.completeNormalAnnotation(
           b.invokeRule(JavaPunctuator.LPAR),
           b.optional(ELEMENT_VALUE_PAIRS()),
           b.invokeRule(JavaPunctuator.RPAR)));
   }
 
-  public AstNode ELEMENT_VALUE_PAIRS() {
-    return b.<AstNode>nonterminal(JavaGrammar.ELEMENT_VALUE_PAIRS)
+  public ArgumentListTreeImpl ELEMENT_VALUE_PAIRS() {
+    return b.<ArgumentListTreeImpl>nonterminal(JavaGrammar.ELEMENT_VALUE_PAIRS)
       .is(
-        f.newElementValuePairs(
+        f.newNormalAnnotation(
           ELEMENT_VALUE_PAIR(), b.zeroOrMore(f.newWrapperAstNode9(b.invokeRule(JavaPunctuator.COMMA), ELEMENT_VALUE_PAIR()))));
   }
 
-  public AstNode ELEMENT_VALUE_PAIR() {
-    return b.<AstNode>nonterminal(JavaGrammar.ELEMENT_VALUE_PAIR)
+  public AssignmentExpressionTreeImpl ELEMENT_VALUE_PAIR() {
+    return b.<AssignmentExpressionTreeImpl>nonterminal(JavaGrammar.ELEMENT_VALUE_PAIR)
       .is(
         f.newElementValuePair(
           b.invokeRule(JavaTokenType.IDENTIFIER),
@@ -305,36 +306,35 @@ public class ActionGrammar {
           ELEMENT_VALUE()));
   }
 
-  public AstNode ELEMENT_VALUE() {
-    return b.<AstNode>nonterminal(JavaGrammar.ELEMENT_VALUE)
+  public ExpressionTree ELEMENT_VALUE() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.ELEMENT_VALUE)
       .is(
-        f.newElementValue(
-          b.firstOf(
-            (AstNode) CONDITIONAL_EXPRESSION(),
-            ANNOTATION(),
-            ELEMENT_VALUE_ARRAY_INITIALIZER())));
+        b.firstOf(
+          CONDITIONAL_EXPRESSION(),
+          ANNOTATION(),
+          ELEMENT_VALUE_ARRAY_INITIALIZER()));
   }
 
-  public AstNode ELEMENT_VALUE_ARRAY_INITIALIZER() {
-    return b.<AstNode>nonterminal(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER)
+  public NewArrayTreeImpl ELEMENT_VALUE_ARRAY_INITIALIZER() {
+    return b.<NewArrayTreeImpl>nonterminal(JavaGrammar.ELEMENT_VALUE_ARRAY_INITIALIZER)
       .is(
-        f.newElementValueArrayInitializer(
+        f.completeElementValueArrayInitializer(
           b.invokeRule(JavaPunctuator.LWING),
           b.optional(ELEMENT_VALUES()),
           b.optional(b.invokeRule(JavaPunctuator.COMMA)),
           b.invokeRule(JavaPunctuator.RWING)));
   }
 
-  public AstNode ELEMENT_VALUES() {
-    return b.<AstNode>nonterminal(JavaGrammar.ELEMENT_VALUES)
+  public NewArrayTreeImpl ELEMENT_VALUES() {
+    return b.<NewArrayTreeImpl>nonterminal(JavaGrammar.ELEMENT_VALUES)
       .is(
-        f.newElementValues(
-          ELEMENT_VALUE(), b.zeroOrMore(f.newWrapperAstNode8(b.invokeRule(JavaPunctuator.COMMA), ELEMENT_VALUE()))));
+        f.newElementValueArrayInitializer(
+          ELEMENT_VALUE(), b.zeroOrMore(f.newWrapperAstNode8(b.invokeRule(JavaPunctuator.COMMA), (AstNode) ELEMENT_VALUE()))));
   }
 
-  public AstNode SINGLE_ELEMENT_ANNOTATION_REST() {
-    return b.<AstNode>nonterminal(JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST)
-      .is(f.newSingleElementAnnotationRest(b.invokeRule(JavaPunctuator.LPAR), ELEMENT_VALUE(), b.invokeRule(JavaPunctuator.RPAR)));
+  public ArgumentListTreeImpl SINGLE_ELEMENT_ANNOTATION_REST() {
+    return b.<ArgumentListTreeImpl>nonterminal(JavaGrammar.SINGLE_ELEMENT_ANNOTATION_REST)
+      .is(f.newSingleElementAnnotation(b.invokeRule(JavaPunctuator.LPAR), ELEMENT_VALUE(), b.invokeRule(JavaPunctuator.RPAR)));
   }
 
   // End of annotations

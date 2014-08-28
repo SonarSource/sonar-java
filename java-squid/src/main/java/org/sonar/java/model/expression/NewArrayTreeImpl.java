@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
+
   private Tree type;
   private final List<ExpressionTree> dimensions;
   private final List<ExpressionTree> initializers;
@@ -98,4 +99,5 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
       initializers.iterator()
       );
   }
+
 }
