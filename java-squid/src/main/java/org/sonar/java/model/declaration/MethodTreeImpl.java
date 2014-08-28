@@ -20,6 +20,7 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.JavaTree;
@@ -40,11 +41,12 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MethodTreeImpl extends JavaTree implements MethodTree {
-  private final ModifiersTree modifiers;
+
+  private ModifiersTree modifiers;
   private final List<TypeParameterTree> typeParameters;
   @Nullable
-  private final Tree returnType;
-  private final IdentifierTree simpleName;
+  private Tree returnType;
+  private IdentifierTree simpleName;
   private final List<VariableTree> parameters;
   @Nullable
   private final BlockTree block;
@@ -52,6 +54,19 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   private final ExpressionTree defaultValue;
 
   private Symbol.MethodSymbol symbol;
+
+  public MethodTreeImpl(@Nullable ExpressionTree defaultValue) {
+    super(Kind.METHOD);
+    this.typeParameters = ImmutableList.<TypeParameterTree>of();
+    this.parameters = ImmutableList.<VariableTree>of();
+    this.block = null;
+    this.throwsClauses = ImmutableList.<ExpressionTree>of();
+    this.defaultValue = defaultValue;
+
+    if (defaultValue != null) {
+      addChild((AstNode) defaultValue);
+    }
+  }
 
   public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, List<TypeParameterTree> typeParameters, @Nullable Tree returnType, IdentifierTree simpleName,
     List<VariableTree> parameters,
@@ -66,6 +81,25 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.block = block;
     this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
     this.defaultValue = defaultValue;
+  }
+
+  public MethodTreeImpl complete(Tree returnType, IdentifierTree simpleName) {
+    Preconditions.checkState(this.simpleName == null);
+    this.returnType = returnType;
+    this.simpleName = simpleName;
+
+    prependChildren((AstNode) returnType, (AstNode) simpleName);
+
+    return this;
+  }
+
+  public MethodTreeImpl complete(ModifiersTreeImpl modifiers) {
+    Preconditions.checkState(this.modifiers == null);
+    this.modifiers = modifiers;
+
+    prependChildren(modifiers);
+
+    return this;
   }
 
   @Override

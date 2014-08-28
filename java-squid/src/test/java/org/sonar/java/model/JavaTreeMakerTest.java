@@ -596,8 +596,7 @@ public class JavaTreeMakerTest {
 
   @Test
   public void annotation_declaration() {
-    AstNode astNode = p.parse("public @interface T { }");
-    ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    ClassTree tree = (ClassTree) p.parse("public @interface T { }").getFirstDescendant(Kind.ANNOTATION_TYPE);
     assertThat(tree.is(Tree.Kind.ANNOTATION_TYPE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
@@ -607,8 +606,7 @@ public class JavaTreeMakerTest {
 
   @Test
   public void annotation_method() {
-    AstNode astNode = p.parse("@interface T { int m() default 0; }");
-    MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    MethodTree tree = (MethodTree) p.parse("@interface T { int m() default 0; }").getFirstDescendant(Kind.METHOD);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
@@ -621,8 +619,7 @@ public class JavaTreeMakerTest {
 
   @Test
   public void annotation_constant() {
-    AstNode astNode = p.parse("@interface T { int c1 = 1, c2[] = { 2 }; }");
-    List<Tree> members = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
+    List<Tree> members = ((ClassTree) p.parse("@interface T { int c1 = 1, c2[] = { 2 }; }").getFirstDescendant(Kind.ANNOTATION_TYPE)).members();
     assertThat(members).hasSize(2);
 
     VariableTree tree = (VariableTree) members.get(0);

@@ -24,6 +24,8 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.api.SourceClass;
 import org.sonar.squidbridge.api.SourceMethod;
 import org.sonar.squidbridge.api.SourcePackage;
@@ -37,11 +39,11 @@ public class ClassVisitor extends JavaAstVisitor {
   @Override
   public void init() {
     subscribeTo(
-        JavaGrammar.CLASS_DECLARATION,
-        JavaGrammar.INTERFACE_DECLARATION,
-        JavaGrammar.ENUM_DECLARATION,
-        JavaGrammar.ANNOTATION_TYPE_DECLARATION,
-        JavaGrammar.ENUM_CONSTANT);
+      JavaGrammar.CLASS_DECLARATION,
+      JavaGrammar.INTERFACE_DECLARATION,
+      JavaGrammar.ENUM_DECLARATION,
+      Kind.ANNOTATION_TYPE,
+      JavaGrammar.ENUM_CONSTANT);
   }
 
   @Override
@@ -51,21 +53,23 @@ public class ClassVisitor extends JavaAstVisitor {
 
   @Override
   public void visitNode(AstNode astNode) {
-    String className = astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
+    String className = astNode.is(Kind.ANNOTATION_TYPE) ?
+      ((ClassTree) astNode).simpleName().name() :
+      astNode.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
     final SourceClass sourceClass;
-    if(astNode.is(JavaGrammar.ENUM_CONSTANT)) {
-      sourceClass  = createSourceClass(peekSourceClass(), className);
-    }else if (getContext().peekSourceCode().isType(SourceClass.class)) {
+    if (astNode.is(JavaGrammar.ENUM_CONSTANT)) {
+      sourceClass = createSourceClass(peekSourceClass(), className);
+    } else if (getContext().peekSourceCode().isType(SourceClass.class)) {
       sourceClass = createSourceClass((SourceClass) getContext().peekSourceCode(), className);
     } else if (getContext().peekSourceCode().isType(SourceMethod.class)) {
       localNameCounter++;
-      sourceClass = createSourceClass((SourceClass) getContext().peekSourceCode().getParent(), localNameCounter+className);
+      sourceClass = createSourceClass((SourceClass) getContext().peekSourceCode().getParent(), localNameCounter + className);
     } else {
       sourceClass = createSourceClass(peekParentPackage(), className);
     }
 
     sourceClass.setStartAtLine(astNode.getTokenLine());
-    if(!astNode.is(JavaGrammar.ENUM_CONSTANT)) {
+    if (!astNode.is(JavaGrammar.ENUM_CONSTANT)) {
       sourceClass.setMeasure(JavaMetric.CLASSES, 1);
       sourceClass.setSuppressWarnings(SuppressWarningsAnnotationUtils.isSuppressAllWarnings(astNode));
     }

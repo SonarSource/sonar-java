@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
+import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
@@ -215,7 +216,7 @@ public class JavaTreeMaker {
         JavaGrammar.CLASS_DECLARATION,
         JavaGrammar.ENUM_DECLARATION,
         JavaGrammar.INTERFACE_DECLARATION,
-        JavaGrammar.ANNOTATION_TYPE_DECLARATION
+        Kind.ANNOTATION_TYPE
         );
       if (declarationNode != null) {
         types.add(typeDeclaration((ModifiersTree) typeNode.getFirstChild(JavaGrammar.MODIFIERS), declarationNode));
@@ -239,17 +240,21 @@ public class JavaTreeMaker {
       packageAnnotations.build());
   }
 
-  private ClassTree typeDeclaration(ModifiersTree modifiers, AstNode astNode) {
+  public ClassTree typeDeclaration(ModifiersTree modifiers, AstNode astNode) {
     if (astNode.is(JavaGrammar.CLASS_DECLARATION)) {
       return classDeclaration(modifiers, astNode);
     } else if (astNode.is(JavaGrammar.ENUM_DECLARATION)) {
       return enumDeclaration(modifiers, astNode);
     } else if (astNode.is(JavaGrammar.INTERFACE_DECLARATION)) {
       return interfaceDeclaration(modifiers, astNode);
-    } else if (astNode.is(JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
-      return annotationTypeDeclaration(modifiers, astNode);
+    } else if (astNode.is(Kind.ANNOTATION_TYPE)) {
+      // TODO Modifiers
+      ClassTreeImpl tree = (ClassTreeImpl) astNode;
+      tree.setModifiers(modifiers);
+      return tree;
     } else {
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType().toString());
+      throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType().toString()
+        + "\n" + AstXmlPrinter.print(astNode));
     }
   }
 
@@ -320,8 +325,7 @@ public class JavaTreeMaker {
       JavaGrammar.INTERFACE_DECLARATION,
       JavaGrammar.CLASS_DECLARATION,
       JavaGrammar.ENUM_DECLARATION,
-      JavaGrammar.ANNOTATION_TYPE_DECLARATION
-      );
+      Kind.ANNOTATION_TYPE);
     if (declaration != null) {
       return typeDeclaration(modifiers, declaration);
     }
@@ -512,8 +516,7 @@ public class JavaTreeMaker {
       JavaGrammar.INTERFACE_DECLARATION,
       JavaGrammar.CLASS_DECLARATION,
       JavaGrammar.ENUM_DECLARATION,
-      JavaGrammar.ANNOTATION_TYPE_DECLARATION
-      );
+      Kind.ANNOTATION_TYPE);
     if (declarationNode != null) {
       members.add(typeDeclaration(modifiers, declarationNode));
       return;
@@ -572,7 +575,7 @@ public class JavaTreeMaker {
     throw new IllegalStateException();
   }
 
-  private void appendConstantDeclarations(ModifiersTree modifiers, ImmutableList.Builder<Tree> members, AstNode astNode) {
+  public void appendConstantDeclarations(ModifiersTree modifiers, ImmutableList.Builder<Tree> members, AstNode astNode) {
     checkType(astNode, JavaGrammar.INTERFACE_METHOD_OR_FIELD_DECL, JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST);
     AstNode typeAstNode = astNode.getFirstChild(TYPE_KINDS);
     if (typeAstNode == null) {
@@ -589,68 +592,6 @@ public class JavaTreeMaker {
         identifier(identifierNode),
         variableInitializer(constantDeclaratorRestNode.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER))
         ));
-    }
-  }
-
-  /**
-   * 9.6. Annotation Types
-   */
-  private ClassTree annotationTypeDeclaration(ModifiersTree modifiers, AstNode astNode) {
-    checkType(astNode, JavaGrammar.ANNOTATION_TYPE_DECLARATION);
-    IdentifierTree simpleName = identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER));
-    ImmutableList.Builder<Tree> members = ImmutableList.builder();
-    for (AstNode annotationTypeElementDeclarationNode : astNode.getFirstChild(JavaGrammar.ANNOTATION_TYPE_BODY).getChildren(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)) {
-      AstNode annotationTypeElementRestNode = annotationTypeElementDeclarationNode.getFirstChild(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST);
-      if (annotationTypeElementRestNode != null) {
-        ModifiersTree modifiersTree = (ModifiersTree) annotationTypeElementDeclarationNode.getFirstChild(JavaGrammar.MODIFIERS);
-        if(modifiersTree == null) {
-          modifiersTree = ModifiersTreeImpl.EMPTY;
-        }
-        appendAnnotationTypeElementDeclaration(members, modifiersTree, annotationTypeElementRestNode);
-      }
-    }
-    return new ClassTreeImpl(astNode, Tree.Kind.ANNOTATION_TYPE,
-      modifiers,
-      simpleName,
-      ImmutableList.<TypeParameterTree>of(),
-      /* super class: */null,
-      ImmutableList.<Tree>of(),
-      members.build());
-  }
-
-  /**
-   * 9.6.1. Annotation Type Elements
-   */
-  private void appendAnnotationTypeElementDeclaration(ImmutableList.Builder<Tree> members, ModifiersTree modifiers, AstNode astNode) {
-    checkType(astNode, JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST);
-    AstNode declarationNode = astNode.getFirstChild(
-      JavaGrammar.INTERFACE_DECLARATION,
-      JavaGrammar.CLASS_DECLARATION,
-      JavaGrammar.ENUM_DECLARATION,
-      JavaGrammar.ANNOTATION_TYPE_DECLARATION
-      );
-    if (declarationNode != null) {
-      members.add(typeDeclaration(modifiers, declarationNode));
-      return;
-    }
-    AstNode typeNode = astNode.getFirstChild(TYPE_KINDS);
-    AstNode identifierNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-    AstNode annotationMethodRestNode = astNode.getFirstChild(JavaGrammar.ANNOTATION_METHOD_OR_CONSTANT_REST).getFirstChild(JavaGrammar.ANNOTATION_METHOD_REST);
-    if (annotationMethodRestNode != null) {
-      members.add(new MethodTreeImpl(
-        annotationMethodRestNode,
-        /* modifiers */modifiers,
-        /* type parameters */ImmutableList.<TypeParameterTree>of(),
-        /* return type */(Tree) typeNode,
-        /* name */identifier(identifierNode),
-        /* parameters */ImmutableList.<VariableTree>of(),
-        /* block */null,
-        /* throws */ImmutableList.<ExpressionTree>of(),
-        // TODO DEFAULT_VALUE
-        /* default value */null
-        ));
-    } else {
-      appendConstantDeclarations(modifiers, members, astNode);
     }
   }
 

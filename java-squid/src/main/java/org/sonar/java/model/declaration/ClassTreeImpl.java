@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -40,8 +41,8 @@ import java.util.List;
 public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   private final Kind kind;
-  private final ModifiersTree modifiers;
-  private final IdentifierTree simpleName;
+  private ModifiersTree modifiers;
+  private IdentifierTree simpleName;
   private final List<TypeParameterTree> typeParameters;
   @Nullable
   private final Tree superClass;
@@ -51,6 +52,20 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   // FIXME(Godin): never should be null, i.e. should have default value
   @Nullable
   private Symbol.TypeSymbol symbol;
+
+  public ClassTreeImpl(ModifiersTree modifiers, List<Tree> members, List<AstNode> children) {
+    super(Kind.ANNOTATION_TYPE);
+    this.kind = Preconditions.checkNotNull(Kind.ANNOTATION_TYPE);
+    this.modifiers = modifiers;
+    this.typeParameters = ImmutableList.<TypeParameterTree>of();
+    this.superClass = null;
+    this.superInterfaces = ImmutableList.<Tree>of();
+    this.members = Preconditions.checkNotNull(members);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
 
   public ClassTreeImpl(
     AstNode astNode, Kind kind,
@@ -68,6 +83,20 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   // TODO remove:
   public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, List<Tree> members) {
     this(astNode, kind, modifiers, null, ImmutableList.<TypeParameterTree>of(), null, ImmutableList.<Tree>of(), members);
+  }
+
+  public ClassTreeImpl complete(InternalSyntaxToken atToken, InternalSyntaxToken interfaceToken, IdentifierTree simpleName) {
+    Preconditions.checkState(this.simpleName == null);
+    this.simpleName = simpleName;
+
+    prependChildren(atToken, interfaceToken, (AstNode) simpleName);
+
+    return this;
+  }
+
+  // FIXME Remove
+  public void setModifiers(ModifiersTree modifiers) {
+    this.modifiers = modifiers;
   }
 
   @Override

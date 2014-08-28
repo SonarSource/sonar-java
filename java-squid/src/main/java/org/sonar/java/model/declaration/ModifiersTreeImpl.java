@@ -40,8 +40,9 @@ public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
     new ModifiersTreeImpl((AstNode) null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
 
   /* FIXME */
-  public static final org.sonar.java.model.declaration.ModifiersTreeImpl EMPTY_MODIFIERS =
-    new ModifiersTreeImpl(ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of(), ImmutableList.<AstNode>of());
+  public static final org.sonar.java.model.declaration.ModifiersTreeImpl emptyModifiers() {
+    return new ModifiersTreeImpl(ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of(), ImmutableList.<AstNode>of());
+  }
 
   private final List<Modifier> modifiers;
   private final List<AnnotationTree> annotations;

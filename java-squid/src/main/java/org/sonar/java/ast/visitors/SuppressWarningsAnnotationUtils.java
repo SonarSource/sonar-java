@@ -23,8 +23,10 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -40,7 +42,7 @@ public class SuppressWarningsAnnotationUtils {
   private static final String VALUE = "\"all\"";
 
   public static boolean isSuppressAllWarnings(AstNode astNode) {
-    if (astNode.is(JavaGrammar.CLASS_DECLARATION, JavaGrammar.INTERFACE_DECLARATION, JavaGrammar.ENUM_DECLARATION, JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
+    if (astNode.is(JavaGrammar.CLASS_DECLARATION, JavaGrammar.INTERFACE_DECLARATION, JavaGrammar.ENUM_DECLARATION)) {
       AstNode modifiersCandidate = astNode.getPreviousAstNode();
       if (!modifiersCandidate.is(JavaGrammar.MODIFIERS)) {
         return false;
@@ -48,14 +50,17 @@ public class SuppressWarningsAnnotationUtils {
 
       ModifiersTree modifiers = (ModifiersTree) modifiersCandidate;
       return containsAnnotationSuppressAllWarnings(modifiers.annotations());
+    } else if (astNode.is(Kind.ANNOTATION_TYPE)) {
+      return containsAnnotationSuppressAllWarnings(((ClassTree) astNode).modifiers().annotations());
     }
+
     final AstNode node;
     if (astNode.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
       node = astNode.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION);
     } else if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST, JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST)) {
       node = astNode.getFirstAncestor(JavaGrammar.INTERFACE_BODY_DECLARATION);
-    } else if (astNode.is(JavaGrammar.ANNOTATION_METHOD_REST)) {
-      node = astNode.getFirstAncestor(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION);
+    } else if (astNode.is(Kind.METHOD)) {
+      return containsAnnotationSuppressAllWarnings(((MethodTree) astNode).modifiers().annotations());
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType());
     }

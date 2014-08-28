@@ -26,6 +26,8 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
@@ -201,20 +203,21 @@ public class ActionGrammar {
 
   // Annotations
 
-  public AstNode ANNOTATION_TYPE_DECLARATION() {
-    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_TYPE_DECLARATION)
+  // TODO modifiers
+  public ClassTreeImpl ANNOTATION_TYPE_DECLARATION() {
+    return b.<ClassTreeImpl>nonterminal(JavaGrammar.ANNOTATION_TYPE_DECLARATION)
       .is(
-        f.newAnnotationTypeDeclaration(
+        f.completeAnnotationType(
           b.invokeRule(JavaPunctuator.AT),
           b.invokeRule(JavaKeyword.INTERFACE),
           b.invokeRule(JavaTokenType.IDENTIFIER),
           ANNOTATION_TYPE_BODY()));
   }
 
-  public AstNode ANNOTATION_TYPE_BODY() {
-    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_TYPE_BODY)
+  public ClassTreeImpl ANNOTATION_TYPE_BODY() {
+    return b.<ClassTreeImpl>nonterminal(JavaGrammar.ANNOTATION_TYPE_BODY)
       .is(
-        f.newAnnotationTypeBody(
+        f.newAnnotationType(
           b.invokeRule(JavaPunctuator.LWING), b.zeroOrMore(ANNOTATION_TYPE_ELEMENT_DECLARATION()), b.invokeRule(JavaPunctuator.RWING)));
   }
 
@@ -222,42 +225,42 @@ public class ActionGrammar {
     return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)
       .is(
         b.firstOf(
-          f.newAnnotationTypeElementDeclaration1(MODIFIERS(), ANNOTATION_TYPE_ELEMENT_REST()),
-          f.newAnnotationTypeElementDeclaration2(b.invokeRule(JavaPunctuator.SEMI))));
+          f.completeAnnotationTypeMember(MODIFIERS(), ANNOTATION_TYPE_ELEMENT_REST()),
+          b.invokeRule(JavaPunctuator.SEMI)));
   }
 
   public AstNode ANNOTATION_TYPE_ELEMENT_REST() {
     return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST)
       .is(
         b.firstOf(
-          f.newAnnotationTypeElementRest1(
+          f.newAnnotationTypeMember(
             TYPE(), b.invokeRule(JavaTokenType.IDENTIFIER), ANNOTATION_METHOD_OR_CONSTANT_REST(), b.invokeRule(JavaPunctuator.SEMI)),
-          f.newAnnotationTypeElementRest2(b.invokeRule(JavaGrammar.CLASS_DECLARATION)),
-          f.newAnnotationTypeElementRest3(b.invokeRule(JavaGrammar.ENUM_DECLARATION)),
-          f.newAnnotationTypeElementRest4(b.invokeRule(JavaGrammar.INTERFACE_DECLARATION)),
-          f.newAnnotationTypeElementRest5(ANNOTATION_TYPE_DECLARATION())));
+          b.firstOf(
+            b.invokeRule(JavaGrammar.CLASS_DECLARATION),
+            b.invokeRule(JavaGrammar.ENUM_DECLARATION),
+            b.invokeRule(JavaGrammar.INTERFACE_DECLARATION)),
+          ANNOTATION_TYPE_DECLARATION()));
   }
 
   public AstNode ANNOTATION_METHOD_OR_CONSTANT_REST() {
     return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_METHOD_OR_CONSTANT_REST)
       .is(
-        f.newAnnotationMethodOrConstantRest(
-          b.firstOf(
-            ANNOTATION_METHOD_REST(),
-            b.invokeRule(JavaGrammar.CONSTANT_DECLARATORS_REST))));
+        b.firstOf(
+          ANNOTATION_METHOD_REST(),
+          b.invokeRule(JavaGrammar.CONSTANT_DECLARATORS_REST)));
   }
 
-  public AstNode ANNOTATION_METHOD_REST() {
-    return b.<AstNode>nonterminal(JavaGrammar.ANNOTATION_METHOD_REST)
+  public MethodTreeImpl ANNOTATION_METHOD_REST() {
+    return b.<MethodTreeImpl>nonterminal(JavaGrammar.ANNOTATION_METHOD_REST)
       .is(
-        f.newAnnotationMethodRest(
+        f.newAnnotationTypeMethod(
           b.invokeRule(JavaPunctuator.LPAR),
           b.invokeRule(JavaPunctuator.RPAR),
           b.optional(DEFAULT_VALUE())));
   }
 
-  public AstNode DEFAULT_VALUE() {
-    return b.<AstNode>nonterminal(JavaGrammar.DEFAULT_VALUE)
+  public ExpressionTree DEFAULT_VALUE() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.DEFAULT_VALUE)
       .is(
         f.newDefaultValue(
           b.invokeRule(JavaKeyword.DEFAULT),

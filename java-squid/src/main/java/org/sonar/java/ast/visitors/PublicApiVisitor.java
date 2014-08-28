@@ -21,17 +21,22 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.squidbridge.measures.Metric;
 import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.List;
 
 public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
 
@@ -45,7 +50,7 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
       JavaGrammar.CLASS_DECLARATION,
       JavaGrammar.INTERFACE_DECLARATION,
       JavaGrammar.ENUM_DECLARATION,
-      JavaGrammar.ANNOTATION_TYPE_DECLARATION,
+      Kind.ANNOTATION_TYPE,
 
       JavaGrammar.FIELD_DECLARATION,
       // TODO seems that it was missed in previous implementation: grammar.constantDeclaratorsRest
@@ -56,7 +61,7 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
       JavaGrammar.VOID_METHOD_DECLARATOR_REST,
       JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-      JavaGrammar.ANNOTATION_METHOD_REST);
+      Kind.METHOD);
   }
 
   @Override
@@ -86,7 +91,7 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
       type = "interface";
     } else if (node.is(JavaGrammar.ENUM_DECLARATION)) {
       type = "enum";
-    } else if (node.is(JavaGrammar.ANNOTATION_TYPE_DECLARATION)) {
+    } else if (node.is(Kind.ANNOTATION_TYPE)) {
       type = "annotation";
     } else if (node.is(JavaGrammar.FIELD_DECLARATION)) {
       type = "field";
@@ -117,17 +122,13 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
 
   private static boolean hasAnnotation(AstNode astNode, String expected) {
     AstNode declaration = getDeclaration(astNode);
-    for (AnnotationTree annotationTree : getModifiers(declaration).annotations()) {
-      // FIXME
-      AstNode annotation = ((JavaTree) annotationTree).getAstNode();
-      if (annotation != null) {
-        StringBuilder value = new StringBuilder();
-        for (AstNode identifier : annotation.getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS).getChildren()) {
-          value.append(identifier.getTokenValue());
-        }
-        if (value.toString().equals(expected)) {
-          return true;
-        }
+    for (AnnotationTree annotation : getModifiers(declaration).annotations()) {
+      StringBuilder value = new StringBuilder();
+      for (Token token : ((AstNode) annotation.annotationType()).getTokens()) {
+        value.append(token.getValue());
+      }
+      if (value.toString().equals(expected)) {
+        return true;
       }
     }
     return false;
@@ -138,7 +139,7 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
       JavaGrammar.VOID_METHOD_DECLARATOR_REST,
       JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-      JavaGrammar.ANNOTATION_METHOD_REST);
+      Kind.METHOD);
   }
 
   private static boolean isStaticFinalVariable(AstNode astNode) {
@@ -154,7 +155,15 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
 
   public static String getApiJavadoc(AstNode astNode) {
     AstNode declaration = getDeclaration(astNode);
-    for (Trivia trivia : declaration.getToken().getTrivia()) {
+    String result = getApiJavadoc(declaration.getToken().getTrivia());
+    if (result == null && declaration.is(Kind.ANNOTATION_TYPE)) {
+      result = getApiJavadoc(((ModifiersTreeImpl) ((ClassTree) declaration).modifiers()).getToken().getTrivia());
+    }
+    return result;
+  }
+
+  private static String getApiJavadoc(List<Trivia> trivias) {
+    for (Trivia trivia : trivias) {
       if (trivia.isComment()) {
         String value = trivia.getToken().getOriginalValue();
         if (value.startsWith("/**")) {
@@ -167,7 +176,7 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
 
   private static boolean isPublic(AstNode astNode) {
     AstNode declaration = getDeclaration(astNode);
-    return declaration.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)
+    return declaration.hasAncestor(Kind.ANNOTATION_TYPE)
       || declaration.is(JavaGrammar.INTERFACE_BODY_DECLARATION)
       || hasModifier(declaration, Modifier.PUBLIC);
   }
@@ -177,6 +186,12 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
   }
 
   private static ModifiersTree getModifiers(AstNode declaration) {
+    if (declaration.is(Kind.METHOD)) {
+      return ((MethodTree) declaration).modifiers();
+    } else if (declaration.is(Kind.ANNOTATION_TYPE)) {
+      return ((ClassTree) declaration).modifiers();
+    }
+
     return (ModifiersTree) declaration.getFirstChild(JavaGrammar.MODIFIERS);
   }
 
@@ -197,18 +212,16 @@ public class PublicApiVisitor extends SquidCheck<LexerlessGrammar> {
     } else if (astNode.getParent().is(JavaGrammar.INTERFACE_GENERIC_METHOD_DECL)) {
       declaration = astNode.getParent().getParent().getParent();
       Preconditions.checkState(declaration.is(JavaGrammar.INTERFACE_BODY_DECLARATION));
-    } else if (astNode.getParent().is(JavaGrammar.ANNOTATION_METHOD_OR_CONSTANT_REST)) {
-      declaration = astNode.getParent().getParent().getParent();
-      Preconditions.checkState(declaration.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION));
     } else if (astNode.getParent().is(JavaGrammar.TYPE_DECLARATION)) {
       declaration = astNode.getParent();
     } else if (astNode.getParent().is(JavaGrammar.BLOCK_STATEMENT)) {
       declaration = astNode.getParent();
-    } else if (astNode.getParent().is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST)) {
-      declaration = astNode.getParent().getParent();
-      Preconditions.checkState(declaration.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION));
+    } else if (astNode.hasAncestor(Kind.METHOD, Kind.ANNOTATION_TYPE)) {
+      declaration = astNode.getFirstAncestor(Kind.METHOD, Kind.ANNOTATION_TYPE);
+    } else if (astNode.is(Kind.METHOD, Kind.ANNOTATION_TYPE)) {
+      declaration = astNode;
     } else {
-      throw new IllegalStateException(astNode.getParent().getType().toString());
+      throw new IllegalStateException(astNode.getType().toString());
     }
     return declaration;
   }

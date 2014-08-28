@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -52,7 +53,7 @@ public class MethodHelperTest {
       JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
       JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-      JavaGrammar.ANNOTATION_METHOD_REST);
+      Kind.METHOD);
   }
 
   @Test
@@ -148,7 +149,7 @@ public class MethodHelperTest {
       JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
       JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-      JavaGrammar.ANNOTATION_METHOD_REST);
+      Kind.METHOD);
     Preconditions.checkState(descendants.size() == 1);
     return descendants.get(0);
   }

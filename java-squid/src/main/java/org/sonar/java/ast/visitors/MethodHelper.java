@@ -27,6 +27,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -51,22 +52,28 @@ public class MethodHelper {
       JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
       JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
       JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-      JavaGrammar.ANNOTATION_METHOD_REST);
+      Kind.METHOD);
   }
 
   public boolean isPublic() {
-    final AstNode node;
-    if (astNode.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
-      node = astNode.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION);
-    } else if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST, JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST)) {
-      node = astNode.getFirstAncestor(JavaGrammar.INTERFACE_BODY_DECLARATION);
-    } else if (astNode.is(JavaGrammar.ANNOTATION_METHOD_REST)) {
-      node = astNode.getFirstAncestor(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION);
+    ModifiersTree modifiers;
+
+    if (astNode.is(Kind.METHOD)) {
+      modifiers = ((MethodTree) astNode).modifiers();
     } else {
-      throw new IllegalStateException();
+      final AstNode node;
+
+      if (astNode.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, JavaGrammar.CONSTRUCTOR_DECLARATOR_REST)) {
+        node = astNode.getFirstAncestor(JavaGrammar.CLASS_BODY_DECLARATION);
+      } else if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST, JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST)) {
+        node = astNode.getFirstAncestor(JavaGrammar.INTERFACE_BODY_DECLARATION);
+      } else {
+        throw new IllegalStateException();
+      }
+
+      modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.MODIFIERS);
     }
 
-    ModifiersTree modifiers = (ModifiersTree) node.getFirstChild(JavaGrammar.MODIFIERS);
     return modifiers.modifiers().contains(Modifier.PUBLIC);
   }
 
@@ -82,16 +89,27 @@ public class MethodHelper {
 
   public AstNode getName() {
     final AstNode methodNameNode;
-    if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST, JavaGrammar.ANNOTATION_METHOD_REST)) {
-      methodNameNode = astNode.getPreviousAstNode();
+
+    if (astNode.is(Kind.METHOD)) {
+      methodNameNode = (AstNode) ((MethodTree) astNode).simpleName();
     } else {
-      methodNameNode = astNode.getPreviousSibling();
+      if (astNode.is(JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST)) {
+        methodNameNode = astNode.getPreviousAstNode();
+      } else {
+        methodNameNode = astNode.getPreviousSibling();
+      }
+      Preconditions.checkState(methodNameNode.is(JavaTokenType.IDENTIFIER));
     }
-    Preconditions.checkState(methodNameNode.is(JavaTokenType.IDENTIFIER));
+
     return methodNameNode;
   }
 
   public List<AstNode> getParameters() {
+    if (astNode.is(Kind.METHOD)) {
+      MethodTree tree = (MethodTree) astNode;
+      return (List) tree.parameters();
+    }
+
     AstNode node = astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS);
     if (node == null) {
       // in case of annotationMethodRest
@@ -106,6 +124,13 @@ public class MethodHelper {
   }
 
   public List<AstNode> getStatements() {
+    if (astNode.is(Kind.METHOD)) {
+      MethodTree tree = (MethodTree) astNode;
+      return tree.block() == null ?
+        Collections.EMPTY_LIST :
+        tree.block().body();
+    }
+
     AstNode node = astNode.getFirstChild(JavaGrammar.METHOD_BODY);
     if (node == null) {
       return Collections.emptyList();
@@ -130,8 +155,8 @@ public class MethodHelper {
           JavaGrammar.INTERFACE_DECLARATION,
           JavaGrammar.CLASS_DECLARATION,
           JavaGrammar.ENUM_DECLARATION,
-          JavaGrammar.ANNOTATION_TYPE_DECLARATION);
-        if (actualMember.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST)) {
+          Kind.METHOD);
+        if (actualMember.is(JavaGrammar.METHOD_DECLARATOR_REST, JavaGrammar.VOID_METHOD_DECLARATOR_REST, Kind.METHOD)) {
           builder.add(new MethodHelper(actualMember));
         }
       }

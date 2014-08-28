@@ -40,6 +40,7 @@ import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
@@ -95,7 +96,7 @@ public class TreeFactory {
 
   public ModifiersTreeImpl modifiers(Optional<List<AstNode>> modifierNodes) {
     if (!modifierNodes.isPresent()) {
-      return ModifiersTreeImpl.EMPTY_MODIFIERS;
+      return ModifiersTreeImpl.emptyModifiers();
     }
 
     ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
@@ -359,30 +360,65 @@ public class TreeFactory {
 
   // Annotations
 
-  public AstNode newAnnotationTypeDeclaration(AstNode atTokenAstNode, AstNode interfaceTokenAstNode, AstNode identifier, AstNode annotationTypeBody) {
-    AstNodeType type = JavaGrammar.ANNOTATION_TYPE_DECLARATION;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(atTokenAstNode);
-    result.addChild(interfaceTokenAstNode);
-    result.addChild(identifier);
-    result.addChild(annotationTypeBody);
-    return result;
+  public ClassTreeImpl completeAnnotationType(AstNode atTokenAstNode, AstNode interfaceTokenAstNode, AstNode identifier, ClassTreeImpl partial) {
+    return partial.complete(
+      InternalSyntaxToken.create(atTokenAstNode),
+      InternalSyntaxToken.create(interfaceTokenAstNode),
+      new IdentifierTreeImpl(InternalSyntaxToken.create(identifier)));
   }
 
-  public AstNode newAnnotationTypeBody(AstNode openBraceTokenAstNode, Optional<List<AstNode>> annotationTypeElementDeclarations, AstNode closeBraceTokenAstNode) {
-    AstNodeType type = JavaGrammar.ANNOTATION_TYPE_BODY;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(openBraceTokenAstNode);
+  public ClassTreeImpl newAnnotationType(AstNode openBraceTokenAstNode, Optional<List<AstNode>> annotationTypeElementDeclarations, AstNode closeBraceTokenAstNode) {
+    InternalSyntaxToken openBraceToken = InternalSyntaxToken.create(openBraceTokenAstNode);
+    InternalSyntaxToken closeBraceToken = InternalSyntaxToken.create(closeBraceTokenAstNode);
+
+    // TODO
+    ModifiersTreeImpl emptyModifiers = ModifiersTreeImpl.emptyModifiers();
+
+    ImmutableList.Builder<Tree> members = ImmutableList.builder();
+
+    List<AstNode> children = Lists.newArrayList();
+    children.add(emptyModifiers);
+    children.add(openBraceToken);
+
     if (annotationTypeElementDeclarations.isPresent()) {
       for (AstNode annotationTypeElementDeclaration : annotationTypeElementDeclarations.get()) {
-        result.addChild(annotationTypeElementDeclaration);
+        // FIXME
+        if (annotationTypeElementDeclaration.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)) {
+          Preconditions.checkArgument(annotationTypeElementDeclaration.getNumberOfChildren() == 2);
+
+          ModifiersTreeImpl modifiers = (ModifiersTreeImpl) annotationTypeElementDeclaration.getFirstChild(JavaGrammar.MODIFIERS);
+          AstNode declaration = annotationTypeElementDeclaration.getLastChild();
+
+          if (declaration.is(Kind.METHOD)) {
+            // method
+            members.add(((MethodTreeImpl) declaration).complete(modifiers));
+            children.add(declaration);
+          } else if (declaration.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST)) {
+            // constant
+            treeMaker.appendConstantDeclarations(ModifiersTreeImpl.EMPTY, members, declaration);
+            children.add(annotationTypeElementDeclaration);
+          } else if (declaration.is(Kind.ANNOTATION_TYPE)) {
+            // TODO Complete with modifiers
+            members.add((Tree) declaration);
+            children.add(annotationTypeElementDeclaration);
+          } else {
+            // interface, class, enum
+            members.add(modifiers, treeMaker.typeDeclaration(modifiers, declaration));
+            children.add(annotationTypeElementDeclaration);
+          }
+        } else {
+          // semi
+          children.add(annotationTypeElementDeclaration);
+        }
       }
     }
-    result.addChild(closeBraceTokenAstNode);
-    return result;
+
+    children.add(closeBraceToken);
+
+    return new ClassTreeImpl(emptyModifiers, members.build(), children);
   }
 
-  public AstNode newAnnotationTypeElementDeclaration1(ModifiersTreeImpl modifiers, AstNode annotationTypeElementRest) {
+  public AstNode completeAnnotationTypeMember(ModifiersTreeImpl modifiers, AstNode annotationTypeElementRest) {
     AstNodeType type = JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION;
     AstNode result = new AstNode(type, type.toString(), null);
     result.addChild(modifiers);
@@ -390,75 +426,42 @@ public class TreeFactory {
     return result;
   }
 
-  public AstNode newAnnotationTypeElementDeclaration2(AstNode semiTokenAstNode) {
-    AstNodeType type = JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(semiTokenAstNode);
-    return result;
-  }
+  public AstNode newAnnotationTypeMember(ExpressionTree type, AstNode identifierAstNode, AstNode annotationMethodOrConstantRest, AstNode semiTokenAstNode) {
+    if (annotationMethodOrConstantRest.is(Kind.METHOD)) {
+      MethodTreeImpl partial = (MethodTreeImpl) annotationMethodOrConstantRest;
+      partial.complete(type, new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode)));
+      partial.addChild(semiTokenAstNode);
 
-  public AstNode newAnnotationTypeElementRest1(ExpressionTree type, AstNode identifier, AstNode annotationMethodOrConstantRest, AstNode semiTokenAstNode) {
+      return partial;
+    }
+
     AstNodeType type2 = JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST;
     AstNode result = new AstNode(type2, type2.toString(), null);
+
     result.addChild((AstNode) type);
-    result.addChild(identifier);
+    result.addChild(identifierAstNode);
     result.addChild(annotationMethodOrConstantRest);
     result.addChild(semiTokenAstNode);
+
     return result;
   }
 
-  public AstNode newAnnotationTypeElementRest2(AstNode classDeclaration) {
-    AstNodeType type = JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(classDeclaration);
-    return result;
+  public MethodTreeImpl newAnnotationTypeMethod(AstNode openParenTokenAstNode, AstNode closeParenTokenAstNode, Optional<ExpressionTree> defaultValue) {
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+
+    MethodTreeImpl tree = new MethodTreeImpl(defaultValue.isPresent() ? defaultValue.get() : null);
+
+    tree.prependChildren(openParenToken, closeParenToken);
+
+    return tree;
   }
 
-  public AstNode newAnnotationTypeElementRest3(AstNode enumDeclaration) {
-    AstNodeType type = JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(enumDeclaration);
-    return result;
-  }
+  public ExpressionTree newDefaultValue(AstNode defaultTokenAstNode, ExpressionTree elementValue) {
+    InternalSyntaxToken defaultToken = InternalSyntaxToken.create(defaultTokenAstNode);
 
-  public AstNode newAnnotationTypeElementRest4(AstNode interfaceDeclaration) {
-    AstNodeType type = JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(interfaceDeclaration);
-    return result;
-  }
-
-  public AstNode newAnnotationTypeElementRest5(AstNode annotationTypeDeclaration) {
-    AstNodeType type = JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(annotationTypeDeclaration);
-    return result;
-  }
-
-  public AstNode newAnnotationMethodOrConstantRest(AstNode astNode) {
-    AstNodeType type = JavaGrammar.ANNOTATION_METHOD_OR_CONSTANT_REST;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(astNode);
-    return result;
-  }
-
-  public AstNode newAnnotationMethodRest(AstNode openParenTokenAstNode, AstNode closeParenTokenAstNode, Optional<AstNode> defaultValue) {
-    AstNodeType type = JavaGrammar.ANNOTATION_METHOD_REST;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(openParenTokenAstNode);
-    result.addChild(closeParenTokenAstNode);
-    if (defaultValue.isPresent()) {
-      result.addChild(defaultValue.get());
-    }
-    return result;
-  }
-
-  public AstNode newDefaultValue(AstNode defaultTokenAstNode, ExpressionTree elementValue) {
-    AstNodeType type = JavaGrammar.DEFAULT_VALUE;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(defaultTokenAstNode);
-    result.addChild((AstNode) elementValue);
-    return result;
+    ((JavaTree) elementValue).prependChildren(defaultToken);
+    return elementValue;
   }
 
   public AnnotationTreeImpl newAnnotation(AstNode atTokenAstNode, ExpressionTree qualifiedIdentifier, Optional<ArgumentListTreeImpl> arguments) {

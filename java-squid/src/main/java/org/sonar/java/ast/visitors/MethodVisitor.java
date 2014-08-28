@@ -56,6 +56,8 @@ public class MethodVisitor extends JavaAstVisitor {
     SourceClass sourceClass = peekSourceClass();
     // TODO hack grammar to get proper start line
     int startLine = PublicApiVisitor.getDeclaration(astNode).getTokenLine();
+    Preconditions.checkNotNull(sourceClass);
+    Preconditions.checkNotNull(methodName);
     SourceMethod sourceMethod = new SourceMethod(sourceClass, methodName, startLine);
     sourceMethod.setMeasure(JavaMetric.METHODS, 1);
     sourceMethod.setSuppressWarnings(SuppressWarningsAnnotationUtils.isSuppressAllWarnings(astNode));
