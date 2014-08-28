@@ -21,25 +21,32 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.Token;
+import org.sonar.api.utils.ParsingUtils;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Deque;
+import java.util.LinkedList;
 
-public class PublicApiChecker {
+
+public class PublicApiChecker extends BaseTreeVisitor {
 
   public static final Tree.Kind[] CLASS_KINDS = {
       Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE
@@ -54,6 +61,62 @@ public class PublicApiChecker {
       Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR,
       Tree.Kind.VARIABLE
   };
+  private Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
+  private Deque<Tree> currentParents = new LinkedList<Tree>();
+  private double publicApi;
+  private double documentedPublicApi;
+
+
+  public void scan(CompilationUnitTree tree) {
+    classTrees.clear();
+    currentParents.clear();
+    publicApi = 0;
+    documentedPublicApi = 0;
+    super.scan(tree);
+  }
+
+  @Override
+  public void visitNewClass(NewClassTree tree) {
+    //don't visit anonymous classes, nothing in an anonymous class is part of public api.
+  }
+
+  @Override
+  public void visitClass(ClassTree tree) {
+    visitNode(tree);
+    super.visitClass(tree);
+    classTrees.pop();
+    currentParents.pop();
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    visitNode(tree);
+    super.visitVariable(tree);
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    visitNode(tree);
+    super.visitMethod(tree);
+    currentParents.pop();
+  }
+
+  private void visitNode(Tree tree) {
+    Tree currentParent = currentParents.peek();
+    if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+      classTrees.push((ClassTree) tree);
+      currentParents.push(tree);
+    } else if (tree.is(PublicApiChecker.METHOD_KINDS)) {
+      currentParents.push(tree);
+    }
+
+    if(isPublicApi(currentParent, tree)) {
+      publicApi++;
+      if(getApiJavadoc(tree) != null) {
+        documentedPublicApi++;
+      }
+    }
+  }
 
 
   public boolean isPublicApi(ClassTree currentClass, ClassTree classTree) {
@@ -166,5 +229,20 @@ public class PublicApiChecker {
       }
     }
     return null;
+  }
+
+
+  public double getPublicApi() {
+    return publicApi;
+  }
+  public double getUndocumentedPublicApi() {
+    return publicApi - documentedPublicApi;
+  }
+
+  public double getDocumentedPublicApiDensity() {
+    if(publicApi == 0) {
+      return 100.0;
+    }
+    return ParsingUtils.scaleValue(documentedPublicApi/publicApi*100,2);
   }
 }

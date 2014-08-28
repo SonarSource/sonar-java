@@ -68,7 +68,7 @@ public class CopyBasicMeasuresBridgeTest {
     bridge.onFile(squidFile, sonarFile);
 
     ArgumentCaptor<Measure> measureCaptor = ArgumentCaptor.forClass(Measure.class);
-    verify(context, times(9)).saveMeasure(eq(sonarFile), measureCaptor.capture());
+    verify(context, times(6)).saveMeasure(eq(sonarFile), measureCaptor.capture());
     verifyNoMoreInteractions(context);
 
     List<Measure> measures = measureCaptor.getAllValues();
@@ -90,12 +90,6 @@ public class CopyBasicMeasuresBridgeTest {
 
     assertThat(measures.get(5).getMetric()).isSameAs(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION);
 
-    assertThat(measures.get(6).getMetric()).isSameAs(CoreMetrics.PUBLIC_API);
-    assertThat(measures.get(6).getValue()).isEqualTo(8);
-
-    assertThat(measures.get(7).getMetric()).isSameAs(CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY);
-
-    assertThat(measures.get(8).getMetric()).isSameAs(CoreMetrics.PUBLIC_UNDOCUMENTED_API);
   }
 
 }

@@ -35,13 +35,14 @@ import java.io.File;
 import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class MeasurerTest {
 
+  private static final int NB_OF_METRICS = 8;
   private SensorContext context;
   private Measurer measurer;
   private JavaSquid squid;
@@ -67,19 +68,34 @@ public class MeasurerTest {
 
   @Test
   public void verify_methods_metric() {
-    checkMetric("Methods.java", "functions", 9.0);
+    checkMetric("Methods.java", "functions", 7.0);
   }
 
+  @Test
+  public void verify_public_api_metric() {
+    checkMetric("Comments.java", "public_api", 2.0);
+  }
+  @Test
+  public void verify_public_api_density_metric() {
+    checkMetric("Comments.java", "public_documented_api_density", 100.0);
+  }
+  @Test
+  public void verify_public_undocumented_api() {
+    checkMetric("Comments.java", "public_undocumented_api", 0.0);
+  }
   private void checkMetric(String filename, String metric, double expectedValue) {
     InputFile sourceFile = InputFileUtils.create(baseDir, new File(baseDir, filename));
     squid.scan(Collections.singleton(sourceFile), Collections.<InputFile>emptyList(), Collections.<File>emptyList());
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     ArgumentCaptor<org.sonar.api.resources.File> sonarFilescaptor = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
-    verify(context, atMost(5)).saveMeasure(sonarFilescaptor.capture(), captor.capture());
+    verify(context, times(NB_OF_METRICS)).saveMeasure(sonarFilescaptor.capture(), captor.capture());
+    int checkedMetrics = 0;
     for (Measure measure : captor.getAllValues()) {
-      if(metric.equals(measure.getDescription())){
+      if(metric.equals(measure.getMetricKey())){
         assertThat(measure.getValue()).isEqualTo(expectedValue);
+        checkedMetrics++;
       }
     }
+    assertThat(checkedMetrics).isEqualTo(1);
   }
 }

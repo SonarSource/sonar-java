@@ -32,6 +32,7 @@ import org.sonar.api.resources.File;
 import org.sonar.api.resources.Project;
 import org.sonar.java.ast.visitors.AccessorVisitorST;
 import org.sonar.java.ast.visitors.ComplexityVisitorST;
+import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -60,6 +61,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private final AccessorVisitorST accessorVisitorST;
   private final ComplexityVisitorST complexityVisitorST;
   private Charset charset;
+  private double publicApi;
 
   public Measurer(Project project, SensorContext context) {
     this.project = project;
@@ -82,12 +84,18 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     methods = 0;
     complexityInMethods = 0;
     accessors = 0;
+    PublicApiChecker publicApiChecker = new PublicApiChecker();
+    publicApiChecker.scan(context.getTree());
     methodComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, LIMITS);
     super.scanFile(context);
     //leave file.
     saveMetricOnFile(CoreMetrics.FUNCTIONS, methods);
     saveMetricOnFile(CoreMetrics.ACCESSORS, accessors);
     saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_FUNCTIONS, complexityInMethods);
+    saveMetricOnFile(CoreMetrics.PUBLIC_API, publicApiChecker.getPublicApi());
+    saveMetricOnFile(CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY, publicApiChecker.getDocumentedPublicApiDensity());
+    saveMetricOnFile(CoreMetrics.PUBLIC_UNDOCUMENTED_API, publicApiChecker.getUndocumentedPublicApi());
+
     sensorContext.saveMeasure(sonarFile, methodComplexityDistribution.build(true).setPersistenceMode(PersistenceMode.MEMORY));
     saveLinesMetric();
 

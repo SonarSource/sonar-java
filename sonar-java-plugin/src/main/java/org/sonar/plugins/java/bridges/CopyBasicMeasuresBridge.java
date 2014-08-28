@@ -24,11 +24,9 @@ import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.PersistenceMode;
 import org.sonar.api.measures.RangeDistributionBuilder;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.utils.ParsingUtils;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.measures.Metric;
 import org.sonar.squidbridge.measures.MetricDef;
 
 public final class CopyBasicMeasuresBridge extends Bridge {
@@ -38,7 +36,6 @@ public final class CopyBasicMeasuresBridge extends Bridge {
   @Override
   public void onFile(SourceFile squidFile, Resource sonarResource) {
     copy(squidFile, sonarResource, JavaMetric.LINES_OF_CODE, CoreMetrics.NCLOC);
-    //copy(squidFile, sonarResource, JavaMetric.LINES, CoreMetrics.LINES);
     copy(squidFile, sonarResource, JavaMetric.COMMENT_LINES_WITHOUT_HEADER, CoreMetrics.COMMENT_LINES);
     copy(squidFile, sonarResource, JavaMetric.STATEMENTS, CoreMetrics.STATEMENTS);
     copy(squidFile, sonarResource, JavaMetric.CLASSES, CoreMetrics.CLASSES);
@@ -49,11 +46,6 @@ public final class CopyBasicMeasuresBridge extends Bridge {
       .build(true)
       .setPersistenceMode(PersistenceMode.MEMORY));
 
-    copy(squidFile, sonarResource, Metric.PUBLIC_API, CoreMetrics.PUBLIC_API);
-    double undocumentedApiDensity = ParsingUtils.scaleValue(squidFile.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY) * 100, 2);
-    context.saveMeasure(sonarResource, new Measure(CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY, undocumentedApiDensity));
-    double undocumentedApi = squidFile.getDouble(Metric.PUBLIC_API) - squidFile.getInt(Metric.PUBLIC_DOC_API);
-    context.saveMeasure(sonarResource, new Measure(CoreMetrics.PUBLIC_UNDOCUMENTED_API, undocumentedApi));
   }
 
   private void copy(SourceCode squidResource, Resource sonarResource, MetricDef squidMetric, org.sonar.api.measures.Metric sonarMetric) {
