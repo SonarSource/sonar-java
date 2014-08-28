@@ -64,8 +64,8 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-      arguments.iterator(),
-      Iterators.singletonIterator(annotationType)
-    );
+      Iterators.singletonIterator(annotationType),
+      arguments.iterator());
   }
+
 }
