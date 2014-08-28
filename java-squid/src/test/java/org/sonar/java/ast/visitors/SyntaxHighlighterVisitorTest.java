@@ -81,6 +81,9 @@ public class SyntaxHighlighterVisitorTest {
     Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 7), "k");
     Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 11), "k");
     Mockito.verify(highlighting).highlight(offset(12, 12), offset(12, 14), "c");
+    Mockito.verify(highlighting).highlight(offset(17, 2), offset(17, 12), "k");
+    Mockito.verify(highlighting).highlight(offset(18, 21), offset(18, 29), "k");
+    Mockito.verify(highlighting).highlight(offset(18, 29), offset(18, 30), "c");
     Mockito.verify(highlighting).done();
     Mockito.verifyNoMoreInteractions(highlighting);
   }
@@ -102,6 +105,9 @@ public class SyntaxHighlighterVisitorTest {
     Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 7), "k");
     Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 11), "k");
     Mockito.verify(highlighting).highlight(offset(12, 12), offset(12, 14), "c");
+    Mockito.verify(highlighting).highlight(offset(17, 2), offset(17, 12), "k");
+    Mockito.verify(highlighting).highlight(offset(18, 21), offset(18, 29), "k");
+    Mockito.verify(highlighting).highlight(offset(18, 29), offset(18, 30), "c");
     Mockito.verify(highlighting).done();
     Mockito.verifyNoMoreInteractions(highlighting);
   }
@@ -123,6 +129,9 @@ public class SyntaxHighlighterVisitorTest {
     Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 7), "k");
     Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 11), "k");
     Mockito.verify(highlighting).highlight(offset(12, 12), offset(12, 14), "c");
+    Mockito.verify(highlighting).highlight(offset(17, 2), offset(17, 12), "k");
+    Mockito.verify(highlighting).highlight(offset(18, 21), offset(18, 29), "k");
+    Mockito.verify(highlighting).highlight(offset(18, 29), offset(18, 30), "c");
     Mockito.verify(highlighting).done();
     Mockito.verifyNoMoreInteractions(highlighting);
   }

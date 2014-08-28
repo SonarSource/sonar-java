@@ -102,7 +102,14 @@ public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTo
     if (astNode.is(Kind.ANNOTATION)) {
       highlighting.highlight(astNode.getFromIndex(), ((AstNode) ((AnnotationTree) astNode).annotationType()).getToIndex(), types.get(astNode.getType()));
     } else {
-      highlighting.highlight(astNode.getFromIndex(), astNode.getToIndex(), types.get(astNode.getType()));
+      // FIXME Hack to support prepending of keywords in literals, such as "default 0" in annotation type methods
+      AstNode target;
+      if (astNode.hasChildren()) {
+        target = astNode.getLastChild();
+      } else {
+        target = astNode;
+      }
+      highlighting.highlight(target.getFromIndex(), target.getToIndex(), types.get(astNode.getType()));
     }
   }
 

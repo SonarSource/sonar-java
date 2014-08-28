@@ -62,4 +62,9 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
       token);
   }
 
+  // FIXME Remove
+  public InternalSyntaxToken token() {
+    return token;
+  }
+
 }
