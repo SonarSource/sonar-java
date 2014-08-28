@@ -37,6 +37,7 @@ import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private final AccessorVisitorST accessorVisitorST;
   private final ComplexityVisitorST complexityVisitorST;
   private Charset charset;
-  private double publicApi;
+  private double classes;
 
   public Measurer(Project project, SensorContext context) {
     this.project = project;
@@ -73,6 +74,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE,
+        Tree.Kind.NEW_CLASS, Tree.Kind.ENUM_CONSTANT,
         Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
@@ -84,11 +86,13 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     methods = 0;
     complexityInMethods = 0;
     accessors = 0;
+    classes = 0;
     PublicApiChecker publicApiChecker = new PublicApiChecker();
     publicApiChecker.scan(context.getTree());
     methodComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, LIMITS);
     super.scanFile(context);
     //leave file.
+    saveMetricOnFile(CoreMetrics.CLASSES, classes);
     saveMetricOnFile(CoreMetrics.FUNCTIONS, methods);
     saveMetricOnFile(CoreMetrics.ACCESSORS, accessors);
     saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_FUNCTIONS, complexityInMethods);
@@ -113,7 +117,11 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.ANNOTATION_TYPE)) {
+      classes++;
       classTrees.push((ClassTree) tree);
+    }
+    if(tree.is(Tree.Kind.NEW_CLASS) && ((NewClassTree)tree).classBody() != null ) {
+      classes--;
     }
     if (tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR)) {
       //don't count methods in anonymous classes.

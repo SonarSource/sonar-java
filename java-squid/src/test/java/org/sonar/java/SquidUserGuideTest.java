@@ -88,8 +88,10 @@ public class SquidUserGuideTest {
     }
 
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(412);
+    assertThat(metrics.count("classes")).isEqualTo(412);
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(3805 + 69);
     assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(3805);
+    assertThat(metrics.count("functions")).isEqualTo(3693);
     assertThat(project.getInt(Metric.ACCESSORS)).isEqualTo(69);
     assertThat(metrics.count("lines")).isEqualTo(64125);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(26323);
@@ -97,6 +99,7 @@ public class SquidUserGuideTest {
     assertThat(project.getInt(JavaMetric.COMPLEXITY)).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);
     assertThat(project.getInt(JavaMetric.COMMENT_LINES_WITHOUT_HEADER)).isEqualTo(17908);
     assertThat(project.getInt(Metric.PUBLIC_API)).isEqualTo(3257);
+    assertThat(metrics.count("public_api")).isEqualTo(3221);
     assertThat(project.getInt(Metric.PUBLIC_DOC_API)).isEqualTo(2008);
     assertThat(project.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY)).isEqualTo(0.62, Delta.delta(0.01));
   }

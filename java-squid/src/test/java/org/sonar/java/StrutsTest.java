@@ -91,6 +91,7 @@ public class StrutsTest {
     }
 
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(146);
+    assertThat(metrics.count("classes")).isEqualTo(146);
     assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(1437 + 48);
     assertThat(project.getInt(Metric.ACCESSORS)).isEqualTo(48);
     assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(1437);
@@ -102,8 +103,10 @@ public class StrutsTest {
     assertThat(project.getInt(JavaMetric.COMPLEXITY)).isEqualTo(3957 - 145 /* SONAR-3793 */- 1 /* SONAR-3794 */);
     assertThat(project.getInt(JavaMetric.COMMENT_LINES_WITHOUT_HEADER)).isEqualTo(7605);
     assertThat(project.getInt(Metric.PUBLIC_API)).isEqualTo(1348);
+    assertThat(metrics.count("public_api")).isEqualTo(1340);
     assertThat(project.getInt(Metric.PUBLIC_DOC_API)).isEqualTo(842);
     assertThat(project.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY)).isEqualTo(0.62, Delta.delta(0.01));
+
   }
 
 

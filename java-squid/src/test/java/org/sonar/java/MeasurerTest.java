@@ -42,9 +42,8 @@ import static org.mockito.Mockito.when;
 
 public class MeasurerTest {
 
-  private static final int NB_OF_METRICS = 8;
+  private static final int NB_OF_METRICS = 9;
   private SensorContext context;
-  private Measurer measurer;
   private JavaSquid squid;
   private File baseDir;
 
@@ -57,7 +56,7 @@ public class MeasurerTest {
     baseDir = new File("src/test/files/metrics");
     when(sonarProject.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
-    measurer = new Measurer(sonarProject, context);
+    Measurer measurer = new Measurer(sonarProject, context);
     squid = new JavaSquid(conf, null, measurer, new CodeVisitor[0]);
   }
 
@@ -75,14 +74,22 @@ public class MeasurerTest {
   public void verify_public_api_metric() {
     checkMetric("Comments.java", "public_api", 2.0);
   }
+
   @Test
   public void verify_public_api_density_metric() {
     checkMetric("Comments.java", "public_documented_api_density", 100.0);
   }
+
   @Test
   public void verify_public_undocumented_api() {
     checkMetric("Comments.java", "public_undocumented_api", 0.0);
   }
+
+  @Test
+  public void verify_class_metric() {
+    checkMetric("Classes.java", "classes", 4.0);
+  }
+
   private void checkMetric(String filename, String metric, double expectedValue) {
     InputFile sourceFile = InputFileUtils.create(baseDir, new File(baseDir, filename));
     squid.scan(Collections.singleton(sourceFile), Collections.<InputFile>emptyList(), Collections.<File>emptyList());
@@ -91,7 +98,7 @@ public class MeasurerTest {
     verify(context, times(NB_OF_METRICS)).saveMeasure(sonarFilescaptor.capture(), captor.capture());
     int checkedMetrics = 0;
     for (Measure measure : captor.getAllValues()) {
-      if(metric.equals(measure.getMetricKey())){
+      if (metric.equals(measure.getMetricKey())) {
         assertThat(measure.getValue()).isEqualTo(expectedValue);
         checkedMetrics++;
       }

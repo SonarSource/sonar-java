@@ -63,12 +63,6 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void classes() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Classes.java"));
-    assertThat(file.getInt(JavaMetric.CLASSES)).isEqualTo(2);
-  }
-
-  @Test
   public void accessors() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Accessors.java"));
     assertThat(file.getInt(Metric.ACCESSORS)).isEqualTo(3);
