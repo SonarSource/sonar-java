@@ -104,6 +104,11 @@ public class MeasurerTest {
   }
 
   @Test
+  public void verify_accessors_set_to_0_when_not_analysing_accessors() {
+    checkMetric(false, baseDir, "Complexity.java", "accessors", 0.0);
+  }
+
+  @Test
   public void verify_complexity_metric_not_analysing_accessor() {
     checkMetric(false, baseDir, "Complexity.java", "complexity", 15.0);
   }
