@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
@@ -32,7 +33,7 @@ public class BadTypeParameterName_S00119_CheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadGenericName.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadGenericName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(1).withMessage("Rename this generic name to match the regular expression '^[A-Z]$'.")
         .next().atLine(2)
@@ -42,7 +43,7 @@ public class BadTypeParameterName_S00119_CheckTest {
   @Test
   public void test2() {
     check.format = "^[a-zA-Z0-9_]*$";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadGenericName.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadGenericName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
   }

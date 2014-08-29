@@ -3,7 +3,7 @@ class MyClass<TYPE> {
   }
 }
 
-public class MyClass<T> {
+public class MyClass2<T> {
   <T> void addAll(Collection<T> c) {
   }
 }

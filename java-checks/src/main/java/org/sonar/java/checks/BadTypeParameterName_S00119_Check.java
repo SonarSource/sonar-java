@@ -19,46 +19,50 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = "S00119",
-  priority = Priority.MAJOR,
-  tags = {"convention"})
+    key = "S00119",
+    priority = Priority.MAJOR,
+    tags = {"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class BadTypeParameterName_S00119_Check extends SquidCheck<LexerlessGrammar> {
+public class BadTypeParameterName_S00119_Check extends SubscriptionBaseVisitor {
 
   private static final String DEFAULT_FORMAT = "^[A-Z]$";
 
   @RuleProperty(
-    key = "format",
-    defaultValue = "" + DEFAULT_FORMAT)
+      key = "format",
+      defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
-
   private Pattern pattern = null;
 
   @Override
-  public void init() {
-    subscribeTo(Kind.TYPE_PARAMETER);
-    pattern = Pattern.compile(format, Pattern.DOTALL);
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Kind.TYPE_PARAMETER);
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
-    String name = ((TypeParameterTree) astNode).identifier().name();
-    if (!pattern.matcher(name).matches()) {
-      getContext().createLineViolation(this, "Rename this generic name to match the regular expression '" + format + "'.", astNode);
-    }
+  public void scanFile(JavaFileScannerContext context) {
+    pattern = Pattern.compile(format, Pattern.DOTALL);
+    super.scanFile(context);
   }
 
+  @Override
+  public void visitNode(Tree tree) {
+    String name = ((TypeParameterTree) tree).identifier().name();
+    if (!pattern.matcher(name).matches()) {
+      addIssue(tree, "Rename this generic name to match the regular expression '" + format + "'.");
+    }
+  }
 }
