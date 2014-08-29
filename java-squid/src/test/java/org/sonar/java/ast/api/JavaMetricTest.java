@@ -27,7 +27,7 @@ public class JavaMetricTest {
 
   @Test
   public void test() {
-    assertThat(JavaMetric.values()).hasSize(8);
+    assertThat(JavaMetric.values()).hasSize(7);
 
     for (JavaMetric metric : JavaMetric.values()) {
       assertThat(metric.getName()).isEqualTo(metric.name());

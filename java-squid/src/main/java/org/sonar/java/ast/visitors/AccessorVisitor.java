@@ -62,7 +62,6 @@ public class AccessorVisitor extends JavaAstVisitor {
       sourceMethod.setMeasure(Metric.PUBLIC_API, 0);
       sourceMethod.setMeasure(Metric.PUBLIC_DOC_API, 0);
       sourceMethod.setMeasure(JavaMetric.METHODS, 0);
-      sourceMethod.setMeasure(JavaMetric.COMPLEXITY, 0);
     }
   }
 

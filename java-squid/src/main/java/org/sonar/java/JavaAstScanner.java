@@ -30,7 +30,6 @@ import org.sonar.java.ast.visitors.AccessorVisitor;
 import org.sonar.java.ast.visitors.AnonymousInnerClassVisitor;
 import org.sonar.java.ast.visitors.ClassVisitor;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
-import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.ast.visitors.EndAtLineVisitor;
 import org.sonar.java.ast.visitors.FileVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
@@ -154,8 +153,6 @@ public final class JavaAstScanner {
         JavaGrammar.EXPRESSION_STATEMENT,
         JavaGrammar.EMPTY_STATEMENT)
       .build());
-
-    builder.withSquidAstVisitor(new ComplexityVisitor());
 
     /* External visitors (typically Check ones) */
     for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
