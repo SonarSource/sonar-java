@@ -21,7 +21,9 @@ package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
@@ -44,5 +46,9 @@ public interface JavaFileScannerContext {
   String getFileName();
 
   File getFile();
+
+  int getComplexity(Tree tree);
+
+  int getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree);
 
 }

@@ -91,6 +91,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     }
     VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge, sonarComponents);
     visitorsBridge.setCharset(conf.getCharset());
+    visitorsBridge.setAnalyseAccessors(conf.isAnalysePropertyAccessors());
     astScanner.accept(visitorsBridge);
 
     if (sonarComponents != null) {

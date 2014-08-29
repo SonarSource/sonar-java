@@ -46,7 +46,14 @@ interface Interface {
 }
 
 abstract class AbstractClass {
+  private int i;
   abstract void method(); // +0
+  public int getI(){
+    return i; //+0 Accessor
+  }
+  public void setI(int i){
+    this.i = i;//+0 Accessor
+  }
 }
 
 @interface Annotation {

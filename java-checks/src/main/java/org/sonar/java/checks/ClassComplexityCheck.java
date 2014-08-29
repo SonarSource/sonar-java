@@ -24,7 +24,6 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.visitors.ComplexityVisitorST;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.text.MessageFormat;
@@ -47,7 +46,7 @@ public class ClassComplexityCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    int complexity = new ComplexityVisitorST().scan(tree);
+    int complexity = context.getComplexity(tree);
     if (complexity > max) {
       addIssue(tree, MessageFormat.format("The Cyclomatic Complexity of this class is {0,number,integer} which is greater than {1,number,integer} authorized.", complexity, max));
     }

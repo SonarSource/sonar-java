@@ -26,7 +26,6 @@ import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.ast.visitors.AccessorVisitor;
 import org.sonar.java.ast.visitors.AnonymousInnerClassVisitor;
 import org.sonar.java.ast.visitors.ClassVisitor;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
@@ -96,9 +95,6 @@ public final class JavaAstScanner {
 
     /* Methods */
     builder.withSquidAstVisitor(new MethodVisitor());
-    if (conf.isAnalysePropertyAccessors()) {
-      builder.withSquidAstVisitor(new AccessorVisitor());
-    }
     builder.withSquidAstVisitor(new PublicApiVisitor());
 
     builder.withSquidAstVisitor(new EndAtLineVisitor());

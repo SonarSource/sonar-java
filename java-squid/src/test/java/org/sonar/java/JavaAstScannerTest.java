@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.measures.Metric;
 
 import java.io.File;
 
@@ -54,12 +53,6 @@ public class JavaAstScannerTest {
   public void methods() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Methods.java"));
     assertThat(file.getInt(JavaMetric.METHODS)).isEqualTo(9);
-  }
-
-  @Test
-  public void accessors() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Accessors.java"));
-    assertThat(file.getInt(Metric.ACCESSORS)).isEqualTo(3);
   }
 
   @Test

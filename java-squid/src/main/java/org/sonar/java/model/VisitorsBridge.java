@@ -29,12 +29,15 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.ast.visitors.ComplexityVisitorST;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
@@ -55,6 +58,7 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
 
   private SemanticModel semanticModel;
   private final SonarComponents sonarComponents;
+  private boolean analyseAccessors;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -70,6 +74,10 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
     }
     this.scanners = scannersBuilder.build();
     this.sonarComponents = sonarComponents;
+  }
+
+  public void setAnalyseAccessors(boolean analyseAccessors) {
+    this.analyseAccessors = analyseAccessors;
   }
 
   @Override
@@ -97,7 +105,7 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
       } else {
         SemanticModel.handleMissingTypes(tree);
       }
-      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), getContext().getFile(), semanticModel);
+      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), getContext().getFile(), semanticModel, analyseAccessors);
       for (JavaFileScanner scanner : scanners) {
         scanner.scanFile(context);
       }
@@ -132,13 +140,15 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
     private final CompilationUnitTree tree;
     private final SourceFile sourceFile;
     private final SemanticModel semanticModel;
+    private final ComplexityVisitorST complexityVisitor;
     private File file;
 
-    public DefaultJavaFileScannerContext(CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel) {
+    public DefaultJavaFileScannerContext(CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors) {
       this.tree = tree;
       this.sourceFile = sourceFile;
       this.file = file;
       this.semanticModel = semanticModel;
+      this.complexityVisitor = new ComplexityVisitorST(analyseAccessors);
     }
 
     @Override
@@ -182,6 +192,16 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
     @Override
     public File getFile() {
       return file;
+    }
+
+    @Override
+    public int getComplexity(Tree tree) {
+      return complexityVisitor.scan(tree);
+    }
+
+    @Override
+    public int getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree) {
+      return complexityVisitor.scan(enclosingClass, methodTree);
     }
 
   }

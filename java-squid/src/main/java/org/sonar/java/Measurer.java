@@ -31,7 +31,6 @@ import org.sonar.api.measures.RangeDistributionBuilder;
 import org.sonar.api.resources.File;
 import org.sonar.api.resources.Project;
 import org.sonar.java.ast.visitors.AccessorVisitorST;
-import org.sonar.java.ast.visitors.ComplexityVisitorST;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -53,6 +52,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
 
   private final SensorContext sensorContext;
   private final Project project;
+  private final boolean analyseAccessors;
   private File sonarFile;
   private int methods;
   private int accessors;
@@ -61,15 +61,14 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
 
   private final Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
   private final AccessorVisitorST accessorVisitorST;
-  private final ComplexityVisitorST complexityVisitorST;
   private Charset charset;
   private double classes;
 
-  public Measurer(Project project, SensorContext context) {
+  public Measurer(Project project, SensorContext context, boolean analyseAccessors) {
     this.project = project;
     this.sensorContext = context;
+    this.analyseAccessors = analyseAccessors;
     accessorVisitorST = new AccessorVisitorST();
-    complexityVisitorST = new ComplexityVisitorST();
   }
 
   @Override
@@ -93,10 +92,12 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     methodComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, LIMITS_COMPLEXITY_METHODS);
     super.scanFile(context);
     //leave file.
-    int fileComplexity = complexityVisitorST.scan(context.getTree());
+    int fileComplexity = context.getComplexity(context.getTree());
     saveMetricOnFile(CoreMetrics.CLASSES, classes);
     saveMetricOnFile(CoreMetrics.FUNCTIONS, methods);
-    saveMetricOnFile(CoreMetrics.ACCESSORS, accessors);
+    if(analyseAccessors) {
+      saveMetricOnFile(CoreMetrics.ACCESSORS, accessors);
+    }
     saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_FUNCTIONS, complexityInMethods);
     saveMetricOnFile(CoreMetrics.COMPLEXITY, fileComplexity);
     saveMetricOnFile(CoreMetrics.PUBLIC_API, publicApiChecker.getPublicApi());
@@ -133,11 +134,11 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
       //don't count methods in anonymous classes.
       if (classTrees.peek().simpleName() != null) {
         MethodTree methodTree = (MethodTree) tree;
-        if (accessorVisitorST.isAccessor(classTrees.peek(), methodTree)) {
+        if (analyseAccessors && accessorVisitorST.isAccessor(classTrees.peek(), methodTree)) {
           accessors++;
         } else {
           methods++;
-          int methodComplexity = complexityVisitorST.scan(classTrees.peek(), methodTree);
+          int methodComplexity = context.getMethodComplexity(classTrees.peek(), methodTree);
           methodComplexityDistribution.add(methodComplexity);
           complexityInMethods += methodComplexity;
         }

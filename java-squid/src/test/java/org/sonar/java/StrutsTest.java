@@ -20,8 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -42,6 +40,8 @@ import org.sonar.squidbridge.measures.Metric;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -65,12 +65,13 @@ public class StrutsTest {
     File binDir = new File(prjDir, "bin");
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
+    conf.setAnalyzePropertyAccessors(true);
     context = mock(SensorContext.class);
     Project sonarProject = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     when(pfs.getBasedir()).thenReturn(prjDir);
     when(sonarProject.getFileSystem()).thenReturn(pfs);
-    measurer = new Measurer(sonarProject, context);
+    measurer = new Measurer(sonarProject, context, true);
     squid = new JavaSquid(conf, null, measurer, new CodeVisitor[0]);
     squid.scanDirectories(Collections.singleton(srcDir), Collections.singleton(binDir));
 
@@ -83,28 +84,29 @@ public class StrutsTest {
   public void measures_on_project() throws Exception {
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());
-    Multiset<String> metrics = HashMultiset.create();
+    Map<String, Double> metrics = new HashMap<String, Double>();
     for (Measure measure : captor.getAllValues()) {
-      if(measure.getIntValue() != null ){
-        metrics.add(measure.getMetricKey(), measure.getIntValue());
+      if(measure.getValue() != null ){
+        if(metrics.get(measure.getMetricKey())==null) {
+          metrics.put(measure.getMetricKey(), measure.getValue());
+        } else {
+          metrics.put(measure.getMetricKey(), metrics.get(measure.getMetricKey()) + measure.getValue());
+        }
       }
     }
 
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(146);
-    assertThat(metrics.count("classes")).isEqualTo(146);
-    assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(1437 + 48);
-    assertThat(project.getInt(Metric.ACCESSORS)).isEqualTo(48);
-    assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(1437);
+    assertThat(metrics.get("classes").intValue()).isEqualTo(146);
     //56 methods in anonymous classes: not part of metric but part of number of methods in project.
-    assertThat(metrics.count("functions")).isEqualTo(1437-56);
-    assertThat(metrics.count("lines")).isEqualTo(32878);
+    assertThat(metrics.get("functions").intValue()).isEqualTo(1437 - 56);
+    assertThat(metrics.get("lines").intValue()).isEqualTo(32878);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(14007);
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(6403);
-    assertThat(metrics.count("complexity")).isEqualTo(3957 - 145 /* SONAR-3793 */- 1 /* SONAR-3794 */);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(3957 - 145 /* SONAR-3793 */ - 1 /* SONAR-3794 */);
     assertThat(project.getInt(JavaMetric.COMMENT_LINES_WITHOUT_HEADER)).isEqualTo(7605);
-    assertThat(project.getInt(Metric.PUBLIC_API)).isEqualTo(1348);
-    assertThat(metrics.count("public_api")).isEqualTo(1340);
-    assertThat(project.getInt(Metric.PUBLIC_DOC_API)).isEqualTo(842);
+    assertThat(project.getInt(Metric.PUBLIC_API)).isEqualTo(1348+/*accessors*/48);
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(1340);
+    assertThat(project.getInt(Metric.PUBLIC_DOC_API)).isEqualTo(842+/*documented accessors*/36);
     assertThat(project.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY)).isEqualTo(0.62, Delta.delta(0.01));
 
   }

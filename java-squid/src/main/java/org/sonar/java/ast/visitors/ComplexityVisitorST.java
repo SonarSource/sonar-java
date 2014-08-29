@@ -36,6 +36,11 @@ public class ComplexityVisitorST extends SubscriptionVisitor {
   private int complexity;
   private AccessorVisitorST accessorVisitor = new AccessorVisitorST();
   private Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
+  private boolean analyseAccessors;
+
+  public ComplexityVisitorST(boolean analyseAccessors) {
+    this.analyseAccessors = analyseAccessors;
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -104,7 +109,7 @@ public class ComplexityVisitorST extends SubscriptionVisitor {
   private void computeMethodComplexity(MethodTree methodTree) {
     BlockTree block = methodTree.block();
     if (block != null) {
-      if (classTrees.isEmpty() || !accessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
+      if (classTrees.isEmpty() || !isAccessor(methodTree)) {
         complexity++;
       }
       if (!block.body().isEmpty() && Iterables.getLast(block.body()).is(Tree.Kind.RETURN_STATEMENT)) {
@@ -114,6 +119,9 @@ public class ComplexityVisitorST extends SubscriptionVisitor {
     }
   }
 
+  private boolean isAccessor(MethodTree methodTree) {
+    return analyseAccessors && accessorVisitor.isAccessor(classTrees.peek(), methodTree);
+  }
 
 
   @Override

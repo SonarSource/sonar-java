@@ -35,8 +35,8 @@ import java.io.File;
 import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,18 +46,16 @@ public class MeasurerTest {
   private SensorContext context;
   private JavaSquid squid;
   private File baseDir;
+  private Project sonarProject;
 
   @Before
   public void setUp() throws Exception {
-    JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     context = mock(SensorContext.class);
-    Project sonarProject = mock(Project.class);
+    sonarProject = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     baseDir = new File("src/test/files/metrics");
     when(sonarProject.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
-    Measurer measurer = new Measurer(sonarProject, context);
-    squid = new JavaSquid(conf, null, measurer, new CodeVisitor[0]);
   }
 
   @Test
@@ -91,23 +89,41 @@ public class MeasurerTest {
   }
 
   @Test
+  public void verify_accessors_metric() {
+    checkMetric("Accessors.java", "accessors", 3.0);
+  }
+
+  @Test
   public void verify_complexity_metric() {
     checkMetric("Complexity.java", "complexity", 13.0);
   }
 
-  private void checkMetric(String filename, String metric, double expectedValue) {
-    checkMetric(baseDir, filename, metric, expectedValue);
+  @Test
+  public void verify_function_metric_not_analysing_accessors() {
+    checkMetric(false, baseDir, "Complexity.java", "functions", 7.0);
   }
 
+  @Test
+  public void verify_complexity_metric_not_analysing_accessor() {
+    checkMetric(false, baseDir, "Complexity.java", "complexity", 15.0);
+  }
+  private void checkMetric(String filename, String metric, double expectedValue) {
+    checkMetric(true, baseDir, filename, metric, expectedValue);
+  }
   /**
    * Utility method to quickly get metric out of a file.
    */
-  private void checkMetric(File baseDir, String filename, String metric, double expectedValue) {
+  private void checkMetric(boolean analyseAccessors, File baseDir, String filename, String metric, double expectedValue) {
+    Measurer measurer = new Measurer(sonarProject, context, analyseAccessors);
+    JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
+    conf.setAnalyzePropertyAccessors(analyseAccessors);
+    squid = new JavaSquid(conf, null, measurer, new CodeVisitor[0]);
     InputFile sourceFile = InputFileUtils.create(baseDir, new File(baseDir, filename));
     squid.scan(Collections.singleton(sourceFile), Collections.<InputFile>emptyList(), Collections.<File>emptyList());
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     ArgumentCaptor<org.sonar.api.resources.File> sonarFilescaptor = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
-    verify(context, times(NB_OF_METRICS)).saveMeasure(sonarFilescaptor.capture(), captor.capture());
+    //-1 for metrics in case we don't analyse Accessors.
+    verify(context, atLeast(NB_OF_METRICS-1)).saveMeasure(sonarFilescaptor.capture(), captor.capture());
     int checkedMetrics = 0;
     for (Measure measure : captor.getAllValues()) {
       if (metric.equals(measure.getMetricKey())) {

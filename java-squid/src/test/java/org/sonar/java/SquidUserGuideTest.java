@@ -20,8 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,13 +35,13 @@ import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
 import org.sonar.squidbridge.api.SourceProject;
 import org.sonar.squidbridge.indexer.QueryByType;
-import org.sonar.squidbridge.measures.Metric;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -63,12 +61,13 @@ public class SquidUserGuideTest {
     File binDir = new File(prjDir, "bin");
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
+    conf.setAnalyzePropertyAccessors(true);
     context = mock(SensorContext.class);
     Project sonarProject = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     when(pfs.getBasedir()).thenReturn(prjDir);
     when(sonarProject.getFileSystem()).thenReturn(pfs);
-    measurer = new Measurer(sonarProject, context);
+    measurer = new Measurer(sonarProject, context, true);
     squid = new JavaSquid(conf, null, measurer, new CodeVisitor[0]);
     squid.scanDirectories(Collections.singleton(srcDir), Collections.singleton(binDir));
 
@@ -79,29 +78,33 @@ public class SquidUserGuideTest {
   @Test
   public void measures_on_project() throws Exception {
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
-    verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());
-    Multiset<String> metrics = HashMultiset.create();
+    ArgumentCaptor<org.sonar.api.resources.File> files = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
+    verify(context, atLeastOnce()).saveMeasure(files.capture(), captor.capture());
+    Map<String, Double> metrics = new HashMap<String, Double>();
     for (Measure measure : captor.getAllValues()) {
-      if(measure.getIntValue() != null ){
-        metrics.add(measure.getMetricKey(), measure.getIntValue());
+      if(measure.getValue() != null ){
+        if(metrics.get(measure.getMetricKey())==null) {
+          metrics.put(measure.getMetricKey(), measure.getValue());
+        } else {
+          metrics.put(measure.getMetricKey(), metrics.get(measure.getMetricKey()) + measure.getValue());
+        }
       }
     }
 
     assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(412);
-    assertThat(metrics.count("classes")).isEqualTo(412);
-    assertThat(project.getInt(JavaMetric.METHODS) + project.getInt(Metric.ACCESSORS)).isEqualTo(3805 + 69);
-    assertThat(project.getInt(JavaMetric.METHODS)).isEqualTo(3805);
-    assertThat(metrics.count("functions")).isEqualTo(3693);
-    assertThat(project.getInt(Metric.ACCESSORS)).isEqualTo(69);
-    assertThat(metrics.count("lines")).isEqualTo(64125);
+    assertThat(metrics.get("classes").intValue()).isEqualTo(412);
+    assertThat(metrics.get("functions").intValue()).isEqualTo(3693);
+    assertThat(metrics.get("lines").intValue()).isEqualTo(64125);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(26323);
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(12047);
-    assertThat(metrics.count("complexity")).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);
     assertThat(project.getInt(JavaMetric.COMMENT_LINES_WITHOUT_HEADER)).isEqualTo(17908);
-    assertThat(project.getInt(Metric.PUBLIC_API)).isEqualTo(3257);
-    assertThat(metrics.count("public_api")).isEqualTo(3221);
-    assertThat(project.getInt(Metric.PUBLIC_DOC_API)).isEqualTo(2008);
-    assertThat(project.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY)).isEqualTo(0.62, Delta.delta(0.01));
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221);
+    double density = 1.0;
+    if (metrics.get("public_api").intValue() != 0) {
+      density = (metrics.get("public_api") - metrics.get("public_undocumented_api")) / metrics.get("public_api");
+    }
+    assertThat(density).isEqualTo(0.64, Delta.delta(0.01));
   }
 
   @Test
