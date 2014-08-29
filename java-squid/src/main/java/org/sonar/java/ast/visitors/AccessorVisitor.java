@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import java.util.Collections;
 import java.util.List;
 
-public class AccessorVisitorST extends SubscriptionVisitor {
+public class AccessorVisitor extends SubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

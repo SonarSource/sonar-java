@@ -25,7 +25,6 @@ import com.google.common.collect.Maps;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTreeMaker;
@@ -55,11 +54,10 @@ public class MethodVisitor extends JavaAstVisitor {
     String methodName = buildMethodSignature(new MethodHelper(astNode));
     SourceClass sourceClass = peekSourceClass();
     // TODO hack grammar to get proper start line
-    int startLine = PublicApiVisitor.getDeclaration(astNode).getTokenLine();
+    int startLine = getDeclaration(astNode).getTokenLine();
     Preconditions.checkNotNull(sourceClass);
     Preconditions.checkNotNull(methodName);
     SourceMethod sourceMethod = new SourceMethod(sourceClass, methodName, startLine);
-    sourceMethod.setMeasure(JavaMetric.METHODS, 1);
     sourceMethod.setSuppressWarnings(SuppressWarningsAnnotationUtils.isSuppressAllWarnings(astNode));
     getContext().addSourceCode(sourceMethod);
   }
@@ -150,4 +148,34 @@ public class MethodVisitor extends JavaAstVisitor {
     JAVA_TYPE_MAPPING.put(JavaKeyword.VOID, JvmJavaType.V);
   }
 
+  private static AstNode getDeclaration(AstNode astNode) {
+    AstNode declaration;
+    if (astNode.getParent().is(JavaGrammar.MEMBER_DECL)) {
+      declaration = astNode.getParent().getParent();
+      Preconditions.checkState(declaration.is(JavaGrammar.CLASS_BODY_DECLARATION));
+    } else if (astNode.getParent().is(JavaGrammar.GENERIC_METHOD_OR_CONSTRUCTOR_REST)) {
+      declaration = astNode.getParent().getParent().getParent();
+      Preconditions.checkState(declaration.is(JavaGrammar.CLASS_BODY_DECLARATION));
+    } else if (astNode.getParent().is(JavaGrammar.INTERFACE_MEMBER_DECL)) {
+      declaration = astNode.getParent().getParent();
+      Preconditions.checkState(declaration.is(JavaGrammar.INTERFACE_BODY_DECLARATION));
+    } else if (astNode.getParent().is(JavaGrammar.INTERFACE_METHOD_OR_FIELD_REST)) {
+      declaration = astNode.getParent().getParent().getParent().getParent();
+      Preconditions.checkState(declaration.is(JavaGrammar.INTERFACE_BODY_DECLARATION));
+    } else if (astNode.getParent().is(JavaGrammar.INTERFACE_GENERIC_METHOD_DECL)) {
+      declaration = astNode.getParent().getParent().getParent();
+      Preconditions.checkState(declaration.is(JavaGrammar.INTERFACE_BODY_DECLARATION));
+    } else if (astNode.getParent().is(JavaGrammar.TYPE_DECLARATION)) {
+      declaration = astNode.getParent();
+    } else if (astNode.getParent().is(JavaGrammar.BLOCK_STATEMENT)) {
+      declaration = astNode.getParent();
+    } else if (astNode.hasAncestor(Kind.METHOD, Kind.ANNOTATION_TYPE)) {
+      declaration = astNode.getFirstAncestor(Kind.METHOD, Kind.ANNOTATION_TYPE);
+    } else if (astNode.is(Kind.METHOD, Kind.ANNOTATION_TYPE)) {
+      declaration = astNode;
+    } else {
+      throw new IllegalStateException(astNode.getType().toString());
+    }
+    return declaration;
+  }
 }

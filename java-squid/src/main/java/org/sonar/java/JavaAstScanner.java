@@ -34,7 +34,6 @@ import org.sonar.java.ast.visitors.FileVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.ast.visitors.MethodVisitor;
 import org.sonar.java.ast.visitors.PackageVisitor;
-import org.sonar.java.ast.visitors.PublicApiVisitor;
 import org.sonar.squidbridge.CommentAnalyser;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.SourceCode;
@@ -95,8 +94,6 @@ public final class JavaAstScanner {
 
     /* Methods */
     builder.withSquidAstVisitor(new MethodVisitor());
-    builder.withSquidAstVisitor(new PublicApiVisitor());
-
     builder.withSquidAstVisitor(new EndAtLineVisitor());
 
     /* Comments */

@@ -31,14 +31,14 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ComplexityVisitorST extends SubscriptionVisitor {
+public class ComplexityVisitor extends SubscriptionVisitor {
 
   private int complexity;
-  private AccessorVisitorST accessorVisitor = new AccessorVisitorST();
+  private AccessorVisitor accessorVisitor = new AccessorVisitor();
   private Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
   private boolean analyseAccessors;
 
-  public ComplexityVisitorST(boolean analyseAccessors) {
+  public ComplexityVisitor(boolean analyseAccessors) {
     this.analyseAccessors = analyseAccessors;
   }
 

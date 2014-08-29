@@ -32,11 +32,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class AccessorVisitorSTTest {
+public class AccessorVisitorTest {
 
   private final Parser p = JavaParser.createParser(Charsets.UTF_8, true);
   private final JavaTreeMaker maker = new JavaTreeMaker();
-  private AccessorVisitorST accessorVisitorST = new AccessorVisitorST();
+  private AccessorVisitor accessorVisitor = new AccessorVisitor();
 
   @Test
   public void method_badly_named_is_not_accessor() {
@@ -135,7 +135,7 @@ public class AccessorVisitorSTTest {
 
   private boolean isAccessor(String code) {
     ClassTree classTree = parseClass(code);
-    return accessorVisitorST.isAccessor(classTree, extractMethod(classTree));
+    return accessorVisitor.isAccessor(classTree, extractMethod(classTree));
   }
 
 

@@ -70,7 +70,6 @@ public class ClassVisitor extends JavaAstVisitor {
 
     sourceClass.setStartAtLine(astNode.getTokenLine());
     if (!astNode.is(JavaGrammar.ENUM_CONSTANT)) {
-      sourceClass.setMeasure(JavaMetric.CLASSES, 1);
       sourceClass.setSuppressWarnings(SuppressWarningsAnnotationUtils.isSuppressAllWarnings(astNode));
     }
     getContext().addSourceCode(sourceClass);

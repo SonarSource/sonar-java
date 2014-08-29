@@ -91,7 +91,6 @@ public class SquidUserGuideTest {
       }
     }
 
-    assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(412);
     assertThat(metrics.get("classes").intValue()).isEqualTo(412);
     assertThat(metrics.get("functions").intValue()).isEqualTo(3693);
     assertThat(metrics.get("lines").intValue()).isEqualTo(64125);

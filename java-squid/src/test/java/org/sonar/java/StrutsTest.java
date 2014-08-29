@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
-import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -35,7 +34,6 @@ import org.sonar.squidbridge.api.SourceCodeSearchEngine;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourceProject;
 import org.sonar.squidbridge.indexer.QueryByType;
-import org.sonar.squidbridge.measures.Metric;
 
 import java.io.File;
 import java.util.Collection;
@@ -86,8 +84,8 @@ public class StrutsTest {
     verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());
     Map<String, Double> metrics = new HashMap<String, Double>();
     for (Measure measure : captor.getAllValues()) {
-      if(measure.getValue() != null ){
-        if(metrics.get(measure.getMetricKey())==null) {
+      if (measure.getValue() != null) {
+        if (metrics.get(measure.getMetricKey()) == null) {
           metrics.put(measure.getMetricKey(), measure.getValue());
         } else {
           metrics.put(measure.getMetricKey(), metrics.get(measure.getMetricKey()) + measure.getValue());
@@ -95,7 +93,6 @@ public class StrutsTest {
       }
     }
 
-    assertThat(project.getInt(JavaMetric.CLASSES)).isEqualTo(146);
     assertThat(metrics.get("classes").intValue()).isEqualTo(146);
     //56 methods in anonymous classes: not part of metric but part of number of methods in project.
     assertThat(metrics.get("functions").intValue()).isEqualTo(1437 - 56);
@@ -104,11 +101,7 @@ public class StrutsTest {
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(6403);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(3957 - 145 /* SONAR-3793 */ - 1 /* SONAR-3794 */);
     assertThat(project.getInt(JavaMetric.COMMENT_LINES_WITHOUT_HEADER)).isEqualTo(7605);
-    assertThat(project.getInt(Metric.PUBLIC_API)).isEqualTo(1348+/*accessors*/48);
     assertThat(metrics.get("public_api").intValue()).isEqualTo(1340);
-    assertThat(project.getInt(Metric.PUBLIC_DOC_API)).isEqualTo(842+/*documented accessors*/36);
-    assertThat(project.getDouble(Metric.PUBLIC_DOCUMENTED_API_DENSITY)).isEqualTo(0.62, Delta.delta(0.01));
-
   }
 
 

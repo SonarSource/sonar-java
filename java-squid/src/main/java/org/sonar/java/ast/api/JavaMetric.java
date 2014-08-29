@@ -28,8 +28,6 @@ public enum JavaMetric implements MetricDef {
   LINES_OF_CODE(false),
   COMMENT_LINES_WITHOUT_HEADER(false),
   STATEMENTS,
-  METHODS,
-  CLASSES,
   TESTS;
 
   private boolean aggregateIfThereIsAlreadyAValue = true;

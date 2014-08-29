@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.ast.visitors.ComplexityVisitorST;
+import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.resolve.SemanticModel;
@@ -140,7 +140,7 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
     private final CompilationUnitTree tree;
     private final SourceFile sourceFile;
     private final SemanticModel semanticModel;
-    private final ComplexityVisitorST complexityVisitor;
+    private final ComplexityVisitor complexityVisitor;
     private File file;
 
     public DefaultJavaFileScannerContext(CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors) {
@@ -148,7 +148,7 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
       this.sourceFile = sourceFile;
       this.file = file;
       this.semanticModel = semanticModel;
-      this.complexityVisitor = new ComplexityVisitorST(analyseAccessors);
+      this.complexityVisitor = new ComplexityVisitor(analyseAccessors);
     }
 
     @Override

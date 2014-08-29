@@ -30,7 +30,7 @@ import org.sonar.api.measures.PersistenceMode;
 import org.sonar.api.measures.RangeDistributionBuilder;
 import org.sonar.api.resources.File;
 import org.sonar.api.resources.Project;
-import org.sonar.java.ast.visitors.AccessorVisitorST;
+import org.sonar.java.ast.visitors.AccessorVisitor;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -60,7 +60,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private RangeDistributionBuilder methodComplexityDistribution;
 
   private final Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
-  private final AccessorVisitorST accessorVisitorST;
+  private final AccessorVisitor accessorVisitor;
   private Charset charset;
   private double classes;
 
@@ -68,7 +68,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     this.project = project;
     this.sensorContext = context;
     this.analyseAccessors = analyseAccessors;
-    accessorVisitorST = new AccessorVisitorST();
+    accessorVisitor = new AccessorVisitor();
   }
 
   @Override
@@ -134,7 +134,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
       //don't count methods in anonymous classes.
       if (classTrees.peek().simpleName() != null) {
         MethodTree methodTree = (MethodTree) tree;
-        if (analyseAccessors && accessorVisitorST.isAccessor(classTrees.peek(), methodTree)) {
+        if (analyseAccessors && accessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
           accessors++;
         } else {
           methods++;
