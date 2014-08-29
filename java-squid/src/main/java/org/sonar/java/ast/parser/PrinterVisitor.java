@@ -19,31 +19,55 @@
  */
 package org.sonar.java.ast.parser;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
-
-import org.sonar.java.model.JavaTree;
+import com.sonar.sslr.impl.Parser;
 import org.apache.commons.lang.StringUtils;
+import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PrinterVisitor extends BaseTreeVisitor {
 
   private static final int INDENT_SPACES = 2;
 
   private final StringBuilder sb;
+  private final SemanticModel semanticModel;
+  private final Map<IdentifierTree, Symbol> idents = new HashMap<IdentifierTree, Symbol>();
   private int indentLevel;
 
   public PrinterVisitor() {
+    semanticModel = null;
     sb = new StringBuilder();
     indentLevel = 0;
   }
 
+  public PrinterVisitor(SemanticModel semanticModel) {
+    sb = new StringBuilder();
+    indentLevel = 0;
+    this.semanticModel =semanticModel;
+  }
+
   public static String print(Tree tree) {
-    PrinterVisitor pv = new PrinterVisitor();
+   return print(tree, null);
+  }
+  public static String print(Tree tree, @Nullable SemanticModel semanticModel) {
+    PrinterVisitor pv = new PrinterVisitor(semanticModel);
     pv.scan(tree);
     return pv.sb.toString();
   }
@@ -73,20 +97,67 @@ public class PrinterVisitor extends BaseTreeVisitor {
   @Override
   protected void scan(@Nullable Tree tree) {
     if (tree != null) {
+      Symbol sym = null;
+      try {
+        Method getSymbol = null;
+        for (Method method : tree.getClass().getMethods()) {
+          if (method.getName().equals("getSymbol")) {
+            getSymbol = tree.getClass().getMethod("getSymbol");
+          }
+        }
+        if (getSymbol != null) {
+          sym = (Symbol) getSymbol.invoke(tree);
+        }
+      } catch (NoSuchMethodException e) {
+        e.printStackTrace();
+      } catch (InvocationTargetException e) {
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        e.printStackTrace();
+      }
+
       Tree.Kind kind = ((JavaTree) tree).getKind();
       String nodeName = ((JavaTree) tree).getClass().getSimpleName();
       if (kind != null) {
         nodeName = kind.getAssociatedInterface().getSimpleName();
       }
       indent().append(nodeName);
+      int line = -1;
       AstNode node = ((JavaTree) tree).getAstNode();
       if (node != null && node.hasToken()) {
-        sb.append(" ").append(node.getTokenLine());
+        line = node.getTokenLine();
+        sb.append(" ").append(line);
+      }
+      if(idents.get(tree) != null) {
+        Preconditions.checkState(sym==null);
+        sym = idents.get(tree);
+      }
+      if(tree instanceof AbstractTypedTree) {
+        sb.append(" ").append(((AbstractTypedTree) tree).getSymbolType());
+      }
+
+      if (sym != null) {
+        //No forward reference possible... Need another visitor to build this info ?
+        for (IdentifierTree identifierTree : semanticModel.getUsages(sym)) {
+          idents.put(identifierTree, sym);
+        }
+        sb.append(" ").append(sym.getName());
+        int refLine = ((JavaTree)semanticModel.getTree(sym)).getTokenLine();
+        if(refLine!=line) {
+          sb.append(" ref#").append(refLine);
+        }
       }
       sb.append("\n");
     }
     indentLevel++;
     super.scan(tree);
     indentLevel--;
+  }
+
+  public static String printFile(String file, String bytecodePath) {
+    final Parser p = JavaParser.createParser(Charsets.UTF_8);
+    CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(file));
+    SemanticModel semanticModel = SemanticModel.createFor(cut, Lists.newArrayList(new File(bytecodePath)));
+    return PrinterVisitor.print(cut, semanticModel);
   }
 }
