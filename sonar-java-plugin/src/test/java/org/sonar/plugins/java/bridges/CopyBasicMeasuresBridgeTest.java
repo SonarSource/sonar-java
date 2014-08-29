@@ -58,13 +58,12 @@ public class CopyBasicMeasuresBridgeTest {
     Resource sonarFile = mock(Resource.class);
     SourceFile squidFile = new SourceFile("file");
     squidFile.setMeasure(JavaMetric.LINES_OF_CODE, 1);
-    squidFile.setMeasure(JavaMetric.COMMENT_LINES_WITHOUT_HEADER, 3);
     squidFile.setMeasure(JavaMetric.STATEMENTS, 4);
 
     bridge.onFile(squidFile, sonarFile);
 
     ArgumentCaptor<Measure> measureCaptor = ArgumentCaptor.forClass(Measure.class);
-    verify(context, times(3)).saveMeasure(eq(sonarFile), measureCaptor.capture());
+    verify(context, times(2)).saveMeasure(eq(sonarFile), measureCaptor.capture());
     verifyNoMoreInteractions(context);
 
     List<Measure> measures = measureCaptor.getAllValues();
@@ -72,11 +71,8 @@ public class CopyBasicMeasuresBridgeTest {
     assertThat(measures.get(0).getMetric()).isSameAs(CoreMetrics.NCLOC);
     assertThat(measures.get(0).getValue()).isEqualTo(1);
 
-    assertThat(measures.get(1).getMetric()).isSameAs(CoreMetrics.COMMENT_LINES);
-    assertThat(measures.get(1).getValue()).isEqualTo(3);
-
-    assertThat(measures.get(2).getMetric()).isSameAs(CoreMetrics.STATEMENTS);
-    assertThat(measures.get(2).getValue()).isEqualTo(4);
+    assertThat(measures.get(1).getMetric()).isSameAs(CoreMetrics.STATEMENTS);
+    assertThat(measures.get(1).getValue()).isEqualTo(4);
   }
 
 }

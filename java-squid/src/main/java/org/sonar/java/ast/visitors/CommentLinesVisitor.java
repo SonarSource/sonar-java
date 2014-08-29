@@ -19,69 +19,71 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
-import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.CommentAnalyser;
 
+import java.util.List;
 import java.util.Set;
 
-public class CommentLinesVisitor extends JavaAstVisitor implements AstAndTokenVisitor {
+public class CommentLinesVisitor extends SubscriptionVisitor {
 
   private Set<Integer> comments = Sets.newHashSet();
   private boolean seenFirstToken;
+  private JavaCommentAnalyser commentAnalyser = new JavaCommentAnalyser();
 
   @Override
-  public void init() {
-    subscribeTo(JavaPunctuator.RWING);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.TOKEN);
   }
 
-  @Override
-  public void visitFile(AstNode astNode) {
+  public int commentLines(CompilationUnitTree tree) {
     comments.clear();
     seenFirstToken = false;
+    visitTokens(tree);
+    return comments.size();
   }
 
-  public void visitToken(Token token) {
-    for (Trivia trivia : token.getTrivia()) {
-      if (trivia.isComment()) {
-        if (seenFirstToken) {
-          String[] commentLines = getContext().getCommentAnalyser().getContents(trivia.getToken().getOriginalValue())
-              .split("(\r)?\n|\r", -1);
-          int line = trivia.getToken().getLine();
-          for (String commentLine : commentLines) {
-            if (!commentLine.contains("NOSONAR") && !getContext().getCommentAnalyser().isBlank(commentLine)) {
-              comments.add(line);
-            }
-            line++;
+  @Override
+  public void visitToken(SyntaxToken syntaxToken) {
+    for (SyntaxTrivia trivia : syntaxToken.trivias()) {
+      if (seenFirstToken) {
+        String[] commentLines = commentAnalyser.getContents(trivia.comment())
+            .split("(\r)?\n|\r", -1);
+        int line = trivia.startLine();
+        for (String commentLine : commentLines) {
+          if (!commentLine.contains("NOSONAR") && !commentAnalyser.isBlank(commentLine)) {
+            comments.add(line);
           }
-        } else {
-          seenFirstToken = true;
+          line++;
         }
+      } else {
+        seenFirstToken = true;
       }
     }
     seenFirstToken = true;
   }
 
-  @Override
-  public void leaveNode(AstNode astNode) {
-    SourceCode sourceCode = getContext().peekSourceCode();
-    int commentlines = 0;
-    for (int line = sourceCode.getStartAtLine(); line <= sourceCode.getEndAtLine(); line++) {
-      if (comments.contains(line)) {
-        commentlines++;
+  public static class JavaCommentAnalyser extends CommentAnalyser {
+
+    public boolean isBlank(String line) {
+      // Implementation of this method was taken from org.sonar.squidbridge.text.Line#isThereBlankComment()
+      // TODO Godin: for some languages we use Character.isLetterOrDigit instead of Character.isWhitespace
+      for (int i = 0; i < line.length(); i++) {
+        char character = line.charAt(i);
+        if (!Character.isWhitespace(character) && character != '*' && character != '/') {
+          return false;
+        }
       }
+      return true;
     }
-    sourceCode.setMeasure(JavaMetric.COMMENT_LINES_WITHOUT_HEADER, commentlines);
-  }
 
-  public void leaveFile(AstNode ast) {
-    getContext().peekSourceCode().setMeasure(JavaMetric.COMMENT_LINES_WITHOUT_HEADER, comments.size());
-    comments.clear();
+    public String getContents(String comment) {
+      return comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
+    }
   }
-
 }

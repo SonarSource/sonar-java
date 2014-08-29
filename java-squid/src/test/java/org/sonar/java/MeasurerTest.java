@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public class MeasurerTest {
 
-  private static final int NB_OF_METRICS = 11;
+  private static final int NB_OF_METRICS = 12;
   private SensorContext context;
   private JavaSquid squid;
   private File baseDir;
@@ -106,6 +106,12 @@ public class MeasurerTest {
   @Test
   public void verify_accessors_set_to_0_when_not_analysing_accessors() {
     checkMetric(false, baseDir, "Complexity.java", "accessors", 0.0);
+  }
+
+  @Test
+  public void verify_comments_metric() throws Exception {
+    checkMetric("Comments.java", "comment_lines", 3);
+
   }
 
   @Test

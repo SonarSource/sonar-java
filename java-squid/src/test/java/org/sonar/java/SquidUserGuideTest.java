@@ -97,7 +97,7 @@ public class SquidUserGuideTest {
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(26323);
     assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(12047);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);
-    assertThat(project.getInt(JavaMetric.COMMENT_LINES_WITHOUT_HEADER)).isEqualTo(17908);
+    assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17908);
     assertThat(metrics.get("public_api").intValue()).isEqualTo(3221);
     double density = 1.0;
     if (metrics.get("public_api").intValue() != 0) {

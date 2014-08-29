@@ -70,7 +70,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner, CodeVisito
     visit(tree);
   }
 
-  private void visitTokens(CompilationUnitTree compilationUnitTree) {
+  protected void visitTokens(CompilationUnitTree compilationUnitTree) {
     if (nodesToVisit().contains(Tree.Kind.TOKEN) || nodesToVisit().contains(Tree.Kind.TRIVIA)) {
       //FIXME relying on ASTNode to iterate over tokens.
       for (Token token : ((JavaTree) compilationUnitTree).getAstNode().getTokens()) {

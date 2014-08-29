@@ -43,6 +43,11 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   }
 
   @Override
+  public int startLine() {
+    return startLine;
+  }
+
+  @Override
   public Kind getKind() {
     return Tree.Kind.TRIVIA;
   }

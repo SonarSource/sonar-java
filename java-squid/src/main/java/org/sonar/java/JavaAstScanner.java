@@ -34,7 +34,6 @@ import org.sonar.java.ast.visitors.FileVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.ast.visitors.MethodVisitor;
 import org.sonar.java.ast.visitors.PackageVisitor;
-import org.sonar.squidbridge.CommentAnalyser;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
@@ -97,31 +96,11 @@ public final class JavaAstScanner {
     builder.withSquidAstVisitor(new EndAtLineVisitor());
 
     /* Comments */
-    builder.setCommentAnalyser(
-      new CommentAnalyser() {
-        @Override
-        public boolean isBlank(String line) {
-          // Implementation of this method was taken from org.sonar.squidbridge.text.Line#isThereBlankComment()
-          // TODO Godin: for some languages we use Character.isLetterOrDigit instead of Character.isWhitespace
-          for (int i = 0; i < line.length(); i++) {
-            char character = line.charAt(i);
-            if (!Character.isWhitespace(character) && character != '*' && character != '/') {
-              return false;
-            }
-          }
-          return true;
-        }
-
-        @Override
-        public String getContents(String comment) {
-          return comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
-        }
-      });
+    builder.setCommentAnalyser(new CommentLinesVisitor.JavaCommentAnalyser());
 
     /* Metrics */
 
     builder.withSquidAstVisitor(new LinesOfCodeVisitor());
-    builder.withSquidAstVisitor(new CommentLinesVisitor());
     builder.withSquidAstVisitor(CommentsVisitor.<LexerlessGrammar>builder()
       .withNoSonar(true)
       .withIgnoreHeaderComment(true)
