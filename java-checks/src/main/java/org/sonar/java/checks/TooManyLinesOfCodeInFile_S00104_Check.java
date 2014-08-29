@@ -19,20 +19,22 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.GenericTokenType;
-import com.sonar.sslr.api.Token;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.text.MessageFormat;
+import java.util.List;
 
 @Rule(
   key = "S00104",
   priority = Priority.MAJOR,
   tags={"brain-overload"})
-public class TooManyLinesOfCodeInFile_S00104_Check extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class TooManyLinesOfCodeInFile_S00104_Check extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAXIMUM = 1000;
 
@@ -41,15 +43,20 @@ public class TooManyLinesOfCodeInFile_S00104_Check extends SquidCheck<LexerlessG
     defaultValue = "" + DEFAULT_MAXIMUM)
   public int maximum = DEFAULT_MAXIMUM;
 
-  @Override
-  public void visitToken(Token token) {
-    if (token.getType() == GenericTokenType.EOF) {
-      int lines = token.getLine();
 
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.TOKEN);
+  }
+
+  @Override
+  public void visitToken(SyntaxToken token) {
+      InternalSyntaxToken internalSyntaxToken = (InternalSyntaxToken) token;
+    if (internalSyntaxToken.isEOF()) {
+      int lines = internalSyntaxToken.getLine();
       if (lines > maximum) {
-        getContext().createFileViolation(this, "This file has {0} lines, which is greater than {1} authorized. Split it into smaller files.", lines, maximum);
+        addIssueOnFile(MessageFormat.format("This file has {0} lines, which is greater than {1} authorized. Split it into smaller files.", lines, maximum));
       }
     }
   }
-
 }

@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
+import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -95,6 +96,10 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   @Override
   public boolean isLeaf() {
     return true;
+  }
+
+  public boolean isEOF(){
+    return token.getType() == GenericTokenType.EOF;
   }
 
   @Override

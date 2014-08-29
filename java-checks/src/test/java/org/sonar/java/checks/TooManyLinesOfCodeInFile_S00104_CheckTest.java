@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
@@ -40,7 +41,7 @@ public class TooManyLinesOfCodeInFile_S00104_CheckTest {
   @Test
   public void test() {
     check.maximum = 1;
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyLinesOfCode.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyLinesOfCode.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().withMessage("This file has 11 lines, which is greater than 1 authorized. Split it into smaller files.")
         .noMore();
@@ -48,7 +49,7 @@ public class TooManyLinesOfCodeInFile_S00104_CheckTest {
 
   @Test
   public void test2() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyLinesOfCode.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyLinesOfCode.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
   }
