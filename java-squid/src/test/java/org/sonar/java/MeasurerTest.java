@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public class MeasurerTest {
 
-  private static final int NB_OF_METRICS = 9;
+  private static final int NB_OF_METRICS = 11;
   private SensorContext context;
   private JavaSquid squid;
   private File baseDir;
@@ -90,7 +90,19 @@ public class MeasurerTest {
     checkMetric("Classes.java", "classes", 4.0);
   }
 
+  @Test
+  public void verify_complexity_metric() {
+    checkMetric("Complexity.java", "complexity", 13.0);
+  }
+
   private void checkMetric(String filename, String metric, double expectedValue) {
+    checkMetric(baseDir, filename, metric, expectedValue);
+  }
+
+  /**
+   * Utility method to quickly get metric out of a file.
+   */
+  private void checkMetric(File baseDir, String filename, String metric, double expectedValue) {
     InputFile sourceFile = InputFileUtils.create(baseDir, new File(baseDir, filename));
     squid.scan(Collections.singleton(sourceFile), Collections.<InputFile>emptyList(), Collections.<File>emptyList());
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);

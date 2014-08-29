@@ -21,8 +21,6 @@ package org.sonar.plugins.java.bridges;
 
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
-import org.sonar.api.measures.PersistenceMode;
-import org.sonar.api.measures.RangeDistributionBuilder;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squidbridge.api.SourceCode;
@@ -31,20 +29,11 @@ import org.sonar.squidbridge.measures.MetricDef;
 
 public final class CopyBasicMeasuresBridge extends Bridge {
 
-  private static final Number[] LIMITS = {0, 5, 10, 20, 30, 60, 90};
-
   @Override
   public void onFile(SourceFile squidFile, Resource sonarResource) {
     copy(squidFile, sonarResource, JavaMetric.LINES_OF_CODE, CoreMetrics.NCLOC);
     copy(squidFile, sonarResource, JavaMetric.COMMENT_LINES_WITHOUT_HEADER, CoreMetrics.COMMENT_LINES);
     copy(squidFile, sonarResource, JavaMetric.STATEMENTS, CoreMetrics.STATEMENTS);
-
-    copy(squidFile, sonarResource, JavaMetric.COMPLEXITY, CoreMetrics.COMPLEXITY);
-    context.saveMeasure(sonarResource, new RangeDistributionBuilder(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION, LIMITS)
-      .add(squidFile.getInt(JavaMetric.COMPLEXITY))
-      .build(true)
-      .setPersistenceMode(PersistenceMode.MEMORY));
-
   }
 
   private void copy(SourceCode squidResource, Resource sonarResource, MetricDef squidMetric, org.sonar.api.measures.Metric sonarMetric) {

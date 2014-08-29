@@ -28,7 +28,6 @@ import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.measures.Metric;
 
 import java.util.List;
 
@@ -61,13 +60,11 @@ public class CopyBasicMeasuresBridgeTest {
     squidFile.setMeasure(JavaMetric.LINES_OF_CODE, 1);
     squidFile.setMeasure(JavaMetric.COMMENT_LINES_WITHOUT_HEADER, 3);
     squidFile.setMeasure(JavaMetric.STATEMENTS, 4);
-    squidFile.setMeasure(JavaMetric.COMPLEXITY, 7);
-    squidFile.setMeasure(Metric.PUBLIC_API, 8);
 
     bridge.onFile(squidFile, sonarFile);
 
     ArgumentCaptor<Measure> measureCaptor = ArgumentCaptor.forClass(Measure.class);
-    verify(context, times(5)).saveMeasure(eq(sonarFile), measureCaptor.capture());
+    verify(context, times(3)).saveMeasure(eq(sonarFile), measureCaptor.capture());
     verifyNoMoreInteractions(context);
 
     List<Measure> measures = measureCaptor.getAllValues();
@@ -80,12 +77,6 @@ public class CopyBasicMeasuresBridgeTest {
 
     assertThat(measures.get(2).getMetric()).isSameAs(CoreMetrics.STATEMENTS);
     assertThat(measures.get(2).getValue()).isEqualTo(4);
-
-    assertThat(measures.get(3).getMetric()).isSameAs(CoreMetrics.COMPLEXITY);
-    assertThat(measures.get(3).getValue()).isEqualTo(7);
-
-    assertThat(measures.get(4).getMetric()).isSameAs(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION);
-
   }
 
 }
