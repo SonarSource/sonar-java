@@ -369,7 +369,8 @@ public class ActionGrammar {
 
   public WhileStatementTreeImpl WHILE_STATEMENT() {
     return b.<WhileStatementTreeImpl>nonterminal(JavaGrammar.WHILE_STATEMENT)
-      .is(f.whileStatement(b.invokeRule(JavaKeyword.WHILE), PARENTHESIZED_EXPRESSION(), b.invokeRule(JavaGrammar.STATEMENT)));
+      .is(f.whileStatement(b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
+          b.invokeRule(JavaGrammar.STATEMENT)));
   }
 
   public DoWhileStatementTreeImpl DO_WHILE_STATEMENT() {

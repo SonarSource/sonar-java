@@ -608,9 +608,12 @@ public class TreeFactory {
     return new IfStatementTreeImpl(treeMaker.statement(elseStatement), elseToken, elseStatement);
   }
 
-  public WhileStatementTreeImpl whileStatement(AstNode whileToken, ParenthesizedTreeImpl expression, AstNode statement) {
-    return new WhileStatementTreeImpl(expression, treeMaker.statement(statement),
-      whileToken, expression, statement);
+  public WhileStatementTreeImpl whileStatement(AstNode whileToken,  AstNode openParen, AstNode expression, AstNode closeParen, AstNode statement) {
+    InternalSyntaxToken whileKeyword = InternalSyntaxToken.create(whileToken);
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
+    return new WhileStatementTreeImpl(whileKeyword, openParenToken, treeMaker.expression(expression), closeParenToken , treeMaker.statement(statement),
+        whileKeyword, openParenToken, expression, closeParenToken, statement);
   }
 
   public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, AstNode statement, AstNode whileToken, ParenthesizedTreeImpl expression, AstNode semicolonToken) {
