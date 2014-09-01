@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
@@ -34,12 +35,18 @@ public class UselessParenthesesCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UselessParenthesesCheck.java"), new UselessParenthesesCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UselessParenthesesCheck.java"), new VisitorsBridge(new UselessParenthesesCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Remove those useless parentheses.")
-      .next().atLine(5)
-      .next().atLine(6)
-      .next().atLine(12);
+        .next().atLine(4).withMessage("Remove those useless parentheses.")
+        .next().atLine(5)
+        .next().atLine(6)
+        .next().atLine(12)
+        .next().atLine(14)
+        .next().atLine(17)
+        .next().atLine(19)
+        .next().atLine(20)
+        .next().atLine(20)
+    ;
   }
 
 }

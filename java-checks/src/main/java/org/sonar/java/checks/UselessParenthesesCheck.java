@@ -19,39 +19,89 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 @Rule(
-  key = "UselessParenthesesCheck",
-  priority = Priority.MAJOR)
+    key = "UselessParenthesesCheck",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class UselessParenthesesCheck extends SquidCheck<LexerlessGrammar> {
+public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
+
+  private final Deque<Tree> parent = new LinkedList<Tree>();
+  private static final Kind[] PARENT_EXPRESSION =  {
+      Kind.ANNOTATION,
+      Kind.ARRAY_ACCESS_EXPRESSION,
+      Kind.ASSERT_STATEMENT,
+      Kind.CASE_LABEL,
+      Kind.CONDITIONAL_EXPRESSION,
+      Kind.DO_STATEMENT,
+      Kind.EXPRESSION_STATEMENT,
+      Kind.FOR_EACH_STATEMENT,
+      Kind.FOR_STATEMENT,
+      Kind.IF_STATEMENT,
+      Kind.LAMBDA_EXPRESSION,
+      Kind.METHOD_INVOCATION,
+      Kind.METHOD,
+      Kind.NEW_ARRAY,
+      Kind.NEW_CLASS,
+      Kind.PARENTHESIZED_EXPRESSION,
+      Kind.RETURN_STATEMENT,
+      Kind.SWITCH_STATEMENT,
+      Kind.SYNCHRONIZED_STATEMENT,
+      Kind.THROW_STATEMENT,
+      Kind.VARIABLE,
+      Kind.WHILE_STATEMENT
+  };
+
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.PAR_EXPRESSION);
+  public void scanFile(JavaFileScannerContext context) {
+    parent.clear();
+    super.scanFile(context);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.getParent().is(JavaGrammar.EXPRESSION)) {
-      if (node.getParent().getParent().is(Kind.CONDITIONAL_EXPRESSION)) {
-        ConditionalExpressionTree tree = (ConditionalExpressionTree) node.getParent().getParent();
-        if (tree.falseExpression().equals(node)) {
-          return;
-        }
-      }
-
-      getContext().createLineViolation(this, "Remove those useless parentheses.", node);
+  public void visitNode(Tree tree) {
+    if(tree.is(Kind.PARENTHESIZED_EXPRESSION) && hasParentExpression(tree)) {
+      addIssue(tree, "Remove those useless parentheses.");
     }
+    parent.push(tree);
   }
 
+  private boolean hasParentExpression(Tree tree) {
+    Tree parent = this.parent.peek();
+    //Exclude condition of conditional expression
+    if(parent.is(Kind.CONDITIONAL_EXPRESSION)) {
+      ConditionalExpressionTree conditionalExpressionTree = (ConditionalExpressionTree) parent;
+      return !(tree.equals(conditionalExpressionTree.condition()) || tree.equals(conditionalExpressionTree.falseExpression()));
+    }
+    //Exclude expression of array access expression
+    if(parent.is(Kind.ARRAY_ACCESS_EXPRESSION) && tree.equals(((ArrayAccessExpressionTree) parent).expression()) ) {
+      return false;
+    }
+    return parent.is(PARENT_EXPRESSION);
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    parent.pop();
+  }
+
+
+  @Override
+  public List<Kind> nodesToVisit() {
+    return Arrays.asList(Kind.values());
+  }
 }
