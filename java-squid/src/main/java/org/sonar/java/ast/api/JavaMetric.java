@@ -24,10 +24,7 @@ import org.sonar.squidbridge.measures.MetricDef;
 
 public enum JavaMetric implements MetricDef {
 
-  LINES(false),
   LINES_OF_CODE(false),
-  COMMENT_LINES_WITHOUT_HEADER(false),
-  STATEMENTS,
   TESTS;
 
   private boolean aggregateIfThereIsAlreadyAValue = true;

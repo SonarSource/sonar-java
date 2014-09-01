@@ -27,7 +27,7 @@ public class JavaMetricTest {
 
   @Test
   public void test() {
-    assertThat(JavaMetric.values()).hasSize(5);
+    assertThat(JavaMetric.values()).hasSize(2);
 
     for (JavaMetric metric : JavaMetric.values()) {
       assertThat(metric.getName()).isEqualTo(metric.name());
@@ -36,7 +36,6 @@ public class JavaMetricTest {
       assertThat(metric.getCalculatedMetricFormula()).isNull();
     }
 
-    assertThat(JavaMetric.LINES.aggregateIfThereIsAlreadyAValue()).isFalse();
   }
 
 }

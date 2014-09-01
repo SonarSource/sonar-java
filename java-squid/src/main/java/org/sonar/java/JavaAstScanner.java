@@ -23,8 +23,6 @@ import com.sonar.sslr.impl.Parser;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.AstScanner;
-import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.AnonymousInnerClassVisitor;
 import org.sonar.java.ast.visitors.ClassVisitor;
@@ -39,7 +37,6 @@ import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.squidbridge.metrics.CommentsVisitor;
-import org.sonar.squidbridge.metrics.CounterVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
@@ -104,26 +101,6 @@ public final class JavaAstScanner {
     builder.withSquidAstVisitor(CommentsVisitor.<LexerlessGrammar>builder()
       .withNoSonar(true)
       .withIgnoreHeaderComment(true)
-      .build());
-    builder.withSquidAstVisitor(CounterVisitor.<LexerlessGrammar>builder()
-      .setMetricDef(JavaMetric.STATEMENTS)
-      .subscribeTo(
-        // This is mostly the same elements as for the grammar rule "statement", but "labeledStatement" and "block" were excluded
-        JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
-        JavaGrammar.ASSERT_STATEMENT,
-        JavaGrammar.IF_STATEMENT,
-        JavaGrammar.FOR_STATEMENT,
-        JavaGrammar.WHILE_STATEMENT,
-        JavaGrammar.DO_STATEMENT,
-        JavaGrammar.TRY_STATEMENT,
-        JavaGrammar.SWITCH_STATEMENT,
-        JavaGrammar.SYNCHRONIZED_STATEMENT,
-        JavaGrammar.RETURN_STATEMENT,
-        JavaGrammar.THROW_STATEMENT,
-        JavaGrammar.BREAK_STATEMENT,
-        JavaGrammar.CONTINUE_STATEMENT,
-        JavaGrammar.EXPRESSION_STATEMENT,
-        JavaGrammar.EMPTY_STATEMENT)
       .build());
 
     /* External visitors (typically Check ones) */

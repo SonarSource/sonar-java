@@ -92,13 +92,12 @@ public class StrutsTest {
         }
       }
     }
-
     assertThat(metrics.get("classes").intValue()).isEqualTo(146);
     //56 methods in anonymous classes: not part of metric but part of number of methods in project.
     assertThat(metrics.get("functions").intValue()).isEqualTo(1437 - 56);
     assertThat(metrics.get("lines").intValue()).isEqualTo(32878);
     assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(14007);
-    assertThat(project.getInt(JavaMetric.STATEMENTS)).isEqualTo(6403);
+    assertThat(metrics.get("statements").intValue()).isEqualTo(6403);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(3957 - 145 /* SONAR-3793 */ - 1 /* SONAR-3794 */);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);
     assertThat(metrics.get("public_api").intValue()).isEqualTo(1340);

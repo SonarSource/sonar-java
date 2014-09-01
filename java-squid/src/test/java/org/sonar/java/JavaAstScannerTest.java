@@ -43,12 +43,6 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void statements() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Statements.java"));
-    assertThat(file.getInt(JavaMetric.STATEMENTS)).isEqualTo(16);
-  }
-
-  @Test
   public void parseError() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/filesInError/ParseError.java"));
     assertThat(file.getParent().getKey()).isEqualTo(PackageVisitor.UNRESOLVED_PACKAGE);

@@ -33,6 +33,7 @@ import org.sonar.api.resources.Project;
 import org.sonar.java.ast.visitors.AccessorVisitor;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.java.ast.visitors.StatementVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -103,6 +104,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     saveMetricOnFile(CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY, publicApiChecker.getDocumentedPublicApiDensity());
     saveMetricOnFile(CoreMetrics.PUBLIC_UNDOCUMENTED_API, publicApiChecker.getUndocumentedPublicApi());
     saveMetricOnFile(CoreMetrics.COMMENT_LINES, new CommentLinesVisitor().commentLines(context.getTree()));
+    saveMetricOnFile(CoreMetrics.STATEMENTS, new StatementVisitor().numberOfStatements(context.getTree()));
 
     sensorContext.saveMeasure(sonarFile, methodComplexityDistribution.build(true).setPersistenceMode(PersistenceMode.MEMORY));
 

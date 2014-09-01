@@ -35,14 +35,14 @@ import java.io.File;
 import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class MeasurerTest {
 
-  private static final int NB_OF_METRICS = 12;
+  private static final int NB_OF_METRICS = 13;
   private SensorContext context;
   private JavaSquid squid;
   private File baseDir;
@@ -109,18 +109,24 @@ public class MeasurerTest {
   }
 
   @Test
-  public void verify_comments_metric() throws Exception {
+  public void verify_comments_metric() {
     checkMetric("Comments.java", "comment_lines", 3);
+  }
 
+  @Test
+  public void verify_statements_metric() {
+    checkMetric("Statements.java", "statements", 18);
   }
 
   @Test
   public void verify_complexity_metric_not_analysing_accessor() {
     checkMetric(false, baseDir, "Complexity.java", "complexity", 15.0);
   }
+
   private void checkMetric(String filename, String metric, double expectedValue) {
     checkMetric(true, baseDir, filename, metric, expectedValue);
   }
+
   /**
    * Utility method to quickly get metric out of a file.
    */
@@ -134,7 +140,7 @@ public class MeasurerTest {
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     ArgumentCaptor<org.sonar.api.resources.File> sonarFilescaptor = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
     //-1 for metrics in case we don't analyse Accessors.
-    verify(context, atLeast(NB_OF_METRICS-1)).saveMeasure(sonarFilescaptor.capture(), captor.capture());
+    verify(context, times(NB_OF_METRICS)).saveMeasure(sonarFilescaptor.capture(), captor.capture());
     int checkedMetrics = 0;
     for (Measure measure : captor.getAllValues()) {
       if (metric.equals(measure.getMetricKey())) {

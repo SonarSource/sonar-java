@@ -4,6 +4,14 @@ public class HelloWorld {
     super(); // +1
   }
 
+  {
+    int j = 0; //+1 for local variable in block
+  }
+
+  static {
+    int y = 0; //+1 for local variable in block
+  }
+
   public void sayHello() {
     int localVar; // +1 local-variable-declaration-statement
     localVar = 42; // +1 expression-statement
@@ -17,7 +25,7 @@ public class HelloWorld {
     for (int i = 0; i < 10; i++) { // +1 for-statement
     }
 
-    label: // +0
+    label:// +0
     while (false) { // +1 while-statement
       continue; // +1 continue-statement
     }
@@ -45,5 +53,4 @@ public class HelloWorld {
 
     return; // +1 return-statement
   }
-
 }
