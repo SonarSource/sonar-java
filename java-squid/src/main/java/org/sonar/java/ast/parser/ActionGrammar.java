@@ -376,7 +376,8 @@ public class ActionGrammar {
   public DoWhileStatementTreeImpl DO_WHILE_STATEMENT() {
     return b.<DoWhileStatementTreeImpl>nonterminal(JavaGrammar.DO_STATEMENT)
       .is(
-        f.doWhileStatement(b.invokeRule(JavaKeyword.DO), b.invokeRule(JavaGrammar.STATEMENT), b.invokeRule(JavaKeyword.WHILE), PARENTHESIZED_EXPRESSION(),
+        f.doWhileStatement(b.invokeRule(JavaKeyword.DO), b.invokeRule(JavaGrammar.STATEMENT),
+          b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
           b.invokeRule(JavaPunctuator.SEMI)));
   }
 

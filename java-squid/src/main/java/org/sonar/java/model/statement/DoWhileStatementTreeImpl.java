@@ -22,8 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -39,11 +37,23 @@ import java.util.Iterator;
 public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStatementTree {
   private final StatementTree statement;
   private final ExpressionTree condition;
+  private InternalSyntaxToken semicolonToken;
+  private InternalSyntaxToken doKeyword;
+  private InternalSyntaxToken whileKeyword;
+  private InternalSyntaxToken openParenToken;
+  private InternalSyntaxToken closeParenToken;
 
-  public DoWhileStatementTreeImpl(StatementTree statement, ExpressionTree condition, AstNode... children) {
+  public DoWhileStatementTreeImpl(InternalSyntaxToken doKeyword, StatementTree statement,
+                                  InternalSyntaxToken whileKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
+                                  InternalSyntaxToken semicolonToken, AstNode... children) {
     super(JavaGrammar.DO_STATEMENT);
     this.statement = Preconditions.checkNotNull(statement);
     this.condition = Preconditions.checkNotNull(condition);
+    this.doKeyword = doKeyword;
+    this.whileKeyword = whileKeyword;
+    this.openParenToken = openParenToken;
+    this.semicolonToken = semicolonToken;
+    this.closeParenToken = closeParenToken;
 
     for (AstNode child : children) {
       addChild(child);
@@ -57,7 +67,7 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
 
   @Override
   public SyntaxToken doKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.DO));
+    return doKeyword;
   }
 
   @Override
@@ -67,12 +77,12 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
 
   @Override
   public SyntaxToken whileKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.WHILE));
+    return whileKeyword;
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR));
+    return openParenToken;
   }
 
   @Override
@@ -82,12 +92,12 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
 
   @Override
   public SyntaxToken closeParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR));
+    return closeParenToken;
   }
 
   @Override
   public SyntaxToken semicolonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return semicolonToken;
   }
 
   @Override

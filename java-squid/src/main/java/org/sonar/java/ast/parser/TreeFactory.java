@@ -616,9 +616,14 @@ public class TreeFactory {
         whileKeyword, openParenToken, expression, closeParenToken, statement);
   }
 
-  public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, AstNode statement, AstNode whileToken, ParenthesizedTreeImpl expression, AstNode semicolonToken) {
-    return new DoWhileStatementTreeImpl(treeMaker.statement(statement), expression,
-      doToken, statement, whileToken, expression, semicolonToken);
+  public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, AstNode statement, AstNode whileToken, AstNode openParen, AstNode expression, AstNode closeParen, AstNode semicolon) {
+    InternalSyntaxToken doKeyword = InternalSyntaxToken.create(doToken);
+    InternalSyntaxToken whileKeyword = InternalSyntaxToken.create(whileToken);
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
+    InternalSyntaxToken semiColonToken = InternalSyntaxToken.create(semicolon);
+    return new DoWhileStatementTreeImpl(doKeyword, treeMaker.statement(statement), whileKeyword, openParenToken, treeMaker.expression(expression), closeParenToken, semiColonToken,
+      doKeyword, statement, whileKeyword, openParenToken, expression, closeParenToken, semiColonToken);
   }
 
   public SwitchStatementTreeImpl switchStatement(
