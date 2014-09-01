@@ -22,8 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -41,11 +39,23 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   private final ExpressionTree expression;
   private final List<CaseGroupTreeImpl> cases;
+  private InternalSyntaxToken switchKeyword;
+  private InternalSyntaxToken openParenToken;
+  private InternalSyntaxToken closeParenToken;
+  private InternalSyntaxToken openBraceToken;
+  private InternalSyntaxToken closeBraceToken;
 
-  public SwitchStatementTreeImpl(ExpressionTree expression, List<CaseGroupTreeImpl> groups, List<AstNode> children) {
+  public SwitchStatementTreeImpl(InternalSyntaxToken switchKeyword, InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken,
+                                 InternalSyntaxToken openBraceToken, List<CaseGroupTreeImpl> groups, InternalSyntaxToken closeBraceToken,
+                                 List<AstNode> children) {
     super(JavaGrammar.SWITCH_STATEMENT);
+    this.switchKeyword = switchKeyword;
+    this.openParenToken = openParenToken;
     this.expression = Preconditions.checkNotNull(expression);
+    this.closeParenToken = closeParenToken;
+    this.openBraceToken = openBraceToken;
     this.cases = Preconditions.checkNotNull(groups);
+    this.closeBraceToken = closeBraceToken;
 
     for (AstNode child : children) {
       addChild(child);
@@ -59,12 +69,12 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken switchKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.SWITCH));
+    return switchKeyword;
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR));
+    return openParenToken;
   }
 
   @Override
@@ -74,12 +84,12 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken closeParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR));
+    return closeParenToken;
   }
 
   @Override
   public SyntaxToken openBraceToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LWING));
+    return openBraceToken;
   }
 
   @Override
@@ -90,7 +100,7 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken closeBraceToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RWING));
+    return closeBraceToken;
   }
 
   @Override

@@ -630,18 +630,25 @@ public class TreeFactory {
       doKeyword, statement, whileKeyword, openParenToken, expression, closeParenToken, semiColonToken);
   }
 
-  public SwitchStatementTreeImpl switchStatement(
-    AstNode switchToken, ParenthesizedTreeImpl expression, AstNode leftCurlyBraceToken, Optional<List<CaseGroupTreeImpl>> optionalGroups, AstNode rightCurlyBraceToken) {
+  public SwitchStatementTreeImpl switchStatement(AstNode switchToken, AstNode openParen, AstNode expression, AstNode closeParen,
+    AstNode leftCurlyBraceToken, Optional<List<CaseGroupTreeImpl>> optionalGroups, AstNode rightCurlyBraceToken) {
+
+    InternalSyntaxToken switchKeyword = InternalSyntaxToken.create(switchToken);
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
+    InternalSyntaxToken openBraceToken = InternalSyntaxToken.create(leftCurlyBraceToken);
+    InternalSyntaxToken closeBraceToken = InternalSyntaxToken.create(rightCurlyBraceToken);
 
     List<CaseGroupTreeImpl> groups = optionalGroups.isPresent() ? optionalGroups.get() : Collections.<CaseGroupTreeImpl>emptyList();
 
     ImmutableList.Builder<AstNode> children = ImmutableList.builder();
-    children.add(switchToken, expression, leftCurlyBraceToken);
+    children.add(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken);
     children.addAll(groups);
-    children.add(rightCurlyBraceToken);
+    children.add(closeBraceToken);
 
-    return new SwitchStatementTreeImpl(expression, groups,
-      children.build());
+    return new SwitchStatementTreeImpl(switchKeyword, openParenToken, treeMaker.expression(expression), closeParenToken,
+        openBraceToken, groups, closeBraceToken,
+        children.build());
   }
 
   public CaseGroupTreeImpl switchGroup(List<CaseLabelTreeImpl> labels, Optional<List<AstNode>> optionalBlockStatements) {

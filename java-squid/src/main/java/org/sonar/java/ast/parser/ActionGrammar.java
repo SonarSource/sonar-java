@@ -386,7 +386,8 @@ public class ActionGrammar {
     return b.<SwitchStatementTreeImpl>nonterminal(JavaGrammar.SWITCH_STATEMENT)
       .is(
         f.switchStatement(
-          b.invokeRule(JavaKeyword.SWITCH), PARENTHESIZED_EXPRESSION(), b.invokeRule(JavaPunctuator.LWING),
+          b.invokeRule(JavaKeyword.SWITCH), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
+          b.invokeRule(JavaPunctuator.LWING),
           b.zeroOrMore(SWITCH_GROUP()),
           b.invokeRule(JavaPunctuator.RWING)));
   }
