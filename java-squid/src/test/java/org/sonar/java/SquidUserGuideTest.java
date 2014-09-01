@@ -28,7 +28,6 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
-import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
@@ -94,7 +93,7 @@ public class SquidUserGuideTest {
     assertThat(metrics.get("classes").intValue()).isEqualTo(412);
     assertThat(metrics.get("functions").intValue()).isEqualTo(3693);
     assertThat(metrics.get("lines").intValue()).isEqualTo(64125);
-    assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(26323);
+    assertThat(metrics.get("ncloc").intValue()).isEqualTo(26323);
     assertThat(metrics.get("statements").intValue()).isEqualTo(12047);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17908);

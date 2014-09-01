@@ -23,17 +23,9 @@ import org.sonar.squidbridge.measures.CalculatedMetricFormula;
 import org.sonar.squidbridge.measures.MetricDef;
 
 public enum JavaMetric implements MetricDef {
-
-  LINES_OF_CODE(false),
   TESTS;
 
-  private boolean aggregateIfThereIsAlreadyAValue = true;
-
   JavaMetric() {
-  }
-
-  JavaMetric(boolean aggregateIfThereIsAlreadyAValue) {
-    this.aggregateIfThereIsAlreadyAValue = aggregateIfThereIsAlreadyAValue;
   }
 
   public String getName() {
@@ -45,7 +37,7 @@ public enum JavaMetric implements MetricDef {
   }
 
   public boolean aggregateIfThereIsAlreadyAValue() {
-    return aggregateIfThereIsAlreadyAValue;
+    return true;
   }
 
   public boolean isThereAggregationFormula() {

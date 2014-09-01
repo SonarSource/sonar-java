@@ -27,15 +27,13 @@ public class JavaMetricTest {
 
   @Test
   public void test() {
-    assertThat(JavaMetric.values()).hasSize(2);
-
+    assertThat(JavaMetric.values()).hasSize(1);
     for (JavaMetric metric : JavaMetric.values()) {
       assertThat(metric.getName()).isEqualTo(metric.name());
       assertThat(metric.isCalculatedMetric()).isFalse();
       assertThat(metric.isThereAggregationFormula()).isTrue();
       assertThat(metric.getCalculatedMetricFormula()).isNull();
     }
-
   }
 
 }

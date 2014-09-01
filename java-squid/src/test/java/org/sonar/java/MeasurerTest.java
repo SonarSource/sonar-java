@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public class MeasurerTest {
 
-  private static final int NB_OF_METRICS = 13;
+  private static final int NB_OF_METRICS = 14;
   private SensorContext context;
   private JavaSquid squid;
   private File baseDir;
@@ -116,6 +116,11 @@ public class MeasurerTest {
   @Test
   public void verify_statements_metric() {
     checkMetric("Statements.java", "statements", 18);
+  }
+
+  @Test
+  public void verify_ncloc_metric() {
+    checkMetric("LinesOfCode.java", "ncloc", 2);
   }
 
   @Test

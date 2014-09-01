@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 
@@ -29,12 +28,6 @@ import java.io.File;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaAstScannerTest {
-
-  @Test
-  public void lines_of_code() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/LinesOfCode.java"));
-    assertThat(file.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(2);
-  }
 
   @Test
   public void comments() {

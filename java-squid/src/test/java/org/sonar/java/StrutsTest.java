@@ -27,7 +27,6 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
-import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
@@ -96,7 +95,7 @@ public class StrutsTest {
     //56 methods in anonymous classes: not part of metric but part of number of methods in project.
     assertThat(metrics.get("functions").intValue()).isEqualTo(1437 - 56);
     assertThat(metrics.get("lines").intValue()).isEqualTo(32878);
-    assertThat(project.getInt(JavaMetric.LINES_OF_CODE)).isEqualTo(14007);
+    assertThat(metrics.get("ncloc").intValue()).isEqualTo(14007);
     assertThat(metrics.get("statements").intValue()).isEqualTo(6403);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(3957 - 145 /* SONAR-3793 */ - 1 /* SONAR-3794 */);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);

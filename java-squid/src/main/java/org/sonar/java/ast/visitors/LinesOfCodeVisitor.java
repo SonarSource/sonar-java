@@ -19,54 +19,36 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import org.sonar.java.ast.api.JavaMetric;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.List;
 import java.util.Set;
 
-import static com.sonar.sslr.api.GenericTokenType.EOF;
-
-public class LinesOfCodeVisitor extends JavaAstVisitor implements AstAndTokenVisitor {
+public class LinesOfCodeVisitor extends SubscriptionVisitor{
 
   private Set<Integer> lines = Sets.newHashSet();
 
-  @Override
-  public void init() {
-    subscribeTo(JavaPunctuator.RWING);
-  }
-
-  @Override
-  public void visitFile(AstNode astNode) {
+  public int linesOfCode(CompilationUnitTree tree) {
     lines.clear();
+    visitTokens(tree);
+    return lines.size();
   }
 
-  public void visitToken(Token token) {
-    if (token.getType() != EOF) {
-      lines.add(token.getLine());
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.TOKEN);
+  }
+
+  @Override
+  public void visitToken(SyntaxToken syntaxToken) {
+    InternalSyntaxToken internalSyntaxToken = (InternalSyntaxToken) syntaxToken;
+    if(!internalSyntaxToken.isEOF()) {
+      lines.add(internalSyntaxToken.getLine());
     }
   }
-
-  @Override
-  public void leaveNode(AstNode astNode) {
-    SourceCode sourceCode = getContext().peekSourceCode();
-    int linesOfCode = 0;
-    for (int line = sourceCode.getStartAtLine(); line <= sourceCode.getEndAtLine(); line++) {
-      if (lines.contains(line)) {
-        linesOfCode++;
-      }
-    }
-    sourceCode.setMeasure(JavaMetric.LINES_OF_CODE, linesOfCode);
-  }
-
-  @Override
-  public void leaveFile(AstNode astNode) {
-    getContext().peekSourceCode().setMeasure(JavaMetric.LINES_OF_CODE, lines.size());
-    lines.clear();
-  }
-
 }

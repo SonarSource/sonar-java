@@ -29,7 +29,6 @@ import org.sonar.java.ast.visitors.ClassVisitor;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.EndAtLineVisitor;
 import org.sonar.java.ast.visitors.FileVisitor;
-import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.ast.visitors.MethodVisitor;
 import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.squidbridge.SquidAstVisitor;
@@ -95,9 +94,6 @@ public final class JavaAstScanner {
     /* Comments */
     builder.setCommentAnalyser(new CommentLinesVisitor.JavaCommentAnalyser());
 
-    /* Metrics */
-
-    builder.withSquidAstVisitor(new LinesOfCodeVisitor());
     builder.withSquidAstVisitor(CommentsVisitor.<LexerlessGrammar>builder()
       .withNoSonar(true)
       .withIgnoreHeaderComment(true)
