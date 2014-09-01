@@ -403,7 +403,7 @@ public class ActionGrammar {
 
   public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
     return b.<SynchronizedStatementTreeImpl>nonterminal(JavaGrammar.SYNCHRONIZED_STATEMENT)
-      .is(f.synchronizedStatement(b.invokeRule(JavaKeyword.SYNCHRONIZED), PARENTHESIZED_EXPRESSION(), BLOCK()));
+      .is(f.synchronizedStatement(b.invokeRule(JavaKeyword.SYNCHRONIZED), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR), BLOCK()));
   }
 
   public BreakStatementTreeImpl BREAK_STATEMENT() {

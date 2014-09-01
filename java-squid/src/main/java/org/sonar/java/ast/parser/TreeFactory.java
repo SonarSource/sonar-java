@@ -653,9 +653,12 @@ public class TreeFactory {
       defaultToken, colonToken);
   }
 
-  public SynchronizedStatementTreeImpl synchronizedStatement(AstNode synchronizedToken, ParenthesizedTreeImpl expression, BlockTreeImpl block) {
-    return new SynchronizedStatementTreeImpl(expression, block,
-      synchronizedToken, expression, block);
+  public SynchronizedStatementTreeImpl synchronizedStatement(AstNode synchronizedToken, AstNode openParen, AstNode expression, AstNode closeParen, BlockTreeImpl block) {
+    InternalSyntaxToken synchronizedKeyword = InternalSyntaxToken.create(synchronizedToken);
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
+    return new SynchronizedStatementTreeImpl(synchronizedKeyword, openParenToken, treeMaker.expression(expression), closeParenToken, block,
+        synchronizedKeyword, openParenToken, expression, closeParenToken, block);
   }
 
   public BreakStatementTreeImpl breakStatement(AstNode breakToken, Optional<AstNode> identifier, AstNode semicolonToken) {

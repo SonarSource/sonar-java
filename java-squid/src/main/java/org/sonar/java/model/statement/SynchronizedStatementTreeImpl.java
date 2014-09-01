@@ -22,8 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -39,13 +37,20 @@ import java.util.Iterator;
 public class SynchronizedStatementTreeImpl extends JavaTree implements SynchronizedStatementTree {
   private final ExpressionTree expression;
   private final BlockTree block;
+  private final InternalSyntaxToken synchronizedKeyword;
+  private InternalSyntaxToken openParenToken;
+  private final InternalSyntaxToken closeParenToken;
 
-  public SynchronizedStatementTreeImpl(ExpressionTree expression, BlockTree block, AstNode... children) {
+  public SynchronizedStatementTreeImpl(InternalSyntaxToken synchronizedKeyword, InternalSyntaxToken openParenToken,
+                                       ExpressionTree expression, InternalSyntaxToken closeParenToken, BlockTree block, AstNode... childrens) {
     super(JavaGrammar.SYNCHRONIZED_STATEMENT);
     this.expression = Preconditions.checkNotNull(expression);
     this.block = Preconditions.checkNotNull(block);
+    this.synchronizedKeyword = synchronizedKeyword;
+    this.openParenToken = openParenToken;
+    this.closeParenToken = closeParenToken;
 
-    for (AstNode child : children) {
+    for (AstNode child : childrens) {
       addChild(child);
     }
   }
@@ -57,12 +62,12 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
 
   @Override
   public SyntaxToken synchronizedKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.SYNCHRONIZED));
+    return synchronizedKeyword;
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR));
+    return openParenToken;
   }
 
   @Override
@@ -72,7 +77,7 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
 
   @Override
   public SyntaxToken closeParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR));
+    return closeParenToken;
   }
 
   @Override
@@ -88,8 +93,8 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
-      expression,
-      block);
+        expression,
+        block);
   }
 
 }
