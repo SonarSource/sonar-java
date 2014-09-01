@@ -9,7 +9,7 @@ class Foo {
     super.finalize();     // Non-Compliant
     this.finalize();      // Non-Compliant
     finalize();           // Non-Compliant
-    finalize() + 0;       // Compliant
+    finalize() + 0;       // Non-Compliant
   }
 
   @Override

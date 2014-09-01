@@ -19,89 +19,63 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import org.sonar.squidbridge.checks.SquidCheck;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(
-  key = "ObjectFinalizeCheck",
-  priority = Priority.CRITICAL,
-  tags={"pitfall"})
+    key = "ObjectFinalizeCheck",
+    priority = Priority.CRITICAL,
+    tags = {"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class ObjectFinalizeCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
-
-  enum State {
-    EXPECT_FINALIZE,
-    EXPECT_LPAREN,
-    EXPECT_RPAREN,
-    EXPECT_SEMI
-  }
-
-  private State state = State.EXPECT_FINALIZE;
-
-  private boolean isInFinalizeMethod;
+public class ObjectFinalizeCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.MEMBER_DECL);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION);
   }
 
-  @Override
-  public void visitFile(AstNode node) {
-    isInFinalizeMethod = false;
-  }
+  private boolean isInFinalizeMethod = false;
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isFinalizeMethodMember(node)) {
-      isInFinalizeMethod = true;
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      isInFinalizeMethod = isFinalizeMethodMember((MethodTree) tree);
+    } else {
+      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
+      String name = "";
+      if (methodInvocationTree.methodSelect().is(Tree.Kind.IDENTIFIER)) {
+        name = ((IdentifierTree) methodInvocationTree.methodSelect()).name();
+      } else if (methodInvocationTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        name = ((MemberSelectExpressionTree) methodInvocationTree.methodSelect()).identifier().name();
+      }
+      if (!isInFinalizeMethod && "finalize".equals(name) && methodInvocationTree.arguments().isEmpty()) {
+        addIssue(tree, "Remove this call to finalize().");
+      }
     }
+
   }
 
   @Override
-  public void leaveNode(AstNode node) {
-    if (isFinalizeMethodMember(node)) {
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD) && isFinalizeMethodMember((MethodTree) tree)) {
       isInFinalizeMethod = false;
     }
   }
 
-  @Override
-  public void visitToken(Token token) {
-    switch (state) {
-      case EXPECT_FINALIZE:
-        transitionIfMatch(token, "finalize", State.EXPECT_LPAREN);
-        break;
-      case EXPECT_LPAREN:
-        transitionIfMatch(token, "(", State.EXPECT_RPAREN);
-        break;
-      case EXPECT_RPAREN:
-        transitionIfMatch(token, ")", State.EXPECT_SEMI);
-        break;
-      case EXPECT_SEMI:
-        if (";".equals(token.getOriginalValue()) && !isInFinalizeMethod) {
-          getContext().createLineViolation(this, "Remove this call to finalize().", token);
-        }
-        state = State.EXPECT_FINALIZE;
-        break;
-      default:
-        throw new IllegalStateException();
-    }
-  }
-
-  private void transitionIfMatch(Token token, String expected, State target) {
-    state = expected.equals(token.getOriginalValue()) ? target : State.EXPECT_FINALIZE;
-  }
-
-  private static boolean isFinalizeMethodMember(AstNode node) {
-    return node.hasDirectChildren(JavaGrammar.VOID_METHOD_DECLARATOR_REST) &&
-      "finalize".equals(node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue());
+  private boolean isFinalizeMethodMember(MethodTree methodTree) {
+    Tree returnType = methodTree.returnType();
+    boolean returnVoid = returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
+    return returnVoid && "finalize".equals(methodTree.simpleName().name());
   }
 
 }

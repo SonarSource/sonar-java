@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,12 +35,14 @@ public class ObjectFinalizeCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ObjectFinalizeCheck.java"), new ObjectFinalizeCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ObjectFinalizeCheck.java"), new VisitorsBridge(new ObjectFinalizeCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(4).withMessage("Remove this call to finalize().")
         .next().atLine(9)
         .next().atLine(10)
-        .next().atLine(11);
+        .next().atLine(11)
+        .next().atLine(12)
+    ;
   }
 
 }
