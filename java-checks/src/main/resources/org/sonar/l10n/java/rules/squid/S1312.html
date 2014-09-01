@@ -28,7 +28,7 @@ public class Bar {
 <h2>Compliant Solution</h2>
 <pre>
 public class Foo {
-  private static Logger LOGGER = LoggerFactory.getLogger(Foo.class); // Compliant
+  private static final Logger LOGGER = LoggerFactory.getLogger(Foo.class); // Compliant
 
   public void doSomething() {
     /* ... */
