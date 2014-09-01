@@ -19,41 +19,31 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.List;
+
 @Rule(
-  key = IfConditionAlwaysTrueOrFalseCheck.RULE_KEY,
+  key = "S1145",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class IfConditionAlwaysTrueOrFalseCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1145";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
-  private JavaFileScannerContext context;
+public class IfConditionAlwaysTrueOrFalseCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.IF_STATEMENT);
   }
 
   @Override
-  public void visitIfStatement(IfStatementTree tree) {
-    if (tree.condition().is(Tree.Kind.PARENTHESIZED_EXPRESSION) && ((ParenthesizedTree) tree.condition()).expression().is(Tree.Kind.BOOLEAN_LITERAL)) {
-      context.addIssue(tree, ruleKey, "Remove this if statement.");
+  public void visitNode(Tree tree) {
+    if (((IfStatementTree)tree).condition().is(Tree.Kind.BOOLEAN_LITERAL)) {
+      addIssue(tree, "Remove this if statement.");
     }
-
-    super.visitIfStatement(tree);
   }
 
 }

@@ -362,7 +362,8 @@ public class ActionGrammar {
     return b.<IfStatementTreeImpl>nonterminal(JavaGrammar.IF_STATEMENT)
       .is(
         f.completeIf(
-          b.invokeRule(JavaKeyword.IF), PARENTHESIZED_EXPRESSION(), b.invokeRule(JavaGrammar.STATEMENT),
+          b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
+            b.invokeRule(JavaGrammar.STATEMENT),
           b.optional(
             f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), b.invokeRule(JavaGrammar.STATEMENT)))));
   }

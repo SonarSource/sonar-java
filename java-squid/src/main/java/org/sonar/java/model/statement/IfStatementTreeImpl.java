@@ -22,8 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -35,30 +33,24 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-
 import java.util.Iterator;
 
 public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
-  private ExpressionTree condition;
-  private StatementTree thenStatement;
 
+  private InternalSyntaxToken ifKeyword;
+  private InternalSyntaxToken openParenToken;
+  private ExpressionTree condition;
+  private InternalSyntaxToken closeParenToken;
+  private StatementTree thenStatement;
+  @Nullable
+  private InternalSyntaxToken elseKeyword;
   @Nullable
   private final StatementTree elseStatement;
 
-  public IfStatementTreeImpl(ExpressionTree condition, StatementTree thenStatement, AstNode... children) {
+  public IfStatementTreeImpl(InternalSyntaxToken elseKeyword, StatementTree elseStatement, AstNode... children) {
     super(JavaGrammar.IF_STATEMENT);
-    this.condition = Preconditions.checkNotNull(condition);
-    this.thenStatement = Preconditions.checkNotNull(thenStatement);
-    this.elseStatement = null;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
-  }
-
-  public IfStatementTreeImpl(StatementTree elseStatement, AstNode... children) {
-    super(JavaGrammar.IF_STATEMENT);
+    this.elseKeyword = elseKeyword;
     this.elseStatement = Preconditions.checkNotNull(elseStatement);
 
     for (AstNode child : children) {
@@ -66,10 +58,29 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
     }
   }
 
-  public IfStatementTreeImpl complete(ExpressionTree condition, StatementTree thenStatement, AstNode... children) {
-    Preconditions.checkState(this.condition == null, "Already completed");
-
+  public IfStatementTreeImpl(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
+                             StatementTree thenStatement, AstNode... children) {
+    super(JavaGrammar.IF_STATEMENT);
+    this.ifKeyword = ifKeyword;
+    this.openParenToken = openParenToken;
     this.condition = Preconditions.checkNotNull(condition);
+    this.closeParenToken = closeParenToken;
+    this.thenStatement = Preconditions.checkNotNull(thenStatement);
+    this.elseStatement = null;
+    this.elseKeyword = null;
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
+
+  public IfStatementTreeImpl complete(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
+                                      StatementTree thenStatement, AstNode... children) {
+    Preconditions.checkState(this.condition == null, "Already completed");
+    this.ifKeyword = ifKeyword;
+    this.openParenToken = openParenToken;
+    this.condition = Preconditions.checkNotNull(condition);
+    this.closeParenToken = closeParenToken;
     this.thenStatement = Preconditions.checkNotNull(thenStatement);
 
     prependChildren(children);
@@ -84,12 +95,12 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
   @Override
   public SyntaxToken ifKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.IF));
+    return ifKeyword;
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.LPAR));
+    return openParenToken;
   }
 
   @Override
@@ -99,7 +110,7 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
   @Override
   public SyntaxToken closeParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaGrammar.PAR_EXPRESSION).getFirstChild(JavaPunctuator.RPAR));
+    return closeParenToken;
   }
 
   @Override
@@ -110,7 +121,7 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   @Nullable
   @Override
   public SyntaxToken elseKeyword() {
-    return elseStatement == null ? null : InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.ELSE));
+    return elseKeyword;
   }
 
   @Nullable

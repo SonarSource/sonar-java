@@ -594,18 +594,22 @@ public class TreeFactory {
       colonToken, expression);
   }
 
-  public IfStatementTreeImpl completeIf(AstNode ifToken, ParenthesizedTreeImpl condition, AstNode statement, Optional<IfStatementTreeImpl> elseClause) {
+  public IfStatementTreeImpl completeIf(AstNode ifToken, AstNode openParen, AstNode condition, AstNode closeParen, AstNode statement, Optional<IfStatementTreeImpl> elseClause) {
+    InternalSyntaxToken ifKeyword = InternalSyntaxToken.create(ifToken);
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
     if (elseClause.isPresent()) {
-      return elseClause.get().complete(condition, treeMaker.statement(statement),
-        ifToken, condition, statement);
+      return elseClause.get().complete(ifKeyword, openParenToken, treeMaker.expression(condition), closeParenToken, treeMaker.statement(statement),
+          ifKeyword, openParenToken, condition, closeParenToken, statement);
     } else {
-      return new IfStatementTreeImpl(condition, treeMaker.statement(statement),
-        ifToken, condition, statement);
+      return new IfStatementTreeImpl(ifKeyword, openParenToken, treeMaker.expression(condition), closeParenToken, treeMaker.statement(statement),
+          ifKeyword, openParenToken, condition, closeParenToken, statement);
     }
   }
 
   public IfStatementTreeImpl newIfWithElse(AstNode elseToken, AstNode elseStatement) {
-    return new IfStatementTreeImpl(treeMaker.statement(elseStatement), elseToken, elseStatement);
+    InternalSyntaxToken elseKeyword = InternalSyntaxToken.create(elseToken);
+    return new IfStatementTreeImpl(elseKeyword, treeMaker.statement(elseStatement), elseKeyword, elseStatement);
   }
 
   public WhileStatementTreeImpl whileStatement(AstNode whileToken,  AstNode openParen, AstNode expression, AstNode closeParen, AstNode statement) {
