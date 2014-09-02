@@ -39,7 +39,6 @@ public class JaCoCoExtensions {
     extensions.addAll(JacocoConfiguration.getPropertyDefinitions());
     extensions.add(
       JacocoConfiguration.class,
-      JaCoCoAgentDownloader.class,
       // Unit tests
       JaCoCoSensor.class,
       // Integration tests
