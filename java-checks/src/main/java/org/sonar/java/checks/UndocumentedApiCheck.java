@@ -49,16 +49,22 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Rule(key = UndocumentedApiCheck.RULE_KEY, priority = Priority.MAJOR,
-    tags = {"convention"})
+  tags = {"convention"})
 public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String DEFAULT_FOR_CLASSES = "**";
+  private static final String DEFAULT_INHERITDOC_SUPPORT = "false";
   public static final String RULE_KEY = "UndocumentedApi";
 
   @RuleProperty(
-      key = "forClasses",
-      defaultValue = DEFAULT_FOR_CLASSES)
+    key = "forClasses",
+    defaultValue = DEFAULT_FOR_CLASSES)
   public String forClasses = DEFAULT_FOR_CLASSES;
+
+  @RuleProperty(
+    key = "inheritDocSupport",
+    defaultValue = "" + DEFAULT_INHERITDOC_SUPPORT)
+  public boolean inheritDocSupport = Boolean.valueOf(DEFAULT_INHERITDOC_SUPPORT);
 
   private WildcardPattern[] patterns;
   private Deque<ClassTree> classTrees = Lists.newLinkedList();
@@ -92,7 +98,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    //don't visit anonymous classes, nothing in an anonymous class is part of public api.
+    // don't visit anonymous classes, nothing in an anonymous class is part of public api.
   }
 
   @Override
@@ -122,6 +128,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
       if (javadoc == null) {
         context.addIssue(tree, ruleKey, "Document this public " + getType(tree) + ".");
+      } else if (this.inheritDocSupport && javadoc.contains("{@inheritDoc}")) {
+        // No error, Javadoc considered as consistent
       } else {
         List<String> undocumentedParameters = getUndocumentedParameters(javadoc, getParameters(tree));
         if (!undocumentedParameters.isEmpty()) {
@@ -163,7 +171,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
       MethodTree methodTree = (MethodTree) tree;
       String name = methodTree.simpleName().name();
       return (setterPattern.matcher(name).matches() && methodTree.parameters().size() == 1) ||
-          (getterPattern.matcher(name).matches() && methodTree.parameters().isEmpty());
+        (getterPattern.matcher(name).matches() && methodTree.parameters().isEmpty());
     }
     return false;
   }
@@ -217,7 +225,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
       for (VariableTree variableTree : methodTree.parameters()) {
         builder.add(variableTree.simpleName().name());
       }
-      //don't check type paramters documentation for methods
+      // don't check type paramters documentation for methods
     } else if (tree.is(PublicApiChecker.CLASS_KINDS)) {
       for (TypeParameterTree typeParam : ((ClassTree) tree).typeParameters()) {
         builder.add("<" + typeParam.identifier().name() + ">");
@@ -231,7 +239,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private boolean hasNonVoidReturnType(Tree tree) {
-    //Backward compatibility : ignore methods from annotations.
+    // Backward compatibility : ignore methods from annotations.
     if (tree.is(Tree.Kind.METHOD) && !classTrees.peek().is(Tree.Kind.ANNOTATION_TYPE)) {
       Tree returnType = ((MethodTree) tree).returnType();
       return returnType == null || !(returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text()));

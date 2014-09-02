@@ -47,6 +47,13 @@ public class MyClass&lt;T&gt; implements Runnable {    // Non-Compliant - missin
   public void run() {                            // Compliant - has @Override annotation
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  public void run() {                            // Compliant - if 'inheritDocSupport' rule property set to true
+  }
+
+
   protected void doSomething() {                 // Compliant - not public
   }
 

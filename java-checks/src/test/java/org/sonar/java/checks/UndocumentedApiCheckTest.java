@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
@@ -64,9 +64,8 @@ public class UndocumentedApiCheckTest {
       .next().atLine(167).withMessage("Document this public method.")
       .next().atLine(177).withMessage("Document this public method.")
       .next().atLine(183).withMessage("Document this method return value.")
-    //  .next().atLine(193).withMessage("Document this public method.") false negative for getter
-      .next().atLine(208).withMessage("Document this public class.")
-    ;
+      // .next().atLine(193).withMessage("Document this public method.") false negative for getter
+      .next().atLine(208).withMessage("Document this public class.");
   }
 
   @Test
@@ -78,4 +77,27 @@ public class UndocumentedApiCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages());
   }
 
+  @Test
+  public void inheritDocSupported() {
+    UndocumentedApiCheck check = new UndocumentedApiCheck();
+    check.inheritDocSupport = true;
+    assertThat(check.forClasses).isEqualTo("**");
+    assertThat(check.inheritDocSupport).isEqualTo(true);
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApiInheritDoc.java"), new VisitorsBridge(check));
+    checkMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(13);
+  }
+
+  @Test
+  public void inheritDocDefault() {
+    UndocumentedApiCheck check = new UndocumentedApiCheck();
+    assertThat(check.forClasses).isEqualTo("**");
+    assertThat(check.inheritDocSupport).isEqualTo(false);
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApiInheritDoc.java"), new VisitorsBridge(check));
+    checkMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(9).withMessage("Document the parameter(s): s").next().atLine(9).withMessage("Document this method return value.").next().atLine(13)
+      .withMessage("Document this public method.");
+  }
 }
