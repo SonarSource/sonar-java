@@ -19,74 +19,73 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.List;
 
 @Rule(
-  key = "S1182",
-  priority = Priority.MAJOR)
+    key = "S1182",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class CloneMethodCallsSuperCloneCheck extends SquidCheck<LexerlessGrammar> {
+public class CloneMethodCallsSuperCloneCheck extends SubscriptionBaseVisitor {
 
   private boolean foundSuperClone;
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.MEMBER_DECL);
-    subscribeTo(Kind.METHOD_INVOCATION);
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Kind.METHOD, Kind.METHOD_INVOCATION);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isCloneMethod(node)) {
+  public void visitNode(Tree tree) {
+    if (isCloneMethod(tree)) {
       foundSuperClone = false;
-    } else if (isSuperCloneCall(node)) {
+    } else if (isSuperCloneCall(tree)) {
       foundSuperClone = true;
     }
+
   }
 
   @Override
-  public void leaveNode(AstNode node) {
-    if (isCloneMethod(node) && !foundSuperClone) {
-      getContext().createLineViolation(this, "Use super.clone() to create and seed the cloned instance to be returned.", node);
+  public void leaveNode(Tree tree) {
+    if (isCloneMethod(tree) && !foundSuperClone) {
+      addIssue(tree, "Use super.clone() to create and seed the cloned instance to be returned.");
     }
   }
 
-  private static boolean isCloneMethod(AstNode node) {
-    AstNode methodRest = node.getFirstChild(JavaGrammar.METHOD_DECLARATOR_REST);
-
-    return node.is(JavaGrammar.MEMBER_DECL) &&
-      methodRest != null &&
-      "clone".equals(node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenOriginalValue()) &&
-      !methodRest.getFirstChild(JavaGrammar.FORMAL_PARAMETERS).hasDirectChildren(JavaGrammar.FORMAL_PARAMETER_DECLS);
+  private boolean isCloneMethod(Tree tree) {
+    if (!tree.is(Kind.METHOD)) {
+      return false;
+    }
+    MethodTree methodTree = (MethodTree) tree;
+    return "clone".equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty() && methodTree.block() != null;
   }
 
-  private static boolean isSuperCloneCall(AstNode node) {
-    if (!node.is(Kind.METHOD_INVOCATION)) {
+  private boolean isSuperCloneCall(Tree tree) {
+    if (!tree.is(Kind.METHOD_INVOCATION)) {
       return false;
     }
 
-    MethodInvocationTree tree = (MethodInvocationTree) node;
+    MethodInvocationTree mit = (MethodInvocationTree) tree;
 
-    return tree.arguments().isEmpty() &&
-      tree.methodSelect().is(Kind.MEMBER_SELECT) &&
-      isSuperClone((MemberSelectExpressionTree) tree.methodSelect());
+    return mit.arguments().isEmpty() &&
+        mit.methodSelect().is(Kind.MEMBER_SELECT) &&
+        isSuperClone((MemberSelectExpressionTree) mit.methodSelect());
   }
 
-  private static boolean isSuperClone(MemberSelectExpressionTree tree) {
+  private boolean isSuperClone(MemberSelectExpressionTree tree) {
     return "clone".equals(tree.identifier().name()) &&
-      tree.expression().is(Kind.IDENTIFIER) &&
-      "super".equals(((IdentifierTree) tree.expression()).name());
+        tree.expression().is(Kind.IDENTIFIER) &&
+        "super".equals(((IdentifierTree) tree.expression()).name());
   }
 
 }

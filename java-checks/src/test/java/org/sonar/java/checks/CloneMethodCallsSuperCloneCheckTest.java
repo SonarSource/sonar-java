@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class CloneMethodCallsSuperCloneCheckTest {
 
   @Test
   public void detected() throws Exception {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CloneMethodCallsSuperCloneCheck.java"), new CloneMethodCallsSuperCloneCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CloneMethodCallsSuperCloneCheck.java"), new VisitorsBridge(new CloneMethodCallsSuperCloneCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("Use super.clone() to create and seed the cloned instance to be returned.")
         .next().atLine(46)
