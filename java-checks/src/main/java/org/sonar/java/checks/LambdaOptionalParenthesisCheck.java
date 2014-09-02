@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.LambdaParameterListTreeImpl;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 
@@ -43,13 +43,10 @@ public class LambdaOptionalParenthesisCheck extends SquidCheck<LexerlessGrammar>
 
   @Override
   public void visitNode(AstNode node) {
-    if (!node.hasDirectChildren(JavaGrammar.FORMAL_PARAMETERS) && hasOneParameterWithParenthesis(node)) {
+    LambdaParameterListTreeImpl lambdaParameterListTree = (LambdaParameterListTreeImpl) node;
+    if (lambdaParameterListTree.openParenToken() != null && node.getNumberOfChildren()-2 == 1) {
       String identifier = node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
       getContext().createLineViolation(this, "Remove the parentheses around the \"" + identifier + "\" parameter", node);
     }
-  }
-
-  private boolean hasOneParameterWithParenthesis(AstNode node) {
-    return node.getChildren(JavaTokenType.IDENTIFIER).size() == 1 && node.getFirstChild().is(JavaPunctuator.LPAR);
   }
 }

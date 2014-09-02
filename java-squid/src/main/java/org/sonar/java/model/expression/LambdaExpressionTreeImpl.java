@@ -23,6 +23,7 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,12 +39,15 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
 
   private final List<VariableTree> parameters;
   private final Tree body;
+  private InternalSyntaxToken openParenToken;
+  private InternalSyntaxToken closeParenToken;
 
-  public LambdaExpressionTreeImpl(List<VariableTree> parameters, Tree body, AstNode... children) {
+  public LambdaExpressionTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTree> parameters, @Nullable InternalSyntaxToken closeParenToken, Tree body, AstNode... children) {
     super(JavaGrammar.LAMBDA_EXPRESSION);
+    this.openParenToken = openParenToken;
     this.parameters = parameters;
+    this.closeParenToken = closeParenToken;
     this.body = body;
-
     for (AstNode child : children) {
       addChild(child);
     }
@@ -57,7 +61,7 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
   @Nullable
   @Override
   public SyntaxToken openParenToken() {
-    throw new UnsupportedOperationException();
+    return openParenToken;
   }
 
   @Override
@@ -68,7 +72,7 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
   @Nullable
   @Override
   public SyntaxToken closeParenToken() {
-    throw new UnsupportedOperationException();
+    return  closeParenToken;
   }
 
   @Override

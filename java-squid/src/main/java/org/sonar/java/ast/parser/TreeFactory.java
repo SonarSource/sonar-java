@@ -42,6 +42,7 @@ import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
@@ -1027,7 +1028,7 @@ public class TreeFactory {
     return new NotImplementedTreeImpl(children.toArray(new AstNode[children.size()]));
   }
 
-  public ExpressionTree lambdaExpression(AstNode parameters, AstNode arrowToken, AstNode body) {
+  public ExpressionTree lambdaExpression(LambdaParameterListTreeImpl parameters, AstNode arrowToken, AstNode body) {
     Tree bodyTree;
     if (body.hasDirectChildren(Kind.BLOCK)) {
       bodyTree = (BlockTree) body.getFirstChild(Kind.BLOCK);
@@ -1037,8 +1038,25 @@ public class TreeFactory {
     List<VariableTree> params = Lists.newArrayList();
     // FIXME(Godin): params always empty
 
-    return new LambdaExpressionTreeImpl(params, bodyTree,
+    return new LambdaExpressionTreeImpl(parameters.openParenToken(), params, parameters.closeParenToken(), bodyTree,
       parameters, arrowToken, body);
+  }
+
+  public LambdaParameterListTreeImpl lambdaParameters(AstNode astNode) {
+    List<AstNode> children = astNode.getChildren();
+    InternalSyntaxToken openParenToken = null;
+    AstNode leftParen = astNode.getFirstChild(JavaPunctuator.LPAR);
+    if (leftParen != null) {
+      openParenToken = InternalSyntaxToken.create(leftParen);
+      children.remove(leftParen);
+    }
+    InternalSyntaxToken closeParenToken = null;
+    AstNode rightParen = astNode.getFirstChild(JavaPunctuator.RPAR);
+    if (rightParen != null) {
+      closeParenToken = InternalSyntaxToken.create(rightParen);
+      children.remove(rightParen);
+    }
+    return new LambdaParameterListTreeImpl(openParenToken, ImmutableList.<VariableTreeImpl>of(), closeParenToken, children);
   }
 
   public ParenthesizedTreeImpl parenthesizedExpression(AstNode leftParenthesisToken, AstNode expression, AstNode rightParenthesisToken) {

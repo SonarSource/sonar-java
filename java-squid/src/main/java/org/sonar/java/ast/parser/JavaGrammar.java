@@ -304,7 +304,8 @@ public enum JavaGrammar implements GrammarRuleKey {
 
   MODIFIERS,
 
-  ANNOTATION_ARGUMENTS;
+  ANNOTATION_ARGUMENTS,
+  INFERED_PARAMS;
 
   public static LexerlessGrammarBuilder createGrammarBuilder() {
     LexerlessGrammarBuilder b = LexerlessGrammarBuilder.create();
@@ -694,11 +695,7 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(DIM_EXPR).is(b.zeroOrMore(ANNOTATION), LBRK, EXPRESSION, RBRK);
 
     // Java 8 lambda expressions.
-    b.rule(LAMBDA_PARAMETERS).is(b.firstOf(
-      b.sequence(LPAR, b.optional(JavaTokenType.IDENTIFIER, b.zeroOrMore(COMMA, JavaTokenType.IDENTIFIER)), RPAR),
-      FORMAL_PARAMETERS,
-      JavaTokenType.IDENTIFIER
-      ));
+    b.rule(INFERED_PARAMS).is(LPAR, b.optional(JavaTokenType.IDENTIFIER, b.zeroOrMore(COMMA, JavaTokenType.IDENTIFIER)), RPAR);
     b.rule(LAMBDA_BODY).is(b.firstOf(BLOCK, EXPRESSION));
 
   }
