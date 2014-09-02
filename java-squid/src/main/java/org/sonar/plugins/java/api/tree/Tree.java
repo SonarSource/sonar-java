@@ -607,7 +607,9 @@ public interface Tree {
 
     TOKEN(SyntaxToken.class),
 
-    TRIVIA(SyntaxTrivia.class);
+    TRIVIA(SyntaxTrivia.class),
+
+    INFERED_TYPE(InferedTypeTree.class);
 
     final Class<? extends Tree> associatedInterface;
 

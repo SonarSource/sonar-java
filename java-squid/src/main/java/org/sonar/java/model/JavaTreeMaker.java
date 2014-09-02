@@ -413,7 +413,7 @@ public class JavaTreeMaker {
       null);
   }
 
-  private List<VariableTree> formalParameters(AstNode astNode) {
+  public List<VariableTree> formalParameters(AstNode astNode) {
     checkType(astNode, JavaGrammar.FORMAL_PARAMETERS);
     ImmutableList.Builder<VariableTree> result = ImmutableList.builder();
     for (AstNode variableDeclaratorIdNode : astNode.getDescendants(JavaGrammar.VARIABLE_DECLARATOR_ID)) {

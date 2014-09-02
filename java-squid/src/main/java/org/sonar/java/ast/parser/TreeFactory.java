@@ -1035,28 +1035,43 @@ public class TreeFactory {
     } else {
       bodyTree = treeMaker.expression(body.getFirstChild());
     }
-    List<VariableTree> params = Lists.newArrayList();
-    // FIXME(Godin): params always empty
-
-    return new LambdaExpressionTreeImpl(parameters.openParenToken(), params, parameters.closeParenToken(), bodyTree,
+    return new LambdaExpressionTreeImpl(parameters.openParenToken(), ImmutableList.<VariableTree>builder().addAll(parameters).build(), parameters.closeParenToken(), bodyTree,
       parameters, arrowToken, body);
   }
 
   public LambdaParameterListTreeImpl lambdaParameters(AstNode astNode) {
-    List<AstNode> children = astNode.getChildren();
     InternalSyntaxToken openParenToken = null;
-    AstNode leftParen = astNode.getFirstChild(JavaPunctuator.LPAR);
-    if (leftParen != null) {
-      openParenToken = InternalSyntaxToken.create(leftParen);
-      children.remove(leftParen);
-    }
     InternalSyntaxToken closeParenToken = null;
-    AstNode rightParen = astNode.getFirstChild(JavaPunctuator.RPAR);
-    if (rightParen != null) {
-      closeParenToken = InternalSyntaxToken.create(rightParen);
-      children.remove(rightParen);
+    List<AstNode> children = Lists.newArrayList();
+    ImmutableList.Builder<VariableTreeImpl> parameters = ImmutableList.builder();
+    if(astNode.is(JavaTokenType.IDENTIFIER)) {
+      VariableTreeImpl variableTree = new VariableTreeImpl(astNode, treeMaker.identifier(astNode));
+      parameters.add(variableTree);
+      children.add(astNode);
+    } else {
+      if (astNode.is(JavaGrammar.FORMAL_PARAMETERS)) {
+        for (VariableTree variableTree : treeMaker.formalParameters(astNode)) {
+          parameters.add((VariableTreeImpl) variableTree);
+          children.add(astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETER_DECLS));
+        }
+      }else {
+        for (AstNode node : astNode.getChildren(JavaTokenType.IDENTIFIER)) {
+          VariableTreeImpl variableTree = new VariableTreeImpl(node, treeMaker.identifier(node));
+          parameters.add(variableTree);
+          children.add(node);
+        }
+      }
+
+      AstNode leftParen = astNode.getFirstChild(JavaPunctuator.LPAR);
+      if (leftParen != null) {
+        openParenToken = InternalSyntaxToken.create(leftParen);
+      }
+      AstNode rightParen = astNode.getFirstChild(JavaPunctuator.RPAR);
+      if (rightParen != null) {
+        closeParenToken = InternalSyntaxToken.create(rightParen);
+      }
     }
-    return new LambdaParameterListTreeImpl(openParenToken, ImmutableList.<VariableTreeImpl>of(), closeParenToken, children);
+    return new LambdaParameterListTreeImpl(openParenToken, parameters.build(), closeParenToken, children);
   }
 
   public ParenthesizedTreeImpl parenthesizedExpression(AstNode leftParenthesisToken, AstNode expression, AstNode rightParenthesisToken) {

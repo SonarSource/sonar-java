@@ -181,7 +181,9 @@ public class SecondPass implements Symbol.Completer {
         tree.is(Tree.Kind.PARAMETERIZED_TYPE) ||
         tree.is(Tree.Kind.ARRAY_TYPE) ||
         tree.is(Tree.Kind.UNION_TYPE) ||
-        tree.is(Tree.Kind.PRIMITIVE_TYPE);
+        tree.is(Tree.Kind.PRIMITIVE_TYPE) ||
+        tree.is(Tree.Kind.INFERED_TYPE)
+        ;
   }
 
   private Type castToTypeIfPossible(Symbol symbol) {

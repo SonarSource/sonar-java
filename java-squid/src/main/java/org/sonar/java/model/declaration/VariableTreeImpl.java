@@ -26,6 +26,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.InferedTypeTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -51,6 +52,11 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     this.simpleName = Preconditions.checkNotNull(simpleName);
     this.initializer = initializer;
   }
+
+  public VariableTreeImpl(AstNode astNode, IdentifierTree simpleName) {
+    this(astNode, ModifiersTreeImpl.EMPTY, new InferedTypeTree(), simpleName, null);
+  }
+
 
   @Override
   public Kind getKind() {

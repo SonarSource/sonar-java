@@ -19,15 +19,15 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.LambdaParameterListTreeImpl;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.List;
 
 
 @Rule(
@@ -35,18 +35,20 @@ import org.sonar.sslr.parser.LexerlessGrammar;
     priority = Priority.MINOR,
     tags = {"java8"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class LambdaOptionalParenthesisCheck extends SquidCheck<LexerlessGrammar> {
+public class LambdaOptionalParenthesisCheck extends SubscriptionBaseVisitor {
+
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.LAMBDA_PARAMETERS);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    LambdaParameterListTreeImpl lambdaParameterListTree = (LambdaParameterListTreeImpl) node;
-    if (lambdaParameterListTree.openParenToken() != null && node.getNumberOfChildren()-2 == 1) {
-      String identifier = node.getFirstChild(JavaTokenType.IDENTIFIER).getTokenValue();
-      getContext().createLineViolation(this, "Remove the parentheses around the \"" + identifier + "\" parameter", node);
+  public void visitNode(Tree tree) {
+    LambdaExpressionTree let = (LambdaExpressionTree) tree;
+    if(let.openParenToken() != null && let.parameters().size() == 1) {
+      VariableTree param = let.parameters().get(0);
+      String ident = param.simpleName().name();
+      addIssue(param, "Remove the parentheses around the \"" + ident + "\" parameter");
     }
   }
 }

@@ -19,15 +19,35 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+import com.sonar.sslr.api.AstNode;
+import org.sonar.java.model.JavaTree;
 
-import static org.fest.assertions.Assertions.assertThat;
+import java.util.Iterator;
 
-public class TreeTest {
+public class InferedTypeTree extends JavaTree {
 
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(103);
+
+  public InferedTypeTree(){
+    super((AstNode) null);
   }
 
+  @Override
+  public Kind getKind() {
+    return Kind.INFERED_TYPE;
+  }
+
+  @Override
+  public boolean isLeaf() {
+    return true;
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void accept(TreeVisitor visitor) {
+    //Do nothing.
+  }
 }
