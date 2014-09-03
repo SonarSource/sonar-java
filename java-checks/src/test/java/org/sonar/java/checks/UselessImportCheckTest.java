@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
@@ -36,8 +37,7 @@ public class UselessImportCheckTest {
   public void detected_with_package() {
     SourceFile file = JavaAstScanner.scanSingleFile(
       new File("src/test/files/checks/UselessImportCheck/WithPackage.java"),
-      new File("src/test/files/"),
-      new UselessImportCheck());
+      new VisitorsBridge(new UselessImportCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(8).withMessage("Remove this unused import 'a.b.c.NonCompliant'.")
       .next().atLine(9)
@@ -52,8 +52,7 @@ public class UselessImportCheckTest {
   public void detected_without_package() {
     SourceFile file = JavaAstScanner.scanSingleFile(
       new File("src/test/files/checks/UselessImportCheck/WithoutPackage.java"),
-      new File("src/test/files/"),
-      new UselessImportCheck());
+      new VisitorsBridge(new UselessImportCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(2);
   }

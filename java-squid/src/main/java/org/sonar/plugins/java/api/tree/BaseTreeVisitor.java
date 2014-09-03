@@ -72,6 +72,7 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(tree.returnType());
     scan(tree.parameters());
     scan(tree.defaultValue());
+    scan(tree.throwsClauses());
     scan(tree.block());
   }
 
