@@ -242,4 +242,15 @@ public interface deprecatedInterface{
 
 }
 
+/**
+ * Documented
+ */
+public class MyRunner extends Foo {
 
+  /**
+   * {@inheritDoc}
+   */
+  public int foo(int a, int b, int c) { // Non-Compliant - single issue for parameters, + one for return value
+    return 0;
+  }
+}
