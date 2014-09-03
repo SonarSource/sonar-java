@@ -56,7 +56,7 @@ class Baz {  // Noncompliant
   T23 a23;
 }
 
-class Foo { // Compliant
+class Qix { // Compliant
   class Bar { // Noncompliant
     T1 a1;
     T2 a2;
@@ -82,7 +82,7 @@ class Foo { // Compliant
   }
 }
 
-class Foo { // Noncompliant
+class Qux { // Noncompliant
   T1 a1;
   T2 a2;
   T3 a3;
@@ -110,14 +110,14 @@ class Foo { // Noncompliant
   T21 a21;
 }
 
-enum Foo { // Compliant - should not fail
+enum Qax { // Compliant - should not fail
   ;
 
   T1 foo() {
   }
 }
 
-class Foo {  // Compliant
+class Qex {  // Compliant
   T1 a1;
   T2 a2;
   T3 a3;
@@ -141,7 +141,7 @@ class Foo {  // Compliant
   int a21;
 }
 
-class Foo { // Noncompliant
+class Plop { // Noncompliant
   List<T1> a1;
   List<T2> a2;
   List<T3> a3;
