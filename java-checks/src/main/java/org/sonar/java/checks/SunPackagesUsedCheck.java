@@ -19,63 +19,86 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.model.JavaTreeMaker;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 @Rule(
-  key = "S1191",
-  priority = Priority.MAJOR)
+    key = SunPackagesUsedCheck.RULE_KEY,
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class SunPackagesUsedCheck extends SquidCheck<LexerlessGrammar> {
+public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private int lastReportedLine;
+  public static final String RULE_KEY = "S1191";
+  private Set<Integer> reportedLines = new HashSet<Integer>();
 
   private static final String DEFAULT_EXCLUDE = "";
 
   @RuleProperty(
-    key = "exclude",
-    defaultValue = "" + DEFAULT_EXCLUDE)
+      key = "exclude",
+      defaultValue = "" + DEFAULT_EXCLUDE)
   public String exclude = DEFAULT_EXCLUDE;
   private String[] excludePackages = null;
+  private JavaFileScannerContext context;
+  private RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
-  public void init() {
-    subscribeTo(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
-    subscribeTo(JavaGrammar.CLASS_TYPE);
-    subscribeTo(JavaGrammar.CREATED_NAME);
-  }
-
-  @Override
-  public void visitFile(AstNode node) {
-    lastReportedLine = -1;
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    reportedLines.clear();
     excludePackages = exclude.split(",");
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    String reference = merge(node);
-    if (lastReportedLine != node.getTokenLine() && isSunClass(reference) && !isExcluded(reference)) {
-      getContext().createLineViolation(this, "Replace this usage of Sun classes by ones from the Java API.", node);
-      lastReportedLine = node.getTokenLine();
+  public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+    String reference = merge(tree);
+    if (!isExcluded(reference)) {
+      int line = ((JavaTree) tree).getLine();
+      if (!reportedLines.contains(line) && isSunClass(reference)) {
+        context.addIssue(line, ruleKey, "Replace this usage of Sun classes by ones from the Java API.");
+        reportedLines.add(line);
+      }
+      super.visitMemberSelectExpression(tree);
     }
   }
 
   private boolean isSunClass(String reference) {
-    return reference.startsWith("com.sun.") || reference.startsWith("sun.");
+    return reference.equals("com.sun") || reference.matches("sun\\.[^\\.]*");
   }
 
-  private String merge(AstNode node) {
+  private String merge(ExpressionTree tree) {
+    Deque<String> pieces = new LinkedList<String>();
+    ExpressionTree expr = tree;
+    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
+      pieces.push(mse.identifier().name());
+      pieces.push(".");
+      expr = mse.expression();
+    }
+    if (expr.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree idt = (IdentifierTree) expr;
+      pieces.push(idt.name());
+    }
+
     StringBuilder sb = new StringBuilder();
-    for (Token token : node.getTokens()) {
-      sb.append(token.getOriginalValue());
+    for (String piece : pieces) {
+      sb.append(piece);
     }
     return sb.toString();
   }
@@ -88,5 +111,4 @@ public class SunPackagesUsedCheck extends SquidCheck<LexerlessGrammar> {
     }
     return false;
   }
-
 }

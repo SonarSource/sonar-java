@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,20 +37,25 @@ public class SunPackagesUsedCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SunPackagesUsedCheck.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SunPackagesUsedCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(1).withMessage("Replace this usage of Sun classes by ones from the Java API.")
         .next().atLine(2)
         .next().atLine(7)
         .next().atLine(8)
-        .next().atLine(10);
+        .next().atLine(10)
+        .next().atLine(11)
+        .next().atLine(13)
+    ;
   }
 
   @Test
   public void check_with_exclusion() {
-    check.exclude = "com.sun.imageio,com.sun.jersey";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SunPackagesUsedCheck.java"), check);
+    check.exclude = "com.sun.imageio,com.sun.jersey,com.sun.org.apache.xml";
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SunPackagesUsedCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(10).withMessage("Replace this usage of Sun classes by ones from the Java API.");
+        .next().atLine(10).withMessage("Replace this usage of Sun classes by ones from the Java API.")
+        .next().atLine(13).withMessage("Replace this usage of Sun classes by ones from the Java API.")
+    ;
   }
 }

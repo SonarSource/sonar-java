@@ -8,5 +8,10 @@ class A {
     new com.sun.imageio.plugins.bmp(); // Non-Compliant
     java.util.List a; // Compliant
     sun.Foo a; // Non-Compliant
+    db.setErrorHandler(new com.sun.org.apache.xml.internal.security.utils
+        .IgnoreAllErrorHandler());
+    sun       //nonCompliant
+        .Foo.toto
+        .asd a;
   }
 }
