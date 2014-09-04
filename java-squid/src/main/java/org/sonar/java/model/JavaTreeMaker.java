@@ -423,6 +423,10 @@ public class JavaTreeMaker {
         referenceTypeNode = referenceTypeNode.getPreviousAstNode();
       }
       Tree type = typeNode.is(JavaPunctuator.ELLIPSIS) ? new JavaTree.ArrayTypeTreeImpl(typeNode, (Tree) referenceTypeNode) : (Tree) typeNode;
+      int dimSize = variableDeclaratorIdNode.getChildren(JavaGrammar.DIM).size();
+      if(dimSize > 0) {
+        type = applyDim((ExpressionTree) typeNode, dimSize);
+      }
       result.add(new VariableTreeImpl(
         variableDeclaratorIdNode,
         ModifiersTreeImpl.EMPTY,
