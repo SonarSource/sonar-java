@@ -35,13 +35,17 @@ public class LambdaParameterListTreeImpl extends ListTreeImpl<VariableTreeImpl> 
   public LambdaParameterListTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTreeImpl> params,
                                      @Nullable InternalSyntaxToken closeParenToken, List<AstNode> children) {
     super(JavaGrammar.LAMBDA_PARAMETERS, params, ImmutableList.<AstNode>of());
-    this.openParenToken = openParenToken;
-    addChild(openParenToken);
+    if(openParenToken != null) {
+      this.openParenToken = openParenToken;
+      addChild(openParenToken);
+    }
     for (AstNode child : children) {
       addChild(child);
     }
-    addChild(closeParenToken);
-    this.closeParenToken = closeParenToken;
+    if(closeParenToken != null) {
+      addChild(closeParenToken);
+      this.closeParenToken = closeParenToken;
+    }
   }
 
   @Nullable

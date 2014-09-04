@@ -79,7 +79,7 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private boolean isSunClass(String reference) {
-    return reference.equals("com.sun") || reference.matches("sun\\.[^\\.]*");
+    return "com.sun".equals(reference) || reference.matches("sun\\.[^\\.]*");
   }
 
   private String merge(ExpressionTree tree) {
