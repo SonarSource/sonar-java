@@ -139,6 +139,8 @@ public class SymbolTest {
     assertThat(methodSymbol.isEnum()).isFalse();
     assertThat(methodSymbol.isAbstract()).isTrue();
     assertThat(methodSymbol.isStatic()).isTrue();
+    assertThat(methodSymbol.isPackageVisibility()).isTrue();
+
     assertThat(enumeration.isEnum()).isTrue();
     assertThat(enumeration.isAbstract()).isFalse();
     assertThat(enumeration.isStatic()).isFalse();

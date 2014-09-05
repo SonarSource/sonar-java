@@ -237,5 +237,16 @@ public class Symbol {
     return (flags & Flags.ABSTRACT) != 0;
   }
 
+  public boolean isPublic() {
+    return (flags & Flags.PUBLIC) != 0;
+  }
+
+  public boolean isPrivate() {
+    return (flags & Flags.PRIVATE) != 0;
+  }
+
+  public boolean isPackageVisibility() {
+    return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
+  }
 
 }
