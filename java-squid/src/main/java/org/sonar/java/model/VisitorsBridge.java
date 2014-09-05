@@ -58,11 +58,18 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
 
   private SemanticModel semanticModel;
   private final SonarComponents sonarComponents;
+  private List<File> projectClasspath;
   private boolean analyseAccessors;
 
   @VisibleForTesting
-  public VisitorsBridge(JavaFileScanner visitor) {
+  public VisitorsBridge(JavaFileScanner visitor){
     this(Arrays.asList(visitor), null);
+  }
+
+  @VisibleForTesting
+  public VisitorsBridge(JavaFileScanner visitor, List<File> projectClasspath) {
+    this(Arrays.asList(visitor), null);
+    this.projectClasspath = projectClasspath;
   }
 
   public VisitorsBridge(Iterable visitors, @Nullable SonarComponents sonarComponents) {
@@ -74,6 +81,11 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
     }
     this.scanners = scannersBuilder.build();
     this.sonarComponents = sonarComponents;
+    if(sonarComponents!=null) {
+      projectClasspath = sonarComponents.getJavaClasspath();
+    } else {
+      projectClasspath = Lists.newArrayList();
+    }
   }
 
   public void setAnalyseAccessors(boolean analyseAccessors) {
@@ -122,10 +134,6 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
   }
 
   private List<File> getProjectClasspath() {
-    List<File> projectClasspath = Lists.newArrayList();
-    if (sonarComponents != null) {
-      projectClasspath = sonarComponents.getJavaClasspath();
-    }
     return projectClasspath;
   }
 
