@@ -31,9 +31,11 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -51,7 +53,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (hasSemantic() && isPublic(methodTree)) {
+    if (hasSemantic() && isPublic(methodTree) && !isPublicStaticVoidMain(methodTree)) {
       List<String> thrownCheckedExceptions = getThrownCheckedExceptions(methodTree);
       if (thrownCheckedExceptions.size() > 1 && isNotOverriden(methodTree)) {
         addIssue(methodTree, "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
@@ -59,9 +61,36 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
     }
   }
 
+  private boolean isPublicStaticVoidMain(MethodTree methodTree) {
+    return methodTree.simpleName().name().equals("main") && hasStringArrayParam(methodTree) && returnsVoid(methodTree) && isStatic(methodTree);
+  }
+
+  private boolean hasStringArrayParam(MethodTree methodTree) {
+    if(methodTree.parameters().size()==1){
+      Tree argType = methodTree.parameters().get(0).type();
+      if(argType.is(Tree.Kind.ARRAY_TYPE) && ((ArrayTypeTree) argType).type().is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifierTree = (IdentifierTree) ((ArrayTypeTree) argType).type();
+        return "String".equals(identifierTree.name()) || "java.lang.String".equals(identifierTree.name());
+      }
+    }
+    return false;
+  }
+
+  private boolean returnsVoid(MethodTree methodTree) {
+    Tree returnType = methodTree.returnType();
+    if(returnType != null) {
+      return returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
+    }
+    return false;
+  }
+
   private boolean isNotOverriden(MethodTree methodTree) {
     //Static method are necessarily not overriden, no need to check.
-    return methodTree.modifiers().modifiers().contains(Modifier.STATIC) || BooleanUtils.isFalse(isOverriden(methodTree));
+    return isStatic(methodTree) || BooleanUtils.isFalse(isOverriden(methodTree));
+  }
+
+  private boolean isStatic(MethodTree methodTree) {
+    return methodTree.modifiers().modifiers().contains(Modifier.STATIC);
   }
 
   /**
@@ -74,7 +103,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
     if (isAnnotatedOverride(methodTree)) {
       return true;
     }
-    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) getSemanticModel().getSymbol(methodTree);
+    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) methodTree).getSymbol();
 
     Boolean result = false;
     Symbol.TypeSymbol enclosingClass = methodSymbol.enclosingClass();
