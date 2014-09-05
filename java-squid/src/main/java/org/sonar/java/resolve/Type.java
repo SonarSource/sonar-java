@@ -19,6 +19,9 @@
  */
 package org.sonar.java.resolve;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.util.List;
 
 public class Type {
@@ -93,6 +96,24 @@ public class Type {
     public ArrayType(Type elementType, Symbol.TypeSymbol arrayClass) {
       super(ARRAY, arrayClass);
       this.elementType = elementType;
+    }
+
+    @Override
+    public int hashCode() {
+      return new HashCodeBuilder(31, 37).append(elementType).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == null) { return false; }
+      if (obj == this) { return true; }
+      if (!(obj instanceof ArrayType)) {
+           return false;
+      }
+      ArrayType rhs = (ArrayType) obj;
+      return new EqualsBuilder()
+          .append(elementType, rhs.elementType)
+          .isEquals();
     }
 
     @Override
