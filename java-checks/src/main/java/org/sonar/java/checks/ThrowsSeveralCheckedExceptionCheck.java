@@ -62,7 +62,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean isPublicStaticVoidMain(MethodTree methodTree) {
-    return methodTree.simpleName().name().equals("main") && hasStringArrayParam(methodTree) && returnsVoid(methodTree) && isStatic(methodTree);
+    return "main".equals(methodTree.simpleName().name()) && hasStringArrayParam(methodTree) && returnsVoid(methodTree) && isStatic(methodTree);
   }
 
   private boolean hasStringArrayParam(MethodTree methodTree) {

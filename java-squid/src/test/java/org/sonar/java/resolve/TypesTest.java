@@ -68,6 +68,20 @@ public class TypesTest {
     shouldBeSubtype(symbols.nullType, Arrays.asList(symbols.nullType, arrayType, symbols.objectType));
   }
 
+  @Test
+  public void array_types_equality() throws Exception {
+    Type.ArrayType arrayInt= new Type.ArrayType(symbols.intType, symbols.arrayClass);
+    Type.ArrayType arrayInt2= new Type.ArrayType(symbols.intType, symbols.arrayClass);
+    Type.ArrayType arrayBoolean = new Type.ArrayType(symbols.booleanType, symbols.arrayClass);
+    assertThat(arrayInt.equals(arrayInt2)).isTrue();
+    assertThat(arrayInt2.equals(arrayInt)).isTrue();
+    assertThat(arrayInt2.equals(arrayBoolean)).isFalse();
+    assertThat(arrayInt2.equals(arrayInt2)).isTrue();
+    assertThat(arrayInt2.equals(null)).isFalse();
+    assertThat(arrayInt2.equals(symbols.charType)).isFalse();
+
+  }
+
   private void shouldNotBeSubtype(Type t, List<Type> s) {
     for (Type type : s) {
       assertThat(types.isSubtype(t, type)).as(t + " is subtype of " + type).isFalse();
