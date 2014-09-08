@@ -59,3 +59,9 @@ public class Example {
   public void throws_Exception() throws Exception {
   }
 }
+class SubClass extends Example {
+
+  public void throws_Exception() throws Exception { //Compliant because overrides.
+    super.throws_Exception();
+  }
+}

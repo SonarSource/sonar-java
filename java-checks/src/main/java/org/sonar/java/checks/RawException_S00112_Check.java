@@ -20,13 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
+import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -59,7 +60,7 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
 
   @Override
   public void visitMethod(MethodTree tree) {
-    if (!isOverride(tree)) {
+    if (tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverriden(tree)) {
       for (ExpressionTree throwClause : tree.throwsClauses()) {
         checkExceptionAndRaiseIssue(throwClause);
       }
@@ -85,16 +86,8 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
     return tree.is(Tree.Kind.IDENTIFIER) && RAW_EXCEPTIONS.contains(((IdentifierTree) tree).name());
   }
 
-  private boolean isOverride(MethodTree tree) {
-    for (AnnotationTree annotationTree : tree.modifiers().annotations()) {
-      if (annotationTree.annotationType().is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifier = (IdentifierTree) annotationTree.annotationType();
-        if (Override.class.getSimpleName().equals(identifier.name())) {
-          return true;
-        }
-      }
-    }
-    return false;
+  private boolean isNotOverriden(MethodTree tree) {
+    return BooleanUtils.isFalse(((MethodTreeImpl) tree).isOverriden());
   }
 
 }
