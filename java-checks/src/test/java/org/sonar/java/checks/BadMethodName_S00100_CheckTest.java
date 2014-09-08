@@ -48,5 +48,23 @@ public class BadMethodName_S00100_CheckTest {
         .noMore();
   }
 
-
+  @Test
+  public void testOverrideWithoutAnnotation() throws Exception {
+    check.format = "^[A-Z0-9]*$";
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadMethodName.java"), new VisitorsBridge(check));
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(5)
+        .next().atLine(8)
+        .next().atLine(16)
+        .noMore();
+  }
+//
+//  @Test
+//  public void testName() throws Exception {
+//    SourceFile file = JavaAstScanner.scanSingleFile(new File("/home/benzonico/Development/SonarSource/it-sources/sslr/oracle-jdk-1.7.0.3/org/omg/CORBA/DynAny.java"), new VisitorsBridge(check));
+//    CheckMessagesVerifier.verify(file.getCheckMessages())
+//        .next().atLine(69)
+//        .next().atLine(81)
+//        .noMore();
+//  }
 }

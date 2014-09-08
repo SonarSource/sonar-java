@@ -16,4 +16,7 @@ class BadMethodName {
   void Bad2() {
   }
 
+  public String toString() { //Overrides from object
+    return "...";
+  }
 }
