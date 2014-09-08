@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class Type {
@@ -105,10 +106,14 @@ public class Type {
 
     @Override
     public boolean equals(Object obj) {
-      if (obj == null) { return false; }
-      if (obj == this) { return true; }
+      if (obj == null) {
+        return false;
+      }
+      if (obj == this) {
+        return true;
+      }
       if (!(obj instanceof ArrayType)) {
-           return false;
+        return false;
       }
       ArrayType rhs = (ArrayType) obj;
       return new EqualsBuilder()
@@ -125,10 +130,12 @@ public class Type {
   public static class MethodType extends Type {
 
     List<Type> argTypes;
+    //Return type of constructor is null.
+    @Nullable
     Type resultType;
     List<Type> thrown;
 
-    public MethodType(List<Type> argTypes, Type resultType, List<Type> thrown, Symbol.TypeSymbol symbol) {
+    public MethodType(List<Type> argTypes, @Nullable Type resultType, List<Type> thrown, Symbol.TypeSymbol symbol) {
       super(METHOD, symbol);
       this.argTypes = argTypes;
       this.resultType = resultType;
@@ -137,7 +144,7 @@ public class Type {
 
     @Override
     public String toString() {
-      return "returns " + resultType.toString();
+      return resultType==null ? "constructor" : "returns " + resultType.toString();
     }
   }
 

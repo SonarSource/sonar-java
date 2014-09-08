@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -149,18 +150,19 @@ public class SecondPass implements Symbol.Completer {
     }
     symbol.thrown = thrown.build();
 
-    if ("<init>".equals(symbol.name)) {
-      // no return type for constructor
-      return;
-    }
-    Type returnType = resolveType(env, methodTree.returnType());
-    if (returnType != null) {
-      symbol.type = returnType.symbol;
+    Type returnType = null;
+    // no return type for constructor
+    if (!"<init>".equals(symbol.name)) {
+      returnType = resolveType(env, methodTree.returnType());
+      if (returnType != null) {
+        symbol.type = returnType.symbol;
+      }
     }
     List<Type> argTypes = Lists.newArrayList();
+    Collection<Symbol> scopeSymbols = symbol.parameters.scopeSymbols();
     //Guarantee order of params.
     for (VariableTree variableTree : methodTree.parameters()) {
-      for (Symbol param : symbol.parameters.scopeSymbols()) {
+      for (Symbol param : scopeSymbols) {
         if (variableTree.simpleName().name().equals(param.getName())) {
           param.complete();
           argTypes.add(param.getType());

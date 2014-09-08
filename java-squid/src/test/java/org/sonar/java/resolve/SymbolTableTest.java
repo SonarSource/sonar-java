@@ -249,6 +249,7 @@ public class SymbolTableTest {
     assertThat(methodSymbol.owner()).isSameAs(result.symbol("ConstructorDeclaration"));
     assertThat(methodSymbol.flags()).isEqualTo(0);
     assertThat(methodSymbol.getReturnType()).isNull(); // TODO should it be result.symbol("ConstructorDeclaration")?
+    assertThat(methodSymbol.getParametersTypes()).hasSize(1);
     assertThat(methodSymbol.getThrownTypes()).containsExactly(
       result.symbol("FirstExceptionType"),
       result.symbol("SecondExceptionType"));
