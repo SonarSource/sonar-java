@@ -20,9 +20,13 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Set;
 
 public class Symbol {
 
@@ -235,6 +239,93 @@ public class Symbol {
       super.type = methodType;
     }
 
+    public Boolean isOverriden() {
+      Boolean result = false;
+      Symbol.TypeSymbol enclosingClass = enclosingClass();
+      if (StringUtils.isEmpty(enclosingClass.getName())) {
+        //FIXME : SONARJAVA-645 : exclude methods within anonymous classes
+        return null;
+      }
+      for (Type.ClassType type : superTypes(enclosingClass)) {
+        Boolean overrideFromType = overridesFromSymbol(type);
+        if (overrideFromType == null) {
+          result = null;
+        } else if (BooleanUtils.isTrue(overrideFromType)) {
+          return true;
+        }
+      }
+      return result;
+    }
+
+    private Set<Type.ClassType> superTypes(Symbol.TypeSymbol enclosingClass) {
+      ImmutableSet.Builder<Type.ClassType> types = ImmutableSet.builder();
+      Type.ClassType superClassType = (Type.ClassType) enclosingClass.getSuperclass();
+      types.addAll(interfacesOfType(enclosingClass));
+      while (superClassType != null) {
+        types.add(superClassType);
+        Symbol.TypeSymbol superClassSymbol = superClassType.getSymbol();
+        types.addAll(interfacesOfType(superClassSymbol));
+        superClassType = (Type.ClassType) superClassSymbol.getSuperclass();
+      }
+      return types.build();
+    }
+
+    private Set<Type.ClassType> interfacesOfType(Symbol.TypeSymbol typeSymbol) {
+      ImmutableSet.Builder<Type.ClassType> builder = ImmutableSet.builder();
+      for (Type type : typeSymbol.getInterfaces()) {
+        Type.ClassType classType = (Type.ClassType) type;
+        builder.add(classType);
+        builder.addAll(interfacesOfType(classType.getSymbol()));
+      }
+      return builder.build();
+    }
+    private Boolean overridesFromSymbol(Type.ClassType classType) {
+      Boolean result = false;
+      if (classType.isTagged(Type.UNKNOWN)) {
+        return null;
+      }
+      List<Symbol> symbols = classType.getSymbol().members().lookup(name);
+      for (Symbol overrideSymbol : symbols) {
+        if (overrideSymbol.isKind(Symbol.MTH) && canOverride((Symbol.MethodSymbol) overrideSymbol)) {
+          Boolean isOverriding = isOverriding((Symbol.MethodSymbol) overrideSymbol);
+          if (isOverriding == null) {
+            result = null;
+          } else if (BooleanUtils.isTrue(isOverriding)) {
+            return true;
+          }
+        }
+      }
+      return result;
+    }
+
+    /**
+     * Check accessibility of parent method.
+     */
+    private boolean canOverride(Symbol.MethodSymbol overridee) {
+      if (overridee.isPackageVisibility()) {
+        return overridee.outermostClass().owner().equals(outermostClass().owner());
+      }
+      return !overridee.isPrivate();
+    }
+
+    private Boolean isOverriding(Symbol.MethodSymbol overridee) {
+      //same number and type of formal parameters
+      if (getParametersTypes().size() != overridee.getParametersTypes().size()) {
+        return false;
+      }
+      for (int i = 0; i < getParametersTypes().size(); i++) {
+        Type paramOverrider = getParametersTypes().get(i);
+        if (paramOverrider.isTagged(Type.UNKNOWN)) {
+          //FIXME : complete symbol table should not have unknown types.
+          return null;
+        }
+        if (!paramOverrider.equals(overridee.getParametersTypes().get(i))) {
+          return false;
+        }
+      }
+      //we assume code is compiling so no need to check return type at this point.
+      return true;
+    }
   }
 
   public boolean isStatic() {
