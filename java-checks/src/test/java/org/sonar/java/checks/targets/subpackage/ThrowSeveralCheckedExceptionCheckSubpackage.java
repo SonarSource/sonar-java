@@ -27,4 +27,7 @@ public class ThrowSeveralCheckedExceptionCheckSubpackage {
   //package visibility method
   String foo(int a) throws IOException, SQLException {return null;}
 
+  public static class MyCustomException  extends Exception {
+
+  }
 }

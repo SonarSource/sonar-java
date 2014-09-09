@@ -121,6 +121,10 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
       for (JavaFileScanner scanner : scanners) {
         scanner.scanFile(context);
       }
+      if(semanticModel != null) {
+        //Close class loader after all the checks.
+        semanticModel.done();
+      }
     }
   }
 

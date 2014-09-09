@@ -159,4 +159,5 @@ class W extends ThrowSeveralCheckedExceptionCheckSubpackage {
 class Y extends W {
   public String bar(int j) throws IOException, SQLException  {return null;}//Compliant : same package : overrides
   public static void main(String[] args) throws IOException, SQLException {}
+  public String plop() throws IOException, ThrowSeveralCheckedExceptionCheckSubpackage.MyCustomException {return null;}
 }

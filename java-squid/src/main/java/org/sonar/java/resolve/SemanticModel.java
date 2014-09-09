@@ -50,11 +50,13 @@ public class SemanticModel {
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final Map<Tree, Resolve.Env> envs = Maps.newHashMap();
   private final Map<Tree, Tree> parentLink = Maps.newHashMap();
+  private BytecodeCompleter bytecodeCompleter;
 
   public static SemanticModel createFor(CompilationUnitTree tree, List<File> projectClasspath) {
     BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(projectClasspath);
     Symbols symbols = new Symbols(bytecodeCompleter);
     SemanticModel semanticModel = new SemanticModel();
+    semanticModel.bytecodeCompleter = bytecodeCompleter;
     semanticModel.createParentLink((JavaTree) tree);
     try {
       Resolve resolve = new Resolve(symbols, bytecodeCompleter);
@@ -62,10 +64,13 @@ public class SemanticModel {
       new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);
       new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
     } finally {
-      bytecodeCompleter.done();
       handleMissingTypes(symbols, tree);
     }
     return semanticModel;
+  }
+
+  public void done(){
+    bytecodeCompleter.done();
   }
 
 
