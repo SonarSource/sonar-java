@@ -146,12 +146,12 @@ public class TreeFactory {
     }
   }
 
-  public ExpressionTree newClassType(Optional<List<AstNode>> annotations, AstNode identifierAstNode, Optional<TypeArgumentListTreeImpl> typeArguments,
+  public ExpressionTree newClassType(Optional<List<AnnotationTreeImpl>> annotations, AstNode identifierAstNode, Optional<TypeArgumentListTreeImpl> typeArguments,
     Optional<List<ClassTypeComplement>> classTypeComplements) {
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
     if (annotations.isPresent()) {
-      identifier.prependChildren(annotations.get());
+      identifier.prependChildren((List) annotations.get());
     }
 
     ExpressionTree result = identifier;
@@ -207,12 +207,12 @@ public class TreeFactory {
 
   }
 
-  public ClassTypeComplement newClassTypeComplement(AstNode dotTokenAstNode, Optional<List<AstNode>> annotations, AstNode identifierAstNode,
+  public ClassTypeComplement newClassTypeComplement(AstNode dotTokenAstNode, Optional<List<AnnotationTreeImpl>> annotations, AstNode identifierAstNode,
     Optional<TypeArgumentListTreeImpl> typeArguments) {
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
     if (annotations.isPresent()) {
-      identifier.prependChildren(annotations.get());
+      identifier.prependChildren((List) annotations.get());
     }
 
     return new ClassTypeComplement(InternalSyntaxToken.create(dotTokenAstNode), identifier, typeArguments);
@@ -265,9 +265,9 @@ public class TreeFactory {
     return new TypeArgumentListTreeImpl(openBracketToken, typeArguments.build(), children, closeBracketToken);
   }
 
-  public Tree completeTypeArgument(Optional<List<AstNode>> annotations, Tree partial) {
+  public Tree completeTypeArgument(Optional<List<AnnotationTreeImpl>> annotations, Tree partial) {
     if (annotations.isPresent()) {
-      ((JavaTree) partial).prependChildren(annotations.get());
+      ((JavaTree) partial).prependChildren((List) annotations.get());
     }
 
     return partial;
@@ -285,12 +285,12 @@ public class TreeFactory {
       new WildcardTreeImpl(Kind.UNBOUNDED_WILDCARD, queryToken);
   }
 
-  public WildcardTreeImpl newWildcardTypeArguments(AstNode extendsOrSuperTokenAstNode, Optional<List<AstNode>> annotations, ExpressionTree type) {
+  public WildcardTreeImpl newWildcardTypeArguments(AstNode extendsOrSuperTokenAstNode, Optional<List<AnnotationTreeImpl>> annotations, ExpressionTree type) {
     InternalSyntaxToken extendsOrSuperToken = InternalSyntaxToken.create(extendsOrSuperTokenAstNode);
     return new WildcardTreeImpl(
       JavaKeyword.EXTENDS.getValue().equals(extendsOrSuperToken.text()) ? Kind.EXTENDS_WILDCARD : Kind.SUPER_WILDCARD,
       extendsOrSuperToken,
-      annotations.isPresent() ? annotations.get() : ImmutableList.<AstNode>of(),
+      annotations.isPresent() ? annotations.get() : ImmutableList.<AnnotationTreeImpl>of(),
       type);
   }
 
@@ -320,10 +320,10 @@ public class TreeFactory {
     return new TypeParameterListTreeImpl(openBracketToken, typeParameters.build(), children, closeBracketToken);
   }
 
-  public TypeParameterTreeImpl completeTypeParameter(Optional<List<AstNode>> annotations, AstNode identifierAstNode, Optional<TypeParameterTreeImpl> partial) {
+  public TypeParameterTreeImpl completeTypeParameter(Optional<List<AnnotationTreeImpl>> annotations, AstNode identifierAstNode, Optional<TypeParameterTreeImpl> partial) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
     if (annotations.isPresent()) {
-      identifier.prependChildren(annotations.get());
+      identifier.prependChildren((List) annotations.get());
     }
 
     return partial.isPresent() ?
@@ -601,10 +601,10 @@ public class TreeFactory {
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
     if (elseClause.isPresent()) {
       return elseClause.get().complete(ifKeyword, openParenToken, treeMaker.expression(condition), closeParenToken, treeMaker.statement(statement),
-          ifKeyword, openParenToken, condition, closeParenToken, statement);
+        ifKeyword, openParenToken, condition, closeParenToken, statement);
     } else {
       return new IfStatementTreeImpl(ifKeyword, openParenToken, treeMaker.expression(condition), closeParenToken, treeMaker.statement(statement),
-          ifKeyword, openParenToken, condition, closeParenToken, statement);
+        ifKeyword, openParenToken, condition, closeParenToken, statement);
     }
   }
 
@@ -613,15 +613,16 @@ public class TreeFactory {
     return new IfStatementTreeImpl(elseKeyword, treeMaker.statement(elseStatement), elseKeyword, elseStatement);
   }
 
-  public WhileStatementTreeImpl whileStatement(AstNode whileToken,  AstNode openParen, AstNode expression, AstNode closeParen, AstNode statement) {
+  public WhileStatementTreeImpl whileStatement(AstNode whileToken, AstNode openParen, AstNode expression, AstNode closeParen, AstNode statement) {
     InternalSyntaxToken whileKeyword = InternalSyntaxToken.create(whileToken);
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
-    return new WhileStatementTreeImpl(whileKeyword, openParenToken, treeMaker.expression(expression), closeParenToken , treeMaker.statement(statement),
-        whileKeyword, openParenToken, expression, closeParenToken, statement);
+    return new WhileStatementTreeImpl(whileKeyword, openParenToken, treeMaker.expression(expression), closeParenToken, treeMaker.statement(statement),
+      whileKeyword, openParenToken, expression, closeParenToken, statement);
   }
 
-  public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, AstNode statement, AstNode whileToken, AstNode openParen, AstNode expression, AstNode closeParen, AstNode semicolon) {
+  public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, AstNode statement, AstNode whileToken, AstNode openParen, AstNode expression, AstNode closeParen,
+    AstNode semicolon) {
     InternalSyntaxToken doKeyword = InternalSyntaxToken.create(doToken);
     InternalSyntaxToken whileKeyword = InternalSyntaxToken.create(whileToken);
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
@@ -648,8 +649,8 @@ public class TreeFactory {
     children.add(closeBraceToken);
 
     return new SwitchStatementTreeImpl(switchKeyword, openParenToken, treeMaker.expression(expression), closeParenToken,
-        openBraceToken, groups, closeBraceToken,
-        children.build());
+      openBraceToken, groups, closeBraceToken,
+      children.build());
   }
 
   public CaseGroupTreeImpl switchGroup(List<CaseLabelTreeImpl> labels, Optional<List<AstNode>> optionalBlockStatements) {
@@ -678,7 +679,7 @@ public class TreeFactory {
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
     return new SynchronizedStatementTreeImpl(synchronizedKeyword, openParenToken, treeMaker.expression(expression), closeParenToken, block,
-        synchronizedKeyword, openParenToken, expression, closeParenToken, block);
+      synchronizedKeyword, openParenToken, expression, closeParenToken, block);
   }
 
   public BreakStatementTreeImpl breakStatement(AstNode breakToken, Optional<AstNode> identifier, AstNode semicolonToken) {
@@ -1044,7 +1045,7 @@ public class TreeFactory {
     InternalSyntaxToken closeParenToken = null;
     List<AstNode> children = Lists.newArrayList();
     ImmutableList.Builder<VariableTreeImpl> parameters = ImmutableList.builder();
-    if(astNode.is(JavaTokenType.IDENTIFIER)) {
+    if (astNode.is(JavaTokenType.IDENTIFIER)) {
       VariableTreeImpl variableTree = new VariableTreeImpl(astNode, treeMaker.identifier(astNode));
       parameters.add(variableTree);
       children.add(astNode);
@@ -1054,7 +1055,7 @@ public class TreeFactory {
           parameters.add((VariableTreeImpl) variableTree);
           children.add(astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETER_DECLS));
         }
-      }else {
+      } else {
         for (AstNode node : astNode.getChildren(JavaTokenType.IDENTIFIER)) {
           VariableTreeImpl variableTree = new VariableTreeImpl(node, treeMaker.identifier(node));
           parameters.add(variableTree);
@@ -1119,9 +1120,9 @@ public class TreeFactory {
     return applySuperSuffix(new IdentifierTreeImpl(InternalSyntaxToken.create(superToken)), superSuffix);
   }
 
-  public ExpressionTree newExpression(AstNode newToken, Optional<List<AstNode>> annotations, ExpressionTree partial) {
+  public ExpressionTree newExpression(AstNode newToken, Optional<List<AnnotationTreeImpl>> annotations, ExpressionTree partial) {
     if (annotations.isPresent()) {
-      ((JavaTree) partial).prependChildren(annotations.get());
+      ((JavaTree) partial).prependChildren((List) annotations.get());
     }
     ((JavaTree) partial).prependChildren(newToken);
     return partial;
@@ -1149,9 +1150,9 @@ public class TreeFactory {
       (AstNode) type);
   }
 
-  public NewArrayTreeImpl completeArrayCreator(Optional<List<AstNode>> annotations, NewArrayTreeImpl partial) {
+  public NewArrayTreeImpl completeArrayCreator(Optional<List<AnnotationTreeImpl>> annotations, NewArrayTreeImpl partial) {
     if (annotations.isPresent()) {
-      partial.prependChildren(annotations.get());
+      partial.prependChildren((List) annotations.get());
     }
     return partial;
   }
@@ -1306,7 +1307,7 @@ public class TreeFactory {
       voidToken, dotToken, classToken);
   }
 
-  public PrimitiveTypeTreeImpl newBasicType(Optional<List<AstNode>> annotations, AstNode basicType) {
+  public PrimitiveTypeTreeImpl newBasicType(Optional<List<AnnotationTreeImpl>> annotations, AstNode basicType) {
     InternalSyntaxToken token = InternalSyntaxToken.create(basicType);
 
     List<AstNode> children = Lists.newArrayList();
@@ -1344,7 +1345,7 @@ public class TreeFactory {
     return new ArgumentListTreeImpl(expressions.build(), children);
   }
 
-  public ExpressionTree qualifiedIdentifier(Optional<List<AstNode>> annotations, AstNode firstIdentifier, Optional<List<AstNode>> rests) {
+  public ExpressionTree qualifiedIdentifier(Optional<List<AnnotationTreeImpl>> annotations, AstNode firstIdentifier, Optional<List<AstNode>> rests) {
     List<AstNode> children = Lists.newArrayList();
     if (annotations.isPresent()) {
       children.addAll(annotations.get());

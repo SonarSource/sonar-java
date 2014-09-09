@@ -73,7 +73,7 @@ public class ActionGrammar {
         f.modifiers(
           b.zeroOrMore(
             b.firstOf(
-              b.invokeRule(JavaGrammar.ANNOTATION),
+              ANNOTATION(),
               b.invokeRule(JavaKeyword.PUBLIC),
               b.invokeRule(JavaKeyword.PROTECTED),
               b.invokeRule(JavaKeyword.PRIVATE),
@@ -117,20 +117,20 @@ public class ActionGrammar {
           b.firstOf(
             BASIC_TYPE(),
             CLASS_TYPE()),
-          b.zeroOrMore(f.newWrapperAstNode5(b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)), b.invokeRule(JavaGrammar.DIM)))));
+          b.zeroOrMore(f.newWrapperAstNode5(b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaGrammar.DIM)))));
   }
 
   public ExpressionTree CLASS_TYPE() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.CLASS_TYPE)
       .is(
         f.newClassType(
-          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.zeroOrMore(ANNOTATION()),
           b.invokeRule(JavaTokenType.IDENTIFIER),
           b.optional(TYPE_ARGUMENTS()),
           b.zeroOrMore(
             f.newClassTypeComplement(
               b.invokeRule(JavaPunctuator.DOT),
-              b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+              b.zeroOrMore(ANNOTATION()),
               b.invokeRule(JavaTokenType.IDENTIFIER),
               b.optional(TYPE_ARGUMENTS())))));
   }
@@ -157,7 +157,7 @@ public class ActionGrammar {
     return b.<Tree>nonterminal(JavaGrammar.TYPE_ARGUMENT)
       .is(
         f.completeTypeArgument(
-          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.zeroOrMore(ANNOTATION()),
           b.firstOf(
             f.newBasicTypeArgument(TYPE()),
             f.completeWildcardTypeArgument(
@@ -167,7 +167,7 @@ public class ActionGrammar {
                   b.firstOf(
                     b.invokeRule(JavaKeyword.EXTENDS),
                     b.invokeRule(JavaKeyword.SUPER)),
-                  b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+                  b.zeroOrMore(ANNOTATION()),
                   TYPE()))))));
   }
 
@@ -185,7 +185,7 @@ public class ActionGrammar {
     return b.<TypeParameterTreeImpl>nonterminal(JavaGrammar.TYPE_PARAMETER)
       .is(
         f.completeTypeParameter(
-          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.zeroOrMore(ANNOTATION()),
           b.invokeRule(JavaTokenType.IDENTIFIER),
           b.optional(
             f.newTypeParameter(b.invokeRule(JavaKeyword.EXTENDS), BOUND()))));
@@ -363,7 +363,7 @@ public class ActionGrammar {
       .is(
         f.completeIf(
           b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
-            b.invokeRule(JavaGrammar.STATEMENT),
+          b.invokeRule(JavaGrammar.STATEMENT),
           b.optional(
             f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), b.invokeRule(JavaGrammar.STATEMENT)))));
   }
@@ -371,7 +371,7 @@ public class ActionGrammar {
   public WhileStatementTreeImpl WHILE_STATEMENT() {
     return b.<WhileStatementTreeImpl>nonterminal(JavaGrammar.WHILE_STATEMENT)
       .is(f.whileStatement(b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
-          b.invokeRule(JavaGrammar.STATEMENT)));
+        b.invokeRule(JavaGrammar.STATEMENT)));
   }
 
   public DoWhileStatementTreeImpl DO_WHILE_STATEMENT() {
@@ -407,7 +407,9 @@ public class ActionGrammar {
 
   public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
     return b.<SynchronizedStatementTreeImpl>nonterminal(JavaGrammar.SYNCHRONIZED_STATEMENT)
-      .is(f.synchronizedStatement(b.invokeRule(JavaKeyword.SYNCHRONIZED), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR), BLOCK()));
+      .is(
+        f.synchronizedStatement(b.invokeRule(JavaKeyword.SYNCHRONIZED), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
+          BLOCK()));
   }
 
   public BreakStatementTreeImpl BREAK_STATEMENT() {
@@ -700,12 +702,12 @@ public class ActionGrammar {
 
   public LambdaParameterListTreeImpl LAMBDA_PARAMETERS() {
     return b.<LambdaParameterListTreeImpl>nonterminal(JavaGrammar.LAMBDA_PARAMETERS)
-        .is(f.lambdaParameters(
-            b.firstOf(
-              b.invokeRule(JavaGrammar.INFERED_PARAMS),
-              b.invokeRule(JavaGrammar.FORMAL_PARAMETERS),
-              b.invokeRule(JavaTokenType.IDENTIFIER)
-        )));
+      .is(f.lambdaParameters(
+        b.firstOf(
+          b.invokeRule(JavaGrammar.INFERED_PARAMS),
+          b.invokeRule(JavaGrammar.FORMAL_PARAMETERS),
+          b.invokeRule(JavaTokenType.IDENTIFIER)
+          )));
   }
 
   public ParenthesizedTreeImpl PARENTHESIZED_EXPRESSION() {
@@ -736,7 +738,7 @@ public class ActionGrammar {
 
   public ExpressionTree NEW_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.NEW_EXPRESSION)
-      .is(f.newExpression(b.invokeRule(JavaKeyword.NEW), b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)), CREATOR()));
+      .is(f.newExpression(b.invokeRule(JavaKeyword.NEW), b.zeroOrMore(ANNOTATION()), CREATOR()));
   }
 
   public ExpressionTree CREATOR() {
@@ -757,14 +759,14 @@ public class ActionGrammar {
     return b.<NewArrayTreeImpl>nonterminal(JavaGrammar.ARRAY_CREATOR_REST)
       .is(
         f.completeArrayCreator(
-          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.zeroOrMore(ANNOTATION()),
           b.firstOf(
             f.newArrayCreatorWithInitializer(
               b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), b.invokeRule(JavaGrammar.ARRAY_INITIALIZER)),
             f.newArrayCreatorWithDimension(
               b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RBRK),
               b.zeroOrMore(b.invokeRule(JavaGrammar.DIM_EXPR)),
-              b.zeroOrMore(f.newWrapperAstNode(b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)), b.invokeRule(JavaGrammar.DIM)))))));
+              b.zeroOrMore(f.newWrapperAstNode(b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaGrammar.DIM)))))));
   }
 
   public ExpressionTree QUALIFIED_IDENTIFIER_EXPRESSION() {
@@ -788,7 +790,7 @@ public class ActionGrammar {
     return b.<PrimitiveTypeTreeImpl>nonterminal(JavaGrammar.BASIC_TYPE)
       .is(
         f.newBasicType(
-          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.zeroOrMore(ANNOTATION()),
           b.firstOf(
             b.invokeRule(JavaKeyword.BYTE),
             b.invokeRule(JavaKeyword.SHORT),
@@ -816,9 +818,9 @@ public class ActionGrammar {
     return b.<ExpressionTree>nonterminal(JavaGrammar.QUALIFIED_IDENTIFIER)
       .is(
         f.qualifiedIdentifier(
-          b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)),
+          b.zeroOrMore(ANNOTATION()),
           b.invokeRule(JavaTokenType.IDENTIFIER),
-          b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.DOT), b.zeroOrMore(b.invokeRule(JavaGrammar.ANNOTATION)), b.invokeRule(JavaTokenType.IDENTIFIER)))));
+          b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.DOT), b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaTokenType.IDENTIFIER)))));
   }
 
   // End of expressions

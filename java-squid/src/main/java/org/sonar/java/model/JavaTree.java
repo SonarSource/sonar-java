@@ -26,6 +26,7 @@ import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.AstNodeHacks;
 import org.sonar.java.ast.parser.TypeArgumentListTreeImpl;
+import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -71,9 +72,9 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   public JavaTree(@Nullable AstNode astNode) {
     super(
-        astNode == null ? NULL_NODE : astNode.getType(),
-        astNode == null ? NULL_NODE.toString() : astNode.getType().toString(),
-        astNode == null ? null : astNode.getToken());
+      astNode == null ? NULL_NODE : astNode.getType(),
+      astNode == null ? NULL_NODE.toString() : astNode.getType().toString(),
+      astNode == null ? null : astNode.getToken());
     this.astNode = astNode;
   }
 
@@ -198,11 +199,11 @@ public abstract class JavaTree extends AstNode implements Tree {
     @Override
     public Iterator<Tree> childrenIterator() {
       return Iterators.concat(
-          Iterators.singletonIterator(packageName),
-          imports.iterator(),
-          types.iterator(),
-          packageAnnotations.iterator()
-      );
+        Iterators.singletonIterator(packageName),
+        imports.iterator(),
+        types.iterator(),
+        packageAnnotations.iterator()
+        );
     }
   }
 
@@ -239,8 +240,8 @@ public abstract class JavaTree extends AstNode implements Tree {
     @Override
     public Iterator<Tree> childrenIterator() {
       return Iterators.singletonIterator(
-          qualifiedIdentifier
-      );
+        qualifiedIdentifier
+        );
     }
   }
 
@@ -261,7 +262,7 @@ public abstract class JavaTree extends AstNode implements Tree {
       addChild(queryToken);
     }
 
-    public WildcardTreeImpl(Kind kind, InternalSyntaxToken extendsOrSuperToken, List<AstNode> annotations, ExpressionTree bound) {
+    public WildcardTreeImpl(Kind kind, InternalSyntaxToken extendsOrSuperToken, List<AnnotationTreeImpl> annotations, ExpressionTree bound) {
       super(kind);
 
       Preconditions.checkArgument(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
@@ -270,7 +271,7 @@ public abstract class JavaTree extends AstNode implements Tree {
       this.bound = bound;
 
       addChild(extendsOrSuperToken);
-      for (AstNode annotation : annotations) {
+      for (AnnotationTreeImpl annotation : annotations) {
         addChild(annotation);
       }
       addChild((AstNode) bound);
@@ -308,8 +309,8 @@ public abstract class JavaTree extends AstNode implements Tree {
     @Override
     public Iterator<Tree> childrenIterator() {
       return Iterators.singletonIterator(
-          bound
-      );
+        bound
+        );
     }
   }
 
@@ -339,10 +340,10 @@ public abstract class JavaTree extends AstNode implements Tree {
     @Override
     public Iterator<Tree> childrenIterator() {
       return Iterators.concat(
-          // (Godin): workaround for generics
-          Iterators.<Tree>emptyIterator(),
-          typeAlternatives.iterator()
-      );
+        // (Godin): workaround for generics
+        Iterators.<Tree>emptyIterator(),
+        typeAlternatives.iterator()
+        );
     }
   }
 
@@ -493,9 +494,9 @@ public abstract class JavaTree extends AstNode implements Tree {
     @Override
     public Iterator<Tree> childrenIterator() {
       return Iterators.concat(
-          Iterators.singletonIterator(type),
-          typeArguments.iterator()
-      );
+        Iterators.singletonIterator(type),
+        typeArguments.iterator()
+        );
     }
   }
 
