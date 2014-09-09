@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,15 +31,13 @@ public class FormalParameterDeclsTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST).override(RuleMock.word(b, "formalParametersDeclsRest"));
-
     assertThat(b, JavaGrammar.FORMAL_PARAMETER_DECLS)
-      .matches("type formalParametersDeclsRest")
-      .matches("final type formalParametersDeclsRest")
-      .matches("@Foo type formalParametersDeclsRest")
-      .matches("final final type formalParametersDeclsRest")
-      .matches("@Foo @Bar type formalParametersDeclsRest")
-      .matches("@Foo final @Bar final type formalParametersDeclsRest");
+      .matches("type foo")
+      .matches("final type foo, type bar")
+      .matches("@Foo type ... foo")
+      .matches("final final type foo")
+      .matches("@Foo @Bar type foo")
+      .matches("@Foo final @Bar final type foo");
   }
 
 }

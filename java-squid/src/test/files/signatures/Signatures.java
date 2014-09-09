@@ -10,4 +10,6 @@ class Signatures {
     throws IllegalArgumentException,
     RoleNotFoundException,
     RelationServiceNotRegisteredException {}
+
+  public Object invoke(Object obj, Object... args) {}
 }

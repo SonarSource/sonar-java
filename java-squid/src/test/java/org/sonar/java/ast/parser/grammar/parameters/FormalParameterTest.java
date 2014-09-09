@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,15 +31,13 @@ public class FormalParameterTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).override(RuleMock.word(b, "variableDeclaratorId"));
-
     assertThat(b, JavaGrammar.FORMAL_PARAMETER)
-      .matches("int variableDeclaratorId")
-      .matches("final List<Integer> variableDeclaratorId")
-      .matches("@Foo int variableDeclaratorId")
-      .matches("final final int variableDeclaratorId")
-      .matches("@Foo @Bar int variableDeclaratorId")
-      .matches("@Foo final @Bar final int variableDeclaratorId");
+      .matches("int foo")
+      .matches("final List<Integer> foo[]")
+      .matches("@Foo int foo")
+      .matches("final final int foo")
+      .matches("@Foo @Bar int foo")
+      .matches("@Foo final @Bar final int foo");
   }
 
 }

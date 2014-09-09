@@ -572,6 +572,72 @@ public class TreeFactory {
 
   // End of annotations
 
+  // Formal parameters
+
+  public FormalParametersListTreeImpl completeParenFormalParameters(AstNode openParenTokenAstNode, Optional<FormalParametersListTreeImpl> partial, AstNode closeParenTokenAstNode) {
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+
+    return partial.isPresent() ?
+      partial.get().complete(openParenToken, closeParenToken) :
+      new FormalParametersListTreeImpl(openParenToken, closeParenToken);
+  }
+
+  public FormalParametersListTreeImpl completeTypeFormalParameters(ModifiersTreeImpl modifiers, ExpressionTree type, FormalParametersListTreeImpl partial) {
+    VariableTreeImpl variable = partial.get(0);
+
+    Tree variableType = type;
+    int dims = variable.dims();
+    if (variable.isVararg()) {
+      dims = dims + 1;
+    }
+
+    while (dims > 0) {
+      variableType = new JavaTree.ArrayTypeTreeImpl(null, variableType);
+      dims--;
+    }
+
+    variable.complete(variableType);
+    partial.prependChildren(modifiers, (AstNode) type);
+
+    return partial;
+  }
+
+  public FormalParametersListTreeImpl prependNewFormalParameter(VariableTreeImpl variable, Optional<AstNode> rest) {
+    if (rest.isPresent()) {
+      AstNode comma = rest.get().getFirstChild(JavaPunctuator.COMMA);
+      FormalParametersListTreeImpl partial = (FormalParametersListTreeImpl) rest.get().getLastChild();
+
+      partial.add(0, variable);
+      partial.prependChildren(variable, comma);
+
+      return partial;
+    } else {
+      return new FormalParametersListTreeImpl(variable);
+    }
+  }
+
+  public FormalParametersListTreeImpl newVariableArgumentFormalParameter(Optional<List<AnnotationTreeImpl>> annotations, AstNode ellipsisTokenAstNode, VariableTreeImpl variable) {
+    InternalSyntaxToken ellipsisToken = InternalSyntaxToken.create(ellipsisTokenAstNode);
+
+    variable.setVararg(true);
+
+    return new FormalParametersListTreeImpl(
+      annotations.isPresent() ? annotations.get() : ImmutableList.<AnnotationTreeImpl>of(),
+      ellipsisToken,
+      variable);
+  }
+
+  public VariableTreeImpl newVariableDeclaratorId(AstNode identifierAstNode, Optional<List<AstNode>> dims) {
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+    return new VariableTreeImpl(
+      identifier,
+      dims.isPresent() ? dims.get().size() : 0,
+      dims.isPresent() ? dims.get() : ImmutableList.<AstNode>of());
+  }
+
+  // End of formal parameters
+
   // Statements
 
   public BlockTreeImpl block(AstNode openBraceTokenAstNode, AstNode statements, AstNode closeBraceTokenAstNode) {
@@ -1051,9 +1117,14 @@ public class TreeFactory {
       children.add(astNode);
     } else {
       if (astNode.is(JavaGrammar.FORMAL_PARAMETERS)) {
-        for (VariableTree variableTree : treeMaker.formalParameters(astNode)) {
-          parameters.add((VariableTreeImpl) variableTree);
-          children.add(astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETER_DECLS));
+        FormalParametersListTreeImpl formalParameters = (FormalParametersListTreeImpl) astNode;
+        parameters.addAll(formalParameters);
+
+        openParenToken = formalParameters.openParenToken();
+        closeParenToken = formalParameters.closeParenToken();
+
+        for (int i = 1; i < formalParameters.getChildren().size() - 1; i++) {
+          children.add(formalParameters.getChildren().get(i));
         }
       } else {
         for (AstNode node : astNode.getChildren(JavaTokenType.IDENTIFIER)) {
@@ -1061,15 +1132,15 @@ public class TreeFactory {
           parameters.add(variableTree);
           children.add(node);
         }
-      }
 
-      AstNode leftParen = astNode.getFirstChild(JavaPunctuator.LPAR);
-      if (leftParen != null) {
-        openParenToken = InternalSyntaxToken.create(leftParen);
-      }
-      AstNode rightParen = astNode.getFirstChild(JavaPunctuator.RPAR);
-      if (rightParen != null) {
-        closeParenToken = InternalSyntaxToken.create(rightParen);
+        AstNode leftParen = astNode.getFirstChild(JavaPunctuator.LPAR);
+        if (leftParen != null) {
+          openParenToken = InternalSyntaxToken.create(leftParen);
+        }
+        AstNode rightParen = astNode.getFirstChild(JavaPunctuator.RPAR);
+        if (rightParen != null) {
+          closeParenToken = InternalSyntaxToken.create(rightParen);
+        }
       }
     }
     return new LambdaParameterListTreeImpl(openParenToken, parameters.build(), closeParenToken, children);
@@ -1460,6 +1531,14 @@ public class TreeFactory {
   }
 
   public AstNode newWrapperAstNode9(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  public AstNode newWrapperAstNode10(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  public AstNode newWrapperAstNode11(Optional<List<AstNode>> e1, AstNode e2) {
     return newWrapperAstNode(e1, e2);
   }
 

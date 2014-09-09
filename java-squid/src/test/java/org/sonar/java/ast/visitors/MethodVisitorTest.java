@@ -39,6 +39,7 @@ public class MethodVisitorTest {
     assertThat(methods.get(1).getName()).isEqualTo("getQueuedThreads()LCollection;");
     assertThat(methods.get(2).getName()).isEqualTo("getRole(LString;)LList;");
     assertThat(methods.get(3).getName()).isEqualTo("instantiate(LString;LObjectName;[LObject;[LString;)LObject;");
+    assertThat(methods.get(4).getName()).isEqualTo("invoke(LObject;LObject;)LObject;");
   }
 
   private List<SourceMethod> sourceMethods(SourceCode sourceCode) {

@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -33,11 +34,13 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
+import java.util.List;
 
 public class VariableTreeImpl extends JavaTree implements VariableTree {
   private final ModifiersTree modifiers;
-  private final Tree type;
+  private Tree type;
   private final IdentifierTree simpleName;
   @Nullable
   private final ExpressionTree initializer;
@@ -45,11 +48,31 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   // FIXME(Godin): never should be null, i.e. should have default value
   private Symbol.VariableSymbol symbol;
 
+  // Syntax tree holders
+  private final int dims;
+  private boolean vararg = false;
+
+  public VariableTreeImpl(IdentifierTreeImpl simpleName, int dims, List<AstNode> additionalChildren) {
+    super(Kind.VARIABLE);
+
+    this.modifiers = ModifiersTreeImpl.emptyModifiers();
+    this.simpleName = simpleName;
+    this.dims = dims;
+    this.initializer = null;
+
+    addChild((AstNode) modifiers);
+    addChild(simpleName);
+    for (AstNode child : additionalChildren) {
+      addChild(child);
+    }
+  }
+
   public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
     super(astNode);
     this.modifiers = Preconditions.checkNotNull(modifiers);
     this.type = Preconditions.checkNotNull(type);
     this.simpleName = Preconditions.checkNotNull(simpleName);
+    this.dims = -1;
     this.initializer = initializer;
   }
 
@@ -57,6 +80,23 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     this(astNode, ModifiersTreeImpl.EMPTY, new InferedTypeTree(), simpleName, null);
   }
 
+  public VariableTreeImpl complete(Tree type) {
+    this.type = Preconditions.checkNotNull(type);
+
+    return this;
+  }
+
+  public int dims() {
+    return dims;
+  }
+
+  public void setVararg(boolean vararg) {
+    this.vararg = vararg;
+  }
+
+  public boolean isVararg() {
+    return vararg;
+  }
 
   @Override
   public Kind getKind() {
@@ -105,6 +145,6 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
       type,
       simpleName,
       initializer
-    );
+      );
   }
 }

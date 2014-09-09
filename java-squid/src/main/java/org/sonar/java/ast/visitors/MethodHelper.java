@@ -25,12 +25,14 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -104,19 +106,19 @@ public class MethodHelper {
     return methodNameNode;
   }
 
-  public List<AstNode> getParameters() {
+  public List<VariableTree> getParameters() {
     if (astNode.is(Kind.METHOD)) {
       MethodTree tree = (MethodTree) astNode;
-      return (List) tree.parameters();
+      return tree.parameters();
     }
 
-    AstNode node = astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS);
+    FormalParametersListTreeImpl node = (FormalParametersListTreeImpl) astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS);
     if (node == null) {
       // in case of annotationMethodRest
       return Collections.emptyList();
     }
     // TODO try to avoid usage of "getDescendants" by refactoring grammar rule "formalParameterDecls"
-    return node.getDescendants(JavaGrammar.FORMAL_PARAMETER_DECLS);
+    return (List) node;
   }
 
   public boolean hasParameters() {

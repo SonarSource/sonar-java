@@ -28,6 +28,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.signature.JvmJavaType;
 import org.sonar.java.signature.MethodSignature;
 import org.sonar.java.signature.MethodSignaturePrinter;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.api.SourceClass;
 import org.sonar.squidbridge.api.SourceMethod;
 
@@ -93,22 +95,26 @@ public class MethodVisitor extends JavaAstVisitor {
 
   private List<Parameter> extractMethodArgumentTypes(MethodHelper methodHelper) {
     List<Parameter> argumentTypes = Lists.newArrayList();
-    for (AstNode astNode : methodHelper.getParameters()) {
-      AstNode type = astNode.getFirstChild(JavaTreeMaker.TYPE_KINDS);
-      boolean isArray = ((Tree) type).is(Kind.ARRAY_TYPE)
-        || astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST).getFirstChild(JavaGrammar.VARIABLE_DECLARATOR_ID)
-          .hasDirectChildren(JavaGrammar.DIM);
-      argumentTypes.add(extractArgumentAndReturnType(type, isArray));
+    for (VariableTree variable : methodHelper.getParameters()) {
+      Tree type = variable.type();
+
+      if (((VariableTreeImpl) variable).isVararg()) {
+        // Emulate the SONARJAVA-655 bug
+        type = ((ArrayTypeTree) type).type();
+      }
+
+      boolean isArray = type.is(Kind.ARRAY_TYPE);
+      argumentTypes.add(extractArgumentAndReturnType((AstNode) type, isArray));
     }
     return argumentTypes;
   }
 
   private Parameter extractArgumentAndReturnType(AstNode astNode, boolean isArray) {
-    Preconditions.checkArgument(astNode.is(JavaTreeMaker.TYPE_KINDS) || astNode.is(JavaKeyword.VOID));
-
     while (astNode instanceof Tree && ((Tree) astNode).is(Kind.ARRAY_TYPE)) {
       astNode = (AstNode) ((ArrayTypeTree) astNode).type();
     }
+
+    Preconditions.checkArgument(astNode.is(JavaTreeMaker.TYPE_KINDS) || astNode.is(JavaKeyword.VOID));
 
     if (astNode.is(JavaKeyword.VOID)) {
       return new Parameter(JvmJavaType.V, false);

@@ -20,30 +20,32 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1197",
   priority = Priority.MINOR,
-  tags={"convention"})
+  tags = {"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class ArrayDesignatorOnVariableCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
     subscribeTo(JavaGrammar.CONSTANT_DECLARATOR_REST);
-    subscribeTo(JavaGrammar.VARIABLE_DECLARATOR_ID);
+    subscribeTo(Kind.VARIABLE);
     subscribeTo(JavaGrammar.VARIABLE_DECLARATOR);
   }
 
   @Override
   public void visitNode(AstNode node) {
-    if (node.hasDirectChildren(JavaGrammar.DIM)) {
+    if (node.hasDirectChildren(JavaGrammar.DIM) || node.is(Kind.VARIABLE) && ((VariableTreeImpl) node).dims() > 0) {
       getContext().createLineViolation(this, "Move the array designator from the variable to the type.", node);
     }
   }

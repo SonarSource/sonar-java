@@ -33,12 +33,11 @@ public class ResourceTest {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
     b.rule(JavaGrammar.VARIABLE_MODIFIERS).override(RuleMock.word(b, "variableModifiers"));
-    b.rule(JavaGrammar.VARIABLE_DECLARATOR_ID).override(RuleMock.word(b, "variableDeclaratorId"));
     b.rule(JavaGrammar.EXPRESSION).override(RuleMock.word(b, "expression"));
 
     assertThat(b, JavaGrammar.RESOURCE)
-      .matches("variableModifiers List<Integer> variableDeclaratorId = expression")
-      .matches("List<Integer> variableDeclaratorId = expression");
+      .matches("variableModifiers List<Integer> foo = expression")
+      .matches("List<Integer> foo[] = expression");
   }
 
   @Test

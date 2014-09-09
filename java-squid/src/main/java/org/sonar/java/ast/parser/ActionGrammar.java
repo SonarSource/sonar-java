@@ -29,6 +29,7 @@ import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
@@ -341,6 +342,44 @@ public class ActionGrammar {
   }
 
   // End of annotations
+
+  // Formal parameters
+
+  public FormalParametersListTreeImpl FORMAL_PARAMETERS() {
+    return b.<FormalParametersListTreeImpl>nonterminal(JavaGrammar.FORMAL_PARAMETERS)
+      .is(
+        f.completeParenFormalParameters(
+          b.invokeRule(JavaPunctuator.LPAR),
+          b.optional(FORMAL_PARAMETERS_DECLS()),
+          b.invokeRule(JavaPunctuator.RPAR)));
+  }
+
+  public FormalParametersListTreeImpl FORMAL_PARAMETERS_DECLS() {
+    return b.<FormalParametersListTreeImpl>nonterminal(JavaGrammar.FORMAL_PARAMETER_DECLS)
+      .is(
+        f.completeTypeFormalParameters(
+          MODIFIERS(),
+          TYPE(),
+          FORMAL_PARAMETERS_DECLS_REST()));
+  }
+
+  public FormalParametersListTreeImpl FORMAL_PARAMETERS_DECLS_REST() {
+    return b.<FormalParametersListTreeImpl>nonterminal(JavaGrammar.FORMAL_PARAMETERS_DECLS_REST)
+      .is(
+        b.firstOf(
+          f.prependNewFormalParameter(VARIABLE_DECLARATOR_ID(), b.optional(f.newWrapperAstNode10(b.invokeRule(JavaPunctuator.COMMA), FORMAL_PARAMETERS_DECLS()))),
+          f.newVariableArgumentFormalParameter(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaPunctuator.ELLIPSIS), VARIABLE_DECLARATOR_ID())));
+  }
+
+  public VariableTreeImpl VARIABLE_DECLARATOR_ID() {
+    return b.<VariableTreeImpl>nonterminal(JavaGrammar.VARIABLE_DECLARATOR_ID)
+      .is(
+        f.newVariableDeclaratorId(
+          b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.zeroOrMore(f.newWrapperAstNode11(b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaGrammar.DIM)))));
+  }
+
+  // End of formal parameters
 
   // Statements
 
@@ -705,9 +744,8 @@ public class ActionGrammar {
       .is(f.lambdaParameters(
         b.firstOf(
           b.invokeRule(JavaGrammar.INFERED_PARAMS),
-          b.invokeRule(JavaGrammar.FORMAL_PARAMETERS),
-          b.invokeRule(JavaTokenType.IDENTIFIER)
-          )));
+          FORMAL_PARAMETERS(),
+          b.invokeRule(JavaTokenType.IDENTIFIER))));
   }
 
   public ParenthesizedTreeImpl PARENTHESIZED_EXPRESSION() {
