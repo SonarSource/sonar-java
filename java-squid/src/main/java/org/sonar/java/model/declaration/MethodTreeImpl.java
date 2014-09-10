@@ -21,14 +21,10 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -42,10 +38,8 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class MethodTreeImpl extends JavaTree implements MethodTree {
 
@@ -174,17 +168,17 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-      Iterators.singletonIterator(modifiers),
-      typeParameters.iterator(),
-      Iterators.forArray(
-        returnType,
-        simpleName
+        Iterators.singletonIterator(modifiers),
+        typeParameters.iterator(),
+        Iterators.forArray(
+            returnType,
+            simpleName
         ),
-      parameters.iterator(),
-      Iterators.singletonIterator(block),
-      throwsClauses.iterator(),
-      Iterators.singletonIterator(defaultValue)
-      );
+        parameters.iterator(),
+        Iterators.singletonIterator(block),
+        throwsClauses.iterator(),
+        Iterators.singletonIterator(defaultValue)
+    );
   }
 
   /**
