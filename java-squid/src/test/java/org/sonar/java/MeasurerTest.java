@@ -139,7 +139,7 @@ public class MeasurerTest {
     Measurer measurer = new Measurer(sonarProject, context, analyseAccessors);
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setAnalyzePropertyAccessors(analyseAccessors);
-    squid = new JavaSquid(conf, null, measurer, new CodeVisitor[0]);
+    squid = new JavaSquid(conf, null, measurer, null, new CodeVisitor[0]);
     InputFile sourceFile = InputFileUtils.create(baseDir, new File(baseDir, filename));
     squid.scan(Collections.singleton(sourceFile), Collections.<InputFile>emptyList(), Collections.<File>emptyList());
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);

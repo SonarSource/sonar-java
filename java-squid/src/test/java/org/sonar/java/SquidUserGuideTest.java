@@ -67,7 +67,7 @@ public class SquidUserGuideTest {
     when(pfs.getBasedir()).thenReturn(prjDir);
     when(sonarProject.getFileSystem()).thenReturn(pfs);
     measurer = new Measurer(sonarProject, context, true);
-    squid = new JavaSquid(conf, null, measurer, new CodeVisitor[0]);
+    squid = new JavaSquid(conf, null, measurer, null, new CodeVisitor[0]);
     squid.scanDirectories(Collections.singleton(srcDir), Collections.singleton(binDir));
 
     SourceCodeSearchEngine index = squid.getIndex();

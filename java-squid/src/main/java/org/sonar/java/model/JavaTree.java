@@ -31,7 +31,9 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -42,7 +44,9 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
 
+import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class JavaTree extends AstNode implements Tree {
@@ -205,6 +209,31 @@ public abstract class JavaTree extends AstNode implements Tree {
         packageAnnotations.iterator()
         );
     }
+
+    public String packageNameAsString() {
+      if(packageName==null) {
+        return "";
+      }
+      Deque<String> pieces = new LinkedList<String>();
+      ExpressionTree expr = packageName;
+      while (expr.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
+        pieces.push(mse.identifier().name());
+        pieces.push(".");
+        expr = mse.expression();
+      }
+      if (expr.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree idt = (IdentifierTree) expr;
+        pieces.push(idt.name());
+      }
+
+      StringBuilder sb = new StringBuilder();
+      for (String piece : pieces) {
+        sb.append(piece);
+      }
+      return sb.toString();
+    }
+
   }
 
   public static class ImportTreeImpl extends JavaTree implements ImportTree {

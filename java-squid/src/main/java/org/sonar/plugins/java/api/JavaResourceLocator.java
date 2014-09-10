@@ -28,7 +28,7 @@ import java.io.File;
 import java.util.Collection;
 
 @Beta
-public interface JavaResourceLocator extends BatchExtension {
+public interface JavaResourceLocator extends BatchExtension, JavaFileScanner {
 
   /**
    * @return null if not found

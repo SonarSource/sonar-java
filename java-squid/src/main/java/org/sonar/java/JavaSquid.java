@@ -32,15 +32,13 @@ import org.sonar.api.utils.TimeProfiler;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.graph.DirectedGraphAccessor;
 import org.sonar.java.ast.AstScanner;
-import org.sonar.java.ast.visitors.ClassVisitor;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
-import org.sonar.java.ast.visitors.FileVisitor;
-import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
-import org.sonar.java.ast.visitors.TestVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
+import org.sonar.java.model.TestFileVisitorsBridge;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.Query;
 import org.sonar.squidbridge.api.SourceCode;
@@ -71,10 +69,10 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
 
   @VisibleForTesting
   public JavaSquid(JavaConfiguration conf, CodeVisitor... visitors) {
-    this(conf, null, null, visitors);
+    this(conf, null, null, null, visitors);
   }
 
-  public JavaSquid(JavaConfiguration conf, @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer, CodeVisitor... visitors) {
+  public JavaSquid(JavaConfiguration conf, @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer, @Nullable JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
 
     astScanner = JavaAstScanner.create(conf);
 
@@ -82,6 +80,10 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     if(measurer != null) {
       Iterable<CodeVisitor> measurers = Arrays.asList((CodeVisitor)measurer);
       visitorsToBridge =  Iterables.concat(visitorsToBridge, measurers);
+    }
+    if(javaResourceLocator != null) {
+      Iterable<CodeVisitor> jrl = Arrays.asList((CodeVisitor)javaResourceLocator);
+      visitorsToBridge =  Iterables.concat(visitorsToBridge, jrl);
     }
     if (sonarComponents != null) {
       visitorsToBridge = Iterables.concat(
@@ -115,10 +117,9 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     }
 
     astScannerForTests = new AstScanner(astScanner);
-    astScannerForTests.accept(new PackageVisitor());
-    astScannerForTests.accept(new FileVisitor());
-    astScannerForTests.accept(new TestVisitor());
-    astScannerForTests.accept(new ClassVisitor());
+    if(javaResourceLocator != null) {
+      astScannerForTests.accept(new TestFileVisitorsBridge(javaResourceLocator));
+    }
   }
 
   @VisibleForTesting
