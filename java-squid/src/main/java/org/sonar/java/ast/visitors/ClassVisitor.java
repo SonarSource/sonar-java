@@ -21,7 +21,6 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.plugins.java.api.tree.ClassTree;

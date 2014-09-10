@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.InputFile;
 import org.sonar.java.ProgressReport;
-import org.sonar.java.ast.api.JavaMetric;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.squidbridge.CommentAnalyser;
 import org.sonar.squidbridge.SquidAstVisitor;
@@ -83,7 +82,6 @@ public class AstScanner {
     simpleScan(files);
 
     SourceCodeTreeDecorator decorator = new SourceCodeTreeDecorator(project);
-    decorator.decorateWith(JavaMetric.values());
     decorator.decorateWith(org.sonar.squidbridge.measures.Metric.values());
   }
 
