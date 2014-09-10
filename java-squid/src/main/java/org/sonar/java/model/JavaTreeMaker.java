@@ -661,7 +661,7 @@ public class JavaTreeMaker {
    * 14.14. The for Statement
    */
   private StatementTree forStatement(AstNode astNode) {
-    AstNode formalParameterNode = astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETER);
+    AstNode formalParameterNode = astNode.getFirstChild(Kind.VARIABLE);
     if (formalParameterNode == null) {
       AstNode forInitNode = astNode.getFirstChild(JavaGrammar.FOR_INIT);
       final List<StatementTree> forInit;
@@ -686,14 +686,7 @@ public class JavaTreeMaker {
     } else {
       return new ForEachStatementImpl(
         astNode,
-        new VariableTreeImpl(
-          formalParameterNode,
-          ModifiersTreeImpl.EMPTY,
-          // TODO dim
-          (Tree) formalParameterNode.getFirstChild(TYPE_KINDS),
-          ((VariableTreeImpl) formalParameterNode.getFirstChild(Kind.VARIABLE)).simpleName(),
-          /* initializer: */null
-        ),
+        (VariableTreeImpl) formalParameterNode,
         expression(astNode.getFirstChild(JavaGrammar.EXPRESSION)),
         statement(astNode.getFirstChild(JavaGrammar.STATEMENT)));
     }

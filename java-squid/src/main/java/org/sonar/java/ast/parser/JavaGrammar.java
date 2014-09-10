@@ -317,7 +317,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     classDeclaration(b);
     interfaceDeclarations(b);
     enums(b);
-    formalParameters(b);
     blocksAndStatements(b);
     expressions(b);
     literals(b);
@@ -572,13 +571,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(CONSTANT_DECLARATORS_REST).is(CONSTANT_DECLARATOR_REST, b.zeroOrMore(COMMA, CONSTANT_DECLARATOR));
     b.rule(CONSTANT_DECLARATOR).is(JavaTokenType.IDENTIFIER, CONSTANT_DECLARATOR_REST);
     b.rule(CONSTANT_DECLARATOR_REST).is(b.zeroOrMore(DIM), EQU, VARIABLE_INITIALIZER);
-  }
-
-  /**
-   * 8.4.1. Formal Parameters
-   */
-  private static void formalParameters(LexerlessGrammarBuilder b) {
-    b.rule(FORMAL_PARAMETER).is(b.zeroOrMore(b.firstOf(FINAL, ANNOTATION)), TYPE, VARIABLE_DECLARATOR_ID);
   }
 
   /**

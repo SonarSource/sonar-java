@@ -379,6 +379,16 @@ public class ActionGrammar {
           b.zeroOrMore(f.newWrapperAstNode11(b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaGrammar.DIM)))));
   }
 
+  public VariableTreeImpl FORMAL_PARAMETER() {
+    // TODO Dim
+    return b.<VariableTreeImpl>nonterminal(JavaGrammar.FORMAL_PARAMETER)
+      .is(
+        f.newFormalParameter(
+          MODIFIERS(),
+          TYPE(),
+          VARIABLE_DECLARATOR_ID()));
+  }
+
   // End of formal parameters
 
   // Statements

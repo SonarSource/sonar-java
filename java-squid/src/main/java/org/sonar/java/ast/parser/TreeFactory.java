@@ -636,6 +636,11 @@ public class TreeFactory {
       dims.isPresent() ? dims.get() : ImmutableList.<AstNode>of());
   }
 
+  public VariableTreeImpl newFormalParameter(ModifiersTreeImpl modifiers, ExpressionTree type, VariableTreeImpl variable) {
+    variable.prependChildren(modifiers, (AstNode) type);
+    return variable.complete(type);
+  }
+
   // End of formal parameters
 
   // Statements
