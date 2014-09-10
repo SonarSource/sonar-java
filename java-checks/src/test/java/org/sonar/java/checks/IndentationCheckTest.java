@@ -19,10 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
@@ -35,12 +35,10 @@ public class IndentationCheckTest {
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
-  @Ignore("FIXME")
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IndentationCheck.java"), new IndentationCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IndentationCheck.java"), new VisitorsBridge(new IndentationCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(3).withMessage("Make this line start at column 3.")
-      .next().atLine(10)
       .next().atLine(11)
       .next().atLine(16)
       .next().atLine(21)
@@ -49,20 +47,21 @@ public class IndentationCheckTest {
       .next().atLine(48)
       .next().atLine(54)
       .next().atLine(79)
-      .next().atLine(102);
+      .next().atLine(102)
+      .next().atLine(109);
   }
 
   @Test
-  @Ignore("FIXME")
   public void custom() {
     IndentationCheck check = new IndentationCheck();
     check.indentationLevel = 4;
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IndentationCheck.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IndentationCheck.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(2).withMessage("Make this line start at column 5.")
       .next().atLine(7)
-      .next().atLine(10);
+      .next().atLine(11)
+    ;
   }
 
 }

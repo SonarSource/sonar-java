@@ -19,106 +19,154 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
+import com.google.common.collect.Lists;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Deque;
 import java.util.List;
 
 @Rule(
-  key = "IndentationCheck",
-  priority = Priority.MAJOR,
-  tags = {"convention"})
-public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
+    key = "IndentationCheck",
+    priority = Priority.MAJOR,
+    tags = {"convention"})
+public class IndentationCheck extends SubscriptionBaseVisitor {
 
-  private static final AstNodeType[] BLOCK_TYPES = new AstNodeType[] {
-    JavaGrammar.CLASS_BODY,
-    JavaGrammar.ENUM_BODY,
-    JavaGrammar.INTERFACE_BODY,
-    Kind.BLOCK,
-    Kind.SWITCH_STATEMENT,
-    JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP
-  };
-
-  private static final AstNodeType[] CHECKED_TYPES = new AstNodeType[] {
-    JavaGrammar.TYPE_DECLARATION,
-    JavaGrammar.CLASS_BODY_DECLARATION,
-    JavaGrammar.INTERFACE_BODY_DECLARATION,
-    JavaGrammar.BLOCK_STATEMENT
+  private static final Kind[] BLOCK_TYPES = new Kind[]{
+      Kind.CLASS,
+      Kind.INTERFACE,
+      Kind.ENUM,
+      Kind.CLASS,
+      Kind.BLOCK,
+      Kind.STATIC_INITIALIZER,
+      Kind.INITIALIZER,
+      Kind.SWITCH_STATEMENT,
+      Kind.CASE_GROUP
   };
 
   private static final int DEFAULT_INDENTATION_LEVEL = 2;
 
   @RuleProperty(
-    key = "indentationLevel",
-    defaultValue = "" + DEFAULT_INDENTATION_LEVEL)
+      key = "indentationLevel",
+      defaultValue = "" + DEFAULT_INDENTATION_LEVEL)
   public int indentationLevel = DEFAULT_INDENTATION_LEVEL;
 
   private int expectedLevel;
   private boolean isBlockAlreadyReported;
   private int lastCheckedLine;
+  private Deque<Boolean> isInAnonymousClass = Lists.newLinkedList();
 
   @Override
-  public void init() {
-    subscribeTo(BLOCK_TYPES);
-    subscribeTo(CHECKED_TYPES);
+  public List<Kind> nodesToVisit() {
+    return Lists.newArrayList(BLOCK_TYPES);
   }
 
   @Override
-  public void visitFile(AstNode node) {
+  public void scanFile(JavaFileScannerContext context) {
     expectedLevel = 0;
     isBlockAlreadyReported = false;
     lastCheckedLine = 0;
+    isInAnonymousClass.clear();
+    super.scanFile(context);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.is(BLOCK_TYPES)) {
-      expectedLevel += indentationLevel;
-      isBlockAlreadyReported = false;
-
-      // TODO This is quite horrible, but this is how the rule was actually behaving...
-      if (node.is(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)) {
-        List<CaseLabelTree> labels = ((CaseGroupTree) node).labels();
-        if (labels.size() >= 2) {
-          lastCheckedLine = ((JavaTree) labels.get(labels.size() - 2)).getAstNode().getLastToken().getLine();
-        }
+  public void visitNode(Tree tree) {
+    if (tree.is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
+      ClassTree classTree = (ClassTree) tree;
+      //Exclude anonymous classes
+        isInAnonymousClass.push(classTree.simpleName() == null);
+      if(!isInAnonymousClass.peek()){
+        checkIndentation(Lists.newArrayList(classTree));
       }
-    } else if (node.getToken().getColumn() != expectedLevel && !isExcluded(node)) {
-      getContext().createLineViolation(this, "Make this line start at column " + (expectedLevel + 1) + ".", node);
-      isBlockAlreadyReported = true;
     }
+    expectedLevel += indentationLevel;
+    isBlockAlreadyReported = false;
+
+    if (tree.is(Kind.CASE_GROUP)) {
+      List<CaseLabelTree> labels = ((CaseGroupTree) tree).labels();
+      if (labels.size() >= 2) {
+        lastCheckedLine = ((JavaTree) labels.get(labels.size() - 2)).getAstNode().getLastToken().getLine();
+      }
+    }
+
+    if (tree.is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
+      ClassTree classTree = (ClassTree) tree;
+      //Exclude anonymous classes
+      if (classTree.simpleName() != null) {
+        checkIndentation(classTree.members());
+      }
+    }
+    if (tree.is(Kind.CASE_GROUP)) {
+      checkIndentation(((CaseGroupTree) tree).body());
+    }
+    if (tree.is(Kind.BLOCK)) {
+      checkIndentation(((BlockTree) tree).body());
+    }
+  }
+
+  private void checkIndentation(List<? extends Tree> trees) {
+    for (Tree tree : trees) {
+      int column = getColumn(tree);
+      if (column != expectedLevel && !isExcluded(tree)) {
+        addIssue(tree, "Make this line start at column " + (expectedLevel + 1) + ".");
+        isBlockAlreadyReported = true;
+      }
+      lastCheckedLine = ((JavaTree) tree).getLastToken().getLine();
+    }
+  }
+
+  private int getColumn(Tree tree) {
+    if (tree.is(Kind.VARIABLE)) {
+      VariableTree variableTree = (VariableTree) tree;
+      int typeColumn = getTypeColumn(variableTree.type());
+      if (variableTree.modifiers().isEmpty()) {
+        return typeColumn;
+      }
+      return Math.min(typeColumn, ((JavaTree) variableTree.modifiers()).getToken().getColumn());
+    } else if(tree.is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
+      ClassTree classTree = (ClassTree) tree;
+      if (!classTree.modifiers().isEmpty()) {
+        return ((JavaTree) classTree.modifiers()).getToken().getColumn();
+      }
+    }
+    return ((JavaTree) tree).getToken().getColumn();
+  }
+
+  private int getTypeColumn(Tree typeTree) {
+    if(typeTree.is(Kind.ARRAY_TYPE)) {
+      return getTypeColumn(((ArrayTypeTree) typeTree).type());
+    }
+    return ((JavaTree)typeTree).getToken().getColumn();
   }
 
   @Override
-  public void leaveNode(AstNode node) {
-    if (node.is(BLOCK_TYPES)) {
-      expectedLevel -= indentationLevel;
-      isBlockAlreadyReported = false;
+  public void leaveNode(Tree tree) {
+    expectedLevel -= indentationLevel;
+    isBlockAlreadyReported = false;
+    lastCheckedLine = ((JavaTree) tree).getLastToken().getLine();
+    if (tree.is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
+      isInAnonymousClass.pop();
     }
-
-    lastCheckedLine = node.getLastToken().getLine();
   }
 
-  private boolean isExcluded(AstNode node) {
-    return isBlockAlreadyReported || !isLineFirstStatement(node) || isInAnnonymousClass(node);
+  private boolean isExcluded(Tree node) {
+    return node.is(Kind.ENUM_CONSTANT) || isBlockAlreadyReported || !isLineFirstStatement((JavaTree) node) || isInAnonymousClass.peek();
   }
 
-  private boolean isLineFirstStatement(AstNode node) {
-    return lastCheckedLine != node.getTokenLine();
-  }
-
-  private static boolean isInAnnonymousClass(AstNode node) {
-    return node.hasAncestor(JavaGrammar.CLASS_CREATOR_REST);
+  private boolean isLineFirstStatement(JavaTree javaTree) {
+    return lastCheckedLine != javaTree.getTokenLine();
   }
 
 }
