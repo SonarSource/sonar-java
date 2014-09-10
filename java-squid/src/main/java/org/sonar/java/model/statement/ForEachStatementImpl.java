@@ -41,11 +41,15 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
   private final ExpressionTree expression;
   private final StatementTree statement;
 
-  public ForEachStatementImpl(AstNode astNode, VariableTree variable, ExpressionTree expression, StatementTree statement) {
-    super(astNode);
+  public ForEachStatementImpl(VariableTree variable, ExpressionTree expression, StatementTree statement, AstNode... children) {
+    super(Kind.FOR_EACH_STATEMENT);
     this.variable = Preconditions.checkNotNull(variable);
     this.expression = Preconditions.checkNotNull(expression);
     this.statement = Preconditions.checkNotNull(statement);
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   @Override

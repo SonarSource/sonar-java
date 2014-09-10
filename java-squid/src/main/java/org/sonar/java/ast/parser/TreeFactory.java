@@ -68,6 +68,8 @@ import org.sonar.java.model.statement.ContinueStatementTreeImpl;
 import org.sonar.java.model.statement.DoWhileStatementTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
+import org.sonar.java.model.statement.ForEachStatementImpl;
+import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
@@ -787,8 +789,10 @@ public class TreeFactory {
       identifier, colon, statement);
   }
 
-  public ExpressionStatementTreeImpl expressionStatement(AstNode expression, AstNode semicolonToken) {
-    return new ExpressionStatementTreeImpl(treeMaker.expression(expression),
+  public ExpressionStatementTreeImpl expressionStatement(AstNode expression, AstNode semicolonTokenAstNode) {
+    InternalSyntaxToken semicolonToken = InternalSyntaxToken.create(semicolonTokenAstNode);
+
+    return new ExpressionStatementTreeImpl(treeMaker.expression(expression), semicolonToken,
       expression, semicolonToken);
   }
 
@@ -1547,6 +1551,10 @@ public class TreeFactory {
     return newWrapperAstNode(e1, e2);
   }
 
+  public AstNode newWrapperAstNode12(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
   // Crappy methods which must go away
 
   private ExpressionTree applySuperSuffix(ExpressionTree expression, AstNode superSuffixNode) {
@@ -1661,6 +1669,93 @@ public class TreeFactory {
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }
+  }
+
+  public ForStatementTreeImpl newStandardForStatement(
+    AstNode forTokenAstNode,
+    AstNode openParenTokenAstNode,
+    Optional<StatementExpressionListTreeImpl> forInit, AstNode forInitSemicolonTokenAstNode,
+    Optional<AstNode> expression, AstNode expressionSemicolonTokenAstNode,
+    Optional<StatementExpressionListTreeImpl> forUpdate, AstNode forUpdateSemicolonTokenAstNode,
+    AstNode statement) {
+
+    StatementExpressionListTreeImpl forInit2 = forInit.isPresent() ? forInit.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
+    StatementExpressionListTreeImpl forUpdate2 = forUpdate.isPresent() ? forUpdate.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
+
+    ForStatementTreeImpl result = new ForStatementTreeImpl(
+      forInit2,
+      expression.isPresent() ? treeMaker.expression(expression.get()) : null,
+      forUpdate2,
+      treeMaker.statement(statement));
+
+    List<AstNode> children = Lists.newArrayList();
+    children.add(forTokenAstNode);
+    children.add(openParenTokenAstNode);
+    children.add(forInit2);
+    children.add(forInitSemicolonTokenAstNode);
+    if (expression.isPresent()) {
+      children.add(expression.get());
+    }
+    children.add(expressionSemicolonTokenAstNode);
+    children.add(forUpdate2);
+    children.add(forUpdateSemicolonTokenAstNode);
+    children.add(statement);
+
+    result.prependChildren(children);
+
+    return result;
+  }
+
+  public StatementExpressionListTreeImpl newForInitDeclaration(ModifiersTreeImpl modifiers, ExpressionTree type, AstNode variableDeclarators) {
+    List<StatementTree> statements = treeMaker.variableDeclarators(
+      ModifiersTreeImpl.EMPTY,
+      type,
+      variableDeclarators);
+
+    StatementExpressionListTreeImpl result = new StatementExpressionListTreeImpl(statements);
+    result.prependChildren(modifiers, (AstNode) type, variableDeclarators);
+
+    return result;
+  }
+
+  public StatementExpressionListTreeImpl newStatementExpressions(AstNode statementExpression, Optional<List<AstNode>> rests) {
+    List<AstNode> children = Lists.newArrayList();
+    ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
+
+    ExpressionStatementTreeImpl statement = new ExpressionStatementTreeImpl(
+      treeMaker.expression(statementExpression), null,
+      statementExpression);
+    statements.add(statement);
+    children.add(statement);
+
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        children.add(rest.getFirstChild());
+
+        statement = new ExpressionStatementTreeImpl(
+          treeMaker.expression(rest.getLastChild()), null,
+          rest.getLastChild());
+        statements.add(statement);
+        children.add(statement);
+      }
+    }
+
+    StatementExpressionListTreeImpl result = new StatementExpressionListTreeImpl(statements.build());
+    result.prependChildren(children);
+
+    return result;
+  }
+
+  public ForEachStatementImpl newForeachStatement(
+    AstNode forTokenAstNode,
+    AstNode openParenTokenAstNode,
+    VariableTreeImpl variable, AstNode colonTokenAstNode, AstNode expression,
+    AstNode closeParenTokenAstNode,
+    AstNode statement) {
+
+    return new ForEachStatementImpl(
+      variable, treeMaker.expression(expression), treeMaker.statement(statement),
+      forTokenAstNode, openParenTokenAstNode, variable, colonTokenAstNode, expression, closeParenTokenAstNode, statement);
   }
 
 }

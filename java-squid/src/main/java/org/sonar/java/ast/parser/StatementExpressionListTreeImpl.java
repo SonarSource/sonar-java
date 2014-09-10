@@ -17,26 +17,18 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser.grammar.statements;
+package org.sonar.java.ast.parser;
 
-import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
+import com.google.common.collect.ImmutableList;
+import com.sonar.sslr.api.AstNode;
+import org.sonar.plugins.java.api.tree.StatementTree;
 
-import static org.sonar.sslr.tests.Assertions.assertThat;
+import java.util.List;
 
-public class ForUpdateTest {
+public class StatementExpressionListTreeImpl extends ListTreeImpl<StatementTree> {
 
-  @Test
-  public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
-    b.rule(JavaGrammar.STATEMENT_EXPRESSION).override(RuleMock.word(b, "statementExpression"));
-
-    assertThat(b, JavaGrammar.FOR_UPDATE)
-      .matches("statementExpression , statementExpression")
-      .matches("statementExpression");
+  public StatementExpressionListTreeImpl(List<StatementTree> statements) {
+    super(JavaGrammar.STATEMENT_EXPRESSION, statements, ImmutableList.<AstNode>of());
   }
 
 }

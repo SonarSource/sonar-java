@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -45,9 +44,8 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   private final List<StatementTree> update;
   private final StatementTree statement;
 
-  public ForStatementTreeImpl(AstNode astNode, List<StatementTree> initializer, @Nullable ExpressionTree condition, List<StatementTree> update,
-    StatementTree statement) {
-    super(astNode);
+  public ForStatementTreeImpl(List<StatementTree> initializer, @Nullable ExpressionTree condition, List<StatementTree> update, StatementTree statement) {
+    super(Kind.FOR_STATEMENT);
     this.initializer = Preconditions.checkNotNull(initializer);
     this.condition = condition;
     this.update = Preconditions.checkNotNull(update);

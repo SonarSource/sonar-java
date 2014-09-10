@@ -22,8 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -35,16 +33,15 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionStatementTree {
+
   private final ExpressionTree expression;
+  private final InternalSyntaxToken semicolonToken;
 
-  public ExpressionStatementTreeImpl(AstNode astNode, ExpressionTree expression) {
-    super(astNode);
-    this.expression = Preconditions.checkNotNull(expression);
-  }
+  public ExpressionStatementTreeImpl(ExpressionTree expression, InternalSyntaxToken semicolonToken, AstNode... children) {
+    super(Kind.EXPRESSION_STATEMENT);
 
-  public ExpressionStatementTreeImpl(ExpressionTree expression, AstNode... children) {
-    super(JavaGrammar.EXPRESSION_STATEMENT);
     this.expression = Preconditions.checkNotNull(expression);
+    this.semicolonToken = semicolonToken;
 
     for (AstNode child : children) {
       addChild(child);
@@ -62,14 +59,9 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
   }
 
   @Override
+  // FIXME There isn't always a semicolon, for example within "for" initializers
   public SyntaxToken semicolonToken() {
-    if (getAstNode().is(JavaGrammar.EXPRESSION_STATEMENT)) {
-      return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
-    } else if (getAstNode().is(JavaGrammar.STATEMENT_EXPRESSION)) {
-      return InternalSyntaxToken.createLegacy(getAstNode().getParent().getFirstChild(JavaPunctuator.SEMI));
-    } else {
-      throw new IllegalStateException();
-    }
+    return semicolonToken;
   }
 
   @Override

@@ -34,7 +34,6 @@ import static org.sonar.java.ast.api.JavaKeyword.ENUM;
 import static org.sonar.java.ast.api.JavaKeyword.EXTENDS;
 import static org.sonar.java.ast.api.JavaKeyword.FINAL;
 import static org.sonar.java.ast.api.JavaKeyword.FINALLY;
-import static org.sonar.java.ast.api.JavaKeyword.FOR;
 import static org.sonar.java.ast.api.JavaKeyword.IMPLEMENTS;
 import static org.sonar.java.ast.api.JavaKeyword.IMPORT;
 import static org.sonar.java.ast.api.JavaKeyword.INTERFACE;
@@ -610,15 +609,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       LABELED_STATEMENT,
       EXPRESSION_STATEMENT,
       EMPTY_STATEMENT));
-
-    // 14.14. The for Statement
-    b.rule(FOR_STATEMENT).is(b.firstOf(
-      b.sequence(FOR, LPAR, b.optional(FOR_INIT), SEMI, b.optional(EXPRESSION), SEMI, b.optional(FOR_UPDATE), RPAR, STATEMENT),
-      b.sequence(FOR, LPAR, FORMAL_PARAMETER, COLON, EXPRESSION, RPAR, STATEMENT)));
-    b.rule(FOR_INIT).is(b.firstOf(
-      b.sequence(b.zeroOrMore(b.firstOf(FINAL, ANNOTATION)), TYPE, VARIABLE_DECLARATORS),
-      b.sequence(STATEMENT_EXPRESSION, b.zeroOrMore(COMMA, STATEMENT_EXPRESSION))));
-    b.rule(FOR_UPDATE).is(STATEMENT_EXPRESSION, b.zeroOrMore(COMMA, STATEMENT_EXPRESSION));
 
     // 14.20. The try Statement
     b.rule(TRY_STATEMENT).is(b.firstOf(

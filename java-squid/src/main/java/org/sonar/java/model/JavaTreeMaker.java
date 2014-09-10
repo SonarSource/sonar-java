@@ -43,9 +43,6 @@ import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.CatchTreeImpl;
-import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
-import org.sonar.java.model.statement.ForEachStatementImpl;
-import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -177,7 +174,7 @@ public class JavaTreeMaker {
       astNode.hasDirectChildren(JavaGrammar.VARIABLE_INITIALIZER) ? variableInitializer(astNode.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER)) : null);
   }
 
-  private List<StatementTree> variableDeclarators(ModifiersTree modifiers, ExpressionTree type, AstNode astNode) {
+  public List<StatementTree> variableDeclarators(ModifiersTree modifiers, ExpressionTree type, AstNode astNode) {
     checkType(astNode, JavaGrammar.VARIABLE_DECLARATORS);
     ImmutableList.Builder<StatementTree> result = ImmutableList.builder();
     for (AstNode variableDeclaratorNode : astNode.getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
@@ -641,10 +638,6 @@ public class JavaTreeMaker {
       result = (StatementTree) statementNode;
     } else {
       switch ((JavaGrammar) statementNode.getType()) {
-        case FOR_STATEMENT:
-          // TODO
-          result = forStatement(statementNode);
-          break;
         case TRY_STATEMENT:
           // TODO
           result = tryStatement(statementNode);
@@ -655,50 +648,6 @@ public class JavaTreeMaker {
     }
 
     return result;
-  }
-
-  /**
-   * 14.14. The for Statement
-   */
-  private StatementTree forStatement(AstNode astNode) {
-    AstNode formalParameterNode = astNode.getFirstChild(Kind.VARIABLE);
-    if (formalParameterNode == null) {
-      AstNode forInitNode = astNode.getFirstChild(JavaGrammar.FOR_INIT);
-      final List<StatementTree> forInit;
-      if (forInitNode == null) {
-        forInit = ImmutableList.of();
-      } else if (forInitNode.hasDirectChildren(JavaGrammar.VARIABLE_DECLARATORS)) {
-        // TODO modifiers
-        forInit = variableDeclarators(
-          ModifiersTreeImpl.EMPTY,
-          (ExpressionTree) forInitNode.getFirstChild(TYPE_KINDS),
-          forInitNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS)
-          );
-      } else {
-        forInit = statementExpressions(astNode.getFirstChild(JavaGrammar.FOR_INIT));
-      }
-      return new ForStatementTreeImpl(
-        astNode,
-        forInit,
-        astNode.hasDirectChildren(JavaGrammar.EXPRESSION) ? expression(astNode.getFirstChild(JavaGrammar.EXPRESSION)) : null,
-        astNode.hasDirectChildren(JavaGrammar.FOR_UPDATE) ? statementExpressions(astNode.getFirstChild(JavaGrammar.FOR_UPDATE)) : ImmutableList.<StatementTree>of(),
-        statement(astNode.getFirstChild(JavaGrammar.STATEMENT)));
-    } else {
-      return new ForEachStatementImpl(
-        astNode,
-        (VariableTreeImpl) formalParameterNode,
-        expression(astNode.getFirstChild(JavaGrammar.EXPRESSION)),
-        statement(astNode.getFirstChild(JavaGrammar.STATEMENT)));
-    }
-  }
-
-  private List<StatementTree> statementExpressions(AstNode astNode) {
-    checkType(astNode, JavaGrammar.FOR_INIT, JavaGrammar.FOR_UPDATE);
-    ImmutableList.Builder<StatementTree> result = ImmutableList.builder();
-    for (AstNode statementExpressionNode : astNode.getChildren(JavaGrammar.STATEMENT_EXPRESSION)) {
-      result.add(new ExpressionStatementTreeImpl(statementExpressionNode, expression(statementExpressionNode)));
-    }
-    return result.build();
   }
 
   /**

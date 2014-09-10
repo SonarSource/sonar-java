@@ -42,6 +42,8 @@ import org.sonar.java.model.statement.ContinueStatementTreeImpl;
 import org.sonar.java.model.statement.DoWhileStatementTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
+import org.sonar.java.model.statement.ForEachStatementImpl;
+import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
@@ -50,6 +52,7 @@ import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
@@ -415,6 +418,70 @@ public class ActionGrammar {
           b.invokeRule(JavaGrammar.STATEMENT),
           b.optional(
             f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), b.invokeRule(JavaGrammar.STATEMENT)))));
+  }
+
+  public StatementTree FOR_STATEMENT() {
+    return b.<StatementTree>nonterminal(JavaGrammar.FOR_STATEMENT)
+      .is(
+        b.<StatementTree>firstOf(
+          STANDARD_FOR_STATEMENT(),
+          FOREACH_STATEMENT()));
+  }
+
+  public ForStatementTreeImpl STANDARD_FOR_STATEMENT() {
+    return b.<ForStatementTreeImpl>nonterminal()
+      .is(
+        f.newStandardForStatement(
+          b.invokeRule(JavaKeyword.FOR),
+          b.invokeRule(JavaPunctuator.LPAR),
+          b.optional(FOR_INIT()), b.invokeRule(JavaPunctuator.SEMI),
+          b.optional(b.invokeRule(JavaGrammar.EXPRESSION)), b.invokeRule(JavaPunctuator.SEMI),
+          b.optional(FOR_UPDATE()),
+          b.invokeRule(JavaPunctuator.RPAR),
+          b.invokeRule(JavaGrammar.STATEMENT)));
+  }
+
+  public StatementExpressionListTreeImpl FOR_INIT() {
+    return b.<StatementExpressionListTreeImpl>nonterminal()
+      .is(
+        b.firstOf(
+          FOR_INIT_DECLARATION(),
+          FOR_INIT_EXPRESSIONS()));
+  }
+
+  public StatementExpressionListTreeImpl FOR_INIT_DECLARATION() {
+    return b.<StatementExpressionListTreeImpl>nonterminal()
+      .is(
+        f.newForInitDeclaration(
+          MODIFIERS(),
+          TYPE(),
+          b.invokeRule(JavaGrammar.VARIABLE_DECLARATORS)));
+  }
+
+  public StatementExpressionListTreeImpl FOR_INIT_EXPRESSIONS() {
+    return b.<StatementExpressionListTreeImpl>nonterminal()
+      .is(STATEMENT_EXPRESSIONS());
+  }
+
+  public StatementExpressionListTreeImpl FOR_UPDATE() {
+    return b.<StatementExpressionListTreeImpl>nonterminal()
+      .is(STATEMENT_EXPRESSIONS());
+  }
+
+  public StatementExpressionListTreeImpl STATEMENT_EXPRESSIONS() {
+    return b.<StatementExpressionListTreeImpl>nonterminal()
+      .is(
+        f.newStatementExpressions(
+          b.invokeRule(JavaGrammar.STATEMENT_EXPRESSION), b.zeroOrMore(f.newWrapperAstNode12(b.invokeRule(JavaPunctuator.COMMA), b.invokeRule(JavaGrammar.STATEMENT_EXPRESSION)))));
+  }
+
+  public ForEachStatementImpl FOREACH_STATEMENT() {
+    return b.<ForEachStatementImpl>nonterminal()
+      .is(
+        f.newForeachStatement(
+          b.invokeRule(JavaKeyword.FOR),
+          b.invokeRule(JavaPunctuator.LPAR), FORMAL_PARAMETER(), b.invokeRule(JavaPunctuator.COLON), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
+          b.invokeRule(JavaGrammar.STATEMENT)));
   }
 
   public WhileStatementTreeImpl WHILE_STATEMENT() {
