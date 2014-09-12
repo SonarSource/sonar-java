@@ -27,15 +27,10 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
-import org.sonar.squidbridge.api.SourceCode;
-import org.sonar.squidbridge.api.SourceCodeSearchEngine;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.api.SourceProject;
-import org.sonar.squidbridge.indexer.QueryByType;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,11 +44,7 @@ import static org.mockito.Mockito.when;
 
 public class StrutsTest {
 
-  private static JavaSquid squid;
-  private static SourceProject project;
-  private static Measurer measurer;
   private static SensorContext context;
-  private static Collection<SourceCode> files;
 
   @BeforeClass
   public static void init() {
@@ -68,13 +59,9 @@ public class StrutsTest {
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     when(pfs.getBasedir()).thenReturn(prjDir);
     when(sonarProject.getFileSystem()).thenReturn(pfs);
-    measurer = new Measurer(sonarProject, context, true);
-    squid = new JavaSquid(conf, null, measurer, null, new CodeVisitor[0]);
+    Measurer measurer = new Measurer(sonarProject, context, true);
+    JavaSquid squid = new JavaSquid(conf, null, measurer, mock(JavaResourceLocator.class), new CodeVisitor[0]);
     squid.scanDirectories(Collections.singleton(srcDir), Collections.singleton(binDir));
-
-    SourceCodeSearchEngine index = squid.getIndex();
-    project = (SourceProject) index.search(new QueryByType(SourceProject.class)).iterator().next();
-    files = index.search(new QueryByType(SourceFile.class));
   }
 
   @Test

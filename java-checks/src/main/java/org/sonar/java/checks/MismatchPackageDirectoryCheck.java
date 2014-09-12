@@ -58,7 +58,7 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
   public void visitCompilationUnit(CompilationUnitTree tree) {
     if (tree.packageName() != null) {
       String packageName = concatenate(tree.packageName());
-      File javaFile = new File(context.getFileName());
+      File javaFile = context.getFile();
       String dir = javaFile.getParent();
       if (!dir.endsWith(packageName)) {
         context.addIssue(tree.packageName(), ruleKey, "This file \"" + javaFile.getName() + "\" should be located in \"" + packageName + "\" directory, not in \"" + dir + "\".");

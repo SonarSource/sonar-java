@@ -43,7 +43,7 @@ public interface JavaFileScannerContext {
   @Nullable
   Object getSemanticModel();
 
-  String getFileName();
+  String getFileKey();
 
   File getFile();
 

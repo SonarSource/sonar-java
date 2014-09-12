@@ -19,15 +19,16 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.sonar.squidbridge.indexer.QueryByType;
 
 import java.io.File;
@@ -36,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class UnusedPrivateMethodCheckTest {
 
@@ -66,7 +68,7 @@ public class UnusedPrivateMethodCheckTest {
       throw new IllegalArgumentException("File '" + sourceFile + "' not found.");
     }
 
-    JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), visitor);
+    JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), mock(JavaResourceLocator.class), visitor);
     javaSquid.scan(Collections.singleton(sourceFile), Collections.<InputFile>emptyList(), Collections.singleton(bytecodeFile));
 
     Collection<SourceCode> sources = javaSquid.getIndex().search(new QueryByType(SourceFile.class));

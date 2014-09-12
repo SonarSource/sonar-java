@@ -197,8 +197,8 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
     }
 
     @Override
-    public String getFileName() {
-      return sourceFile.getName();
+    public String getFileKey() {
+      return sourceFile.getKey();
     }
 
     @Override

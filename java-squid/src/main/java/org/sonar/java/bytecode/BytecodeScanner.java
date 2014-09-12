@@ -26,6 +26,7 @@ import org.sonar.java.bytecode.asm.AsmClassProviderImpl;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeScanner;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceClass;
@@ -41,9 +42,11 @@ import java.util.Collections;
 public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
 
   private final SquidIndex indexer;
+  private JavaResourceLocator javaResourceLocator;
 
-  public BytecodeScanner(SquidIndex indexer) {
+  public BytecodeScanner(SquidIndex indexer, JavaResourceLocator javaResourceLocator) {
     this.indexer = indexer;
+    this.javaResourceLocator = javaResourceLocator;
   }
 
   public BytecodeScanner scan(Collection<File> bytecodeFilesOrDirectories) {
@@ -81,7 +84,7 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
     for (SourceCode sourceCode : classes) {
       AsmClass asmClass = classProvider.getClass(sourceCode.getKey(), DETAIL_LEVEL.STRUCTURE_AND_CALLS);
       BytecodeVisitorNotifier visitorNotifier = new BytecodeVisitorNotifier(asmClass, visitorArray);
-      visitorNotifier.notifyVisitors(indexer);
+      visitorNotifier.notifyVisitors(indexer, javaResourceLocator);
     }
   }
 

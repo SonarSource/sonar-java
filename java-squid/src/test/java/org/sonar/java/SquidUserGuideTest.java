@@ -24,16 +24,16 @@ import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
-import org.sonar.squidbridge.api.SourceCodeSearchEngine;
-import org.sonar.squidbridge.api.SourceProject;
-import org.sonar.squidbridge.indexer.QueryByType;
 
 import java.io.File;
 import java.util.Collections;
@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -49,9 +50,7 @@ import static org.mockito.Mockito.when;
 public class SquidUserGuideTest {
 
   private static JavaSquid squid;
-  private static SourceProject project;
   private static SensorContext context;
-  private static Measurer measurer;
 
   @BeforeClass
   public static void init() {
@@ -66,12 +65,20 @@ public class SquidUserGuideTest {
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     when(pfs.getBasedir()).thenReturn(prjDir);
     when(sonarProject.getFileSystem()).thenReturn(pfs);
-    measurer = new Measurer(sonarProject, context, true);
-    squid = new JavaSquid(conf, null, measurer, null, new CodeVisitor[0]);
+    Measurer measurer = new Measurer(sonarProject, context, true);
+    JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
+    when(javaResourceLocator.findSourceFileKeyByClassName(anyString())).thenAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        String fileName = (String) invocation.getArguments()[0];
+        if(!fileName.endsWith(".java")) {
+          fileName += ".java";
+        }
+        return fileName;
+      }
+    });
+    squid = new JavaSquid(conf, null, measurer, javaResourceLocator, new CodeVisitor[0]);
     squid.scanDirectories(Collections.singleton(srcDir), Collections.singleton(binDir));
-
-    SourceCodeSearchEngine index = squid.getIndex();
-    project = (SourceProject) index.search(new QueryByType(SourceProject.class)).iterator().next();
   }
 
   @Test

@@ -22,16 +22,17 @@ package org.sonar.java.bytecode.visitor;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmEdge;
-import org.sonar.squidbridge.api.SourceClass;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceCodeEdge;
 import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.api.SourcePackage;
+
+import javax.annotation.Nullable;
 
 public class DependenciesVisitor extends BytecodeVisitor {
 
-  private SourceClass fromSourceClass;
+  @Nullable
+  private SourceFile fromSourceFile;
   private final DirectedGraph<SourceCode, SourceCodeEdge> graph;
 
   public DependenciesVisitor(DirectedGraph<SourceCode, SourceCodeEdge> graph) {
@@ -40,54 +41,37 @@ public class DependenciesVisitor extends BytecodeVisitor {
 
   @Override
   public void visitClass(AsmClass asmClass) {
-    this.fromSourceClass = getSourceClass(asmClass);
+    fromSourceFile = getSourceFile(asmClass);
   }
 
   @Override
   public void visitEdge(AsmEdge edge) {
     AsmClass toAsmClass = edge.getTargetAsmClass();
-    SourceClass toSourceClass = getSourceClass(toAsmClass);
-    switch (edge.getUsage()) {
-      case EXTENDS:
-        link(fromSourceClass, toSourceClass, SourceCodeEdgeUsage.EXTENDS);
-        break;
-      case IMPLEMENTS:
-        link(fromSourceClass, toSourceClass, SourceCodeEdgeUsage.IMPLEMENTS);
-        break;
-      default:
-        link(fromSourceClass, toSourceClass, SourceCodeEdgeUsage.USES);
-        break;
+    SourceFile toSourceFile = getSourceFile(toAsmClass);
+    SourceCodeEdge fileEdge = createEdge(fromSourceFile, toSourceFile, null);
+    if(fromSourceFile != null && toSourceFile != null) {
+      createEdge(fromSourceFile.getParent(), toSourceFile.getParent(), fileEdge);
     }
   }
 
-  private void link(SourceClass from, SourceClass to, SourceCodeEdgeUsage link) {
-    if (canWeLinkNodes(from, to) && graph.getEdge(from, to) == null) {
-      SourceCodeEdge edge = new SourceCodeEdge(from, to, link);
-      graph.addEdge(edge);
-      SourceCodeEdge fileEdge = createEdgeBetweenParents(SourceFile.class, from, to, edge);
-      createEdgeBetweenParents(SourcePackage.class, from, to, fileEdge);
-    }
-  }
-
-  private SourceCodeEdge createEdgeBetweenParents(Class<? extends SourceCode> type, SourceClass from, SourceClass to,
-    SourceCodeEdge rootEdge) {
-    SourceCode fromParent = from.getParent(type);
-    SourceCode toParent = to.getParent(type);
+  private SourceCodeEdge createEdge(@Nullable SourceCode from, @Nullable SourceCode to, @Nullable SourceCodeEdge rootEdge) {
     SourceCodeEdge parentEdge = null;
-    if (canWeLinkNodes(fromParent, toParent) && rootEdge != null) {
-      if (graph.getEdge(fromParent, toParent) == null) {
-        parentEdge = new SourceCodeEdge(fromParent, toParent, SourceCodeEdgeUsage.USES);
-        parentEdge.addRootEdge(rootEdge);
+    if (canWeLinkNodes(from, to)) {
+      parentEdge = graph.getEdge(from, to);
+      if (parentEdge == null) {
+        parentEdge = new SourceCodeEdge(from, to, SourceCodeEdgeUsage.USES);
         graph.addEdge(parentEdge);
+      }
+      if(rootEdge == null) {
+        parentEdge.addRootEdge(parentEdge);
       } else {
-        parentEdge = graph.getEdge(fromParent, toParent);
         parentEdge.addRootEdge(rootEdge);
       }
     }
     return parentEdge;
   }
 
-  private boolean canWeLinkNodes(SourceCode from, SourceCode to) {
+  private boolean canWeLinkNodes(@Nullable SourceCode from, @Nullable SourceCode to) {
     return from != null && to != null && !from.equals(to);
   }
 

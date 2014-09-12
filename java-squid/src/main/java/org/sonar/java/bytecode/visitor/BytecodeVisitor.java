@@ -26,15 +26,18 @@ import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.signature.MethodSignature;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.MethodSignatureScanner;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
-import org.sonar.squidbridge.api.SourceClass;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourceMethod;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
+import javax.annotation.Nullable;
+
 public abstract class BytecodeVisitor implements CodeVisitor {
 
   SquidIndex index;
+  private JavaResourceLocator javaResourceLocator;
 
   public void visitClass(AsmClass asmClass) {
   }
@@ -52,16 +55,13 @@ public abstract class BytecodeVisitor implements CodeVisitor {
   public void leaveClass(AsmClass asmClass) {
   }
 
-  protected final SourceClass getSourceClass(AsmClass asmClass) {
-    return (SourceClass) index.search(asmClass.getInternalName());
-  }
-
-  protected final boolean isMainPublicClassInFile(AsmClass asmClass) {
-    return index.search(asmClass.getInternalName() + ".java") != null;
-  }
-
+  @Nullable
   protected final SourceFile getSourceFile(AsmClass asmClass) {
-    return getSourceClass(asmClass).getParent(SourceFile.class);
+    String sourceFileKey = javaResourceLocator.findSourceFileKeyByClassName(asmClass.getInternalName());
+    if(sourceFileKey==null) {
+      return null;
+    }
+    return (SourceFile) index.search(sourceFileKey);
   }
 
   protected final SourceMethod getSourceMethod(AsmMethod asmMethod) {
@@ -74,4 +74,7 @@ public abstract class BytecodeVisitor implements CodeVisitor {
     this.index = index;
   }
 
+  public void setJavaResourceLocator(JavaResourceLocator javaResourceLocator) {
+    this.javaResourceLocator = javaResourceLocator;
+  }
 }

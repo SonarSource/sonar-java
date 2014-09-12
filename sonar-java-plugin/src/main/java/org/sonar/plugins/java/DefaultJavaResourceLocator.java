@@ -23,28 +23,21 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaClasspath;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.JavaFilesCache;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.Map;
 
-public class DefaultJavaResourceLocator extends BaseTreeVisitor implements JavaResourceLocator, JavaFileScanner {
+public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFileScanner {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaResourceLocator.class);
 
@@ -52,16 +45,14 @@ public class DefaultJavaResourceLocator extends BaseTreeVisitor implements JavaR
   private final JavaClasspath javaClasspath;
   @VisibleForTesting
   Map<String, Resource> resourcesCache;
-  private Resource currentResource;
-  private Deque<String> currentClassKey = new LinkedList<String>();
-  private Deque<Tree> parent = new LinkedList<Tree>();
-  private Deque<Integer> anonymousInnerClassCounter = new LinkedList<Integer>();
-  private String currentPackage;
+  private Map<String, String> sourceFileCache;
+
 
   public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath) {
     this.project = project;
     this.javaClasspath = javaClasspath;
     resourcesCache = Maps.newHashMap();
+    sourceFileCache = Maps.newHashMap();
   }
 
   @Override
@@ -69,9 +60,14 @@ public class DefaultJavaResourceLocator extends BaseTreeVisitor implements JavaR
     String name = className.replace('.', '/');
     Resource resource = resourcesCache.get(name);
     if (resource == null) {
-      LOG.debug("Class not found in resource cache : {}", className);
+      LOG.warn("Class not found in resource cache : {}", className);
     }
     return resource;
+  }
+
+  public String findSourceFileKeyByClassName(String className) {
+    String name = className.replace('.', '/');
+    return sourceFileCache.get(name);
   }
 
   @Override
@@ -92,53 +88,15 @@ public class DefaultJavaResourceLocator extends BaseTreeVisitor implements JavaR
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    JavaTree.CompilationUnitTreeImpl tree = (JavaTree.CompilationUnitTreeImpl) context.getTree();
-    currentPackage = tree.packageNameAsString().replace('.', '/');
-    currentResource = org.sonar.api.resources.File.fromIOFile(context.getFile(), project);
-    Preconditions.checkNotNull(currentResource, "resource not found : "+context.getFile().getName());
-    currentClassKey.clear();
-    parent.clear();
-    anonymousInnerClassCounter.clear();
-    scan(tree);
-  }
-
-  @Override
-  public void visitClass(ClassTree tree) {
-    String className = "";
-    if(tree.simpleName()!=null){
-      className = tree.simpleName().name();
+    JavaFilesCache javaFilesCache = new JavaFilesCache();
+    javaFilesCache.scanFile(context);
+    for (Map.Entry<String, File> stringFileEntry : javaFilesCache.resourcesCache.entrySet()) {
+      org.sonar.api.resources.File currentResource = org.sonar.api.resources.File.fromIOFile(stringFileEntry.getValue(), project);
+      Preconditions.checkNotNull(currentResource, "resource not found : " + context.getFile().getName());
+      resourcesCache.put(stringFileEntry.getKey(), currentResource);
+      if(context.getFileKey() != null) {
+        sourceFileCache.put(stringFileEntry.getKey(), context.getFileKey());
+      }
     }
-    String key = getClassKey(className);
-    currentClassKey.push(key);
-    parent.push(tree);
-    anonymousInnerClassCounter.push(0);
-    resourcesCache.put(key, currentResource);
-    super.visitClass(tree);
-    currentClassKey.pop();
-    parent.pop();
-    anonymousInnerClassCounter.pop();
-  }
-
-  private String getClassKey(String className) {
-    String key = className;
-    if(StringUtils.isNotEmpty(currentPackage)) {
-      key = currentPackage + "/" + className;
-    }
-    if("".equals(className) || (parent.peek()!=null && parent.peek().is(Tree.Kind.METHOD))) {
-      //inner class declared within method
-      int count = anonymousInnerClassCounter.pop()+1;
-      key = currentClassKey.peek()+"$"+count+className;
-      anonymousInnerClassCounter.push(count);
-    } else if (currentClassKey.peek() != null) {
-      key = currentClassKey.peek()+"$"+className;
-    }
-    return key;
-  }
-
-  @Override
-  public void visitMethod(MethodTree tree) {
-    parent.push(tree);
-    super.visitMethod(tree);
-    parent.pop();
   }
 }

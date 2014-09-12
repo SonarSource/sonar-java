@@ -21,9 +21,13 @@ package org.sonar.java.bytecode;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.sonar.api.resources.Resource;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceCodeEdge;
 import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
@@ -34,6 +38,9 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class BytecodeVisitorsTest {
 
@@ -56,7 +63,18 @@ public class BytecodeVisitorsTest {
   @BeforeClass
   public static void setup() {
     JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
-    JavaSquid squid = new JavaSquid(conf);
+    JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
+    when(javaResourceLocator.findSourceFileKeyByClassName(anyString())).thenAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        String fileName = (String) invocation.getArguments()[0];
+        if(!fileName.endsWith(".java")) {
+          fileName += ".java";
+        }
+        return fileName;
+      }
+    });
+    JavaSquid squid = new JavaSquid(conf, javaResourceLocator);
     squid.scanDirectories(
         Collections.singleton(new File("src/test/files/bytecode/src")),
         Collections.singleton(new File("src/test/files/bytecode/bin")));
@@ -79,67 +97,67 @@ public class BytecodeVisitorsTest {
 
   @Test
   public void testExtendsRelationShips() {
-    assertThat(graph.getEdge(sourceFile, file).getUsage()).isEqualTo(SourceCodeEdgeUsage.EXTENDS);
+    assertThat(graph.getEdge(sourceFile.getParent(), file.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testClassDefinitionWithGenerics() {
-    assertThat(graph.getEdge(todo, language).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo.getParent(), language.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testImplementsRelationShips() {
-    assertThat(graph.getEdge(todo, tag).getUsage()).isEqualTo(SourceCodeEdgeUsage.IMPLEMENTS);
+    assertThat(graph.getEdge(todo.getParent(), tag.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testLdcRelationShips() {
-    assertThat(graph.getEdge(tagName, tagException).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(tagName.getParent(), tagException.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testFieldRelationShip() {
-    assertThat(graph.getEdge(todo, file).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo.getParent(), file.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testFieldRelationShipWithGenerics() {
-    assertThat(graph.getEdge(todo, line).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo.getParent(), line.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testMethodReturnType() {
-    assertThat(graph.getEdge(todo, tagName).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo.getParent(), tagName.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testMethodArgs() {
-    assertThat(graph.getEdge(todo, sourceFile).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo.getParent(), sourceFile.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testMethodException() {
-    assertThat(graph.getEdge(todo, tagException).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo.getParent(), tagException.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testAccessFieldOfAnObject() {
-    assertThat(graph.getEdge(fixme, sourceFile).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(fixme.getParent(), sourceFile.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testTypeInsn() {
-    assertThat(graph.getEdge(fixme, file).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(fixme.getParent(), file.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testAccessMethodOfAnObject() {
-    assertThat(graph.getEdge(fixme, tagException).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(fixme.getParent(), tagException.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test
   public void testTryCatchBlock() {
-    assertThat(graph.getEdge(sourceFile, tagException).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(sourceFile.getParent(), tagException.getParent()).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
   }
 
   @Test

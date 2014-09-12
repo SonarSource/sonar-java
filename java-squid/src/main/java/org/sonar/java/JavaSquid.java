@@ -68,22 +68,20 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
   private boolean bytecodeScanned = false;
 
   @VisibleForTesting
-  public JavaSquid(JavaConfiguration conf, CodeVisitor... visitors) {
-    this(conf, null, null, null, visitors);
+  public JavaSquid(JavaConfiguration conf, JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
+    this(conf, null, null, javaResourceLocator, visitors);
   }
 
-  public JavaSquid(JavaConfiguration conf, @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer, @Nullable JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
+  public JavaSquid(JavaConfiguration conf,
+                   @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
+                   JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
 
     astScanner = JavaAstScanner.create(conf);
 
-    Iterable<CodeVisitor> visitorsToBridge = Arrays.asList(visitors);
+    Iterable<CodeVisitor> visitorsToBridge = Iterables.concat(Arrays.asList(javaResourceLocator), Arrays.asList(visitors));
     if(measurer != null) {
       Iterable<CodeVisitor> measurers = Arrays.asList((CodeVisitor)measurer);
       visitorsToBridge =  Iterables.concat(visitorsToBridge, measurers);
-    }
-    if(javaResourceLocator != null) {
-      Iterable<CodeVisitor> jrl = Arrays.asList((CodeVisitor)javaResourceLocator);
-      visitorsToBridge =  Iterables.concat(visitorsToBridge, jrl);
     }
     if (sonarComponents != null) {
       visitorsToBridge = Iterables.concat(
@@ -104,7 +102,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     // TODO unchecked cast
     squidIndex = (SquidIndex) astScanner.getIndex();
 
-    bytecodeScanner = new BytecodeScanner(squidIndex);
+    bytecodeScanner = new BytecodeScanner(squidIndex, javaResourceLocator);
     bytecodeScanner.accept(new DependenciesVisitor(graph));
 
     // External visitors (typically Check ones):
@@ -117,9 +115,7 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
     }
 
     astScannerForTests = new AstScanner(astScanner);
-    if(javaResourceLocator != null) {
-      astScannerForTests.accept(new TestFileVisitorsBridge(javaResourceLocator));
-    }
+    astScannerForTests.accept(new TestFileVisitorsBridge(javaResourceLocator));
   }
 
   @VisibleForTesting

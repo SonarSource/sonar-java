@@ -28,6 +28,10 @@ import static org.mockito.Mockito.mock;
 public class DependenciesVisitorTest {
 
   @Test
+  public void testName() throws Exception {
+  }
+
+  @Test
   public void test_toString() {
     assertThat(new DependenciesVisitor(mock(DirectedGraph.class)).toString()).isEqualTo("deperecated dependencies metrics");
   }

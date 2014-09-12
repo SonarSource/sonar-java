@@ -86,8 +86,8 @@ public class TestFileVisitorsBridge extends JavaAstVisitor {
     }
 
     @Override
-    public String getFileName() {
-      throw new UnsupportedOperationException();
+    public String getFileKey() {
+      return null;
     }
 
     @Override
