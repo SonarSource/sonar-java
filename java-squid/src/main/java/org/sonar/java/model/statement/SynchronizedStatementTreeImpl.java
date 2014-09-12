@@ -22,7 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -38,12 +37,12 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   private final ExpressionTree expression;
   private final BlockTree block;
   private final InternalSyntaxToken synchronizedKeyword;
-  private InternalSyntaxToken openParenToken;
+  private final InternalSyntaxToken openParenToken;
   private final InternalSyntaxToken closeParenToken;
 
   public SynchronizedStatementTreeImpl(InternalSyntaxToken synchronizedKeyword, InternalSyntaxToken openParenToken,
-                                       ExpressionTree expression, InternalSyntaxToken closeParenToken, BlockTree block, AstNode... childrens) {
-    super(JavaGrammar.SYNCHRONIZED_STATEMENT);
+    ExpressionTree expression, InternalSyntaxToken closeParenToken, BlockTree block, AstNode... childrens) {
+    super(Kind.SYNCHRONIZED_STATEMENT);
     this.expression = Preconditions.checkNotNull(expression);
     this.block = Preconditions.checkNotNull(block);
     this.synchronizedKeyword = synchronizedKeyword;
@@ -93,8 +92,8 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
-        expression,
-        block);
+      expression,
+      block);
   }
 
 }

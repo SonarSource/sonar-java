@@ -24,7 +24,6 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -39,7 +38,7 @@ public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTr
   private final ExpressionTree expression;
 
   public ThrowStatementTreeImpl(ExpressionTree expression, AstNode... children) {
-    super(JavaGrammar.THROW_STATEMENT);
+    super(Kind.THROW_STATEMENT);
     this.expression = Preconditions.checkNotNull(expression);
 
     for (AstNode child : children) {

@@ -712,7 +712,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void empty_statement() {
-    EmptyStatementTree tree = (EmptyStatementTree) p.parse("class T { void m() { ; } }").getFirstDescendant(JavaGrammar.EMPTY_STATEMENT);
+    EmptyStatementTree tree = (EmptyStatementTree) p.parse("class T { void m() { ; } }").getFirstDescendant(Kind.EMPTY_STATEMENT);
     assertThat(tree.is(Tree.Kind.EMPTY_STATEMENT)).isTrue();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
   }
@@ -722,7 +722,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void labeled_statement() {
-    LabeledStatementTree tree = (LabeledStatementTree) p.parse("class T { void m() { label: ; } }").getFirstDescendant(JavaGrammar.LABELED_STATEMENT);
+    LabeledStatementTree tree = (LabeledStatementTree) p.parse("class T { void m() { label: ; } }").getFirstDescendant(Kind.LABELED_STATEMENT);
     assertThat(tree.is(Tree.Kind.LABELED_STATEMENT)).isTrue();
     assertThat(tree.label().name()).isEqualTo("label");
     assertThat(tree.statement()).isNotNull();
@@ -745,7 +745,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void if_statement() {
-    IfStatementTree tree = (IfStatementTree) p.parse("class T { void m() { if (true) { } } }").getFirstDescendant(JavaGrammar.IF_STATEMENT);
+    IfStatementTree tree = (IfStatementTree) p.parse("class T { void m() { if (true) { } } }").getFirstDescendant(Kind.IF_STATEMENT);
     assertThat(tree.is(Tree.Kind.IF_STATEMENT)).isTrue();
     assertThat(tree.ifKeyword().text()).isEqualTo("if");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
@@ -755,7 +755,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.elseKeyword()).isNull();
     assertThat(tree.elseStatement()).isNull();
 
-    tree = (IfStatementTree) p.parse("class T { void m() { if (true) { } else { } } }").getFirstDescendant(JavaGrammar.IF_STATEMENT);
+    tree = (IfStatementTree) p.parse("class T { void m() { if (true) { } else { } } }").getFirstDescendant(Kind.IF_STATEMENT);
     assertThat(tree.is(Tree.Kind.IF_STATEMENT)).isTrue();
     assertThat(tree.ifKeyword().text()).isEqualTo("if");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
@@ -771,7 +771,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void assert_statement() {
-    AssertStatementTree tree = (AssertStatementTree) p.parse("class T { void m() { assert true; } }").getFirstDescendant(JavaGrammar.ASSERT_STATEMENT);
+    AssertStatementTree tree = (AssertStatementTree) p.parse("class T { void m() { assert true; } }").getFirstDescendant(Kind.ASSERT_STATEMENT);
     assertThat(tree.is(Tree.Kind.ASSERT_STATEMENT)).isTrue();
     assertThat(tree.assertKeyword().text()).isEqualTo("assert");
     assertThat(tree.condition()).isNotNull();
@@ -779,7 +779,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.detail()).isNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
 
-    tree = (AssertStatementTree) p.parse("class T { void m() { assert true : \"detail\"; } }").getFirstDescendant(JavaGrammar.ASSERT_STATEMENT);
+    tree = (AssertStatementTree) p.parse("class T { void m() { assert true : \"detail\"; } }").getFirstDescendant(Kind.ASSERT_STATEMENT);
     assertThat(tree.is(Tree.Kind.ASSERT_STATEMENT)).isTrue();
     assertThat(tree.assertKeyword().text()).isEqualTo("assert");
     assertThat(tree.condition()).isNotNull();
@@ -794,7 +794,7 @@ public class JavaTreeMakerTest {
   @Test
   public void switch_statement() {
     SwitchStatementTree tree = (SwitchStatementTree) p.parse("class T { void m() { switch (e) { case 1: case 2: ; default: ; } } }").getFirstDescendant(
-      JavaGrammar.SWITCH_STATEMENT);
+      Kind.SWITCH_STATEMENT);
     assertThat(tree.is(Tree.Kind.SWITCH_STATEMENT)).isTrue();
     assertThat(tree.switchKeyword().text()).isEqualTo("switch");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
@@ -824,7 +824,7 @@ public class JavaTreeMakerTest {
     assertThat(c.labels().get(0).colonToken().text()).isEqualTo(":");
     assertThat(c.body()).hasSize(1);
 
-    tree = (SwitchStatementTree) p.parse("class T { void m() { switch (e) { default: } } }").getFirstDescendant(JavaGrammar.SWITCH_STATEMENT);
+    tree = (SwitchStatementTree) p.parse("class T { void m() { switch (e) { default: } } }").getFirstDescendant(Kind.SWITCH_STATEMENT);
     assertThat(tree.cases()).hasSize(1);
     assertThat(tree.cases().get(0).body()).isEmpty();
   }
@@ -834,7 +834,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void while_statement() {
-    WhileStatementTree tree = (WhileStatementTree) p.parse("class T { void m() { while (true) ; } }").getFirstDescendant(JavaGrammar.WHILE_STATEMENT);
+    WhileStatementTree tree = (WhileStatementTree) p.parse("class T { void m() { while (true) ; } }").getFirstDescendant(Kind.WHILE_STATEMENT);
     assertThat(tree.is(Tree.Kind.WHILE_STATEMENT)).isTrue();
     assertThat(tree.whileKeyword().text()).isEqualTo("while");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
@@ -848,7 +848,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void do_statement() {
-    DoWhileStatementTree tree = (DoWhileStatementTree) p.parse("class T { void m() { do ; while (true); } }").getFirstDescendant(JavaGrammar.DO_STATEMENT);
+    DoWhileStatementTree tree = (DoWhileStatementTree) p.parse("class T { void m() { do ; while (true); } }").getFirstDescendant(Kind.DO_STATEMENT);
     assertThat(tree.is(Tree.Kind.DO_STATEMENT)).isTrue();
     assertThat(tree.doKeyword().text()).isEqualTo("do");
     assertThat(tree.statement()).isNotNull();
@@ -911,13 +911,13 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void break_statement() {
-    BreakStatementTree tree = (BreakStatementTree) p.parse("class T { void m() { break ; } }").getFirstDescendant(JavaGrammar.BREAK_STATEMENT);
+    BreakStatementTree tree = (BreakStatementTree) p.parse("class T { void m() { break ; } }").getFirstDescendant(Kind.BREAK_STATEMENT);
     assertThat(tree.is(Tree.Kind.BREAK_STATEMENT)).isTrue();
     assertThat(tree.breakKeyword().text()).isEqualTo("break");
     assertThat(tree.label()).isNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
 
-    tree = (BreakStatementTree) p.parse("class T { void m() { break label ; } }").getFirstDescendant(JavaGrammar.BREAK_STATEMENT);
+    tree = (BreakStatementTree) p.parse("class T { void m() { break label ; } }").getFirstDescendant(Kind.BREAK_STATEMENT);
     assertThat(tree.is(Tree.Kind.BREAK_STATEMENT)).isTrue();
     assertThat(tree.breakKeyword().text()).isEqualTo("break");
     assertThat(tree.label().name()).isEqualTo("label");
@@ -929,13 +929,13 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void continue_statement() {
-    ContinueStatementTree tree = (ContinueStatementTree) p.parse("class T { void m() { continue ; } }").getFirstDescendant(JavaGrammar.CONTINUE_STATEMENT);
+    ContinueStatementTree tree = (ContinueStatementTree) p.parse("class T { void m() { continue ; } }").getFirstDescendant(Kind.CONTINUE_STATEMENT);
     assertThat(tree.is(Tree.Kind.CONTINUE_STATEMENT)).isTrue();
     assertThat(tree.continueKeyword().text()).isEqualTo("continue");
     assertThat(tree.label()).isNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
 
-    tree = (ContinueStatementTree) p.parse("class T { void m() { continue label ; } }").getFirstDescendant(JavaGrammar.CONTINUE_STATEMENT);
+    tree = (ContinueStatementTree) p.parse("class T { void m() { continue label ; } }").getFirstDescendant(Kind.CONTINUE_STATEMENT);
     assertThat(tree.is(Tree.Kind.CONTINUE_STATEMENT)).isTrue();
     assertThat(tree.continueKeyword().text()).isEqualTo("continue");
     assertThat(tree.label().name()).isEqualTo("label");
@@ -947,13 +947,13 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void return_statement() {
-    ReturnStatementTree tree = (ReturnStatementTree) p.parse("class T { boolean m() { return ; } }").getFirstDescendant(JavaGrammar.RETURN_STATEMENT);
+    ReturnStatementTree tree = (ReturnStatementTree) p.parse("class T { boolean m() { return ; } }").getFirstDescendant(Kind.RETURN_STATEMENT);
     assertThat(tree.is(Tree.Kind.RETURN_STATEMENT)).isTrue();
     assertThat(tree.returnKeyword().text()).isEqualTo("return");
     assertThat(tree.expression()).isNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
 
-    tree = (ReturnStatementTree) p.parse("class T { boolean m() { return true; } }").getFirstDescendant(JavaGrammar.RETURN_STATEMENT);
+    tree = (ReturnStatementTree) p.parse("class T { boolean m() { return true; } }").getFirstDescendant(Kind.RETURN_STATEMENT);
     assertThat(tree.is(Tree.Kind.RETURN_STATEMENT)).isTrue();
     assertThat(tree.returnKeyword().text()).isEqualTo("return");
     assertThat(tree.expression()).isNotNull();
@@ -965,7 +965,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void throw_statement() {
-    ThrowStatementTree tree = (ThrowStatementTree) p.parse("class T { void m() { throw e; } }").getFirstDescendant(JavaGrammar.THROW_STATEMENT);
+    ThrowStatementTree tree = (ThrowStatementTree) p.parse("class T { void m() { throw e; } }").getFirstDescendant(Kind.THROW_STATEMENT);
     assertThat(tree.is(Tree.Kind.THROW_STATEMENT)).isTrue();
     assertThat(tree.throwKeyword().text()).isEqualTo("throw");
     assertThat(tree.expression()).isNotNull();
@@ -977,7 +977,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void synchronized_statement() {
-    SynchronizedStatementTree tree = (SynchronizedStatementTree) p.parse("class T { void m() { synchronized(e) { } } }").getFirstDescendant(JavaGrammar.SYNCHRONIZED_STATEMENT);
+    SynchronizedStatementTree tree = (SynchronizedStatementTree) p.parse("class T { void m() { synchronized(e) { } } }").getFirstDescendant(Kind.SYNCHRONIZED_STATEMENT);
     assertThat(tree.is(Tree.Kind.SYNCHRONIZED_STATEMENT)).isTrue();
     assertThat(tree.synchronizedKeyword().text()).isEqualTo("synchronized");
     assertThat(tree.openParenToken().text()).isEqualTo("(");

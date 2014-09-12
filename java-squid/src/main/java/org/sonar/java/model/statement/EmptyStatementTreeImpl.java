@@ -22,7 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
@@ -35,7 +34,7 @@ import java.util.Iterator;
 public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTree {
 
   public EmptyStatementTreeImpl(AstNode astNode) {
-    super(JavaGrammar.EMPTY_STATEMENT);
+    super(Kind.EMPTY_STATEMENT);
     addChild(astNode);
   }
 

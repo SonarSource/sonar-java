@@ -23,7 +23,6 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
@@ -41,7 +40,7 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
   private final IdentifierTree label;
 
   public BreakStatementTreeImpl(@Nullable IdentifierTree label, AstNode... children) {
-    super(JavaGrammar.BREAK_STATEMENT);
+    super(Kind.BREAK_STATEMENT);
     this.label = label;
 
     for (AstNode child : children) {

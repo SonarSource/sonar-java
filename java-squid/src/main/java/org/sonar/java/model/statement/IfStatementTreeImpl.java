@@ -22,7 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -33,10 +32,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
-
 
   private InternalSyntaxToken ifKeyword;
   private InternalSyntaxToken openParenToken;
@@ -44,12 +43,12 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   private InternalSyntaxToken closeParenToken;
   private StatementTree thenStatement;
   @Nullable
-  private InternalSyntaxToken elseKeyword;
+  private final InternalSyntaxToken elseKeyword;
   @Nullable
   private final StatementTree elseStatement;
 
   public IfStatementTreeImpl(InternalSyntaxToken elseKeyword, StatementTree elseStatement, AstNode... children) {
-    super(JavaGrammar.IF_STATEMENT);
+    super(Kind.IF_STATEMENT);
     this.elseKeyword = elseKeyword;
     this.elseStatement = Preconditions.checkNotNull(elseStatement);
 
@@ -59,8 +58,9 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   }
 
   public IfStatementTreeImpl(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
-                             StatementTree thenStatement, AstNode... children) {
-    super(JavaGrammar.IF_STATEMENT);
+    StatementTree thenStatement, AstNode... children) {
+
+    super(Kind.IF_STATEMENT);
     this.ifKeyword = ifKeyword;
     this.openParenToken = openParenToken;
     this.condition = Preconditions.checkNotNull(condition);
@@ -75,7 +75,7 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   }
 
   public IfStatementTreeImpl complete(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
-                                      StatementTree thenStatement, AstNode... children) {
+    StatementTree thenStatement, AstNode... children) {
     Preconditions.checkState(this.condition == null, "Already completed");
     this.ifKeyword = ifKeyword;
     this.openParenToken = openParenToken;

@@ -52,8 +52,8 @@ public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessG
 
   public boolean isExcluded(AstNode astNode) {
     return astNode.is(Kind.BLOCK)
-      || astNode.is(JavaGrammar.EMPTY_STATEMENT)
-      || astNode.is(JavaGrammar.LABELED_STATEMENT)
+      || astNode.is(Kind.EMPTY_STATEMENT)
+      || astNode.is(Kind.LABELED_STATEMENT)
       || astNode.getParent().is(JavaGrammar.STATEMENT_EXPRESSION);
   }
 

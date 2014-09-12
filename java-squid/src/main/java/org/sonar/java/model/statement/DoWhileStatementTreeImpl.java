@@ -22,7 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
@@ -37,16 +36,17 @@ import java.util.Iterator;
 public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStatementTree {
   private final StatementTree statement;
   private final ExpressionTree condition;
-  private InternalSyntaxToken semicolonToken;
-  private InternalSyntaxToken doKeyword;
-  private InternalSyntaxToken whileKeyword;
-  private InternalSyntaxToken openParenToken;
-  private InternalSyntaxToken closeParenToken;
+  private final InternalSyntaxToken semicolonToken;
+  private final InternalSyntaxToken doKeyword;
+  private final InternalSyntaxToken whileKeyword;
+  private final InternalSyntaxToken openParenToken;
+  private final InternalSyntaxToken closeParenToken;
 
   public DoWhileStatementTreeImpl(InternalSyntaxToken doKeyword, StatementTree statement,
-                                  InternalSyntaxToken whileKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
-                                  InternalSyntaxToken semicolonToken, AstNode... children) {
-    super(JavaGrammar.DO_STATEMENT);
+    InternalSyntaxToken whileKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
+    InternalSyntaxToken semicolonToken, AstNode... children) {
+
+    super(Kind.DO_STATEMENT);
     this.statement = Preconditions.checkNotNull(statement);
     this.condition = Preconditions.checkNotNull(condition);
     this.doKeyword = doKeyword;

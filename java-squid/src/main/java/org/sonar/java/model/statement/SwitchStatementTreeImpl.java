@@ -22,7 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -39,16 +38,16 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   private final ExpressionTree expression;
   private final List<CaseGroupTreeImpl> cases;
-  private InternalSyntaxToken switchKeyword;
-  private InternalSyntaxToken openParenToken;
-  private InternalSyntaxToken closeParenToken;
-  private InternalSyntaxToken openBraceToken;
-  private InternalSyntaxToken closeBraceToken;
+  private final InternalSyntaxToken switchKeyword;
+  private final InternalSyntaxToken openParenToken;
+  private final InternalSyntaxToken closeParenToken;
+  private final InternalSyntaxToken openBraceToken;
+  private final InternalSyntaxToken closeBraceToken;
 
   public SwitchStatementTreeImpl(InternalSyntaxToken switchKeyword, InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken,
-                                 InternalSyntaxToken openBraceToken, List<CaseGroupTreeImpl> groups, InternalSyntaxToken closeBraceToken,
-                                 List<AstNode> children) {
-    super(JavaGrammar.SWITCH_STATEMENT);
+    InternalSyntaxToken openBraceToken, List<CaseGroupTreeImpl> groups, InternalSyntaxToken closeBraceToken,
+    List<AstNode> children) {
+    super(Kind.SWITCH_STATEMENT);
     this.switchKeyword = switchKeyword;
     this.openParenToken = openParenToken;
     this.expression = Preconditions.checkNotNull(expression);

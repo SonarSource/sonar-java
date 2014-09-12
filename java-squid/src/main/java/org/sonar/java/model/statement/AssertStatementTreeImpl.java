@@ -24,7 +24,6 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
@@ -44,7 +43,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   private final ExpressionTree detail;
 
   public AssertStatementTreeImpl(ExpressionTree condition, AstNode assertToken, AstNode expression, AstNode semicolonToken) {
-    super(JavaGrammar.ASSERT_STATEMENT);
+    super(Kind.ASSERT_STATEMENT);
     this.condition = Preconditions.checkNotNull(condition);
     this.detail = null;
 
@@ -54,7 +53,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   }
 
   public AssertStatementTreeImpl(ExpressionTree detail, AstNode colonToken, AstNode expression) {
-    super(JavaGrammar.ASSERT_STATEMENT);
+    super(Kind.ASSERT_STATEMENT);
     this.detail = Preconditions.checkNotNull(detail);
 
     addChild(colonToken);

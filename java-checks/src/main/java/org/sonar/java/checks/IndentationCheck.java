@@ -45,7 +45,7 @@ public class IndentationCheck extends SquidCheck<LexerlessGrammar> {
     JavaGrammar.ENUM_BODY,
     JavaGrammar.INTERFACE_BODY,
     Kind.BLOCK,
-    JavaGrammar.SWITCH_STATEMENT,
+    Kind.SWITCH_STATEMENT,
     JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP
   };
 
