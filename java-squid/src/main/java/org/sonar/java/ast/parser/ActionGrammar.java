@@ -437,9 +437,9 @@ public class ActionGrammar {
   public AssertStatementTreeImpl ASSERT_STATEMENT() {
     return b.<AssertStatementTreeImpl>nonterminal(JavaGrammar.ASSERT_STATEMENT)
       .is(f.completeAssertStatement(
-        b.invokeRule(JavaKeyword.ASSERT), b.invokeRule(JavaGrammar.EXPRESSION),
+        b.invokeRule(JavaKeyword.ASSERT), EXPRESSION(),
         b.optional(
-          f.newAssertStatement(b.invokeRule(JavaPunctuator.COLON), b.invokeRule(JavaGrammar.EXPRESSION))),
+          f.newAssertStatement(b.invokeRule(JavaPunctuator.COLON), EXPRESSION())),
         b.invokeRule(JavaPunctuator.SEMI)));
   }
 
@@ -447,7 +447,7 @@ public class ActionGrammar {
     return b.<IfStatementTreeImpl>nonterminal(JavaGrammar.IF_STATEMENT)
       .is(
         f.completeIf(
-          b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
+          b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
           STATEMENT(),
           b.optional(
             f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), STATEMENT()))));
@@ -468,7 +468,7 @@ public class ActionGrammar {
           b.invokeRule(JavaKeyword.FOR),
           b.invokeRule(JavaPunctuator.LPAR),
           b.optional(FOR_INIT()), b.invokeRule(JavaPunctuator.SEMI),
-          b.optional(b.invokeRule(JavaGrammar.EXPRESSION)), b.invokeRule(JavaPunctuator.SEMI),
+          b.optional(EXPRESSION()), b.invokeRule(JavaPunctuator.SEMI),
           b.optional(FOR_UPDATE()),
           b.invokeRule(JavaPunctuator.RPAR),
           STATEMENT()));
@@ -505,7 +505,7 @@ public class ActionGrammar {
     return b.<StatementExpressionListTreeImpl>nonterminal()
       .is(
         f.newStatementExpressions(
-          b.invokeRule(JavaGrammar.STATEMENT_EXPRESSION), b.zeroOrMore(f.newWrapperAstNode12(b.invokeRule(JavaPunctuator.COMMA), b.invokeRule(JavaGrammar.STATEMENT_EXPRESSION)))));
+          EXPRESSION(), b.zeroOrMore(f.newWrapperAstNode12(b.invokeRule(JavaPunctuator.COMMA), (AstNode) EXPRESSION()))));
   }
 
   public ForEachStatementImpl FOREACH_STATEMENT() {
@@ -513,13 +513,13 @@ public class ActionGrammar {
       .is(
         f.newForeachStatement(
           b.invokeRule(JavaKeyword.FOR),
-          b.invokeRule(JavaPunctuator.LPAR), FORMAL_PARAMETER(), b.invokeRule(JavaPunctuator.COLON), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
+          b.invokeRule(JavaPunctuator.LPAR), FORMAL_PARAMETER(), b.invokeRule(JavaPunctuator.COLON), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
           STATEMENT()));
   }
 
   public WhileStatementTreeImpl WHILE_STATEMENT() {
     return b.<WhileStatementTreeImpl>nonterminal(JavaGrammar.WHILE_STATEMENT)
-      .is(f.whileStatement(b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
+      .is(f.whileStatement(b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
         STATEMENT()));
   }
 
@@ -527,7 +527,7 @@ public class ActionGrammar {
     return b.<DoWhileStatementTreeImpl>nonterminal(JavaGrammar.DO_STATEMENT)
       .is(
         f.doWhileStatement(b.invokeRule(JavaKeyword.DO), STATEMENT(),
-          b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
+          b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
           b.invokeRule(JavaPunctuator.SEMI)));
   }
 
@@ -597,14 +597,14 @@ public class ActionGrammar {
   public VariableTreeImpl RESOURCE() {
     return b.<VariableTreeImpl>nonterminal(JavaGrammar.RESOURCE)
       .is(
-        f.newResource(MODIFIERS(), CLASS_TYPE(), VARIABLE_DECLARATOR_ID(), b.invokeRule(JavaPunctuator.EQU), b.invokeRule(JavaGrammar.EXPRESSION)));
+        f.newResource(MODIFIERS(), CLASS_TYPE(), VARIABLE_DECLARATOR_ID(), b.invokeRule(JavaPunctuator.EQU), EXPRESSION()));
   }
 
   public SwitchStatementTreeImpl SWITCH_STATEMENT() {
     return b.<SwitchStatementTreeImpl>nonterminal(JavaGrammar.SWITCH_STATEMENT)
       .is(
         f.switchStatement(
-          b.invokeRule(JavaKeyword.SWITCH), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
+          b.invokeRule(JavaKeyword.SWITCH), b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
           b.invokeRule(JavaPunctuator.LWING),
           b.zeroOrMore(SWITCH_GROUP()),
           b.invokeRule(JavaPunctuator.RWING)));
@@ -619,14 +619,14 @@ public class ActionGrammar {
     return b.<CaseLabelTreeImpl>nonterminal(JavaGrammar.SWITCH_LABEL)
       .is(
         b.firstOf(
-          f.newCaseSwitchLabel(b.invokeRule(JavaKeyword.CASE), b.invokeRule(JavaGrammar.CONSTANT_EXPRESSION), b.invokeRule(JavaPunctuator.COLON)),
+          f.newCaseSwitchLabel(b.invokeRule(JavaKeyword.CASE), EXPRESSION(), b.invokeRule(JavaPunctuator.COLON)),
           f.newDefaultSwitchLabel(b.invokeRule(JavaKeyword.DEFAULT), b.invokeRule(JavaPunctuator.COLON))));
   }
 
   public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
     return b.<SynchronizedStatementTreeImpl>nonterminal(JavaGrammar.SYNCHRONIZED_STATEMENT)
       .is(
-        f.synchronizedStatement(b.invokeRule(JavaKeyword.SYNCHRONIZED), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
+        f.synchronizedStatement(b.invokeRule(JavaKeyword.SYNCHRONIZED), b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
           BLOCK()));
   }
 
@@ -642,12 +642,12 @@ public class ActionGrammar {
 
   public ReturnStatementTreeImpl RETURN_STATEMENT() {
     return b.<ReturnStatementTreeImpl>nonterminal(JavaGrammar.RETURN_STATEMENT)
-      .is(f.returnStatement(b.invokeRule(JavaKeyword.RETURN), b.optional(b.invokeRule(JavaGrammar.EXPRESSION)), b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.returnStatement(b.invokeRule(JavaKeyword.RETURN), b.optional(EXPRESSION()), b.invokeRule(JavaPunctuator.SEMI)));
   }
 
   public ThrowStatementTreeImpl THROW_STATEMENT() {
     return b.<ThrowStatementTreeImpl>nonterminal(JavaGrammar.THROW_STATEMENT)
-      .is(f.throwStatement(b.invokeRule(JavaKeyword.THROW), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.throwStatement(b.invokeRule(JavaKeyword.THROW), EXPRESSION(), b.invokeRule(JavaPunctuator.SEMI)));
   }
 
   public LabeledStatementTreeImpl LABELED_STATEMENT() {
@@ -657,7 +657,7 @@ public class ActionGrammar {
 
   public ExpressionStatementTreeImpl EXPRESSION_STATEMENT() {
     return b.<ExpressionStatementTreeImpl>nonterminal(JavaGrammar.EXPRESSION_STATEMENT)
-      .is(f.expressionStatement(b.invokeRule(JavaGrammar.STATEMENT_EXPRESSION), b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.expressionStatement(EXPRESSION(), b.invokeRule(JavaPunctuator.SEMI)));
   }
 
   public EmptyStatementTreeImpl EMPTY_STATEMENT() {
@@ -668,6 +668,11 @@ public class ActionGrammar {
   // End of statements
 
   // Expressions
+
+  public ExpressionTree EXPRESSION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.EXPRESSION)
+      .is(ASSIGNMENT_EXPRESSION());
+  }
 
   public ExpressionTree ASSIGNMENT_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.ASSIGNMENT_EXPRESSION)
@@ -700,9 +705,9 @@ public class ActionGrammar {
           b.optional(
             f.newTernaryExpression(
               b.invokeRule(JavaPunctuator.QUERY),
-              b.invokeRule(JavaGrammar.EXPRESSION),
+              EXPRESSION(),
               b.invokeRule(JavaPunctuator.COLON),
-              b.invokeRule(JavaGrammar.EXPRESSION)))));
+              EXPRESSION()))));
   }
 
   public ExpressionTree CONDITIONAL_OR_EXPRESSION() {
@@ -929,7 +934,7 @@ public class ActionGrammar {
 
   public ParenthesizedTreeImpl PARENTHESIZED_EXPRESSION() {
     return b.<ParenthesizedTreeImpl>nonterminal(JavaGrammar.PAR_EXPRESSION)
-      .is(f.parenthesizedExpression(b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR)));
+      .is(f.parenthesizedExpression(b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR)));
   }
 
   public ExpressionTree EXPLICIT_GENERIC_INVOCATION_EXPRESSION() {
@@ -981,7 +986,7 @@ public class ActionGrammar {
             f.newArrayCreatorWithInitializer(
               b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), ARRAY_INITIALIZER()),
             f.newArrayCreatorWithDimension(
-              b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RBRK),
+              b.invokeRule(JavaPunctuator.LBRK), EXPRESSION(), b.invokeRule(JavaPunctuator.RBRK),
               b.zeroOrMore(b.invokeRule(JavaGrammar.DIM_EXPR)),
               b.zeroOrMore(f.newWrapperAstNode(b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaGrammar.DIM)))))));
   }
@@ -1026,8 +1031,8 @@ public class ActionGrammar {
           b.invokeRule(JavaPunctuator.LPAR),
           b.optional(
             f.newArguments(
-              b.invokeRule(JavaGrammar.EXPRESSION),
-              b.zeroOrMore(f.newWrapperAstNode2(b.invokeRule(JavaPunctuator.COMMA), b.invokeRule(JavaGrammar.EXPRESSION))))),
+              EXPRESSION(),
+              b.zeroOrMore(f.newWrapperAstNode2(b.invokeRule(JavaPunctuator.COMMA), (AstNode) EXPRESSION())))),
           b.invokeRule(JavaPunctuator.RPAR)));
   }
 
@@ -1044,7 +1049,7 @@ public class ActionGrammar {
     return b.<ExpressionTree>nonterminal(JavaGrammar.VARIABLE_INITIALIZER)
       .is(
         b.firstOf(
-          f.newExpression(b.invokeRule(JavaGrammar.EXPRESSION)),
+          EXPRESSION(),
           ARRAY_INITIALIZER()));
   }
 

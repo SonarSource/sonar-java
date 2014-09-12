@@ -40,8 +40,7 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
   private final InternalSyntaxToken colonToken;
   private final ExpressionTree falseExpression;
 
-  public ConditionalExpressionTreeImpl(InternalSyntaxToken queryToken, ExpressionTree trueExpression, InternalSyntaxToken colonToken, ExpressionTree falseExpression,
-    AstNode trueExpressionChild, AstNode falseExpressionChild) {
+  public ConditionalExpressionTreeImpl(InternalSyntaxToken queryToken, ExpressionTree trueExpression, InternalSyntaxToken colonToken, ExpressionTree falseExpression) {
 
     super(Kind.CONDITIONAL_EXPRESSION);
     this.queryToken = queryToken;
@@ -50,9 +49,9 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
     this.falseExpression = Preconditions.checkNotNull(falseExpression);
 
     addChild(queryToken);
-    addChild(trueExpressionChild);
+    addChild((AstNode) trueExpression);
     addChild(colonToken);
-    addChild(falseExpressionChild);
+    addChild((AstNode) falseExpression);
   }
 
   public ConditionalExpressionTreeImpl complete(ExpressionTree condition) {

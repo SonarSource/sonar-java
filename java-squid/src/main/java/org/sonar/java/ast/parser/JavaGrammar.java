@@ -217,8 +217,6 @@ public enum JavaGrammar implements GrammarRuleKey {
   SWITCH_BLOCK_STATEMENT_GROUP,
   SWITCH_LABEL,
 
-  CONSTANT_EXPRESSION,
-
   BASIC_TYPE,
   TYPE_ARGUMENTS,
   TYPE_ARGUMENT,
@@ -595,19 +593,20 @@ public enum JavaGrammar implements GrammarRuleKey {
    * 15. Expressions
    */
   private static void expressions(LexerlessGrammarBuilder b) {
-    b.rule(STATEMENT_EXPRESSION).is(EXPRESSION);
-    b.rule(CONSTANT_EXPRESSION).is(EXPRESSION);
-    b.rule(EXPRESSION).is(ASSIGNMENT_EXPRESSION);
-
-    b.rule(IDENTIFIER_SUFFIX).is(b.firstOf(
-      b.sequence(LBRK, b.firstOf(b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), b.sequence(EXPRESSION, RBRK))),
-      ARGUMENTS,
-      b.sequence(DOT, b.firstOf(
-        CLASS,
-        EXPLICIT_GENERIC_INVOCATION,
-        THIS,
-        b.sequence(SUPER, ARGUMENTS),
-        b.sequence(NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR)))));
+    b.rule(IDENTIFIER_SUFFIX).is(
+      b.firstOf(
+        b.sequence(
+          LBRK,
+          b.firstOf(
+            b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS),
+            b.sequence(EXPRESSION, RBRK))),
+        ARGUMENTS,
+        b.sequence(DOT, b.firstOf(
+          CLASS,
+          EXPLICIT_GENERIC_INVOCATION,
+          THIS,
+          b.sequence(SUPER, ARGUMENTS),
+          b.sequence(NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR)))));
     b.rule(EXPLICIT_GENERIC_INVOCATION).is(NON_WILDCARD_TYPE_ARGUMENTS, EXPLICIT_GENERIC_INVOCATION_SUFFIX);
     b.rule(NON_WILDCARD_TYPE_ARGUMENTS).is(LPOINT, TYPE, b.zeroOrMore(COMMA, TYPE), RPOINT);
     b.rule(EXPLICIT_GENERIC_INVOCATION_SUFFIX).is(
@@ -636,7 +635,10 @@ public enum JavaGrammar implements GrammarRuleKey {
 
     // Java 8 lambda expressions.
     b.rule(INFERED_PARAMS).is(LPAR, b.optional(JavaTokenType.IDENTIFIER, b.zeroOrMore(COMMA, JavaTokenType.IDENTIFIER)), RPAR);
-    b.rule(LAMBDA_BODY).is(b.firstOf(BLOCK, EXPRESSION));
+    b.rule(LAMBDA_BODY).is(
+      b.firstOf(
+        BLOCK,
+        EXPRESSION));
 
   }
 

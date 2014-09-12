@@ -639,20 +639,6 @@ public class JavaTreeMaker {
     return new ModifiersTreeImpl(astNode, modifiers.build(), annotations.build());
   }
 
-  public ExpressionTree expression(AstNode astNode) {
-    if (astNode.is(JavaGrammar.CONSTANT_EXPRESSION, JavaGrammar.STATEMENT_EXPRESSION)) {
-      astNode = astNode.getFirstChild(JavaGrammar.EXPRESSION).getFirstChild();
-    } else if (astNode.is(JavaGrammar.EXPRESSION)) {
-      astNode = astNode.getFirstChild();
-    }
-
-    if (astNode instanceof ExpressionTree && !((JavaTree) astNode).isLegacy()) {
-      return (ExpressionTree) astNode;
-    } else {
-      throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType().toString());
-    }
-  }
-
   public ExpressionTree applyDim(ExpressionTree expression, int count) {
     ExpressionTree result = expression;
     for (int i = 0; i < count; i++) {

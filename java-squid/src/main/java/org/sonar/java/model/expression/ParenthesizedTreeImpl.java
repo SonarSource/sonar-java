@@ -23,7 +23,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -38,7 +37,7 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
   private final ExpressionTree expression;
 
   public ParenthesizedTreeImpl(ExpressionTree expression, AstNode... children) {
-    super(JavaGrammar.PAR_EXPRESSION);
+    super(Kind.PARENTHESIZED_EXPRESSION);
     this.expression = Preconditions.checkNotNull(expression);
 
     for (AstNode child : children) {
