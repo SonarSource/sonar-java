@@ -132,7 +132,6 @@ public class DefaultJavaResourceLocator extends BaseTreeVisitor implements JavaR
     } else if (currentClassKey.peek() != null) {
       key = currentClassKey.peek()+"$"+className;
     }
-    LOG.error(key);
     return key;
   }
 
