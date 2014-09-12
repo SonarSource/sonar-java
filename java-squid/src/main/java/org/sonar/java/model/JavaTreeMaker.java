@@ -84,6 +84,27 @@ public class JavaTreeMaker {
     .toArray(new Kind[0]);
   public static final Kind[] QUALIFIED_EXPRESSION_KINDS = new Kind[] {Kind.IDENTIFIER, Kind.MEMBER_SELECT};
 
+  public static final AstNodeType[] STATEMENTS_KINDS = new ImmutableList.Builder<AstNodeType>()
+    .add(
+      JavaGrammar.EMPTY_STATEMENT,
+      JavaGrammar.LABELED_STATEMENT,
+      JavaGrammar.IF_STATEMENT,
+      JavaGrammar.ASSERT_STATEMENT,
+      JavaGrammar.SWITCH_STATEMENT,
+      JavaGrammar.WHILE_STATEMENT,
+      JavaGrammar.DO_STATEMENT,
+      JavaGrammar.BREAK_STATEMENT,
+      JavaGrammar.CONTINUE_STATEMENT,
+      JavaGrammar.RETURN_STATEMENT,
+      JavaGrammar.THROW_STATEMENT,
+      JavaGrammar.SYNCHRONIZED_STATEMENT,
+      Kind.EXPRESSION_STATEMENT,
+      Kind.FOR_STATEMENT,
+      Kind.FOR_EACH_STATEMENT,
+      Kind.TRY_STATEMENT)
+    .build()
+    .toArray(new AstNodeType[0]);
+
   private final KindMaps kindMaps = new KindMaps();
 
   public static void checkType(AstNode astNode, AstNodeType... expected) {
@@ -582,14 +603,18 @@ public class JavaTreeMaker {
 
   public List<StatementTree> blockStatement(AstNode astNode) {
     checkType(astNode, JavaGrammar.BLOCK_STATEMENT);
+
     AstNode statementNode = astNode.getFirstChild(
-      JavaGrammar.STATEMENT,
       JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
       JavaGrammar.CLASS_DECLARATION,
-      JavaGrammar.ENUM_DECLARATION
-      );
-    if (statementNode.is(JavaGrammar.STATEMENT)) {
-      return ImmutableList.of(statement(statementNode));
+      JavaGrammar.ENUM_DECLARATION);
+    if (statementNode == null && astNode.getNumberOfChildren() == 1) {
+      // Statement hack (note that they are not all yet migrated to Kinds)
+      statementNode = astNode.getFirstChild();
+    }
+
+    if (statementNode instanceof StatementTree && !((JavaTree) statementNode).isLegacy()) {
+      return ImmutableList.of((StatementTree) statementNode);
     } else if (statementNode.is(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)) {
       return variableDeclarators(
         variableModifiers(statementNode.getFirstChild(JavaGrammar.VARIABLE_MODIFIERS)),
@@ -625,18 +650,11 @@ public class JavaTreeMaker {
   }
 
   public StatementTree statement(AstNode astNode) {
-    checkType(astNode, JavaGrammar.STATEMENT);
-
-    final AstNode statementNode = astNode.getFirstChild();
-    final StatementTree result;
-
-    if (statementNode instanceof StatementTree && !((JavaTree) statementNode).isLegacy()) {
-      result = (StatementTree) statementNode;
+    if (astNode instanceof StatementTree && !((JavaTree) astNode).isLegacy()) {
+      return (StatementTree) astNode;
     } else {
       throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString());
     }
-
-    return result;
   }
 
   public ExpressionTree expression(AstNode astNode) {

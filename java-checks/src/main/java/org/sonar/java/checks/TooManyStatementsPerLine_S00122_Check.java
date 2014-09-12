@@ -26,6 +26,7 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -45,14 +46,15 @@ public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessG
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.STATEMENT, JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT);
+    subscribeTo(JavaTreeMaker.STATEMENTS_KINDS);
+    subscribeTo(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT);
   }
 
   public boolean isExcluded(AstNode astNode) {
-    AstNode statementNode = astNode.getFirstChild();
-    return statementNode.is(Kind.BLOCK)
-      || statementNode.is(JavaGrammar.EMPTY_STATEMENT)
-      || statementNode.is(JavaGrammar.LABELED_STATEMENT);
+    return astNode.is(Kind.BLOCK)
+      || astNode.is(JavaGrammar.EMPTY_STATEMENT)
+      || astNode.is(JavaGrammar.LABELED_STATEMENT)
+      || astNode.getParent().is(JavaGrammar.STATEMENT_EXPRESSION);
   }
 
   @Override

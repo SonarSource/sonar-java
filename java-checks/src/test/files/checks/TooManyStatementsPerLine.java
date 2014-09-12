@@ -40,5 +40,12 @@ class TooManyStatementsPerLine {
             activationCmd);
     if(a){
     }else if(b) return true;
+
+    for (int i = 0; i < 42; i++)
+    {
+    }
+
+    for (int i = 0; i < 42; i++) {
+    }
   }
 }

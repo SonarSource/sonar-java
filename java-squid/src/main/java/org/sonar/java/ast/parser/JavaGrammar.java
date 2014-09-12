@@ -575,10 +575,11 @@ public enum JavaGrammar implements GrammarRuleKey {
   private static void blocksAndStatements(LexerlessGrammarBuilder b) {
     // 14.2. Blocks
     b.rule(BLOCK_STATEMENTS).is(b.zeroOrMore(BLOCK_STATEMENT));
-    b.rule(BLOCK_STATEMENT).is(b.firstOf(
-      LOCAL_VARIABLE_DECLARATION_STATEMENT,
-      b.sequence(MODIFIERS, b.firstOf(CLASS_DECLARATION, ENUM_DECLARATION)),
-      STATEMENT));
+    b.rule(BLOCK_STATEMENT).is(
+      b.firstOf(
+        LOCAL_VARIABLE_DECLARATION_STATEMENT,
+        b.sequence(MODIFIERS, b.firstOf(CLASS_DECLARATION, ENUM_DECLARATION)),
+        STATEMENT));
 
     // 14.4. Local Variable Declaration Statements
     b.rule(LOCAL_VARIABLE_DECLARATION_STATEMENT).is(b.optional(VARIABLE_MODIFIERS), TYPE, VARIABLE_DECLARATORS, SEMI);
@@ -587,25 +588,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       FINAL)));
     b.rule(VARIABLE_DECLARATORS).is(VARIABLE_DECLARATOR, b.zeroOrMore(COMMA, VARIABLE_DECLARATOR));
     b.rule(VARIABLE_DECLARATOR).is(JavaTokenType.IDENTIFIER, b.zeroOrMore(DIM), b.optional(EQU, VARIABLE_INITIALIZER));
-
-    // 14.5. Statements
-    b.rule(STATEMENT).is(b.firstOf(
-      BLOCK,
-      ASSERT_STATEMENT,
-      IF_STATEMENT,
-      FOR_STATEMENT,
-      WHILE_STATEMENT,
-      DO_STATEMENT,
-      TRY_STATEMENT,
-      SWITCH_STATEMENT,
-      SYNCHRONIZED_STATEMENT,
-      RETURN_STATEMENT,
-      THROW_STATEMENT,
-      BREAK_STATEMENT,
-      CONTINUE_STATEMENT,
-      LABELED_STATEMENT,
-      EXPRESSION_STATEMENT,
-      EMPTY_STATEMENT));
   }
 
   /**

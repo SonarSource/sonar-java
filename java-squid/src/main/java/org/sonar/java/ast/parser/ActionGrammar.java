@@ -398,6 +398,28 @@ public class ActionGrammar {
 
   // Statements
 
+  public StatementTree STATEMENT() {
+    return b.<StatementTree>nonterminal(JavaGrammar.STATEMENT)
+      .is(
+        b.firstOf(
+          BLOCK(),
+          ASSERT_STATEMENT(),
+          IF_STATEMENT(),
+          FOR_STATEMENT(),
+          WHILE_STATEMENT(),
+          DO_WHILE_STATEMENT(),
+          TRY_STATEMENT(),
+          SWITCH_STATEMENT(),
+          SYNCHRONIZED_STATEMENT(),
+          RETURN_STATEMENT(),
+          THROW_STATEMENT(),
+          BREAK_STATEMENT(),
+          CONTINUE_STATEMENT(),
+          LABELED_STATEMENT(),
+          EXPRESSION_STATEMENT(),
+          EMPTY_STATEMENT()));
+  }
+
   public BlockTreeImpl BLOCK() {
     return b.<BlockTreeImpl>nonterminal(JavaGrammar.BLOCK)
       .is(f.block(b.invokeRule(JavaPunctuator.LWING), b.invokeRule(JavaGrammar.BLOCK_STATEMENTS), b.invokeRule(JavaPunctuator.RWING)));

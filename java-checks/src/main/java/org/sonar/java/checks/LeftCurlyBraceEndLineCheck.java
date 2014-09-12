@@ -49,16 +49,13 @@ public class LeftCurlyBraceEndLineCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isExcluded(AstNode node) {
-    return node.getParent().is(
-      Kind.NEW_ARRAY,
-      JavaGrammar.ARRAY_INITIALIZER) ||
-      isExcludedBlock(node);
+    return node.getParent().is(Kind.NEW_ARRAY, JavaGrammar.ARRAY_INITIALIZER) ||
+      isExcludedBlock(node.getParent());
   }
 
   private static boolean isExcludedBlock(AstNode node) {
-    AstNode parent = node.getParent();
-    return parent.is(Kind.BLOCK) &&
-      isStaticInitializer(parent) || isBlock(parent);
+    return node.is(Kind.BLOCK) &&
+      isStaticInitializer(node) || isBlock(node);
   }
 
   private static boolean isStaticInitializer(AstNode node) {
@@ -66,8 +63,7 @@ public class LeftCurlyBraceEndLineCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isBlock(AstNode node) {
-    return node.getParent().is(JavaGrammar.STATEMENT) &&
-      node.getParent().getParent().is(JavaGrammar.BLOCK_STATEMENT);
+    return node.getParent().is(JavaGrammar.BLOCK_STATEMENT);
   }
 
 }
