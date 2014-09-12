@@ -68,6 +68,11 @@ public class BytecodeFixture {
       }
 
       @Override
+      public Collection<String> classKeys() {
+        return sourceFileCache.keySet();
+      }
+
+      @Override
       public Collection<File> classFilesToAnalyze() {
         return Collections.emptyList();
       }

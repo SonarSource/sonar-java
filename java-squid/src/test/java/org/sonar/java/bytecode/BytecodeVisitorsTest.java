@@ -19,14 +19,15 @@
  */
 package org.sonar.java.bytecode;
 
+import com.google.common.collect.Maps;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.sonar.api.resources.Resource;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.JavaConfiguration;
+import org.sonar.java.JavaFilesCache;
 import org.sonar.java.JavaSquid;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceCodeEdge;
@@ -35,12 +36,11 @@ import org.sonar.squidbridge.indexer.SquidIndex;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class BytecodeVisitorsTest {
 
@@ -63,17 +63,39 @@ public class BytecodeVisitorsTest {
   @BeforeClass
   public static void setup() {
     JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
-    JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
-    when(javaResourceLocator.findSourceFileKeyByClassName(anyString())).thenAnswer(new Answer<String>() {
+    JavaResourceLocator javaResourceLocator = new JavaResourceLocator() {
+      public Map<String, String> sourceFileCache = Maps.newHashMap();
+
       @Override
-      public String answer(InvocationOnMock invocation) throws Throwable {
-        String fileName = (String) invocation.getArguments()[0];
-        if(!fileName.endsWith(".java")) {
-          fileName += ".java";
-        }
-        return fileName;
+      public Resource findResourceByClassName(String className) {
+        return null;
       }
-    });
+
+      @Override
+      public String findSourceFileKeyByClassName(String className) {
+        String name = className.replace('.', '/');
+        return sourceFileCache.get(name);
+      }
+
+      @Override
+      public Collection<String> classKeys() {
+        return sourceFileCache.keySet();
+      }
+
+      @Override
+      public Collection<File> classFilesToAnalyze() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        JavaFilesCache javaFilesCache = new JavaFilesCache();
+        javaFilesCache.scanFile(context);
+        for (String key : javaFilesCache.resourcesCache.keySet()){
+          sourceFileCache.put(key, context.getFileKey());
+        }
+      }
+    };
     JavaSquid squid = new JavaSquid(conf, javaResourceLocator);
     squid.scanDirectories(
         Collections.singleton(new File("src/test/files/bytecode/src")),

@@ -38,6 +38,8 @@ public interface JavaResourceLocator extends BatchExtension, JavaFileScanner {
 
   String findSourceFileKeyByClassName(String className);
 
+  Collection<String> classKeys();
+
   Collection<File> classFilesToAnalyze();
 
 }

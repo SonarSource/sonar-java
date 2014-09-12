@@ -20,28 +20,29 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Maps;
 import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.api.resources.Resource;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -66,17 +67,39 @@ public class SquidUserGuideTest {
     when(pfs.getBasedir()).thenReturn(prjDir);
     when(sonarProject.getFileSystem()).thenReturn(pfs);
     Measurer measurer = new Measurer(sonarProject, context, true);
-    JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
-    when(javaResourceLocator.findSourceFileKeyByClassName(anyString())).thenAnswer(new Answer<String>() {
+    JavaResourceLocator javaResourceLocator = new JavaResourceLocator() {
+      public Map<String, String> sourceFileCache = Maps.newHashMap();
+
       @Override
-      public String answer(InvocationOnMock invocation) throws Throwable {
-        String fileName = (String) invocation.getArguments()[0];
-        if(!fileName.endsWith(".java")) {
-          fileName += ".java";
-        }
-        return fileName;
+      public Resource findResourceByClassName(String className) {
+        return null;
       }
-    });
+
+      @Override
+      public String findSourceFileKeyByClassName(String className) {
+        String name = className.replace('.', '/');
+        return sourceFileCache.get(name);
+      }
+
+      @Override
+      public Collection<String> classKeys() {
+        return sourceFileCache.keySet();
+      }
+
+      @Override
+      public Collection<File> classFilesToAnalyze() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        JavaFilesCache javaFilesCache = new JavaFilesCache();
+        javaFilesCache.scanFile(context);
+        for (String key : javaFilesCache.resourcesCache.keySet()){
+          sourceFileCache.put(key, context.getFileKey());
+        }
+      }
+    };
     squid = new JavaSquid(conf, null, measurer, javaResourceLocator, new CodeVisitor[0]);
     squid.scanDirectories(Collections.singleton(srcDir), Collections.singleton(binDir));
   }

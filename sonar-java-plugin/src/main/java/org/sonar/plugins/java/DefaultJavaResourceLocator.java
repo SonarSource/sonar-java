@@ -71,6 +71,11 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   }
 
   @Override
+  public Collection<String> classKeys() {
+    return resourcesCache.keySet();
+  }
+
+  @Override
   public Collection<File> classFilesToAnalyze() {
     ImmutableList.Builder<File> result = ImmutableList.builder();
     for (String key : resourcesCache.keySet()) {

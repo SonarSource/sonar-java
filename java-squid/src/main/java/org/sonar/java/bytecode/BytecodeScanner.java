@@ -29,9 +29,6 @@ import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeScanner;
 import org.sonar.squidbridge.api.CodeVisitor;
-import org.sonar.squidbridge.api.SourceClass;
-import org.sonar.squidbridge.api.SourceCode;
-import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
 import java.io.File;
@@ -51,8 +48,7 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
 
   public BytecodeScanner scan(Collection<File> bytecodeFilesOrDirectories) {
     ClassLoader classLoader = ClassLoaderBuilder.create(bytecodeFilesOrDirectories);
-    Collection<SourceCode> classes = indexer.search(new QueryByType(SourceClass.class));
-    scanClasses(classes, new AsmClassProviderImpl(classLoader));
+    scanClasses(javaResourceLocator.classKeys(), new AsmClassProviderImpl(classLoader));
     // TODO unchecked cast
     ((SquidClassLoader) classLoader).close();
     return this;
@@ -62,35 +58,35 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
     return scan(Arrays.asList(bytecodeDirectory));
   }
 
-  protected BytecodeScanner scanClasses(Collection<SourceCode> classes, AsmClassProvider classProvider) {
+  protected BytecodeScanner scanClasses(Collection<String> classes, AsmClassProvider classProvider) {
     loadByteCodeInformation(classes, classProvider);
     linkVirtualMethods(classes, classProvider);
     notifyBytecodeVisitors(classes, classProvider);
     return this;
   }
 
-  private void linkVirtualMethods(Collection<SourceCode> classes, AsmClassProvider classProvider) {
+  private void linkVirtualMethods(Collection<String> keys, AsmClassProvider classProvider) {
     VirtualMethodsLinker linker = new VirtualMethodsLinker();
-    for (SourceCode sourceCode : classes) {
-      AsmClass asmClass = classProvider.getClass(sourceCode.getKey(), DETAIL_LEVEL.STRUCTURE_AND_CALLS);
+    for (String key : keys) {
+      AsmClass asmClass = classProvider.getClass(key, DETAIL_LEVEL.STRUCTURE_AND_CALLS);
       for (AsmMethod method : asmClass.getMethods()) {
         linker.process(method);
       }
     }
   }
 
-  private void notifyBytecodeVisitors(Collection<SourceCode> classes, AsmClassProvider classProvider) {
+  private void notifyBytecodeVisitors(Collection<String> keys, AsmClassProvider classProvider) {
     BytecodeVisitor[] visitorArray = getVisitors().toArray(new BytecodeVisitor[getVisitors().size()]);
-    for (SourceCode sourceCode : classes) {
-      AsmClass asmClass = classProvider.getClass(sourceCode.getKey(), DETAIL_LEVEL.STRUCTURE_AND_CALLS);
+    for (String key : keys) {
+      AsmClass asmClass = classProvider.getClass(key, DETAIL_LEVEL.STRUCTURE_AND_CALLS);
       BytecodeVisitorNotifier visitorNotifier = new BytecodeVisitorNotifier(asmClass, visitorArray);
       visitorNotifier.notifyVisitors(indexer, javaResourceLocator);
     }
   }
 
-  private void loadByteCodeInformation(Collection<SourceCode> classes, AsmClassProvider classProvider) {
-    for (SourceCode sourceCode : classes) {
-      classProvider.getClass(sourceCode.getKey(), DETAIL_LEVEL.STRUCTURE_AND_CALLS);
+  private void loadByteCodeInformation(Collection<String> keys, AsmClassProvider classProvider) {
+    for (String key : keys) {
+      classProvider.getClass(key, DETAIL_LEVEL.STRUCTURE_AND_CALLS);
     }
   }
 
