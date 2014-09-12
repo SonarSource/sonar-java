@@ -49,7 +49,7 @@ public class LeftCurlyBraceEndLineCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isExcluded(AstNode node) {
-    return node.getParent().is(Kind.NEW_ARRAY, JavaGrammar.ARRAY_INITIALIZER) ||
+    return node.getParent().is(Kind.NEW_ARRAY) ||
       isExcludedBlock(node.getParent());
   }
 

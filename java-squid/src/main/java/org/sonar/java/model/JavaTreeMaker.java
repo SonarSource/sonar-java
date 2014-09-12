@@ -39,7 +39,6 @@ import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
-import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -575,8 +574,7 @@ public class JavaTreeMaker {
         modifiers,
         applyDim(type, constantDeclaratorRestNode.getChildren(JavaGrammar.DIM).size()),
         identifier(identifierNode),
-        variableInitializer(constantDeclaratorRestNode.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER))
-        ));
+        (ExpressionTree) constantDeclaratorRestNode.getLastChild()));
     }
   }
 
@@ -652,22 +650,6 @@ public class JavaTreeMaker {
       return (ExpressionTree) astNode;
     } else {
       throw new IllegalArgumentException("Unexpected AstNodeType: " + astNode.getType().toString());
-    }
-  }
-
-  private ExpressionTree arrayInitializer(@Nullable Tree t, AstNode astNode) {
-    ImmutableList.Builder<ExpressionTree> elems = ImmutableList.builder();
-    for (AstNode elem : astNode.getChildren(JavaGrammar.VARIABLE_INITIALIZER)) {
-      elems.add(variableInitializer(elem));
-    }
-    return new NewArrayTreeImpl(astNode, t, ImmutableList.<ExpressionTree>of(), elems.build());
-  }
-
-  public ExpressionTree variableInitializer(AstNode astNode) {
-    if (astNode.getFirstChild().is(JavaGrammar.EXPRESSION)) {
-      return expression(astNode.getFirstChild());
-    } else {
-      return arrayInitializer(null, astNode.getFirstChild());
     }
   }
 

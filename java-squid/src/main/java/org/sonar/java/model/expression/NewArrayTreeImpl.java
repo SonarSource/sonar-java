@@ -39,6 +39,7 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
 
   public NewArrayTreeImpl(List<ExpressionTree> dimensions, List<ExpressionTree> initializers, List<AstNode> children) {
     super(Kind.NEW_ARRAY);
+
     // TODO maybe type should not be null?
     this.type = null;
     this.dimensions = Preconditions.checkNotNull(dimensions);
@@ -56,14 +57,6 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
     prependChildren(children);
 
     return this;
-  }
-
-  public NewArrayTreeImpl(AstNode astNode, Tree type, List<ExpressionTree> dimensions, List<ExpressionTree> initializers) {
-    super(astNode);
-    // TODO maybe type should not be null?
-    this.type = type;
-    this.dimensions = Preconditions.checkNotNull(dimensions);
-    this.initializers = Preconditions.checkNotNull(initializers);
   }
 
   @Override

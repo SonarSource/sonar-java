@@ -404,7 +404,7 @@ public class ActionGrammar {
         f.completeVariableDeclarator(
           b.invokeRule(JavaTokenType.IDENTIFIER), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)),
           b.optional(
-            f.newVariableDeclarator(b.invokeRule(JavaPunctuator.EQU), b.invokeRule(JavaGrammar.VARIABLE_INITIALIZER)))));
+            f.newVariableDeclarator(b.invokeRule(JavaPunctuator.EQU), VARIABLE_INITIALIZER()))));
   }
 
   public StatementTree STATEMENT() {
@@ -979,7 +979,7 @@ public class ActionGrammar {
           b.zeroOrMore(ANNOTATION()),
           b.firstOf(
             f.newArrayCreatorWithInitializer(
-              b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), b.invokeRule(JavaGrammar.ARRAY_INITIALIZER)),
+              b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), ARRAY_INITIALIZER()),
             f.newArrayCreatorWithDimension(
               b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RBRK),
               b.zeroOrMore(b.invokeRule(JavaGrammar.DIM_EXPR)),
@@ -1038,6 +1038,23 @@ public class ActionGrammar {
           b.zeroOrMore(ANNOTATION()),
           b.invokeRule(JavaTokenType.IDENTIFIER),
           b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.DOT), b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaTokenType.IDENTIFIER)))));
+  }
+
+  public ExpressionTree VARIABLE_INITIALIZER() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.VARIABLE_INITIALIZER)
+      .is(
+        b.firstOf(
+          f.newExpression(b.invokeRule(JavaGrammar.EXPRESSION)),
+          ARRAY_INITIALIZER()));
+  }
+
+  public NewArrayTreeImpl ARRAY_INITIALIZER() {
+    return b.<NewArrayTreeImpl>nonterminal(JavaGrammar.ARRAY_INITIALIZER)
+      .is(
+        f.newArrayInitializer(
+          b.invokeRule(JavaPunctuator.LWING),
+          b.zeroOrMore(f.newWrapperAstNode15((AstNode) VARIABLE_INITIALIZER(), b.optional(b.invokeRule(JavaPunctuator.COMMA)))),
+          b.invokeRule(JavaPunctuator.RWING)));
   }
 
   // End of expressions

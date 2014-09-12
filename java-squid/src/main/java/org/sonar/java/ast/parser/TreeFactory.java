@@ -650,6 +650,35 @@ public class TreeFactory {
 
   // Statements
 
+  public VariableTreeImpl completeVariableDeclarator(AstNode identifierAstNode, Optional<List<AstNode>> dims, Optional<VariableTreeImpl> partial) {
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+
+    List<AstNode> children = Lists.newArrayList();
+    if (dims.isPresent()) {
+      for (AstNode dim : dims.get()) {
+        children.add(dim);
+      }
+    }
+
+    if (partial.isPresent()) {
+      children.add(0, identifier);
+      partial.get().prependChildren(children);
+
+      return partial.get().completeIdentifierAndDims(identifier, dims.isPresent() ? dims.get().size() : 0);
+    } else {
+      return new VariableTreeImpl(
+        identifier, dims.isPresent() ? dims.get().size() : 0,
+        children);
+    }
+  }
+
+  public VariableTreeImpl newVariableDeclarator(AstNode equalTokenAstNode, ExpressionTree initializer) {
+    InternalSyntaxToken equalToken = InternalSyntaxToken.create(equalTokenAstNode);
+
+    return new VariableTreeImpl(equalToken, initializer,
+      equalToken, (AstNode) initializer);
+  }
+
   public BlockTreeImpl block(AstNode openBraceTokenAstNode, AstNode statements, AstNode closeBraceTokenAstNode) {
     InternalSyntaxToken openBraceToken = InternalSyntaxToken.create(openBraceTokenAstNode);
     InternalSyntaxToken closeBraceToken = InternalSyntaxToken.create(closeBraceTokenAstNode);
@@ -1435,22 +1464,17 @@ public class TreeFactory {
     return partial;
   }
 
-  public NewArrayTreeImpl newArrayCreatorWithInitializer(AstNode openBracketToken, AstNode closeBracketToken, Optional<List<AstNode>> dims, AstNode arrayInitializer) {
-    ImmutableList.Builder<ExpressionTree> elems = ImmutableList.builder();
-    for (AstNode elem : arrayInitializer.getChildren(JavaGrammar.VARIABLE_INITIALIZER)) {
-      elems.add(treeMaker.variableInitializer(elem));
-    }
-
+  public NewArrayTreeImpl newArrayCreatorWithInitializer(AstNode openBracketToken, AstNode closeBracketToken, Optional<List<AstNode>> dims, NewArrayTreeImpl partial) {
     List<AstNode> children = Lists.newArrayList();
     children.add(openBracketToken);
     children.add(closeBracketToken);
     if (dims.isPresent()) {
       children.addAll(dims.get());
     }
-    children.add(arrayInitializer);
 
-    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), elems.build(),
-      children);
+    partial.prependChildren(children);
+
+    return partial;
   }
 
   public NewArrayTreeImpl newArrayCreatorWithDimension(AstNode openBracketToken, AstNode expression, AstNode closeBracketToken,
@@ -1770,6 +1794,10 @@ public class TreeFactory {
     return newWrapperAstNode(e1, e2);
   }
 
+  public AstNode newWrapperAstNode15(AstNode e1, Optional<AstNode> e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
   // Crappy methods which must go away
 
   private ExpressionTree applySuperSuffix(ExpressionTree expression, AstNode superSuffixNode) {
@@ -1886,33 +1914,28 @@ public class TreeFactory {
     }
   }
 
-  public VariableTreeImpl completeVariableDeclarator(AstNode identifierAstNode, Optional<List<AstNode>> dims, Optional<VariableTreeImpl> partial) {
-    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
-
-    List<AstNode> children = Lists.newArrayList();
-    if (dims.isPresent()) {
-      for (AstNode dim : dims.get()) {
-        children.add(dim);
-      }
-    }
-
-    if (partial.isPresent()) {
-      children.add(0, identifier);
-      partial.get().prependChildren(children);
-
-      return partial.get().completeIdentifierAndDims(identifier, dims.isPresent() ? dims.get().size() : 0);
-    } else {
-      return new VariableTreeImpl(
-        identifier, dims.isPresent() ? dims.get().size() : 0,
-        children);
-    }
+  public ExpressionTree newExpression(AstNode expression) {
+    return treeMaker.expression(expression);
   }
 
-  public VariableTreeImpl newVariableDeclarator(AstNode equalTokenAstNode, AstNode initializer) {
-    InternalSyntaxToken equalToken = InternalSyntaxToken.create(equalTokenAstNode);
+  public NewArrayTreeImpl newArrayInitializer(AstNode openBraceTokenAstNode, Optional<List<AstNode>> rests, AstNode closeBraceTokenAstNode) {
+    ImmutableList.Builder<ExpressionTree> initializers = ImmutableList.builder();
+    List<AstNode> children = Lists.newArrayList();
 
-    return new VariableTreeImpl(equalToken, treeMaker.variableInitializer(initializer),
-      equalToken, initializer);
+    children.add(openBraceTokenAstNode);
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        initializers.add((ExpressionTree) rest.getFirstChild());
+        children.add(rest.getFirstChild());
+
+        if (rest.getNumberOfChildren() == 2) {
+          children.add(rest.getLastChild());
+        }
+      }
+    }
+    children.add(closeBraceTokenAstNode);
+
+    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), initializers.build(), children);
   }
 
 }
