@@ -398,6 +398,15 @@ public class ActionGrammar {
 
   // Statements
 
+  public VariableTreeImpl VARIABLE_DECLARATOR() {
+    return b.<VariableTreeImpl>nonterminal(JavaGrammar.VARIABLE_DECLARATOR)
+      .is(
+        f.completeVariableDeclarator(
+          b.invokeRule(JavaTokenType.IDENTIFIER), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)),
+          b.optional(
+            f.newVariableDeclarator(b.invokeRule(JavaPunctuator.EQU), b.invokeRule(JavaGrammar.VARIABLE_INITIALIZER)))));
+  }
+
   public StatementTree STATEMENT() {
     return b.<StatementTree>nonterminal(JavaGrammar.STATEMENT)
       .is(

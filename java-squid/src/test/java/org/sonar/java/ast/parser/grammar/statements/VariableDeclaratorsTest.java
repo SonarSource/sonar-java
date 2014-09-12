@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,12 +31,10 @@ public class VariableDeclaratorsTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.VARIABLE_DECLARATOR).override(RuleMock.word(b, "variableDeclarator"));
-
     assertThat(b, JavaGrammar.VARIABLE_DECLARATORS)
-      .matches("variableDeclarator , variableDeclarator , variableDeclarator")
-      .matches("variableDeclarator , variableDeclarator")
-      .matches("variableDeclarator");
+      .matches("foo , foo[] , foo[] = {}, foo = 42")
+      .matches("foo[] = 42 , foo")
+      .matches("foo");
   }
 
 }

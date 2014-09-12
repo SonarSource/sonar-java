@@ -22,6 +22,7 @@ package org.sonar.java.model.declaration;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.resolve.Symbol;
@@ -39,9 +40,9 @@ import java.util.Iterator;
 import java.util.List;
 
 public class VariableTreeImpl extends JavaTree implements VariableTree {
-  private final ModifiersTree modifiers;
+  private ModifiersTree modifiers;
   private Tree type;
-  private final IdentifierTree simpleName;
+  private IdentifierTree simpleName;
   @Nullable
   private ExpressionTree initializer;
 
@@ -49,7 +50,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   private Symbol.VariableSymbol symbol;
 
   // Syntax tree holders
-  private final int dims;
+  private int dims;
   private boolean vararg = false;
 
   public VariableTreeImpl(IdentifierTreeImpl simpleName, int dims, List<AstNode> additionalChildren) {
@@ -67,6 +68,16 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     }
   }
 
+  public VariableTreeImpl(InternalSyntaxToken equalToken, ExpressionTree initializer, AstNode... children) {
+    super(Kind.VARIABLE);
+
+    this.initializer = initializer;
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
+
   public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
     super(astNode);
     this.modifiers = Preconditions.checkNotNull(modifiers);
@@ -80,15 +91,29 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     this(astNode, ModifiersTreeImpl.EMPTY, new InferedTypeTree(), simpleName, null);
   }
 
-  public VariableTreeImpl complete(Tree type) {
+  public VariableTreeImpl completeType(Tree type) {
     this.type = Preconditions.checkNotNull(type);
 
     return this;
   }
 
-  public VariableTreeImpl complete(Tree type, ExpressionTree initializer) {
+  public VariableTreeImpl completeModifiersAndType(ModifiersTreeImpl modifiers, Tree type) {
+    this.modifiers = modifiers;
+    this.type = Preconditions.checkNotNull(type);
+
+    return this;
+  }
+
+  public VariableTreeImpl completeTypeAndInitializer(Tree type, ExpressionTree initializer) {
     this.type = Preconditions.checkNotNull(type);
     this.initializer = initializer;
+
+    return this;
+  }
+
+  public VariableTreeImpl completeIdentifierAndDims(IdentifierTreeImpl simpleName, int dims) {
+    this.simpleName = simpleName;
+    this.dims = dims;
 
     return this;
   }

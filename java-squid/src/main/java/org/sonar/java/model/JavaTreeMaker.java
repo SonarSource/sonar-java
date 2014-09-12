@@ -57,7 +57,6 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 
@@ -181,21 +180,14 @@ public class JavaTreeMaker {
     return applyDim(result, dimSize + astNode.getChildren(JavaGrammar.DIM).size());
   }
 
-  private VariableTree variableDeclarator(ModifiersTree modifiers, ExpressionTree type, AstNode astNode) {
-    checkType(astNode, JavaGrammar.VARIABLE_DECLARATOR);
-    return new VariableTreeImpl(
-      astNode,
-      modifiers,
-      applyDim(type, astNode.getChildren(JavaGrammar.DIM).size()),
-      identifier(astNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-      astNode.hasDirectChildren(JavaGrammar.VARIABLE_INITIALIZER) ? variableInitializer(astNode.getFirstChild(JavaGrammar.VARIABLE_INITIALIZER)) : null);
-  }
-
-  public List<StatementTree> variableDeclarators(ModifiersTree modifiers, ExpressionTree type, AstNode astNode) {
+  public List<StatementTree> variableDeclarators(ModifiersTreeImpl modifiers, ExpressionTree type, AstNode astNode) {
     checkType(astNode, JavaGrammar.VARIABLE_DECLARATORS);
     ImmutableList.Builder<StatementTree> result = ImmutableList.builder();
-    for (AstNode variableDeclaratorNode : astNode.getChildren(JavaGrammar.VARIABLE_DECLARATOR)) {
-      result.add(variableDeclarator(modifiers, type, variableDeclaratorNode));
+    for (AstNode variableAstNode : astNode.getChildren(Kind.VARIABLE)) {
+      VariableTreeImpl variable = (VariableTreeImpl) variableAstNode;
+      type = applyDim(type, variable.dims());
+      variable.completeModifiersAndType(modifiers, type);
+      result.add(variable);
     }
     return result.build();
   }
@@ -305,7 +297,7 @@ public class JavaTreeMaker {
     checkType(astNode, JavaGrammar.CLASS_BODY, JavaGrammar.ENUM_BODY_DECLARATIONS);
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
     for (AstNode classBodyDeclaration : astNode.getChildren(JavaGrammar.CLASS_BODY_DECLARATION)) {
-      ModifiersTree modifiers = (ModifiersTree) classBodyDeclaration.getFirstChild(JavaGrammar.MODIFIERS);
+      ModifiersTreeImpl modifiers = (ModifiersTreeImpl) classBodyDeclaration.getFirstChild(JavaGrammar.MODIFIERS);
       if (classBodyDeclaration.hasDirectChildren(JavaGrammar.MEMBER_DECL)) {
         AstNode memberDeclNode = classBodyDeclaration.getFirstChild(JavaGrammar.MEMBER_DECL);
         if (memberDeclNode.hasDirectChildren(JavaGrammar.FIELD_DECLARATION)) {
@@ -382,7 +374,7 @@ public class JavaTreeMaker {
   /**
    * 8.3. Field Declarations
    */
-  private List<StatementTree> fieldDeclaration(ModifiersTree modifiers, AstNode astNode) {
+  private List<StatementTree> fieldDeclaration(ModifiersTreeImpl modifiers, AstNode astNode) {
     checkType(astNode, JavaGrammar.FIELD_DECLARATION);
     return variableDeclarators(modifiers, (ExpressionTree) astNode.getFirstChild(), astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS));
   }
@@ -629,7 +621,7 @@ public class JavaTreeMaker {
     }
   }
 
-  private ModifiersTree variableModifiers(@Nullable AstNode astNode) {
+  private ModifiersTreeImpl variableModifiers(@Nullable AstNode astNode) {
     if (astNode == null) {
       return ModifiersTreeImpl.EMPTY;
     }

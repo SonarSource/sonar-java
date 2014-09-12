@@ -602,7 +602,7 @@ public class TreeFactory {
       dims--;
     }
 
-    variable.complete(variableType);
+    variable.completeType(variableType);
     partial.prependChildren(modifiers, (AstNode) type);
 
     return partial;
@@ -643,7 +643,7 @@ public class TreeFactory {
 
   public VariableTreeImpl newFormalParameter(ModifiersTreeImpl modifiers, ExpressionTree type, VariableTreeImpl variable) {
     variable.prependChildren(modifiers, (AstNode) type);
-    return variable.complete(type);
+    return variable.completeType(type);
   }
 
   // End of formal parameters
@@ -826,7 +826,7 @@ public class TreeFactory {
       parameter.prependChildren((AstNode) type);
     }
 
-    return parameter.complete(type);
+    return parameter.completeType(type);
   }
 
   public Tree newCatchType(ExpressionTree qualifiedIdentifier, Optional<List<AstNode>> rests) {
@@ -899,7 +899,7 @@ public class TreeFactory {
     partial.addChild(equalTokenAstNode);
     partial.addChild(expression);
 
-    return partial.complete(classType, treeMaker.expression(expression));
+    return partial.completeTypeAndInitializer(classType, treeMaker.expression(expression));
   }
 
   public SwitchStatementTreeImpl switchStatement(AstNode switchToken, AstNode openParen, AstNode expression, AstNode closeParen,
@@ -1883,6 +1883,35 @@ public class TreeFactory {
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }
+  }
+
+  public VariableTreeImpl completeVariableDeclarator(AstNode identifierAstNode, Optional<List<AstNode>> dims, Optional<VariableTreeImpl> partial) {
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+
+    List<AstNode> children = Lists.newArrayList();
+    if (dims.isPresent()) {
+      for (AstNode dim : dims.get()) {
+        children.add(dim);
+      }
+    }
+
+    if (partial.isPresent()) {
+      children.add(0, identifier);
+      partial.get().prependChildren(children);
+
+      return partial.get().completeIdentifierAndDims(identifier, dims.isPresent() ? dims.get().size() : 0);
+    } else {
+      return new VariableTreeImpl(
+        identifier, dims.isPresent() ? dims.get().size() : 0,
+        children);
+    }
+  }
+
+  public VariableTreeImpl newVariableDeclarator(AstNode equalTokenAstNode, AstNode initializer) {
+    InternalSyntaxToken equalToken = InternalSyntaxToken.create(equalTokenAstNode);
+
+    return new VariableTreeImpl(equalToken, treeMaker.variableInitializer(initializer),
+      equalToken, initializer);
   }
 
 }
