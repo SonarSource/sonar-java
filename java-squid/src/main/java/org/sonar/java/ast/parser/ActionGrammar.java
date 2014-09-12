@@ -448,9 +448,9 @@ public class ActionGrammar {
       .is(
         f.completeIf(
           b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
-          b.invokeRule(JavaGrammar.STATEMENT),
+          STATEMENT(),
           b.optional(
-            f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), b.invokeRule(JavaGrammar.STATEMENT)))));
+            f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), STATEMENT()))));
   }
 
   public StatementTree FOR_STATEMENT() {
@@ -471,7 +471,7 @@ public class ActionGrammar {
           b.optional(b.invokeRule(JavaGrammar.EXPRESSION)), b.invokeRule(JavaPunctuator.SEMI),
           b.optional(FOR_UPDATE()),
           b.invokeRule(JavaPunctuator.RPAR),
-          b.invokeRule(JavaGrammar.STATEMENT)));
+          STATEMENT()));
   }
 
   public StatementExpressionListTreeImpl FOR_INIT() {
@@ -514,19 +514,19 @@ public class ActionGrammar {
         f.newForeachStatement(
           b.invokeRule(JavaKeyword.FOR),
           b.invokeRule(JavaPunctuator.LPAR), FORMAL_PARAMETER(), b.invokeRule(JavaPunctuator.COLON), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
-          b.invokeRule(JavaGrammar.STATEMENT)));
+          STATEMENT()));
   }
 
   public WhileStatementTreeImpl WHILE_STATEMENT() {
     return b.<WhileStatementTreeImpl>nonterminal(JavaGrammar.WHILE_STATEMENT)
       .is(f.whileStatement(b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
-        b.invokeRule(JavaGrammar.STATEMENT)));
+        STATEMENT()));
   }
 
   public DoWhileStatementTreeImpl DO_WHILE_STATEMENT() {
     return b.<DoWhileStatementTreeImpl>nonterminal(JavaGrammar.DO_STATEMENT)
       .is(
-        f.doWhileStatement(b.invokeRule(JavaKeyword.DO), b.invokeRule(JavaGrammar.STATEMENT),
+        f.doWhileStatement(b.invokeRule(JavaKeyword.DO), STATEMENT(),
           b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
           b.invokeRule(JavaPunctuator.SEMI)));
   }
@@ -652,7 +652,7 @@ public class ActionGrammar {
 
   public LabeledStatementTreeImpl LABELED_STATEMENT() {
     return b.<LabeledStatementTreeImpl>nonterminal(JavaGrammar.LABELED_STATEMENT)
-      .is(f.labeledStatement(b.invokeRule(IDENTIFIER), b.invokeRule(COLON), b.invokeRule(JavaGrammar.STATEMENT)));
+      .is(f.labeledStatement(b.invokeRule(IDENTIFIER), b.invokeRule(COLON), STATEMENT()));
   }
 
   public ExpressionStatementTreeImpl EXPRESSION_STATEMENT() {

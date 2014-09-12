@@ -671,22 +671,23 @@ public class TreeFactory {
       colonToken, expression);
   }
 
-  public IfStatementTreeImpl completeIf(AstNode ifToken, AstNode openParen, AstNode condition, AstNode closeParen, AstNode statement, Optional<IfStatementTreeImpl> elseClause) {
+  public IfStatementTreeImpl completeIf(AstNode ifToken, AstNode openParen, AstNode condition, AstNode closeParen, StatementTree statement, Optional<IfStatementTreeImpl> elseClause) {
     InternalSyntaxToken ifKeyword = InternalSyntaxToken.create(ifToken);
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
     if (elseClause.isPresent()) {
-      return elseClause.get().complete(ifKeyword, openParenToken, treeMaker.expression(condition), closeParenToken, treeMaker.statement(statement),
-        ifKeyword, openParenToken, condition, closeParenToken, statement);
+      return elseClause.get().complete(ifKeyword, openParenToken, treeMaker.expression(condition), closeParenToken, statement,
+        ifKeyword, openParenToken, condition, closeParenToken, (AstNode) statement);
     } else {
-      return new IfStatementTreeImpl(ifKeyword, openParenToken, treeMaker.expression(condition), closeParenToken, treeMaker.statement(statement),
-        ifKeyword, openParenToken, condition, closeParenToken, statement);
+      return new IfStatementTreeImpl(ifKeyword, openParenToken, treeMaker.expression(condition), closeParenToken, statement,
+        ifKeyword, openParenToken, condition, closeParenToken, (AstNode) statement);
     }
   }
 
-  public IfStatementTreeImpl newIfWithElse(AstNode elseToken, AstNode elseStatement) {
+  public IfStatementTreeImpl newIfWithElse(AstNode elseToken, StatementTree elseStatement) {
     InternalSyntaxToken elseKeyword = InternalSyntaxToken.create(elseToken);
-    return new IfStatementTreeImpl(elseKeyword, treeMaker.statement(elseStatement), elseKeyword, elseStatement);
+    return new IfStatementTreeImpl(elseKeyword, elseStatement,
+      elseKeyword, (AstNode) elseStatement);
   }
 
   public ForStatementTreeImpl newStandardForStatement(
@@ -695,7 +696,7 @@ public class TreeFactory {
     Optional<StatementExpressionListTreeImpl> forInit, AstNode forInitSemicolonTokenAstNode,
     Optional<AstNode> expression, AstNode expressionSemicolonTokenAstNode,
     Optional<StatementExpressionListTreeImpl> forUpdate, AstNode forUpdateSemicolonTokenAstNode,
-    AstNode statement) {
+    StatementTree statement) {
 
     StatementExpressionListTreeImpl forInit2 = forInit.isPresent() ? forInit.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
     StatementExpressionListTreeImpl forUpdate2 = forUpdate.isPresent() ? forUpdate.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
@@ -704,7 +705,7 @@ public class TreeFactory {
       forInit2,
       expression.isPresent() ? treeMaker.expression(expression.get()) : null,
       forUpdate2,
-      treeMaker.statement(statement));
+      statement);
 
     List<AstNode> children = Lists.newArrayList();
     children.add(forTokenAstNode);
@@ -717,7 +718,7 @@ public class TreeFactory {
     children.add(expressionSemicolonTokenAstNode);
     children.add(forUpdate2);
     children.add(forUpdateSemicolonTokenAstNode);
-    children.add(statement);
+    children.add((AstNode) statement);
 
     result.prependChildren(children);
 
@@ -769,30 +770,30 @@ public class TreeFactory {
     AstNode openParenTokenAstNode,
     VariableTreeImpl variable, AstNode colonTokenAstNode, AstNode expression,
     AstNode closeParenTokenAstNode,
-    AstNode statement) {
+    StatementTree statement) {
 
     return new ForEachStatementImpl(
-      variable, treeMaker.expression(expression), treeMaker.statement(statement),
-      forTokenAstNode, openParenTokenAstNode, variable, colonTokenAstNode, expression, closeParenTokenAstNode, statement);
+      variable, treeMaker.expression(expression), statement,
+      forTokenAstNode, openParenTokenAstNode, variable, colonTokenAstNode, expression, closeParenTokenAstNode, (AstNode) statement);
   }
 
-  public WhileStatementTreeImpl whileStatement(AstNode whileToken, AstNode openParen, AstNode expression, AstNode closeParen, AstNode statement) {
+  public WhileStatementTreeImpl whileStatement(AstNode whileToken, AstNode openParen, AstNode expression, AstNode closeParen, StatementTree statement) {
     InternalSyntaxToken whileKeyword = InternalSyntaxToken.create(whileToken);
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
-    return new WhileStatementTreeImpl(whileKeyword, openParenToken, treeMaker.expression(expression), closeParenToken, treeMaker.statement(statement),
-      whileKeyword, openParenToken, expression, closeParenToken, statement);
+    return new WhileStatementTreeImpl(whileKeyword, openParenToken, treeMaker.expression(expression), closeParenToken, statement,
+      whileKeyword, openParenToken, expression, closeParenToken, (AstNode) statement);
   }
 
-  public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, AstNode statement, AstNode whileToken, AstNode openParen, AstNode expression, AstNode closeParen,
+  public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, StatementTree statement, AstNode whileToken, AstNode openParen, AstNode expression, AstNode closeParen,
     AstNode semicolon) {
     InternalSyntaxToken doKeyword = InternalSyntaxToken.create(doToken);
     InternalSyntaxToken whileKeyword = InternalSyntaxToken.create(whileToken);
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
     InternalSyntaxToken semiColonToken = InternalSyntaxToken.create(semicolon);
-    return new DoWhileStatementTreeImpl(doKeyword, treeMaker.statement(statement), whileKeyword, openParenToken, treeMaker.expression(expression), closeParenToken, semiColonToken,
-      doKeyword, statement, whileKeyword, openParenToken, expression, closeParenToken, semiColonToken);
+    return new DoWhileStatementTreeImpl(doKeyword, statement, whileKeyword, openParenToken, treeMaker.expression(expression), closeParenToken, semiColonToken,
+      doKeyword, (AstNode) statement, whileKeyword, openParenToken, expression, closeParenToken, semiColonToken);
   }
 
   public TryStatementTreeImpl completeStandardTryStatement(AstNode tryTokenAstNode, BlockTreeImpl block, TryStatementTreeImpl partial) {
@@ -981,9 +982,9 @@ public class TreeFactory {
       throwToken, expression, semicolonToken);
   }
 
-  public LabeledStatementTreeImpl labeledStatement(AstNode identifier, AstNode colon, AstNode statement) {
-    return new LabeledStatementTreeImpl(treeMaker.identifier(identifier), treeMaker.statement(statement),
-      identifier, colon, statement);
+  public LabeledStatementTreeImpl labeledStatement(AstNode identifier, AstNode colon, StatementTree statement) {
+    return new LabeledStatementTreeImpl(treeMaker.identifier(identifier), statement,
+      identifier, colon, (AstNode) statement);
   }
 
   public ExpressionStatementTreeImpl expressionStatement(AstNode expression, AstNode semicolonTokenAstNode) {
