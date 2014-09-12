@@ -28,12 +28,10 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import java.util.Arrays;
 
-import static org.sonar.java.ast.api.JavaKeyword.CATCH;
 import static org.sonar.java.ast.api.JavaKeyword.CLASS;
 import static org.sonar.java.ast.api.JavaKeyword.ENUM;
 import static org.sonar.java.ast.api.JavaKeyword.EXTENDS;
 import static org.sonar.java.ast.api.JavaKeyword.FINAL;
-import static org.sonar.java.ast.api.JavaKeyword.FINALLY;
 import static org.sonar.java.ast.api.JavaKeyword.IMPLEMENTS;
 import static org.sonar.java.ast.api.JavaKeyword.IMPORT;
 import static org.sonar.java.ast.api.JavaKeyword.INTERFACE;
@@ -43,7 +41,6 @@ import static org.sonar.java.ast.api.JavaKeyword.STATIC;
 import static org.sonar.java.ast.api.JavaKeyword.SUPER;
 import static org.sonar.java.ast.api.JavaKeyword.THIS;
 import static org.sonar.java.ast.api.JavaKeyword.THROWS;
-import static org.sonar.java.ast.api.JavaKeyword.TRY;
 import static org.sonar.java.ast.api.JavaKeyword.VOID;
 import static org.sonar.java.ast.api.JavaPunctuator.AND;
 import static org.sonar.java.ast.api.JavaPunctuator.ANDAND;
@@ -609,20 +606,6 @@ public enum JavaGrammar implements GrammarRuleKey {
       LABELED_STATEMENT,
       EXPRESSION_STATEMENT,
       EMPTY_STATEMENT));
-
-    // 14.20. The try Statement
-    b.rule(TRY_STATEMENT).is(b.firstOf(
-      b.sequence(TRY, BLOCK, b.firstOf(b.sequence(b.oneOrMore(CATCH_CLAUSE), b.optional(FINALLY_)), FINALLY_)),
-      TRY_WITH_RESOURCES_STATEMENT));
-    b.rule(TRY_WITH_RESOURCES_STATEMENT).is(TRY, RESOURCE_SPECIFICATION, BLOCK, b.zeroOrMore(CATCH_CLAUSE), b.optional(FINALLY_));
-    b.rule(RESOURCE_SPECIFICATION).is(LPAR, RESOURCE, b.zeroOrMore(SEMI, RESOURCE), b.optional(SEMI), RPAR);
-    b.rule(RESOURCE).is(b.optional(VARIABLE_MODIFIERS), CLASS_TYPE, VARIABLE_DECLARATOR_ID, EQU, EXPRESSION);
-
-    b.rule(CATCH_CLAUSE).is(CATCH, LPAR, CATCH_FORMAL_PARAMETER, RPAR, BLOCK);
-    b.rule(CATCH_FORMAL_PARAMETER).is(b.optional(VARIABLE_MODIFIERS), CATCH_TYPE, VARIABLE_DECLARATOR_ID);
-    b.rule(CATCH_TYPE).is(QUALIFIED_IDENTIFIER, b.zeroOrMore(OR, QUALIFIED_IDENTIFIER));
-
-    b.rule(FINALLY_).is(FINALLY, BLOCK);
   }
 
   /**

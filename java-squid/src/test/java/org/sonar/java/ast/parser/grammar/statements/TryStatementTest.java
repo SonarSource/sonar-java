@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,13 +31,11 @@ public class TryStatementTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.CATCH_CLAUSE).override(RuleMock.word(b, "catchClause"));
-    b.rule(JavaGrammar.FINALLY_).override(RuleMock.word(b, "finally_"));
-
     assertThat(b, JavaGrammar.STATEMENT)
-      .matches("try {} catchClause catchClause finally_")
-      .matches("try {} catchClause finally_")
-      .matches("try {} finally_");
+      .matches("try {} catch (Exception e) {} catch (Exception e) {} finally {}")
+      .matches("try {} catch (Exception e) {} finally {}")
+      .matches("try {} catch (Exception e) {}")
+      .matches("try {} finally {}");
   }
 
   @Test

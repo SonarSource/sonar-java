@@ -21,11 +21,9 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -36,13 +34,27 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import java.util.Iterator;
 
 public class CatchTreeImpl extends JavaTree implements CatchTree {
+
+  private final InternalSyntaxToken catchToken;
+  private final InternalSyntaxToken openParenToken;
   private final VariableTree parameter;
   private final BlockTree block;
+  private final InternalSyntaxToken closeParenToken;
 
-  public CatchTreeImpl(AstNode astNode, VariableTree parameter, BlockTree block) {
-    super(astNode);
+  public CatchTreeImpl(InternalSyntaxToken catchToken, InternalSyntaxToken openParenToken, VariableTreeImpl parameter, InternalSyntaxToken closeParenToken, BlockTreeImpl block) {
+    super(Kind.CATCH);
+
+    this.catchToken = catchToken;
+    this.openParenToken = openParenToken;
     this.parameter = Preconditions.checkNotNull(parameter);
+    this.closeParenToken = closeParenToken;
     this.block = Preconditions.checkNotNull(block);
+
+    addChild(catchToken);
+    addChild(openParenToken);
+    addChild(parameter);
+    addChild(closeParenToken);
+    addChild(block);
   }
 
   @Override
@@ -52,12 +64,12 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
 
   @Override
   public SyntaxToken catchKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.CATCH));
+    return catchToken;
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LPAR));
+    return openParenToken;
   }
 
   @Override
@@ -67,7 +79,7 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
 
   @Override
   public SyntaxToken closeParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RPAR));
+    return closeParenToken;
   }
 
   @Override

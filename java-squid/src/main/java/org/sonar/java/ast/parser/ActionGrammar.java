@@ -38,6 +38,7 @@ import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
 import org.sonar.java.model.statement.CaseGroupTreeImpl;
 import org.sonar.java.model.statement.CaseLabelTreeImpl;
+import org.sonar.java.model.statement.CatchTreeImpl;
 import org.sonar.java.model.statement.ContinueStatementTreeImpl;
 import org.sonar.java.model.statement.DoWhileStatementTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
@@ -50,6 +51,7 @@ import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
+import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -496,6 +498,75 @@ public class ActionGrammar {
         f.doWhileStatement(b.invokeRule(JavaKeyword.DO), b.invokeRule(JavaGrammar.STATEMENT),
           b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), b.invokeRule(JavaGrammar.EXPRESSION), b.invokeRule(JavaPunctuator.RPAR),
           b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
+  public TryStatementTreeImpl TRY_STATEMENT() {
+    return b.<TryStatementTreeImpl>nonterminal(JavaGrammar.TRY_STATEMENT)
+      .is(
+        b.firstOf(
+          STANDARD_TRY_STATEMENT(),
+          TRY_WITH_RESOURCES_STATEMENT()));
+  }
+
+  public TryStatementTreeImpl STANDARD_TRY_STATEMENT() {
+    return b.<TryStatementTreeImpl>nonterminal()
+      .is(
+        f.completeStandardTryStatement(
+          b.invokeRule(JavaKeyword.TRY),
+          BLOCK(),
+          b.firstOf(
+            f.newTryCatch(b.zeroOrMore(CATCH_CLAUSE()), b.optional(FINALLY())),
+            f.newTryFinally(FINALLY()))));
+  }
+
+  public CatchTreeImpl CATCH_CLAUSE() {
+    return b.<CatchTreeImpl>nonterminal(JavaGrammar.CATCH_CLAUSE)
+      .is(
+        f.newCatchClause(
+          b.invokeRule(JavaKeyword.CATCH), b.invokeRule(JavaPunctuator.LPAR), CATCH_FORMAL_PARAMETER(), b.invokeRule(JavaPunctuator.RPAR), BLOCK()));
+  }
+
+  public VariableTreeImpl CATCH_FORMAL_PARAMETER() {
+    return b.<VariableTreeImpl>nonterminal()
+      .is(
+        f.newCatchFormalParameter(b.optional(MODIFIERS()), CATCH_TYPE(), VARIABLE_DECLARATOR_ID()));
+  }
+
+  public Tree CATCH_TYPE() {
+    return b.<Tree>nonterminal()
+      .is(
+        f.newCatchType(QUALIFIED_IDENTIFIER(), b.zeroOrMore(f.newWrapperAstNode13(b.invokeRule(JavaPunctuator.OR), (AstNode) QUALIFIED_IDENTIFIER()))));
+  }
+
+  public BlockTreeImpl FINALLY() {
+    return b.<BlockTreeImpl>nonterminal(JavaGrammar.FINALLY_)
+      .is(
+        f.newFinallyBlock(b.invokeRule(JavaKeyword.FINALLY), BLOCK()));
+  }
+
+  public TryStatementTreeImpl TRY_WITH_RESOURCES_STATEMENT() {
+    return b.<TryStatementTreeImpl>nonterminal()
+      .is(
+        f.newTryWithResourcesStatement(
+          b.invokeRule(JavaKeyword.TRY),
+          b.invokeRule(JavaPunctuator.LPAR),
+          RESOURCES(),
+          b.invokeRule(JavaPunctuator.RPAR),
+          BLOCK(),
+          b.zeroOrMore(CATCH_CLAUSE()),
+          b.optional(FINALLY())));
+  }
+
+  public ResourceListTreeImpl RESOURCES() {
+    return b.<ResourceListTreeImpl>nonterminal()
+      .is(
+        f.newResources(b.oneOrMore(f.newWrapperAstNode14(RESOURCE(), b.optional(b.invokeRule(JavaPunctuator.SEMI))))));
+  }
+
+  public VariableTreeImpl RESOURCE() {
+    return b.<VariableTreeImpl>nonterminal(JavaGrammar.RESOURCE)
+      .is(
+        f.newResource(MODIFIERS(), CLASS_TYPE(), VARIABLE_DECLARATOR_ID(), b.invokeRule(JavaPunctuator.EQU), b.invokeRule(JavaGrammar.EXPRESSION)));
   }
 
   public SwitchStatementTreeImpl SWITCH_STATEMENT() {

@@ -42,11 +42,8 @@ import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
-import org.sonar.java.model.statement.CatchTreeImpl;
-import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -59,7 +56,6 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -637,83 +633,10 @@ public class JavaTreeMaker {
     if (statementNode instanceof StatementTree && !((JavaTree) statementNode).isLegacy()) {
       result = (StatementTree) statementNode;
     } else {
-      switch ((JavaGrammar) statementNode.getType()) {
-        case TRY_STATEMENT:
-          // TODO
-          result = tryStatement(statementNode);
-          break;
-        default:
-          throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString());
-      }
+      throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString());
     }
 
     return result;
-  }
-
-  /**
-   * 14.20. The try statement
-   */
-  private TryStatementTree tryStatement(AstNode astNode) {
-    if (astNode.hasDirectChildren(JavaGrammar.TRY_WITH_RESOURCES_STATEMENT)) {
-      astNode = astNode.getFirstChild(JavaGrammar.TRY_WITH_RESOURCES_STATEMENT);
-    }
-    ImmutableList.Builder<CatchTree> catches = ImmutableList.builder();
-    for (AstNode catchNode : astNode.getChildren(JavaGrammar.CATCH_CLAUSE)) {
-      AstNode catchFormalParameterNode = catchNode.getFirstChild(JavaGrammar.CATCH_FORMAL_PARAMETER);
-      catches.add(new CatchTreeImpl(
-        catchNode,
-        new VariableTreeImpl(
-          catchFormalParameterNode,
-          // TODO modifiers:
-          ModifiersTreeImpl.EMPTY,
-          catchType(catchFormalParameterNode.getFirstChild(JavaGrammar.CATCH_TYPE)),
-          // TODO WTF why VARIABLE_DECLARATOR_ID in grammar?
-          ((VariableTreeImpl) catchFormalParameterNode.getFirstChild(Kind.VARIABLE)).simpleName(),
-          /* initializer: */null
-        ),
-        (BlockTree) catchNode.getFirstChild(Kind.BLOCK)));
-    }
-    BlockTree finallyBlock = null;
-    if (astNode.hasDirectChildren(JavaGrammar.FINALLY_)) {
-      finallyBlock = (BlockTree) astNode.getFirstChild(JavaGrammar.FINALLY_).getFirstChild(Kind.BLOCK);
-    }
-    AstNode resourceSpecificationNode = astNode.getFirstChild(JavaGrammar.RESOURCE_SPECIFICATION);
-    return new TryStatementTreeImpl(
-      astNode,
-      resourceSpecificationNode == null ? ImmutableList.<VariableTree>of() : resourceSpecification(resourceSpecificationNode),
-      (BlockTree) astNode.getFirstChild(Kind.BLOCK),
-      catches.build(),
-      finallyBlock);
-  }
-
-  private Tree catchType(AstNode astNode) {
-    checkType(astNode, JavaGrammar.CATCH_TYPE);
-    List<AstNode> children = astNode.getChildren(QUALIFIED_EXPRESSION_KINDS);
-    if (children.size() == 1) {
-      return (ExpressionTree) children.get(0);
-    } else {
-      ImmutableList.Builder<Tree> typeAlternatives = ImmutableList.builder();
-      for (AstNode child : children) {
-        typeAlternatives.add((ExpressionTree) child);
-      }
-      return new JavaTree.UnionTypeTreeImpl(astNode, typeAlternatives.build());
-    }
-  }
-
-  private List<VariableTree> resourceSpecification(AstNode astNode) {
-    checkType(astNode, JavaGrammar.RESOURCE_SPECIFICATION);
-    ImmutableList.Builder<VariableTree> result = ImmutableList.builder();
-    for (AstNode resourceNode : astNode.getChildren(JavaGrammar.RESOURCE)) {
-      result.add(new VariableTreeImpl(
-        resourceNode,
-        // TODO modifiers:
-        ModifiersTreeImpl.EMPTY,
-        (Tree) resourceNode.getFirstChild(TYPE_KINDS),
-        ((VariableTreeImpl) resourceNode.getFirstChild(Kind.VARIABLE)).simpleName(),
-        expression(resourceNode.getFirstChild(JavaGrammar.EXPRESSION))
-        ));
-    }
-    return result.build();
   }
 
   public ExpressionTree expression(AstNode astNode) {

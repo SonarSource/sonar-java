@@ -26,6 +26,7 @@ import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.AstNodeHacks;
 import org.sonar.java.ast.parser.TypeArgumentListTreeImpl;
+import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -211,7 +212,7 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
 
     public String packageNameAsString() {
-      if(packageName==null) {
+      if (packageName == null) {
         return "";
       }
       Deque<String> pieces = new LinkedList<String>();
@@ -345,6 +346,13 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   public static class UnionTypeTreeImpl extends JavaTree implements UnionTypeTree {
     private final List<Tree> typeAlternatives;
+
+    public UnionTypeTreeImpl(TypeUnionListTreeImpl typeAlternatives) {
+      super(Kind.UNION_TYPE);
+      this.typeAlternatives = Preconditions.checkNotNull(typeAlternatives);
+
+      addChild(typeAlternatives);
+    }
 
     public UnionTypeTreeImpl(AstNode astNode, List<Tree> typeAlternatives) {
       super(astNode);

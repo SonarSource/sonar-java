@@ -17,31 +17,17 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser.grammar.statements;
+package org.sonar.java.ast.parser;
 
-import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
+import com.sonar.sslr.api.AstNode;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.sslr.tests.Assertions.assertThat;
+import java.util.List;
 
-public class ResourceTest {
+public class TypeUnionListTreeImpl extends ListTreeImpl<Tree> {
 
-  @Test
-  public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
-
-    assertThat(b, JavaGrammar.RESOURCE)
-      .matches("final List<Integer> foo = 0")
-      .matches("final @Nullable List<Integer> foo = 0")
-      .matches("List<Integer> foo[] = foo");
-  }
-
-  @Test
-  public void realLife() {
-    assertThat(JavaGrammar.RESOURCE)
-      .matches("Closeable resource = open()")
-      .notMatches("byte resource = open()");
+  public TypeUnionListTreeImpl(List<Tree> types, List<AstNode> children) {
+    super(JavaGrammar.CATCH_TYPE, types, children);
   }
 
 }

@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,10 +31,9 @@ public class CatchClauseTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.CATCH_FORMAL_PARAMETER).override(RuleMock.word(b, "catchFormalParameter"));
-
     assertThat(b, JavaGrammar.CATCH_CLAUSE)
-      .matches("catch ( catchFormalParameter ) {}");
+      .matches("catch (Exception e) {}")
+      .matches("catch (Exception | Error e) {}");
   }
 
 }

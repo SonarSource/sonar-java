@@ -34,6 +34,7 @@ import org.sonar.java.model.JavaTree.ArrayTypeTreeImpl;
 import org.sonar.java.model.JavaTree.NotImplementedTreeImpl;
 import org.sonar.java.model.JavaTree.ParameterizedTypeTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
+import org.sonar.java.model.JavaTree.UnionTypeTreeImpl;
 import org.sonar.java.model.JavaTree.WildcardTreeImpl;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
@@ -64,6 +65,7 @@ import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
 import org.sonar.java.model.statement.CaseGroupTreeImpl;
 import org.sonar.java.model.statement.CaseLabelTreeImpl;
+import org.sonar.java.model.statement.CatchTreeImpl;
 import org.sonar.java.model.statement.ContinueStatementTreeImpl;
 import org.sonar.java.model.statement.DoWhileStatementTreeImpl;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
@@ -76,6 +78,7 @@ import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
+import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -1509,6 +1512,15 @@ public class TreeFactory {
     return astNode;
   }
 
+  public AstNode newWrapperAstNode(AstNode e1, Optional<AstNode> e2) {
+    AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
+    astNode.addChild(e1);
+    if (e2.isPresent()) {
+      astNode.addChild(e2.get());
+    }
+    return astNode;
+  }
+
   // TODO Enable the same method call multiple times
 
   public AstNode newWrapperAstNode2(AstNode e1, AstNode e2) {
@@ -1552,6 +1564,14 @@ public class TreeFactory {
   }
 
   public AstNode newWrapperAstNode12(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  public AstNode newWrapperAstNode13(AstNode e1, AstNode e2) {
+    return newWrapperAstNode(e1, e2);
+  }
+
+  public AstNode newWrapperAstNode14(AstNode e1, Optional<AstNode> e2) {
     return newWrapperAstNode(e1, e2);
   }
 
@@ -1756,6 +1776,115 @@ public class TreeFactory {
     return new ForEachStatementImpl(
       variable, treeMaker.expression(expression), treeMaker.statement(statement),
       forTokenAstNode, openParenTokenAstNode, variable, colonTokenAstNode, expression, closeParenTokenAstNode, statement);
+  }
+
+  //
+
+  public TryStatementTreeImpl completeStandardTryStatement(AstNode tryTokenAstNode, BlockTreeImpl block, TryStatementTreeImpl partial) {
+    InternalSyntaxToken tryToken = InternalSyntaxToken.create(tryTokenAstNode);
+
+    return partial.completeStandardTry(tryToken, block);
+  }
+
+  public TryStatementTreeImpl newTryCatch(Optional<List<CatchTreeImpl>> catches, Optional<BlockTreeImpl> finallyBlock) {
+    return new TryStatementTreeImpl(catches.isPresent() ? catches.get() : ImmutableList.<CatchTreeImpl>of(), finallyBlock.isPresent() ? finallyBlock.get() : null);
+  }
+
+  public TryStatementTreeImpl newTryFinally(BlockTreeImpl finallyBlock) {
+    return new TryStatementTreeImpl(finallyBlock);
+  }
+
+  public CatchTreeImpl newCatchClause(AstNode catchTokenAstNode, AstNode openParenTokenAstNode, VariableTreeImpl parameter, AstNode closeParenTokenAstNode, BlockTreeImpl block) {
+    InternalSyntaxToken catchToken = InternalSyntaxToken.create(catchTokenAstNode);
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+
+    return new CatchTreeImpl(catchToken, openParenToken, parameter, closeParenToken, block);
+  }
+
+  public VariableTreeImpl newCatchFormalParameter(Optional<ModifiersTreeImpl> modifiers, Tree type, VariableTreeImpl parameter) {
+    // TODO modifiers
+
+    if (modifiers.isPresent()) {
+      parameter.prependChildren(modifiers.get(), (AstNode) type);
+    } else {
+      parameter.prependChildren((AstNode) type);
+    }
+
+    return parameter.complete(type);
+  }
+
+  public Tree newCatchType(ExpressionTree qualifiedIdentifier, Optional<List<AstNode>> rests) {
+    if (!rests.isPresent()) {
+      return qualifiedIdentifier;
+    }
+
+    List<AstNode> children = Lists.newArrayList();
+    ImmutableList.Builder<Tree> types = ImmutableList.builder();
+
+    children.add((AstNode) qualifiedIdentifier);
+    types.add(qualifiedIdentifier);
+
+    for (AstNode rest : rests.get()) {
+      children.add(rest.getFirstChild());
+
+      ExpressionTree qualifiedIdentifier2 = (ExpressionTree) rest.getLastChild();
+      types.add(qualifiedIdentifier2);
+
+      children.add((AstNode) qualifiedIdentifier2);
+    }
+
+    return new UnionTypeTreeImpl(new TypeUnionListTreeImpl(types.build(), children));
+  }
+
+  public BlockTreeImpl newFinallyBlock(AstNode finallyTokenAstNode, BlockTreeImpl block) {
+    InternalSyntaxToken finallyToken = InternalSyntaxToken.create(finallyTokenAstNode);
+    block.prependChildren(finallyToken);
+
+    return block;
+  }
+
+  public TryStatementTreeImpl newTryWithResourcesStatement(
+    AstNode tryTokenAstNode, AstNode openParenTokenAstNode, ResourceListTreeImpl resources, AstNode closeParenTokenAstNode,
+    BlockTreeImpl block,
+    Optional<List<CatchTreeImpl>> catches, Optional<BlockTreeImpl> finallyBlock) {
+
+    InternalSyntaxToken tryToken = InternalSyntaxToken.create(tryTokenAstNode);
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+
+    return new TryStatementTreeImpl(
+      tryToken,
+      openParenToken, resources, closeParenToken,
+      block,
+      catches.isPresent() ? catches.get() : ImmutableList.<CatchTreeImpl>of(),
+      finallyBlock.isPresent() ? finallyBlock.get() : null);
+  }
+
+  public ResourceListTreeImpl newResources(List<AstNode> rests) {
+    List<AstNode> children = Lists.newArrayList();
+    ImmutableList.Builder<VariableTreeImpl> resources = ImmutableList.builder();
+
+    for (AstNode rest : rests) {
+      VariableTreeImpl resource = (VariableTreeImpl) rest.getFirstChild();
+      children.add(resource);
+      resources.add(resource);
+
+      if (rest.getNumberOfChildren() == 2) {
+        children.add(rest.getLastChild());
+      }
+    }
+
+    return new ResourceListTreeImpl(resources.build(), children);
+  }
+
+  public VariableTreeImpl newResource(ModifiersTreeImpl modifiers, ExpressionTree classType, VariableTreeImpl partial, AstNode equalTokenAstNode, AstNode expression) {
+    // TODO modifiers
+    partial.prependChildren(modifiers, (AstNode) classType);
+    partial.addChild(equalTokenAstNode);
+    partial.addChild(expression);
+
+    return partial.complete(classType, treeMaker.expression(expression));
   }
 
 }
