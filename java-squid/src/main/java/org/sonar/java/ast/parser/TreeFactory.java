@@ -689,6 +689,93 @@ public class TreeFactory {
     return new IfStatementTreeImpl(elseKeyword, treeMaker.statement(elseStatement), elseKeyword, elseStatement);
   }
 
+  public ForStatementTreeImpl newStandardForStatement(
+    AstNode forTokenAstNode,
+    AstNode openParenTokenAstNode,
+    Optional<StatementExpressionListTreeImpl> forInit, AstNode forInitSemicolonTokenAstNode,
+    Optional<AstNode> expression, AstNode expressionSemicolonTokenAstNode,
+    Optional<StatementExpressionListTreeImpl> forUpdate, AstNode forUpdateSemicolonTokenAstNode,
+    AstNode statement) {
+
+    StatementExpressionListTreeImpl forInit2 = forInit.isPresent() ? forInit.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
+    StatementExpressionListTreeImpl forUpdate2 = forUpdate.isPresent() ? forUpdate.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
+
+    ForStatementTreeImpl result = new ForStatementTreeImpl(
+      forInit2,
+      expression.isPresent() ? treeMaker.expression(expression.get()) : null,
+      forUpdate2,
+      treeMaker.statement(statement));
+
+    List<AstNode> children = Lists.newArrayList();
+    children.add(forTokenAstNode);
+    children.add(openParenTokenAstNode);
+    children.add(forInit2);
+    children.add(forInitSemicolonTokenAstNode);
+    if (expression.isPresent()) {
+      children.add(expression.get());
+    }
+    children.add(expressionSemicolonTokenAstNode);
+    children.add(forUpdate2);
+    children.add(forUpdateSemicolonTokenAstNode);
+    children.add(statement);
+
+    result.prependChildren(children);
+
+    return result;
+  }
+
+  public StatementExpressionListTreeImpl newForInitDeclaration(ModifiersTreeImpl modifiers, ExpressionTree type, AstNode variableDeclarators) {
+    List<StatementTree> statements = treeMaker.variableDeclarators(
+      ModifiersTreeImpl.EMPTY,
+      type,
+      variableDeclarators);
+
+    StatementExpressionListTreeImpl result = new StatementExpressionListTreeImpl(statements);
+    result.prependChildren(modifiers, (AstNode) type, variableDeclarators);
+
+    return result;
+  }
+
+  public StatementExpressionListTreeImpl newStatementExpressions(AstNode statementExpression, Optional<List<AstNode>> rests) {
+    List<AstNode> children = Lists.newArrayList();
+    ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
+
+    ExpressionStatementTreeImpl statement = new ExpressionStatementTreeImpl(
+      treeMaker.expression(statementExpression), null,
+      statementExpression);
+    statements.add(statement);
+    children.add(statement);
+
+    if (rests.isPresent()) {
+      for (AstNode rest : rests.get()) {
+        children.add(rest.getFirstChild());
+
+        statement = new ExpressionStatementTreeImpl(
+          treeMaker.expression(rest.getLastChild()), null,
+          rest.getLastChild());
+        statements.add(statement);
+        children.add(statement);
+      }
+    }
+
+    StatementExpressionListTreeImpl result = new StatementExpressionListTreeImpl(statements.build());
+    result.prependChildren(children);
+
+    return result;
+  }
+
+  public ForEachStatementImpl newForeachStatement(
+    AstNode forTokenAstNode,
+    AstNode openParenTokenAstNode,
+    VariableTreeImpl variable, AstNode colonTokenAstNode, AstNode expression,
+    AstNode closeParenTokenAstNode,
+    AstNode statement) {
+
+    return new ForEachStatementImpl(
+      variable, treeMaker.expression(expression), treeMaker.statement(statement),
+      forTokenAstNode, openParenTokenAstNode, variable, colonTokenAstNode, expression, closeParenTokenAstNode, statement);
+  }
+
   public WhileStatementTreeImpl whileStatement(AstNode whileToken, AstNode openParen, AstNode expression, AstNode closeParen, AstNode statement) {
     InternalSyntaxToken whileKeyword = InternalSyntaxToken.create(whileToken);
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
@@ -706,6 +793,113 @@ public class TreeFactory {
     InternalSyntaxToken semiColonToken = InternalSyntaxToken.create(semicolon);
     return new DoWhileStatementTreeImpl(doKeyword, treeMaker.statement(statement), whileKeyword, openParenToken, treeMaker.expression(expression), closeParenToken, semiColonToken,
       doKeyword, statement, whileKeyword, openParenToken, expression, closeParenToken, semiColonToken);
+  }
+
+  public TryStatementTreeImpl completeStandardTryStatement(AstNode tryTokenAstNode, BlockTreeImpl block, TryStatementTreeImpl partial) {
+    InternalSyntaxToken tryToken = InternalSyntaxToken.create(tryTokenAstNode);
+
+    return partial.completeStandardTry(tryToken, block);
+  }
+
+  public TryStatementTreeImpl newTryCatch(Optional<List<CatchTreeImpl>> catches, Optional<BlockTreeImpl> finallyBlock) {
+    return new TryStatementTreeImpl(catches.isPresent() ? catches.get() : ImmutableList.<CatchTreeImpl>of(), finallyBlock.isPresent() ? finallyBlock.get() : null);
+  }
+
+  public TryStatementTreeImpl newTryFinally(BlockTreeImpl finallyBlock) {
+    return new TryStatementTreeImpl(finallyBlock);
+  }
+
+  public CatchTreeImpl newCatchClause(AstNode catchTokenAstNode, AstNode openParenTokenAstNode, VariableTreeImpl parameter, AstNode closeParenTokenAstNode, BlockTreeImpl block) {
+    InternalSyntaxToken catchToken = InternalSyntaxToken.create(catchTokenAstNode);
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+
+    return new CatchTreeImpl(catchToken, openParenToken, parameter, closeParenToken, block);
+  }
+
+  public VariableTreeImpl newCatchFormalParameter(Optional<ModifiersTreeImpl> modifiers, Tree type, VariableTreeImpl parameter) {
+    // TODO modifiers
+
+    if (modifiers.isPresent()) {
+      parameter.prependChildren(modifiers.get(), (AstNode) type);
+    } else {
+      parameter.prependChildren((AstNode) type);
+    }
+
+    return parameter.complete(type);
+  }
+
+  public Tree newCatchType(ExpressionTree qualifiedIdentifier, Optional<List<AstNode>> rests) {
+    if (!rests.isPresent()) {
+      return qualifiedIdentifier;
+    }
+
+    List<AstNode> children = Lists.newArrayList();
+    ImmutableList.Builder<Tree> types = ImmutableList.builder();
+
+    children.add((AstNode) qualifiedIdentifier);
+    types.add(qualifiedIdentifier);
+
+    for (AstNode rest : rests.get()) {
+      children.add(rest.getFirstChild());
+
+      ExpressionTree qualifiedIdentifier2 = (ExpressionTree) rest.getLastChild();
+      types.add(qualifiedIdentifier2);
+
+      children.add((AstNode) qualifiedIdentifier2);
+    }
+
+    return new UnionTypeTreeImpl(new TypeUnionListTreeImpl(types.build(), children));
+  }
+
+  public BlockTreeImpl newFinallyBlock(AstNode finallyTokenAstNode, BlockTreeImpl block) {
+    InternalSyntaxToken finallyToken = InternalSyntaxToken.create(finallyTokenAstNode);
+    block.prependChildren(finallyToken);
+
+    return block;
+  }
+
+  public TryStatementTreeImpl newTryWithResourcesStatement(
+    AstNode tryTokenAstNode, AstNode openParenTokenAstNode, ResourceListTreeImpl resources, AstNode closeParenTokenAstNode,
+    BlockTreeImpl block,
+    Optional<List<CatchTreeImpl>> catches, Optional<BlockTreeImpl> finallyBlock) {
+
+    InternalSyntaxToken tryToken = InternalSyntaxToken.create(tryTokenAstNode);
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+
+    return new TryStatementTreeImpl(
+      tryToken,
+      openParenToken, resources, closeParenToken,
+      block,
+      catches.isPresent() ? catches.get() : ImmutableList.<CatchTreeImpl>of(),
+      finallyBlock.isPresent() ? finallyBlock.get() : null);
+  }
+
+  public ResourceListTreeImpl newResources(List<AstNode> rests) {
+    List<AstNode> children = Lists.newArrayList();
+    ImmutableList.Builder<VariableTreeImpl> resources = ImmutableList.builder();
+
+    for (AstNode rest : rests) {
+      VariableTreeImpl resource = (VariableTreeImpl) rest.getFirstChild();
+      children.add(resource);
+      resources.add(resource);
+
+      if (rest.getNumberOfChildren() == 2) {
+        children.add(rest.getLastChild());
+      }
+    }
+
+    return new ResourceListTreeImpl(resources.build(), children);
+  }
+
+  public VariableTreeImpl newResource(ModifiersTreeImpl modifiers, ExpressionTree classType, VariableTreeImpl partial, AstNode equalTokenAstNode, AstNode expression) {
+    // TODO modifiers
+    partial.prependChildren(modifiers, (AstNode) classType);
+    partial.addChild(equalTokenAstNode);
+    partial.addChild(expression);
+
+    return partial.complete(classType, treeMaker.expression(expression));
   }
 
   public SwitchStatementTreeImpl switchStatement(AstNode switchToken, AstNode openParen, AstNode expression, AstNode closeParen,
@@ -1689,202 +1883,6 @@ public class TreeFactory {
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }
-  }
-
-  public ForStatementTreeImpl newStandardForStatement(
-    AstNode forTokenAstNode,
-    AstNode openParenTokenAstNode,
-    Optional<StatementExpressionListTreeImpl> forInit, AstNode forInitSemicolonTokenAstNode,
-    Optional<AstNode> expression, AstNode expressionSemicolonTokenAstNode,
-    Optional<StatementExpressionListTreeImpl> forUpdate, AstNode forUpdateSemicolonTokenAstNode,
-    AstNode statement) {
-
-    StatementExpressionListTreeImpl forInit2 = forInit.isPresent() ? forInit.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
-    StatementExpressionListTreeImpl forUpdate2 = forUpdate.isPresent() ? forUpdate.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
-
-    ForStatementTreeImpl result = new ForStatementTreeImpl(
-      forInit2,
-      expression.isPresent() ? treeMaker.expression(expression.get()) : null,
-      forUpdate2,
-      treeMaker.statement(statement));
-
-    List<AstNode> children = Lists.newArrayList();
-    children.add(forTokenAstNode);
-    children.add(openParenTokenAstNode);
-    children.add(forInit2);
-    children.add(forInitSemicolonTokenAstNode);
-    if (expression.isPresent()) {
-      children.add(expression.get());
-    }
-    children.add(expressionSemicolonTokenAstNode);
-    children.add(forUpdate2);
-    children.add(forUpdateSemicolonTokenAstNode);
-    children.add(statement);
-
-    result.prependChildren(children);
-
-    return result;
-  }
-
-  public StatementExpressionListTreeImpl newForInitDeclaration(ModifiersTreeImpl modifiers, ExpressionTree type, AstNode variableDeclarators) {
-    List<StatementTree> statements = treeMaker.variableDeclarators(
-      ModifiersTreeImpl.EMPTY,
-      type,
-      variableDeclarators);
-
-    StatementExpressionListTreeImpl result = new StatementExpressionListTreeImpl(statements);
-    result.prependChildren(modifiers, (AstNode) type, variableDeclarators);
-
-    return result;
-  }
-
-  public StatementExpressionListTreeImpl newStatementExpressions(AstNode statementExpression, Optional<List<AstNode>> rests) {
-    List<AstNode> children = Lists.newArrayList();
-    ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
-
-    ExpressionStatementTreeImpl statement = new ExpressionStatementTreeImpl(
-      treeMaker.expression(statementExpression), null,
-      statementExpression);
-    statements.add(statement);
-    children.add(statement);
-
-    if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        children.add(rest.getFirstChild());
-
-        statement = new ExpressionStatementTreeImpl(
-          treeMaker.expression(rest.getLastChild()), null,
-          rest.getLastChild());
-        statements.add(statement);
-        children.add(statement);
-      }
-    }
-
-    StatementExpressionListTreeImpl result = new StatementExpressionListTreeImpl(statements.build());
-    result.prependChildren(children);
-
-    return result;
-  }
-
-  public ForEachStatementImpl newForeachStatement(
-    AstNode forTokenAstNode,
-    AstNode openParenTokenAstNode,
-    VariableTreeImpl variable, AstNode colonTokenAstNode, AstNode expression,
-    AstNode closeParenTokenAstNode,
-    AstNode statement) {
-
-    return new ForEachStatementImpl(
-      variable, treeMaker.expression(expression), treeMaker.statement(statement),
-      forTokenAstNode, openParenTokenAstNode, variable, colonTokenAstNode, expression, closeParenTokenAstNode, statement);
-  }
-
-  //
-
-  public TryStatementTreeImpl completeStandardTryStatement(AstNode tryTokenAstNode, BlockTreeImpl block, TryStatementTreeImpl partial) {
-    InternalSyntaxToken tryToken = InternalSyntaxToken.create(tryTokenAstNode);
-
-    return partial.completeStandardTry(tryToken, block);
-  }
-
-  public TryStatementTreeImpl newTryCatch(Optional<List<CatchTreeImpl>> catches, Optional<BlockTreeImpl> finallyBlock) {
-    return new TryStatementTreeImpl(catches.isPresent() ? catches.get() : ImmutableList.<CatchTreeImpl>of(), finallyBlock.isPresent() ? finallyBlock.get() : null);
-  }
-
-  public TryStatementTreeImpl newTryFinally(BlockTreeImpl finallyBlock) {
-    return new TryStatementTreeImpl(finallyBlock);
-  }
-
-  public CatchTreeImpl newCatchClause(AstNode catchTokenAstNode, AstNode openParenTokenAstNode, VariableTreeImpl parameter, AstNode closeParenTokenAstNode, BlockTreeImpl block) {
-    InternalSyntaxToken catchToken = InternalSyntaxToken.create(catchTokenAstNode);
-    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
-    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
-
-    return new CatchTreeImpl(catchToken, openParenToken, parameter, closeParenToken, block);
-  }
-
-  public VariableTreeImpl newCatchFormalParameter(Optional<ModifiersTreeImpl> modifiers, Tree type, VariableTreeImpl parameter) {
-    // TODO modifiers
-
-    if (modifiers.isPresent()) {
-      parameter.prependChildren(modifiers.get(), (AstNode) type);
-    } else {
-      parameter.prependChildren((AstNode) type);
-    }
-
-    return parameter.complete(type);
-  }
-
-  public Tree newCatchType(ExpressionTree qualifiedIdentifier, Optional<List<AstNode>> rests) {
-    if (!rests.isPresent()) {
-      return qualifiedIdentifier;
-    }
-
-    List<AstNode> children = Lists.newArrayList();
-    ImmutableList.Builder<Tree> types = ImmutableList.builder();
-
-    children.add((AstNode) qualifiedIdentifier);
-    types.add(qualifiedIdentifier);
-
-    for (AstNode rest : rests.get()) {
-      children.add(rest.getFirstChild());
-
-      ExpressionTree qualifiedIdentifier2 = (ExpressionTree) rest.getLastChild();
-      types.add(qualifiedIdentifier2);
-
-      children.add((AstNode) qualifiedIdentifier2);
-    }
-
-    return new UnionTypeTreeImpl(new TypeUnionListTreeImpl(types.build(), children));
-  }
-
-  public BlockTreeImpl newFinallyBlock(AstNode finallyTokenAstNode, BlockTreeImpl block) {
-    InternalSyntaxToken finallyToken = InternalSyntaxToken.create(finallyTokenAstNode);
-    block.prependChildren(finallyToken);
-
-    return block;
-  }
-
-  public TryStatementTreeImpl newTryWithResourcesStatement(
-    AstNode tryTokenAstNode, AstNode openParenTokenAstNode, ResourceListTreeImpl resources, AstNode closeParenTokenAstNode,
-    BlockTreeImpl block,
-    Optional<List<CatchTreeImpl>> catches, Optional<BlockTreeImpl> finallyBlock) {
-
-    InternalSyntaxToken tryToken = InternalSyntaxToken.create(tryTokenAstNode);
-    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
-    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
-
-    return new TryStatementTreeImpl(
-      tryToken,
-      openParenToken, resources, closeParenToken,
-      block,
-      catches.isPresent() ? catches.get() : ImmutableList.<CatchTreeImpl>of(),
-      finallyBlock.isPresent() ? finallyBlock.get() : null);
-  }
-
-  public ResourceListTreeImpl newResources(List<AstNode> rests) {
-    List<AstNode> children = Lists.newArrayList();
-    ImmutableList.Builder<VariableTreeImpl> resources = ImmutableList.builder();
-
-    for (AstNode rest : rests) {
-      VariableTreeImpl resource = (VariableTreeImpl) rest.getFirstChild();
-      children.add(resource);
-      resources.add(resource);
-
-      if (rest.getNumberOfChildren() == 2) {
-        children.add(rest.getLastChild());
-      }
-    }
-
-    return new ResourceListTreeImpl(resources.build(), children);
-  }
-
-  public VariableTreeImpl newResource(ModifiersTreeImpl modifiers, ExpressionTree classType, VariableTreeImpl partial, AstNode equalTokenAstNode, AstNode expression) {
-    // TODO modifiers
-    partial.prependChildren(modifiers, (AstNode) classType);
-    partial.addChild(equalTokenAstNode);
-    partial.addChild(expression);
-
-    return partial.complete(classType, treeMaker.expression(expression));
   }
 
 }
