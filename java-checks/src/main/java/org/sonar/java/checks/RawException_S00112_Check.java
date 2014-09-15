@@ -87,7 +87,7 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
   }
 
   private boolean isNotOverriden(MethodTree tree) {
-    return BooleanUtils.isFalse(((MethodTreeImpl) tree).isOverriden());
+    return BooleanUtils.isFalse(((MethodTreeImpl) tree).isOverriding());
   }
 
 }

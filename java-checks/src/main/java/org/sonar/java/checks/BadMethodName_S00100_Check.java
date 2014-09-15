@@ -72,6 +72,6 @@ public class BadMethodName_S00100_Check extends SubscriptionBaseVisitor {
   }
 
   private boolean isNotOverriden(MethodTree methodTree) {
-    return BooleanUtils.isFalse(((MethodTreeImpl) methodTree).isOverriden());
+    return BooleanUtils.isFalse(((MethodTreeImpl) methodTree).isOverriding());
   }
 }

@@ -46,31 +46,31 @@ public class MethodTreeImplTest {
     MethodTreeImpl methodInterface = (MethodTreeImpl) interfaze.members().get(0);
     ClassTree clazz = (ClassTree) cut.types().get(1);
     MethodTreeImpl methodClazz = (MethodTreeImpl) clazz.members().get(0);
-    assertThat(methodInterface.isOverriden()).isFalse();
-    assertThat(methodClazz.isOverriden()).isTrue();
+    assertThat(methodInterface.isOverriding()).isFalse();
+    assertThat(methodClazz.isOverriding()).isTrue();
   }
 
   @Test
   public void override_from_object_should_be_detected() {
     MethodTreeImpl method = getUniqueMethod("class A { String toString(){return \"\";}}");
-    assertThat(method.isOverriden()).isTrue();
+    assertThat(method.isOverriding()).isTrue();
   }
 
   @Test
   public void static_method_cannot_be_overriden() {
-    assertThat(getUniqueMethod("class A{ static void m(){}}").isOverriden()).isFalse();
+    assertThat(getUniqueMethod("class A{ static void m(){}}").isOverriding()).isFalse();
   }
 
   @Test
   public void private_method_cannot_be_overriden() {
-    assertThat(getUniqueMethod("class A{ private void m(){}}").isOverriden()).isFalse();
+    assertThat(getUniqueMethod("class A{ private void m(){}}").isOverriding()).isFalse();
   }
 
   @Test
   public void override_annotated_method_should_be_overriden() {
-    assertThat(getUniqueMethod("class A{ @Override void m(){}}").isOverriden()).isTrue();
-    assertThat(getUniqueMethod("class A{ @cutom.namespace.Override void m(){}}").isOverriden()).isFalse();
-    assertThat(getUniqueMethod("class A{ @Foo void m(){}}").isOverriden()).isFalse();
+    assertThat(getUniqueMethod("class A{ @Override void m(){}}").isOverriding()).isTrue();
+    assertThat(getUniqueMethod("class A{ @cutom.namespace.Override void m(){}}").isOverriding()).isFalse();
+    assertThat(getUniqueMethod("class A{ @Foo void m(){}}").isOverriding()).isFalse();
   }
 
   @Test
@@ -78,7 +78,7 @@ public class MethodTreeImplTest {
     AstNode astNode = p.parse("class A { String toString(){return \"\";}}");
     CompilationUnitTree cut = maker.compilationUnit(astNode);
     MethodTreeImpl methodTree = (MethodTreeImpl) ((ClassTree) cut.types().get(0)).members().get(0);
-    assertThat(methodTree.isOverriden()).isNull();
+    assertThat(methodTree.isOverriding()).isNull();
   }
 
   private MethodTreeImpl getUniqueMethod(String code) {

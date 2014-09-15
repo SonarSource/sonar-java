@@ -185,7 +185,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
    * Check if a methodTree is overriden.
    * @return true if overriden, null if it cannot be decided (method symbol not resolved or lack of bytecode for super types).
    */
-  public Boolean isOverriden() {
+  public Boolean isOverriding() {
     if(isStatic() || isPrivate()) {
       return false;
     }

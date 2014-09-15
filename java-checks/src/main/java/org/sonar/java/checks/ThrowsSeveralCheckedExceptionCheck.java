@@ -85,7 +85,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean isNotOverriden(MethodTree methodTree) {
-    return BooleanUtils.isFalse(((MethodTreeImpl) methodTree).isOverriden());
+    return BooleanUtils.isFalse(((MethodTreeImpl) methodTree).isOverriding());
   }
 
   private boolean isPublic(MethodTree methodTree) {
