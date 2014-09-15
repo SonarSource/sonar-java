@@ -243,8 +243,10 @@ public class JavaTreeMakerTest {
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.typeParameters()).isNotEmpty();
+    assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.superClass()).isNotNull();
     assertThat(tree.superInterfaces()).hasSize(2);
+    assertThat(tree.closeBraceToken().text()).isEqualTo("}");
 
     astNode = p.parse("public class T { }");
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
@@ -435,6 +437,8 @@ public class JavaTreeMakerTest {
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
+    assertThat(tree.openBraceToken().text()).isEqualTo("{");
+    assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
   }
 
@@ -457,6 +461,8 @@ public class JavaTreeMakerTest {
     newClassTree = (NewClassTree) tree.initializer();
     assertThat(newClassTree.arguments()).hasSize(1);
     assertThat(newClassTree.classBody()).isNotNull();
+    assertThat(newClassTree.classBody().openBraceToken().text()).isEqualTo("{");
+
   }
 
   @Test
@@ -543,6 +549,8 @@ public class JavaTreeMakerTest {
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.typeParameters()).isEmpty();
     assertThat(tree.superClass()).isNull();
+    assertThat(tree.openBraceToken().text()).isEqualTo("{");
+    assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
   }
 
@@ -606,6 +614,8 @@ public class JavaTreeMakerTest {
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
+    assertThat(tree.openBraceToken().text()).isEqualTo("{");
+    assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
   }
 
