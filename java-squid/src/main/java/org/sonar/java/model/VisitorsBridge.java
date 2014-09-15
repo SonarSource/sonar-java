@@ -47,6 +47,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisitor {
@@ -214,6 +215,11 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
     @Override
     public int getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree) {
       return complexityVisitor.scan(enclosingClass, methodTree);
+    }
+
+    @Override
+    public Set<Integer> getNoSonarLines() {
+      return sourceFile.getNoSonarTagLines();
     }
 
   }

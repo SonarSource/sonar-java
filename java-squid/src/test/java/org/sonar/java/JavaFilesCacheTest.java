@@ -33,9 +33,10 @@ public class JavaFilesCacheTest {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
 
-    assertThat(javaFilesCache.resourcesCache.keySet()).hasSize(5);
+    assertThat(javaFilesCache.resourcesCache.keySet()).hasSize(6);
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest");
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A");
+    assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest$plop");
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$I");
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$1B");
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$1B$1");
@@ -52,15 +53,26 @@ public class JavaFilesCacheTest {
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest#method_start_lines_mapping()V");
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A#method()V");
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest#resource_file_mapping()V");
+
+    assertThat(javaFilesCache.ignoredLines).hasSize(13);
+    assertThat(javaFilesCache.ignoredLines).contains(67);
+    assertThat(javaFilesCache.ignoredLines).contains(68);
+    assertThat(javaFilesCache.ignoredLines).contains(71);
+    assertThat(javaFilesCache.ignoredLines).contains(81);
+
   }
 
   static class A {
     interface I{
+      @SuppressWarnings("all")
       void foo();
     }
     private void method() {
+      @SuppressWarnings("all")
       class B{
         Object obj = new I() {
+
+          @SuppressWarnings("foo")
           @Override
           public void foo() {
 
@@ -69,5 +81,6 @@ public class JavaFilesCacheTest {
       }
     }
   }
+  @interface plop{}
 
 }

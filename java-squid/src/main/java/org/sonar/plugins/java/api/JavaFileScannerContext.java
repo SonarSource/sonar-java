@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.Set;
 
 @Beta
 public interface JavaFileScannerContext {
@@ -50,5 +51,7 @@ public interface JavaFileScannerContext {
   int getComplexity(Tree tree);
 
   int getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree);
+
+  Set<Integer> getNoSonarLines();
 
 }

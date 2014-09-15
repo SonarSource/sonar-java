@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import com.google.common.collect.Sets;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.ast.visitors.JavaAstVisitor;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.Set;
 
 public class TestFileVisitorsBridge extends JavaAstVisitor {
 
@@ -103,6 +105,11 @@ public class TestFileVisitorsBridge extends JavaAstVisitor {
     @Override
     public int getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree) {
       throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<Integer> getNoSonarLines() {
+      return Sets.newHashSet();
     }
 
   }

@@ -22,7 +22,6 @@ package org.sonar.plugins.java.bridges;
 import com.google.common.collect.Lists;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
-import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.java.JavaSquid;
 
@@ -35,10 +34,8 @@ public final class BridgeFactory {
     // only static methods
   }
 
-  private static List<Bridge> create(NoSonarFilter noSonarFilter, boolean skipPackageDesignAnalysis) {
-    List<Bridge> result = Lists.newArrayList(
-        new NoSonarFilterLoader(noSonarFilter),
-        new ChecksBridge());
+  private static List<Bridge> create(boolean skipPackageDesignAnalysis) {
+    List<Bridge> result = Lists.<Bridge>newArrayList(new ChecksBridge());
     if (!skipPackageDesignAnalysis) {
       result.add(new DesignBridge());
     }
@@ -46,9 +43,9 @@ public final class BridgeFactory {
   }
 
   public static List<Bridge> create(boolean bytecodeScanned, boolean skipPackageDesignAnalysis, SensorContext context, CheckFactory checkFactory,
-                                    ResourceIndex resourceIndex, JavaSquid squid, NoSonarFilter noSonarFilter, RulesProfile profile) {
+                                    ResourceIndex resourceIndex, JavaSquid squid, RulesProfile profile) {
     List<Bridge> result = new ArrayList<Bridge>();
-    for (Bridge bridge : create(noSonarFilter, skipPackageDesignAnalysis)) {
+    for (Bridge bridge : create(skipPackageDesignAnalysis)) {
       bridge.setCheckFactory(checkFactory);
       if (!bridge.needsBytecode() || bytecodeScanned) {
         bridge.setContext(context);

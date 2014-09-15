@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import org.junit.Test;
+import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.java.JavaAstScanner;
@@ -40,7 +41,7 @@ public class DefaultJavaResourceLocatorTest {
     File baseDir = new File("src/test/java");
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null);
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, mock(NoSonarFilter.class));
     JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/plugins/java/DefaultJavaResourceLocatorTest.java"), new VisitorsBridge(javaResourceLocator));
 
     assertThat(javaResourceLocator.resourcesCache.keySet()).hasSize(5);

@@ -21,21 +21,30 @@ package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.MethodSignatureScanner;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -45,6 +54,9 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
   @VisibleForTesting
   Map<String, Integer> methodStartLines = Maps.newHashMap();
+
+  @VisibleForTesting
+  Set<Integer> ignoredLines = Sets.newHashSet();
 
   private File currentFile;
   private Deque<String> currentClassKey = new LinkedList<String>();
@@ -68,6 +80,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     currentClassKey.clear();
     parent.clear();
     anonymousInnerClassCounter.clear();
+    ignoredLines.clear();
     scan(tree);
   }
 
@@ -82,6 +95,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     parent.push(tree);
     anonymousInnerClassCounter.push(0);
     resourcesCache.put(key, currentFile);
+    isSuppressWarning(tree);
     super.visitClass(tree);
     currentClassKey.pop();
     parent.pop();
@@ -109,8 +123,63 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     parent.push(tree);
     String methodKey = currentClassKey.peek() + "#" + MethodSignaturePrinter.print(MethodSignatureScanner.scan(tree));
     methodStartLines.put(methodKey, ((JavaTree) tree.simpleName()).getLine());
+    isSuppressWarning(tree);
     super.visitMethod(tree);
     parent.pop();
   }
 
+  private void isSuppressWarning(ClassTree tree) {
+    int endLine = ((InternalSyntaxToken) tree.closeBraceToken()).getLine();
+    isSuppressWarning(tree.modifiers().annotations(), endLine);
+  }
+
+  private void isSuppressWarning(MethodTree tree) {
+    int endLine = ((JavaTree) tree.simpleName()).getLine();
+    //if we have no block, then we assume method is on one line on the method name line.
+    if (tree.block() != null) {
+      endLine = ((InternalSyntaxToken) tree.block().closeBraceToken()).getLine();
+    }
+    isSuppressWarning(tree.modifiers().annotations(), endLine);
+  }
+
+  private void isSuppressWarning(List<AnnotationTree> annotationTrees, int endLine) {
+    boolean hasSuppressAllWarnings = false;
+    int startLine = 0;
+    for (AnnotationTree annotationTree : annotationTrees) {
+      if (isSuppressAllWarnings(annotationTree)) {
+        startLine = ((JavaTree) annotationTree).getLine();
+        hasSuppressAllWarnings = true;
+      }
+    }
+
+    if (hasSuppressAllWarnings) {
+      for (int i = startLine; i <= endLine; i++) {
+        ignoredLines.add(i);
+      }
+    }
+  }
+
+  private boolean isSuppressAllWarnings(AnnotationTree annotationTree) {
+    boolean suppressWarningsType = false;
+    Tree type = annotationTree.annotationType();
+    if (type.is(Tree.Kind.IDENTIFIER)) {
+      suppressWarningsType = ((IdentifierTree) type).name().equals("SuppressWarnings");
+    } else if (type.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) type;
+      suppressWarningsType = mset.identifier().equals("SuppressWarnings") &&
+          mset.expression().is(Tree.Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) mset.expression()).identifier().name().equals("lang");
+    }
+    if (suppressWarningsType) {
+      for (ExpressionTree expression : annotationTree.arguments()) {
+        if (expression.is(Tree.Kind.STRING_LITERAL) && "\"all\"".equals(((LiteralTree) expression).value())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public Set<Integer> ignoredLines() {
+    return ignoredLines;
+  }
 }

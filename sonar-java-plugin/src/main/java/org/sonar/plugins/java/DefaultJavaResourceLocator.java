@@ -23,8 +23,10 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaClasspath;
@@ -36,6 +38,7 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFileScanner {
 
@@ -43,15 +46,17 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
 
   private final Project project;
   private final JavaClasspath javaClasspath;
+  private final NoSonarFilter noSonarFilter;
   @VisibleForTesting
   Map<String, Resource> resourcesCache;
   private Map<String, String> sourceFileCache;
   private Map<String, Integer> methodStartLines;
 
 
-  public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath) {
+  public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath, NoSonarFilter noSonarFilter) {
     this.project = project;
     this.javaClasspath = javaClasspath;
+    this.noSonarFilter = noSonarFilter;
     resourcesCache = Maps.newHashMap();
     sourceFileCache = Maps.newHashMap();
     methodStartLines = Maps.newHashMap();
@@ -103,14 +108,20 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   public void scanFile(JavaFileScannerContext context) {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     javaFilesCache.scanFile(context);
+    org.sonar.api.resources.File currentResource = null;
     for (Map.Entry<String, File> stringFileEntry : javaFilesCache.getResourcesCache().entrySet()) {
-      org.sonar.api.resources.File currentResource = org.sonar.api.resources.File.fromIOFile(stringFileEntry.getValue(), project);
-      Preconditions.checkNotNull(currentResource, "resource not found : " + context.getFile().getName());
+      if(currentResource == null) {
+        currentResource = org.sonar.api.resources.File.fromIOFile(stringFileEntry.getValue(), project);
+        Preconditions.checkNotNull(currentResource, "resource not found : " + context.getFile().getName());
+      }
       resourcesCache.put(stringFileEntry.getKey(), currentResource);
       if(context.getFileKey() != null) {
         sourceFileCache.put(stringFileEntry.getKey(), context.getFileKey());
       }
     }
+    Set<Integer> ignoredLines = Sets.newHashSet(context.getNoSonarLines());
+    ignoredLines.addAll(javaFilesCache.ignoredLines());
+    noSonarFilter.addResource(currentResource, ignoredLines);
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
   }
 }

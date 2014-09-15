@@ -22,7 +22,6 @@ package org.sonar.plugins.java;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
-import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
@@ -50,7 +49,7 @@ public class Bridges {
     this.settings = settings;
   }
 
-  public void save(SensorContext context, Project project, CheckFactory checkFactory, NoSonarFilter noSonarFilter, RulesProfile profile) {
+  public void save(SensorContext context, Project project, CheckFactory checkFactory, RulesProfile profile) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     ResourceIndex resourceIndex = new ResourceIndex(skipPackageDesignAnalysis).loadSquidResources(squid, context, project);
     List<Bridge> bridges = BridgeFactory.create(
@@ -60,7 +59,6 @@ public class Bridges {
         checkFactory,
         resourceIndex,
         squid,
-        noSonarFilter,
         profile);
     saveProject(resourceIndex, bridges);
     savePackages(resourceIndex, bridges);
