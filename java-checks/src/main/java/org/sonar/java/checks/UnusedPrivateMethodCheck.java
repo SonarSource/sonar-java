@@ -27,7 +27,6 @@ import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.api.SourceMethod;
 
 @Rule(key = UnusedPrivateMethodCheck.RULE_KEY, priority = Priority.MAJOR,
   tags={"unused"})
@@ -46,9 +45,9 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
   public void visitMethod(AsmMethod asmMethod) {
     if (isPrivateUnused(asmMethod) && !isExcludedFromCheck(asmMethod)) {
       CheckMessage message = new CheckMessage(this, "Private method '" + asmMethod.getName() + "(...)' is never used.");
-      SourceMethod sourceMethod = getSourceMethod(asmMethod);
-      if (sourceMethod != null) {
-        message.setLine(sourceMethod.getStartAtLine());
+      int line = getMethodLineNumber(asmMethod);
+      if (line > 0) {
+        message.setLine(line);
       }
       SourceFile file = getSourceFile(asmClass);
       file.log(message);

@@ -58,7 +58,7 @@ public abstract class BytecodeVisitor implements CodeVisitor {
   @Nullable
   protected final SourceFile getSourceFile(AsmClass asmClass) {
     String sourceFileKey = javaResourceLocator.findSourceFileKeyByClassName(asmClass.getInternalName());
-    if(sourceFileKey==null) {
+    if (sourceFileKey == null) {
       return null;
     }
     return (SourceFile) index.search(sourceFileKey);
@@ -68,6 +68,14 @@ public abstract class BytecodeVisitor implements CodeVisitor {
     MethodSignature methodSignature = MethodSignatureScanner.scan(asmMethod.getGenericKey());
     AsmClass asmClass = asmMethod.getParent();
     return (SourceMethod) index.search(asmClass.getInternalName() + "#" + MethodSignaturePrinter.print(methodSignature));
+  }
+
+  protected final int getMethodLineNumber(AsmMethod asmMethod) {
+    SourceMethod sourceMethod = getSourceMethod(asmMethod);
+    if (sourceMethod != null) {
+      return sourceMethod.getStartAtLine();
+    }
+    return -1;
   }
 
   public final void setSquidIndex(SquidIndex index) {

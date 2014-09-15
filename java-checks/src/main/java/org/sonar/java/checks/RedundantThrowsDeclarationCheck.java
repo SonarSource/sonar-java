@@ -28,7 +28,6 @@ import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.api.SourceMethod;
 
 import java.util.List;
 import java.util.Set;
@@ -48,8 +47,8 @@ public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
 
   @Override
   public void visitMethod(AsmMethod asmMethod) {
-    SourceMethod sourceMethod = getSourceMethod(asmMethod);
-    if (sourceMethod != null) {
+    int line = getMethodLineNumber(asmMethod);
+    if (line > 0) {
       Set<String> reportedExceptions = Sets.newHashSet();
 
       List<AsmClass> thrownClasses = asmMethod.getThrows();
@@ -63,7 +62,7 @@ public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
             reportedExceptions.add(thrownClassName);
 
             CheckMessage message = new CheckMessage(this, issueMessage);
-            message.setLine(sourceMethod.getStartAtLine());
+            message.setLine(line);
             SourceFile file = getSourceFile(asmClass);
             file.log(message);
           }

@@ -32,7 +32,6 @@ import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.api.SourceMethod;
 
 import java.util.Map;
 
@@ -112,9 +111,9 @@ public class ArchitectureCheck extends BytecodeVisitor {
 
   private int getSourceLineNumber(AsmEdge edge) {
     if (edge.getSourceLineNumber() == 0 && edge.getFrom() instanceof AsmMethod) {
-      SourceMethod sourceMethod = getSourceMethod((AsmMethod) edge.getFrom());
-      if (sourceMethod != null) {
-        return sourceMethod.getStartAtLine();
+      int line = getMethodLineNumber((AsmMethod) edge.getFrom());
+      if (line > 0) {
+        return line;
       }
     }
     return edge.getSourceLineNumber();

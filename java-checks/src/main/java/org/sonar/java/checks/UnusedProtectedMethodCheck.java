@@ -26,7 +26,6 @@ import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.api.SourceMethod;
 
 @Rule(key = UnusedProtectedMethodCheck.RULE_KEY, priority = Priority.MAJOR,
   tags={"unused"})
@@ -45,9 +44,9 @@ public class UnusedProtectedMethodCheck extends BytecodeVisitor {
     if (!asmMethod.isUsed() && asmMethod.isProtected() && !asmClass.isAbstract() && !SerializableContract.methodMatch(asmMethod)
       && !asmMethod.isInherited()) {
       CheckMessage message = new CheckMessage(this, "Protected method '" + asmMethod.getName() + "(...)' is never used.");
-      SourceMethod sourceMethod = getSourceMethod(asmMethod);
-      if (sourceMethod != null) {
-        message.setLine(sourceMethod.getStartAtLine());
+      int line = getMethodLineNumber(asmMethod);
+      if (line > 0) {
+        message.setLine(line);
       }
       SourceFile file = getSourceFile(asmClass);
       file.log(message);
