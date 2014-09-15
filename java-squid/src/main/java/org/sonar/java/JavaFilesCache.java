@@ -163,11 +163,11 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     boolean suppressWarningsType = false;
     Tree type = annotationTree.annotationType();
     if (type.is(Tree.Kind.IDENTIFIER)) {
-      suppressWarningsType = ((IdentifierTree) type).name().equals("SuppressWarnings");
+      suppressWarningsType = "SuppressWarnings".equals(((IdentifierTree) type).name());
     } else if (type.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) type;
-      suppressWarningsType = mset.identifier().equals("SuppressWarnings") &&
-          mset.expression().is(Tree.Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) mset.expression()).identifier().name().equals("lang");
+      suppressWarningsType = "SuppressWarnings".equals(mset.identifier()) &&
+          mset.expression().is(Tree.Kind.MEMBER_SELECT) && "lang".equals(((MemberSelectExpressionTree) mset.expression()).identifier().name());
     }
     if (suppressWarningsType) {
       for (ExpressionTree expression : annotationTree.arguments()) {
