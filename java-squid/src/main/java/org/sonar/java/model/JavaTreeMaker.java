@@ -49,7 +49,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -607,7 +606,7 @@ public class JavaTreeMaker {
       return ImmutableList.of((StatementTree) statementNode);
     } else if (statementNode.is(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)) {
       return variableDeclarators(
-        variableModifiers(statementNode.getFirstChild(JavaGrammar.VARIABLE_MODIFIERS)),
+        (ModifiersTreeImpl) statementNode.getFirstChild(JavaGrammar.MODIFIERS),
         (ExpressionTree) statementNode.getFirstChild(TYPE_KINDS),
         statementNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS));
     } else if (statementNode.is(JavaGrammar.CLASS_DECLARATION)) {
@@ -617,26 +616,6 @@ public class JavaTreeMaker {
     } else {
       throw new IllegalStateException("Unexpected AstNodeType: " + statementNode.getType().toString());
     }
-  }
-
-  private ModifiersTreeImpl variableModifiers(@Nullable AstNode astNode) {
-    if (astNode == null) {
-      return ModifiersTreeImpl.EMPTY;
-    }
-
-    Preconditions.checkArgument(astNode.is(JavaGrammar.VARIABLE_MODIFIERS), "Unexpected AstNodeType: %s", astNode.getType().toString());
-
-    ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
-    ImmutableList.Builder<AnnotationTree> annotations = ImmutableList.builder();
-    for (AstNode modifierAstNode : astNode.getChildren()) {
-      if (modifierAstNode.is(Kind.ANNOTATION)) {
-        annotations.add((AnnotationTree) modifierAstNode);
-      } else {
-        JavaKeyword keyword = (JavaKeyword) modifierAstNode.getType();
-        modifiers.add(kindMaps.getModifier(keyword));
-      }
-    }
-    return new ModifiersTreeImpl(astNode, modifiers.build(), annotations.build());
   }
 
   public ExpressionTree applyDim(ExpressionTree expression, int count) {

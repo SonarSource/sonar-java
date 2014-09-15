@@ -31,7 +31,6 @@ import java.util.Arrays;
 import static org.sonar.java.ast.api.JavaKeyword.CLASS;
 import static org.sonar.java.ast.api.JavaKeyword.ENUM;
 import static org.sonar.java.ast.api.JavaKeyword.EXTENDS;
-import static org.sonar.java.ast.api.JavaKeyword.FINAL;
 import static org.sonar.java.ast.api.JavaKeyword.IMPLEMENTS;
 import static org.sonar.java.ast.api.JavaKeyword.IMPORT;
 import static org.sonar.java.ast.api.JavaKeyword.INTERFACE;
@@ -169,7 +168,6 @@ public enum JavaGrammar implements GrammarRuleKey {
   ARGUMENTS,
 
   LOCAL_VARIABLE_DECLARATION_STATEMENT,
-  VARIABLE_MODIFIERS,
   VARIABLE_DECLARATOR,
 
   FORMAL_PARAMETER,
@@ -580,12 +578,7 @@ public enum JavaGrammar implements GrammarRuleKey {
         STATEMENT));
 
     // 14.4. Local Variable Declaration Statements
-    b.rule(LOCAL_VARIABLE_DECLARATION_STATEMENT).is(b.optional(VARIABLE_MODIFIERS), TYPE, VARIABLE_DECLARATORS, SEMI);
-    b.rule(VARIABLE_MODIFIERS).is(
-      b.oneOrMore(
-        b.firstOf(
-          ANNOTATION,
-          FINAL)));
+    b.rule(LOCAL_VARIABLE_DECLARATION_STATEMENT).is(MODIFIERS, TYPE, VARIABLE_DECLARATORS, SEMI);
     b.rule(VARIABLE_DECLARATORS).is(VARIABLE_DECLARATOR, b.zeroOrMore(COMMA, VARIABLE_DECLARATOR));
   }
 
