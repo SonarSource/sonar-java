@@ -81,7 +81,6 @@ import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -1331,15 +1330,9 @@ public class TreeFactory {
     return new NotImplementedTreeImpl(children.toArray(new AstNode[children.size()]));
   }
 
-  public ExpressionTree lambdaExpression(LambdaParameterListTreeImpl parameters, AstNode arrowToken, AstNode body) {
-    Tree bodyTree;
-    if (body.hasDirectChildren(Kind.BLOCK)) {
-      bodyTree = (BlockTree) body.getFirstChild(Kind.BLOCK);
-    } else {
-      bodyTree = (ExpressionTree) body.getFirstChild();
-    }
-    return new LambdaExpressionTreeImpl(parameters.openParenToken(), ImmutableList.<VariableTree>builder().addAll(parameters).build(), parameters.closeParenToken(), bodyTree,
-      parameters, arrowToken, body);
+  public ExpressionTree lambdaExpression(LambdaParameterListTreeImpl parameters, AstNode arrowToken, Tree body) {
+    return new LambdaExpressionTreeImpl(parameters.openParenToken(), ImmutableList.<VariableTree>builder().addAll(parameters).build(), parameters.closeParenToken(), body,
+      parameters, arrowToken, (AstNode) body);
   }
 
   public LambdaParameterListTreeImpl lambdaParameters(AstNode astNode) {

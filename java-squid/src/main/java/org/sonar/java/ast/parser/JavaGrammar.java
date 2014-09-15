@@ -633,13 +633,7 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(DIM).is(LBRK, RBRK);
     b.rule(DIM_EXPR).is(b.zeroOrMore(ANNOTATION), LBRK, EXPRESSION, RBRK);
 
-    // Java 8 lambda expressions.
     b.rule(INFERED_PARAMS).is(LPAR, b.optional(JavaTokenType.IDENTIFIER, b.zeroOrMore(COMMA, JavaTokenType.IDENTIFIER)), RPAR);
-    b.rule(LAMBDA_BODY).is(
-      b.firstOf(
-        BLOCK,
-        EXPRESSION));
-
   }
 
   private final String internalName;

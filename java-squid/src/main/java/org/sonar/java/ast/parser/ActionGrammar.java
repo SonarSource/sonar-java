@@ -920,7 +920,7 @@ public class ActionGrammar {
 
   public ExpressionTree LAMBDA_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.LAMBDA_EXPRESSION)
-      .is(f.lambdaExpression(LAMBDA_PARAMETERS(), b.invokeRule(JavaGrammar.ARROW), b.invokeRule(JavaGrammar.LAMBDA_BODY)));
+      .is(f.lambdaExpression(LAMBDA_PARAMETERS(), b.invokeRule(JavaGrammar.ARROW), LAMBDA_BODY()));
   }
 
   public LambdaParameterListTreeImpl LAMBDA_PARAMETERS() {
@@ -930,6 +930,14 @@ public class ActionGrammar {
           b.invokeRule(JavaGrammar.INFERED_PARAMS),
           FORMAL_PARAMETERS(),
           b.invokeRule(JavaTokenType.IDENTIFIER))));
+  }
+
+  public Tree LAMBDA_BODY() {
+    return b.<Tree>nonterminal(JavaGrammar.LAMBDA_BODY)
+      .is(
+        b.firstOf(
+          BLOCK(),
+          EXPRESSION()));
   }
 
   public ParenthesizedTreeImpl PARENTHESIZED_EXPRESSION() {
