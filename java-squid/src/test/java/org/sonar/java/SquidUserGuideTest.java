@@ -92,6 +92,11 @@ public class SquidUserGuideTest {
       }
 
       @Override
+      public Integer getMethodStartLine(String fullyQualifiedMethodName) {
+        return null;
+      }
+
+      @Override
       public void scanFile(JavaFileScannerContext context) {
         JavaFilesCache javaFilesCache = new JavaFilesCache();
         javaFilesCache.scanFile(context);

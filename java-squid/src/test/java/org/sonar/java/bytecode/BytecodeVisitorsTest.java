@@ -65,7 +65,6 @@ public class BytecodeVisitorsTest {
     JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
     JavaResourceLocator javaResourceLocator = new JavaResourceLocator() {
       public Map<String, String> sourceFileCache = Maps.newHashMap();
-
       @Override
       public Resource findResourceByClassName(String className) {
         return null;
@@ -85,6 +84,11 @@ public class BytecodeVisitorsTest {
       @Override
       public Collection<File> classFilesToAnalyze() {
         return Collections.emptyList();
+      }
+
+      @Override
+      public Integer getMethodStartLine(String fullyQualifiedMethodName) {
+        return null;
       }
 
       @Override

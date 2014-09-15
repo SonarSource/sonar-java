@@ -19,7 +19,16 @@
  */
 package org.sonar.java.signature;
 
+import com.google.common.base.Charsets;
+import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
+import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -53,7 +62,7 @@ public class MethodSignatureScannerTest {
   }
 
   @Test
-  public void scanGenericMethod(){
+  public void scanGenericMethod() {
     MethodSignature method = MethodSignatureScanner.scan("transactionValidation(Ljava/lang/String;Ljava/util/List<Ljava/lang/String;>;)V");
 
     Parameter param1 = method.getArgumentTypes().get(0);
@@ -65,4 +74,51 @@ public class MethodSignatureScannerTest {
     assertThat(param2.getClassName()).isEqualTo("List");
   }
 
+  @Test
+  public void scanMethodTree() {
+    Parser p = JavaParser.createParser(Charsets.UTF_8, true);
+    JavaTreeMaker maker = new JavaTreeMaker();
+    List<Tree> members = ((ClassTree) maker.compilationUnit(p.parse("class A { " +
+        "A(){} " +
+        "String[] method(int a){} " +
+        "int foo(String a){}" +
+        "java.lang.String bar(java.lang.String a){}" +
+        "String qix(List<String> list){}" +
+        "}")).types().get(0)).members();
+    MethodTree constructorTree = (MethodTree) members.get(0);
+    MethodTree methodTree = (MethodTree) members.get(1);
+    MethodTree primitiveReturnType = (MethodTree) members.get(2);
+    MethodTree fullyQualifiedReturnType = (MethodTree) members.get(3);
+    MethodTree genericParameter = (MethodTree) members.get(4);
+    MethodSignature constructor = MethodSignatureScanner.scan(constructorTree);
+    assertThat(constructor.getMethodName()).isEqualTo("<init>");
+    assertThat(constructor.getReturnType().isVoid()).isTrue();
+
+    MethodSignature method = MethodSignatureScanner.scan(methodTree);
+    assertThat(method.getMethodName()).isEqualTo("method");
+    assertThat(method.getReturnType().isVoid()).isFalse();
+    assertThat(method.getReturnType().isArray()).isTrue();
+    assertThat(method.getReturnType().getClassName()).isEqualTo("String");
+    assertThat(method.getArgumentTypes().get(0).isOject()).isFalse();
+
+    method = MethodSignatureScanner.scan(primitiveReturnType);
+    assertThat(method.getMethodName()).isEqualTo("foo");
+    assertThat(method.getReturnType().isVoid()).isFalse();
+    assertThat(method.getReturnType().isOject()).isFalse();
+    assertThat(method.getReturnType().isArray()).isFalse();
+    assertThat(method.getArgumentTypes().get(0).isOject()).isTrue();
+    assertThat(method.getArgumentTypes().get(0).getClassName()).isEqualTo("String");
+
+    method = MethodSignatureScanner.scan(fullyQualifiedReturnType);
+    assertThat(method.getMethodName()).isEqualTo("bar");
+    assertThat(method.getReturnType().isVoid()).isFalse();
+    assertThat(method.getReturnType().isOject()).isTrue();
+    assertThat(method.getReturnType().isArray()).isFalse();
+    assertThat(method.getReturnType().getClassName()).isEqualTo("String");
+    assertThat(method.getArgumentTypes().get(0).getClassName()).isEqualTo("String");
+
+    method = MethodSignatureScanner.scan(genericParameter);
+    assertThat(method.getMethodName()).isEqualTo("qix");
+    assertThat(method.getArgumentTypes().get(0).getClassName()).isEqualTo("List");
+  }
 }

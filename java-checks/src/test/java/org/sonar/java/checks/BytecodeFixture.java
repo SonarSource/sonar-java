@@ -55,6 +55,7 @@ public class BytecodeFixture {
 
     JavaResourceLocator resourceLocatorStub = new JavaResourceLocator() {
       public Map<String, String> sourceFileCache = Maps.newHashMap();
+      public Map<String, Integer> methodStart = Maps.newHashMap();
 
       @Override
       public Resource findResourceByClassName(String className) {
@@ -78,12 +79,18 @@ public class BytecodeFixture {
       }
 
       @Override
+      public Integer getMethodStartLine(String fullyQualifiedMethodName) {
+        return methodStart.get(fullyQualifiedMethodName);
+      }
+
+      @Override
       public void scanFile(JavaFileScannerContext context) {
         JavaFilesCache javaFilesCache = new JavaFilesCache();
         javaFilesCache.scanFile(context);
         for (String key : javaFilesCache.getResourcesCache().keySet()){
           sourceFileCache.put(key, context.getFileKey());
         }
+        methodStart.putAll(javaFilesCache.getMethodStartLines());
       }
     };
 

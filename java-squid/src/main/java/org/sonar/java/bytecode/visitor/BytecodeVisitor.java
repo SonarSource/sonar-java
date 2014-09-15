@@ -29,7 +29,6 @@ import org.sonar.java.signature.MethodSignatureScanner;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.api.SourceMethod;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
@@ -64,16 +63,12 @@ public abstract class BytecodeVisitor implements CodeVisitor {
     return (SourceFile) index.search(sourceFileKey);
   }
 
-  protected final SourceMethod getSourceMethod(AsmMethod asmMethod) {
+  protected final int getMethodLineNumber(AsmMethod asmMethod) {
     MethodSignature methodSignature = MethodSignatureScanner.scan(asmMethod.getGenericKey());
     AsmClass asmClass = asmMethod.getParent();
-    return (SourceMethod) index.search(asmClass.getInternalName() + "#" + MethodSignaturePrinter.print(methodSignature));
-  }
-
-  protected final int getMethodLineNumber(AsmMethod asmMethod) {
-    SourceMethod sourceMethod = getSourceMethod(asmMethod);
-    if (sourceMethod != null) {
-      return sourceMethod.getStartAtLine();
+    Integer result = javaResourceLocator.getMethodStartLine(asmClass.getInternalName() + "#" + MethodSignaturePrinter.print(methodSignature));
+    if (result != null) {
+      return result;
     }
     return -1;
   }

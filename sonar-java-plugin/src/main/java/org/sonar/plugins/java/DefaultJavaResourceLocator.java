@@ -46,6 +46,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   @VisibleForTesting
   Map<String, Resource> resourcesCache;
   private Map<String, String> sourceFileCache;
+  private Map<String, Integer> methodStartLines;
 
 
   public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath) {
@@ -53,6 +54,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
     this.javaClasspath = javaClasspath;
     resourcesCache = Maps.newHashMap();
     sourceFileCache = Maps.newHashMap();
+    methodStartLines = Maps.newHashMap();
   }
 
   @Override
@@ -65,6 +67,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
     return resource;
   }
 
+  @Override
   public String findSourceFileKeyByClassName(String className) {
     String name = className.replace('.', '/');
     return sourceFileCache.get(name);
@@ -92,6 +95,11 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   }
 
   @Override
+  public Integer getMethodStartLine(String fullyQualifiedMethodName) {
+    return methodStartLines.get(fullyQualifiedMethodName);
+  }
+
+  @Override
   public void scanFile(JavaFileScannerContext context) {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     javaFilesCache.scanFile(context);
@@ -103,5 +111,6 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
         sourceFileCache.put(stringFileEntry.getKey(), context.getFileKey());
       }
     }
+    methodStartLines.putAll(javaFilesCache.getMethodStartLines());
   }
 }

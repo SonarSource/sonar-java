@@ -23,6 +23,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.signature.MethodSignaturePrinter;
+import org.sonar.java.signature.MethodSignatureScanner;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -41,6 +43,9 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   @VisibleForTesting
   Map<String, File> resourcesCache = Maps.newHashMap();
 
+  @VisibleForTesting
+  Map<String, Integer> methodStartLines = Maps.newHashMap();
+
   private File currentFile;
   private Deque<String> currentClassKey = new LinkedList<String>();
   private Deque<Tree> parent = new LinkedList<Tree>();
@@ -49,6 +54,10 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
   public Map<String, File> getResourcesCache() {
     return resourcesCache;
+  }
+
+  public Map<String, Integer> getMethodStartLines() {
+    return methodStartLines;
   }
 
   @Override
@@ -65,7 +74,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   @Override
   public void visitClass(ClassTree tree) {
     String className = "";
-    if(tree.simpleName()!=null){
+    if (tree.simpleName() != null) {
       className = tree.simpleName().name();
     }
     String key = getClassKey(className);
@@ -81,16 +90,16 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
   private String getClassKey(String className) {
     String key = className;
-    if(StringUtils.isNotEmpty(currentPackage)) {
+    if (StringUtils.isNotEmpty(currentPackage)) {
       key = currentPackage + "/" + className;
     }
-    if("".equals(className) || (parent.peek()!=null && parent.peek().is(Tree.Kind.METHOD))) {
+    if ("".equals(className) || (parent.peek() != null && parent.peek().is(Tree.Kind.METHOD))) {
       //inner class declared within method
-      int count = anonymousInnerClassCounter.pop()+1;
-      key = currentClassKey.peek()+"$"+count+className;
+      int count = anonymousInnerClassCounter.pop() + 1;
+      key = currentClassKey.peek() + "$" + count + className;
       anonymousInnerClassCounter.push(count);
     } else if (currentClassKey.peek() != null) {
-      key = currentClassKey.peek()+"$"+className;
+      key = currentClassKey.peek() + "$" + className;
     }
     return key;
   }
@@ -98,6 +107,8 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   @Override
   public void visitMethod(MethodTree tree) {
     parent.push(tree);
+    String methodKey = currentClassKey.peek() + "#" + MethodSignaturePrinter.print(MethodSignatureScanner.scan(tree));
+    methodStartLines.put(methodKey, ((JavaTree) tree.simpleName()).getLine());
     super.visitMethod(tree);
     parent.pop();
   }
