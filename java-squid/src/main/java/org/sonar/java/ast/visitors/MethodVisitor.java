@@ -20,40 +20,28 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.impl.ast.AstXmlPrinter;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.model.JavaTreeMaker;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.signature.JvmJavaType;
-import org.sonar.java.signature.MethodSignature;
-import org.sonar.java.signature.MethodSignaturePrinter;
-import org.sonar.java.signature.Parameter;
-import org.sonar.plugins.java.api.tree.ArrayTypeTree;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.api.SourceClass;
 import org.sonar.squidbridge.api.SourceMethod;
-
-import java.util.List;
-import java.util.Map;
 
 public class MethodVisitor extends JavaAstVisitor {
 
   @Override
   public void init() {
-    MethodHelper.subscribe(this);
+    subscribeTo(
+        JavaGrammar.METHOD_DECLARATOR_REST,
+        JavaGrammar.VOID_METHOD_DECLARATOR_REST,
+        JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
+        JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
+        JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
+        Kind.METHOD);
   }
 
   @Override
   public void visitNode(AstNode astNode) {
-    String methodName = buildMethodSignature(new MethodHelper(astNode));
+    String methodName = extractMethodName(new MethodHelper(astNode));
     SourceClass sourceClass = peekSourceClass();
     // TODO hack grammar to get proper start line
     int startLine = getDeclaration(astNode).getTokenLine();
@@ -69,89 +57,12 @@ public class MethodVisitor extends JavaAstVisitor {
     getContext().popSourceCode();
   }
 
-  private String buildMethodSignature(MethodHelper methodHelper) {
-    String methodName = extractMethodName(methodHelper);
-    Parameter returnType = extractMethodReturnType(methodHelper);
-    List<Parameter> argumentTypes = extractMethodArgumentTypes(methodHelper);
-    MethodSignature signature = new MethodSignature(methodName, returnType, argumentTypes);
-    return MethodSignaturePrinter.print(signature);
-  }
 
   private String extractMethodName(MethodHelper methodHelper) {
     if (methodHelper.isConstructor()) {
       return "<init>";
     }
     return methodHelper.getName().getTokenValue();
-  }
-
-  private Parameter extractMethodReturnType(MethodHelper methodHelper) {
-    if (methodHelper.isConstructor()) {
-      return new Parameter(JvmJavaType.V, false);
-    }
-    AstNode returnType = methodHelper.getReturnType();
-    boolean isArray = !returnType.is(JavaKeyword.VOID) && ((Tree) returnType).is(Kind.ARRAY_TYPE);
-    return new Parameter(extractArgumentAndReturnType(returnType, isArray));
-  }
-
-  private List<Parameter> extractMethodArgumentTypes(MethodHelper methodHelper) {
-    List<Parameter> argumentTypes = Lists.newArrayList();
-    for (VariableTree variable : methodHelper.getParameters()) {
-      Tree type = variable.type();
-
-      if (((VariableTreeImpl) variable).isVararg()) {
-        // Emulate the SONARJAVA-655 bug
-        type = ((ArrayTypeTree) type).type();
-      }
-
-      boolean isArray = type.is(Kind.ARRAY_TYPE);
-      argumentTypes.add(extractArgumentAndReturnType((AstNode) type, isArray));
-    }
-    return argumentTypes;
-  }
-
-  private Parameter extractArgumentAndReturnType(AstNode astNode, boolean isArray) {
-    while (astNode instanceof Tree && ((Tree) astNode).is(Kind.ARRAY_TYPE)) {
-      astNode = (AstNode) ((ArrayTypeTree) astNode).type();
-    }
-
-    Preconditions.checkArgument(astNode.is(JavaTreeMaker.TYPE_KINDS) || astNode.is(JavaKeyword.VOID));
-
-    if (astNode.is(JavaKeyword.VOID)) {
-      return new Parameter(JvmJavaType.V, false);
-    }
-    if (astNode.is(Kind.PRIMITIVE_TYPE)) {
-      PrimitiveTypeTree primitve = (PrimitiveTypeTree) astNode;
-      return new Parameter(JAVA_TYPE_MAPPING.get(((AstNode) primitve.keyword()).getType()), isArray);
-    } else {
-      return new Parameter(extractClassName(astNode), isArray);
-    }
-  }
-
-  private String extractClassName(AstNode astNode) {
-    // TODO Godin: verify
-    AstNode identifier = null;
-    for (AstNode descendant : astNode.getDescendants(JavaTokenType.IDENTIFIER)) {
-      if (!descendant.hasAncestor(JavaGrammar.TYPE_ARGUMENTS)) {
-        identifier = descendant;
-      }
-    }
-    Preconditions.checkArgument(identifier != null, "Bad identifier: " + AstXmlPrinter.print(astNode));
-
-    return identifier.getTokenValue();
-  }
-
-  private static final Map<JavaKeyword, JvmJavaType> JAVA_TYPE_MAPPING = Maps.newHashMap();
-
-  static {
-    JAVA_TYPE_MAPPING.put(JavaKeyword.BYTE, JvmJavaType.B);
-    JAVA_TYPE_MAPPING.put(JavaKeyword.CHAR, JvmJavaType.C);
-    JAVA_TYPE_MAPPING.put(JavaKeyword.SHORT, JvmJavaType.S);
-    JAVA_TYPE_MAPPING.put(JavaKeyword.INT, JvmJavaType.I);
-    JAVA_TYPE_MAPPING.put(JavaKeyword.LONG, JvmJavaType.J);
-    JAVA_TYPE_MAPPING.put(JavaKeyword.BOOLEAN, JvmJavaType.Z);
-    JAVA_TYPE_MAPPING.put(JavaKeyword.FLOAT, JvmJavaType.F);
-    JAVA_TYPE_MAPPING.put(JavaKeyword.DOUBLE, JvmJavaType.D);
-    JAVA_TYPE_MAPPING.put(JavaKeyword.VOID, JvmJavaType.V);
   }
 
   private static AstNode getDeclaration(AstNode astNode) {

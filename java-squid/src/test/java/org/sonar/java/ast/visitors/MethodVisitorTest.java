@@ -35,11 +35,11 @@ public class MethodVisitorTest {
   @Test
   public void signatures() {
     List<SourceMethod> methods = sourceMethods(JavaAstScanner.scanSingleFile(new File("src/test/files/signatures/Signatures.java"), new MethodVisitor()));
-    assertThat(methods.get(0).getName()).isEqualTo("drainTasksTo(LCollection;)I");
-    assertThat(methods.get(1).getName()).isEqualTo("getQueuedThreads()LCollection;");
-    assertThat(methods.get(2).getName()).isEqualTo("getRole(LString;)LList;");
-    assertThat(methods.get(3).getName()).isEqualTo("instantiate(LString;LObjectName;[LObject;[LString;)LObject;");
-    assertThat(methods.get(4).getName()).isEqualTo("invoke(LObject;LObject;)LObject;");
+    assertThat(methods.get(0).getName()).isEqualTo("drainTasksTo");
+    assertThat(methods.get(1).getName()).isEqualTo("getQueuedThreads");
+    assertThat(methods.get(2).getName()).isEqualTo("getRole");
+    assertThat(methods.get(3).getName()).isEqualTo("instantiate");
+    assertThat(methods.get(4).getName()).isEqualTo("invoke");
   }
 
   private List<SourceMethod> sourceMethods(SourceCode sourceCode) {

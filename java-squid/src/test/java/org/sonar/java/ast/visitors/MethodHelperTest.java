@@ -28,8 +28,6 @@ import org.junit.rules.ExpectedException;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.SquidAstVisitor;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.List;
 
@@ -43,48 +41,6 @@ public class MethodHelperTest {
   public ExpectedException thrown = ExpectedException.none();
 
   @Test
-  public void subscribeTo() {
-    SquidAstVisitor<LexerlessGrammar> visitor = new JavaAstVisitor() {
-    };
-    MethodHelper.subscribe(visitor);
-    assertThat(visitor.getAstNodeTypesToVisit()).containsExactly(
-      JavaGrammar.METHOD_DECLARATOR_REST,
-      JavaGrammar.VOID_METHOD_DECLARATOR_REST,
-      JavaGrammar.CONSTRUCTOR_DECLARATOR_REST,
-      JavaGrammar.INTERFACE_METHOD_DECLARATOR_REST,
-      JavaGrammar.VOID_INTERFACE_METHOD_DECLARATORS_REST,
-      Kind.METHOD);
-  }
-
-  @Test
-  public void isPublic() {
-    assertThat(new MethodHelper(parseMethod("class A { public void f() {} }")).isPublic()).isTrue();
-    assertThat(new MethodHelper(parseMethod("class A { public int f() {} }")).isPublic()).isTrue();
-    assertThat(new MethodHelper(parseMethod("class A { public <T> void f(T a) {} }")).isPublic()).isTrue();
-    assertThat(new MethodHelper(parseMethod("class A { public A() {} }")).isPublic()).isTrue();
-    assertThat(new MethodHelper(parseMethod("class A { private void f() {} }")).isPublic()).isFalse();
-    assertThat(new MethodHelper(parseMethod("class A { private int f() {} }")).isPublic()).isFalse();
-    assertThat(new MethodHelper(parseMethod("class A { private <T> void f(T a) {} }")).isPublic()).isFalse();
-    assertThat(new MethodHelper(parseMethod("class A { private A() {} }")).isPublic()).isFalse();
-
-    assertThat(new MethodHelper(parseMethod("interface A { public void f(); }")).isPublic()).isTrue();
-    assertThat(new MethodHelper(parseMethod("interface A { public int f(); }")).isPublic()).isTrue();
-    assertThat(new MethodHelper(parseMethod("interface A { public <T> int f(T a); }")).isPublic()).isTrue();
-    assertThat(new MethodHelper(parseMethod("interface A { private void f(); }")).isPublic()).isFalse();
-    assertThat(new MethodHelper(parseMethod("interface A { private int f(); }")).isPublic()).isFalse();
-    assertThat(new MethodHelper(parseMethod("interface A { private <T> int f(T a); }")).isPublic()).isFalse();
-
-    assertThat(new MethodHelper(parseMethod("@interface Foo { public boolean value(); }")).isPublic()).isTrue();
-    assertThat(new MethodHelper(parseMethod("@interface Foo { private boolean value(); }")).isPublic()).isFalse();
-  }
-
-  @Test
-  public void isPublic_should_fail_when_invalid_type_given() {
-    thrown.expect(IllegalStateException.class);
-    new MethodHelper(mock(AstNode.class)).isPublic();
-  }
-
-  @Test
   public void isConstructor() {
     assertThat(new MethodHelper(mock(AstNode.class)).isConstructor()).isFalse();
 
@@ -94,51 +50,10 @@ public class MethodHelperTest {
   }
 
   @Test
-  public void getReturnType() {
-    assertThat(new MethodHelper(parseMethod("class A { void f() {} }")).getReturnType().getTokenOriginalValue()).isEqualTo("void");
-    assertThat(new MethodHelper(parseMethod("class A { int f() { return 0; } }")).getReturnType().getTokenOriginalValue()).isEqualTo("int");
-  }
-
-  @Test
   public void getName() {
     assertThat(new MethodHelper(parseMethod("class A { void foo() {} }")).getName().getTokenOriginalValue()).isEqualTo("foo");
     assertThat(new MethodHelper(parseMethod("class A { int bar() { return 0; } }")).getName().getTokenOriginalValue()).isEqualTo("bar");
     assertThat(new MethodHelper(parseMethod("@interface Foo { public boolean value(); }")).getName().getTokenOriginalValue()).isEqualTo("value");
-  }
-
-  @Test
-  public void parameters() {
-    assertThat(new MethodHelper(parseMethod("class A { void foo() {} }")).hasParameters()).isFalse();
-    assertThat(new MethodHelper(parseMethod("class A { void foo() {} }")).getParameters()).hasSize(0);
-
-    assertThat(new MethodHelper(parseMethod("class A { void foo(int a, int b) {} }")).hasParameters()).isTrue();
-    assertThat(new MethodHelper(parseMethod("class A { void foo(int a, int b) {} }")).getParameters()).hasSize(2);
-
-    assertThat(new MethodHelper(parseMethod("class A { <T> A(T a) {} }")).hasParameters()).isTrue();
-    assertThat(new MethodHelper(parseMethod("class A { <T> A(T a) {} }")).getParameters()).hasSize(1);
-
-    assertThat(new MethodHelper(parseMethod("@interface Foo { public boolean value(); }")).hasParameters()).isFalse();
-    assertThat(new MethodHelper(parseMethod("@interface Foo { public boolean value(); }")).getParameters()).hasSize(0);
-  }
-
-  @Test
-  public void getStatements() {
-    assertThat(new MethodHelper(parseMethod("class A { void foo() {} }")).getStatements()).hasSize(0);
-    assertThat(new MethodHelper(parseMethod("class A { void foo() { int a; int b; } }")).getStatements()).hasSize(2);
-    assertThat(new MethodHelper(parseMethod("interface A { void foo(); }")).getStatements()).hasSize(0);
-  }
-
-  @Test
-  public void getMethods() {
-    assertThat(MethodHelper.getMethods(parse("class A {}").getFirstDescendant(JavaGrammar.CLASS_BODY))).hasSize(0);
-    assertThat(MethodHelper.getMethods(parse("class A { ; }").getFirstDescendant(JavaGrammar.CLASS_BODY))).hasSize(0);
-    assertThat(MethodHelper.getMethods(parse("class A { A() {} }").getFirstDescendant(JavaGrammar.CLASS_BODY))).hasSize(0);
-    assertThat(MethodHelper.getMethods(parse("class A { void f() {} }").getFirstDescendant(JavaGrammar.CLASS_BODY))).hasSize(1);
-    assertThat(MethodHelper.getMethods(parse("class A { int f() { return 0; } }").getFirstDescendant(JavaGrammar.CLASS_BODY))).hasSize(1);
-    assertThat(MethodHelper.getMethods(parse("class A { <T> void f(T a) {} }").getFirstDescendant(JavaGrammar.CLASS_BODY))).hasSize(1);
-    assertThat(MethodHelper.getMethods(parse("class A { void f() {} int g() { return 0; } }").getFirstDescendant(JavaGrammar.CLASS_BODY))).hasSize(2);
-
-    assertThat(MethodHelper.getMethods(parse("enum A { ; void f() {} int g() { return 0; } }").getFirstDescendant(JavaGrammar.ENUM_BODY_DECLARATIONS))).hasSize(2);
   }
 
   private static AstNode parseMethod(String source) {
