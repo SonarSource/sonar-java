@@ -84,8 +84,8 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     super.visitBinaryExpression(tree);
     if (tree.is(Tree.Kind.EQUAL_TO) || tree.is(Tree.Kind.NOT_EQUAL_TO)) {
-      Type leftOperandType = ((AbstractTypedTree) tree.leftOperand()).getType2();
-      Type rightOperandType = ((AbstractTypedTree) tree.rightOperand()).getType2();
+      Type leftOperandType = ((AbstractTypedTree) tree.leftOperand()).getSymbolType();
+      Type rightOperandType = ((AbstractTypedTree) tree.rightOperand()).getSymbolType();
       if (!isNullComparison(leftOperandType, rightOperandType)
           && !isNumericalComparison(leftOperandType, rightOperandType)
           && (isClass(leftOperandType) || isClass(rightOperandType))) {

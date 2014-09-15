@@ -56,7 +56,7 @@ public class ArrayEqualsCheck extends BaseTreeVisitor implements JavaFileScanner
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) tree.methodSelect();
       if ("equals".equals(mset.identifier().name())) {
         AbstractTypedTree typedTree = (AbstractTypedTree) mset.expression();
-        if (typedTree.getType2().isTagged(Type.ARRAY)) {
+        if (typedTree.getSymbolType().isTagged(Type.ARRAY)) {
           context.addIssue(tree, ruleKey, "Use the '==' operator instead of calling the equals() method to prevent any misunderstandings");
         }
       }

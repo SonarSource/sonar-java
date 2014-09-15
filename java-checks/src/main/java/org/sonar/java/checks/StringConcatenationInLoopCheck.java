@@ -65,7 +65,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
   }
 
   private boolean isStringConcatenation(AssignmentExpressionTree tree) {
-    return isString(((AssignmentExpressionTreeImpl) tree).getType2()) && isConcatenation(tree);
+    return isString(((AssignmentExpressionTreeImpl) tree).getSymbolType()) && isConcatenation(tree);
   }
 
   private boolean isConcatenation(AssignmentExpressionTree tree) {

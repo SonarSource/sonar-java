@@ -78,8 +78,8 @@ public class NPEThrowCheck extends BaseTreeVisitor implements JavaFileScanner {
   }
 
   private boolean isNPE(AbstractTypedTree tree) {
-    if (tree.getType2().isTagged(Type.CLASS)) {
-      Type.ClassType type = (Type.ClassType) tree.getType2();
+    if (tree.getSymbolType().isTagged(Type.CLASS)) {
+      Type.ClassType type = (Type.ClassType) tree.getSymbolType();
       return "NullPointerException".equals(type.getSymbol().getName());
     }
     return false;

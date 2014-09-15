@@ -82,7 +82,7 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
 
   private boolean calledOnTypeInheritedFromThrowable(MethodInvocationTree tree) {
     // TODO this is painful way to access caller site of a method.
-    Type type = ((AbstractTypedTree) ((MemberSelectExpressionTree) tree.methodSelect()).expression()).getType2();
+    Type type = ((AbstractTypedTree) ((MemberSelectExpressionTree) tree.methodSelect()).expression()).getSymbolType();
     return extendsThrowable((Type.ClassType) type);
   }
 

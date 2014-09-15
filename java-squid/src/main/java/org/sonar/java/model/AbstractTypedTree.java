@@ -44,7 +44,7 @@ public abstract class AbstractTypedTree extends JavaTree {
     super(astNodeType, token);
   }
 
-  public Type getType2() {
+  public Type getSymbolType() {
     return type;
   }
 
