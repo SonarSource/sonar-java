@@ -398,6 +398,16 @@ public class ActionGrammar {
 
   // Statements
 
+  public VariableDeclaratorListTreeImpl LOCAL_VARIABLE_DECLARATION_STATEMENT() {
+    return b.<VariableDeclaratorListTreeImpl>nonterminal(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)
+      .is(f.completeLocalVariableDeclaration(MODIFIERS(), TYPE(), VARIABLE_DECLARATORS(), b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
+  public VariableDeclaratorListTreeImpl VARIABLE_DECLARATORS() {
+    return b.<VariableDeclaratorListTreeImpl>nonterminal(JavaGrammar.VARIABLE_DECLARATORS)
+      .is(f.newVariableDeclarators(VARIABLE_DECLARATOR(), b.zeroOrMore(f.newTuple3(b.invokeRule(JavaPunctuator.COMMA), VARIABLE_DECLARATOR()))));
+  }
+
   public VariableTreeImpl VARIABLE_DECLARATOR() {
     return b.<VariableTreeImpl>nonterminal(JavaGrammar.VARIABLE_DECLARATOR)
       .is(
@@ -484,11 +494,7 @@ public class ActionGrammar {
 
   public StatementExpressionListTreeImpl FOR_INIT_DECLARATION() {
     return b.<StatementExpressionListTreeImpl>nonterminal()
-      .is(
-        f.newForInitDeclaration(
-          MODIFIERS(),
-          TYPE(),
-          b.invokeRule(JavaGrammar.VARIABLE_DECLARATORS)));
+      .is(f.newForInitDeclaration(MODIFIERS(), TYPE(), VARIABLE_DECLARATORS()));
   }
 
   public StatementExpressionListTreeImpl FOR_INIT_EXPRESSIONS() {

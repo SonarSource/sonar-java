@@ -32,12 +32,11 @@ public class BlockStatementTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT).override(RuleMock.word(b, "localVariableDeclarationStatement"));
     b.rule(JavaGrammar.CLASS_DECLARATION).override(RuleMock.word(b, "classDeclaration"));
     b.rule(JavaGrammar.ENUM_DECLARATION).override(RuleMock.word(b, "enumDeclaration"));
 
     assertThat(b, JavaGrammar.BLOCK_STATEMENT)
-      .matches("localVariableDeclarationStatement")
+      .matches("int a;")
       .matches("public classDeclaration")
       .matches("private enumDeclaration")
       .matches(";")

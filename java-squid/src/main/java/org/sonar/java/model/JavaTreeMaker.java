@@ -32,6 +32,7 @@ import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.ClassTypeListTreeImpl;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.TypeArgumentListTreeImpl;
+import org.sonar.java.ast.parser.VariableDeclaratorListTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -176,18 +177,6 @@ public class JavaTreeMaker {
   ExpressionTree referenceType(AstNode astNode, int dimSize) {
     ExpressionTree result = astNode.getFirstChild().is(Kind.PRIMITIVE_TYPE) ? (PrimitiveTypeTree) astNode.getFirstChild() : classType(astNode.getFirstChild());
     return applyDim(result, dimSize + astNode.getChildren(JavaGrammar.DIM).size());
-  }
-
-  public List<StatementTree> variableDeclarators(ModifiersTreeImpl modifiers, ExpressionTree type, AstNode astNode) {
-    checkType(astNode, JavaGrammar.VARIABLE_DECLARATORS);
-    ImmutableList.Builder<StatementTree> result = ImmutableList.builder();
-    for (AstNode variableAstNode : astNode.getChildren(Kind.VARIABLE)) {
-      VariableTreeImpl variable = (VariableTreeImpl) variableAstNode;
-      type = applyDim(type, variable.dims());
-      variable.completeModifiersAndType(modifiers, type);
-      result.add(variable);
-    }
-    return result.build();
   }
 
   /*
@@ -374,7 +363,15 @@ public class JavaTreeMaker {
    */
   private List<StatementTree> fieldDeclaration(ModifiersTreeImpl modifiers, AstNode astNode) {
     checkType(astNode, JavaGrammar.FIELD_DECLARATION);
-    return variableDeclarators(modifiers, (ExpressionTree) astNode.getFirstChild(), astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS));
+
+    Tree type = (Tree) astNode.getFirstChild();
+    VariableDeclaratorListTreeImpl variables = (VariableDeclaratorListTreeImpl) astNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS);
+
+    for (VariableTreeImpl variable : variables) {
+      variable.completeModifiersAndType(modifiers, type);
+    }
+
+    return (List) variables;
   }
 
   /**
@@ -594,7 +591,7 @@ public class JavaTreeMaker {
     checkType(astNode, JavaGrammar.BLOCK_STATEMENT);
 
     AstNode statementNode = astNode.getFirstChild(
-      JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT,
+      JavaGrammar.VARIABLE_DECLARATORS,
       JavaGrammar.CLASS_DECLARATION,
       JavaGrammar.ENUM_DECLARATION);
     if (statementNode == null && astNode.getNumberOfChildren() == 1) {
@@ -604,11 +601,8 @@ public class JavaTreeMaker {
 
     if (statementNode instanceof StatementTree && !((JavaTree) statementNode).isLegacy()) {
       return ImmutableList.of((StatementTree) statementNode);
-    } else if (statementNode.is(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)) {
-      return variableDeclarators(
-        (ModifiersTreeImpl) statementNode.getFirstChild(JavaGrammar.MODIFIERS),
-        (ExpressionTree) statementNode.getFirstChild(TYPE_KINDS),
-        statementNode.getFirstChild(JavaGrammar.VARIABLE_DECLARATORS));
+    } else if (statementNode.is(JavaGrammar.VARIABLE_DECLARATORS)) {
+      return (List<StatementTree>) statementNode;
     } else if (statementNode.is(JavaGrammar.CLASS_DECLARATION)) {
       return ImmutableList.<StatementTree>of(classDeclaration((ModifiersTree) astNode.getFirstChild(JavaGrammar.MODIFIERS), statementNode));
     } else if (statementNode.is(JavaGrammar.ENUM_DECLARATION)) {

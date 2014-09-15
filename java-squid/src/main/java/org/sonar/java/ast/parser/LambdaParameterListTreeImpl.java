@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -30,22 +29,15 @@ import java.util.List;
 
 public class LambdaParameterListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
 
-  private InternalSyntaxToken openParenToken;
-  private InternalSyntaxToken closeParenToken;
+  private final InternalSyntaxToken openParenToken;
+  private final InternalSyntaxToken closeParenToken;
 
   public LambdaParameterListTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTreeImpl> params,
     @Nullable InternalSyntaxToken closeParenToken, List<AstNode> children) {
-    super(JavaGrammar.LAMBDA_PARAMETERS, params, ImmutableList.<AstNode>of());
+    super(JavaGrammar.LAMBDA_PARAMETERS, params, children);
 
-    if (openParenToken != null) {
-      this.openParenToken = openParenToken;
-    }
-    for (AstNode child : children) {
-      addChild(child);
-    }
-    if (closeParenToken != null) {
-      this.closeParenToken = closeParenToken;
-    }
+    this.openParenToken = openParenToken;
+    this.closeParenToken = closeParenToken;
   }
 
   @Nullable

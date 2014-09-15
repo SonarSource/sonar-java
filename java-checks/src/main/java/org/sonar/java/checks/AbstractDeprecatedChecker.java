@@ -67,7 +67,7 @@ public class AbstractDeprecatedChecker extends SquidCheck<LexerlessGrammar> {
 
   public static boolean hasDeprecatedAnnotationOnLocalVariables(AstNode node) {
     AstSelect annotations = node.select()
-      .children(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)
+      .children(JavaGrammar.VARIABLE_DECLARATORS)
       .children(JavaGrammar.MODIFIERS)
       .children(Kind.ANNOTATION);
 

@@ -47,7 +47,7 @@ public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessG
   @Override
   public void init() {
     subscribeTo(JavaTreeMaker.STATEMENTS_KINDS);
-    subscribeTo(JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT);
+    subscribeTo(JavaGrammar.VARIABLE_DECLARATORS);
   }
 
   public boolean isExcluded(AstNode astNode) {
@@ -65,6 +65,10 @@ public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessG
 
   @Override
   public void visitNode(AstNode statementNode) {
+    if (statementNode.is(JavaGrammar.VARIABLE_DECLARATORS) && !statementNode.hasParent(JavaGrammar.BLOCK_STATEMENT)) {
+      return;
+    }
+
     if (!isExcluded(statementNode)) {
       int lineStart = statementNode.getTokenLine();
       int lineEnd = statementNode.getLastToken().getLine();

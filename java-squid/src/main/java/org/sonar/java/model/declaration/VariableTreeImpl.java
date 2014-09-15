@@ -94,23 +94,27 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   public VariableTreeImpl completeType(Tree type) {
-    this.type = Preconditions.checkNotNull(type);
+    Tree actualType = type;
+
+    for (int i = isVararg() ? 1 + dims() : dims(); i > 0; i--) {
+      actualType = new ArrayTypeTreeImpl(null, actualType);
+    }
+
+    this.type = actualType;
 
     return this;
   }
 
   public VariableTreeImpl completeModifiersAndType(ModifiersTreeImpl modifiers, Tree type) {
     this.modifiers = modifiers;
-    this.type = Preconditions.checkNotNull(type);
 
-    return this;
+    return completeType(type);
   }
 
   public VariableTreeImpl completeTypeAndInitializer(Tree type, ExpressionTree initializer) {
-    this.type = Preconditions.checkNotNull(type);
     this.initializer = initializer;
 
-    return this;
+    return completeType(type);
   }
 
   public VariableTreeImpl completeIdentifierAndDims(IdentifierTreeImpl simpleName, int dims) {

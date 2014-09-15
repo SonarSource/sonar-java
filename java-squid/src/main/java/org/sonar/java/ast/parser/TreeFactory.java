@@ -590,18 +590,7 @@ public class TreeFactory {
   public FormalParametersListTreeImpl completeTypeFormalParameters(ModifiersTreeImpl modifiers, ExpressionTree type, FormalParametersListTreeImpl partial) {
     VariableTreeImpl variable = partial.get(0);
 
-    Tree variableType = type;
-    int dims = variable.dims();
-    if (variable.isVararg()) {
-      dims = dims + 1;
-    }
-
-    while (dims > 0) {
-      variableType = new JavaTree.ArrayTypeTreeImpl(null, variableType);
-      dims--;
-    }
-
-    variable.completeType(variableType);
+    variable.completeType(type);
     partial.prependChildren(modifiers, (AstNode) type);
 
     return partial;
@@ -648,6 +637,40 @@ public class TreeFactory {
   // End of formal parameters
 
   // Statements
+
+  public VariableDeclaratorListTreeImpl completeLocalVariableDeclaration(
+    ModifiersTreeImpl modifiers,
+    ExpressionTree type,
+    VariableDeclaratorListTreeImpl variables,
+    AstNode semicolonTokenAstNode) {
+
+    variables.prependChildren(modifiers, (AstNode) type);
+    variables.addChild(semicolonTokenAstNode);
+
+    for (VariableTreeImpl variable : variables) {
+      variable.completeModifiersAndType(modifiers, type);
+    }
+
+    return variables;
+  }
+
+  public VariableDeclaratorListTreeImpl newVariableDeclarators(VariableTreeImpl variable, Optional<List<Tuple<AstNode, VariableTreeImpl>>> rests) {
+    ImmutableList.Builder<VariableTreeImpl> variables = ImmutableList.builder();
+
+    variables.add(variable);
+    List<AstNode> children = Lists.newArrayList();
+    children.add(variable);
+
+    if (rests.isPresent()) {
+      for (Tuple<AstNode, VariableTreeImpl> rest : rests.get()) {
+        variables.add(rest.second());
+        children.add(rest.first());
+        children.add(rest.second());
+      }
+    }
+
+    return new VariableDeclaratorListTreeImpl(variables.build(), children);
+  }
 
   public VariableTreeImpl completeVariableDeclarator(AstNode identifierAstNode, Optional<List<AstNode>> dims, Optional<VariableTreeImpl> partial) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
@@ -754,14 +777,13 @@ public class TreeFactory {
     return result;
   }
 
-  public StatementExpressionListTreeImpl newForInitDeclaration(ModifiersTreeImpl modifiers, ExpressionTree type, AstNode variableDeclarators) {
-    List<StatementTree> statements = treeMaker.variableDeclarators(
-      ModifiersTreeImpl.EMPTY,
-      type,
-      variableDeclarators);
+  public StatementExpressionListTreeImpl newForInitDeclaration(ModifiersTreeImpl modifiers, ExpressionTree type, VariableDeclaratorListTreeImpl variables) {
+    for (VariableTreeImpl variable : variables) {
+      variable.completeModifiersAndType(modifiers, type);
+    }
 
-    StatementExpressionListTreeImpl result = new StatementExpressionListTreeImpl(statements);
-    result.prependChildren(modifiers, (AstNode) type, variableDeclarators);
+    StatementExpressionListTreeImpl result = new StatementExpressionListTreeImpl(variables);
+    result.prependChildren(modifiers, (AstNode) type, variables);
 
     return result;
   }
@@ -1867,6 +1889,10 @@ public class TreeFactory {
   }
 
   public <T, U> Tuple<T, U> newTuple2(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple3(T first, U second) {
     return newTuple(first, second);
   }
 

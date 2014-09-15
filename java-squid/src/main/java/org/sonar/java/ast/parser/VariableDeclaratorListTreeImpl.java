@@ -19,16 +19,15 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 
 import java.util.List;
 
-public class StatementExpressionListTreeImpl extends ListTreeImpl<StatementTree> {
+public class VariableDeclaratorListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
 
-  public StatementExpressionListTreeImpl(List<? extends StatementTree> statements) {
-    super(JavaGrammar.STATEMENT_EXPRESSION, (List<StatementTree>) statements, ImmutableList.<AstNode>of());
+  public VariableDeclaratorListTreeImpl(List<VariableTreeImpl> variables, List<AstNode> children) {
+    super(JavaGrammar.VARIABLE_DECLARATORS, variables, children);
   }
 
 }
