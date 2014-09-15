@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.model.JavaTree;
@@ -36,13 +37,19 @@ import java.util.Map;
 
 public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
-  public Map<String, File> resourcesCache = Maps.newHashMap();
+
+  @VisibleForTesting
+  Map<String, File> resourcesCache = Maps.newHashMap();
 
   private File currentFile;
   private Deque<String> currentClassKey = new LinkedList<String>();
   private Deque<Tree> parent = new LinkedList<Tree>();
   private Deque<Integer> anonymousInnerClassCounter = new LinkedList<Integer>();
   private String currentPackage;
+
+  public Map<String, File> getResourcesCache() {
+    return resourcesCache;
+  }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

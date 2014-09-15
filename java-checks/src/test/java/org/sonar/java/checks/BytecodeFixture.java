@@ -81,7 +81,7 @@ public class BytecodeFixture {
       public void scanFile(JavaFileScannerContext context) {
         JavaFilesCache javaFilesCache = new JavaFilesCache();
         javaFilesCache.scanFile(context);
-        for (String key : javaFilesCache.resourcesCache.keySet()){
+        for (String key : javaFilesCache.getResourcesCache().keySet()){
           sourceFileCache.put(key, context.getFileKey());
         }
       }
