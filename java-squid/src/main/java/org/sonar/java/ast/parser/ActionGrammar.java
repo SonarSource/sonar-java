@@ -932,6 +932,18 @@ public class ActionGrammar {
           b.invokeRule(JavaTokenType.IDENTIFIER))));
   }
 
+  public LambdaParameterListTreeImpl INFERED_PARAMS() {
+    return b.<LambdaParameterListTreeImpl>nonterminal(JavaGrammar.INFERED_PARAMS)
+      .is(
+        f.newInferedParameters(
+          b.invokeRule(JavaPunctuator.LPAR),
+          b.optional(
+            f.newTuple2(
+              b.invokeRule(JavaTokenType.IDENTIFIER),
+              b.zeroOrMore(f.newTuple1(b.invokeRule(JavaPunctuator.COMMA), b.invokeRule(JavaTokenType.IDENTIFIER))))),
+          b.invokeRule(JavaPunctuator.RPAR)));
+  }
+
   public Tree LAMBDA_BODY() {
     return b.<Tree>nonterminal(JavaGrammar.LAMBDA_BODY)
       .is(

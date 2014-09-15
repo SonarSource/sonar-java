@@ -632,8 +632,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(QUALIFIED_IDENTIFIER_LIST).is(QUALIFIED_IDENTIFIER, b.zeroOrMore(COMMA, QUALIFIED_IDENTIFIER));
     b.rule(DIM).is(LBRK, RBRK);
     b.rule(DIM_EXPR).is(b.zeroOrMore(ANNOTATION), LBRK, EXPRESSION, RBRK);
-
-    b.rule(INFERED_PARAMS).is(LPAR, b.optional(JavaTokenType.IDENTIFIER, b.zeroOrMore(COMMA, JavaTokenType.IDENTIFIER)), RPAR);
   }
 
   private final String internalName;

@@ -1336,6 +1336,10 @@ public class TreeFactory {
   }
 
   public LambdaParameterListTreeImpl lambdaParameters(AstNode astNode) {
+    if (astNode instanceof LambdaParameterListTreeImpl) {
+      return (LambdaParameterListTreeImpl) astNode;
+    }
+
     InternalSyntaxToken openParenToken = null;
     InternalSyntaxToken closeParenToken = null;
     List<AstNode> children = Lists.newArrayList();
@@ -1344,35 +1348,53 @@ public class TreeFactory {
       VariableTreeImpl variableTree = new VariableTreeImpl(astNode, treeMaker.identifier(astNode));
       parameters.add(variableTree);
       children.add(astNode);
+    } else if (astNode.is(JavaGrammar.FORMAL_PARAMETERS)) {
+      FormalParametersListTreeImpl formalParameters = (FormalParametersListTreeImpl) astNode;
+      parameters.addAll(formalParameters);
+
+      openParenToken = formalParameters.openParenToken();
+      closeParenToken = formalParameters.closeParenToken();
+
+      for (int i = 1; i < formalParameters.getChildren().size() - 1; i++) {
+        children.add(formalParameters.getChildren().get(i));
+      }
     } else {
-      if (astNode.is(JavaGrammar.FORMAL_PARAMETERS)) {
-        FormalParametersListTreeImpl formalParameters = (FormalParametersListTreeImpl) astNode;
-        parameters.addAll(formalParameters);
+      throw new IllegalStateException();
+    }
+    return new LambdaParameterListTreeImpl(openParenToken, parameters.build(), closeParenToken, children);
+  }
 
-        openParenToken = formalParameters.openParenToken();
-        closeParenToken = formalParameters.closeParenToken();
+  public LambdaParameterListTreeImpl newInferedParameters(
+    AstNode openParenTokenAstNode,
+    Optional<Tuple<AstNode, Optional<List<Tuple<AstNode, AstNode>>>>> identifiersOpt,
+    AstNode closeParenTokenAstNode) {
 
-        for (int i = 1; i < formalParameters.getChildren().size() - 1; i++) {
-          children.add(formalParameters.getChildren().get(i));
-        }
-      } else {
-        for (AstNode node : astNode.getChildren(JavaTokenType.IDENTIFIER)) {
-          VariableTreeImpl variableTree = new VariableTreeImpl(node, treeMaker.identifier(node));
-          parameters.add(variableTree);
-          children.add(node);
-        }
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
 
-        AstNode leftParen = astNode.getFirstChild(JavaPunctuator.LPAR);
-        if (leftParen != null) {
-          openParenToken = InternalSyntaxToken.create(leftParen);
-        }
-        AstNode rightParen = astNode.getFirstChild(JavaPunctuator.RPAR);
-        if (rightParen != null) {
-          closeParenToken = InternalSyntaxToken.create(rightParen);
+    ImmutableList.Builder<VariableTreeImpl> params = ImmutableList.builder();
+
+    List<AstNode> children = Lists.newArrayList();
+
+    if (identifiersOpt.isPresent()) {
+      Tuple<AstNode, Optional<List<Tuple<AstNode, AstNode>>>> identifiers = identifiersOpt.get();
+
+      // TODO Non-legacy
+      params.add(new VariableTreeImpl(identifiers.first(), treeMaker.identifier(identifiers.first())));
+      children.add(identifiers.first());
+
+      if (identifiers.second().isPresent()) {
+        for (Tuple<AstNode, AstNode> identifier : identifiers.second().get()) {
+          // TODO Non-legacy
+          params.add(new VariableTreeImpl(identifier.second(), treeMaker.identifier(identifier.second())));
+
+          children.add(identifier.first());
+          children.add(identifier.second());
         }
       }
     }
-    return new LambdaParameterListTreeImpl(openParenToken, parameters.build(), closeParenToken, children);
+
+    return new LambdaParameterListTreeImpl(openParenToken, params.build(), closeParenToken, children);
   }
 
   public ParenthesizedTreeImpl parenthesizedExpression(AstNode leftParenthesisToken, ExpressionTree expression, AstNode rightParenthesisToken) {
@@ -1809,6 +1831,58 @@ public class TreeFactory {
 
   public AstNode newWrapperAstNode15(AstNode e1, Optional<AstNode> e2) {
     return newWrapperAstNode(e1, e2);
+  }
+
+  public static class Tuple<T, U> extends AstNode {
+
+    private final T first;
+    private final U second;
+
+    public Tuple(T first, U second) {
+      super(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
+
+      this.first = first;
+      this.second = second;
+
+      add(first);
+      add(second);
+    }
+
+    public T first() {
+      return first;
+    }
+
+    public U second() {
+      return second;
+    }
+
+    private void add(Object o) {
+      if (o instanceof AstNode) {
+        addChild((AstNode) o);
+      } else if (o instanceof Optional) {
+        Optional opt = (Optional) o;
+        if (opt.isPresent()) {
+          Object o2 = opt.get();
+          Preconditions.checkArgument(o2 instanceof AstNode, "Unsupported optional type: " + o2.getClass().getSimpleName());
+          addChild((AstNode) o2);
+        }
+      } else {
+        throw new IllegalStateException("Unsupported argument type: " + o.getClass().getSimpleName());
+      }
+    }
+
+  }
+
+  private <T, U> Tuple<T, U> newTuple(T first, U second) {
+    return new Tuple<T, U>(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple1(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple2(T first, U second) {
+    return newTuple(first, second);
   }
 
   // Crappy methods which must go away
