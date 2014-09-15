@@ -925,23 +925,29 @@ public class ActionGrammar {
 
   public LambdaParameterListTreeImpl LAMBDA_PARAMETERS() {
     return b.<LambdaParameterListTreeImpl>nonterminal(JavaGrammar.LAMBDA_PARAMETERS)
-      .is(f.lambdaParameters(
+      .is(
         b.firstOf(
-          b.invokeRule(JavaGrammar.INFERED_PARAMS),
-          FORMAL_PARAMETERS(),
-          b.invokeRule(JavaTokenType.IDENTIFIER))));
+          MULTIPLE_INFERED_PARAMETERS(),
+          f.formalLambdaParameters(FORMAL_PARAMETERS()),
+          f.singleInferedParameter(INFERED_PARAMETER())));
   }
 
-  public LambdaParameterListTreeImpl INFERED_PARAMS() {
+  public LambdaParameterListTreeImpl MULTIPLE_INFERED_PARAMETERS() {
     return b.<LambdaParameterListTreeImpl>nonterminal(JavaGrammar.INFERED_PARAMS)
       .is(
         f.newInferedParameters(
           b.invokeRule(JavaPunctuator.LPAR),
           b.optional(
             f.newTuple2(
-              b.invokeRule(JavaTokenType.IDENTIFIER),
-              b.zeroOrMore(f.newTuple1(b.invokeRule(JavaPunctuator.COMMA), b.invokeRule(JavaTokenType.IDENTIFIER))))),
+              INFERED_PARAMETER(),
+              b.zeroOrMore(f.newTuple1(b.invokeRule(JavaPunctuator.COMMA), INFERED_PARAMETER())))),
           b.invokeRule(JavaPunctuator.RPAR)));
+  }
+
+  public VariableTreeImpl INFERED_PARAMETER() {
+    return b.<VariableTreeImpl>nonterminal()
+      .is(
+        f.newSimpleParameter(b.invokeRule(JavaTokenType.IDENTIFIER)));
   }
 
   public Tree LAMBDA_BODY() {

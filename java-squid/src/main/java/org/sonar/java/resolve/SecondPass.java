@@ -160,7 +160,7 @@ public class SecondPass implements Symbol.Completer {
     }
     List<Type> argTypes = Lists.newArrayList();
     Collection<Symbol> scopeSymbols = symbol.parameters.scopeSymbols();
-    //Guarantee order of params.
+    // Guarantee order of params.
     for (VariableTree variableTree : methodTree.parameters()) {
       for (Symbol param : scopeSymbols) {
         if (variableTree.simpleName().name().equals(param.getName())) {
@@ -169,7 +169,7 @@ public class SecondPass implements Symbol.Completer {
         }
       }
     }
-    Type.MethodType methodType = new Type.MethodType(argTypes, returnType, thrownTypes.build() , (Symbol.TypeSymbol) symbol.owner);
+    Type.MethodType methodType = new Type.MethodType(argTypes, returnType, thrownTypes.build(), (Symbol.TypeSymbol) symbol.owner);
     symbol.setMethodType(methodType);
   }
 
@@ -187,7 +187,7 @@ public class SecondPass implements Symbol.Completer {
     Preconditions.checkArgument(checkTypeOfTree(tree), "Kind of tree unexpected " + ((JavaTree) tree).getKind());
     TypeResolverVisitor typeResolverVisitor = new TypeResolverVisitor(env.dup());
     tree.accept(typeResolverVisitor);
-    if(typeResolverVisitor.arrayType != null) {
+    if (typeResolverVisitor.arrayType != null) {
       return typeResolverVisitor.arrayType;
     }
     return castToTypeIfPossible(typeResolverVisitor.site);
@@ -195,13 +195,12 @@ public class SecondPass implements Symbol.Completer {
 
   private boolean checkTypeOfTree(Tree tree) {
     return tree.is(Tree.Kind.MEMBER_SELECT) ||
-        tree.is(Tree.Kind.IDENTIFIER) ||
-        tree.is(Tree.Kind.PARAMETERIZED_TYPE) ||
-        tree.is(Tree.Kind.ARRAY_TYPE) ||
-        tree.is(Tree.Kind.UNION_TYPE) ||
-        tree.is(Tree.Kind.PRIMITIVE_TYPE) ||
-        tree.is(Tree.Kind.INFERED_TYPE)
-        ;
+      tree.is(Tree.Kind.IDENTIFIER) ||
+      tree.is(Tree.Kind.PARAMETERIZED_TYPE) ||
+      tree.is(Tree.Kind.ARRAY_TYPE) ||
+      tree.is(Tree.Kind.UNION_TYPE) ||
+      tree.is(Tree.Kind.PRIMITIVE_TYPE) ||
+      tree.is(Tree.Kind.INFERED_TYPE);
   }
 
   private Type castToTypeIfPossible(Symbol symbol) {
@@ -225,16 +224,16 @@ public class SecondPass implements Symbol.Completer {
 
     @Override
     public void visitParameterizedType(ParameterizedTypeTree tree) {
-      //Scan only the type, the generic arguments are not yet handled
+      // Scan only the type, the generic arguments are not yet handled
       scan(tree.type());
     }
 
     @Override
     public void visitArrayType(ArrayTypeTree tree) {
       super.visitArrayType(tree);
-      if(arrayType == null) {
+      if (arrayType == null) {
         arrayType = new Type.ArrayType(site.type, symbols.arrayClass);
-      }else {
+      } else {
         arrayType = new Type.ArrayType(arrayType, symbols.arrayClass);
       }
     }

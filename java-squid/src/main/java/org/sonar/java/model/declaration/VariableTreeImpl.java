@@ -20,6 +20,7 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -78,6 +79,11 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     }
   }
 
+  public VariableTreeImpl(IdentifierTreeImpl simpleName) {
+    this(simpleName, 0, ImmutableList.<AstNode>of());
+    this.type = new InferedTypeTree();
+  }
+
   public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
     super(astNode);
     this.modifiers = Preconditions.checkNotNull(modifiers);
@@ -85,10 +91,6 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     this.simpleName = Preconditions.checkNotNull(simpleName);
     this.dims = -1;
     this.initializer = initializer;
-  }
-
-  public VariableTreeImpl(AstNode astNode, IdentifierTree simpleName) {
-    this(astNode, ModifiersTreeImpl.EMPTY, new InferedTypeTree(), simpleName, null);
   }
 
   public VariableTreeImpl completeType(Tree type) {

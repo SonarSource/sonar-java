@@ -1335,38 +1335,9 @@ public class TreeFactory {
       parameters, arrowToken, (AstNode) body);
   }
 
-  public LambdaParameterListTreeImpl lambdaParameters(AstNode astNode) {
-    if (astNode instanceof LambdaParameterListTreeImpl) {
-      return (LambdaParameterListTreeImpl) astNode;
-    }
-
-    InternalSyntaxToken openParenToken = null;
-    InternalSyntaxToken closeParenToken = null;
-    List<AstNode> children = Lists.newArrayList();
-    ImmutableList.Builder<VariableTreeImpl> parameters = ImmutableList.builder();
-    if (astNode.is(JavaTokenType.IDENTIFIER)) {
-      VariableTreeImpl variableTree = new VariableTreeImpl(astNode, treeMaker.identifier(astNode));
-      parameters.add(variableTree);
-      children.add(astNode);
-    } else if (astNode.is(JavaGrammar.FORMAL_PARAMETERS)) {
-      FormalParametersListTreeImpl formalParameters = (FormalParametersListTreeImpl) astNode;
-      parameters.addAll(formalParameters);
-
-      openParenToken = formalParameters.openParenToken();
-      closeParenToken = formalParameters.closeParenToken();
-
-      for (int i = 1; i < formalParameters.getChildren().size() - 1; i++) {
-        children.add(formalParameters.getChildren().get(i));
-      }
-    } else {
-      throw new IllegalStateException();
-    }
-    return new LambdaParameterListTreeImpl(openParenToken, parameters.build(), closeParenToken, children);
-  }
-
   public LambdaParameterListTreeImpl newInferedParameters(
     AstNode openParenTokenAstNode,
-    Optional<Tuple<AstNode, Optional<List<Tuple<AstNode, AstNode>>>>> identifiersOpt,
+    Optional<Tuple<VariableTreeImpl, Optional<List<Tuple<AstNode, VariableTreeImpl>>>>> identifiersOpt,
     AstNode closeParenTokenAstNode) {
 
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
@@ -1375,18 +1346,17 @@ public class TreeFactory {
     ImmutableList.Builder<VariableTreeImpl> params = ImmutableList.builder();
 
     List<AstNode> children = Lists.newArrayList();
+    children.add(openParenToken);
 
     if (identifiersOpt.isPresent()) {
-      Tuple<AstNode, Optional<List<Tuple<AstNode, AstNode>>>> identifiers = identifiersOpt.get();
+      Tuple<VariableTreeImpl, Optional<List<Tuple<AstNode, VariableTreeImpl>>>> identifiers = identifiersOpt.get();
 
-      // TODO Non-legacy
-      params.add(new VariableTreeImpl(identifiers.first(), treeMaker.identifier(identifiers.first())));
+      params.add(identifiers.first());
       children.add(identifiers.first());
 
       if (identifiers.second().isPresent()) {
-        for (Tuple<AstNode, AstNode> identifier : identifiers.second().get()) {
-          // TODO Non-legacy
-          params.add(new VariableTreeImpl(identifier.second(), treeMaker.identifier(identifier.second())));
+        for (Tuple<AstNode, VariableTreeImpl> identifier : identifiers.second().get()) {
+          params.add(identifier.second());
 
           children.add(identifier.first());
           children.add(identifier.second());
@@ -1394,7 +1364,22 @@ public class TreeFactory {
       }
     }
 
+    children.add(closeParenToken);
+
     return new LambdaParameterListTreeImpl(openParenToken, params.build(), closeParenToken, children);
+  }
+
+  public LambdaParameterListTreeImpl formalLambdaParameters(FormalParametersListTreeImpl formalParameters) {
+    return new LambdaParameterListTreeImpl(formalParameters.openParenToken(), formalParameters, formalParameters.closeParenToken(), formalParameters.getChildren());
+  }
+
+  public LambdaParameterListTreeImpl singleInferedParameter(VariableTreeImpl parameter) {
+    return new LambdaParameterListTreeImpl(null, ImmutableList.of(parameter), null, ImmutableList.<AstNode>of(parameter));
+  }
+
+  public VariableTreeImpl newSimpleParameter(AstNode identifierAstNode) {
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+    return new VariableTreeImpl(identifier);
   }
 
   public ParenthesizedTreeImpl parenthesizedExpression(AstNode leftParenthesisToken, ExpressionTree expression, AstNode rightParenthesisToken) {

@@ -411,6 +411,9 @@ public class ActionParser extends Parser {
   }
 
   private void replaceAstNode(AstNode o, AstNode n, List<Token> oldTokens) {
+    Preconditions.checkNotNull(o, "old null");
+    Preconditions.checkNotNull(n, "new null");
+
     if (verifyAssertions) {
       verifyNoInjectionFromJavaTreeMaker(n);
       verifyTokens(o, n, oldTokens);

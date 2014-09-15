@@ -25,6 +25,7 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 public class LambdaParameterListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
@@ -33,17 +34,16 @@ public class LambdaParameterListTreeImpl extends ListTreeImpl<VariableTreeImpl> 
   private InternalSyntaxToken closeParenToken;
 
   public LambdaParameterListTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTreeImpl> params,
-                                     @Nullable InternalSyntaxToken closeParenToken, List<AstNode> children) {
+    @Nullable InternalSyntaxToken closeParenToken, List<AstNode> children) {
     super(JavaGrammar.LAMBDA_PARAMETERS, params, ImmutableList.<AstNode>of());
-    if(openParenToken != null) {
+
+    if (openParenToken != null) {
       this.openParenToken = openParenToken;
-      addChild(openParenToken);
     }
     for (AstNode child : children) {
       addChild(child);
     }
-    if(closeParenToken != null) {
-      addChild(closeParenToken);
+    if (closeParenToken != null) {
       this.closeParenToken = closeParenToken;
     }
   }
