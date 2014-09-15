@@ -25,7 +25,7 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -36,9 +36,9 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(
-  key = AnonymousClassesTooBigCheck.RULE_KEY,
-  priority = Priority.MAJOR,
-  tags = {"brain-overload"})
+    key = AnonymousClassesTooBigCheck.RULE_KEY,
+    priority = Priority.MAJOR,
+    tags = {"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -90,11 +90,9 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   }
 
   private int getNumberOfLines(ClassTree classTree) {
-    AstNode node = ((JavaTree) classTree).getAstNode();
-    if (!node.is(JavaGrammar.CLASS_BODY)) {
-      node = node.getFirstChild(JavaGrammar.CLASS_BODY);
-    }
-    return getNumberOfLines(node);
+    int startLine = ((InternalSyntaxToken) classTree.openBraceToken()).getLine();
+    int endline = ((InternalSyntaxToken) classTree.closeBraceToken()).getLine();
+    return endline - startLine + 1;
   }
 
   private int getNumberOfLines(AstNode node) {

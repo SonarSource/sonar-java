@@ -23,18 +23,20 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -132,8 +134,26 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   @Override
+  public SyntaxToken openBraceToken() {
+    if(is(Kind.ANNOTATION_TYPE)) {
+      return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.LWING).getToken());
+    }
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.CLASS_BODY, JavaGrammar.ENUM_BODY, JavaGrammar.INTERFACE_BODY)
+        .getFirstChild(JavaPunctuator.LWING).getToken());
+  }
+
+  @Override
   public List<Tree> members() {
     return members;
+  }
+
+  @Override
+  public SyntaxToken closeBraceToken() {
+    if(is(Kind.ANNOTATION_TYPE)) {
+      return new InternalSyntaxToken(getAstNode().getFirstChild(JavaPunctuator.RWING).getToken());
+    }
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.CLASS_BODY, JavaGrammar.ENUM_BODY, JavaGrammar.INTERFACE_BODY)
+        .getFirstChild(JavaPunctuator.RWING).getToken());
   }
 
   @Override

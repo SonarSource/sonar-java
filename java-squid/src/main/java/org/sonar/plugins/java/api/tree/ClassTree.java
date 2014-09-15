@@ -71,6 +71,9 @@ public interface ClassTree extends StatementTree {
 
   List<Tree> superInterfaces();
 
+  SyntaxToken openBraceToken();
+
   List<Tree> members();
 
+  SyntaxToken closeBraceToken();
 }
