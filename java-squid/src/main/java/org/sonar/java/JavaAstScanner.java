@@ -24,12 +24,8 @@ import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.ast.visitors.AnonymousInnerClassVisitor;
-import org.sonar.java.ast.visitors.ClassVisitor;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
-import org.sonar.java.ast.visitors.EndAtLineVisitor;
 import org.sonar.java.ast.visitors.FileVisitor;
-import org.sonar.java.ast.visitors.MethodVisitor;
 import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.SourceCode;
@@ -82,14 +78,6 @@ public final class JavaAstScanner {
 
     /* Files */
     builder.withSquidAstVisitor(new FileVisitor());
-
-    /* Classes */
-    builder.withSquidAstVisitor(new ClassVisitor());
-    builder.withSquidAstVisitor(new AnonymousInnerClassVisitor());
-
-    /* Methods */
-    builder.withSquidAstVisitor(new MethodVisitor());
-    builder.withSquidAstVisitor(new EndAtLineVisitor());
 
     /* Comments */
     builder.setCommentAnalyser(new CommentLinesVisitor.JavaCommentAnalyser());

@@ -20,7 +20,6 @@
 package org.sonar.java.ast.visitors;
 
 import org.sonar.squidbridge.SquidAstVisitor;
-import org.sonar.squidbridge.api.SourceClass;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourcePackage;
@@ -45,14 +44,6 @@ public abstract class JavaAstVisitor extends SquidAstVisitor<LexerlessGrammar> {
       return (SourcePackage) getContext().peekSourceCode();
     }
     return sourceCode.getParent(SourcePackage.class);
-  }
-
-  protected final SourceClass peekSourceClass() {
-    SourceCode sourceCode = getContext().peekSourceCode();
-    if (sourceCode.isType(SourceClass.class)) {
-      return (SourceClass) sourceCode;
-    }
-    return sourceCode.getParent(SourceClass.class);
   }
 
 }
