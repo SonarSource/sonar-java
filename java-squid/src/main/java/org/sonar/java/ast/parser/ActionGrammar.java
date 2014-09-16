@@ -902,6 +902,7 @@ public class ActionGrammar {
           b.firstOf(
             f.newSuperMethodReference(b.invokeRule(JavaKeyword.SUPER), b.invokeRule(JavaPunctuator.DBLECOLON)),
             f.newTypeMethodReference(TYPE(), b.invokeRule(JavaPunctuator.DBLECOLON)),
+            // TODO This is a postfix expression followed by a double colon
             f.newPrimaryMethodReference(PRIMARY(), b.zeroOrMore(b.invokeRule(JavaGrammar.SELECTOR)), b.invokeRule(JavaPunctuator.DBLECOLON))),
           b.optional(b.invokeRule(JavaGrammar.TYPE_ARGUMENTS)),
           b.firstOf(
