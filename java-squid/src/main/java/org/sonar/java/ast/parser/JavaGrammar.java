@@ -620,7 +620,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(DIAMOND).is(LT, GT);
     b.rule(QUALIFIED_IDENTIFIER_LIST).is(QUALIFIED_IDENTIFIER, b.zeroOrMore(COMMA, QUALIFIED_IDENTIFIER));
     b.rule(DIM).is(LBRK, RBRK);
-    b.rule(DIM_EXPR).is(b.zeroOrMore(ANNOTATION), LBRK, EXPRESSION, RBRK);
   }
 
   private final String internalName;

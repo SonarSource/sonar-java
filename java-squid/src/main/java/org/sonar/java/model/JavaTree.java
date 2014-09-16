@@ -111,7 +111,7 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
   }
 
-  public void prependChildren(List<AstNode> astNodes) {
+  public void prependChildren(List<? extends AstNode> astNodes) {
     prependChildren(astNodes.toArray(new AstNode[astNodes.size()]));
   }
 

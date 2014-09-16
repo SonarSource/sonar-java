@@ -155,7 +155,7 @@ public class TreeFactory {
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
     if (annotations.isPresent()) {
-      identifier.prependChildren((List) annotations.get());
+      identifier.prependChildren(annotations.get());
     }
 
     ExpressionTree result = identifier;
@@ -216,7 +216,7 @@ public class TreeFactory {
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
     if (annotations.isPresent()) {
-      identifier.prependChildren((List) annotations.get());
+      identifier.prependChildren(annotations.get());
     }
 
     return new ClassTypeComplement(InternalSyntaxToken.create(dotTokenAstNode), identifier, typeArguments);
@@ -271,7 +271,7 @@ public class TreeFactory {
 
   public Tree completeTypeArgument(Optional<List<AnnotationTreeImpl>> annotations, Tree partial) {
     if (annotations.isPresent()) {
-      ((JavaTree) partial).prependChildren((List) annotations.get());
+      ((JavaTree) partial).prependChildren(annotations.get());
     }
 
     return partial;
@@ -327,7 +327,7 @@ public class TreeFactory {
   public TypeParameterTreeImpl completeTypeParameter(Optional<List<AnnotationTreeImpl>> annotations, AstNode identifierAstNode, Optional<TypeParameterTreeImpl> partial) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
     if (annotations.isPresent()) {
-      identifier.prependChildren((List) annotations.get());
+      identifier.prependChildren(annotations.get());
     }
 
     return partial.isPresent() ?
@@ -1451,7 +1451,7 @@ public class TreeFactory {
 
   public ExpressionTree newExpression(AstNode newToken, Optional<List<AnnotationTreeImpl>> annotations, ExpressionTree partial) {
     if (annotations.isPresent()) {
-      ((JavaTree) partial).prependChildren((List) annotations.get());
+      ((JavaTree) partial).prependChildren(annotations.get());
     }
     ((JavaTree) partial).prependChildren(newToken);
     return partial;
@@ -1481,7 +1481,7 @@ public class TreeFactory {
 
   public NewArrayTreeImpl completeArrayCreator(Optional<List<AnnotationTreeImpl>> annotations, NewArrayTreeImpl partial) {
     if (annotations.isPresent()) {
-      partial.prependChildren((List) annotations.get());
+      partial.prependChildren(annotations.get());
     }
     return partial;
   }
@@ -1500,14 +1500,14 @@ public class TreeFactory {
   }
 
   public NewArrayTreeImpl newArrayCreatorWithDimension(AstNode openBracketToken, ExpressionTree expression, AstNode closeBracketToken,
-    Optional<List<AstNode>> dimExpressions,
+    Optional<List<ArrayAccessExpressionTreeImpl>> arrayAccesses,
     Optional<List<AstNode>> dims) {
 
     ImmutableList.Builder<ExpressionTree> dimensions = ImmutableList.builder();
     dimensions.add(expression);
-    if (dimExpressions.isPresent()) {
-      for (AstNode dimExpr : dimExpressions.get()) {
-        dimensions.add((ExpressionTree) dimExpr.getChild(dimExpr.getNumberOfChildren() - 2));
+    if (arrayAccesses.isPresent()) {
+      for (ArrayAccessExpressionTreeImpl arrayAccess : arrayAccesses.get()) {
+        dimensions.add(arrayAccess.index());
       }
     }
 
@@ -1515,8 +1515,8 @@ public class TreeFactory {
     children.add(openBracketToken);
     children.add((AstNode) expression);
     children.add(closeBracketToken);
-    if (dimExpressions.isPresent()) {
-      children.addAll(dimExpressions.get());
+    if (arrayAccesses.isPresent()) {
+      children.addAll(arrayAccesses.get());
     }
     if (dims.isPresent()) {
       children.addAll(dims.get());
@@ -1542,9 +1542,13 @@ public class TreeFactory {
             (AstNode) qualifiedIdentifier, identifierSuffixNode);
         } else {
           // id[expression]
+          // TODO Replace by DIM_EXPR aka ARRAY_ACCESS_EXPRESSION()
+          InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(identifierSuffixNode.getFirstChild(JavaPunctuator.LBRK));
+          InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(identifierSuffixNode.getFirstChild(JavaPunctuator.RBRK));
+
           return new ArrayAccessExpressionTreeImpl(
-            qualifiedIdentifier, (ExpressionTree) identifierSuffixNode.getChild(identifierSuffixNode.getNumberOfChildren() - 2),
-            (AstNode) qualifiedIdentifier, identifierSuffixNode);
+            qualifiedIdentifier,
+            openBracketToken, (ExpressionTree) identifierSuffixNode.getChild(identifierSuffixNode.getNumberOfChildren() - 2), closeBracketToken);
         }
       } else if (identifierSuffixNode.getFirstChild().is(JavaGrammar.ARGUMENTS)) {
         // id(arguments)
@@ -1728,6 +1732,19 @@ public class TreeFactory {
     children.add(closeBraceTokenAstNode);
 
     return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), initializers.build(), children);
+  }
+
+  public ArrayAccessExpressionTreeImpl newArrayAccessExpression(Optional<List<AnnotationTreeImpl>> annotations, AstNode openBracketTokenAstNode, ExpressionTree index,
+    AstNode closeBracketTokenAstNode) {
+    InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(openBracketTokenAstNode);
+    InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(closeBracketTokenAstNode);
+
+    ArrayAccessExpressionTreeImpl result = new ArrayAccessExpressionTreeImpl(openBracketToken, index, closeBracketToken);
+    if (annotations.isPresent()) {
+      result.prependChildren(annotations.get());
+    }
+
+    return result;
   }
 
   // End of expressions
@@ -2003,11 +2020,8 @@ public class TreeFactory {
       return new NewClassTreeImpl(
         expression, identifier, arguments, classBody,
         children.toArray(new AstNode[children.size()]));
-    } else if (selectorNode.hasDirectChildren(JavaGrammar.DIM_EXPR)) {
-      AstNode dimExpr = selectorNode.getFirstChild(JavaGrammar.DIM_EXPR);
-      return new ArrayAccessExpressionTreeImpl(
-        expression, (ExpressionTree) dimExpr.getChild(dimExpr.getNumberOfChildren() - 2),
-        (AstNode) expression, selectorNode.getFirstChild(JavaGrammar.DIM_EXPR));
+    } else if (selectorNode.hasDirectChildren(Kind.ARRAY_ACCESS_EXPRESSION)) {
+      return ((ArrayAccessExpressionTreeImpl) selectorNode.getFirstChild(Kind.ARRAY_ACCESS_EXPRESSION)).complete(expression);
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }

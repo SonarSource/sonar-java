@@ -30,6 +30,7 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
@@ -1019,7 +1020,7 @@ public class ActionGrammar {
               b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), ARRAY_INITIALIZER()),
             f.newArrayCreatorWithDimension(
               b.invokeRule(JavaPunctuator.LBRK), EXPRESSION(), b.invokeRule(JavaPunctuator.RBRK),
-              b.zeroOrMore(b.invokeRule(JavaGrammar.DIM_EXPR)),
+              b.zeroOrMore(ARRAY_ACCESS_EXPRESSION()),
               b.zeroOrMore(f.newWrapperAstNode(b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaGrammar.DIM)))))));
   }
 
@@ -1092,6 +1093,11 @@ public class ActionGrammar {
           b.invokeRule(JavaPunctuator.LWING),
           b.zeroOrMore(f.newWrapperAstNode15((AstNode) VARIABLE_INITIALIZER(), b.optional(b.invokeRule(JavaPunctuator.COMMA)))),
           b.invokeRule(JavaPunctuator.RWING)));
+  }
+
+  public ArrayAccessExpressionTreeImpl ARRAY_ACCESS_EXPRESSION() {
+    return b.<ArrayAccessExpressionTreeImpl>nonterminal(JavaGrammar.DIM_EXPR)
+      .is(f.newArrayAccessExpression(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaPunctuator.LBRK), EXPRESSION(), b.invokeRule(JavaPunctuator.RBRK)));
   }
 
   // End of expressions

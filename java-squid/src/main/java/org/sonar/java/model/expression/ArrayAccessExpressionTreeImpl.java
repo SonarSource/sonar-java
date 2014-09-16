@@ -19,10 +19,10 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -32,23 +32,35 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements ArrayAccessExpressionTree {
-  private final ExpressionTree expression;
+
+  private ExpressionTree expression;
+  private final InternalSyntaxToken openBracketToken;
   private final ExpressionTree index;
+  private final InternalSyntaxToken closeBracketToken;
 
-  public ArrayAccessExpressionTreeImpl(ExpressionTree expression, ExpressionTree index, AstNode... children) {
-    super(Kind.ARRAY_ACCESS_EXPRESSION);
-    this.expression = Preconditions.checkNotNull(expression);
-    this.index = Preconditions.checkNotNull(index);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
+  public ArrayAccessExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken openBracketToken, ExpressionTree index, InternalSyntaxToken closeBracketToken) {
+    this(openBracketToken, index, closeBracketToken);
+    complete(expression);
   }
 
-  public ArrayAccessExpressionTreeImpl(AstNode astNode, ExpressionTree expression, ExpressionTree index) {
-    super(astNode);
-    this.expression = Preconditions.checkNotNull(expression);
-    this.index = Preconditions.checkNotNull(index);
+  public ArrayAccessExpressionTreeImpl(InternalSyntaxToken openBracketToken, ExpressionTree index, InternalSyntaxToken closeBracketToken) {
+    super(Kind.ARRAY_ACCESS_EXPRESSION);
+
+    this.openBracketToken = openBracketToken;
+    this.index = index;
+    this.closeBracketToken = closeBracketToken;
+
+    addChild(openBracketToken);
+    addChild((AstNode) index);
+    addChild(closeBracketToken);
+  }
+
+  public ArrayAccessExpressionTreeImpl complete(ExpressionTree expression) {
+    this.expression = expression;
+
+    prependChildren((AstNode) expression);
+
+    return this;
   }
 
   @Override
@@ -63,7 +75,7 @@ public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements 
 
   @Override
   public SyntaxToken openBracketToken() {
-    throw new UnsupportedOperationException();
+    return openBracketToken;
   }
 
   @Override
@@ -73,7 +85,7 @@ public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements 
 
   @Override
   public SyntaxToken closeBracketToken() {
-    throw new UnsupportedOperationException();
+    return closeBracketToken;
   }
 
   @Override
@@ -85,7 +97,6 @@ public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements 
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>forArray(
       expression,
-      index
-      );
+      index);
   }
 }
