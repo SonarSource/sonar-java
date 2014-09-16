@@ -1095,6 +1095,11 @@ public class ActionGrammar {
           b.invokeRule(JavaPunctuator.RWING)));
   }
 
+  public QualifiedIdentifierListTreeImpl QUALIFIED_IDENTIFIER_LIST() {
+    return b.<QualifiedIdentifierListTreeImpl>nonterminal(JavaGrammar.QUALIFIED_IDENTIFIER_LIST)
+      .is(f.newQualifiedIdentifierList(QUALIFIED_IDENTIFIER(), b.zeroOrMore(f.newTuple4(b.invokeRule(JavaPunctuator.COMMA), QUALIFIED_IDENTIFIER()))));
+  }
+
   public ArrayAccessExpressionTreeImpl ARRAY_ACCESS_EXPRESSION() {
     return b.<ArrayAccessExpressionTreeImpl>nonterminal(JavaGrammar.DIM_EXPR)
       .is(f.newArrayAccessExpression(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaPunctuator.LBRK), EXPRESSION(), b.invokeRule(JavaPunctuator.RBRK)));

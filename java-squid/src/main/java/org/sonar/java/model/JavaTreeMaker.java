@@ -31,6 +31,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.ClassTypeListTreeImpl;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeArgumentListTreeImpl;
 import org.sonar.java.ast.parser.VariableDeclaratorListTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -112,17 +113,6 @@ public class JavaTreeMaker {
   public IdentifierTree identifier(AstNode astNode) {
     checkType(astNode, JavaTokenType.IDENTIFIER, JavaKeyword.THIS, JavaKeyword.CLASS, JavaKeyword.SUPER);
     return new IdentifierTreeImpl(InternalSyntaxToken.createLegacy(astNode), astNode);
-  }
-
-  private List<ExpressionTree> qualifiedIdentifierList(AstNode astNode) {
-    checkType(astNode, JavaGrammar.QUALIFIED_IDENTIFIER_LIST);
-    ImmutableList.Builder<ExpressionTree> result = ImmutableList.builder();
-    for (AstNode child : astNode.getChildren()) {
-      if (child instanceof ExpressionTree && !((JavaTree) child).isLegacy()) {
-        result.add((ExpressionTree) child);
-      }
-    }
-    return result.build();
   }
 
   /*
@@ -401,7 +391,7 @@ public class JavaTreeMaker {
     if (astNode.hasDirectChildren(JavaGrammar.METHOD_BODY)) {
       body = (BlockTree) astNode.getFirstChild(JavaGrammar.METHOD_BODY).getFirstChild(Kind.BLOCK);
     }
-    AstNode throwsClauseNode = astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER_LIST);
+    QualifiedIdentifierListTreeImpl throwsClauseNode = (QualifiedIdentifierListTreeImpl) astNode.getFirstChild(JavaGrammar.QUALIFIED_IDENTIFIER_LIST);
     return new MethodTreeImpl(
       astNode,
       modifiers,
@@ -410,7 +400,7 @@ public class JavaTreeMaker {
       identifier(name),
       (List) astNode.getFirstChild(JavaGrammar.FORMAL_PARAMETERS),
       body,
-      throwsClauseNode != null ? qualifiedIdentifierList(throwsClauseNode) : ImmutableList.<ExpressionTree>of(),
+      throwsClauseNode != null ? throwsClauseNode : ImmutableList.<ExpressionTree>of(),
       null);
   }
 

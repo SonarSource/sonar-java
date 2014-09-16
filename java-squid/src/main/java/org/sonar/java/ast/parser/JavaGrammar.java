@@ -587,8 +587,8 @@ public enum JavaGrammar implements GrammarRuleKey {
         b.sequence(
           LBRK,
           b.firstOf(
-            b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS),
-            b.sequence(EXPRESSION, RBRK))),
+            b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), // TODO This is actually DIM, followed by other DIMs, followed by .class
+            b.sequence(EXPRESSION, RBRK))), // TODO This is actually DIM_EXPR
         ARGUMENTS,
         b.sequence(DOT, b.firstOf(
           CLASS,
@@ -618,7 +618,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     b.rule(INNER_CREATOR).is(JavaTokenType.IDENTIFIER, CLASS_CREATOR_REST);
     b.rule(CLASS_CREATOR_REST).is(b.optional(b.firstOf(DIAMOND, TYPE_ARGUMENTS)), ARGUMENTS, b.optional(CLASS_BODY));
     b.rule(DIAMOND).is(LT, GT);
-    b.rule(QUALIFIED_IDENTIFIER_LIST).is(QUALIFIED_IDENTIFIER, b.zeroOrMore(COMMA, QUALIFIED_IDENTIFIER));
     b.rule(DIM).is(LBRK, RBRK);
   }
 

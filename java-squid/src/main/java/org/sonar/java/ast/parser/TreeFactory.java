@@ -1913,6 +1913,10 @@ public class TreeFactory {
     return newTuple(first, second);
   }
 
+  public <T, U> Tuple<T, U> newTuple4(T first, U second) {
+    return newTuple(first, second);
+  }
+
   // Crappy methods which must go away
 
   private ExpressionTree applySuperSuffix(ExpressionTree expression, AstNode superSuffixNode) {
@@ -2025,6 +2029,24 @@ public class TreeFactory {
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }
+  }
+
+  public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(ExpressionTree qualifiedIdentifier, Optional<List<Tuple<AstNode, ExpressionTree>>> rests) {
+    ImmutableList.Builder<ExpressionTree> qualifiedIdentifiers = ImmutableList.builder();
+    List<AstNode> children = Lists.newArrayList();
+
+    qualifiedIdentifiers.add(qualifiedIdentifier);
+    children.add((AstNode) qualifiedIdentifier);
+
+    if (rests.isPresent()) {
+      for (Tuple<AstNode, ExpressionTree> rest : rests.get()) {
+        qualifiedIdentifiers.add(rest.second());
+        children.add(rest.first());
+        children.add((AstNode) rest.second());
+      }
+    }
+
+    return new QualifiedIdentifierListTreeImpl(qualifiedIdentifiers.build(), children);
   }
 
 }
