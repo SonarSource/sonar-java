@@ -1259,7 +1259,7 @@ public class TreeFactory {
     return new InternalPrefixUnaryExpression(kindMaps.getPrefixOperator((JavaPunctuator) operatorTokenAstNode.getType()), operatorToken, expression);
   }
 
-  public ExpressionTree newPostfixExpression(ExpressionTree primary, Optional<List<AstNode>> selectors, Optional<List<AstNode>> postfixOperatorAstNodes) {
+  public ExpressionTree newPostfixExpression(ExpressionTree primary, Optional<List<AstNode>> selectors, Optional<AstNode> postfixOperatorAstNode) {
     ExpressionTree result = primary;
 
     if (selectors.isPresent()) {
@@ -1268,11 +1268,9 @@ public class TreeFactory {
       }
     }
 
-    if (postfixOperatorAstNodes.isPresent()) {
-      for (AstNode postfixOperatorAstNode : postfixOperatorAstNodes.get()) {
-        InternalSyntaxToken postfixOperatorToken = InternalSyntaxToken.create(postfixOperatorAstNode);
-        result = new InternalPostfixUnaryExpression(kindMaps.getPostfixOperator((JavaPunctuator) postfixOperatorAstNode.getType()), result, postfixOperatorToken);
-      }
+    if (postfixOperatorAstNode.isPresent()) {
+      InternalSyntaxToken postfixOperatorToken = InternalSyntaxToken.create(postfixOperatorAstNode.get());
+      result = new InternalPostfixUnaryExpression(kindMaps.getPostfixOperator((JavaPunctuator) postfixOperatorAstNode.get().getType()), result, postfixOperatorToken);
     }
 
     return result;

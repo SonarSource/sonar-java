@@ -873,7 +873,7 @@ public class ActionGrammar {
           f.newPostfixExpression(
             PRIMARY(),
             b.zeroOrMore(b.invokeRule(JavaGrammar.SELECTOR)),
-            b.zeroOrMore(
+            b.optional(
               b.firstOf(
                 b.invokeRule(JavaPunctuator.INC),
                 b.invokeRule(JavaPunctuator.DEC)))),
