@@ -1533,24 +1533,17 @@ public class TreeFactory {
       return qualifiedIdentifier;
     } else {
       AstNode identifierSuffixNode = identifierSuffix.get();
-      if (identifierSuffixNode.getFirstChild().is(JavaPunctuator.LBRK)) {
-        if (identifierSuffixNode.hasDirectChildren(JavaKeyword.CLASS)) {
-          // 15.8.2. Class Literals
-          // id[].class
-          return new MemberSelectExpressionTreeImpl(
-            treeMaker.applyDim(qualifiedIdentifier, identifierSuffixNode.getChildren(JavaGrammar.DIM).size() + 1),
-            treeMaker.identifier(identifierSuffixNode.getFirstChild(JavaKeyword.CLASS)),
-            (AstNode) qualifiedIdentifier, identifierSuffixNode);
-        } else {
-          // id[expression]
-          // TODO Replace by DIM_EXPR aka ARRAY_ACCESS_EXPRESSION()
-          InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(identifierSuffixNode.getFirstChild(JavaPunctuator.LBRK));
-          InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(identifierSuffixNode.getFirstChild(JavaPunctuator.RBRK));
-
-          return new ArrayAccessExpressionTreeImpl(
-            qualifiedIdentifier,
-            openBracketToken, (ExpressionTree) identifierSuffixNode.getChild(identifierSuffixNode.getNumberOfChildren() - 2), closeBracketToken);
-        }
+      if (identifierSuffixNode.getFirstChild().is(JavaGrammar.DIM)) {
+        // 15.8.2. Class Literals
+        // id[].class
+        return new MemberSelectExpressionTreeImpl(
+          treeMaker.applyDim(qualifiedIdentifier, identifierSuffixNode.getChildren(JavaGrammar.DIM).size()),
+          treeMaker.identifier(identifierSuffixNode.getFirstChild(JavaKeyword.CLASS)),
+          (AstNode) qualifiedIdentifier, identifierSuffixNode);
+      } else if (identifierSuffixNode.getFirstChild().is(Kind.ARRAY_ACCESS_EXPRESSION)) {
+        // id[expression]
+        ArrayAccessExpressionTreeImpl arrayAccess = (ArrayAccessExpressionTreeImpl) identifierSuffixNode.getFirstChild(Kind.ARRAY_ACCESS_EXPRESSION);
+        return arrayAccess.complete(qualifiedIdentifier);
       } else if (identifierSuffixNode.getFirstChild().is(JavaGrammar.ARGUMENTS)) {
         // id(arguments)
         return new MethodInvocationTreeImpl(

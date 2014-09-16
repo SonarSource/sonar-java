@@ -584,11 +584,8 @@ public enum JavaGrammar implements GrammarRuleKey {
   private static void expressions(LexerlessGrammarBuilder b) {
     b.rule(IDENTIFIER_SUFFIX).is(
       b.firstOf(
-        b.sequence(
-          LBRK,
-          b.firstOf(
-            b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), // TODO This is actually DIM, followed by other DIMs, followed by .class
-            b.sequence(EXPRESSION, RBRK))), // TODO This is actually DIM_EXPR
+        b.sequence(b.oneOrMore(DIM), DOT, CLASS),
+        DIM_EXPR,
         ARGUMENTS,
         b.sequence(
           DOT,
