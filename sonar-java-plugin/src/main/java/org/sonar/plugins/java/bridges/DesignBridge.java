@@ -35,12 +35,12 @@ import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Violation;
 import org.sonar.api.utils.TimeProfiler;
 import org.sonar.graph.Cycle;
+import org.sonar.graph.DirectedGraph;
 import org.sonar.graph.Dsm;
 import org.sonar.graph.DsmTopologicalSorter;
 import org.sonar.graph.Edge;
 import org.sonar.graph.IncrementalCyclesAndFESSolver;
 import org.sonar.graph.MinimumFeedbackEdgeSetSolver;
-import org.sonar.java.JavaSquid;
 import org.sonar.java.ast.visitors.PackageVisitor;
 import org.sonar.java.checks.CycleBetweenPackagesCheck;
 import org.sonar.squidbridge.api.SourceCode;
@@ -56,7 +56,7 @@ import java.util.Set;
 public class DesignBridge extends Bridge {
 
   private static final Logger LOG = LoggerFactory.getLogger(DesignBridge.class);
-
+  private DirectedGraph<SourceCode, SourceCodeEdge> graph;
   /*
    * This index is shared between onProject() and onPackage(). It works because onProject() is executed before onPackage().
    */
@@ -69,6 +69,7 @@ public class DesignBridge extends Bridge {
 
   @Override
   public void onProject(SourceProject squidProject, Project sonarProject) {
+    graph = squid.getGraph();
     Set<SourceCode> squidPackages = squidProject.getChildren();
     if (squidPackages != null) {
       squidPackages = Sets.filter(squidPackages, new Predicate<SourceCode>() {
@@ -85,7 +86,7 @@ public class DesignBridge extends Bridge {
 
       savePackageDependencies(squidPackages);
 
-      IncrementalCyclesAndFESSolver<SourceCode> cyclesAndFESSolver = new IncrementalCyclesAndFESSolver<SourceCode>(squid, squidPackages);
+      IncrementalCyclesAndFESSolver<SourceCode> cyclesAndFESSolver = new IncrementalCyclesAndFESSolver<SourceCode>(graph, squidPackages);
       LOG.debug("{} cycles", cyclesAndFESSolver.getCycles().size());
 
       Set<Edge> feedbackEdges = cyclesAndFESSolver.getFeedbackEdgeSet();
@@ -98,7 +99,7 @@ public class DesignBridge extends Bridge {
       savePositiveMeasure(sonarProject, CoreMetrics.PACKAGE_TANGLES, tangles);
       savePositiveMeasure(sonarProject, CoreMetrics.PACKAGE_EDGES_WEIGHT, getEdgesWeight(squidPackages));
 
-      String dsmJson = serializeDsm(squid, squidPackages, feedbackEdges);
+      String dsmJson = serializeDsm(graph, squidPackages, feedbackEdges);
       Measure dsmMeasure = new Measure(CoreMetrics.DEPENDENCY_MATRIX, dsmJson).setPersistenceMode(PersistenceMode.DATABASE);
       context.saveMeasure(sonarProject, dsmMeasure);
 
@@ -119,7 +120,7 @@ public class DesignBridge extends Bridge {
 
       saveFileDependencies(squidFiles);
 
-      IncrementalCyclesAndFESSolver<SourceCode> cycleDetector = new IncrementalCyclesAndFESSolver<SourceCode>(squid, squidFiles);
+      IncrementalCyclesAndFESSolver<SourceCode> cycleDetector = new IncrementalCyclesAndFESSolver<SourceCode>(graph, squidFiles);
       Set<Cycle> cycles = cycleDetector.getCycles();
 
       MinimumFeedbackEdgeSetSolver solver = new MinimumFeedbackEdgeSetSolver(cycles);
@@ -131,13 +132,13 @@ public class DesignBridge extends Bridge {
       savePositiveMeasure(sonarPackage, CoreMetrics.FILE_TANGLES, tangles);
       savePositiveMeasure(sonarPackage, CoreMetrics.FILE_EDGES_WEIGHT, getEdgesWeight(squidFiles));
 
-      String dsmJson = serializeDsm(squid, squidFiles, feedbackEdges);
+      String dsmJson = serializeDsm(graph, squidFiles, feedbackEdges);
       context.saveMeasure(sonarPackage, new Measure(CoreMetrics.DEPENDENCY_MATRIX, dsmJson));
     }
   }
 
   private double getEdgesWeight(Collection<SourceCode> sourceCodes) {
-    List<SourceCodeEdge> edges = squid.getEdges(sourceCodes);
+    List<SourceCodeEdge> edges = graph.getEdges(sourceCodes);
     double total = 0.0;
     for (SourceCodeEdge edge : edges) {
       total += edge.getWeight();
@@ -145,8 +146,8 @@ public class DesignBridge extends Bridge {
     return total;
   }
 
-  private String serializeDsm(JavaSquid squid, Set<SourceCode> squidSources, Set<Edge> feedbackEdges) {
-    Dsm<SourceCode> dsm = new Dsm<SourceCode>(squid, squidSources, feedbackEdges);
+  private String serializeDsm(DirectedGraph<SourceCode, SourceCodeEdge> graph, Set<SourceCode> squidSources, Set<Edge> feedbackEdges) {
+    Dsm<SourceCode> dsm = new Dsm<SourceCode>(graph, squidSources, feedbackEdges);
     DsmTopologicalSorter.sort(dsm);
     return DsmSerializer.serialize(dsm, dependencyIndex, resourceIndex);
   }
@@ -156,7 +157,7 @@ public class DesignBridge extends Bridge {
    */
   public void savePackageDependencies(Set<SourceCode> squidPackages) {
     for (SourceCode squidPackage : squidPackages) {
-      for (SourceCodeEdge edge : squid.getOutgoingEdges(squidPackage)) {
+      for (SourceCodeEdge edge : graph.getOutgoingEdges(squidPackage)) {
         Dependency dependency = saveEdge(edge, context, null);
         if (dependency != null) {
           // save file dependencies
@@ -177,7 +178,7 @@ public class DesignBridge extends Bridge {
     for (Edge feedbackEdge : feedbackEdges) {
       SourceCode fromPackage = (SourcePackage) feedbackEdge.getFrom();
       SourceCode toPackage = (SourcePackage) feedbackEdge.getTo();
-      SourceCodeEdge edge = squid.getEdge(fromPackage, toPackage);
+      SourceCodeEdge edge = graph.getEdge(fromPackage, toPackage);
       for (SourceCodeEdge subEdge : edge.getRootEdges()) {
         Resource fromFile = resourceIndex.get(subEdge.getFrom());
         Resource toFile = resourceIndex.get(subEdge.getTo());
@@ -197,7 +198,7 @@ public class DesignBridge extends Bridge {
    */
   public void saveFileDependencies(Set<SourceCode> squidFiles) {
     for (SourceCode squidFile : squidFiles) {
-      for (SourceCodeEdge edge : squid.getOutgoingEdges(squidFile)) {
+      for (SourceCodeEdge edge : graph.getOutgoingEdges(squidFile)) {
         saveEdge(edge, context, null);
       }
     }

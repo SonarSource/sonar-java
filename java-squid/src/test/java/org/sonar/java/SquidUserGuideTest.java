@@ -145,9 +145,9 @@ public class SquidUserGuideTest {
     SourceCode collectionsPackage = squid.search("org/apache/commons/collections");
     SourceCode bufferPackage = squid.search("org/apache/commons/collections/buffer");
     SourceCode bidimapPackage = squid.search("org/apache/commons/collections/bidimap");
-    assertThat(squid.getEdge(bidimapPackage, collectionsPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
-    assertThat(squid.getEdge(collectionsPackage, bufferPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
-    assertThat(squid.getEdge(collectionsPackage, bufferPackage).getRootEdges().size()).isEqualTo(7);
+    assertThat(squid.getGraph().getEdge(bidimapPackage, collectionsPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(squid.getGraph().getEdge(collectionsPackage, bufferPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(squid.getGraph().getEdge(collectionsPackage, bufferPackage).getRootEdges().size()).isEqualTo(7);
   }
 
 }

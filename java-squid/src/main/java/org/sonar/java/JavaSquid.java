@@ -30,7 +30,6 @@ import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
 import org.sonar.api.utils.TimeProfiler;
 import org.sonar.graph.DirectedGraph;
-import org.sonar.graph.DirectedGraphAccessor;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
@@ -52,9 +51,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEdge>, SourceCodeSearchEngine {
+public class JavaSquid implements SourceCodeSearchEngine {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaSquid.class);
 
@@ -181,35 +179,6 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
 
   public DirectedGraph<SourceCode, SourceCodeEdge> getGraph() {
     return graph;
-  }
-
-  @Override
-  public SourceCodeEdge getEdge(SourceCode from, SourceCode to) {
-    return graph.getEdge(from, to);
-  }
-
-  @Override
-  public boolean hasEdge(SourceCode from, SourceCode to) {
-    return graph.hasEdge(from, to);
-  }
-
-  @Override
-  public Set<SourceCode> getVertices() {
-    return graph.getVertices();
-  }
-
-  @Override
-  public Collection<SourceCodeEdge> getOutgoingEdges(SourceCode from) {
-    return graph.getOutgoingEdges(from);
-  }
-
-  @Override
-  public Collection<SourceCodeEdge> getIncomingEdges(SourceCode to) {
-    return graph.getIncomingEdges(to);
-  }
-
-  public List<SourceCodeEdge> getEdges(Collection<SourceCode> sourceCodes) {
-    return graph.getEdges(sourceCodes);
   }
 
   @Override
