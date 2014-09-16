@@ -44,7 +44,6 @@ import org.sonar.squidbridge.api.Query;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceCodeEdge;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
-import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
@@ -211,10 +210,6 @@ public class JavaSquid implements DirectedGraphAccessor<SourceCode, SourceCodeEd
 
   public List<SourceCodeEdge> getEdges(Collection<SourceCode> sourceCodes) {
     return graph.getEdges(sourceCodes);
-  }
-
-  public Collection<SourceCode> search(QueryByType queryByType) {
-    return squidIndex.search(queryByType);
   }
 
   @Override
