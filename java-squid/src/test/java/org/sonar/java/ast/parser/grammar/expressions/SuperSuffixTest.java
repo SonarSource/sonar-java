@@ -29,10 +29,10 @@ public class SuperSuffixTest {
   @Test
   public void realLife() {
     assertThat(JavaGrammar.SUPER_SUFFIX)
-      .matches("(arguments)")
-      .matches(".field")
-      .matches(".method(arguments)")
-      .matches(".<T>method(arguments)");
+      .matches("super(arguments)")
+      .matches("super.field")
+      .matches("super.method(arguments)")
+      .matches("super.<T>method(arguments)");
   }
 
 }

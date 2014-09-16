@@ -590,29 +590,34 @@ public enum JavaGrammar implements GrammarRuleKey {
             b.sequence(RBRK, b.zeroOrMore(DIM), DOT, CLASS), // TODO This is actually DIM, followed by other DIMs, followed by .class
             b.sequence(EXPRESSION, RBRK))), // TODO This is actually DIM_EXPR
         ARGUMENTS,
-        b.sequence(DOT, b.firstOf(
-          CLASS,
-          EXPLICIT_GENERIC_INVOCATION,
-          THIS,
-          b.sequence(SUPER, ARGUMENTS),
-          b.sequence(NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR)))));
+        b.sequence(
+          DOT,
+          b.firstOf(
+            CLASS,
+            EXPLICIT_GENERIC_INVOCATION,
+            THIS,
+            b.sequence(SUPER, ARGUMENTS),
+            b.sequence(NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR)))));
     b.rule(EXPLICIT_GENERIC_INVOCATION).is(NON_WILDCARD_TYPE_ARGUMENTS, EXPLICIT_GENERIC_INVOCATION_SUFFIX);
     b.rule(NON_WILDCARD_TYPE_ARGUMENTS).is(LPOINT, TYPE, b.zeroOrMore(COMMA, TYPE), RPOINT);
     b.rule(EXPLICIT_GENERIC_INVOCATION_SUFFIX).is(
       b.firstOf(
-        b.sequence(SUPER, SUPER_SUFFIX),
+        SUPER_SUFFIX,
         b.sequence(JavaTokenType.IDENTIFIER, ARGUMENTS)));
-    b.rule(SELECTOR).is(b.firstOf(
-      b.sequence(DOT, JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS)),
-      b.sequence(DOT, EXPLICIT_GENERIC_INVOCATION),
-      b.sequence(DOT, THIS),
-      b.sequence(DOT, SUPER, SUPER_SUFFIX),
-      b.sequence(DOT, NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR),
-      DIM_EXPR));
-    b.rule(SUPER_SUFFIX).is(b.firstOf(
-      ARGUMENTS,
-      b.sequence(DOT, JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS)),
-      b.sequence(DOT, NON_WILDCARD_TYPE_ARGUMENTS, JavaTokenType.IDENTIFIER, ARGUMENTS)));
+    b.rule(SELECTOR).is(
+      b.firstOf(
+        b.sequence(DOT, JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS)),
+        b.sequence(DOT, EXPLICIT_GENERIC_INVOCATION),
+        b.sequence(DOT, THIS),
+        b.sequence(DOT, SUPER_SUFFIX),
+        b.sequence(DOT, NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR),
+        DIM_EXPR));
+    b.rule(SUPER_SUFFIX).is(
+      SUPER,
+      b.firstOf(
+        ARGUMENTS,
+        b.sequence(DOT, JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS)),
+        b.sequence(DOT, NON_WILDCARD_TYPE_ARGUMENTS, JavaTokenType.IDENTIFIER, ARGUMENTS)));
     b.rule(CREATED_NAME).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS),
       b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS)));
     b.rule(INNER_CREATOR).is(JavaTokenType.IDENTIFIER, CLASS_CREATOR_REST);

@@ -988,7 +988,7 @@ public class ActionGrammar {
 
   public ExpressionTree SUPER_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.SUPER_EXPRESSION)
-      .is(f.superExpression(b.invokeRule(JavaKeyword.SUPER), b.invokeRule(JavaGrammar.SUPER_SUFFIX)));
+      .is(f.superExpression(b.invokeRule(JavaGrammar.SUPER_SUFFIX)));
   }
 
   public ExpressionTree NEW_EXPRESSION() {
