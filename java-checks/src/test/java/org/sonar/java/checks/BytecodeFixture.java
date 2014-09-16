@@ -19,15 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Maps;
+import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
-import org.sonar.api.resources.Resource;
+import org.sonar.api.resources.Project;
+import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConfiguration;
-import org.sonar.java.JavaFilesCache;
 import org.sonar.java.JavaSquid;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
@@ -37,7 +36,9 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class BytecodeFixture {
 
@@ -52,49 +53,12 @@ public class BytecodeFixture {
     if (!sourceFile.getFile().isFile()) {
       throw new IllegalArgumentException("File '" + sourceFile + "' not found.");
     }
-
-    JavaResourceLocator resourceLocatorStub = new JavaResourceLocator() {
-      public Map<String, String> sourceFileCache = Maps.newHashMap();
-      public Map<String, Integer> methodStart = Maps.newHashMap();
-
-      @Override
-      public Resource findResourceByClassName(String className) {
-        return null;
-      }
-
-      @Override
-      public String findSourceFileKeyByClassName(String className) {
-        String name = className.replace('.', '/');
-        return sourceFileCache.get(name);
-      }
-
-      @Override
-      public Collection<String> classKeys() {
-        return sourceFileCache.keySet();
-      }
-
-      @Override
-      public Collection<File> classFilesToAnalyze() {
-        return Collections.emptyList();
-      }
-
-      @Override
-      public Integer getMethodStartLine(String fullyQualifiedMethodName) {
-        return methodStart.get(fullyQualifiedMethodName);
-      }
-
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        JavaFilesCache javaFilesCache = new JavaFilesCache();
-        javaFilesCache.scanFile(context);
-        for (String key : javaFilesCache.getResourcesCache().keySet()){
-          sourceFileCache.put(key, context.getFileKey());
-        }
-        methodStart.putAll(javaFilesCache.getMethodStartLines());
-      }
-    };
-
-    JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), resourceLocatorStub, visitor);
+    Project project = mock(Project.class);
+    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
+    when(project.getFileSystem()).thenReturn(pfs);
+    when(pfs.getBasedir()).thenReturn(baseDir);
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, mock(NoSonarFilter.class));
+    JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), javaResourceLocator, visitor);
     javaSquid.scan(Collections.singleton(sourceFile), Collections.<InputFile>emptyList(), Collections.singleton(bytecodeFile));
 
     Collection<SourceCode> sources = javaSquid.getIndex().search(new QueryByType(SourceFile.class));

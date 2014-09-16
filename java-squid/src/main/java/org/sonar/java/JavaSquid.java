@@ -26,8 +26,10 @@ import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.design.Dependency;
 import org.sonar.api.resources.InputFile;
 import org.sonar.api.resources.InputFileUtils;
+import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.TimeProfiler;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.ast.AstScanner;
@@ -41,7 +43,6 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.Query;
 import org.sonar.squidbridge.api.SourceCode;
-import org.sonar.squidbridge.api.SourceCodeEdge;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
@@ -60,7 +61,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
   private final AstScanner astScanner;
   private final AstScanner astScannerForTests;
   private final BytecodeScanner bytecodeScanner;
-  private final DirectedGraph<SourceCode, SourceCodeEdge> graph = new DirectedGraph<SourceCode, SourceCodeEdge>();
+  private final DirectedGraph<Resource, Dependency> graph = new DirectedGraph<Resource, Dependency>();
 
   private boolean bytecodeScanned = false;
 
@@ -177,7 +178,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
     return squidIndex;
   }
 
-  public DirectedGraph<SourceCode, SourceCodeEdge> getGraph() {
+  public DirectedGraph<Resource, Dependency> getGraph() {
     return graph;
   }
 

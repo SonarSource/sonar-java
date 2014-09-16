@@ -24,6 +24,7 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.java.JavaSquid;
+import org.sonar.java.bytecode.visitor.DSMMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,15 +44,16 @@ public final class BridgeFactory {
   }
 
   public static List<Bridge> create(boolean bytecodeScanned, boolean skipPackageDesignAnalysis, SensorContext context, CheckFactory checkFactory,
-                                    ResourceIndex resourceIndex, JavaSquid squid, RulesProfile profile) {
+                                    ResourceIndex resourceIndex, JavaSquid squid, RulesProfile profile, DSMMapping DSMMapping) {
     List<Bridge> result = new ArrayList<Bridge>();
     for (Bridge bridge : create(skipPackageDesignAnalysis)) {
       bridge.setCheckFactory(checkFactory);
       if (!bridge.needsBytecode() || bytecodeScanned) {
         bridge.setContext(context);
-        bridge.setSquid(squid);
+        bridge.setGraph(squid.getGraph());
         bridge.setResourceIndex(resourceIndex);
         bridge.setProfile(profile);
+        bridge.setDSMMapping(DSMMapping);
         result.add(bridge);
       }
     }

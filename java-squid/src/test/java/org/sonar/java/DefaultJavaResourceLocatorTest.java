@@ -17,13 +17,12 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java;
+package org.sonar.java;
 
 import org.junit.Test;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
-import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 
 import java.io.File;
@@ -42,14 +41,14 @@ public class DefaultJavaResourceLocatorTest {
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, mock(NoSonarFilter.class));
-    JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/plugins/java/DefaultJavaResourceLocatorTest.java"), new VisitorsBridge(javaResourceLocator));
+    JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java"), new VisitorsBridge(javaResourceLocator));
 
-    assertThat(javaResourceLocator.resourcesCache.keySet()).hasSize(5);
-    assertThat(javaResourceLocator.resourcesCache.keySet()).contains("org/sonar/plugins/java/DefaultJavaResourceLocatorTest");
-    assertThat(javaResourceLocator.resourcesCache.keySet()).contains("org/sonar/plugins/java/DefaultJavaResourceLocatorTest$A");
-    assertThat(javaResourceLocator.resourcesCache.keySet()).contains("org/sonar/plugins/java/DefaultJavaResourceLocatorTest$A$I");
-    assertThat(javaResourceLocator.resourcesCache.keySet()).contains("org/sonar/plugins/java/DefaultJavaResourceLocatorTest$A$1B");
-    assertThat(javaResourceLocator.resourcesCache.keySet()).contains("org/sonar/plugins/java/DefaultJavaResourceLocatorTest$A$1B$1");
+    assertThat(javaResourceLocator.resourcesByClass.keySet()).hasSize(5);
+    assertThat(javaResourceLocator.resourcesByClass.keySet()).contains("org/sonar/java/DefaultJavaResourceLocatorTest");
+    assertThat(javaResourceLocator.resourcesByClass.keySet()).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A");
+    assertThat(javaResourceLocator.resourcesByClass.keySet()).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$I");
+    assertThat(javaResourceLocator.resourcesByClass.keySet()).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$1B");
+    assertThat(javaResourceLocator.resourcesByClass.keySet()).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$1B$1");
 
   }
   static class A {

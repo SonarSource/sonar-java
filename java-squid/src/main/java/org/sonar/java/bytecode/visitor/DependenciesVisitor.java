@@ -19,60 +19,73 @@
  */
 package org.sonar.java.bytecode.visitor;
 
+import org.sonar.api.design.Dependency;
+import org.sonar.api.resources.Resource;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmEdge;
-import org.sonar.squidbridge.api.SourceCode;
-import org.sonar.squidbridge.api.SourceCodeEdge;
-import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
-import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import javax.annotation.Nullable;
 
 public class DependenciesVisitor extends BytecodeVisitor {
 
   @Nullable
-  private SourceFile fromSourceFile;
-  private final DirectedGraph<SourceCode, SourceCodeEdge> graph;
+  private Resource fromResource;
+  private final DirectedGraph<Resource, Dependency> graph;
+  private DSMMapping dsmMapping;
 
-  public DependenciesVisitor(DirectedGraph<SourceCode, SourceCodeEdge> graph) {
+  public DependenciesVisitor(DirectedGraph<Resource, Dependency> graph) {
     this.graph = graph;
   }
 
   @Override
+  public void setJavaResourceLocator(JavaResourceLocator javaResourceLocator) {
+    dsmMapping = javaResourceLocator.getDSMMapping();
+    super.setJavaResourceLocator(javaResourceLocator);
+  }
+
+  @Override
   public void visitClass(AsmClass asmClass) {
-    fromSourceFile = getSourceFile(asmClass);
+    fromResource = getResource(asmClass);
   }
 
   @Override
   public void visitEdge(AsmEdge edge) {
     AsmClass toAsmClass = edge.getTargetAsmClass();
-    SourceFile toSourceFile = getSourceFile(toAsmClass);
-    SourceCodeEdge fileEdge = createEdge(fromSourceFile, toSourceFile, null);
-    if(fromSourceFile != null && toSourceFile != null) {
-      createEdge(fromSourceFile.getParent(), toSourceFile.getParent(), fileEdge);
+    Resource toResource = getResource(toAsmClass);
+    Dependency fileEdge = createDependency(fromResource, toResource, null);
+    if (fromResource != null && toResource != null) {
+      createDependency(fromResource.getParent(), toResource.getParent(), fileEdge);
     }
   }
 
-  private SourceCodeEdge createEdge(@Nullable SourceCode from, @Nullable SourceCode to, @Nullable SourceCodeEdge rootEdge) {
-    SourceCodeEdge parentEdge = null;
+
+  private Dependency createDependency(@Nullable Resource from, @Nullable Resource to, @Nullable Dependency subDependency) {
+    Dependency dependency = null;
     if (canWeLinkNodes(from, to)) {
-      parentEdge = graph.getEdge(from, to);
-      if (parentEdge == null) {
-        parentEdge = new SourceCodeEdge(from, to, SourceCodeEdgeUsage.USES);
-        graph.addEdge(parentEdge);
+      dependency = graph.getEdge(from, to);
+      if (dependency == null) {
+        dependency = new Dependency(from, to).setUsage("USES");
+        graph.addEdge(dependency);
       }
-      if(rootEdge == null) {
-        parentEdge.addRootEdge(parentEdge);
-      } else {
-        parentEdge.addRootEdge(rootEdge);
+      if (subDependency != null) {
+        if (!dsmMapping.getSubDependencies(dependency).contains(subDependency)) {
+          dsmMapping.addSubDependency(dependency, subDependency);
+          dependency.setWeight(dependency.getWeight() + 1);
+          subDependency.setParent(dependency);
+        }
       }
     }
-    return parentEdge;
+    return dependency;
   }
 
-  private boolean canWeLinkNodes(@Nullable SourceCode from, @Nullable SourceCode to) {
+  private boolean canWeLinkNodes(@Nullable Resource from, @Nullable Resource to) {
     return from != null && to != null && !from.equals(to);
+  }
+
+  private Resource getResource(AsmClass asmClass) {
+    return javaResourceLocator.findResourceByClassName(asmClass.getInternalName());
   }
 
   @Override

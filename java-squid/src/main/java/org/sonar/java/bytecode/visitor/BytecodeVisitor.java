@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 public abstract class BytecodeVisitor implements CodeVisitor {
 
   SquidIndex index;
-  private JavaResourceLocator javaResourceLocator;
+  JavaResourceLocator javaResourceLocator;
 
   public void visitClass(AsmClass asmClass) {
   }

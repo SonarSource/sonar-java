@@ -19,176 +19,145 @@
  */
 package org.sonar.java.bytecode;
 
-import com.google.common.collect.Maps;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sonar.api.checks.NoSonarFilter;
+import org.sonar.api.design.Dependency;
+import org.sonar.api.resources.Directory;
+import org.sonar.api.resources.Project;
+import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
 import org.sonar.graph.DirectedGraph;
+import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConfiguration;
-import org.sonar.java.JavaFilesCache;
 import org.sonar.java.JavaSquid;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.squidbridge.api.SourceCode;
-import org.sonar.squidbridge.api.SourceCodeEdge;
-import org.sonar.squidbridge.api.SourceCodeEdgeUsage;
-import org.sonar.squidbridge.indexer.SquidIndex;
+import org.sonar.java.bytecode.visitor.DSMMapping;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
+import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class BytecodeVisitorsTest {
 
-  private static SquidIndex index;
-  private static DirectedGraph<SourceCode, SourceCodeEdge> graph;
+  private static DirectedGraph<Resource, Dependency> graph;
 
-  static SourceCode todo;
-  static SourceCode fixme;
-  static SourceCode file;
-  static SourceCode tag;
-  static SourceCode tagFile;
-  static SourceCode line;
-  static SourceCode sourceFile;
-  static SourceCode language;
-  static SourceCode tagName;
-  static SourceCode tagException;
-  static SourceCode pacTag;
-  static SourceCode pacImpl;
+  static Resource todo;
+  static Resource fixme;
+  static Resource file;
+  static Resource tag;
+  static Resource tagFile;
+  static Resource line;
+  static Resource sourceFile;
+  static Resource language;
+  static Resource tagName;
+  static Resource tagException;
+  static Resource pacTag;
+  static Resource pacImpl;
+  static DSMMapping dsmMapping;
 
   @BeforeClass
   public static void setup() {
     JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
-    JavaResourceLocator javaResourceLocator = new JavaResourceLocator() {
-      public Map<String, String> sourceFileCache = Maps.newHashMap();
-      @Override
-      public Resource findResourceByClassName(String className) {
-        return null;
-      }
-
-      @Override
-      public String findSourceFileKeyByClassName(String className) {
-        String name = className.replace('.', '/');
-        return sourceFileCache.get(name);
-      }
-
-      @Override
-      public Collection<String> classKeys() {
-        return sourceFileCache.keySet();
-      }
-
-      @Override
-      public Collection<File> classFilesToAnalyze() {
-        return Collections.emptyList();
-      }
-
-      @Override
-      public Integer getMethodStartLine(String fullyQualifiedMethodName) {
-        return null;
-      }
-
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        JavaFilesCache javaFilesCache = new JavaFilesCache();
-        javaFilesCache.scanFile(context);
-        for (String key : javaFilesCache.getResourcesCache().keySet()){
-          sourceFileCache.put(key, context.getFileKey());
-        }
-      }
-    };
+    Project project = mock(Project.class);
+    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
+    File baseDir = new File("src/test/files/bytecode/src");
+    when(project.getFileSystem()).thenReturn(pfs);
+    when(pfs.getBasedir()).thenReturn(baseDir);
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, mock(NoSonarFilter.class));
     JavaSquid squid = new JavaSquid(conf, javaResourceLocator);
     squid.scanDirectories(
         Collections.singleton(new File("src/test/files/bytecode/src")),
         Collections.singleton(new File("src/test/files/bytecode/bin")));
-    index = squid.getIndex();
     graph = squid.getGraph();
-
-    tag = index.search("tags/Tag.java");
-    tagFile = index.search("tags/Tag.java");
-    file = index.search("tags/File.java");
-    line = index.search("tags/Line.java");
-    tagName = index.search("tags/TagName.java");
-    tagException = index.search("tags/TagException.java");
-    language = index.search("tags/Language.java");
-    sourceFile = index.search("tags/SourceFile.java");
-    todo = index.search("tags/impl/Todo.java");
-    fixme = index.search("tags/impl/FixMe.java");
-    pacTag = index.search("tags");
-    pacImpl = index.search("tags/impl");
+    dsmMapping = javaResourceLocator.getDSMMapping();
+    tag = findResource("tags/Tag.java");
+    tagFile = findResource("tags/Tag.java");
+    file = findResource("tags/File.java");
+    line = findResource("tags/Line.java");
+    tagName = findResource("tags/TagName.java");
+    tagException = findResource("tags/TagException.java");
+    language = findResource("tags/Language.java");
+    sourceFile = findResource("tags/SourceFile.java");
+    todo = findResource("tags/impl/Todo.java");
+    fixme = findResource("tags/impl/FixMe.java");
+    pacTag = findResource("tags");
+    pacImpl = findResource("tags/impl");
   }
 
   @Test
   public void testExtendsRelationShips() {
-    assertThat(graph.getEdge(sourceFile, file).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(sourceFile, file).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testClassDefinitionWithGenerics() {
-    assertThat(graph.getEdge(todo, language).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo, language).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testImplementsRelationShips() {
-    assertThat(graph.getEdge(todo, tag).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo, tag).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testLdcRelationShips() {
-    assertThat(graph.getEdge(tagName, tagException).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(tagName, tagException).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testFieldRelationShip() {
-    assertThat(graph.getEdge(todo, file).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo, file).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testFieldRelationShipWithGenerics() {
-    assertThat(graph.getEdge(todo, line).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo, line).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testMethodReturnType() {
-    assertThat(graph.getEdge(todo, tagName).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo, tagName).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testMethodArgs() {
-    assertThat(graph.getEdge(todo, sourceFile).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo, sourceFile).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testMethodException() {
-    assertThat(graph.getEdge(todo, tagException).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(todo, tagException).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testAccessFieldOfAnObject() {
-    assertThat(graph.getEdge(fixme, sourceFile).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(fixme, sourceFile).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testTypeInsn() {
-    assertThat(graph.getEdge(fixme, file).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(fixme, file).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testAccessMethodOfAnObject() {
-    assertThat(graph.getEdge(fixme, tagException).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(fixme, tagException).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testTryCatchBlock() {
-    assertThat(graph.getEdge(sourceFile, tagException).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(sourceFile, tagException).getUsage()).isEqualTo("USES");
   }
 
   @Test
   public void testPackageDependencies() {
-    assertThat(graph.getEdge(pacImpl, pacTag).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(pacImpl, pacTag).getUsage()).isEqualTo("USES");
     assertThat(graph.getEdge(pacImpl, pacTag).getWeight()).isEqualTo(13);
   }
 
@@ -200,7 +169,23 @@ public class BytecodeVisitorsTest {
 
   @Test
   public void testFileDependencies() {
-    assertThat(graph.getEdge(sourceFile, tagException).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    assertThat(graph.getEdge(sourceFile, tagException).getUsage()).isEqualTo("USES");
   }
 
+
+  private static Resource findResource(String resource) {
+    Set<Resource> directories = dsmMapping.directories();
+    for (Resource directory : directories) {
+      if (directory.getKey().endsWith(resource)) {
+        return directory;
+      }
+      Collection<Resource> files = dsmMapping.files((Directory) directory);
+      for (Resource file : files) {
+        if (file.getKey().endsWith(resource)) {
+          return file;
+        }
+      }
+    }
+    return null;
+  }
 }

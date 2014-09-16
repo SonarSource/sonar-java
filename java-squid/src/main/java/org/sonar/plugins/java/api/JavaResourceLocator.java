@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api;
 import com.google.common.annotations.Beta;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.resources.Resource;
+import org.sonar.java.bytecode.visitor.DSMMapping;
 
 import javax.annotation.CheckForNull;
 import java.io.File;
@@ -43,4 +44,6 @@ public interface JavaResourceLocator extends BatchExtension, JavaFileScanner {
   Collection<File> classFilesToAnalyze();
 
   Integer getMethodStartLine(String fullyQualifiedMethodName);
+
+  DSMMapping getDSMMapping();
 }

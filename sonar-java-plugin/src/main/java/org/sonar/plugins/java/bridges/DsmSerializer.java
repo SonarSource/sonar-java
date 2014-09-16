@@ -19,23 +19,19 @@
  */
 package org.sonar.plugins.java.bridges;
 
+import org.sonar.api.design.Dependency;
 import org.sonar.api.resources.Resource;
 import org.sonar.graph.Dsm;
 import org.sonar.graph.DsmCell;
-import org.sonar.squidbridge.api.SourceCode;
 
 public final class DsmSerializer {
 
   private Dsm dsm;
   private StringBuilder json;
-  private DependencyIndex dependencyIndex;
-  private ResourceIndex resourceIndex;
 
-  private DsmSerializer(Dsm<SourceCode> dsm, DependencyIndex dependencyIndex, ResourceIndex resourceIndex) {
+  private DsmSerializer(Dsm<Resource> dsm) {
     this.dsm = dsm;
     this.json = new StringBuilder();
-    this.dependencyIndex = dependencyIndex;
-    this.resourceIndex = resourceIndex;
   }
 
   private String serialize() {
@@ -55,8 +51,7 @@ public final class DsmSerializer {
   }
 
   private void serializeRow(int y) {
-    SourceCode squidResource = (SourceCode) dsm.getVertex(y);
-    Resource sonarResource = resourceIndex.get(squidResource);
+    Resource sonarResource = (Resource) dsm.getVertex(y);
 
     json.append("{");
     if (sonarResource != null) {
@@ -83,14 +78,14 @@ public final class DsmSerializer {
     json.append('{');
     if (cell.getEdge() != null && cell.getWeight() > 0) {
       json.append("\"i\":");
-      json.append(dependencyIndex.get(cell.getEdge()).getId());
+      json.append(((Dependency) cell.getEdge()).getId());
       json.append(",\"w\":");
       json.append(cell.getWeight());
     }
     json.append('}');
   }
 
-  public static String serialize(Dsm<SourceCode> dsm, DependencyIndex dependencyIndex, ResourceIndex resourceIndex) {
-    return new DsmSerializer(dsm, dependencyIndex, resourceIndex).serialize();
+  public static String serialize(Dsm<Resource> dsm) {
+    return new DsmSerializer(dsm).serialize();
   }
 }

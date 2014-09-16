@@ -21,10 +21,11 @@ package org.sonar.plugins.java.bridges;
 
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
+import org.sonar.api.design.Dependency;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
-import org.sonar.java.JavaSquid;
+import org.sonar.graph.DirectedGraph;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourcePackage;
 import org.sonar.squidbridge.api.SourceProject;
@@ -34,18 +35,20 @@ import org.sonar.squidbridge.api.SourceProject;
  */
 public abstract class Bridge {
 
-  JavaSquid squid;
+
+  DirectedGraph<Resource, Dependency> graph;
   ResourceIndex resourceIndex;
   SensorContext context;
   CheckFactory checkFactory;
   RulesProfile profile;
+  org.sonar.java.bytecode.visitor.DSMMapping DSMMapping;
 
   public boolean needsBytecode() {
     return false;
   }
 
-  protected final void setSquid(JavaSquid squid) {
-    this.squid = squid;
+  public void setGraph(DirectedGraph<Resource, Dependency> graph) {
+    this.graph = graph;
   }
 
   protected final void setCheckFactory(CheckFactory checkFactory) {
@@ -76,4 +79,7 @@ public abstract class Bridge {
 
   }
 
+  public void setDSMMapping(org.sonar.java.bytecode.visitor.DSMMapping DSMMapping) {
+    this.DSMMapping = DSMMapping;
+  }
 }

@@ -27,6 +27,7 @@ import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaSquid;
+import org.sonar.java.bytecode.visitor.DSMMapping;
 import org.sonar.plugins.java.bridges.Bridge;
 import org.sonar.plugins.java.bridges.BridgeFactory;
 import org.sonar.plugins.java.bridges.ResourceIndex;
@@ -49,7 +50,7 @@ public class Bridges {
     this.settings = settings;
   }
 
-  public void save(SensorContext context, Project project, CheckFactory checkFactory, RulesProfile profile) {
+  public void save(SensorContext context, Project project, CheckFactory checkFactory, RulesProfile profile, DSMMapping DSMMapping) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     ResourceIndex resourceIndex = new ResourceIndex(skipPackageDesignAnalysis).loadSquidResources(squid, context, project);
     List<Bridge> bridges = BridgeFactory.create(
@@ -59,7 +60,8 @@ public class Bridges {
         checkFactory,
         resourceIndex,
         squid,
-        profile);
+        profile,
+        DSMMapping);
     saveProject(resourceIndex, bridges);
     savePackages(resourceIndex, bridges);
     saveFiles(resourceIndex, bridges);

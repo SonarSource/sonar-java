@@ -34,6 +34,7 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.scan.filesystem.FileQuery;
 import org.sonar.api.scan.filesystem.FileType;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
@@ -85,7 +86,7 @@ public class JavaSquidSensor implements Sensor {
     Measurer measurer = new Measurer(project, context, configuration.isAnalysePropertyAccessors());
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, checks.toArray(new CodeVisitor[checks.size()]));
     squid.scan(getSourceFiles(project), getTestFiles(project), getBytecodeFiles());
-    new Bridges(squid, settings).save(context, project, annotationCheckFactory, profile);
+    new Bridges(squid, settings).save(context, project, annotationCheckFactory, profile, javaResourceLocator.getDSMMapping());
   }
 
   private List<InputFile> getSourceFiles(Project project) {
