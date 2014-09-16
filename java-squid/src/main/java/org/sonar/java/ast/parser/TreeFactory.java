@@ -975,15 +975,15 @@ public class TreeFactory {
       children.build());
   }
 
-  public CaseGroupTreeImpl switchGroup(List<CaseLabelTreeImpl> labels, Optional<List<AstNode>> optionalBlockStatements) {
-    List<AstNode> blockStatements = optionalBlockStatements.isPresent() ? optionalBlockStatements.get() : Collections.<AstNode>emptyList();
+  public CaseGroupTreeImpl switchGroup(List<CaseLabelTreeImpl> labels, AstNode blockStatementsAstNode) {
+    List<AstNode> blockStatements = blockStatementsAstNode.getChildren();
 
     ImmutableList.Builder<StatementTree> builder = ImmutableList.builder();
     for (AstNode blockStatement : blockStatements) {
       builder.addAll(treeMaker.blockStatement(blockStatement));
     }
 
-    return new CaseGroupTreeImpl(labels, builder.build(), blockStatements);
+    return new CaseGroupTreeImpl(labels, builder.build(), blockStatementsAstNode);
   }
 
   public CaseLabelTreeImpl newCaseSwitchLabel(AstNode caseToken, ExpressionTree expression, AstNode colonToken) {

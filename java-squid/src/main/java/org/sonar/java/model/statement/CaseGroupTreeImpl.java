@@ -37,7 +37,7 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
   private final List<CaseLabelTreeImpl> labels;
   private final List<StatementTree> body;
 
-  public CaseGroupTreeImpl(List<CaseLabelTreeImpl> labels, List<StatementTree> body, List<AstNode> children) {
+  public CaseGroupTreeImpl(List<CaseLabelTreeImpl> labels, List<StatementTree> body, AstNode child) {
     super(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP);
     this.labels = Preconditions.checkNotNull(labels);
     this.body = Preconditions.checkNotNull(body);
@@ -45,9 +45,7 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
     for (CaseLabelTreeImpl label : labels) {
       addChild(label);
     }
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    addChild(child);
   }
 
   @Override

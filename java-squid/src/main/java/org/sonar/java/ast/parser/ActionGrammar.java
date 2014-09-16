@@ -619,7 +619,7 @@ public class ActionGrammar {
 
   public CaseGroupTreeImpl SWITCH_GROUP() {
     return b.<CaseGroupTreeImpl>nonterminal(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
-      .is(f.switchGroup(b.oneOrMore(SWITCH_LABEL()), b.zeroOrMore(b.invokeRule(JavaGrammar.BLOCK_STATEMENT))));
+      .is(f.switchGroup(b.oneOrMore(SWITCH_LABEL()), b.invokeRule(JavaGrammar.BLOCK_STATEMENTS)));
   }
 
   public CaseLabelTreeImpl SWITCH_LABEL() {
