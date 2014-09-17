@@ -75,7 +75,7 @@ public class BytecodeVisitorsTest {
         Collections.singleton(new File("src/test/files/bytecode/src")),
         Collections.singleton(new File("src/test/files/bytecode/bin")));
     graph = squid.getGraph();
-    dsmMapping = javaResourceLocator.getDSMMapping();
+    dsmMapping = javaResourceLocator.getDsmMapping();
     tag = findResource("tags/Tag.java");
     tagFile = findResource("tags/Tag.java");
     file = findResource("tags/File.java");

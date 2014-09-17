@@ -44,14 +44,13 @@ public final class BridgeFactory {
   }
 
   public static List<Bridge> create(boolean bytecodeScanned, boolean skipPackageDesignAnalysis, SensorContext context, CheckFactory checkFactory,
-                                    ResourceIndex resourceIndex, JavaSquid squid, RulesProfile profile, DSMMapping DSMMapping) {
+                                    JavaSquid squid, RulesProfile profile, DSMMapping DSMMapping) {
     List<Bridge> result = new ArrayList<Bridge>();
     for (Bridge bridge : create(skipPackageDesignAnalysis)) {
       bridge.setCheckFactory(checkFactory);
       if (!bridge.needsBytecode() || bytecodeScanned) {
         bridge.setContext(context);
         bridge.setGraph(squid.getGraph());
-        bridge.setResourceIndex(resourceIndex);
         bridge.setProfile(profile);
         bridge.setDSMMapping(DSMMapping);
         result.add(bridge);

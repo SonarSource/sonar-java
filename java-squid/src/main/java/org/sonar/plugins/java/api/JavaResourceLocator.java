@@ -45,5 +45,5 @@ public interface JavaResourceLocator extends BatchExtension, JavaFileScanner {
 
   Integer getMethodStartLine(String fullyQualifiedMethodName);
 
-  DSMMapping getDSMMapping();
+  DSMMapping getDsmMapping();
 }

@@ -50,18 +50,17 @@ public class Bridges {
     this.settings = settings;
   }
 
-  public void save(SensorContext context, Project project, CheckFactory checkFactory, RulesProfile profile, DSMMapping DSMMapping) {
+  public void save(SensorContext context, Project project, CheckFactory checkFactory, RulesProfile profile, DSMMapping dsmMapping) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
-    ResourceIndex resourceIndex = new ResourceIndex(skipPackageDesignAnalysis).loadSquidResources(squid, context, project);
     List<Bridge> bridges = BridgeFactory.create(
         squid.isBytecodeScanned(),
         skipPackageDesignAnalysis,
         context,
         checkFactory,
-        resourceIndex,
         squid,
         profile,
-        DSMMapping);
+        dsmMapping);
+    ResourceIndex resourceIndex = new ResourceIndex(skipPackageDesignAnalysis).loadSquidResources(squid, context, project);
     saveProject(resourceIndex, bridges);
     savePackages(resourceIndex, bridges);
     saveFiles(resourceIndex, bridges);

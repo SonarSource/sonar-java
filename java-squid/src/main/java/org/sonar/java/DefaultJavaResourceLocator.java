@@ -51,7 +51,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   Map<String, Resource> resourcesByClass;
   private Map<String, String> sourceFileByClass;
   private Map<String, Integer> methodStartLines;
-  private DSMMapping DSMMapping;
+  private DSMMapping dsmMapping;
 
   public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath, NoSonarFilter noSonarFilter) {
     this.project = project;
@@ -60,7 +60,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
     resourcesByClass = Maps.newHashMap();
     sourceFileByClass = Maps.newHashMap();
     methodStartLines = Maps.newHashMap();
-    DSMMapping = new DSMMapping();
+    dsmMapping = new DSMMapping();
   }
 
   @Override
@@ -68,7 +68,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
     String name = className.replace('.', '/');
     Resource resource = resourcesByClass.get(name);
     if (resource == null) {
-      LOG.warn("Class not found in resource cache : {}", className);
+      LOG.debug("Class not found in resource cache : {}", className);
     }
     return resource;
   }
@@ -106,8 +106,8 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   }
 
   @Override
-  public DSMMapping getDSMMapping() {
-    return DSMMapping;
+  public DSMMapping getDsmMapping() {
+    return dsmMapping;
   }
 
   @Override
@@ -119,7 +119,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
       if (currentResource == null) {
         currentResource = org.sonar.api.resources.File.fromIOFile(classIOFileEntry.getValue(), project);
         Preconditions.checkNotNull(currentResource, "resource not found : " + context.getFile().getName());
-        DSMMapping.addResource(currentResource);
+        dsmMapping.addResource(currentResource);
       }
       resourcesByClass.put(classIOFileEntry.getKey(), currentResource);
       if (context.getFileKey() != null) {

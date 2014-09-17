@@ -41,7 +41,7 @@ public class DependenciesVisitor extends BytecodeVisitor {
 
   @Override
   public void setJavaResourceLocator(JavaResourceLocator javaResourceLocator) {
-    dsmMapping = javaResourceLocator.getDSMMapping();
+    dsmMapping = javaResourceLocator.getDsmMapping();
     super.setJavaResourceLocator(javaResourceLocator);
   }
 
@@ -69,12 +69,10 @@ public class DependenciesVisitor extends BytecodeVisitor {
         dependency = new Dependency(from, to).setUsage("USES");
         graph.addEdge(dependency);
       }
-      if (subDependency != null) {
-        if (!dsmMapping.getSubDependencies(dependency).contains(subDependency)) {
-          dsmMapping.addSubDependency(dependency, subDependency);
-          dependency.setWeight(dependency.getWeight() + 1);
-          subDependency.setParent(dependency);
-        }
+      if (subDependency != null && !dsmMapping.getSubDependencies(dependency).contains(subDependency)) {
+        dsmMapping.addSubDependency(dependency, subDependency);
+        dependency.setWeight(dependency.getWeight() + 1);
+        subDependency.setParent(dependency);
       }
     }
     return dependency;

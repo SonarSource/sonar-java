@@ -97,7 +97,7 @@ public class SquidUserGuideTest {
       }
 
       @Override
-      public DSMMapping getDSMMapping() {
+      public DSMMapping getDsmMapping() {
         return null;
       }
 

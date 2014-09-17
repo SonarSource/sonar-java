@@ -37,7 +37,6 @@ public abstract class Bridge {
 
 
   DirectedGraph<Resource, Dependency> graph;
-  ResourceIndex resourceIndex;
   SensorContext context;
   CheckFactory checkFactory;
   RulesProfile profile;
@@ -57,10 +56,6 @@ public abstract class Bridge {
 
   public void setProfile(RulesProfile profile) {
     this.profile = profile;
-  }
-
-  protected final void setResourceIndex(ResourceIndex resourceIndex) {
-    this.resourceIndex = resourceIndex;
   }
 
   protected final void setContext(SensorContext context) {
