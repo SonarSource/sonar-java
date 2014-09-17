@@ -1929,28 +1929,27 @@ public class TreeFactory {
       children.add(0, (AstNode) expression);
       return new MethodInvocationTreeImpl(expression, (ArgumentListTreeImpl) superSuffixNode.getFirstChild(JavaGrammar.ARGUMENTS),
         children.toArray(new AstNode[0]));
-    } else if (superSuffixNode.hasDirectChildren(JavaGrammar.MEMBER_SELECT)) {
-      // super.field
-      AstNode memberSelectAstNode = superSuffixNode.getFirstChild(JavaGrammar.MEMBER_SELECT);
+    } else if (superSuffixNode.hasDirectChildren(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION)) {
+      AstNode memberSelectOrMethodInvocationAstNode = superSuffixNode.getFirstChild(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION);
 
-      children.add(0, (AstNode) expression);
-      return new MemberSelectExpressionTreeImpl(expression, treeMaker.identifier(memberSelectAstNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-        children.toArray(new AstNode[0]));
-    } else if (superSuffixNode.hasDirectChildren(JavaGrammar.METHOD_INVOCATION)) {
-      // super.method(arguments)
-      // super.<T>method(arguments)
-      // TODO typeArguments
+      if (memberSelectOrMethodInvocationAstNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
+        // super.method(arguments)
+        // super.<T>method(arguments)
+        // TODO typeArguments
+        MemberSelectExpressionTreeImpl memberSelect = new MemberSelectExpressionTreeImpl(
+          expression, treeMaker.identifier(memberSelectOrMethodInvocationAstNode.getFirstChild(JavaTokenType.IDENTIFIER)),
+          (AstNode) expression);
 
-      AstNode methodInocationAstNode = superSuffixNode.getFirstChild(JavaGrammar.METHOD_INVOCATION);
+        children.add(0, memberSelect);
 
-      MemberSelectExpressionTreeImpl memberSelect = new MemberSelectExpressionTreeImpl(
-        expression, treeMaker.identifier(methodInocationAstNode.getFirstChild(JavaTokenType.IDENTIFIER)),
-        (AstNode) expression);
-
-      children.add(0, memberSelect);
-
-      return new MethodInvocationTreeImpl(memberSelect, (ArgumentListTreeImpl) methodInocationAstNode.getFirstChild(JavaGrammar.ARGUMENTS),
-        children.toArray(new AstNode[0]));
+        return new MethodInvocationTreeImpl(memberSelect, (ArgumentListTreeImpl) memberSelectOrMethodInvocationAstNode.getFirstChild(JavaGrammar.ARGUMENTS),
+          children.toArray(new AstNode[0]));
+      } else {
+        // super.field
+        children.add(0, (AstNode) expression);
+        return new MemberSelectExpressionTreeImpl(expression, treeMaker.identifier(memberSelectOrMethodInvocationAstNode.getFirstChild(JavaTokenType.IDENTIFIER)),
+          children.toArray(new AstNode[0]));
+      }
     } else {
       throw new IllegalArgumentException();
     }
@@ -1987,8 +1986,8 @@ public class TreeFactory {
 
     AstNode identifierAstNode = selectorNode.getFirstChild(JavaKeyword.THIS);
     AstNode node = selectorNode;
-    if (identifierAstNode == null && selectorNode.hasDirectChildren(JavaGrammar.METHOD_INVOCATION, JavaGrammar.MEMBER_SELECT)) {
-      node = selectorNode.getFirstChild(JavaGrammar.METHOD_INVOCATION, JavaGrammar.MEMBER_SELECT);
+    if (identifierAstNode == null && selectorNode.hasDirectChildren(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION)) {
+      node = selectorNode.getFirstChild(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION);
       identifierAstNode = node.getFirstChild(JavaTokenType.IDENTIFIER);
     } else if (selectorNode.hasDirectChildren(JavaGrammar.SUPER_SUFFIX)) {
       identifierAstNode = selectorNode.getFirstChild(JavaGrammar.SUPER_SUFFIX).getFirstChild(JavaKeyword.SUPER);
@@ -2009,8 +2008,8 @@ public class TreeFactory {
       ExpressionTree result = new MemberSelectExpressionTreeImpl(expression, identifier,
         children.toArray(new AstNode[0]));
 
-      if (selectorNode.hasDirectChildren(JavaGrammar.METHOD_INVOCATION)) {
-        ArgumentListTreeImpl arguments = (ArgumentListTreeImpl) selectorNode.getFirstChild(JavaGrammar.METHOD_INVOCATION).getFirstChild(JavaGrammar.ARGUMENTS);
+      if (node.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
+        ArgumentListTreeImpl arguments = (ArgumentListTreeImpl) node.getFirstChild(JavaGrammar.ARGUMENTS);
         result = new MethodInvocationTreeImpl(result, arguments,
           (AstNode) result, arguments);
       } else if (selectorNode.hasDirectChildren(JavaGrammar.SUPER_SUFFIX)) {
