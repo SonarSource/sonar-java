@@ -590,6 +590,7 @@ public enum JavaGrammar implements GrammarRuleKey {
         b.sequence(b.oneOrMore(DIM), DOT, CLASS),
         DIM_EXPR,
         ARGUMENTS,
+        // TODO This looks similar to SELECTOR
         b.sequence(
           DOT,
           b.firstOf(
@@ -606,7 +607,9 @@ public enum JavaGrammar implements GrammarRuleKey {
         b.sequence(JavaTokenType.IDENTIFIER, ARGUMENTS)));
     b.rule(SELECTOR).is(
       b.firstOf(
-        b.sequence(DOT, JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS)),
+        METHOD_INVOCATION,
+        MEMBER_SELECT,
+        // TODO: Alternative with IDENTIFIER, ARUGMENTS is now consumed by METHOD_INVOCATION
         b.sequence(DOT, EXPLICIT_GENERIC_INVOCATION),
         b.sequence(DOT, THIS),
         b.sequence(DOT, SUPER_SUFFIX),
