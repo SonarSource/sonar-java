@@ -1726,6 +1726,24 @@ public class TreeFactory {
     return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), initializers.build(), children);
   }
 
+  public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(ExpressionTree qualifiedIdentifier, Optional<List<Tuple<AstNode, ExpressionTree>>> rests) {
+    ImmutableList.Builder<ExpressionTree> qualifiedIdentifiers = ImmutableList.builder();
+    List<AstNode> children = Lists.newArrayList();
+
+    qualifiedIdentifiers.add(qualifiedIdentifier);
+    children.add((AstNode) qualifiedIdentifier);
+
+    if (rests.isPresent()) {
+      for (Tuple<AstNode, ExpressionTree> rest : rests.get()) {
+        qualifiedIdentifiers.add(rest.second());
+        children.add(rest.first());
+        children.add((AstNode) rest.second());
+      }
+    }
+
+    return new QualifiedIdentifierListTreeImpl(qualifiedIdentifiers.build(), children);
+  }
+
   public ArrayAccessExpressionTreeImpl newArrayAccessExpression(Optional<List<AnnotationTreeImpl>> annotations, AstNode openBracketTokenAstNode, ExpressionTree index,
     AstNode closeBracketTokenAstNode) {
     InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(openBracketTokenAstNode);
@@ -1999,7 +2017,7 @@ public class TreeFactory {
 
       List<AstNode> children = Lists.newArrayList();
       children.add((AstNode) expression);
-      children.add(node.getFirstChild(JavaPunctuator.DOT));
+      children.add(selectorNode.getFirstChild(JavaPunctuator.DOT));
       if (node.hasDirectChildren(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
         children.add(node.getFirstChild(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS));
       }
@@ -2053,24 +2071,6 @@ public class TreeFactory {
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }
-  }
-
-  public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(ExpressionTree qualifiedIdentifier, Optional<List<Tuple<AstNode, ExpressionTree>>> rests) {
-    ImmutableList.Builder<ExpressionTree> qualifiedIdentifiers = ImmutableList.builder();
-    List<AstNode> children = Lists.newArrayList();
-
-    qualifiedIdentifiers.add(qualifiedIdentifier);
-    children.add((AstNode) qualifiedIdentifier);
-
-    if (rests.isPresent()) {
-      for (Tuple<AstNode, ExpressionTree> rest : rests.get()) {
-        qualifiedIdentifiers.add(rest.second());
-        children.add(rest.first());
-        children.add((AstNode) rest.second());
-      }
-    }
-
-    return new QualifiedIdentifierListTreeImpl(qualifiedIdentifiers.build(), children);
   }
 
 }

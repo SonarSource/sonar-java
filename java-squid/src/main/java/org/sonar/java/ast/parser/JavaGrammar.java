@@ -606,7 +606,7 @@ public enum JavaGrammar implements GrammarRuleKey {
         b.sequence(JavaTokenType.IDENTIFIER, ARGUMENTS)));
     b.rule(SELECTOR).is(
       b.firstOf(
-        MEMBER_SELECT_OR_METHOD_INVOCATION,
+        b.sequence(DOT, MEMBER_SELECT_OR_METHOD_INVOCATION),
         // TODO: Alternative with IDENTIFIER, ARUGMENTS is now consumed by METHOD_INVOCATION
         b.sequence(DOT, EXPLICIT_GENERIC_INVOCATION),
         b.sequence(DOT, THIS),
@@ -617,9 +617,9 @@ public enum JavaGrammar implements GrammarRuleKey {
       SUPER,
       b.firstOf(
         ARGUMENTS,
-        MEMBER_SELECT_OR_METHOD_INVOCATION));
+        b.sequence(DOT, MEMBER_SELECT_OR_METHOD_INVOCATION)));
 
-    b.rule(MEMBER_SELECT_OR_METHOD_INVOCATION).is(DOT, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS));
+    b.rule(MEMBER_SELECT_OR_METHOD_INVOCATION).is(b.optional(NON_WILDCARD_TYPE_ARGUMENTS), JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS));
 
     b.rule(CREATED_NAME).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS),
       b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS)));
