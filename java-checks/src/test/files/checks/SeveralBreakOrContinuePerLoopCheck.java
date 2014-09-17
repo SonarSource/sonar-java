@@ -55,7 +55,7 @@ class A {
         break;
     }
 
-    while(true){// Non-Compliant
+    while(true){//Compliant
       for (int i = 0; i < 42; i++) {
         continue;
       }

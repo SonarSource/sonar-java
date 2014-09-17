@@ -139,10 +139,6 @@ public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implemen
     if (!breakAndContinueCounter.isEmpty()) {
       count = breakAndContinueCounter.pop();
     }
-    if (!breakAndContinueCounter.isEmpty()) {
-      int pushBack = breakAndContinueCounter.pop() + count;
-      breakAndContinueCounter.push(pushBack);
-    }
     if (count > 1) {
       context.addIssue(tree, ruleKey, "Reduce the total number of break and continue statement in this loop to use at most one.");
     }

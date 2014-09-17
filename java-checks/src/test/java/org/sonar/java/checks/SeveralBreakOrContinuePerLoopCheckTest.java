@@ -41,8 +41,8 @@ public class SeveralBreakOrContinuePerLoopCheckTest {
         .next().atLine(15).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.")
         .next().atLine(20).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.")
         .next().atLine(41).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.")
-        .next().atLine(58).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.")
-        .next().atLine(67).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.");
+        .next().atLine(67).withMessage("Reduce the total number of break and continue statement in this loop to use at most one.")
+    ;
   }
 
 }
