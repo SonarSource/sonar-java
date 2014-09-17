@@ -19,75 +19,73 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
-import org.sonar.java.ast.parser.JavaGrammar;
+import com.google.common.collect.Lists;
+import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.ast.AstSelect;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-public class AbstractDeprecatedChecker extends SquidCheck<LexerlessGrammar> {
+import java.util.List;
+
+public class AbstractDeprecatedChecker extends SubscriptionBaseVisitor {
+
+
+  private PublicApiChecker publicApiChecker = new PublicApiChecker();
 
   @Override
-  public void init() {
-    subscribeTo(
-      JavaGrammar.TYPE_DECLARATION,
-      JavaGrammar.CLASS_BODY_DECLARATION,
-      JavaGrammar.INTERFACE_BODY_DECLARATION,
-      JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION,
-      JavaGrammar.BLOCK_STATEMENT);
+  public List<Kind> nodesToVisit() {
+    return Lists.newArrayList(PublicApiChecker.API_KINDS);
   }
 
-  public static boolean hasJavadocDeprecatedTag(AstNode node) {
-    Token token = node.getToken();
-    for (Trivia trivia : token.getTrivia()) {
-      String comment = trivia.getToken().getOriginalValue();
-      if (hasJavadocDeprecatedTag(comment)) {
-        return true;
-      }
-    }
-    return false;
+  public boolean hasJavadocDeprecatedTag(Tree tree) {
+    String javadoc = publicApiChecker.getApiJavadoc(tree);
+    return hasJavadocDeprecatedTag(javadoc);
   }
 
   public static boolean hasJavadocDeprecatedTag(String comment) {
-    return comment.startsWith("/**") && comment.contains("@deprecated");
+    return comment != null && comment.startsWith("/**") && comment.contains("@deprecated");
   }
 
-  public static boolean hasDeprecatedAnnotationExcludingLocalVariables(AstNode node) {
-    AstSelect annotations = node.select()
-      .children(JavaGrammar.MODIFIERS)
-      .children(Kind.ANNOTATION);
-
-    return hasDeprecatedAnnotation(annotations);
-  }
-
-  public static boolean hasDeprecatedAnnotationOnLocalVariables(AstNode node) {
-    AstSelect annotations = node.select()
-      .children(JavaGrammar.VARIABLE_DECLARATORS)
-      .children(JavaGrammar.MODIFIERS)
-      .children(Kind.ANNOTATION);
-
-    return hasDeprecatedAnnotation(annotations);
-  }
-
-  public static boolean hasDeprecatedAnnotation(Iterable<AstNode> query) {
-    for (AstNode annotationAstNode : query) {
-      AnnotationTree annotation = (AnnotationTree) annotationAstNode;
-      if (isDeprecated(annotation)) {
-        return true;
-      }
+  public boolean hasDeprecatedAnnotation(Tree tree) {
+    if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+      return hasDeprecatedAnnotation((ClassTree) tree);
+    } else if (tree.is(PublicApiChecker.METHOD_KINDS)) {
+      return hasDeprecatedAnnotation((MethodTree) tree);
+    } else if (tree.is(Kind.VARIABLE)) {
+      return hasDeprecatedAnnotation((VariableTree) tree);
     }
-
     return false;
   }
 
-  public static boolean isDeprecated(AnnotationTree tree) {
+  private boolean hasDeprecatedAnnotation(ClassTree classTree) {
+    return hasDeprecatedAnnotation(classTree.modifiers().annotations());
+  }
+
+  private boolean hasDeprecatedAnnotation(VariableTree variableTree) {
+    return hasDeprecatedAnnotation(variableTree.modifiers().annotations());
+  }
+
+  private boolean hasDeprecatedAnnotation(MethodTree methodTree) {
+    return hasDeprecatedAnnotation(methodTree.modifiers().annotations());
+  }
+
+  private boolean hasDeprecatedAnnotation(Iterable<AnnotationTree> annotations) {
+    for (AnnotationTree annotationTree : annotations) {
+      if (isDeprecated(annotationTree)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean isDeprecated(AnnotationTree tree) {
     return tree.annotationType().is(Kind.IDENTIFIER) &&
-      "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());
+        "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());
   }
 
 }

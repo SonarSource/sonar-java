@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,17 +35,18 @@ public class MissingDeprecatedCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MissingDeprecatedCheck.java"), new MissingDeprecatedCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MissingDeprecatedCheck.java"), new VisitorsBridge(new MissingDeprecatedCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Add the missing @deprecated Javadoc tag.")
-        .next().atLine(9)
+        .next().atLine(4).withMessage("Add the missing @deprecated Javadoc tag.")
+        .next().atLine(10)
         .next().atLine(16).withMessage("Add the missing @Deprecated annotation.")
-        .next().atLine(28)
-        .next().atLine(38)
-        .next().atLine(45)
-        .next().atLine(61)
+        .next().atLine(32).withMessage("Add the missing @deprecated Javadoc tag.")
+        .next().atLine(39)
+        .next().atLine(46)
+        .next().atLine(62)
         .next().atLine(69)
-        .next().atLine(87);
+        .next().atLine(83)
+        ;
   }
 
 }

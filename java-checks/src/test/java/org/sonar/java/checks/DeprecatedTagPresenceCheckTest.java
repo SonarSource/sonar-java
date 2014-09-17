@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,17 +35,17 @@ public class DeprecatedTagPresenceCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/DeprecatedTagPresenceCheck.java"), new DeprecatedTagPresenceCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/DeprecatedTagPresenceCheck.java"), new VisitorsBridge(new DeprecatedTagPresenceCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Do not forget to remove this deprecated code someday.")
-        .next().atLine(9)
+        .next().atLine(4).withMessage("Do not forget to remove this deprecated code someday.")
+        .next().atLine(10)
         .next().atLine(16)
-        .next().atLine(23)
-        .next().atLine(28)
-        .next().atLine(38)
-        .next().atLine(45)
-        .next().atLine(52)
-        .next().atLine(61);
+        .next().atLine(25)
+        .next().atLine(32)
+        .next().atLine(39)
+        .next().atLine(46)
+        .next().atLine(53)
+        .next().atLine(62);
   }
 
 }

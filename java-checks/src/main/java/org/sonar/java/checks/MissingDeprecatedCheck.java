@@ -19,41 +19,59 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.Deque;
+import java.util.LinkedList;
 
 @Rule(
-  key = "MissingDeprecatedCheck",
-  priority = Priority.MAJOR)
+    key = "MissingDeprecatedCheck",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
-  private boolean classOrInterfaceIsDeprecated = false;
+  private Deque<Tree> currentParent = new LinkedList<Tree>();
+  private Deque<Boolean> classOrInterfaceIsDeprecated = new LinkedList<Boolean>();
 
   @Override
-  public void init() {
-    super.init();
-    subscribeTo(JavaGrammar.CLASS_DECLARATION, JavaGrammar.INTERFACE_DECLARATION);
-  }
-
-  @Override
-  public void visitNode(AstNode node) {
-    boolean hasDeprecatedAnnotation = hasDeprecatedAnnotationExcludingLocalVariables(node);
-    boolean hasJavadocDeprecatedTag = hasJavadocDeprecatedTag(node);
-    if(node.is(JavaGrammar.CLASS_DECLARATION, JavaGrammar.INTERFACE_DECLARATION)) {
-      classOrInterfaceIsDeprecated = hasDeprecatedAnnotation || hasJavadocDeprecatedTag;
-      return;
+  public void visitNode(Tree tree) {
+    boolean isLocalVar = false;
+    if(tree.is(Tree.Kind.VARIABLE)) {
+      isLocalVar = currentParent.peek().is(PublicApiChecker.METHOD_KINDS);
+    } else {
+      currentParent.push(tree);
     }
-    if(!classOrInterfaceIsDeprecated) {
+
+    boolean hasDeprecatedAnnotation = hasDeprecatedAnnotation(tree);
+    boolean hasJavadocDeprecatedTag = hasJavadocDeprecatedTag(tree);
+    if (currentClassNotDeprecated() && !isLocalVar) {
       if (hasDeprecatedAnnotation && !hasJavadocDeprecatedTag) {
-        getContext().createLineViolation(this, "Add the missing @deprecated Javadoc tag.", node);
+        addIssue(tree, "Add the missing @deprecated Javadoc tag.");
       } else if (hasJavadocDeprecatedTag && !hasDeprecatedAnnotation) {
-        getContext().createLineViolation(this, "Add the missing @Deprecated annotation.", node);
+        addIssue(tree, "Add the missing @Deprecated annotation.");
       }
     }
+    if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+      classOrInterfaceIsDeprecated.push(hasDeprecatedAnnotation || hasJavadocDeprecatedTag);
+    }
   }
 
+  private boolean currentClassNotDeprecated() {
+    return classOrInterfaceIsDeprecated.isEmpty() || !classOrInterfaceIsDeprecated.peek();
+  }
+
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (!tree.is(Tree.Kind.VARIABLE)) {
+      currentParent.pop();
+    }
+    if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+      classOrInterfaceIsDeprecated.pop();
+    }
+  }
 }

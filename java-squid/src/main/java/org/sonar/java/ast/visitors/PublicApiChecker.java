@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.Nullable;
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -175,6 +176,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
     return constructor.is(Tree.Kind.CONSTRUCTOR) && constructor.parameters().size() == 0 && constructor.block().body().size() == 0;
   }
 
+  @Nullable
   public String getApiJavadoc(Tree tree) {
     if (tree.is(API_KINDS)) {
       ModifiersTree modifiersTree = null;

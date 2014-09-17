@@ -19,21 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
-  key = "S1133",
-  priority = Priority.INFO)
+    key = "S1133",
+    priority = Priority.INFO)
 @BelongsToProfile(title = "Sonar way", priority = Priority.INFO)
 public class DeprecatedTagPresenceCheck extends AbstractDeprecatedChecker {
 
   @Override
-  public void visitNode(AstNode node) {
-    if (hasDeprecatedAnnotationExcludingLocalVariables(node) || hasDeprecatedAnnotationOnLocalVariables(node) || hasJavadocDeprecatedTag(node)) {
-      getContext().createLineViolation(this, "Do not forget to remove this deprecated code someday.", node);
+  public void visitNode(Tree tree) {
+    if (hasDeprecatedAnnotation(tree) || hasJavadocDeprecatedTag(tree)) {
+      addIssue(tree, "Do not forget to remove this deprecated code someday.");
     }
   }
 
