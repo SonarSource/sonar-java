@@ -297,7 +297,10 @@ public enum JavaGrammar implements GrammarRuleKey {
   MODIFIERS,
 
   ANNOTATION_ARGUMENTS,
-  INFERED_PARAMS;
+  INFERED_PARAMS,
+
+  MEMBER_SELECT,
+  METHOD_INVOCATION;
 
   public static LexerlessGrammarBuilder createGrammarBuilder() {
     LexerlessGrammarBuilder b = LexerlessGrammarBuilder.create();
@@ -613,8 +616,12 @@ public enum JavaGrammar implements GrammarRuleKey {
       SUPER,
       b.firstOf(
         ARGUMENTS,
-        b.sequence(DOT, JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS)),
-        b.sequence(DOT, NON_WILDCARD_TYPE_ARGUMENTS, JavaTokenType.IDENTIFIER, ARGUMENTS)));
+        METHOD_INVOCATION,
+        MEMBER_SELECT));
+
+    b.rule(MEMBER_SELECT).is(DOT, JavaTokenType.IDENTIFIER);
+    b.rule(METHOD_INVOCATION).is(DOT, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), JavaTokenType.IDENTIFIER, ARGUMENTS);
+
     b.rule(CREATED_NAME).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS),
       b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS)));
     b.rule(INNER_CREATOR).is(JavaTokenType.IDENTIFIER, CLASS_CREATOR_REST);
