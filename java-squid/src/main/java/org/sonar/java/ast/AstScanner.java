@@ -36,7 +36,6 @@ import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
-import org.sonar.squidbridge.api.SourceCodeTreeDecorator;
 import org.sonar.squidbridge.api.SourceProject;
 import org.sonar.squidbridge.indexer.SquidIndex;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -46,9 +45,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Replacement for {@link com.sonar.sslr.squid.AstScanner}.
- */
 public class AstScanner {
 
   private static final Logger LOG = LoggerFactory.getLogger(AstScanner.class);
@@ -76,13 +72,9 @@ public class AstScanner {
     SourceProject project = new SourceProject("Java Project");
     index.index(project);
     project.setSourceCodeIndexer(index);
-    VisitorContext context = new VisitorContext(project);
-    context.setCommentAnalyser(commentAnalyser);
 
     simpleScan(files);
 
-    SourceCodeTreeDecorator decorator = new SourceCodeTreeDecorator(project);
-    decorator.decorateWith(org.sonar.squidbridge.measures.Metric.values());
   }
 
   /**
