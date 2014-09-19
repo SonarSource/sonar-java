@@ -31,7 +31,7 @@ import org.sonar.graph.DirectedGraph;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
-import org.sonar.java.bytecode.visitor.DSMMapping;
+import org.sonar.java.bytecode.visitor.ResourceMapping;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -59,7 +59,7 @@ public class BytecodeVisitorsTest {
   static Resource tagException;
   static Resource pacTag;
   static Resource pacImpl;
-  static DSMMapping dsmMapping;
+  static ResourceMapping resourceMapping;
 
   @BeforeClass
   public static void setup() {
@@ -75,7 +75,7 @@ public class BytecodeVisitorsTest {
         Collections.singleton(new File("src/test/files/bytecode/src")),
         Collections.singleton(new File("src/test/files/bytecode/bin")));
     graph = squid.getGraph();
-    dsmMapping = javaResourceLocator.getDsmMapping();
+    resourceMapping = javaResourceLocator.getResourceMapping();
     tag = findResource("tags/Tag.java");
     tagFile = findResource("tags/Tag.java");
     file = findResource("tags/File.java");
@@ -174,12 +174,12 @@ public class BytecodeVisitorsTest {
 
 
   private static Resource findResource(String resource) {
-    Set<Resource> directories = dsmMapping.directories();
+    Set<Resource> directories = resourceMapping.directories();
     for (Resource directory : directories) {
       if (directory.getKey().endsWith(resource)) {
         return directory;
       }
-      Collection<Resource> files = dsmMapping.files((Directory) directory);
+      Collection<Resource> files = resourceMapping.files((Directory) directory);
       for (Resource file : files) {
         if (file.getKey().endsWith(resource)) {
           return file;

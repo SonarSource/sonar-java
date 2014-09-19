@@ -33,7 +33,7 @@ public class DependenciesVisitor extends BytecodeVisitor {
   @Nullable
   private Resource fromResource;
   private final DirectedGraph<Resource, Dependency> graph;
-  private DSMMapping dsmMapping;
+  private ResourceMapping resourceMapping;
 
   public DependenciesVisitor(DirectedGraph<Resource, Dependency> graph) {
     this.graph = graph;
@@ -41,7 +41,7 @@ public class DependenciesVisitor extends BytecodeVisitor {
 
   @Override
   public void setJavaResourceLocator(JavaResourceLocator javaResourceLocator) {
-    dsmMapping = javaResourceLocator.getDsmMapping();
+    resourceMapping = javaResourceLocator.getResourceMapping();
     super.setJavaResourceLocator(javaResourceLocator);
   }
 
@@ -69,8 +69,8 @@ public class DependenciesVisitor extends BytecodeVisitor {
         dependency = new Dependency(from, to).setUsage("USES");
         graph.addEdge(dependency);
       }
-      if (subDependency != null && !dsmMapping.getSubDependencies(dependency).contains(subDependency)) {
-        dsmMapping.addSubDependency(dependency, subDependency);
+      if (subDependency != null && !resourceMapping.getSubDependencies(dependency).contains(subDependency)) {
+        resourceMapping.addSubDependency(dependency, subDependency);
         dependency.setWeight(dependency.getWeight() + 1);
         subDependency.setParent(dependency);
       }

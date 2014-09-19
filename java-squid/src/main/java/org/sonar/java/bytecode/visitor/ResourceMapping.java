@@ -30,20 +30,29 @@ import org.sonar.api.resources.Resource;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
-public class DSMMapping {
+public class ResourceMapping {
 
   private Multimap<Directory, File> directories;
   private Multimap<Dependency, Dependency> subDependencies;
+  private Map<File, String> fileKeyByResource;
 
-  public DSMMapping() {
+  public ResourceMapping() {
     directories = ArrayListMultimap.create();
     subDependencies = ArrayListMultimap.create();
+    fileKeyByResource = new HashMap<File, String>();
   }
 
-  public void addResource(File resource) {
+  public void addResource(File resource, String fileKey) {
     directories.put(resource.getParent(), resource);
+    fileKeyByResource.put(resource, fileKey);
+  }
+
+  public String getFileKeyByResource(Resource resource) {
+    return fileKeyByResource.get(resource);
   }
 
   public Set<Resource> directories() {

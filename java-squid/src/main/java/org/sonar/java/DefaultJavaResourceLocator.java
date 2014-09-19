@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
-import org.sonar.java.bytecode.visitor.DSMMapping;
+import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -51,7 +51,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   Map<String, Resource> resourcesByClass;
   private Map<String, String> sourceFileByClass;
   private Map<String, Integer> methodStartLines;
-  private DSMMapping dsmMapping;
+  private ResourceMapping resourceMapping;
 
   public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath, NoSonarFilter noSonarFilter) {
     this.project = project;
@@ -60,7 +60,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
     resourcesByClass = Maps.newHashMap();
     sourceFileByClass = Maps.newHashMap();
     methodStartLines = Maps.newHashMap();
-    dsmMapping = new DSMMapping();
+    resourceMapping = new ResourceMapping();
   }
 
   @Override
@@ -106,21 +106,18 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   }
 
   @Override
-  public DSMMapping getDsmMapping() {
-    return dsmMapping;
+  public ResourceMapping getResourceMapping() {
+    return resourceMapping;
   }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     javaFilesCache.scanFile(context);
-    org.sonar.api.resources.File currentResource = null;
+    org.sonar.api.resources.File currentResource = org.sonar.api.resources.File.fromIOFile(context.getFile(), project);
+    Preconditions.checkNotNull(currentResource, "resource not found : " + context.getFile().getName());
+    resourceMapping.addResource(currentResource, context.getFileKey());
     for (Map.Entry<String, File> classIOFileEntry : javaFilesCache.getResourcesCache().entrySet()) {
-      if (currentResource == null) {
-        currentResource = org.sonar.api.resources.File.fromIOFile(classIOFileEntry.getValue(), project);
-        Preconditions.checkNotNull(currentResource, "resource not found : " + context.getFile().getName());
-        dsmMapping.addResource(currentResource);
-      }
       resourcesByClass.put(classIOFileEntry.getKey(), currentResource);
       if (context.getFileKey() != null) {
         sourceFileByClass.put(classIOFileEntry.getKey(), context.getFileKey());

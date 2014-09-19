@@ -30,7 +30,7 @@ import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
-import org.sonar.java.bytecode.visitor.DSMMapping;
+import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
@@ -97,7 +97,7 @@ public class SquidUserGuideTest {
       }
 
       @Override
-      public DSMMapping getDsmMapping() {
+      public ResourceMapping getResourceMapping() {
         return null;
       }
 

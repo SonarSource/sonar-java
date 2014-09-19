@@ -41,7 +41,7 @@ import org.sonar.graph.DsmTopologicalSorter;
 import org.sonar.graph.Edge;
 import org.sonar.graph.IncrementalCyclesAndFESSolver;
 import org.sonar.graph.MinimumFeedbackEdgeSetSolver;
-import org.sonar.java.bytecode.visitor.DSMMapping;
+import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.java.checks.CycleBetweenPackagesCheck;
 
 import java.util.Collection;
@@ -54,18 +54,18 @@ public class DesignBridge {
 
   private final SensorContext context;
   private final DirectedGraph<Resource, Dependency> graph;
-  private final DSMMapping dsmMapping;
+  private final ResourceMapping resourceMapping;
   private final CheckFactory checkFactory;
 
-  public DesignBridge(SensorContext context, DirectedGraph<Resource, Dependency> graph, DSMMapping dsmMapping, CheckFactory checkFactory) {
+  public DesignBridge(SensorContext context, DirectedGraph<Resource, Dependency> graph, ResourceMapping resourceMapping, CheckFactory checkFactory) {
     this.context = context;
     this.graph = graph;
-    this.dsmMapping = dsmMapping;
+    this.resourceMapping = resourceMapping;
     this.checkFactory = checkFactory;
   }
 
   public void saveDesign(Project sonarProject) {
-    Collection<Resource> directories = dsmMapping.directories();
+    Collection<Resource> directories = resourceMapping.directories();
     TimeProfiler profiler = new TimeProfiler(LOG).start("Package design analysis");
     LOG.debug("{} packages to analyze", directories.size());
 
@@ -101,7 +101,7 @@ public class DesignBridge {
   }
 
   private void onPackage(Resource sonarPackage) {
-    Collection<Resource> squidFiles = dsmMapping.files((Directory) sonarPackage);
+    Collection<Resource> squidFiles = resourceMapping.files((Directory) sonarPackage);
     if (squidFiles != null && !squidFiles.isEmpty()) {
 
       IncrementalCyclesAndFESSolver<Resource> cycleDetector = new IncrementalCyclesAndFESSolver<Resource>(graph, squidFiles);
@@ -143,7 +143,7 @@ public class DesignBridge {
       return;
     }
     for (Edge feedbackEdge : feedbackEdges) {
-      for (Dependency subDependency : dsmMapping.getSubDependencies((Dependency) feedbackEdge)) {
+      for (Dependency subDependency : resourceMapping.getSubDependencies((Dependency) feedbackEdge)) {
         Resource fromFile = subDependency.getFrom();
         Resource toFile = subDependency.getTo();
         Violation violation = Violation.create(rule, fromFile)

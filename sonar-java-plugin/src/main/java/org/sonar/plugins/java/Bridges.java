@@ -19,53 +19,55 @@
  */
 package org.sonar.plugins.java;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaSquid;
-import org.sonar.java.bytecode.visitor.DSMMapping;
+import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.bridges.ChecksBridge;
 import org.sonar.plugins.java.bridges.DesignBridge;
-import org.sonar.plugins.java.bridges.ResourceIndex;
-import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.indexer.QueryByType;
-
-import java.util.Collection;
 
 public class Bridges {
 
+  private static final Logger LOG = LoggerFactory.getLogger(Bridges.class);
   private final JavaSquid squid;
   private final Settings settings;
+
 
   public Bridges(JavaSquid squid, Settings settings) {
     this.squid = squid;
     this.settings = settings;
   }
 
-  public void save(SensorContext context, Project project, CheckFactory checkFactory, RulesProfile profile, DSMMapping dsmMapping) {
+  public void save(SensorContext context, Project project, CheckFactory checkFactory, RulesProfile profile, ResourceMapping resourceMapping) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     //Design
-    if(!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
-      DesignBridge designBridge = new DesignBridge(context, squid.getGraph(), dsmMapping, checkFactory);
+    if (!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
+      DesignBridge designBridge = new DesignBridge(context, squid.getGraph(), resourceMapping, checkFactory);
       designBridge.saveDesign(project);
     }
     //Report Issues
-    ResourceIndex resourceIndex = new ResourceIndex(skipPackageDesignAnalysis).loadSquidResources(squid, context, project);
     ChecksBridge checksBridge = new ChecksBridge(context, profile, checkFactory);
-    reportIssues(resourceIndex, checksBridge);
+    reportIssues(resourceMapping, checksBridge);
   }
 
-  private void reportIssues(ResourceIndex resourceIndex, ChecksBridge checksBridge) {
-    Collection<SourceCode> squidFiles = squid.search(new QueryByType(SourceFile.class));
-    for (SourceCode squidFile : squidFiles) {
-      Resource sonarFile = resourceIndex.get(squidFile);
-      if (sonarFile != null) {
-        checksBridge.reportIssues((SourceFile) squidFile, sonarFile);
+  private void reportIssues(ResourceMapping resourceMapping, ChecksBridge checksBridge) {
+    for (Resource directory : resourceMapping.directories()) {
+      for (Resource sonarFile : resourceMapping.files((Directory) directory)) {
+        SourceFile squidFile = (SourceFile) squid.search(resourceMapping.getFileKeyByResource(sonarFile));
+        if (squidFile != null) {
+          checksBridge.reportIssues(squidFile, sonarFile);
+        } else {
+          LOG.error("Could not report issue on file: " + sonarFile.getKey());
+        }
       }
     }
   }

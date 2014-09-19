@@ -29,7 +29,7 @@ import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.graph.DirectedGraph;
-import org.sonar.java.bytecode.visitor.DSMMapping;
+import org.sonar.java.bytecode.visitor.ResourceMapping;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyDouble;
@@ -44,9 +44,9 @@ public class DesignBridgeTest {
   public void metrics_are_saved() throws Exception {
     SensorContext context = mock(SensorContext.class);
     DirectedGraph<Resource, Dependency> graph = mock(DirectedGraph.class);
-    DSMMapping dsmMapping = mock(DSMMapping.class);
+    ResourceMapping resourceMapping = mock(ResourceMapping.class);
     AnnotationCheckFactory checkFactory = AnnotationCheckFactory.create(RulesProfile.create(), "repo", Lists.newArrayList());
-    DesignBridge bridge = new DesignBridge(context, graph, dsmMapping, checkFactory);
+    DesignBridge bridge = new DesignBridge(context, graph, resourceMapping, checkFactory);
     bridge.saveDesign(mock(Project.class));
     verify(context, times(4)).saveMeasure(any(Resource.class), any(Metric.class), anyDouble());
 
