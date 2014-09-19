@@ -21,6 +21,8 @@ package org.sonar.plugins.java.bridges;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.batch.SensorContext;
+import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.design.Dependency;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
@@ -39,23 +41,30 @@ import org.sonar.graph.DsmTopologicalSorter;
 import org.sonar.graph.Edge;
 import org.sonar.graph.IncrementalCyclesAndFESSolver;
 import org.sonar.graph.MinimumFeedbackEdgeSetSolver;
+import org.sonar.java.bytecode.visitor.DSMMapping;
 import org.sonar.java.checks.CycleBetweenPackagesCheck;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class DesignBridge extends Bridge {
+public class DesignBridge {
 
   private static final Logger LOG = LoggerFactory.getLogger(DesignBridge.class);
 
-  @Override
-  public boolean needsBytecode() {
-    return true;
+  private final SensorContext context;
+  private final DirectedGraph<Resource, Dependency> graph;
+  private final DSMMapping dsmMapping;
+  private final CheckFactory checkFactory;
+
+  public DesignBridge(SensorContext context, DirectedGraph<Resource, Dependency> graph, DSMMapping dsmMapping, CheckFactory checkFactory) {
+    this.context = context;
+    this.graph = graph;
+    this.dsmMapping = dsmMapping;
+    this.checkFactory = checkFactory;
   }
 
-  @Override
-  public void onProject(Project sonarProject) {
+  public void saveDesign(Project sonarProject) {
     Collection<Resource> directories = dsmMapping.directories();
     TimeProfiler profiler = new TimeProfiler(LOG).start("Package design analysis");
     LOG.debug("{} packages to analyze", directories.size());
@@ -91,7 +100,7 @@ public class DesignBridge extends Bridge {
     }
   }
 
-  public void onPackage(Resource sonarPackage) {
+  private void onPackage(Resource sonarPackage) {
     Collection<Resource> squidFiles = dsmMapping.files((Directory) sonarPackage);
     if (squidFiles != null && !squidFiles.isEmpty()) {
 

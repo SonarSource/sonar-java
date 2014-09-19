@@ -28,15 +28,14 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.bytecode.visitor.DSMMapping;
-import org.sonar.plugins.java.bridges.Bridge;
-import org.sonar.plugins.java.bridges.BridgeFactory;
+import org.sonar.plugins.java.bridges.ChecksBridge;
+import org.sonar.plugins.java.bridges.DesignBridge;
 import org.sonar.plugins.java.bridges.ResourceIndex;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.indexer.QueryByType;
 
 import java.util.Collection;
-import java.util.List;
 
 public class Bridges {
 
@@ -50,33 +49,23 @@ public class Bridges {
 
   public void save(SensorContext context, Project project, CheckFactory checkFactory, RulesProfile profile, DSMMapping dsmMapping) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
-    List<Bridge> bridges = BridgeFactory.create(
-        squid.isBytecodeScanned(),
-        skipPackageDesignAnalysis,
-        context,
-        checkFactory,
-        squid,
-        profile,
-        dsmMapping);
-    ResourceIndex resourceIndex = new ResourceIndex(skipPackageDesignAnalysis).loadSquidResources(squid, context, project);
-    saveProject(project, bridges);
-    saveFiles(resourceIndex, bridges);
-  }
-
-  private void saveProject(Project project, List<Bridge> bridges) {
-    for (Bridge bridge : bridges) {
-      bridge.onProject(project);
+    //Design
+    if(!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
+      DesignBridge designBridge = new DesignBridge(context, squid.getGraph(), dsmMapping, checkFactory);
+      designBridge.saveDesign(project);
     }
+    //Report Issues
+    ResourceIndex resourceIndex = new ResourceIndex(skipPackageDesignAnalysis).loadSquidResources(squid, context, project);
+    ChecksBridge checksBridge = new ChecksBridge(context, profile, checkFactory);
+    reportIssues(resourceIndex, checksBridge);
   }
 
-  private void saveFiles(ResourceIndex resourceIndex, List<Bridge> bridges) {
+  private void reportIssues(ResourceIndex resourceIndex, ChecksBridge checksBridge) {
     Collection<SourceCode> squidFiles = squid.search(new QueryByType(SourceFile.class));
     for (SourceCode squidFile : squidFiles) {
       Resource sonarFile = resourceIndex.get(squidFile);
       if (sonarFile != null) {
-        for (Bridge bridge : bridges) {
-          bridge.onFile((SourceFile) squidFile, sonarFile);
-        }
+        checksBridge.reportIssues((SourceFile) squidFile, sonarFile);
       }
     }
   }

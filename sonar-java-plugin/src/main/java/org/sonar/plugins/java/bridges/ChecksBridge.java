@@ -19,6 +19,9 @@
  */
 package org.sonar.plugins.java.bridges;
 
+import org.sonar.api.batch.SensorContext;
+import org.sonar.api.checks.CheckFactory;
+import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
@@ -29,10 +32,19 @@ import org.sonar.squidbridge.api.SourceFile;
 import java.util.Locale;
 import java.util.Set;
 
-public class ChecksBridge extends Bridge {
+public class ChecksBridge {
 
-  @Override
-  public void onFile(SourceFile squidFile, Resource sonarFile) {
+  private final SensorContext context;
+  private final RulesProfile profile;
+  private final CheckFactory checkFactory;
+
+  public ChecksBridge(SensorContext context, RulesProfile profile, CheckFactory checkFactory) {
+    this.context = context;
+    this.profile = profile;
+    this.checkFactory = checkFactory;
+  }
+
+  public void reportIssues(SourceFile squidFile, Resource sonarFile) {
     if (squidFile.hasCheckMessages()) {
       Set<CheckMessage> messages = squidFile.getCheckMessages();
       for (CheckMessage checkMessage : messages) {

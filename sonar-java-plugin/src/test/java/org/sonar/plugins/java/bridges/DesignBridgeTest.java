@@ -19,18 +19,36 @@
  */
 package org.sonar.plugins.java.bridges;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
+import org.sonar.api.batch.SensorContext;
+import org.sonar.api.checks.AnnotationCheckFactory;
+import org.sonar.api.design.Dependency;
+import org.sonar.api.measures.Metric;
+import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.resources.Project;
+import org.sonar.api.resources.Resource;
+import org.sonar.graph.DirectedGraph;
+import org.sonar.java.bytecode.visitor.DSMMapping;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class DesignBridgeTest {
 
-  private final DesignBridge bridge = new DesignBridge();
 
   @Test
-  public void bytecode_needed() {
-    assertThat(bridge.needsBytecode()).isTrue();
+  public void metrics_are_saved() throws Exception {
+    SensorContext context = mock(SensorContext.class);
+    DirectedGraph<Resource, Dependency> graph = mock(DirectedGraph.class);
+    DSMMapping dsmMapping = mock(DSMMapping.class);
+    AnnotationCheckFactory checkFactory = AnnotationCheckFactory.create(RulesProfile.create(), "repo", Lists.newArrayList());
+    DesignBridge bridge = new DesignBridge(context, graph, dsmMapping, checkFactory);
+    bridge.saveDesign(mock(Project.class));
+    verify(context, times(4)).saveMeasure(any(Resource.class), any(Metric.class), anyDouble());
+
   }
-
-
 }
