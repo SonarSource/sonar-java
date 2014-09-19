@@ -2002,13 +2002,15 @@ public class TreeFactory {
   private ExpressionTree applySelector(ExpressionTree expression, AstNode selectorNode) {
     JavaTreeMaker.checkType(selectorNode, JavaGrammar.SELECTOR);
 
-    AstNode identifierAstNode = selectorNode.getFirstChild(JavaKeyword.THIS);
+    AstNode identifierAstNode;
     AstNode node = selectorNode;
-    if (identifierAstNode == null && selectorNode.hasDirectChildren(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION)) {
+    if (selectorNode.hasDirectChildren(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION)) {
       node = selectorNode.getFirstChild(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION);
-      identifierAstNode = node.getFirstChild(JavaTokenType.IDENTIFIER);
+      identifierAstNode = node.getFirstChild(JavaTokenType.IDENTIFIER, JavaKeyword.THIS);
     } else if (selectorNode.hasDirectChildren(JavaGrammar.SUPER_SUFFIX)) {
       identifierAstNode = selectorNode.getFirstChild(JavaGrammar.SUPER_SUFFIX).getFirstChild(JavaKeyword.SUPER);
+    } else {
+      identifierAstNode = null;
     }
 
     if (identifierAstNode != null) {
