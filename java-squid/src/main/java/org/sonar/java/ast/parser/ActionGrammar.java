@@ -971,6 +971,7 @@ public class ActionGrammar {
       .is(f.parenthesizedExpression(b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR)));
   }
 
+  // TODO This method should go away
   public ExpressionTree EXPLICIT_GENERIC_INVOCATION_EXPRESSION() {
     // TODO Own tree node?
     return b.<ExpressionTree>nonterminal(JavaGrammar.EXPLICIT_GENERIC_INVOCATION_EXPRESSION)
@@ -982,11 +983,13 @@ public class ActionGrammar {
             f.newExplicitGenericInvokation(b.invokeRule(JavaKeyword.THIS), ARGUMENTS()))));
   }
 
+  // TODO This method should go away, handled by MEMBER_SELECT_OR_METHOD_INVOCATION
   public ExpressionTree THIS_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.THIS_EXPRESSION)
       .is(f.thisExpression(b.invokeRule(JavaKeyword.THIS), b.optional(ARGUMENTS())));
   }
 
+  // TODO This method should go away
   public ExpressionTree SUPER_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.SUPER_EXPRESSION)
       .is(f.superExpression(b.invokeRule(JavaGrammar.SUPER_SUFFIX)));
@@ -1025,11 +1028,13 @@ public class ActionGrammar {
               b.zeroOrMore(f.newWrapperAstNode(b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaGrammar.DIM)))))));
   }
 
+  // TODO This method should go away
   public ExpressionTree QUALIFIED_IDENTIFIER_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION)
       .is(f.newQualifiedIdentifierExpression(QUALIFIED_IDENTIFIER(), b.optional(b.invokeRule(JavaGrammar.IDENTIFIER_SUFFIX))));
   }
 
+  // TODO This method should go away
   public ExpressionTree BASIC_CLASS_EXPRESSION() {
     return b
       .<ExpressionTree>nonterminal(JavaGrammar.BASIC_CLASS_EXPRESSION)
@@ -1037,6 +1042,7 @@ public class ActionGrammar {
         f.basicClassExpression(BASIC_TYPE(), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
   }
 
+  // TODO This method should go away
   public ExpressionTree VOID_CLASS_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.VOID_CLASS_EXPRESSION)
       .is(f.voidClassExpression(b.invokeRule(JavaKeyword.VOID), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
