@@ -21,16 +21,21 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.GenericTokenType;
+import org.sonar.java.ast.parser.AstNodeHacks;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.api.SourcePackage;
 
 import java.io.File;
 
 public class FileVisitor extends JavaAstVisitor {
+  public static final String UNRESOLVED_PACKAGE = "!error!";
 
   @Override
   public void visitFile(AstNode astNode) {
-    SourceFile sourceFile = createSourceFile(peekParentPackage(), getContext().getFile());
+    String packageKey = getPackageKey(astNode);
+    SourceFile sourceFile = createSourceFile(packageKey, getContext().getFile());
     getContext().addSourceCode(sourceFile);
   }
 
@@ -40,14 +45,42 @@ public class FileVisitor extends JavaAstVisitor {
     getContext().popSourceCode();
   }
 
-  private static SourceFile createSourceFile(SourcePackage parentPackage, File file) {
+  private SourceFile createSourceFile(String parentPackage, File file) {
     StringBuilder key = new StringBuilder();
-    if (parentPackage != null && !"".equals(parentPackage.getKey())) {
-      key.append(parentPackage.getKey());
+    if (!"".equals(parentPackage)) {
+      key.append(parentPackage);
       key.append("/");
     }
     key.append(file.getName());
     return new SourceFile(key.toString(), file.getPath());
   }
+
+  private String getPackageKey(AstNode astNode) {
+    if (isEmptyFileOrParseError(astNode)) {
+      // Cannot resolve package for empty file and parse error.
+      return UNRESOLVED_PACKAGE;
+    } else if (astNode.getFirstChild().is(JavaGrammar.PACKAGE_DECLARATION)) {
+      AstNode packageNameNode = astNode.getFirstChild().getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
+      return getAstNodeValue(packageNameNode).replace('.', '/');
+    } else {
+      // unnamed package
+      return "";
+    }
+  }
+
+  private boolean isEmptyFileOrParseError(AstNode astNode) {
+    return astNode == null || astNode.getFirstChild().is(GenericTokenType.EOF);
+  }
+
+  private String getAstNodeValue(AstNode astNode) {
+    StringBuilder sb = new StringBuilder();
+    for (AstNode child : AstNodeHacks.getDescendants(astNode)) {
+      if (!child.hasChildren() && child.hasToken()) {
+        sb.append(child.getTokenValue());
+      }
+    }
+    return sb.toString();
+  }
+
 
 }

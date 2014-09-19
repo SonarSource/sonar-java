@@ -20,7 +20,7 @@
 package org.sonar.java;
 
 import org.junit.Test;
-import org.sonar.java.ast.visitors.PackageVisitor;
+import org.sonar.java.ast.visitors.FileVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 
 import java.io.File;
@@ -38,12 +38,12 @@ public class JavaAstScannerTest {
   @Test
   public void parseError() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/filesInError/ParseError.java"));
-    assertThat(file.getParent().getKey()).isEqualTo(PackageVisitor.UNRESOLVED_PACKAGE);
+    assertThat(file.getKey()).startsWith(FileVisitor.UNRESOLVED_PACKAGE);
   }
   @Test
   public void emptyFile() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/filesInError/EmptyFile.java"));
-    assertThat(file.getParent().getKey()).isEqualTo(PackageVisitor.UNRESOLVED_PACKAGE);
+    assertThat(file.getKey()).startsWith(FileVisitor.UNRESOLVED_PACKAGE);
   }
 
 }

@@ -118,7 +118,7 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
       } else {
         SemanticModel.handleMissingTypes(tree);
       }
-      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, peekSourceFile(), getContext().getFile(), semanticModel, analyseAccessors);
+      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors);
       for (JavaFileScanner scanner : scanners) {
         scanner.scanFile(context);
       }
@@ -130,7 +130,7 @@ public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisito
   }
 
   private boolean isNotJavaLangOrSerializable() {
-    String[] path = peekSourceFile().getName().split(Pattern.quote(File.separator));
+    String[] path = getContext().peekSourceCode().getName().split(Pattern.quote(File.separator));
     boolean isJavaLang = path.length > 3 && "java".equals(path[path.length - 3]) && "lang".equals(path[path.length - 2]);
     boolean isJavaLangAnnotation = path.length > 4 && "Annotation.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 4])
         && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);

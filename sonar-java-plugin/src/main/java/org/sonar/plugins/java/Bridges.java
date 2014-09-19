@@ -62,11 +62,15 @@ public class Bridges {
   private void reportIssues(ResourceMapping resourceMapping, ChecksBridge checksBridge) {
     for (Resource directory : resourceMapping.directories()) {
       for (Resource sonarFile : resourceMapping.files((Directory) directory)) {
-        SourceFile squidFile = (SourceFile) squid.search(resourceMapping.getFileKeyByResource(sonarFile));
-        if (squidFile != null) {
-          checksBridge.reportIssues(squidFile, sonarFile);
-        } else {
-          LOG.error("Could not report issue on file: " + sonarFile.getKey());
+        String key = resourceMapping.getFileKeyByResource((org.sonar.api.resources.File) sonarFile);
+        //key would be null for test files as they are not in squid index.
+        if(key != null) {
+          SourceFile squidFile = (SourceFile) squid.search(key);
+          if (squidFile != null) {
+            checksBridge.reportIssues(squidFile, sonarFile);
+          } else {
+            LOG.error("Could not report issue on file: " + sonarFile.getKey());
+          }
         }
       }
     }

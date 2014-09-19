@@ -51,7 +51,7 @@ public class ResourceMapping {
     fileKeyByResource.put(resource, fileKey);
   }
 
-  public String getFileKeyByResource(Resource resource) {
+  public String getFileKeyByResource(File resource) {
     return fileKeyByResource.get(resource);
   }
 

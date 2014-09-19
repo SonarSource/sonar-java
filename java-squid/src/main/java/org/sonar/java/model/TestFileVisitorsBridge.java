@@ -34,6 +34,9 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Set;
 
+/**
+ * This visitor is used to add the mapping between className and SonarResource for test files into {@link org.sonar.plugins.java.api.JavaResourceLocator}
+ */
 public class TestFileVisitorsBridge extends JavaAstVisitor {
 
   private final JavaTreeMaker treeMaker = new JavaTreeMaker();
