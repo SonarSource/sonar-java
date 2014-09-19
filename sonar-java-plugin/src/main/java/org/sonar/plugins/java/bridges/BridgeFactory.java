@@ -52,7 +52,7 @@ public final class BridgeFactory {
         bridge.setContext(context);
         bridge.setGraph(squid.getGraph());
         bridge.setProfile(profile);
-        bridge.setDSMMapping(DSMMapping);
+        bridge.setDsmMapping(DSMMapping);
         result.add(bridge);
       }
     }

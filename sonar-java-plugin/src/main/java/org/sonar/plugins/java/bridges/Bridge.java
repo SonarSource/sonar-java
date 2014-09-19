@@ -27,8 +27,6 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.api.SourcePackage;
-import org.sonar.squidbridge.api.SourceProject;
 
 /**
  * Pattern visitor : project -> packages -> files
@@ -40,7 +38,7 @@ public abstract class Bridge {
   SensorContext context;
   CheckFactory checkFactory;
   RulesProfile profile;
-  org.sonar.java.bytecode.visitor.DSMMapping DSMMapping;
+  org.sonar.java.bytecode.visitor.DSMMapping dsmMapping;
 
   public boolean needsBytecode() {
     return false;
@@ -62,11 +60,7 @@ public abstract class Bridge {
     this.context = context;
   }
 
-  public void onProject(SourceProject squidProject, Project sonarProject) {
-
-  }
-
-  public void onPackage(SourcePackage squidPackage, Resource sonarPackage) {
+  public void onProject(Project sonarProject) {
 
   }
 
@@ -74,7 +68,7 @@ public abstract class Bridge {
 
   }
 
-  public void setDSMMapping(org.sonar.java.bytecode.visitor.DSMMapping DSMMapping) {
-    this.DSMMapping = DSMMapping;
+  public void setDsmMapping(org.sonar.java.bytecode.visitor.DSMMapping dsmMapping) {
+    this.dsmMapping = dsmMapping;
   }
 }

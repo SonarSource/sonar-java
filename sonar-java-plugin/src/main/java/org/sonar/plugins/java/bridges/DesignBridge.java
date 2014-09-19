@@ -40,8 +40,6 @@ import org.sonar.graph.Edge;
 import org.sonar.graph.IncrementalCyclesAndFESSolver;
 import org.sonar.graph.MinimumFeedbackEdgeSetSolver;
 import org.sonar.java.checks.CycleBetweenPackagesCheck;
-import org.sonar.squidbridge.api.SourcePackage;
-import org.sonar.squidbridge.api.SourceProject;
 
 import java.util.Collection;
 import java.util.List;
@@ -51,17 +49,14 @@ public class DesignBridge extends Bridge {
 
   private static final Logger LOG = LoggerFactory.getLogger(DesignBridge.class);
 
-  /*
-   * This index is shared between onProject() and onPackage(). It works because onProject() is executed before onPackage().
-   */
   @Override
   public boolean needsBytecode() {
     return true;
   }
 
   @Override
-  public void onProject(SourceProject squidProject, Project sonarProject) {
-    Collection<Resource> directories = DSMMapping.directories();
+  public void onProject(Project sonarProject) {
+    Collection<Resource> directories = dsmMapping.directories();
     TimeProfiler profiler = new TimeProfiler(LOG).start("Package design analysis");
     LOG.debug("{} packages to analyze", directories.size());
 
@@ -84,6 +79,10 @@ public class DesignBridge extends Bridge {
     context.saveMeasure(sonarProject, dsmMeasure);
 
     profiler.stop();
+
+    for (Resource sonarPackage : directories) {
+      onPackage(sonarPackage);
+    }
   }
 
   private void savePositiveMeasure(Resource sonarResource, Metric metric, double value) {
@@ -92,9 +91,8 @@ public class DesignBridge extends Bridge {
     }
   }
 
-  @Override
-  public void onPackage(SourcePackage squidPackage, Resource sonarPackage) {
-    Collection<Resource> squidFiles = DSMMapping.files((Directory) sonarPackage);
+  public void onPackage(Resource sonarPackage) {
+    Collection<Resource> squidFiles = dsmMapping.files((Directory) sonarPackage);
     if (squidFiles != null && !squidFiles.isEmpty()) {
 
       IncrementalCyclesAndFESSolver<Resource> cycleDetector = new IncrementalCyclesAndFESSolver<Resource>(graph, squidFiles);
@@ -123,8 +121,8 @@ public class DesignBridge extends Bridge {
     return total;
   }
 
-  private String serializeDsm(DirectedGraph<Resource, Dependency> graph, Collection<Resource> squidSources, Set<Edge> feedbackEdges) {
-    Dsm<Resource> dsm = new Dsm<Resource>(graph, squidSources, feedbackEdges);
+  private String serializeDsm(DirectedGraph<Resource, Dependency> graph, Collection<Resource> sources, Set<Edge> feedbackEdges) {
+    Dsm<Resource> dsm = new Dsm<Resource>(graph, sources, feedbackEdges);
     DsmTopologicalSorter.sort(dsm);
     return DsmSerializer.serialize(dsm);
   }
@@ -136,7 +134,7 @@ public class DesignBridge extends Bridge {
       return;
     }
     for (Edge feedbackEdge : feedbackEdges) {
-      for (Dependency subDependency : DSMMapping.getSubDependencies((Dependency) feedbackEdge)) {
+      for (Dependency subDependency : dsmMapping.getSubDependencies((Dependency) feedbackEdge)) {
         Resource fromFile = subDependency.getFrom();
         Resource toFile = subDependency.getTo();
         Violation violation = Violation.create(rule, fromFile)

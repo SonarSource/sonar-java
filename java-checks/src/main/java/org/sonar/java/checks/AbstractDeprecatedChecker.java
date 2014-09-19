@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
 import org.sonar.java.ast.visitors.PublicApiChecker;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;

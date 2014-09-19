@@ -33,8 +33,6 @@ import org.sonar.plugins.java.bridges.BridgeFactory;
 import org.sonar.plugins.java.bridges.ResourceIndex;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.api.SourcePackage;
-import org.sonar.squidbridge.api.SourceProject;
 import org.sonar.squidbridge.indexer.QueryByType;
 
 import java.util.Collection;
@@ -61,28 +59,13 @@ public class Bridges {
         profile,
         dsmMapping);
     ResourceIndex resourceIndex = new ResourceIndex(skipPackageDesignAnalysis).loadSquidResources(squid, context, project);
-    saveProject(resourceIndex, bridges);
-    savePackages(resourceIndex, bridges);
+    saveProject(project, bridges);
     saveFiles(resourceIndex, bridges);
   }
 
-  private void saveProject(ResourceIndex resourceIndex, List<Bridge> bridges) {
-    SourceProject squidProject = (SourceProject) squid.search(new QueryByType(SourceProject.class)).iterator().next();
-    Resource sonarResource = resourceIndex.get(squidProject);
+  private void saveProject(Project project, List<Bridge> bridges) {
     for (Bridge bridge : bridges) {
-      bridge.onProject(squidProject, (Project) sonarResource);
-    }
-  }
-
-  private void savePackages(ResourceIndex resourceIndex, List<Bridge> bridges) {
-    Collection<SourceCode> packages = squid.search(new QueryByType(SourcePackage.class));
-    for (SourceCode squidPackage : packages) {
-      Resource sonarPackage = resourceIndex.get(squidPackage);
-      if (sonarPackage != null) {
-        for (Bridge bridge : bridges) {
-          bridge.onPackage((SourcePackage) squidPackage, sonarPackage);
-        }
-      }
+      bridge.onProject(project);
     }
   }
 
