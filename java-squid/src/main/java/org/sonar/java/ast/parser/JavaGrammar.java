@@ -38,7 +38,6 @@ import static org.sonar.java.ast.api.JavaKeyword.NEW;
 import static org.sonar.java.ast.api.JavaKeyword.PACKAGE;
 import static org.sonar.java.ast.api.JavaKeyword.STATIC;
 import static org.sonar.java.ast.api.JavaKeyword.SUPER;
-import static org.sonar.java.ast.api.JavaKeyword.THIS;
 import static org.sonar.java.ast.api.JavaKeyword.THROWS;
 import static org.sonar.java.ast.api.JavaKeyword.VOID;
 import static org.sonar.java.ast.api.JavaPunctuator.AND;
@@ -267,7 +266,6 @@ public enum JavaGrammar implements GrammarRuleKey {
   SUPER_SUFFIX,
   LITERAL,
   CREATOR,
-  IDENTIFIER_SUFFIX,
   EXPLICIT_GENERIC_INVOCATION,
   INNER_CREATOR,
   DIM_EXPR,
@@ -584,20 +582,6 @@ public enum JavaGrammar implements GrammarRuleKey {
    * 15. Expressions
    */
   private static void expressions(LexerlessGrammarBuilder b) {
-    b.rule(IDENTIFIER_SUFFIX).is(
-      b.firstOf(
-        b.sequence(b.oneOrMore(DIM), DOT, CLASS),
-        DIM_EXPR,
-        ARGUMENTS,
-        // TODO This looks similar to SELECTOR
-        b.sequence(
-          DOT,
-          b.firstOf(
-            CLASS,
-            EXPLICIT_GENERIC_INVOCATION,
-            THIS,
-            b.sequence(SUPER, ARGUMENTS),
-            b.sequence(NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR)))));
     b.rule(EXPLICIT_GENERIC_INVOCATION).is(NON_WILDCARD_TYPE_ARGUMENTS, EXPLICIT_GENERIC_INVOCATION_SUFFIX);
     b.rule(NON_WILDCARD_TYPE_ARGUMENTS).is(LPOINT, TYPE, b.zeroOrMore(COMMA, TYPE), RPOINT);
     b.rule(EXPLICIT_GENERIC_INVOCATION_SUFFIX).is(
@@ -611,7 +595,10 @@ public enum JavaGrammar implements GrammarRuleKey {
         b.sequence(DOT, EXPLICIT_GENERIC_INVOCATION),
         b.sequence(DOT, SUPER_SUFFIX),
         b.sequence(DOT, NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR),
-        DIM_EXPR));
+        DIM_EXPR,
+        // Specific to IDENTIFIER_SUFFIX
+        ARGUMENTS,
+        b.sequence(b.zeroOrMore(DIM), DOT, CLASS)));
     b.rule(SUPER_SUFFIX).is(
       SUPER,
       b.firstOf(

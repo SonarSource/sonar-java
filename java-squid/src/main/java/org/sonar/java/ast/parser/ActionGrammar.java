@@ -1031,7 +1031,7 @@ public class ActionGrammar {
   // TODO This method should go away
   public ExpressionTree QUALIFIED_IDENTIFIER_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.QUALIFIED_IDENTIFIER_EXPRESSION)
-      .is(f.newQualifiedIdentifierExpression(QUALIFIED_IDENTIFIER(), b.optional(b.invokeRule(JavaGrammar.IDENTIFIER_SUFFIX))));
+      .is(f.newQualifiedIdentifierExpression(QUALIFIED_IDENTIFIER(), b.optional(b.invokeRule(JavaGrammar.SELECTOR))));
   }
 
   // TODO This method should go away
