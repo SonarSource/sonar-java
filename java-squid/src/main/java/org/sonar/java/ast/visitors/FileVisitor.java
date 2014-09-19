@@ -25,11 +25,13 @@ import com.sonar.sslr.api.GenericTokenType;
 import org.sonar.java.ast.parser.AstNodeHacks;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
 
-public class FileVisitor extends JavaAstVisitor {
+public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
   public static final String UNRESOLVED_PACKAGE = "!error!";
 
   @Override

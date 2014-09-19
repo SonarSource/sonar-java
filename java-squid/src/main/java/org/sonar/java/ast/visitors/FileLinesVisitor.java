@@ -30,6 +30,8 @@ import com.sonar.sslr.api.Trivia;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.java.SonarComponents;
+import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -39,7 +41,7 @@ import java.util.Set;
 /**
  * Saves information about lines directly into Sonar by using {@link FileLinesContext}.
  */
-public class FileLinesVisitor extends JavaAstVisitor implements AstAndTokenVisitor {
+public class FileLinesVisitor extends SquidAstVisitor<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private final SonarComponents sonarComponents;
   private final Charset charset;

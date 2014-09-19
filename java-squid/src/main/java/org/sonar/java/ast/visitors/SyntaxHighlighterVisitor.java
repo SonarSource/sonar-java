@@ -33,13 +33,15 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
-public class SyntaxHighlighterVisitor extends JavaAstVisitor implements AstAndTokenVisitor {
+public class SyntaxHighlighterVisitor extends SquidAstVisitor<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private final SonarComponents sonarComponents;
   private final Map<AstNodeType, String> types;

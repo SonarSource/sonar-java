@@ -30,7 +30,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
-import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -39,8 +38,10 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -50,7 +51,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class VisitorsBridge extends JavaAstVisitor implements CharsetAwareVisitor {
+public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements CharsetAwareVisitor {
 
   private static final Logger LOG = LoggerFactory.getLogger(VisitorsBridge.class);
 

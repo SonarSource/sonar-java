@@ -22,13 +22,14 @@ package org.sonar.java.model;
 import com.google.common.collect.Sets;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.java.ast.visitors.JavaAstVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -37,7 +38,7 @@ import java.util.Set;
 /**
  * This visitor is used to add the mapping between className and SonarResource for test files into {@link org.sonar.plugins.java.api.JavaResourceLocator}
  */
-public class TestFileVisitorsBridge extends JavaAstVisitor {
+public class TestFileVisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
 
   private final JavaTreeMaker treeMaker = new JavaTreeMaker();
   private final JavaFileScanner visitor;
