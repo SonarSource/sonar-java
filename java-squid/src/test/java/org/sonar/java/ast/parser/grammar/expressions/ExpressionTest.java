@@ -57,6 +57,7 @@ public class ExpressionTest {
       // Java 8 : constructors with annotation types
       .matches("new int @Foo [12]")
       .matches("new int[12] @Foo [13] @Foo @Bar []")
+      .matches("new Class1().new @NonNull Class2()")
 
       .matches("new @Foo innerClass(\"literal\")")
       .matches("new OuterClass.@Foo innerClass(\"literal\")")

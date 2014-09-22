@@ -591,7 +591,7 @@ public enum JavaGrammar implements GrammarRuleKey {
         JavaKeyword.SUPER),
       b.optional(ARGUMENTS));
 
-    b.rule(INNER_CREATOR).is(JavaTokenType.IDENTIFIER, CLASS_CREATOR_REST);
+    b.rule(INNER_CREATOR).is(b.zeroOrMore(JavaGrammar.ANNOTATION), JavaTokenType.IDENTIFIER, CLASS_CREATOR_REST);
     b.rule(CLASS_CREATOR_REST).is(b.optional(b.firstOf(DIAMOND, TYPE_ARGUMENTS)), ARGUMENTS, b.optional(CLASS_BODY));
     b.rule(DIAMOND).is(LT, GT);
     b.rule(DIM).is(LBRK, RBRK);
