@@ -22,8 +22,9 @@ package org.sonar.plugins.java.bridges;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.checks.CheckFactory;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.design.Dependency;
+import org.sonar.api.issue.Issuable;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.Metric;
@@ -31,8 +32,6 @@ import org.sonar.api.measures.PersistenceMode;
 import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.rules.ActiveRule;
-import org.sonar.api.rules.Violation;
 import org.sonar.api.utils.TimeProfiler;
 import org.sonar.graph.Cycle;
 import org.sonar.graph.DirectedGraph;
@@ -55,13 +54,13 @@ public class DesignBridge {
   private final SensorContext context;
   private final DirectedGraph<Resource, Dependency> graph;
   private final ResourceMapping resourceMapping;
-  private final CheckFactory checkFactory;
+  private final ResourcePerspectives resourcePerspectives;
 
-  public DesignBridge(SensorContext context, DirectedGraph<Resource, Dependency> graph, ResourceMapping resourceMapping, CheckFactory checkFactory) {
+  public DesignBridge(SensorContext context, DirectedGraph<Resource, Dependency> graph, ResourceMapping resourceMapping, ResourcePerspectives resourcePerspectives) {
     this.context = context;
     this.graph = graph;
     this.resourceMapping = resourceMapping;
-    this.checkFactory = checkFactory;
+    this.resourcePerspectives = resourcePerspectives;
   }
 
   public void saveDesign(Project sonarProject) {
@@ -76,7 +75,7 @@ public class DesignBridge {
     LOG.debug("{} feedback edges", feedbackEdges.size());
     int tangles = cyclesAndFESSolver.getWeightOfFeedbackEdgeSet();
 
-    saveViolations(feedbackEdges);
+    saveIssues(feedbackEdges);
     saveDependencies();
     savePositiveMeasure(sonarProject, CoreMetrics.PACKAGE_CYCLES, cyclesAndFESSolver.getCycles().size());
     savePositiveMeasure(sonarProject, CoreMetrics.PACKAGE_FEEDBACK_EDGES, feedbackEdges.size());
@@ -136,20 +135,17 @@ public class DesignBridge {
     return DsmSerializer.serialize(dsm);
   }
 
-  private void saveViolations(Set<Edge> feedbackEdges) {
-    ActiveRule rule = CycleBetweenPackagesCheck.getActiveRule(checkFactory);
-    if (rule == null) {
-      // Rule inactive
-      return;
-    }
+  private void saveIssues(Set<Edge> feedbackEdges) {
     for (Edge feedbackEdge : feedbackEdges) {
       for (Dependency subDependency : resourceMapping.getSubDependencies((Dependency) feedbackEdge)) {
         Resource fromFile = subDependency.getFrom();
         Resource toFile = subDependency.getTo();
-        Violation violation = Violation.create(rule, fromFile)
-            .setMessage("Remove the dependency on the source file \"" + toFile.getLongName() + "\" to break a package cycle.")
-            .setCost((double) subDependency.getWeight());
-        context.saveViolation(violation);
+        Issuable issuable = resourcePerspectives.as(Issuable.class, fromFile);
+        issuable.addIssue(issuable.newIssueBuilder()
+            .ruleKey(CycleBetweenPackagesCheck.RULE_KEY)
+            .effortToFix((double) subDependency.getWeight())
+            .message("Remove the dependency on the source file \"" + toFile.getLongName() + "\" to break a package cycle.")
+            .build());
       }
     }
   }

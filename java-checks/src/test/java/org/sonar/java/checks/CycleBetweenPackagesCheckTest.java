@@ -28,11 +28,6 @@ public class CycleBetweenPackagesCheckTest {
   private final CycleBetweenPackagesCheck check = new CycleBetweenPackagesCheck();
 
   @Test
-  public void test() {
-    // TODO
-  }
-
-  @Test
   public void test_toString() {
     assertThat(check.toString()).isEqualTo("CycleBetweenPackages rule");
   }

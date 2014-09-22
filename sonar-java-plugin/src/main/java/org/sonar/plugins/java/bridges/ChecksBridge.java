@@ -19,53 +19,51 @@
  */
 package org.sonar.plugins.java.bridges;
 
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
-import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.issue.Issuable;
+import org.sonar.api.issue.Issue;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
-import org.sonar.api.rules.Violation;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
-import java.util.Locale;
 import java.util.Set;
 
 public class ChecksBridge {
 
-  private final SensorContext context;
-  private final RulesProfile profile;
   private final CheckFactory checkFactory;
+  private final ResourcePerspectives resourcePerspectives;
 
-  public ChecksBridge(SensorContext context, RulesProfile profile, CheckFactory checkFactory) {
-    this.context = context;
-    this.profile = profile;
+  public ChecksBridge(CheckFactory checkFactory, ResourcePerspectives resourcePerspectives) {
     this.checkFactory = checkFactory;
+    this.resourcePerspectives = resourcePerspectives;
   }
 
   public void reportIssues(SourceFile squidFile, Resource sonarFile) {
     if (squidFile.hasCheckMessages()) {
+      Issuable issuable = resourcePerspectives.as(Issuable.class, sonarFile);
       Set<CheckMessage> messages = squidFile.getCheckMessages();
       for (CheckMessage checkMessage : messages) {
-        final ActiveRule rule;
         Object check = checkMessage.getCheck();
+        RuleKey ruleKey;
         if (check instanceof RuleKey) {
           // VisitorsBridge uses RuleKey
-          RuleKey ruleKey = (RuleKey) check;
-          rule = profile.getActiveRule(ruleKey.repository(), ruleKey.rule());
+          ruleKey = (RuleKey) check;
         } else {
-          rule = checkFactory.getActiveRule(checkMessage.getCheck());
+          ActiveRule rule = checkFactory.getActiveRule(checkMessage.getCheck());
+          if (rule == null) {
+            // rule not active
+            continue;
+          }
+          ruleKey = rule.getRule().ruleKey();
         }
-        if (rule == null) {
-          // rule not active
-          continue;
-        }
-        Violation violation = Violation.create(rule, sonarFile);
-        violation.setLineId(checkMessage.getLine());
-        violation.setMessage(checkMessage.getText(Locale.ENGLISH));
-        violation.setCost(checkMessage.getCost());
-        context.saveViolation(violation, checkMessage.isBypassExclusion());
+        Issue issue = issuable.newIssueBuilder()
+            .ruleKey(ruleKey)
+            .line(checkMessage.getLine())
+            .message(checkMessage.formatDefaultMessage()).build();
+        issuable.addIssue(issue);
       }
       // Remove from memory:
       messages.clear();

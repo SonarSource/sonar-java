@@ -19,40 +19,26 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.checks.CheckFactory;
-import org.sonar.api.rules.ActiveRule;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 
-import javax.annotation.CheckForNull;
-
 /**
- * Companion of {@link org.sonar.plugins.javang.bridges.DesignBridge} which actually does the job on finding cycles and creation of violations.
+ * Companion of {@link org.sonar.plugins.javang.bridges.DesignBridge} which actually does the job on finding cycles and creation of issues.
  *
  * @since 3.2
  */
-@Rule(key = CycleBetweenPackagesCheck.RULE_KEY, priority = Priority.MAJOR)
+@Rule(key = CycleBetweenPackagesCheck.RULE_KEY_STRING, priority = Priority.MAJOR)
 public class CycleBetweenPackagesCheck extends BytecodeVisitor {
 
-  public static final String RULE_KEY = "CycleBetweenPackages";
 
-  /**
-   * @return null, if this check is inactive
-   */
-  @CheckForNull
-  public static ActiveRule getActiveRule(CheckFactory checkFactory) {
-    for (Object check : checkFactory.getChecks()) {
-      if (CycleBetweenPackagesCheck.class.equals(check.getClass())) {
-        return checkFactory.getActiveRule(check);
-      }
-    }
-    return null;
-  }
+  public static final String RULE_KEY_STRING = "CycleBetweenPackages";
+  public static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY_STRING);
 
   @Override
   public String toString() {
-    return RULE_KEY + " rule";
+    return RULE_KEY_STRING + " rule";
   }
 
 }

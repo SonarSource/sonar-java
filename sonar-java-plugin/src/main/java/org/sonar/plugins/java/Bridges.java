@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Directory;
@@ -47,15 +48,15 @@ public class Bridges {
     this.settings = settings;
   }
 
-  public void save(SensorContext context, Project project, CheckFactory checkFactory, RulesProfile profile, ResourceMapping resourceMapping) {
+  public void save(SensorContext context, Project project, CheckFactory checkFactory, RulesProfile profile, ResourceMapping resourceMapping, ResourcePerspectives resourcePerspectives) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     //Design
     if (!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
-      DesignBridge designBridge = new DesignBridge(context, squid.getGraph(), resourceMapping, checkFactory);
+      DesignBridge designBridge = new DesignBridge(context, squid.getGraph(), resourceMapping, resourcePerspectives);
       designBridge.saveDesign(project);
     }
     //Report Issues
-    ChecksBridge checksBridge = new ChecksBridge(context, profile, checkFactory);
+    ChecksBridge checksBridge = new ChecksBridge(checkFactory, resourcePerspectives);
     reportIssues(resourceMapping, checksBridge);
   }
 

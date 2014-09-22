@@ -91,4 +91,8 @@ public class SonarComponents implements BatchExtension {
     }
     return javaClasspath.getElements();
   }
+
+  public ResourcePerspectives getResourcePerspectives() {
+    return resourcePerspectives;
+  }
 }

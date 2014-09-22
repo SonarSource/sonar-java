@@ -19,13 +19,11 @@
  */
 package org.sonar.plugins.java.bridges;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.checks.AnnotationCheckFactory;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.design.Dependency;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.graph.DirectedGraph;
@@ -45,8 +43,8 @@ public class DesignBridgeTest {
     SensorContext context = mock(SensorContext.class);
     DirectedGraph<Resource, Dependency> graph = mock(DirectedGraph.class);
     ResourceMapping resourceMapping = mock(ResourceMapping.class);
-    AnnotationCheckFactory checkFactory = AnnotationCheckFactory.create(RulesProfile.create(), "repo", Lists.newArrayList());
-    DesignBridge bridge = new DesignBridge(context, graph, resourceMapping, checkFactory);
+    ResourcePerspectives resourcePerspectives = mock(ResourcePerspectives.class);
+    DesignBridge bridge = new DesignBridge(context, graph, resourceMapping, resourcePerspectives);
     bridge.saveDesign(mock(Project.class));
     verify(context, times(4)).saveMeasure(any(Resource.class), any(Metric.class), anyDouble());
 
