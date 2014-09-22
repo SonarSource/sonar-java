@@ -582,7 +582,6 @@ public enum JavaGrammar implements GrammarRuleKey {
         b.sequence(DOT, NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR),
         DIM_EXPR,
         // Specific to IDENTIFIER_SUFFIX
-        ARGUMENTS,
         b.sequence(b.zeroOrMore(DIM), DOT, CLASS)));
 
     b.rule(MEMBER_SELECT_OR_METHOD_INVOCATION).is(
