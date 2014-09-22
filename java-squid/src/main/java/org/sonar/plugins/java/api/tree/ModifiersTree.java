@@ -40,4 +40,7 @@ public interface ModifiersTree extends Tree {
 
   List<Modifier> modifiers();
 
+  List<ModifierTree> list();
+
+
 }

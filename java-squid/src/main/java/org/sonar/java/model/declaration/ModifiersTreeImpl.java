@@ -21,12 +21,14 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -37,32 +39,43 @@ import java.util.List;
 public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
   // TODO remove:
   public static final org.sonar.java.model.declaration.ModifiersTreeImpl EMPTY =
-    new ModifiersTreeImpl((AstNode) null, ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of());
+    new ModifiersTreeImpl((AstNode) null, ImmutableList.<ModifierKeywordTree>of(), ImmutableList.<AnnotationTree>of());
+
 
   /* FIXME */
   public static final org.sonar.java.model.declaration.ModifiersTreeImpl emptyModifiers() {
-    return new ModifiersTreeImpl(ImmutableList.<Modifier>of(), ImmutableList.<AnnotationTree>of(), ImmutableList.<AstNode>of());
+    return new ModifiersTreeImpl(ImmutableList.<ModifierTree>of());
   }
 
   private final List<Modifier> modifiers;
+  private final List<ModifierTree> modifierTrees;
   private final List<AnnotationTree> annotations;
 
-  public ModifiersTreeImpl(AstNode astNode, List<Modifier> modifiers, List<AnnotationTree> annotations) {
+  private ModifiersTreeImpl(AstNode astNode, List<ModifierKeywordTree> modifierKeywordTrees, List<AnnotationTree> annotations) {
     super(astNode);
-    this.modifiers = Preconditions.checkNotNull(modifiers);
     this.annotations = Preconditions.checkNotNull(annotations);
+    modifiers = Lists.newArrayList();
+    modifierTrees = Lists.newArrayList();
   }
 
-  public ModifiersTreeImpl(List<Modifier> modifiers, List<AnnotationTree> annotations, List<AstNode> children) {
+  public ModifiersTreeImpl(List<ModifierTree> javaTrees) {
     super(JavaGrammar.MODIFIERS);
-
-    this.modifiers = Preconditions.checkNotNull(modifiers);
-    this.annotations = Preconditions.checkNotNull(annotations);
-
-    for (AstNode child : children) {
-      addChild(child);
+    ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
+    ImmutableList.Builder<AnnotationTree> annotations = ImmutableList.builder();
+    for (ModifierTree modifierTree : javaTrees) {
+      if (modifierTree.is(Kind.ANNOTATION)) {
+        annotations.add((AnnotationTree) modifierTree);
+      } else {
+        ModifierKeywordTree modifierKeywordTree = (ModifierKeywordTree) modifierTree;
+        modifiers.add(modifierKeywordTree.modifier());
+      }
+      addChild((AstNode) modifierTree);
     }
+    this.annotations = annotations.build();
+    this.modifierTrees = javaTrees;
+    this.modifiers = modifiers.build();
   }
+
 
   @Override
   public Kind getKind() {
@@ -72,6 +85,11 @@ public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
   @Override
   public List<Modifier> modifiers() {
     return modifiers;
+  }
+
+  @Override
+  public List<ModifierTree> list() {
+    return modifierTrees;
   }
 
   @Override
@@ -86,11 +104,7 @@ public class ModifiersTreeImpl extends JavaTree implements ModifiersTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      // TODO(Godin): modifiers
-      Iterators.<Tree>emptyIterator(),
-      annotations.iterator()
-      );
+    return ImmutableList.<Tree>builder().addAll(list()).build().iterator();
   }
 
 }

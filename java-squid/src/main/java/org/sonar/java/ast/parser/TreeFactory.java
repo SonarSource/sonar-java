@@ -41,6 +41,7 @@ import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.ModifierKeywordTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -80,10 +81,9 @@ import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -99,31 +99,22 @@ public class TreeFactory {
 
   private final JavaTreeMaker treeMaker = new JavaTreeMaker();
 
-  public ModifiersTreeImpl modifiers(Optional<List<AstNode>> modifierNodes) {
+  public ModifiersTreeImpl modifiers(Optional<List<ModifierTree>> modifierNodes) {
     if (!modifierNodes.isPresent()) {
       return ModifiersTreeImpl.emptyModifiers();
     }
+    return new ModifiersTreeImpl(modifierNodes.get());
+  }
 
-    ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
-    ImmutableList.Builder<AnnotationTree> annotations = ImmutableList.builder();
-    for (AstNode astNode : modifierNodes.get()) {
-      if (astNode.is(Kind.ANNOTATION)) {
-        annotations.add((AnnotationTree) astNode);
-      } else {
-        JavaKeyword keyword = (JavaKeyword) astNode.getType();
-        modifiers.add(kindMaps.getModifier(keyword));
-      }
-    }
-
-    return new ModifiersTreeImpl(modifiers.build(), annotations.build(),
-      modifierNodes.get());
+  public ModifierKeywordTreeImpl modifierKeyword(AstNode astNode) {
+    JavaKeyword keyword = (JavaKeyword) astNode.getType();
+    return new ModifierKeywordTreeImpl(kindMaps.getModifier(keyword), astNode);
   }
 
   // Literals
 
   public ExpressionTree literal(AstNode astNode) {
     InternalSyntaxToken token = InternalSyntaxToken.create(astNode);
-
     return new LiteralTreeImpl(kindMaps.getLiteral(astNode.getType()), token);
   }
 

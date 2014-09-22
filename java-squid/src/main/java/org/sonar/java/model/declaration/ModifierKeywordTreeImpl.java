@@ -17,29 +17,24 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.java.model.declaration;
 
-import com.google.common.annotations.Beta;
+import com.sonar.sslr.api.AstNode;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 
-import java.util.List;
+public class ModifierKeywordTreeImpl extends InternalSyntaxToken implements ModifierKeywordTree {
 
-/**
- * Annotation.
- *
- * JLS 9.7
- *
- * <pre>
- *   {@code @}{@link #annotationType()}
- *   {@code @}{@link #annotationType()} ( {@link #arguments()} )
- * </pre>
- *
- * @since Java 1.5
- */
-@Beta
-public interface AnnotationTree extends ExpressionTree, ModifierTree {
+  private final Modifier modifier;
 
-  Tree annotationType();
+  public ModifierKeywordTreeImpl(Modifier modifier, AstNode astNode) {
+    super(astNode.getType(), astNode.getToken(), astNode.getFromIndex(), astNode.getToIndex());
+    this.modifier = modifier;
+  }
 
-  List<ExpressionTree> arguments();
-
+  @Override
+  public Modifier modifier() {
+    return modifier;
+  }
 }

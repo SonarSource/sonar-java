@@ -19,27 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
-import java.util.List;
-
-/**
- * Annotation.
- *
- * JLS 9.7
- *
- * <pre>
- *   {@code @}{@link #annotationType()}
- *   {@code @}{@link #annotationType()} ( {@link #arguments()} )
- * </pre>
- *
- * @since Java 1.5
- */
-@Beta
-public interface AnnotationTree extends ExpressionTree, ModifierTree {
-
-  Tree annotationType();
-
-  List<ExpressionTree> arguments();
+public interface ModifierTree extends Tree {
 
 }
