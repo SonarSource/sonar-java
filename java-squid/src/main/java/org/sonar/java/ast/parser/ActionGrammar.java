@@ -80,8 +80,8 @@ public class ActionGrammar {
     return b.<ModifiersTreeImpl>nonterminal(JavaGrammar.MODIFIERS)
       .is(
         f.modifiers(
-            b.<ModifierTree>zeroOrMore(
-              b.firstOf(
+            b.zeroOrMore(
+              b.<ModifierTree>firstOf(
                 ANNOTATION(),
                 MODIFIER_KEYWORD()
                 ))));

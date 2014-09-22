@@ -22,7 +22,6 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 /**
@@ -41,6 +40,10 @@ public class BaseTreeVisitor implements TreeVisitor {
     if (tree != null) {
       tree.accept(this);
     }
+  }
+
+  protected void scan(ListTree<? extends Tree> listTree) {
+    scan((Tree) listTree);
   }
 
   @Override

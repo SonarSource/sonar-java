@@ -19,20 +19,28 @@
  */
 package org.sonar.java.ast.parser;
 
+import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public abstract class ListTreeImpl<T> extends JavaTree implements List<T> {
+public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
 
   private final List<T> list;
+
+  public ListTreeImpl(@Nullable AstNode astNode) {
+    super(astNode);
+    this.list = Lists.newArrayList();
+  }
 
   public ListTreeImpl(AstNodeType type, List<T> list, List<AstNode> children) {
     super(type);

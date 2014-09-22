@@ -70,7 +70,7 @@ public class ModifiersOrderCheck extends SubscriptionBaseVisitor {
   private static ModifierTree getFirstBadlyOrdered(ModifiersTree modifiersTree) {
     int modifierIndex = -1;
     Modifier[] modifiers = Modifier.values();
-    for (ModifierTree modifier : modifiersTree.list()) {
+    for (ModifierTree modifier : modifiersTree) {
       if (modifier.is(Kind.ANNOTATION)) {
         if (modifierIndex >= 0) {
           return modifier;

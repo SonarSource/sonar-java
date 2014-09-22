@@ -19,25 +19,7 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 import java.util.List;
 
-/**
- * Modifiers.
- *
- * JLS 8.1.1, 8.3.1, 8.4.3, 8.5.1, 8.8.3, 9.1.1, 9.7
- *
- * @since Java 1.3
- */
-@Beta
-public interface ModifiersTree extends ListTree<ModifierTree> {
-
-  /**
-   * @since Java 1.5
-   */
-  List<AnnotationTree> annotations();
-
-  List<Modifier> modifiers();
-
+public interface ListTree<T> extends Tree, List<T> {
 }
