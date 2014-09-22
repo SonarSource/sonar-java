@@ -23,18 +23,27 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+
+import java.util.Deque;
+import java.util.LinkedList;
 
 @Rule(
     key = StringConcatenationInLoopCheck.RULE_KEY,
@@ -46,22 +55,61 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
-  private int loopLevel;
+  private Deque<Tree> loopLevel = new LinkedList<Tree>();
+  private SemanticModel semanticModel;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    loopLevel = 0;
+    loopLevel.clear();
+    semanticModel = (SemanticModel) context.getSemanticModel();
     scan(context.getTree());
   }
 
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    if (loopLevel > 0 && isStringConcatenation(tree)) {
+    if (!loopLevel.isEmpty() && isStringConcatenation(tree) && isNotLoopLocalVar(tree)) {
       context.addIssue(tree, ruleKey, "Use a StringBuilder instead.");
     }
     super.visitAssignmentExpression(tree);
+  }
+
+  private boolean isNotLoopLocalVar(AssignmentExpressionTree tree) {
+    IdentifierTree idTree = getIdentifierTree(tree.variable());
+    Tree envTree = semanticModel.getTree(semanticModel.getEnv(semanticModel.getReference(idTree)));
+    Tree loopTree = loopLevel.peek();
+    if(envTree!= null && (envTree.equals(loopTree) || envTree.equals(loopStatement(loopTree)))) {
+      return false;
+    }
+    return true;
+  }
+
+  private IdentifierTree getIdentifierTree(ExpressionTree tree) {
+    IdentifierTree idTree;
+    if(tree.is(Tree.Kind.MEMBER_SELECT)) {
+      idTree = getIdentifierTree(((MemberSelectExpressionTree) tree).expression());
+    } else if(tree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)){
+      idTree = getIdentifierTree(((ArrayAccessExpressionTree)tree).expression());
+    } else if(tree.is(Tree.Kind.METHOD_INVOCATION)){
+      idTree = getIdentifierTree(((MethodInvocationTree) tree).methodSelect());
+    } else {
+      idTree = (IdentifierTree)tree;
+    }
+    return idTree;
+  }
+
+  private Tree loopStatement(Tree loopTree) {
+    if(loopTree.is(Tree.Kind.FOR_STATEMENT)) {
+      return ((ForStatementTree) loopTree).statement();
+    } else if(loopTree.is(Tree.Kind.DO_STATEMENT)) {
+      return ((DoWhileStatementTree) loopTree).statement();
+    } else if(loopTree.is(Tree.Kind.WHILE_STATEMENT)) {
+      return ((WhileStatementTree) loopTree).statement();
+    } else if(loopTree.is(Tree.Kind.FOR_EACH_STATEMENT)) {
+      return ((ForEachStatement) loopTree).statement();
+    }
+    return null;
   }
 
   private boolean isStringConcatenation(AssignmentExpressionTree tree) {
@@ -90,30 +138,30 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
 
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
-    loopLevel++;
+    loopLevel.push(tree);
     super.visitForEachStatement(tree);
-    loopLevel--;
+    loopLevel.pop();
   }
 
   @Override
   public void visitForStatement(ForStatementTree tree) {
-    loopLevel++;
+    loopLevel.push(tree);
     super.visitForStatement(tree);
-    loopLevel--;
+    loopLevel.pop();
   }
 
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
-    loopLevel++;
+    loopLevel.push(tree);
     super.visitWhileStatement(tree);
-    loopLevel--;
+    loopLevel.pop();
   }
 
   @Override
   public void visitDoWhileStatement(DoWhileStatementTree tree) {
-    loopLevel++;
+    loopLevel.push(tree);
     super.visitDoWhileStatement(tree);
-    loopLevel--;
+    loopLevel.pop();
   }
 
 
