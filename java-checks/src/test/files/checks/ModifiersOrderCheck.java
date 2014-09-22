@@ -15,6 +15,8 @@ class Foo {
                                    @RequestParam(value = "callback", required = false, defaultValue = "") final String callback){}
   abstract
   public class A{}
+
+  private final static int CREATE = 0, FIND = 1, NEW = 2, RELEASE = 3, N_NAMES = 4; //modifiers are shared between variable trees.
 }
 
 interface Bar{

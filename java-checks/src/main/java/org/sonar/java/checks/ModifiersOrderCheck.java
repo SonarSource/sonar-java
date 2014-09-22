@@ -19,72 +19,75 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
+import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.List;
+import java.util.Set;
 
 @Rule(
-  key = "ModifiersOrderCheck",
-  priority = Priority.MINOR,
-  tags = {"convention"})
+    key = "ModifiersOrderCheck",
+    priority = Priority.MINOR,
+    tags = {"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
-public class ModifiersOrderCheck extends SquidCheck<LexerlessGrammar> {
+public class ModifiersOrderCheck extends SubscriptionBaseVisitor {
 
-  private static final AstNodeType[] EXPECTED_ORDER = new AstNodeType[] {
-    Kind.ANNOTATION,
-    JavaKeyword.PUBLIC,
-    JavaKeyword.PROTECTED,
-    JavaKeyword.PRIVATE,
-    JavaKeyword.ABSTRACT,
-    JavaKeyword.STATIC,
-    JavaKeyword.FINAL,
-    JavaKeyword.TRANSIENT,
-    JavaKeyword.VOLATILE,
-    JavaKeyword.SYNCHRONIZED,
-    JavaKeyword.NATIVE,
-    JavaKeyword.DEFAULT,
-    JavaKeyword.STRICTFP
-  };
+
+  private Set<Tree> alreadyReported = Sets.newHashSet();
 
   @Override
-  public void init() {
-    subscribeTo(JavaGrammar.MODIFIERS);
+  public void scanFile(JavaFileScannerContext context) {
+    alreadyReported.clear();
+    super.scanFile(context);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (isFirstModifer(node)) {
-      AstNode badlyOrderedModifier = getFirstBadlyOrdered(node);
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Kind.MODIFIERS);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (!alreadyReported.contains(tree)) {
+      alreadyReported.add(tree);
+      ModifierTree badlyOrderedModifier = getFirstBadlyOrdered((ModifiersTree) tree);
       if (badlyOrderedModifier != null) {
-        getContext().createLineViolation(this, "Reorder the modifiers to comply with the Java Language Specification.", badlyOrderedModifier);
+        addIssue(badlyOrderedModifier, "Reorder the modifiers to comply with the Java Language Specification.");
       }
     }
   }
 
-  private static boolean isFirstModifer(AstNode node) {
-    return node.getPreviousSibling() == null;
-  }
-
-  private static AstNode getFirstBadlyOrdered(AstNode node) {
-    int expectedIndex = 0;
-
-    for (AstNode modifier : node.getChildren()) {
-      for (; expectedIndex < EXPECTED_ORDER.length && !modifier.is(EXPECTED_ORDER[expectedIndex]); expectedIndex++) {
-        // We're just interested in the final value of 'expectedIndex'
-      }
-      if (expectedIndex == EXPECTED_ORDER.length) {
-        return modifier;
+  private static ModifierTree getFirstBadlyOrdered(ModifiersTree modifiersTree) {
+    int modifierIndex = -1;
+    Modifier[] modifiers = Modifier.values();
+    for (ModifierTree modifier : modifiersTree.list()) {
+      if (modifier.is(Kind.ANNOTATION)) {
+        if (modifierIndex >= 0) {
+          return modifier;
+        }
+      } else {
+        if (modifierIndex < 0) {
+          modifierIndex = 0;
+        }
+        ModifierKeywordTree mkt = (ModifierKeywordTree) modifier;
+        for (; modifierIndex < modifiers.length && !mkt.modifier().equals(modifiers[modifierIndex]); modifierIndex++) {
+          // We're just interested in the final value of modifierIndex
+        }
+        if (modifierIndex == modifiers.length) {
+          return modifier;
+        }
       }
     }
-
     return null;
   }
-
 }
