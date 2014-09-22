@@ -37,7 +37,6 @@ import static org.sonar.java.ast.api.JavaKeyword.INTERFACE;
 import static org.sonar.java.ast.api.JavaKeyword.NEW;
 import static org.sonar.java.ast.api.JavaKeyword.PACKAGE;
 import static org.sonar.java.ast.api.JavaKeyword.STATIC;
-import static org.sonar.java.ast.api.JavaKeyword.SUPER;
 import static org.sonar.java.ast.api.JavaKeyword.THROWS;
 import static org.sonar.java.ast.api.JavaKeyword.VOID;
 import static org.sonar.java.ast.api.JavaPunctuator.AND;
@@ -252,21 +251,14 @@ public enum JavaGrammar implements GrammarRuleKey {
   UNARY_EXPRESSION,
   PREFIX_OP,
   PRIMARY,
-  EXPLICIT_GENERIC_INVOCATION_EXPRESSION,
-  THIS_EXPRESSION,
-  SUPER_EXPRESSION,
-  QUALIFIED_IDENTIFIER_EXPRESSION,
   NEW_EXPRESSION,
   BASIC_CLASS_EXPRESSION,
   VOID_CLASS_EXPRESSION,
   SELECTOR,
   POST_FIX_OP,
   NON_WILDCARD_TYPE_ARGUMENTS,
-  EXPLICIT_GENERIC_INVOCATION_SUFFIX,
-  SUPER_SUFFIX,
   LITERAL,
   CREATOR,
-  EXPLICIT_GENERIC_INVOCATION,
   INNER_CREATOR,
   DIM_EXPR,
   CREATED_NAME,
@@ -582,36 +574,26 @@ public enum JavaGrammar implements GrammarRuleKey {
    * 15. Expressions
    */
   private static void expressions(LexerlessGrammarBuilder b) {
-    b.rule(EXPLICIT_GENERIC_INVOCATION).is(NON_WILDCARD_TYPE_ARGUMENTS, EXPLICIT_GENERIC_INVOCATION_SUFFIX);
     b.rule(NON_WILDCARD_TYPE_ARGUMENTS).is(LPOINT, TYPE, b.zeroOrMore(COMMA, TYPE), RPOINT);
-    b.rule(EXPLICIT_GENERIC_INVOCATION_SUFFIX).is(
-      b.firstOf(
-        SUPER_SUFFIX,
-        b.sequence(JavaTokenType.IDENTIFIER, ARGUMENTS)));
     b.rule(SELECTOR).is(
       b.firstOf(
         b.sequence(DOT, MEMBER_SELECT_OR_METHOD_INVOCATION),
         // TODO: Alternative with IDENTIFIER, ARUGMENTS is now consumed by METHOD_INVOCATION
-        b.sequence(DOT, EXPLICIT_GENERIC_INVOCATION),
-        b.sequence(DOT, SUPER_SUFFIX),
         b.sequence(DOT, NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR),
         DIM_EXPR,
         // Specific to IDENTIFIER_SUFFIX
         ARGUMENTS,
         b.sequence(b.zeroOrMore(DIM), DOT, CLASS)));
-    b.rule(SUPER_SUFFIX).is(
-      SUPER,
-      b.firstOf(
-        ARGUMENTS,
-        b.sequence(DOT, MEMBER_SELECT_OR_METHOD_INVOCATION)));
 
     b.rule(MEMBER_SELECT_OR_METHOD_INVOCATION).is(
       b.optional(NON_WILDCARD_TYPE_ARGUMENTS),
       b.firstOf(
         JavaTokenType.IDENTIFIER,
-        JavaKeyword.THIS),
+        JavaKeyword.THIS,
+        JavaKeyword.SUPER),
       b.optional(ARGUMENTS));
 
+    // TODO Factorize annotated identifier
     b.rule(CREATED_NAME).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS),
       b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS)));
     b.rule(INNER_CREATOR).is(JavaTokenType.IDENTIFIER, CLASS_CREATOR_REST);

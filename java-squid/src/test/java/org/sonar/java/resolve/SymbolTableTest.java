@@ -334,8 +334,6 @@ public class SymbolTableTest {
 
     assertThat(result.reference(17, 5)).isSameAs(result.symbol("field"));
     assertThat(result.reference(17, 11)).isSameAs(result.symbol("field_in_Superclass"));
-
-    assertThat(result.reference(32, 16)).isSameAs(result.symbol("field_in_Superclass"));
   }
 
   @Test

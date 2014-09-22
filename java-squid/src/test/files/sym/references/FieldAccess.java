@@ -27,10 +27,6 @@ class FieldAccess {
 
   static class Superclass {
     int field_in_Superclass;
-
-    public Superclass() {
-      @NotNull field_in_Superclass = null; // Java 8
-    }
   }
 
 }
