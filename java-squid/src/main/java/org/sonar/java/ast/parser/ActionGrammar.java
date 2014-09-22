@@ -27,8 +27,8 @@ import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.model.declaration.ModifierKeywordTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.declaration.ModifierKeywordTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
@@ -80,29 +80,28 @@ public class ActionGrammar {
     return b.<ModifiersTreeImpl>nonterminal(JavaGrammar.MODIFIERS)
       .is(
         f.modifiers(
-            b.zeroOrMore(
-              b.<ModifierTree>firstOf(
-                ANNOTATION(),
-                MODIFIER_KEYWORD()
-                ))));
+          b.zeroOrMore(
+            b.<ModifierTree>firstOf(
+              ANNOTATION(),
+              MODIFIER_KEYWORD()))));
   }
 
-  public ModifierKeywordTreeImpl MODIFIER_KEYWORD(){
+  public ModifierKeywordTreeImpl MODIFIER_KEYWORD() {
     return b.<ModifierKeywordTreeImpl>nonterminal().is(
-        f.modifierKeyword(
-            b.firstOf(
-                b.invokeRule(JavaKeyword.PUBLIC),
-                b.invokeRule(JavaKeyword.PROTECTED),
-                b.invokeRule(JavaKeyword.PRIVATE),
-                b.invokeRule(JavaKeyword.ABSTRACT),
-                b.invokeRule(JavaKeyword.STATIC),
-                b.invokeRule(JavaKeyword.FINAL),
-                b.invokeRule(JavaKeyword.TRANSIENT),
-                b.invokeRule(JavaKeyword.VOLATILE),
-                b.invokeRule(JavaKeyword.SYNCHRONIZED),
-                b.invokeRule(JavaKeyword.NATIVE),
-                b.invokeRule(JavaKeyword.DEFAULT),
-                b.invokeRule(JavaKeyword.STRICTFP))));
+      f.modifierKeyword(
+        b.firstOf(
+          b.invokeRule(JavaKeyword.PUBLIC),
+          b.invokeRule(JavaKeyword.PROTECTED),
+          b.invokeRule(JavaKeyword.PRIVATE),
+          b.invokeRule(JavaKeyword.ABSTRACT),
+          b.invokeRule(JavaKeyword.STATIC),
+          b.invokeRule(JavaKeyword.FINAL),
+          b.invokeRule(JavaKeyword.TRANSIENT),
+          b.invokeRule(JavaKeyword.VOLATILE),
+          b.invokeRule(JavaKeyword.SYNCHRONIZED),
+          b.invokeRule(JavaKeyword.NATIVE),
+          b.invokeRule(JavaKeyword.DEFAULT),
+          b.invokeRule(JavaKeyword.STRICTFP))));
   }
 
   // Literals
@@ -988,7 +987,7 @@ public class ActionGrammar {
         f.completeCreator(
           b.optional(b.invokeRule(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)),
           b.firstOf(
-            f.newClassCreator(b.invokeRule(JavaGrammar.CREATED_NAME), b.invokeRule(JavaGrammar.CLASS_CREATOR_REST)),
+            f.newClassCreator(QUALIFIED_IDENTIFIER(), b.invokeRule(JavaGrammar.CLASS_CREATOR_REST)),
             f.newArrayCreator(
               b.firstOf(
                 CLASS_TYPE(),

@@ -261,7 +261,6 @@ public enum JavaGrammar implements GrammarRuleKey {
   CREATOR,
   INNER_CREATOR,
   DIM_EXPR,
-  CREATED_NAME,
   CLASS_CREATOR_REST,
   DIAMOND,
   ARRAY_CREATOR_REST,
@@ -592,9 +591,6 @@ public enum JavaGrammar implements GrammarRuleKey {
         JavaKeyword.SUPER),
       b.optional(ARGUMENTS));
 
-    // TODO Factorize annotated identifier
-    b.rule(CREATED_NAME).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS),
-      b.zeroOrMore(DOT, b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(NON_WILDCARD_TYPE_ARGUMENTS)));
     b.rule(INNER_CREATOR).is(JavaTokenType.IDENTIFIER, CLASS_CREATOR_REST);
     b.rule(CLASS_CREATOR_REST).is(b.optional(b.firstOf(DIAMOND, TYPE_ARGUMENTS)), ARGUMENTS, b.optional(CLASS_BODY));
     b.rule(DIAMOND).is(LT, GT);

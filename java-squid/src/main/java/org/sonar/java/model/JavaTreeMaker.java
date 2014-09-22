@@ -32,7 +32,6 @@ import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.ClassTypeListTreeImpl;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
-import org.sonar.java.ast.parser.TypeArgumentListTreeImpl;
 import org.sonar.java.ast.parser.VariableDeclaratorListTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.EnumConstantTreeImpl;
@@ -124,38 +123,6 @@ public class JavaTreeMaker {
     return new JavaTree.PrimitiveTypeTreeImpl(astNode);
   }
 
-  public ExpressionTree classType(AstNode astNode) {
-    checkType(astNode, JavaGrammar.CREATED_NAME);
-    AstNode child = astNode.getFirstChild(JavaTokenType.IDENTIFIER);
-    AstNode firstIdentifier = child;
-    ExpressionTree result = identifier(child);
-    for (int i = 1; i < astNode.getNumberOfChildren(); i++) {
-      child = astNode.getChild(i);
-      if (child.is(JavaTokenType.IDENTIFIER)) {
-        if (!child.equals(firstIdentifier)) {
-          result = new MemberSelectExpressionTreeImpl(child, result, identifier(child));
-        }
-      } else if (child.is(JavaGrammar.TYPE_ARGUMENTS)) {
-        result = new JavaTree.ParameterizedTypeTreeImpl(child, result, (TypeArgumentListTreeImpl) child);
-      } else if (child.is(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
-        result = new JavaTree.ParameterizedTypeTreeImpl(child, result, nonWildcardTypeArguments(child));
-      } else if (!(child.is(JavaPunctuator.DOT) || child.is(Kind.ANNOTATION))) {
-        throw new IllegalStateException("Unexpected AstNodeType: " + astNode.getType().toString()
-          + " at line " + astNode.getTokenLine() + " column " + astNode.getToken().getColumn());
-      }
-    }
-    return result;
-  }
-
-  private List<Tree> nonWildcardTypeArguments(AstNode astNode) {
-    checkType(astNode, JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS);
-    ImmutableList.Builder<Tree> result = ImmutableList.builder();
-    for (AstNode child : astNode.getChildren(TYPE_KINDS)) {
-      result.add((Tree) child);
-    }
-    return result.build();
-  }
-
   public ExpressionTree referenceType(AstNode astNode) {
     if (astNode instanceof ExpressionTree && ((JavaTree) astNode).isLegacy()) {
       return (ExpressionTree) astNode;
@@ -165,7 +132,7 @@ public class JavaTreeMaker {
   }
 
   ExpressionTree referenceType(AstNode astNode, int dimSize) {
-    ExpressionTree result = astNode.getFirstChild().is(Kind.PRIMITIVE_TYPE) ? (PrimitiveTypeTree) astNode.getFirstChild() : classType(astNode.getFirstChild());
+    ExpressionTree result = astNode.getFirstChild().is(Kind.PRIMITIVE_TYPE) ? (PrimitiveTypeTree) astNode.getFirstChild() : (ExpressionTree) astNode.getFirstChild();
     return applyDim(result, dimSize + astNode.getChildren(JavaGrammar.DIM).size());
   }
 

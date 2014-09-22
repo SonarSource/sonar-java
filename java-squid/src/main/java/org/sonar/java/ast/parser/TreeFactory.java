@@ -1414,14 +1414,14 @@ public class TreeFactory {
     return partial;
   }
 
-  public ExpressionTree newClassCreator(AstNode createdName, AstNode classCreatorRest) {
+  public ExpressionTree newClassCreator(ExpressionTree qualifiedIdentifier, AstNode classCreatorRest) {
     ClassTreeImpl classBody = null;
     if (classCreatorRest.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
       List<Tree> body = treeMaker.classBody(classCreatorRest.getFirstChild(JavaGrammar.CLASS_BODY));
       classBody = new ClassTreeImpl(classCreatorRest, Tree.Kind.CLASS, ModifiersTreeImpl.EMPTY, null, ImmutableList.<TypeParameterTree>of(), null, ImmutableList.<Tree>of(), body);
     }
-    return new NewClassTreeImpl(null, treeMaker.classType(createdName), (ArgumentListTreeImpl) classCreatorRest.getFirstChild(JavaGrammar.ARGUMENTS), classBody,
-      createdName, classCreatorRest);
+    return new NewClassTreeImpl(null, qualifiedIdentifier, (ArgumentListTreeImpl) classCreatorRest.getFirstChild(JavaGrammar.ARGUMENTS), classBody,
+      (AstNode) qualifiedIdentifier, classCreatorRest);
   }
 
   public ExpressionTree newArrayCreator(Tree type, NewArrayTreeImpl partial) {
