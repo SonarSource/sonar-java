@@ -144,7 +144,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     if (is(Kind.ANNOTATION_TYPE)) {
       return new InternalSyntaxToken(getAstNode().getFirstChild(leftOrRightBrace).getToken());
     } else if (getAstNode().is(JavaGrammar.CLASS_BODY)) {
-      // Enum constant body
       return new InternalSyntaxToken(getAstNode().getFirstChild(leftOrRightBrace).getToken());
     }
     return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.CLASS_BODY, JavaGrammar.INTERFACE_BODY, JavaGrammar.ENUM_BODY)
