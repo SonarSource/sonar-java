@@ -28,7 +28,6 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
@@ -99,7 +98,7 @@ public class JaCoCoItSensorTest {
 
   @Test
   public void testReadExecutionData() {
-    JavaFile resource = new JavaFile("org.sonar.plugins.jacoco.tests.Hello");
+    org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
     when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
     SensorContext context = mock(SensorContext.class);
     Project project = mock(Project.class);

@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
@@ -112,7 +111,7 @@ public class JaCoCoOverallSensorTest {
 
   @Test
   public void should_save_measures() throws IOException {
-    JavaFile resource = analyseReports("ut.exec", "it.exec");
+    Resource resource = analyseReports("ut.exec", "it.exec");
     verifyOverallMetrics(resource);
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_LINES, 2.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, "3=1;6=1;7=1;10=1;11=1;14=1;15=1;17=1;18=1;20=1;23=0;24=0")));
@@ -121,7 +120,7 @@ public class JaCoCoOverallSensorTest {
 
   @Test
   public void should_save_measures_when_it_report_is_not_found() throws IOException {
-    JavaFile resource = analyseReports("ut.exec", "it.not.found.exec");
+    Resource resource = analyseReports("ut.exec", "it.not.found.exec");
     verifyOverallMetrics(resource);
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_LINES, 6.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, "3=1;6=1;7=1;10=0;11=0;14=1;15=1;17=0;18=0;20=1;23=0;24=0")));
@@ -130,7 +129,7 @@ public class JaCoCoOverallSensorTest {
 
   @Test
   public void should_save_measures_when_ut_report_is_not_found() throws IOException {
-    JavaFile resource = analyseReports("ut.not.found.exec", "it.exec");
+    Resource resource = analyseReports("ut.not.found.exec", "it.exec");
     verifyOverallMetrics(resource);
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_LINES, 5.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, "3=1;6=0;7=0;10=1;11=1;14=1;15=0;17=1;18=1;20=1;23=0;24=0")));
@@ -140,14 +139,14 @@ public class JaCoCoOverallSensorTest {
 
   @Test
   public void should_save_measures_when_no_reports_and_force_property() throws IOException {
-    JavaFile resource = analyseReports("ut.not.found.exec", "it.not.found.exec");
+    Resource resource = analyseReports("ut.not.found.exec", "it.not.found.exec");
     verifyOverallMetrics(resource);
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_LINES, 12.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, "3=0;6=0;7=0;10=0;11=0;14=0;15=0;17=0;18=0;20=0;23=0;24=0")));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_CONDITIONS, 2.0)));
   }
 
-  private void verifyOverallMetrics(JavaFile resource) {
+  private void verifyOverallMetrics(Resource resource) {
     verify(context, times(1)).getResource(resource);
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_LINES_TO_COVER, 12.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_CONDITIONS_TO_COVER, 2.0)));
@@ -155,11 +154,11 @@ public class JaCoCoOverallSensorTest {
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERED_CONDITIONS_BY_LINE, (String) null)));
   }
 
-  private JavaFile analyseReports(String utReport, String itReport) throws IOException {
+  private Resource analyseReports(String utReport, String itReport) throws IOException {
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
-    Files.copy(TestUtils.getResource("HelloWorld.class.toCopy"), new File(outputDir, "HelloWorld.class"));
-
-    JavaFile resource = new JavaFile("com.sonar.coverages.HelloWorld");
+    File to = new File(outputDir, "HelloWorld.class");
+    Files.copy(TestUtils.getResource("HelloWorld.class.toCopy"), to);
+    org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
 
     when(context.getResource(any(Resource.class))).thenReturn(resource);
     when(javaResourceLocator.findResourceByClassName("com/sonar/coverages/HelloWorld")).thenReturn(resource);
