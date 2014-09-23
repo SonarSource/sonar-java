@@ -63,14 +63,19 @@ public abstract class AbstractAnalyzer {
   private final ModuleFileSystem fileSystem;
   private final PathResolver pathResolver;
   private final JavaResourceLocator javaResourceLocator;
+  private final boolean readCoveragePerTests;
 
   private Map<String, File> classFilesCache;
 
   public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator) {
+    this(perspectives, fileSystem, pathResolver, javaResourceLocator, true);
+  }
+  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator, boolean readCoveragePerTests) {
     this.perspectives = perspectives;
     this.fileSystem = fileSystem;
     this.pathResolver = pathResolver;
     this.javaResourceLocator = javaResourceLocator;
+    this.readCoveragePerTests = readCoveragePerTests;
   }
 
   private static String fullyQualifiedClassName(String packageName, String simpleClassName) {
@@ -152,9 +157,11 @@ public abstract class AbstractAnalyzer {
     }
 
     boolean collectedCoveragePerTest = false;
-    for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
-      if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context)) {
-        collectedCoveragePerTest = true;
+    if(readCoveragePerTests) {
+      for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
+        if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context)) {
+          collectedCoveragePerTest = true;
+        }
       }
     }
 

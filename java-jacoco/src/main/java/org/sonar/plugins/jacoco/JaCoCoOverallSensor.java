@@ -130,7 +130,7 @@ public class JaCoCoOverallSensor implements Sensor {
     private final File report;
 
     OverallAnalyzer(File report, ResourcePerspectives perspectives) {
-      super(perspectives, fileSystem, pathResolver, javaResourceLocator);
+      super(perspectives, fileSystem, pathResolver, javaResourceLocator, false);
       this.report = report;
     }
 
