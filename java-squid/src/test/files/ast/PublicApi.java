@@ -117,6 +117,11 @@ public @interface undocumentedAnnotationPublic {
 @MyAnnotation()
 public @TypeAnnot class documentedClassWithAnnotationPublic {
 
+  private interface inter {
+    void method();
+    public void bar();
+  }
+
 }
 interface deprec {
   /**

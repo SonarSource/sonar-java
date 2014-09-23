@@ -121,25 +121,29 @@ public class PublicApiChecker extends BaseTreeVisitor {
 
 
   public boolean isPublicApi(ClassTree currentClass, ClassTree classTree) {
-    return (currentClass != null && currentClass.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) || hasPublic(classTree.modifiers());
+    return (currentClass != null && isPublicInterface(currentClass)) || hasPublic(classTree.modifiers());
   }
 
   public boolean isPublicApi(ClassTree classTree, MethodTree methodTree) {
     Preconditions.checkNotNull(classTree);
-    if (classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
+    if (isPublicInterface(classTree)) {
       return !hasOverrideAnnotation(methodTree);
-    } else if (isEmptyDefaultConstructor(methodTree) || hasOverrideAnnotation(methodTree)) {
+    } else if (isEmptyDefaultConstructor(methodTree) || hasOverrideAnnotation(methodTree) || classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
       return false;
     }
     return hasPublic(methodTree.modifiers());
   }
 
   public boolean isPublicApi(ClassTree classTree, VariableTree variableTree) {
-    return !classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) && !isStaticFinal(variableTree) && hasPublic(variableTree.modifiers());
+    return !isPublicInterface(classTree) && !isStaticFinal(variableTree) && hasPublic(variableTree.modifiers());
   }
 
   private boolean hasPublic(ModifiersTree modifiers) {
     return hasModifier(modifiers, Modifier.PUBLIC);
+  }
+
+  private boolean isPublicInterface(ClassTree currentClass) {
+    return currentClass.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) && !hasModifier(currentClass.modifiers(), Modifier.PRIVATE);
   }
 
   public boolean isPublicApi(Tree currentParent, Tree tree) {
