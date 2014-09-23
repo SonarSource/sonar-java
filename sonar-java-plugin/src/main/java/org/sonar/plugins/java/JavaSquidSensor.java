@@ -60,12 +60,10 @@ public class JavaSquidSensor implements Sensor {
   private final SonarComponents sonarComponents;
   private final ModuleFileSystem moduleFileSystem;
   private final DefaultJavaResourceLocator javaResourceLocator;
-  private final RulesProfile profile;
   private final Settings settings;
 
   public JavaSquidSensor(RulesProfile profile, JavaClasspath javaClasspath, SonarComponents sonarComponents, ModuleFileSystem moduleFileSystem,
     DefaultJavaResourceLocator javaResourceLocator, Settings settings) {
-    this.profile = profile;
     this.annotationCheckFactory = AnnotationCheckFactory.create(profile, CheckList.REPOSITORY_KEY, CheckList.getChecks());
     this.javaClasspath = javaClasspath;
     this.sonarComponents = sonarComponents;
@@ -86,7 +84,7 @@ public class JavaSquidSensor implements Sensor {
     Measurer measurer = new Measurer(project, context, configuration.isAnalysePropertyAccessors());
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, checks.toArray(new CodeVisitor[checks.size()]));
     squid.scan(getSourceFiles(project), getTestFiles(project), getBytecodeFiles());
-    new Bridges(squid, settings).save(context, project, annotationCheckFactory, profile, javaResourceLocator.getResourceMapping(), sonarComponents.getResourcePerspectives());
+    new Bridges(squid, settings).save(context, project, annotationCheckFactory, javaResourceLocator.getResourceMapping(), sonarComponents.getResourcePerspectives());
   }
 
   private List<InputFile> getSourceFiles(Project project) {

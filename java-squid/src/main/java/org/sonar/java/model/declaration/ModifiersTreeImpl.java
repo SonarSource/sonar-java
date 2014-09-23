@@ -55,19 +55,19 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
 
   public ModifiersTreeImpl(List<ModifierTree> javaTrees) {
     super(JavaGrammar.MODIFIERS, javaTrees, ImmutableList.<AstNode>of());
-    ImmutableList.Builder<Modifier> modifiers = ImmutableList.builder();
-    ImmutableList.Builder<AnnotationTree> annotations = ImmutableList.builder();
+    ImmutableList.Builder<Modifier> modifierBuilder = ImmutableList.builder();
+    ImmutableList.Builder<AnnotationTree> annotationBuilder = ImmutableList.builder();
     for (ModifierTree modifierTree : this) {
       if (modifierTree.is(Kind.ANNOTATION)) {
-        annotations.add((AnnotationTree) modifierTree);
+        annotationBuilder.add((AnnotationTree) modifierTree);
       } else {
         ModifierKeywordTree modifierKeywordTree = (ModifierKeywordTree) modifierTree;
-        modifiers.add(modifierKeywordTree.modifier());
+        modifierBuilder.add(modifierKeywordTree.modifier());
       }
       addChild((AstNode) modifierTree);
     }
-    this.annotations = annotations.build();
-    this.modifiers = modifiers.build();
+    this.annotations = annotationBuilder.build();
+    this.modifiers = modifierBuilder.build();
   }
 
 
