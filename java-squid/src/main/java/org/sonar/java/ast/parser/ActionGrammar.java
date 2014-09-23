@@ -905,7 +905,7 @@ public class ActionGrammar {
       .is(
         b.firstOf(
           LAMBDA_EXPRESSION(),
-          f.newMemberSelectOrMethodInvocation(b.invokeRule(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION)),
+          MEMBER_SELECT_OR_METHOD_INVOCATION(),
           PARENTHESIZED_EXPRESSION(),
           LITERAL(),
           NEW_EXPRESSION(),
@@ -1080,6 +1080,18 @@ public class ActionGrammar {
   public Tuple<AstNode, AstNode> DIMENSION() {
     return b.<Tuple<AstNode, AstNode>>nonterminal(JavaGrammar.DIM)
       .is(f.newTuple6(b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK)));
+  }
+
+  public ExpressionTree MEMBER_SELECT_OR_METHOD_INVOCATION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION)
+      .is(
+        f.newMemberSelectOrMethodInvocation(
+          b.optional(TYPE_ARGUMENTS()),
+          b.firstOf(
+            b.invokeRule(JavaTokenType.IDENTIFIER),
+            b.invokeRule(JavaKeyword.THIS),
+            b.invokeRule(JavaKeyword.SUPER)),
+          b.optional(ARGUMENTS())));
   }
 
   // End of expressions

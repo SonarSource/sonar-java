@@ -579,14 +579,6 @@ public enum JavaGrammar implements GrammarRuleKey {
         b.sequence(DOT, NEW, b.optional(TYPE_ARGUMENTS), ANNOTATED_PARAMETERIZED_IDENTIFIER, CLASS_CREATOR_REST),
         DIM_EXPR,
         b.sequence(b.zeroOrMore(DIM), DOT, CLASS)));
-
-    b.rule(MEMBER_SELECT_OR_METHOD_INVOCATION).is(
-      b.optional(TYPE_ARGUMENTS),
-      b.firstOf(
-        JavaTokenType.IDENTIFIER,
-        JavaKeyword.THIS,
-        JavaKeyword.SUPER),
-      b.optional(ARGUMENTS));
   }
 
   private final String internalName;

@@ -1625,6 +1625,24 @@ public class TreeFactory {
       children.toArray(new AstNode[0]));
   }
 
+  public ExpressionTree newMemberSelectOrMethodInvocation(Optional<TypeArgumentListTreeImpl> typeArguments, AstNode identifierAstNode, Optional<ArgumentListTreeImpl> arguments) {
+    InternalSyntaxToken identifierToken = InternalSyntaxToken.create(identifierAstNode);
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(identifierToken);
+
+    if (typeArguments.isPresent()) {
+      identifier.prependChildren(typeArguments.get());
+    }
+
+    ExpressionTree result = identifier;
+
+    if (arguments.isPresent()) {
+      result = new MethodInvocationTreeImpl(identifier, arguments.get(),
+        identifier, arguments.get());
+    }
+
+    return result;
+  }
+
   // End of expressions
 
   // Helpers
@@ -1808,9 +1826,8 @@ public class TreeFactory {
   private ExpressionTree applySelector(ExpressionTree expression, AstNode selectorNode) {
     JavaTreeMaker.checkType(selectorNode, JavaGrammar.SELECTOR);
 
-    if (selectorNode.hasDirectChildren(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION)) {
-      AstNode astNode = selectorNode.getFirstChild(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION);
-      ExpressionTree selector = newMemberSelectOrMethodInvocation(astNode);
+    if (selectorNode.hasDirectChildren(JavaPunctuator.DOT) && !selectorNode.hasDirectChildren(JavaKeyword.NEW, JavaKeyword.CLASS)) {
+      ExpressionTree selector = (ExpressionTree) selectorNode.getLastChild();
 
       ExpressionTree result;
       if (selector.is(Kind.METHOD_INVOCATION)) {
@@ -1876,28 +1893,6 @@ public class TreeFactory {
     } else {
       throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
     }
-  }
-
-  public ExpressionTree newMemberSelectOrMethodInvocation(AstNode astNode) {
-    Preconditions.checkArgument(astNode.is(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION));
-    AstNode identifierAstNode = astNode.getFirstChild(JavaTokenType.IDENTIFIER, JavaKeyword.THIS, JavaKeyword.SUPER);
-    InternalSyntaxToken identifierToken = InternalSyntaxToken.create(identifierAstNode);
-    IdentifierTreeImpl identifier = new IdentifierTreeImpl(identifierToken);
-
-    if (astNode.hasDirectChildren(JavaGrammar.TYPE_ARGUMENTS)) {
-      identifier.prependChildren(astNode.getFirstChild(JavaGrammar.TYPE_ARGUMENTS));
-    }
-
-    ExpressionTree result;
-    if (astNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
-      ArgumentListTreeImpl arguments = (ArgumentListTreeImpl) astNode.getFirstChild(JavaGrammar.ARGUMENTS);
-      result = new MethodInvocationTreeImpl(identifier, arguments,
-        identifier, arguments);
-    } else {
-      result = identifier;
-    }
-
-    return result;
   }
 
 }
