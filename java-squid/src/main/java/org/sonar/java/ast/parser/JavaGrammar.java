@@ -256,13 +256,10 @@ public enum JavaGrammar implements GrammarRuleKey {
   VOID_CLASS_EXPRESSION,
   SELECTOR,
   POST_FIX_OP,
-  NON_WILDCARD_TYPE_ARGUMENTS,
   LITERAL,
   CREATOR,
-  INNER_CREATOR,
   DIM_EXPR,
   CLASS_CREATOR_REST,
-  DIAMOND,
   ARRAY_CREATOR_REST,
   ARRAY_INITIALIZER,
 
@@ -288,7 +285,9 @@ public enum JavaGrammar implements GrammarRuleKey {
   ANNOTATION_ARGUMENTS,
   INFERED_PARAMS,
 
-  MEMBER_SELECT_OR_METHOD_INVOCATION;
+  MEMBER_SELECT_OR_METHOD_INVOCATION,
+
+  ANNOTATED_PARAMETERIZED_IDENTIFIER;
 
   public static LexerlessGrammarBuilder createGrammarBuilder() {
     LexerlessGrammarBuilder b = LexerlessGrammarBuilder.create();
@@ -573,27 +572,22 @@ public enum JavaGrammar implements GrammarRuleKey {
    * 15. Expressions
    */
   private static void expressions(LexerlessGrammarBuilder b) {
-    b.rule(NON_WILDCARD_TYPE_ARGUMENTS).is(LPOINT, TYPE, b.zeroOrMore(COMMA, TYPE), RPOINT);
     b.rule(SELECTOR).is(
       b.firstOf(
         b.sequence(DOT, MEMBER_SELECT_OR_METHOD_INVOCATION),
-        // TODO: Alternative with IDENTIFIER, ARUGMENTS is now consumed by METHOD_INVOCATION
-        b.sequence(DOT, NEW, b.optional(NON_WILDCARD_TYPE_ARGUMENTS), INNER_CREATOR),
+        b.sequence(DOT, NEW, b.optional(TYPE_ARGUMENTS), ANNOTATED_PARAMETERIZED_IDENTIFIER, CLASS_CREATOR_REST),
         DIM_EXPR,
-        // Specific to IDENTIFIER_SUFFIX
         b.sequence(b.zeroOrMore(DIM), DOT, CLASS)));
 
     b.rule(MEMBER_SELECT_OR_METHOD_INVOCATION).is(
-      b.optional(NON_WILDCARD_TYPE_ARGUMENTS),
+      b.optional(TYPE_ARGUMENTS),
       b.firstOf(
         JavaTokenType.IDENTIFIER,
         JavaKeyword.THIS,
         JavaKeyword.SUPER),
       b.optional(ARGUMENTS));
 
-    b.rule(INNER_CREATOR).is(b.zeroOrMore(JavaGrammar.ANNOTATION), JavaTokenType.IDENTIFIER, CLASS_CREATOR_REST);
-    b.rule(CLASS_CREATOR_REST).is(b.optional(b.firstOf(DIAMOND, TYPE_ARGUMENTS)), ARGUMENTS, b.optional(CLASS_BODY));
-    b.rule(DIAMOND).is(LT, GT);
+    b.rule(CLASS_CREATOR_REST).is(ARGUMENTS, b.optional(CLASS_BODY));
     b.rule(DIM).is(LBRK, RBRK);
   }
 

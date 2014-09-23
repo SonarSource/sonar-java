@@ -161,11 +161,13 @@ public class ActionGrammar {
   public TypeArgumentListTreeImpl TYPE_ARGUMENTS() {
     return b.<TypeArgumentListTreeImpl>nonterminal(JavaGrammar.TYPE_ARGUMENTS)
       .is(
-        f.newTypeArgumentList(
-          b.invokeRule(JavaPunctuator.LPOINT),
-          TYPE_ARGUMENT(),
-          b.zeroOrMore(f.newWrapperAstNode4(b.invokeRule(JavaPunctuator.COMMA), (AstNode) TYPE_ARGUMENT())),
-          b.invokeRule(JavaPunctuator.RPOINT)));
+        b.firstOf(
+          f.newTypeArgumentList(
+            b.invokeRule(JavaPunctuator.LPOINT),
+            TYPE_ARGUMENT(),
+            b.zeroOrMore(f.newWrapperAstNode4(b.invokeRule(JavaPunctuator.COMMA), (AstNode) TYPE_ARGUMENT())),
+            b.invokeRule(JavaPunctuator.RPOINT)),
+          f.newDiamondTypeArgument(b.invokeRule(JavaPunctuator.LPOINT), b.invokeRule(JavaPunctuator.RPOINT))));
   }
 
   public Tree TYPE_ARGUMENT() {
@@ -985,7 +987,7 @@ public class ActionGrammar {
     return b.<ExpressionTree>nonterminal(JavaGrammar.CREATOR)
       .is(
         f.completeCreator(
-          b.optional(b.invokeRule(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)),
+          b.optional(TYPE_ARGUMENTS()),
           b.firstOf(
             f.newClassCreator(QUALIFIED_IDENTIFIER(), b.invokeRule(JavaGrammar.CLASS_CREATOR_REST)),
             f.newArrayCreator(
@@ -1059,7 +1061,7 @@ public class ActionGrammar {
   }
 
   public ExpressionTree ANNOTATED_PARAMETERIZED_IDENTIFIER() {
-    return b.<ExpressionTree>nonterminal()
+    return b.<ExpressionTree>nonterminal(JavaGrammar.ANNOTATED_PARAMETERIZED_IDENTIFIER)
       .is(f.newAnnotatedParameterizedIdentifier(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaTokenType.IDENTIFIER), b.optional(TYPE_ARGUMENTS())));
   }
 

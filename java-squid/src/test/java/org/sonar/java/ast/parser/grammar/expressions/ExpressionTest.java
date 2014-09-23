@@ -51,6 +51,8 @@ public class ExpressionTest {
       // constructor call
       .matches("<T>this(arguments)")
       .matches("<T>super(arguments)")
+      .matches("new <Integer>Foo(42)")
+      .matches("o.new <Integer>Foo(42)")
       // Java 7: diamond
       .matches("new HashMap<>()")
 

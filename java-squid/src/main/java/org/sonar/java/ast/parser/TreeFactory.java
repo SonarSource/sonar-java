@@ -261,6 +261,13 @@ public class TreeFactory {
     return new TypeArgumentListTreeImpl(openBracketToken, typeArguments.build(), children, closeBracketToken);
   }
 
+  public TypeArgumentListTreeImpl newDiamondTypeArgument(AstNode openBracketTokenAstNode, AstNode closeBracketTokenAstNode) {
+    InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(openBracketTokenAstNode);
+    InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(closeBracketTokenAstNode);
+
+    return new TypeArgumentListTreeImpl(openBracketToken, ImmutableList.<Tree>of(), ImmutableList.<AstNode>of(), closeBracketToken);
+  }
+
   public Tree completeTypeArgument(Optional<List<AnnotationTreeImpl>> annotations, Tree partial) {
     if (annotations.isPresent()) {
       ((JavaTree) partial).prependChildren(annotations.get());
@@ -1407,9 +1414,10 @@ public class TreeFactory {
     return partial;
   }
 
-  public ExpressionTree completeCreator(Optional<AstNode> nonWildcardTypeArguments, ExpressionTree partial) {
-    if (nonWildcardTypeArguments.isPresent()) {
-      ((JavaTree) partial).prependChildren(nonWildcardTypeArguments.get());
+  public ExpressionTree completeCreator(Optional<TypeArgumentListTreeImpl> typeArguments, ExpressionTree partial) {
+    // TODO typeArguments is a parameterized expression used to chose which constructor to call
+    if (typeArguments.isPresent()) {
+      ((JavaTree) partial).prependChildren(typeArguments.get());
     }
     return partial;
   }
@@ -1881,13 +1889,21 @@ public class TreeFactory {
 
       return result;
     } else if (selectorNode.hasDirectChildren(JavaKeyword.NEW)) {
-      AstNode innerCreatorNode = selectorNode.getFirstChild(JavaGrammar.INNER_CREATOR);
-      IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(innerCreatorNode.getFirstChild(JavaTokenType.IDENTIFIER)));
-      if (innerCreatorNode.hasDirectChildren(Kind.ANNOTATION)) {
-        identifier.prependChildren(innerCreatorNode.getChildren(Kind.ANNOTATION));
+      ExpressionTree identifier = null;
+      for (AstNode child : selectorNode.getChildren()) {
+        if (child instanceof ExpressionTree) {
+          identifier = (ExpressionTree) child;
+        }
+      }
+      Preconditions.checkState(identifier != null);
+
+      TypeArgumentListTreeImpl typeArguments = (TypeArgumentListTreeImpl) selectorNode.getFirstChild(JavaGrammar.TYPE_ARGUMENTS);
+      if (typeArguments != null) {
+        // TODO Parameterized expression
+        ((JavaTree) identifier).prependChildren(typeArguments);
       }
 
-      AstNode classCreatorRestNode = innerCreatorNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST);
+      AstNode classCreatorRestNode = selectorNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST);
       ArgumentListTreeImpl arguments = (ArgumentListTreeImpl) classCreatorRestNode.getFirstChild(JavaGrammar.ARGUMENTS);
 
       ClassTree classBody = null;
@@ -1903,10 +1919,7 @@ public class TreeFactory {
       children.add((AstNode) expression);
       children.add(selectorNode.getFirstChild(JavaPunctuator.DOT));
       children.add(selectorNode.getFirstChild(JavaKeyword.NEW));
-      if (selectorNode.hasDirectChildren(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
-        children.add(selectorNode.getFirstChild(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS));
-      }
-      children.add(identifier);
+      children.add((AstNode) identifier);
       children.add(classCreatorRestNode);
 
       return new NewClassTreeImpl(
@@ -1938,8 +1951,8 @@ public class TreeFactory {
     InternalSyntaxToken identifierToken = InternalSyntaxToken.create(identifierAstNode);
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(identifierToken);
 
-    if (astNode.hasDirectChildren(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS)) {
-      identifier.prependChildren(astNode.getFirstChild(JavaGrammar.NON_WILDCARD_TYPE_ARGUMENTS));
+    if (astNode.hasDirectChildren(JavaGrammar.TYPE_ARGUMENTS)) {
+      identifier.prependChildren(astNode.getFirstChild(JavaGrammar.TYPE_ARGUMENTS));
     }
 
     ExpressionTree result;
