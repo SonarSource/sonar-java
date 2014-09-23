@@ -861,8 +861,7 @@ public class ActionGrammar {
           METHOD_REFERENCE(),
           // TODO Extract postfix expressions somewhere else
           f.newPostfixExpression(
-            PRIMARY(),
-            b.zeroOrMore(b.invokeRule(JavaGrammar.SELECTOR)),
+            f.applySelectors1(PRIMARY(), b.zeroOrMore(SELECTOR())),
             b.optional(
               b.firstOf(
                 b.invokeRule(JavaPunctuator.INC),
@@ -893,7 +892,9 @@ public class ActionGrammar {
             f.newSuperMethodReference(b.invokeRule(JavaKeyword.SUPER), b.invokeRule(JavaPunctuator.DBLECOLON)),
             f.newTypeMethodReference(TYPE(), b.invokeRule(JavaPunctuator.DBLECOLON)),
             // TODO This is a postfix expression followed by a double colon
-            f.newPrimaryMethodReference(PRIMARY(), b.zeroOrMore(b.invokeRule(JavaGrammar.SELECTOR)), b.invokeRule(JavaPunctuator.DBLECOLON))),
+            f.newPrimaryMethodReference(
+              f.applySelectors2(PRIMARY(), b.zeroOrMore(SELECTOR())),
+              b.invokeRule(JavaPunctuator.DBLECOLON))),
           b.optional(b.invokeRule(JavaGrammar.TYPE_ARGUMENTS)),
           b.firstOf(
             b.invokeRule(JavaKeyword.NEW),
@@ -905,7 +906,7 @@ public class ActionGrammar {
       .is(
         b.firstOf(
           LAMBDA_EXPRESSION(),
-          MEMBER_SELECT_OR_METHOD_INVOCATION(),
+          IDENTIFIER_OR_METHOD_INVOCATION(),
           PARENTHESIZED_EXPRESSION(),
           LITERAL(),
           NEW_EXPRESSION(),
@@ -1082,10 +1083,21 @@ public class ActionGrammar {
       .is(f.newTuple6(b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK)));
   }
 
-  public ExpressionTree MEMBER_SELECT_OR_METHOD_INVOCATION() {
-    return b.<ExpressionTree>nonterminal(JavaGrammar.MEMBER_SELECT_OR_METHOD_INVOCATION)
+  public ExpressionTree SELECTOR() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.SELECTOR)
       .is(
-        f.newMemberSelectOrMethodInvocation(
+        b.firstOf(
+          f.completeMemberSelectOrMethodSelector(b.invokeRule(JavaPunctuator.DOT), IDENTIFIER_OR_METHOD_INVOCATION()),
+          // TODO Perhaps NEW_EXPRESSION() is not as good as before, as it allows NewArrayTree to be constructed
+          f.completeCreatorSelector(b.invokeRule(JavaPunctuator.DOT), NEW_EXPRESSION()),
+          ARRAY_ACCESS_EXPRESSION(),
+          f.newDotClassSelector(b.zeroOrMore(DIMENSION()), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS))));
+  }
+
+  public ExpressionTree IDENTIFIER_OR_METHOD_INVOCATION() {
+    return b.<ExpressionTree>nonterminal(JavaGrammar.IDENTIFIER_OR_METHOD_INVOCATION)
+      .is(
+        f.newIdentifierOrMethodInvocation(
           b.optional(TYPE_ARGUMENTS()),
           b.firstOf(
             b.invokeRule(JavaTokenType.IDENTIFIER),

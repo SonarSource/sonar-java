@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
@@ -82,7 +81,6 @@ import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -1164,14 +1162,8 @@ public class TreeFactory {
     return new InternalPrefixUnaryExpression(kindMaps.getPrefixOperator((JavaPunctuator) operatorTokenAstNode.getType()), operatorToken, expression);
   }
 
-  public ExpressionTree newPostfixExpression(ExpressionTree primary, Optional<List<AstNode>> selectors, Optional<AstNode> postfixOperatorAstNode) {
-    ExpressionTree result = primary;
-
-    if (selectors.isPresent()) {
-      for (AstNode selector : selectors.get()) {
-        result = applySelector(result, selector);
-      }
-    }
+  public ExpressionTree newPostfixExpression(ExpressionTree expression, Optional<AstNode> postfixOperatorAstNode) {
+    ExpressionTree result = expression;
 
     if (postfixOperatorAstNode.isPresent()) {
       InternalSyntaxToken postfixOperatorToken = InternalSyntaxToken.create(postfixOperatorAstNode.get());
@@ -1243,13 +1235,10 @@ public class TreeFactory {
     return new NotImplementedTreeImpl((AstNode) type, doubleColonToken);
   }
 
-  public NotImplementedTreeImpl newPrimaryMethodReference(ExpressionTree primary, Optional<List<AstNode>> selectors, AstNode doubleColonToken) {
+  public NotImplementedTreeImpl newPrimaryMethodReference(ExpressionTree expression, AstNode doubleColonToken) {
     // TODO SONARJAVA-613
     List<AstNode> children = Lists.newArrayList();
-    children.add((AstNode) primary);
-    if (selectors.isPresent()) {
-      children.addAll(selectors.get());
-    }
+    children.add((AstNode) expression);
     children.add(doubleColonToken);
 
     return new NotImplementedTreeImpl(children.toArray(new AstNode[children.size()]));
@@ -1390,15 +1379,6 @@ public class TreeFactory {
 
     return new NewArrayTreeImpl(dimensions.build(), ImmutableList.<ExpressionTree>of(),
       children);
-  }
-
-  public ExpressionTree newQualifiedIdentifierExpression(ExpressionTree qualifiedIdentifier, Optional<AstNode> selector) {
-    if (!selector.isPresent()) {
-      // id
-      return qualifiedIdentifier;
-    } else {
-      return applySelector(qualifiedIdentifier, selector.get());
-    }
   }
 
   public ExpressionTree basicClassExpression(PrimitiveTypeTreeImpl basicType, Optional<List<Tuple<AstNode, AstNode>>> dimensions, AstNode dotToken, AstNode classToken) {
@@ -1625,7 +1605,7 @@ public class TreeFactory {
       children.toArray(new AstNode[0]));
   }
 
-  public ExpressionTree newMemberSelectOrMethodInvocation(Optional<TypeArgumentListTreeImpl> typeArguments, AstNode identifierAstNode, Optional<ArgumentListTreeImpl> arguments) {
+  public ExpressionTree newIdentifierOrMethodInvocation(Optional<TypeArgumentListTreeImpl> typeArguments, AstNode identifierAstNode, Optional<ArgumentListTreeImpl> arguments) {
     InternalSyntaxToken identifierToken = InternalSyntaxToken.create(identifierAstNode);
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(identifierToken);
 
@@ -1641,6 +1621,87 @@ public class TreeFactory {
     }
 
     return result;
+  }
+
+  public ExpressionTree completeMemberSelectOrMethodSelector(AstNode dotTokenAstNode, ExpressionTree partial) {
+    ((JavaTree) partial).prependChildren(dotTokenAstNode);
+    return partial;
+  }
+
+  public ExpressionTree completeCreatorSelector(AstNode dotTokenAstNode, ExpressionTree partial) {
+    ((JavaTree) partial).prependChildren(dotTokenAstNode);
+    return partial;
+  }
+
+  public ExpressionTree newDotClassSelector(Optional<List<Tuple<AstNode, AstNode>>> dimensions, AstNode dotTokenAstNode, AstNode classTokenAstNode) {
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(classTokenAstNode));
+
+    List<AstNode> children = Lists.newArrayList();
+
+    if (dimensions.isPresent()) {
+      for (Tuple<AstNode, AstNode> dimension : dimensions.get()) {
+        children.add(dimension.first());
+        children.add(dimension.second());
+      }
+    }
+
+    children.add(dotTokenAstNode);
+    children.add(identifier);
+
+    return new MemberSelectExpressionTreeImpl(dimensions.isPresent() ? dimensions.get().size() : 0, identifier,
+      children);
+  }
+
+  private ExpressionTree applySelectors(ExpressionTree primary, Optional<List<ExpressionTree>> selectors) {
+    ExpressionTree result = primary;
+
+    // TODO This a bit crappy in the way dots are handled for example
+    // Perhaps we need other objects instead of completing existing ones
+    if (selectors.isPresent()) {
+      for (ExpressionTree selector : selectors.get()) {
+        if (selector.is(Kind.IDENTIFIER)) {
+          IdentifierTreeImpl identifier = (IdentifierTreeImpl) selector;
+          result = new MemberSelectExpressionTreeImpl(result, identifier,
+            (AstNode) result, identifier);
+        } else if (selector.is(Kind.METHOD_INVOCATION)) {
+          MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) selector;
+          IdentifierTreeImpl identifier = (IdentifierTreeImpl) methodInvocation.methodSelect();
+
+          MemberSelectExpressionTreeImpl memberSelect = new MemberSelectExpressionTreeImpl(result, identifier,
+            (AstNode) result, methodInvocation.getFirstChild(JavaPunctuator.DOT), identifier);
+
+          List<AstNode> children = Lists.newArrayList();
+          children.add(memberSelect);
+          children.add((ArgumentListTreeImpl) methodInvocation.arguments());
+
+          result = new MethodInvocationTreeImpl(memberSelect, methodInvocation.arguments(),
+            children.toArray(new AstNode[0]));
+        } else if (selector.is(Kind.NEW_CLASS)) {
+          NewClassTreeImpl newClass = (NewClassTreeImpl) selector;
+          newClass.prependChildren((AstNode) result);
+          result = newClass.completeWithEnclosingExpression(result);
+        } else if (selector.is(Kind.ARRAY_ACCESS_EXPRESSION)) {
+          ArrayAccessExpressionTreeImpl arrayAccess = (ArrayAccessExpressionTreeImpl) selector;
+          result = arrayAccess.complete(result);
+        } else if (selector.is(Kind.MEMBER_SELECT)) {
+          MemberSelectExpressionTreeImpl memberSelect = (MemberSelectExpressionTreeImpl) selector;
+          memberSelect.prependChildren((AstNode) result);
+          result = memberSelect.completeWithExpression(result);
+        } else {
+          throw new IllegalStateException();
+        }
+      }
+    }
+
+    return result;
+  }
+
+  public ExpressionTree applySelectors1(ExpressionTree primary, Optional<List<ExpressionTree>> selectors) {
+    return applySelectors(primary, selectors);
+  }
+
+  public ExpressionTree applySelectors2(ExpressionTree primary, Optional<List<ExpressionTree>> selectors) {
+    return applySelectors(primary, selectors);
   }
 
   // End of expressions
@@ -1819,80 +1880,6 @@ public class TreeFactory {
 
   public <T, U> Tuple<T, U> newTuple6(T first, U second) {
     return newTuple(first, second);
-  }
-
-  // Crappy methods which must go away
-
-  private ExpressionTree applySelector(ExpressionTree expression, AstNode selectorNode) {
-    JavaTreeMaker.checkType(selectorNode, JavaGrammar.SELECTOR);
-
-    if (selectorNode.hasDirectChildren(JavaPunctuator.DOT) && !selectorNode.hasDirectChildren(JavaKeyword.NEW, JavaKeyword.CLASS)) {
-      ExpressionTree selector = (ExpressionTree) selectorNode.getLastChild();
-
-      ExpressionTree result;
-      if (selector.is(Kind.METHOD_INVOCATION)) {
-        MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) selector;
-
-        result = new MemberSelectExpressionTreeImpl(expression, (IdentifierTree) methodInvocation.methodSelect(),
-          (AstNode) expression, selectorNode.getFirstChild(JavaPunctuator.DOT), (AstNode) methodInvocation.methodSelect());
-
-        result = new MethodInvocationTreeImpl(result, methodInvocation.arguments(),
-          (AstNode) result, (AstNode) methodInvocation.arguments());
-      } else if (selector.is(Kind.IDENTIFIER)) {
-        result = new MemberSelectExpressionTreeImpl(expression, (IdentifierTree) selector,
-          (AstNode) expression, selectorNode.getFirstChild(JavaPunctuator.DOT), (AstNode) selector);
-      } else {
-        throw new IllegalArgumentException();
-      }
-
-      return result;
-    } else if (selectorNode.hasDirectChildren(JavaKeyword.NEW)) {
-      ExpressionTree identifier = null;
-
-      for (AstNode child : selectorNode.getChildren()) {
-        if (child instanceof ExpressionTree) {
-          identifier = (ExpressionTree) child;
-          break;
-        }
-      }
-      Preconditions.checkState(identifier != null);
-
-      TypeArgumentListTreeImpl typeArguments = (TypeArgumentListTreeImpl) selectorNode.getFirstChild(JavaGrammar.TYPE_ARGUMENTS);
-      if (typeArguments != null) {
-        // TODO Parameterized expression
-        ((JavaTree) identifier).prependChildren(typeArguments);
-      }
-
-      NewClassTreeImpl newClass = (NewClassTreeImpl) selectorNode.getFirstChild(Kind.NEW_CLASS);
-
-      List<AstNode> children = Lists.newArrayList();
-      children.add((AstNode) expression);
-      children.add(selectorNode.getFirstChild(JavaPunctuator.DOT));
-      children.add(selectorNode.getFirstChild(JavaKeyword.NEW));
-      children.add((AstNode) identifier);
-
-      newClass.completeWithEnclosingExpression(expression).completeWithIdentifier(identifier);
-      newClass.prependChildren(children);
-
-      return newClass;
-    } else if (selectorNode.hasDirectChildren(Kind.ARRAY_ACCESS_EXPRESSION)) {
-      return ((ArrayAccessExpressionTreeImpl) selectorNode.getFirstChild(Kind.ARRAY_ACCESS_EXPRESSION)).complete(expression);
-    } else if (selectorNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
-      // id(arguments)
-      return new MethodInvocationTreeImpl(
-        expression, (ArgumentListTreeImpl) selectorNode.getFirstChild(JavaGrammar.ARGUMENTS),
-        (AstNode) expression, selectorNode);
-    } else if (selectorNode.hasDirectChildren(JavaKeyword.CLASS)) {
-      // 15.8.2. Class Literals
-      // id.class
-      // id[].class
-      return new MemberSelectExpressionTreeImpl(
-        treeMaker.applyDim(expression, selectorNode.getChildren(TreeFactory.WRAPPER_AST_NODE).size()),
-        treeMaker.identifier(selectorNode.getFirstChild(JavaKeyword.CLASS)),
-        (AstNode) expression, selectorNode);
-    } else {
-      throw new IllegalStateException(AstXmlPrinter.print(selectorNode));
-    }
   }
 
 }

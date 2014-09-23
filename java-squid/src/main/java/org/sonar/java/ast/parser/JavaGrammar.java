@@ -34,7 +34,6 @@ import static org.sonar.java.ast.api.JavaKeyword.EXTENDS;
 import static org.sonar.java.ast.api.JavaKeyword.IMPLEMENTS;
 import static org.sonar.java.ast.api.JavaKeyword.IMPORT;
 import static org.sonar.java.ast.api.JavaKeyword.INTERFACE;
-import static org.sonar.java.ast.api.JavaKeyword.NEW;
 import static org.sonar.java.ast.api.JavaKeyword.PACKAGE;
 import static org.sonar.java.ast.api.JavaKeyword.STATIC;
 import static org.sonar.java.ast.api.JavaKeyword.THROWS;
@@ -283,7 +282,7 @@ public enum JavaGrammar implements GrammarRuleKey {
   ANNOTATION_ARGUMENTS,
   INFERED_PARAMS,
 
-  MEMBER_SELECT_OR_METHOD_INVOCATION,
+  IDENTIFIER_OR_METHOD_INVOCATION,
 
   ANNOTATED_PARAMETERIZED_IDENTIFIER;
 
@@ -298,7 +297,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     interfaceDeclarations(b);
     enums(b);
     blocksAndStatements(b);
-    expressions(b);
     literals(b);
 
     b.setRootRule(COMPILATION_UNIT);
@@ -567,18 +565,6 @@ public enum JavaGrammar implements GrammarRuleKey {
         LOCAL_VARIABLE_DECLARATION_STATEMENT,
         b.sequence(MODIFIERS, b.firstOf(CLASS_DECLARATION, ENUM_DECLARATION)),
         STATEMENT));
-  }
-
-  /**
-   * 15. Expressions
-   */
-  private static void expressions(LexerlessGrammarBuilder b) {
-    b.rule(SELECTOR).is(
-      b.firstOf(
-        b.sequence(DOT, MEMBER_SELECT_OR_METHOD_INVOCATION),
-        b.sequence(DOT, NEW, b.optional(TYPE_ARGUMENTS), ANNOTATED_PARAMETERIZED_IDENTIFIER, CLASS_CREATOR_REST),
-        DIM_EXPR,
-        b.sequence(b.zeroOrMore(DIM), DOT, CLASS)));
   }
 
   private final String internalName;

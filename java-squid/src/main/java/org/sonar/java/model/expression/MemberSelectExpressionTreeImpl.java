@@ -31,14 +31,30 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements MemberSelectExpressionTree {
 
-  private final ExpressionTree expression;
+  private ExpressionTree expression;
+
+  private final int dims;
   private final IdentifierTree identifier;
+
+  public MemberSelectExpressionTreeImpl(int dims, IdentifierTreeImpl identifier, List<AstNode> children) {
+    super(Kind.MEMBER_SELECT);
+
+    this.dims = dims;
+    this.identifier = identifier;
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
 
   public MemberSelectExpressionTreeImpl(ExpressionTree expression, IdentifierTree identifier, AstNode... children) {
     super(Kind.MEMBER_SELECT);
+
+    this.dims = -1;
     this.expression = Preconditions.checkNotNull(expression);
     this.identifier = Preconditions.checkNotNull(identifier);
 
@@ -49,8 +65,24 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
 
   public MemberSelectExpressionTreeImpl(AstNode astNode, ExpressionTree expression, IdentifierTree identifier) {
     super(astNode);
+
+    this.dims = -1;
     this.expression = Preconditions.checkNotNull(expression);
     this.identifier = Preconditions.checkNotNull(identifier);
+  }
+
+  public MemberSelectExpressionTreeImpl completeWithExpression(ExpressionTree expression) {
+    Preconditions.checkState(dims >= 0 && this.expression == null);
+    ExpressionTree result = expression;
+
+    // TODO Remove logic?
+    for (int i = 0; i < dims; i++) {
+      result = new ArrayTypeTreeImpl(null, result);
+    }
+
+    this.expression = result;
+
+    return this;
   }
 
   @Override
