@@ -31,6 +31,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
+import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.java.ast.parser.VariableDeclaratorListTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.EnumConstantTreeImpl;
@@ -132,7 +133,7 @@ public class JavaTreeMaker {
 
   ExpressionTree referenceType(AstNode astNode, int dimSize) {
     ExpressionTree result = astNode.getFirstChild().is(Kind.PRIMITIVE_TYPE) ? (PrimitiveTypeTree) astNode.getFirstChild() : (ExpressionTree) astNode.getFirstChild();
-    return applyDim(result, dimSize + astNode.getChildren(JavaGrammar.DIM).size());
+    return applyDim(result, dimSize + astNode.getChildren(TreeFactory.WRAPPER_AST_NODE).size());
   }
 
   /*
@@ -350,7 +351,7 @@ public class JavaTreeMaker {
       if (returnTypeNode.is(JavaKeyword.VOID)) {
         returnType = basicType(returnTypeNode);
       } else {
-        returnType = applyDim((ExpressionTree) returnTypeNode, astNode.getChildren(JavaGrammar.DIM).size());
+        returnType = applyDim((ExpressionTree) returnTypeNode, astNode.getChildren(TreeFactory.WRAPPER_AST_NODE).size());
       }
     }
     BlockTree body = null;
@@ -524,7 +525,7 @@ public class JavaTreeMaker {
       members.add(new VariableTreeImpl(
         constantDeclaratorRestNode,
         modifiers,
-        applyDim(type, constantDeclaratorRestNode.getChildren(JavaGrammar.DIM).size()),
+        applyDim(type, constantDeclaratorRestNode.getChildren(TreeFactory.WRAPPER_AST_NODE).size()),
         identifier(identifierNode),
         (ExpressionTree) constantDeclaratorRestNode.getLastChild()));
     }

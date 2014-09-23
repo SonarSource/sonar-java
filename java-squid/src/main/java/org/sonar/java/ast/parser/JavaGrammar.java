@@ -587,9 +587,6 @@ public enum JavaGrammar implements GrammarRuleKey {
         JavaKeyword.THIS,
         JavaKeyword.SUPER),
       b.optional(ARGUMENTS));
-
-    b.rule(CLASS_CREATOR_REST).is(ARGUMENTS, b.optional(CLASS_BODY));
-    b.rule(DIM).is(LBRK, RBRK);
   }
 
   private final String internalName;

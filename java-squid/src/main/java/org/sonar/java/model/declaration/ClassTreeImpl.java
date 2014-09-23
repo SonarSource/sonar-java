@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -70,8 +71,8 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   public ClassTreeImpl(
-      AstNode astNode, Kind kind,
-      ModifiersTree modifiers, @Nullable IdentifierTree simpleName, List<TypeParameterTree> typeParameters, @Nullable Tree superClass, List<Tree> superInterfaces, List<Tree> members) {
+    AstNode astNode, Kind kind,
+    ModifiersTree modifiers, @Nullable IdentifierTree simpleName, List<TypeParameterTree> typeParameters, @Nullable Tree superClass, List<Tree> superInterfaces, List<Tree> members) {
     super(astNode);
     this.kind = Preconditions.checkNotNull(kind);
     this.modifiers = Preconditions.checkNotNull(modifiers);
@@ -143,11 +144,11 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     if (is(Kind.ANNOTATION_TYPE)) {
       return new InternalSyntaxToken(getAstNode().getFirstChild(leftOrRightBrace).getToken());
     } else if (getAstNode().is(JavaGrammar.CLASS_BODY)) {
-      //Enum constant body
-      return new InternalSyntaxToken(getAstNode().getToken());
+      // Enum constant body
+      return new InternalSyntaxToken(getAstNode().getFirstChild(leftOrRightBrace).getToken());
     }
     return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.CLASS_BODY, JavaGrammar.INTERFACE_BODY, JavaGrammar.ENUM_BODY)
-        .getFirstChild(leftOrRightBrace).getToken());
+      .getFirstChild(leftOrRightBrace).getToken());
   }
 
   @Override
@@ -178,15 +179,15 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-        Iterators.forArray(
-            modifiers,
-            simpleName
+      Iterators.forArray(
+        modifiers,
+        simpleName
         ),
-        typeParameters.iterator(),
-        Iterators.singletonIterator(superClass),
-        superInterfaces.iterator(),
-        members.iterator()
-    );
+      typeParameters.iterator(),
+      Iterators.singletonIterator(superClass),
+      superInterfaces.iterator(),
+      members.iterator()
+      );
   }
 
 }

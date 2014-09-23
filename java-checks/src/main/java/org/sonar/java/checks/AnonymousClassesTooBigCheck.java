@@ -36,9 +36,9 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(
-    key = AnonymousClassesTooBigCheck.RULE_KEY,
-    priority = Priority.MAJOR,
-    tags = {"brain-overload"})
+  key = AnonymousClassesTooBigCheck.RULE_KEY,
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements JavaFileScanner {
 

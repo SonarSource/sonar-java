@@ -24,6 +24,7 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
@@ -45,7 +46,7 @@ public class ArrayDesignatorOnVariableCheck extends SquidCheck<LexerlessGrammar>
 
   @Override
   public void visitNode(AstNode node) {
-    if (node.hasDirectChildren(JavaGrammar.DIM) || node.is(Kind.VARIABLE) && ((VariableTreeImpl) node).dims() > 0) {
+    if (node.hasDirectChildren(TreeFactory.WRAPPER_AST_NODE) || node.is(Kind.VARIABLE) && ((VariableTreeImpl) node).dims() > 0) {
       getContext().createLineViolation(this, "Move the array designator from the variable to the type.", node);
     }
   }

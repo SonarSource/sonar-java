@@ -23,7 +23,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -36,11 +38,23 @@ import java.util.Iterator;
 import java.util.List;
 
 public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree {
-  private final ExpressionTree enclosingExpression;
-  private final ExpressionTree identifier;
+
+  private ExpressionTree enclosingExpression;
+  private ExpressionTree identifier;
   private final List<ExpressionTree> arguments;
   @Nullable
   private final ClassTree classBody;
+
+  public NewClassTreeImpl(ArgumentListTreeImpl arguments, @Nullable ClassTreeImpl classBody, AstNode... children) {
+    super(Kind.NEW_CLASS);
+    this.enclosingExpression = null;
+    this.arguments = Preconditions.checkNotNull(arguments);
+    this.classBody = classBody;
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
 
   public NewClassTreeImpl(@Nullable ExpressionTree enclosingExpression, ExpressionTree identifier, List<ExpressionTree> arguments, @Nullable ClassTree classBody,
     AstNode... children) {
@@ -62,6 +76,18 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     this.identifier = Preconditions.checkNotNull(identifier);
     this.arguments = Preconditions.checkNotNull(arguments);
     this.classBody = classBody;
+  }
+
+  public NewClassTreeImpl completeWithIdentifier(ExpressionTree identifier) {
+    this.identifier = identifier;
+
+    return this;
+  }
+
+  public NewClassTreeImpl completeWithEnclosingExpression(ExpressionTree enclosingExpression) {
+    this.enclosingExpression = enclosingExpression;
+
+    return this;
   }
 
   @Override

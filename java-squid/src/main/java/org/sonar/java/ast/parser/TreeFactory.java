@@ -81,7 +81,6 @@ import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
@@ -577,13 +576,14 @@ public class TreeFactory {
     return new VariableDeclaratorListTreeImpl(variables.build(), children);
   }
 
-  public VariableTreeImpl completeVariableDeclarator(AstNode identifierAstNode, Optional<List<AstNode>> dims, Optional<VariableTreeImpl> partial) {
+  public VariableTreeImpl completeVariableDeclarator(AstNode identifierAstNode, Optional<List<Tuple<AstNode, AstNode>>> dimensions, Optional<VariableTreeImpl> partial) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
 
     List<AstNode> children = Lists.newArrayList();
-    if (dims.isPresent()) {
-      for (AstNode dim : dims.get()) {
-        children.add(dim);
+    if (dimensions.isPresent()) {
+      for (Tuple<AstNode, AstNode> dimension : dimensions.get()) {
+        children.add(dimension.first());
+        children.add(dimension.second());
       }
     }
 
@@ -591,10 +591,10 @@ public class TreeFactory {
       children.add(0, identifier);
       partial.get().prependChildren(children);
 
-      return partial.get().completeIdentifierAndDims(identifier, dims.isPresent() ? dims.get().size() : 0);
+      return partial.get().completeIdentifierAndDims(identifier, dimensions.isPresent() ? dimensions.get().size() : 0);
     } else {
       return new VariableTreeImpl(
-        identifier, dims.isPresent() ? dims.get().size() : 0,
+        identifier, dimensions.isPresent() ? dimensions.get().size() : 0,
         children);
     }
   }
@@ -1328,14 +1328,9 @@ public class TreeFactory {
     return partial;
   }
 
-  public ExpressionTree newClassCreator(ExpressionTree qualifiedIdentifier, AstNode classCreatorRest) {
-    ClassTreeImpl classBody = null;
-    if (classCreatorRest.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
-      List<Tree> body = treeMaker.classBody(classCreatorRest.getFirstChild(JavaGrammar.CLASS_BODY));
-      classBody = new ClassTreeImpl(classCreatorRest, Tree.Kind.CLASS, ModifiersTreeImpl.EMPTY, null, ImmutableList.<TypeParameterTree>of(), null, ImmutableList.<Tree>of(), body);
-    }
-    return new NewClassTreeImpl(null, qualifiedIdentifier, (ArgumentListTreeImpl) classCreatorRest.getFirstChild(JavaGrammar.ARGUMENTS), classBody,
-      (AstNode) qualifiedIdentifier, classCreatorRest);
+  public ExpressionTree newClassCreator(ExpressionTree qualifiedIdentifier, NewClassTreeImpl classCreatorRest) {
+    classCreatorRest.prependChildren((AstNode) qualifiedIdentifier);
+    return classCreatorRest.completeWithIdentifier(qualifiedIdentifier);
   }
 
   public ExpressionTree newArrayCreator(Tree type, NewArrayTreeImpl partial) {
@@ -1350,12 +1345,19 @@ public class TreeFactory {
     return partial;
   }
 
-  public NewArrayTreeImpl newArrayCreatorWithInitializer(AstNode openBracketToken, AstNode closeBracketToken, Optional<List<AstNode>> dims, NewArrayTreeImpl partial) {
+  public NewArrayTreeImpl newArrayCreatorWithInitializer(
+    AstNode openBracketToken, AstNode closeBracketToken,
+    Optional<List<Tuple<AstNode, AstNode>>> dimensions,
+    NewArrayTreeImpl partial) {
+
     List<AstNode> children = Lists.newArrayList();
     children.add(openBracketToken);
     children.add(closeBracketToken);
-    if (dims.isPresent()) {
-      children.addAll(dims.get());
+    if (dimensions.isPresent()) {
+      for (Tuple<AstNode, AstNode> dimension : dimensions.get()) {
+        children.add(dimension.first());
+        children.add(dimension.second());
+      }
     }
 
     partial.prependChildren(children);
@@ -1399,21 +1401,24 @@ public class TreeFactory {
     }
   }
 
-  public ExpressionTree basicClassExpression(PrimitiveTypeTreeImpl basicType, Optional<List<AstNode>> dims, AstNode dotToken, AstNode classToken) {
+  public ExpressionTree basicClassExpression(PrimitiveTypeTreeImpl basicType, Optional<List<Tuple<AstNode, AstNode>>> dimensions, AstNode dotToken, AstNode classToken) {
     // 15.8.2. Class Literals
     // int.class
     // int[].class
 
     List<AstNode> children = Lists.newArrayList();
     children.add(basicType);
-    if (dims.isPresent()) {
-      children.addAll(dims.get());
+    if (dimensions.isPresent()) {
+      for (Tuple<AstNode, AstNode> dimension : dimensions.get()) {
+        children.add(dimension.first());
+        children.add(dimension.second());
+      }
     }
     children.add(dotToken);
     children.add(classToken);
 
     return new MemberSelectExpressionTreeImpl(
-      treeMaker.applyDim(basicType, dims.isPresent() ? dims.get().size() : 0), treeMaker.identifier(classToken),
+      treeMaker.applyDim(basicType, dimensions.isPresent() ? dimensions.get().size() : 0), treeMaker.identifier(classToken),
       children.toArray(new AstNode[children.size()]));
   }
 
@@ -1594,11 +1599,37 @@ public class TreeFactory {
     return result;
   }
 
+  public NewClassTreeImpl newClassCreatorRest(ArgumentListTreeImpl arguments, Optional<AstNode> classBodyAstNode) {
+    List<AstNode> children = Lists.newArrayList();
+    children.add(arguments);
+
+    ClassTreeImpl classBody = null;
+
+    if (classBodyAstNode.isPresent()) {
+      List<Tree> body = treeMaker.classBody(classBodyAstNode.get());
+      // TODO Legacy node
+      classBody = new ClassTreeImpl(
+        classBodyAstNode.get(),
+        Tree.Kind.CLASS,
+        ModifiersTreeImpl.EMPTY,
+        null,
+        ImmutableList.<TypeParameterTree>of(),
+        null,
+        ImmutableList.<Tree>of(),
+        body);
+
+      children.add(classBodyAstNode.get());
+    }
+
+    return new NewClassTreeImpl(arguments, classBody,
+      children.toArray(new AstNode[0]));
+  }
+
   // End of expressions
 
   // Helpers
 
-  private static final AstNodeType WRAPPER_AST_NODE = new AstNodeType() {
+  public static final AstNodeType WRAPPER_AST_NODE = new AstNodeType() {
     @Override
     public String toString() {
       return "WRAPPER_AST_NODE";
@@ -1768,6 +1799,10 @@ public class TreeFactory {
     return newTuple(first, second);
   }
 
+  public <T, U> Tuple<T, U> newTuple6(T first, U second) {
+    return newTuple(first, second);
+  }
+
   // Crappy methods which must go away
 
   private ExpressionTree applySelector(ExpressionTree expression, AstNode selectorNode) {
@@ -1796,9 +1831,11 @@ public class TreeFactory {
       return result;
     } else if (selectorNode.hasDirectChildren(JavaKeyword.NEW)) {
       ExpressionTree identifier = null;
+
       for (AstNode child : selectorNode.getChildren()) {
         if (child instanceof ExpressionTree) {
           identifier = (ExpressionTree) child;
+          break;
         }
       }
       Preconditions.checkState(identifier != null);
@@ -1809,28 +1846,18 @@ public class TreeFactory {
         ((JavaTree) identifier).prependChildren(typeArguments);
       }
 
-      AstNode classCreatorRestNode = selectorNode.getFirstChild(JavaGrammar.CLASS_CREATOR_REST);
-      ArgumentListTreeImpl arguments = (ArgumentListTreeImpl) classCreatorRestNode.getFirstChild(JavaGrammar.ARGUMENTS);
-
-      ClassTree classBody = null;
-      if (classCreatorRestNode.hasDirectChildren(JavaGrammar.CLASS_BODY)) {
-        classBody = new ClassTreeImpl(
-          classCreatorRestNode,
-          Tree.Kind.CLASS,
-          ModifiersTreeImpl.EMPTY,
-          treeMaker.classBody(classCreatorRestNode.getFirstChild(JavaGrammar.CLASS_BODY)));
-      }
+      NewClassTreeImpl newClass = (NewClassTreeImpl) selectorNode.getFirstChild(Kind.NEW_CLASS);
 
       List<AstNode> children = Lists.newArrayList();
       children.add((AstNode) expression);
       children.add(selectorNode.getFirstChild(JavaPunctuator.DOT));
       children.add(selectorNode.getFirstChild(JavaKeyword.NEW));
       children.add((AstNode) identifier);
-      children.add(classCreatorRestNode);
 
-      return new NewClassTreeImpl(
-        expression, identifier, arguments, classBody,
-        children.toArray(new AstNode[children.size()]));
+      newClass.completeWithEnclosingExpression(expression).completeWithIdentifier(identifier);
+      newClass.prependChildren(children);
+
+      return newClass;
     } else if (selectorNode.hasDirectChildren(Kind.ARRAY_ACCESS_EXPRESSION)) {
       return ((ArrayAccessExpressionTreeImpl) selectorNode.getFirstChild(Kind.ARRAY_ACCESS_EXPRESSION)).complete(expression);
     } else if (selectorNode.hasDirectChildren(JavaGrammar.ARGUMENTS)) {
@@ -1843,7 +1870,7 @@ public class TreeFactory {
       // id.class
       // id[].class
       return new MemberSelectExpressionTreeImpl(
-        treeMaker.applyDim(expression, selectorNode.getChildren(JavaGrammar.DIM).size()),
+        treeMaker.applyDim(expression, selectorNode.getChildren(TreeFactory.WRAPPER_AST_NODE).size()),
         treeMaker.identifier(selectorNode.getFirstChild(JavaKeyword.CLASS)),
         (AstNode) expression, selectorNode);
     } else {

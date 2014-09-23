@@ -20,17 +20,18 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.TreeFactory;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1195",
   priority = Priority.MINOR,
-  tags={"convention"})
+  tags = {"convention"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class ArrayDesignatorAfterTypeCheck extends SquidCheck<LexerlessGrammar> {
 
@@ -42,7 +43,7 @@ public class ArrayDesignatorAfterTypeCheck extends SquidCheck<LexerlessGrammar> 
 
   @Override
   public void visitNode(AstNode node) {
-    if (node.hasDirectChildren(JavaGrammar.DIM)) {
+    if (node.hasDirectChildren(TreeFactory.WRAPPER_AST_NODE)) {
       getContext().createLineViolation(this, "Move the array designators \"[]\" to the end of the return type.", node);
     }
   }

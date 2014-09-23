@@ -23,6 +23,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.java.ast.parser.TreeFactory.Tuple;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -34,6 +35,7 @@ import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
+import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
@@ -133,7 +135,7 @@ public class ActionGrammar {
           b.firstOf(
             BASIC_TYPE(),
             QUALIFIED_IDENTIFIER()),
-          b.zeroOrMore(f.newWrapperAstNode5(b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaGrammar.DIM)))));
+          b.zeroOrMore(f.newWrapperAstNode5(b.zeroOrMore((AstNode) ANNOTATION()), DIMENSION()))));
   }
 
   public TypeArgumentListTreeImpl TYPE_ARGUMENTS() {
@@ -370,7 +372,7 @@ public class ActionGrammar {
       .is(
         f.newVariableDeclaratorId(
           b.invokeRule(JavaTokenType.IDENTIFIER),
-          b.zeroOrMore(f.newWrapperAstNode11(b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaGrammar.DIM)))));
+          b.zeroOrMore(f.newWrapperAstNode11(b.zeroOrMore((AstNode) ANNOTATION()), DIMENSION()))));
   }
 
   public VariableTreeImpl FORMAL_PARAMETER() {
@@ -401,7 +403,7 @@ public class ActionGrammar {
     return b.<VariableTreeImpl>nonterminal(JavaGrammar.VARIABLE_DECLARATOR)
       .is(
         f.completeVariableDeclarator(
-          b.invokeRule(JavaTokenType.IDENTIFIER), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)),
+          b.invokeRule(JavaTokenType.IDENTIFIER), b.zeroOrMore(DIMENSION()),
           b.optional(
             f.newVariableDeclarator(b.invokeRule(JavaPunctuator.EQU), VARIABLE_INITIALIZER()))));
   }
@@ -967,7 +969,7 @@ public class ActionGrammar {
         f.completeCreator(
           b.optional(TYPE_ARGUMENTS()),
           b.firstOf(
-            f.newClassCreator(QUALIFIED_IDENTIFIER(), b.invokeRule(JavaGrammar.CLASS_CREATOR_REST)),
+            f.newClassCreator(QUALIFIED_IDENTIFIER(), CLASS_CREATOR_REST()),
             f.newArrayCreator(
               b.firstOf(
                 QUALIFIED_IDENTIFIER(),
@@ -982,11 +984,11 @@ public class ActionGrammar {
           b.zeroOrMore(ANNOTATION()),
           b.firstOf(
             f.newArrayCreatorWithInitializer(
-              b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), ARRAY_INITIALIZER()),
+              b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK), b.zeroOrMore(DIMENSION()), ARRAY_INITIALIZER()),
             f.newArrayCreatorWithDimension(
               b.invokeRule(JavaPunctuator.LBRK), EXPRESSION(), b.invokeRule(JavaPunctuator.RBRK),
               b.zeroOrMore(ARRAY_ACCESS_EXPRESSION()),
-              b.zeroOrMore(f.newWrapperAstNode(b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaGrammar.DIM)))))));
+              b.zeroOrMore(f.newWrapperAstNode(b.zeroOrMore((AstNode) ANNOTATION()), DIMENSION()))))));
   }
 
   // TODO This method should go away
@@ -994,7 +996,7 @@ public class ActionGrammar {
     return b
       .<ExpressionTree>nonterminal(JavaGrammar.BASIC_CLASS_EXPRESSION)
       .is(
-        f.basicClassExpression(BASIC_TYPE(), b.zeroOrMore(b.invokeRule(JavaGrammar.DIM)), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
+        f.basicClassExpression(BASIC_TYPE(), b.zeroOrMore(DIMENSION()), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
   }
 
   // TODO This method should go away
@@ -1068,6 +1070,16 @@ public class ActionGrammar {
   public ArrayAccessExpressionTreeImpl ARRAY_ACCESS_EXPRESSION() {
     return b.<ArrayAccessExpressionTreeImpl>nonterminal(JavaGrammar.DIM_EXPR)
       .is(f.newArrayAccessExpression(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaPunctuator.LBRK), EXPRESSION(), b.invokeRule(JavaPunctuator.RBRK)));
+  }
+
+  public NewClassTreeImpl CLASS_CREATOR_REST() {
+    return b.<NewClassTreeImpl>nonterminal(JavaGrammar.CLASS_CREATOR_REST)
+      .is(f.newClassCreatorRest(ARGUMENTS(), b.optional(b.invokeRule(JavaGrammar.CLASS_BODY))));
+  }
+
+  public Tuple<AstNode, AstNode> DIMENSION() {
+    return b.<Tuple<AstNode, AstNode>>nonterminal(JavaGrammar.DIM)
+      .is(f.newTuple6(b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK)));
   }
 
   // End of expressions
