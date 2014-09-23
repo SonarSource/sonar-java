@@ -1547,7 +1547,7 @@ public class TreeFactory {
     return new ArgumentListTreeImpl(expressions.build(), children);
   }
 
-  public ExpressionTree qualifiedIdentifier(Optional<List<AnnotationTreeImpl>> annotations, AstNode firstIdentifier, Optional<List<AstNode>> rests) {
+  public ExpressionTree newQualifiedIdentifier(Optional<List<AnnotationTreeImpl>> annotations, AstNode firstIdentifier, Optional<List<AstNode>> rests) {
     List<AstNode> children = Lists.newArrayList();
     if (annotations.isPresent()) {
       children.addAll(annotations.get());
@@ -1586,6 +1586,47 @@ public class TreeFactory {
     }
 
     return (ExpressionTree) result;
+  }
+
+  public ExpressionTree newQualifiedIdentifier(ExpressionTree firstIdentifier, Optional<List<Tuple<AstNode, ExpressionTree>>> rests) {
+    ExpressionTree result = firstIdentifier;
+
+    if (rests.isPresent()) {
+      for (Tuple<AstNode, ExpressionTree> rest : rests.get()) {
+        if (rest.second().is(Kind.IDENTIFIER)) {
+          result = new MemberSelectExpressionTreeImpl(result, (IdentifierTreeImpl) rest.second(),
+            (AstNode) result, rest.first(), (AstNode) rest.second());
+        } else if (rest.second().is(Kind.PARAMETERIZED_TYPE)) {
+          ParameterizedTypeTreeImpl parameterizedType = (ParameterizedTypeTreeImpl) rest.second();
+          IdentifierTreeImpl identifier = (IdentifierTreeImpl) parameterizedType.type();
+
+          result = new MemberSelectExpressionTreeImpl(result, identifier,
+            (AstNode) result, rest.first(), identifier);
+
+          result = new ParameterizedTypeTreeImpl(result, (TypeArgumentListTreeImpl) parameterizedType.typeArguments());
+        } else {
+          throw new IllegalArgumentException();
+        }
+      }
+    }
+
+    return result;
+  }
+
+  public ExpressionTree newAnnotatedParameterizedIdentifier(
+    Optional<List<AnnotationTreeImpl>> annotations, AstNode identifierAstNode, Optional<TypeArgumentListTreeImpl> typeArguments) {
+
+    ExpressionTree result = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+
+    if (annotations.isPresent()) {
+      ((JavaTree) result).prependChildren(annotations.get());
+    }
+
+    if (typeArguments.isPresent()) {
+      result = new ParameterizedTypeTreeImpl(result, typeArguments.get());
+    }
+
+    return result;
   }
 
   public NewArrayTreeImpl newArrayInitializer(AstNode openBraceTokenAstNode, Optional<List<AstNode>> rests, AstNode closeBraceTokenAstNode) {
@@ -1806,6 +1847,10 @@ public class TreeFactory {
   }
 
   public <T, U> Tuple<T, U> newTuple4(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple5(T first, U second) {
     return newTuple(first, second);
   }
 

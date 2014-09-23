@@ -1054,10 +1054,13 @@ public class ActionGrammar {
   public ExpressionTree QUALIFIED_IDENTIFIER() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.QUALIFIED_IDENTIFIER)
       .is(
-        f.qualifiedIdentifier(
-          b.zeroOrMore(ANNOTATION()),
-          b.invokeRule(JavaTokenType.IDENTIFIER),
-          b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.DOT), b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaTokenType.IDENTIFIER)))));
+        f.newQualifiedIdentifier(
+          ANNOTATED_PARAMETERIZED_IDENTIFIER(), b.zeroOrMore(f.newTuple5(b.invokeRule(JavaPunctuator.DOT), ANNOTATED_PARAMETERIZED_IDENTIFIER()))));
+  }
+
+  public ExpressionTree ANNOTATED_PARAMETERIZED_IDENTIFIER() {
+    return b.<ExpressionTree>nonterminal()
+      .is(f.newAnnotatedParameterizedIdentifier(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaTokenType.IDENTIFIER), b.optional(TYPE_ARGUMENTS())));
   }
 
   public ExpressionTree VARIABLE_INITIALIZER() {

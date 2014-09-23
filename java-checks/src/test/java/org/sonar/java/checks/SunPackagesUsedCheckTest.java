@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
@@ -39,14 +39,14 @@ public class SunPackagesUsedCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SunPackagesUsedCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("Replace this usage of Sun classes by ones from the Java API.")
-        .next().atLine(2)
-        .next().atLine(7)
-        .next().atLine(8)
-        .next().atLine(10)
-        .next().atLine(11)
-        .next().atLine(13)
-    ;
+      .next().atLine(1).withMessage("Replace this usage of Sun classes by ones from the Java API.")
+      .next().atLine(2)
+      .next().atLine(7)
+      .next().atLine(8)
+      .next().atLine(10)
+      .next().atLine(11)
+      .next().atLine(13)
+      .next().atLine(17);
   }
 
   @Test
@@ -54,8 +54,9 @@ public class SunPackagesUsedCheckTest {
     check.exclude = "com.sun.imageio,com.sun.jersey,com.sun.org.apache.xml";
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SunPackagesUsedCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(10).withMessage("Replace this usage of Sun classes by ones from the Java API.")
-        .next().atLine(13).withMessage("Replace this usage of Sun classes by ones from the Java API.")
-    ;
+      .next().atLine(10).withMessage("Replace this usage of Sun classes by ones from the Java API.")
+      .next().atLine(13).withMessage("Replace this usage of Sun classes by ones from the Java API.")
+      .next().atLine(17);
   }
+
 }

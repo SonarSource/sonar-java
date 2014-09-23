@@ -13,5 +13,7 @@ class A {
     sun       //nonCompliant
         .Foo.toto
         .asd a;
+
+    new Foo<com.sun.Bar>() {}; // Noncompliant
   }
 }
