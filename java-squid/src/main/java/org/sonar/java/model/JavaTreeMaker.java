@@ -29,7 +29,6 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
-import org.sonar.java.ast.parser.ClassTypeListTreeImpl;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.VariableDeclaratorListTreeImpl;
@@ -221,7 +220,7 @@ public class JavaTreeMaker {
     AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
     Tree superClass = extendsNode != null ? (Tree) extendsNode.getNextSibling() : null;
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
-    List<Tree> superInterfaces = implementsNode != null ? (ClassTypeListTreeImpl) implementsNode.getNextSibling() : ImmutableList.<Tree>of();
+    List<Tree> superInterfaces = implementsNode != null ? (List) implementsNode.getNextSibling() : ImmutableList.<ExpressionTree>of();
     return new ClassTreeImpl(
       astNode, Tree.Kind.CLASS,
       modifiers,
@@ -410,7 +409,7 @@ public class JavaTreeMaker {
       members.addAll(classBody(enumBodyDeclarationsNode));
     }
     AstNode implementsNode = astNode.getFirstChild(JavaKeyword.IMPLEMENTS);
-    List<Tree> superInterfaces = implementsNode != null ? (ClassTypeListTreeImpl) implementsNode.getNextSibling() : ImmutableList.<Tree>of();
+    List<Tree> superInterfaces = implementsNode != null ? (List) implementsNode.getNextSibling() : ImmutableList.<Tree>of();
     return new ClassTreeImpl(astNode, Tree.Kind.ENUM, modifiers, enumType, ImmutableList.<TypeParameterTree>of(), /* super class: */null, superInterfaces, members.build());
   }
 
@@ -433,7 +432,7 @@ public class JavaTreeMaker {
       }
     }
     AstNode extendsNode = astNode.getFirstChild(JavaKeyword.EXTENDS);
-    List<Tree> superInterfaces = extendsNode != null ? (ClassTypeListTreeImpl) extendsNode.getNextSibling() : ImmutableList.<Tree>of();
+    List<Tree> superInterfaces = extendsNode != null ? (List) extendsNode.getNextSibling() : ImmutableList.<Tree>of();
     return new ClassTreeImpl(
       astNode, Tree.Kind.INTERFACE,
       modifiers,

@@ -113,8 +113,6 @@ public enum JavaGrammar implements GrammarRuleKey {
   ANNOTATION_TYPE_DECLARATION,
 
   TYPE_PARAMETERS,
-  CLASS_TYPE,
-  CLASS_TYPE_LIST,
   CLASS_BODY,
 
   CLASS_BODY_DECLARATION,
@@ -484,7 +482,10 @@ public enum JavaGrammar implements GrammarRuleKey {
    * 8.1. Class Declaration
    */
   private static void classDeclaration(LexerlessGrammarBuilder b) {
-    b.rule(CLASS_DECLARATION).is(CLASS, JavaTokenType.IDENTIFIER, b.optional(TYPE_PARAMETERS), b.optional(EXTENDS, CLASS_TYPE), b.optional(IMPLEMENTS, CLASS_TYPE_LIST),
+    b.rule(CLASS_DECLARATION).is(
+      CLASS, JavaTokenType.IDENTIFIER, b.optional(TYPE_PARAMETERS),
+      b.optional(EXTENDS, QUALIFIED_IDENTIFIER),
+      b.optional(IMPLEMENTS, QUALIFIED_IDENTIFIER_LIST),
       CLASS_BODY);
 
     b.rule(CLASS_BODY).is(LWING, b.zeroOrMore(CLASS_BODY_DECLARATION), RWING);
@@ -517,7 +518,7 @@ public enum JavaGrammar implements GrammarRuleKey {
    * 8.9. Enums
    */
   private static void enums(LexerlessGrammarBuilder b) {
-    b.rule(ENUM_DECLARATION).is(ENUM, JavaTokenType.IDENTIFIER, b.optional(IMPLEMENTS, CLASS_TYPE_LIST), ENUM_BODY);
+    b.rule(ENUM_DECLARATION).is(ENUM, JavaTokenType.IDENTIFIER, b.optional(IMPLEMENTS, QUALIFIED_IDENTIFIER_LIST), ENUM_BODY);
     b.rule(ENUM_BODY).is(LWING, b.optional(ENUM_CONSTANTS), b.optional(COMMA), b.optional(ENUM_BODY_DECLARATIONS), RWING);
     b.rule(ENUM_CONSTANTS).is(ENUM_CONSTANT, b.zeroOrMore(COMMA, ENUM_CONSTANT));
     b.rule(ENUM_CONSTANT).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS), b.optional(CLASS_BODY));
@@ -528,7 +529,7 @@ public enum JavaGrammar implements GrammarRuleKey {
    * 9.1. Interface Declarations
    */
   private static void interfaceDeclarations(LexerlessGrammarBuilder b) {
-    b.rule(INTERFACE_DECLARATION).is(INTERFACE, JavaTokenType.IDENTIFIER, b.optional(TYPE_PARAMETERS), b.optional(EXTENDS, CLASS_TYPE_LIST), INTERFACE_BODY);
+    b.rule(INTERFACE_DECLARATION).is(INTERFACE, JavaTokenType.IDENTIFIER, b.optional(TYPE_PARAMETERS), b.optional(EXTENDS, QUALIFIED_IDENTIFIER_LIST), INTERFACE_BODY);
 
     b.rule(INTERFACE_BODY).is(LWING, b.zeroOrMore(INTERFACE_BODY_DECLARATION), RWING);
     b.rule(INTERFACE_BODY_DECLARATION).is(b.firstOf(

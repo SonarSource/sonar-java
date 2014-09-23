@@ -105,6 +105,7 @@ public class ActionGrammar {
   }
 
   // Literals
+
   public ExpressionTree LITERAL() {
     return b.<ExpressionTree>nonterminal(JavaGrammar.LITERAL)
       .is(
@@ -131,31 +132,8 @@ public class ActionGrammar {
         f.newType(
           b.firstOf(
             BASIC_TYPE(),
-            CLASS_TYPE()),
+            QUALIFIED_IDENTIFIER()),
           b.zeroOrMore(f.newWrapperAstNode5(b.zeroOrMore((AstNode) ANNOTATION()), b.invokeRule(JavaGrammar.DIM)))));
-  }
-
-  public ExpressionTree CLASS_TYPE() {
-    return b.<ExpressionTree>nonterminal(JavaGrammar.CLASS_TYPE)
-      .is(
-        f.newClassType(
-          b.zeroOrMore(ANNOTATION()),
-          b.invokeRule(JavaTokenType.IDENTIFIER),
-          b.optional(TYPE_ARGUMENTS()),
-          b.zeroOrMore(
-            f.newClassTypeComplement(
-              b.invokeRule(JavaPunctuator.DOT),
-              b.zeroOrMore(ANNOTATION()),
-              b.invokeRule(JavaTokenType.IDENTIFIER),
-              b.optional(TYPE_ARGUMENTS())))));
-  }
-
-  public ClassTypeListTreeImpl CLASS_TYPE_LIST() {
-    return b.<ClassTypeListTreeImpl>nonterminal(JavaGrammar.CLASS_TYPE_LIST)
-      .is(
-        f.newClassTypeList(
-          CLASS_TYPE(),
-          b.zeroOrMore(f.newWrapperAstNode3(b.invokeRule(JavaPunctuator.COMMA), (AstNode) CLASS_TYPE()))));
   }
 
   public TypeArgumentListTreeImpl TYPE_ARGUMENTS() {
@@ -212,8 +190,8 @@ public class ActionGrammar {
     return b.<BoundListTreeImpl>nonterminal(JavaGrammar.BOUND)
       .is(
         f.newBounds(
-          CLASS_TYPE(),
-          b.zeroOrMore(f.newWrapperAstNode6(b.invokeRule(JavaPunctuator.AND), (AstNode) CLASS_TYPE()))));
+          QUALIFIED_IDENTIFIER(),
+          b.zeroOrMore(f.newWrapperAstNode6(b.invokeRule(JavaPunctuator.AND), (AstNode) QUALIFIED_IDENTIFIER()))));
   }
 
   // End of types
@@ -614,7 +592,7 @@ public class ActionGrammar {
   public VariableTreeImpl RESOURCE() {
     return b.<VariableTreeImpl>nonterminal(JavaGrammar.RESOURCE)
       .is(
-        f.newResource(MODIFIERS(), CLASS_TYPE(), VARIABLE_DECLARATOR_ID(), b.invokeRule(JavaPunctuator.EQU), EXPRESSION()));
+        f.newResource(MODIFIERS(), QUALIFIED_IDENTIFIER(), VARIABLE_DECLARATOR_ID(), b.invokeRule(JavaPunctuator.EQU), EXPRESSION()));
   }
 
   public SwitchStatementTreeImpl SWITCH_STATEMENT() {
@@ -900,7 +878,7 @@ public class ActionGrammar {
             f.newBasicTypeCastExpression(BASIC_TYPE(), b.invokeRule(JavaPunctuator.RPAR), UNARY_EXPRESSION()),
             f.newClassCastExpression(
               TYPE(),
-              b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.AND), (AstNode) CLASS_TYPE())),
+              b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.AND), (AstNode) QUALIFIED_IDENTIFIER())),
               b.invokeRule(JavaPunctuator.RPAR),
               UNARY_EXPRESSION_NOT_PLUS_MINUS()))));
   }
@@ -992,7 +970,7 @@ public class ActionGrammar {
             f.newClassCreator(QUALIFIED_IDENTIFIER(), b.invokeRule(JavaGrammar.CLASS_CREATOR_REST)),
             f.newArrayCreator(
               b.firstOf(
-                CLASS_TYPE(),
+                QUALIFIED_IDENTIFIER(),
                 BASIC_TYPE()),
               ARRAY_CREATOR_REST()))));
   }
