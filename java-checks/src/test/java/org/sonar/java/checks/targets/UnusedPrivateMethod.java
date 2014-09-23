@@ -55,4 +55,15 @@ public class UnusedPrivateMethod {
     return 1;
   }
 
+  public enum Attribute {
+    ID("plop", "foo", true);
+
+    Attribute(String prettyName, String type, boolean hidden) {
+    }
+
+    Attribute(String prettyName, String[][] martrix) {
+    }
+
+  }
+
 }

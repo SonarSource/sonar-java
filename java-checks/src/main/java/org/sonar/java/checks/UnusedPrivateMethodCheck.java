@@ -19,14 +19,20 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.java.signature.MethodSignatureScanner;
+import org.sonar.java.signature.Parameter;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
+
+import java.util.List;
 
 @Rule(key = UnusedPrivateMethodCheck.RULE_KEY, priority = Priority.MAJOR,
   tags={"unused"})
@@ -44,7 +50,16 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
   @Override
   public void visitMethod(AsmMethod asmMethod) {
     if (isPrivateUnused(asmMethod) && !isExcludedFromCheck(asmMethod)) {
-      CheckMessage message = new CheckMessage(this, "Private method '" + asmMethod.getName() + "(...)' is never used.");
+      String messageStr = "Private method '" + asmMethod.getName() + "(...)' is never used.";
+      if("<init>".equals(asmMethod.getName())) {
+        messageStr = "Private constructor '"+asmClass.getDisplayName()+"(";
+        List<String> params = Lists.newArrayList();
+        for (Parameter param : MethodSignatureScanner.scan(asmMethod.getSignature()).getArgumentTypes()) {
+          params.add(param.getClassName()+ (param.isArray() ? "[]":""));
+        }
+        messageStr+= Joiner.on(",").join(params)+")' is never used.";
+      }
+      CheckMessage message = new CheckMessage(this, messageStr);
       int line = getMethodLineNumber(asmMethod);
       if (line > 0) {
         message.setLine(line);
