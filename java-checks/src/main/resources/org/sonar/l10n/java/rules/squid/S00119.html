@@ -1,18 +1,18 @@
-<p>
-Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all type parameter names match a provided regular expression.
-</p>
+<p>Shared naming conventions make it possible for a team to collaborate efficiently. Following the established convention of single-letter type parameter names helps users and maintainers of your code quickly see the difference between a type parameter and a poorly named class.</p>
 
-<p>
-The following code snippet illustrates this rule when the regular expression value is "^[A-Z]$":
-</p>
+<p>This rule check that all type parameter names match a provided regular expression. The following code snippets use the default regular expression.</p>
+
+<h2>Noncompliant Code Example</h2>
 <pre>
-class MyClass&lt;TYPE&gt; { // Non-Compliant
-  &lt;TYPE&gt; void addAll(Collection&lt;TYPE&gt; c) { // Non-compliant
+public class MyClass&lt;TYPE&gt; { // Non-Compliant
+  &lt;TYPE&gt; void method(TYPE t) { // Non-compliant
   }
 }
-
-public class MyClass&lt;T&gt; { // Compliant
-  &lt;T&gt; void addAll(Collection&lt;T&gt; c) { // Compliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public class MyClass&lt;T&gt; {
+  &lt;T&gt; void method(T t) {
   }
 }
 </pre>
