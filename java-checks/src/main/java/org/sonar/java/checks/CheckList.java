@@ -193,7 +193,8 @@ public final class CheckList {
       SelfAssignementCheck.class,
       MismatchPackageDirectoryCheck.class,
       ReplaceLambdaByMethodRefCheck.class,
-      StaticFinalArrayNotPrivateCheck.class
+      StaticFinalArrayNotPrivateCheck.class,
+      FieldModifierCheck.class
     );
   }
 
