@@ -194,7 +194,8 @@ public final class CheckList {
       MismatchPackageDirectoryCheck.class,
       ReplaceLambdaByMethodRefCheck.class,
       StaticFinalArrayNotPrivateCheck.class,
-      FieldModifierCheck.class
+      FieldModifierCheck.class,
+      SerializableFieldInSerializableClassCheck.class
     );
   }
 

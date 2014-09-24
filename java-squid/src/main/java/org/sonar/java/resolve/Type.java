@@ -125,6 +125,10 @@ public class Type {
     public String toString() {
       return elementType.toString() + "[]";
     }
+
+    public Type elementType() {
+      return elementType;
+    }
   }
 
   public static class MethodType extends Type {
