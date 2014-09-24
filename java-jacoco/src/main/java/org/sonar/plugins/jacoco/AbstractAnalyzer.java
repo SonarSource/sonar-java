@@ -70,7 +70,8 @@ public abstract class AbstractAnalyzer {
   public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator) {
     this(perspectives, fileSystem, pathResolver, javaResourceLocator, true);
   }
-  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator, boolean readCoveragePerTests) {
+  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem,
+                          PathResolver pathResolver, JavaResourceLocator javaResourceLocator, boolean readCoveragePerTests) {
     this.perspectives = perspectives;
     this.fileSystem = fileSystem;
     this.pathResolver = pathResolver;
@@ -156,14 +157,7 @@ public abstract class AbstractAnalyzer {
       }
     }
 
-    boolean collectedCoveragePerTest = false;
-    if(readCoveragePerTests) {
-      for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
-        if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context)) {
-          collectedCoveragePerTest = true;
-        }
-      }
-    }
+    boolean collectedCoveragePerTest = readCoveragePerTests(context, executionDataVisitor);
 
     CoverageBuilder coverageBuilder = analyze(executionDataVisitor.getMerged());
     int analyzedResources = 0;
@@ -182,6 +176,18 @@ public abstract class AbstractAnalyzer {
     } else if (jacocoExecutionData != null) {
       JaCoCoExtensions.LOG.info("No information about coverage per test.");
     }
+  }
+
+  private boolean readCoveragePerTests(SensorContext context, ExecutionDataVisitor executionDataVisitor) {
+    boolean collectedCoveragePerTest = false;
+    if(readCoveragePerTests) {
+      for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
+        if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context)) {
+          collectedCoveragePerTest = true;
+        }
+      }
+    }
+    return collectedCoveragePerTest;
   }
 
   private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, SensorContext context) {
