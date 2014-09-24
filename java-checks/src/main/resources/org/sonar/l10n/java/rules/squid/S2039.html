@@ -5,11 +5,19 @@
 class Ball {
   String color="red";  // Noncompliant
 }
+enum A {
+ B;
+ int a;
+}
 </pre>
 
 <h2>Compliant Solution</h2>
 <pre>
 class Ball {
   private String color="red";  // Compliant
+}
+enum A {
+ B;
+ private int a;
 }
 </pre>
