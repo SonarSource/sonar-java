@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -55,7 +56,11 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
         messageStr = "Private constructor '"+asmClass.getDisplayName()+"(";
         List<String> params = Lists.newArrayList();
         for (Parameter param : MethodSignatureScanner.scan(asmMethod.getSignature()).getArgumentTypes()) {
-          params.add(param.getClassName()+ (param.isArray() ? "[]":""));
+          String paramName = param.getClassName();
+          if(StringUtils.isEmpty(paramName)) {
+            paramName = MethodSignatureScanner.getReadableType(param.getJvmJavaType());
+          }
+          params.add(paramName+ (param.isArray() ? "[]":""));
         }
         messageStr+= Joiner.on(",").join(params)+")' is never used.";
       }

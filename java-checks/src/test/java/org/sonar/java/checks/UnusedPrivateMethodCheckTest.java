@@ -48,7 +48,7 @@ public class UnusedPrivateMethodCheckTest {
     SourceFile file = BytecodeFixture.scan("UnusedPrivateMethod", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(54).withMessage("Private method 'unusedPrivateMethod(...)' is never used.")
-      .next().atLine(64).withMessage("Private constructor 'org.sonar.java.checks.targets.UnusedPrivateMethod$Attribute(String,String[])' is never used.")
+      .next().atLine(64).withMessage("Private constructor 'org.sonar.java.checks.targets.UnusedPrivateMethod$Attribute(String,String[],int)' is never used.")
       .noMore();
   }
 

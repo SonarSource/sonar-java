@@ -19,8 +19,9 @@
  */
 package org.sonar.java.signature;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -32,14 +33,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
-import java.util.Map;
 
 public final class MethodSignatureScanner {
 
   private final String bytecodeMethodSignature;
   private final MethodTree methodTree;
 
-  private static final Map<String, JvmJavaType> JAVA_TYPE_MAPPING = Maps.newHashMap();
+  private static final BiMap<String, JvmJavaType> JAVA_TYPE_MAPPING = HashBiMap.create();
 
   static {
     JAVA_TYPE_MAPPING.put(JavaKeyword.BYTE.getValue(), JvmJavaType.B);
@@ -61,6 +61,10 @@ public final class MethodSignatureScanner {
   public static MethodSignature scan(MethodTree methodTree) {
     MethodSignatureScanner scanner = new MethodSignatureScanner(methodTree);
     return scanner.scanTree();
+  }
+
+  public static String getReadableType(JvmJavaType jvmJavaType) {
+    return  JAVA_TYPE_MAPPING.inverse().get(jvmJavaType);
   }
 
   private MethodSignature scanTree() {

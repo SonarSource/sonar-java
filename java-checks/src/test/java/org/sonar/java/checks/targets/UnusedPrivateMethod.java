@@ -61,7 +61,7 @@ public class UnusedPrivateMethod {
     Attribute(String prettyName, String type, boolean hidden) {
     }
 
-    Attribute(String prettyName, String[][] martrix) {
+    Attribute(String prettyName, String[][] martrix, int i) {
     }
 
   }
