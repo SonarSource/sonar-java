@@ -6,5 +6,7 @@ class A {
 enum B{
   C,D;
   int varEnum;
-  private int varEnum2;
+  final int varEnum2;
+  static int varEnum3;
+  private int varEnum4;
 }

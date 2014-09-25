@@ -37,6 +37,8 @@ public class FieldModifierCheckTest {
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(2).withMessage("Explicitly declare the visibility for \"member\".")
         .next().atLine(8).withMessage("Explicitly declare the visibility for \"varEnum\".")
+        .next().atLine(9).withMessage("Explicitly declare the visibility for \"varEnum2\".")
+        .next().atLine(10).withMessage("Explicitly declare the visibility for \"varEnum3\".")
         .noMore();
   }
 }

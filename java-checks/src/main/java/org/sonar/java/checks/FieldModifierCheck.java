@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -43,13 +44,17 @@ public class FieldModifierCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
-      if(member.is(Tree.Kind.VARIABLE) && hasNoModifier((VariableTree) member)) {
+      if(member.is(Tree.Kind.VARIABLE) && hasNoVisibilityModifier((VariableTree) member)) {
         addIssue(member, "Explicitly declare the visibility for \""+((VariableTree) member).simpleName().name()+"\".");
       }
     }
   }
 
-  private boolean hasNoModifier(VariableTree member) {
-    return member.modifiers().modifiers().isEmpty();
+  private boolean hasNoVisibilityModifier(VariableTree member) {
+    return !(hasModifier(member, Modifier.PUBLIC) || hasModifier(member, Modifier.PRIVATE) || hasModifier(member, Modifier.PROTECTED));
+  }
+
+  private boolean hasModifier(VariableTree member, Modifier modifier) {
+    return member.modifiers().modifiers().contains(modifier);
   }
 }
