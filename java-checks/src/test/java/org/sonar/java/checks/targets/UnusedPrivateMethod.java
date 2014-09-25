@@ -54,6 +54,9 @@ public class UnusedPrivateMethod {
   private int unusedPrivateMethod() {
     return 1;
   }
+  private int unusedPrivateMethod(int a, String s) {
+    return 1;
+  }
 
   public enum Attribute {
     ID("plop", "foo", true);
