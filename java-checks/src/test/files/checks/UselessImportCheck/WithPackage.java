@@ -29,6 +29,7 @@ import pkg.CompliantClass3;         // Compliant
 
 import java.lang.reflect.Array;     // Compliant
 
+import javax.annotation.Nullable; //Compliant
 import javax.annotation.ParametersAreNonnullByDefault; // Compliant
 
 import java.lang.annotation.*;      // Compliant
@@ -58,5 +59,6 @@ class Foo2 extends Foo {
 
     return new a.b.c.NonCompliant();
   }
+  void foo(@Nullable int x){}
 
 }

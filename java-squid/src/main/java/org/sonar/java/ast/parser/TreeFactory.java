@@ -492,7 +492,7 @@ public class TreeFactory {
   public FormalParametersListTreeImpl completeTypeFormalParameters(ModifiersTreeImpl modifiers, ExpressionTree type, FormalParametersListTreeImpl partial) {
     VariableTreeImpl variable = partial.get(0);
 
-    variable.completeType(type);
+    variable.completeModifiersAndType(modifiers, type);
     partial.prependChildren(modifiers, (AstNode) type);
 
     return partial;
