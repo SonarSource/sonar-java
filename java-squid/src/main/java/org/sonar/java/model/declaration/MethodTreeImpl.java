@@ -195,7 +195,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public int getLine() {
-    // TODO WTF is this typecast?
     return parameters.openParenToken().getLine();
   }
 
