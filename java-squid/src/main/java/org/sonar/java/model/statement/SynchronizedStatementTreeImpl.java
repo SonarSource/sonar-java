@@ -41,7 +41,7 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   private final InternalSyntaxToken closeParenToken;
 
   public SynchronizedStatementTreeImpl(InternalSyntaxToken synchronizedKeyword, InternalSyntaxToken openParenToken,
-    ExpressionTree expression, InternalSyntaxToken closeParenToken, BlockTree block, AstNode... childrens) {
+    ExpressionTree expression, InternalSyntaxToken closeParenToken, BlockTree block, AstNode... children) {
     super(Kind.SYNCHRONIZED_STATEMENT);
     this.expression = Preconditions.checkNotNull(expression);
     this.block = Preconditions.checkNotNull(block);
@@ -49,7 +49,7 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
 
-    for (AstNode child : childrens) {
+    for (AstNode child : children) {
       addChild(child);
     }
   }
