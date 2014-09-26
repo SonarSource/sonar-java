@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
@@ -64,9 +64,11 @@ public class UndocumentedApiCheckTest {
       .next().atLine(167).withMessage("Document this public method.")
       .next().atLine(177).withMessage("Document this public method.")
       .next().atLine(183).withMessage("Document this method return value.")
-    //  .next().atLine(193).withMessage("Document this public method.") false negative for getter
       .next().atLine(208).withMessage("Document this public class.")
-    ;
+      .next().atLine(262)
+      .next().atLine(271)
+      .next().atLine(277)
+      .next().atLine(278);
   }
 
   @Test

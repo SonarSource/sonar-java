@@ -503,7 +503,7 @@ public class TreeFactory {
     MethodTreeImpl result = new MethodTreeImpl(
       actualType,
       identifier,
-      (List) parameters,
+      parameters,
       throwsClause.isPresent() ? (List<ExpressionTree>) throwsClause.get().second() : ImmutableList.<ExpressionTree>of(),
       blockOrSemicolon.is(Kind.BLOCK) ? (BlockTreeImpl) blockOrSemicolon : null);
 
@@ -674,9 +674,8 @@ public class TreeFactory {
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
 
-    MethodTreeImpl tree = new MethodTreeImpl(defaultValue.isPresent() ? defaultValue.get() : null);
-
-    tree.prependChildren(openParenToken, closeParenToken);
+    FormalParametersListTreeImpl parameters = new FormalParametersListTreeImpl(openParenToken, closeParenToken);
+    MethodTreeImpl tree = new MethodTreeImpl(parameters, defaultValue.isPresent() ? defaultValue.get() : null);
 
     return tree;
   }

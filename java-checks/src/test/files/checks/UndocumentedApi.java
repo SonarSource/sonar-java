@@ -257,4 +257,24 @@ public class MyRunner extends Foo {
   private interface Bar {
     void method();
   }
+
+  public void foo
+  (
+  )
+  {
+  }
+
+  /**
+   */
+  public interface Foo {
+
+    public foo();
+
+  }
+
+  @Target({METHOD})
+  @Retention(RUNTIME)
+  public @interface Transient {
+      boolean value() default true;
+  }
 }

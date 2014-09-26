@@ -23,9 +23,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -51,7 +51,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Nullable
   private Tree returnType;
   private IdentifierTree simpleName;
-  private final List<VariableTree> parameters;
+  private final FormalParametersListTreeImpl parameters;
   @Nullable
   private final BlockTree block;
   private final List<ExpressionTree> throwsClauses;
@@ -59,14 +59,15 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   private Symbol.MethodSymbol symbol;
 
-  public MethodTreeImpl(@Nullable ExpressionTree defaultValue) {
+  public MethodTreeImpl(FormalParametersListTreeImpl parameters, @Nullable ExpressionTree defaultValue) {
     super(Kind.METHOD);
     this.typeParameters = ImmutableList.<TypeParameterTree>of();
-    this.parameters = ImmutableList.<VariableTree>of();
+    this.parameters = parameters;
     this.block = null;
     this.throwsClauses = ImmutableList.<ExpressionTree>of();
     this.defaultValue = defaultValue;
 
+    addChild(parameters);
     if (defaultValue != null) {
       addChild((AstNode) defaultValue);
     }
@@ -75,7 +76,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   public MethodTreeImpl(
     @Nullable Tree returnType,
     IdentifierTree simpleName,
-    List<VariableTree> parameters,
+    FormalParametersListTreeImpl parameters,
     List<ExpressionTree> throwsClauses,
     @Nullable BlockTree block) {
 
@@ -92,7 +93,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, List<TypeParameterTree> typeParameters, @Nullable Tree returnType, IdentifierTree simpleName,
-    List<VariableTree> parameters,
+    FormalParametersListTreeImpl parameters,
     @Nullable BlockTree block,
     List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
     super(astNode);
@@ -158,7 +159,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public List<VariableTree> parameters() {
-    return parameters;
+    return (List) parameters;
   }
 
   @Override
@@ -194,7 +195,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public int getLine() {
-    return ((IdentifierTreeImpl) simpleName()).getLine();
+    // TODO WTF is this typecast?
+    return parameters.openParenToken().getLine();
   }
 
   @Override
