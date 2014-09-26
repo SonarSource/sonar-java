@@ -28,16 +28,10 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import java.util.Arrays;
 
-import static org.sonar.java.ast.api.JavaKeyword.CLASS;
 import static org.sonar.java.ast.api.JavaKeyword.ENUM;
-import static org.sonar.java.ast.api.JavaKeyword.EXTENDS;
-import static org.sonar.java.ast.api.JavaKeyword.IMPLEMENTS;
 import static org.sonar.java.ast.api.JavaKeyword.IMPORT;
-import static org.sonar.java.ast.api.JavaKeyword.INTERFACE;
 import static org.sonar.java.ast.api.JavaKeyword.PACKAGE;
 import static org.sonar.java.ast.api.JavaKeyword.STATIC;
-import static org.sonar.java.ast.api.JavaKeyword.THROWS;
-import static org.sonar.java.ast.api.JavaKeyword.VOID;
 import static org.sonar.java.ast.api.JavaPunctuator.AND;
 import static org.sonar.java.ast.api.JavaPunctuator.ANDAND;
 import static org.sonar.java.ast.api.JavaPunctuator.ANDEQU;
@@ -293,9 +287,6 @@ public enum JavaGrammar implements GrammarRuleKey {
     keywords(b);
 
     compilationsUnits(b);
-    classDeclaration(b);
-    interfaceDeclarations(b);
-    enums(b);
     blocksAndStatements(b);
     literals(b);
 
@@ -471,84 +462,12 @@ public enum JavaGrammar implements GrammarRuleKey {
 
     b.rule(PACKAGE_DECLARATION).is(b.zeroOrMore(ANNOTATION), PACKAGE, QUALIFIED_IDENTIFIER, SEMI);
     b.rule(IMPORT_DECLARATION).is(IMPORT, b.optional(STATIC), QUALIFIED_IDENTIFIER, b.optional(DOT, STAR), SEMI);
-    b.rule(TYPE_DECLARATION).is(b.firstOf(
-      b.sequence(MODIFIERS, b.firstOf(CLASS_DECLARATION, ENUM_DECLARATION, INTERFACE_DECLARATION, ANNOTATION_TYPE_DECLARATION)),
-      SEMI));
-  }
+    b.rule(TYPE_DECLARATION).is(
+      b.firstOf(
+        b.sequence(MODIFIERS, b.firstOf(CLASS_DECLARATION, ENUM_DECLARATION, INTERFACE_DECLARATION, ANNOTATION_TYPE_DECLARATION)),
+        SEMI));
 
-  /**
-   * 8.1. Class Declaration
-   */
-  private static void classDeclaration(LexerlessGrammarBuilder b) {
-    b.rule(CLASS_DECLARATION).is(
-      CLASS, JavaTokenType.IDENTIFIER, b.optional(TYPE_PARAMETERS),
-      b.optional(EXTENDS, QUALIFIED_IDENTIFIER),
-      b.optional(IMPLEMENTS, QUALIFIED_IDENTIFIER_LIST),
-      CLASS_BODY);
-
-    b.rule(CLASS_BODY).is(LWING, b.zeroOrMore(CLASS_BODY_DECLARATION), RWING);
-    b.rule(CLASS_BODY_DECLARATION).is(b.firstOf(
-      SEMI,
-      CLASS_INIT_DECLARATION,
-      b.sequence(MODIFIERS, MEMBER_DECL)));
-    b.rule(CLASS_INIT_DECLARATION).is(b.optional(STATIC), BLOCK);
-    b.rule(MEMBER_DECL).is(b.firstOf(
-      b.sequence(TYPE_PARAMETERS, GENERIC_METHOD_OR_CONSTRUCTOR_REST),
-      b.sequence(TYPE, JavaTokenType.IDENTIFIER, METHOD_DECLARATOR_REST),
-      FIELD_DECLARATION,
-      b.sequence(VOID, JavaTokenType.IDENTIFIER, VOID_METHOD_DECLARATOR_REST),
-      b.sequence(JavaTokenType.IDENTIFIER, CONSTRUCTOR_DECLARATOR_REST),
-      INTERFACE_DECLARATION,
-      CLASS_DECLARATION,
-      ENUM_DECLARATION,
-      ANNOTATION_TYPE_DECLARATION));
-    b.rule(FIELD_DECLARATION).is(TYPE, VARIABLE_DECLARATORS, SEMI);
-    b.rule(GENERIC_METHOD_OR_CONSTRUCTOR_REST).is(b.firstOf(
-      b.sequence(b.firstOf(TYPE, VOID), JavaTokenType.IDENTIFIER, METHOD_DECLARATOR_REST),
-      b.sequence(JavaTokenType.IDENTIFIER, CONSTRUCTOR_DECLARATOR_REST)));
-    b.rule(METHOD_DECLARATOR_REST).is(FORMAL_PARAMETERS, b.zeroOrMore(b.zeroOrMore(ANNOTATION), DIM), b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), b.firstOf(METHOD_BODY, SEMI));
-    b.rule(VOID_METHOD_DECLARATOR_REST).is(FORMAL_PARAMETERS, b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), b.firstOf(METHOD_BODY, SEMI));
-    b.rule(CONSTRUCTOR_DECLARATOR_REST).is(FORMAL_PARAMETERS, b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), METHOD_BODY);
-    b.rule(METHOD_BODY).is(BLOCK);
-  }
-
-  /**
-   * 8.9. Enums
-   */
-  private static void enums(LexerlessGrammarBuilder b) {
-    b.rule(ENUM_DECLARATION).is(ENUM, JavaTokenType.IDENTIFIER, b.optional(IMPLEMENTS, QUALIFIED_IDENTIFIER_LIST), ENUM_BODY);
-    b.rule(ENUM_BODY).is(LWING, b.optional(ENUM_CONSTANTS), b.optional(COMMA), b.optional(ENUM_BODY_DECLARATIONS), RWING);
-    b.rule(ENUM_CONSTANTS).is(ENUM_CONSTANT, b.zeroOrMore(COMMA, ENUM_CONSTANT));
-    b.rule(ENUM_CONSTANT).is(b.zeroOrMore(ANNOTATION), JavaTokenType.IDENTIFIER, b.optional(ARGUMENTS), b.optional(CLASS_BODY));
-    b.rule(ENUM_BODY_DECLARATIONS).is(SEMI, b.zeroOrMore(CLASS_BODY_DECLARATION));
-  }
-
-  /**
-   * 9.1. Interface Declarations
-   */
-  private static void interfaceDeclarations(LexerlessGrammarBuilder b) {
-    b.rule(INTERFACE_DECLARATION).is(INTERFACE, JavaTokenType.IDENTIFIER, b.optional(TYPE_PARAMETERS), b.optional(EXTENDS, QUALIFIED_IDENTIFIER_LIST), INTERFACE_BODY);
-
-    b.rule(INTERFACE_BODY).is(LWING, b.zeroOrMore(INTERFACE_BODY_DECLARATION), RWING);
-    b.rule(INTERFACE_BODY_DECLARATION).is(b.firstOf(
-      b.sequence(MODIFIERS, INTERFACE_MEMBER_DECL),
-      SEMI));
-    b.rule(INTERFACE_MEMBER_DECL).is(b.firstOf(
-      INTERFACE_METHOD_OR_FIELD_DECL,
-      INTERFACE_GENERIC_METHOD_DECL,
-      b.sequence(VOID, JavaTokenType.IDENTIFIER, VOID_INTERFACE_METHOD_DECLARATORS_REST),
-      INTERFACE_DECLARATION,
-      ANNOTATION_TYPE_DECLARATION,
-      CLASS_DECLARATION,
-      ENUM_DECLARATION));
-    b.rule(INTERFACE_METHOD_OR_FIELD_DECL).is(TYPE, JavaTokenType.IDENTIFIER, INTERFACE_METHOD_OR_FIELD_REST);
-    b.rule(INTERFACE_METHOD_OR_FIELD_REST).is(b.firstOf(
-      b.sequence(CONSTANT_DECLARATORS_REST, SEMI),
-      INTERFACE_METHOD_DECLARATOR_REST));
-    b.rule(INTERFACE_METHOD_DECLARATOR_REST).is(FORMAL_PARAMETERS, b.zeroOrMore(b.zeroOrMore(ANNOTATION), DIM),
-      b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), b.firstOf(SEMI, METHOD_BODY));
-    b.rule(INTERFACE_GENERIC_METHOD_DECL).is(TYPE_PARAMETERS, b.firstOf(TYPE, VOID), JavaTokenType.IDENTIFIER, INTERFACE_METHOD_DECLARATOR_REST);
-    b.rule(VOID_INTERFACE_METHOD_DECLARATORS_REST).is(FORMAL_PARAMETERS, b.optional(THROWS, QUALIFIED_IDENTIFIER_LIST), b.firstOf(SEMI, METHOD_BODY));
+    // TODO Remove me
     b.rule(CONSTANT_DECLARATORS_REST).is(CONSTANT_DECLARATOR_REST, b.zeroOrMore(COMMA, CONSTANT_DECLARATOR));
     b.rule(CONSTANT_DECLARATOR).is(JavaTokenType.IDENTIFIER, CONSTANT_DECLARATOR_REST);
     b.rule(CONSTANT_DECLARATOR_REST).is(b.zeroOrMore(DIM), EQU, VARIABLE_INITIALIZER);

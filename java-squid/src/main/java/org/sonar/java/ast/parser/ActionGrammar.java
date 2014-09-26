@@ -28,6 +28,7 @@ import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifierKeywordTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
@@ -198,6 +199,122 @@ public class ActionGrammar {
 
   // End of types
 
+  // Classes
+
+  public ClassTreeImpl CLASS_DECLARATION() {
+    return b.<ClassTreeImpl>nonterminal(JavaGrammar.CLASS_DECLARATION)
+      .is(
+        f.completeClassDeclaration(
+          b.invokeRule(JavaKeyword.CLASS),
+          b.invokeRule(JavaTokenType.IDENTIFIER), b.optional(TYPE_PARAMETERS()),
+          b.optional(f.newTuple7(b.invokeRule(JavaKeyword.EXTENDS), QUALIFIED_IDENTIFIER())),
+          b.optional(f.newTuple14(b.invokeRule(JavaKeyword.IMPLEMENTS), QUALIFIED_IDENTIFIER_LIST())),
+          CLASS_BODY()));
+  }
+
+  public ClassTreeImpl CLASS_BODY() {
+    return b.<ClassTreeImpl>nonterminal(JavaGrammar.CLASS_BODY)
+      .is(f.newClassBody(b.invokeRule(JavaPunctuator.LWING), b.zeroOrMore(CLASS_MEMBER()), b.invokeRule(JavaPunctuator.RWING)));
+  }
+
+  public AstNode CLASS_MEMBER() {
+    return b.<AstNode>nonterminal(JavaGrammar.MEMBER_DECL)
+      .is(
+        b.firstOf(
+          f.completeMember(
+            MODIFIERS(),
+            b.firstOf(
+              METHOD_OR_CONSTRUCTOR_DECLARATION(),
+              FIELD_DECLARATION(),
+              CLASS_DECLARATION(),
+              ANNOTATION_TYPE_DECLARATION(),
+              INTERFACE_DECLARATION(),
+              ENUM_DECLARATION())),
+          f.newInitializerMember(b.optional(b.invokeRule(JavaKeyword.STATIC)), BLOCK()),
+          f.newEmptyMember(b.invokeRule(JavaPunctuator.SEMI))));
+  }
+
+  public MethodTreeImpl METHOD_OR_CONSTRUCTOR_DECLARATION() {
+    return b.<MethodTreeImpl>nonterminal()
+      .is(
+        b.firstOf(
+          f.completeGenericMethodOrConstructorDeclaration(TYPE_PARAMETERS(), METHOD_OR_CONSTRUCTOR_DECLARATION()),
+          f.newMethod(
+            TYPE(), b.invokeRule(JavaTokenType.IDENTIFIER), FORMAL_PARAMETERS(),
+            // TOOD Dedicated rule for annotated dimensions
+            b.zeroOrMore(f.newTuple9(b.zeroOrMore(ANNOTATION()), DIMENSION())),
+            b.optional(f.newTuple10(b.invokeRule(JavaKeyword.THROWS), QUALIFIED_IDENTIFIER_LIST())),
+            b.firstOf(
+              BLOCK(),
+              b.invokeRule(JavaPunctuator.SEMI))),
+          // TODO Largely duplicated with method, but there is a prefix capture on the TYPE, it can be improved
+          f.newConstructor(
+            b.invokeRule(JavaTokenType.IDENTIFIER), FORMAL_PARAMETERS(),
+            // TOOD Dedicated rule for annotated dimensions
+            b.zeroOrMore(f.newTuple15(b.zeroOrMore(ANNOTATION()), DIMENSION())),
+            b.optional(f.newTuple16(b.invokeRule(JavaKeyword.THROWS), QUALIFIED_IDENTIFIER_LIST())),
+            b.firstOf(
+              BLOCK(),
+              b.invokeRule(JavaPunctuator.SEMI)))));
+  }
+
+  public VariableDeclaratorListTreeImpl FIELD_DECLARATION() {
+    return b.<VariableDeclaratorListTreeImpl>nonterminal(JavaGrammar.FIELD_DECLARATION)
+      .is(f.completeFieldDeclaration(TYPE(), VARIABLE_DECLARATORS(), b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
+  // End of classes
+
+  // Enums
+
+  public ClassTreeImpl ENUM_DECLARATION() {
+    return b.<ClassTreeImpl>nonterminal(JavaGrammar.ENUM_DECLARATION)
+      .is(
+        f.newEnumDeclaration(
+          b.invokeRule(JavaKeyword.ENUM),
+          b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.optional(f.newTuple12(b.invokeRule(JavaKeyword.IMPLEMENTS), QUALIFIED_IDENTIFIER_LIST())),
+          b.invokeRule(JavaPunctuator.LWING),
+          b.zeroOrMore(ENUM_CONSTANT()),
+          // TODO Grammar has been relaxed
+          b.optional(b.invokeRule(JavaPunctuator.SEMI)),
+          b.zeroOrMore(CLASS_MEMBER()),
+          b.invokeRule(JavaPunctuator.RWING)));
+  }
+
+  public EnumConstantTreeImpl ENUM_CONSTANT() {
+    return b.<EnumConstantTreeImpl>nonterminal(JavaGrammar.ENUM_CONSTANT)
+      .is(
+        f.newEnumConstant(
+          // TODO Annotated identifier?
+          b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.optional(ARGUMENTS()),
+          b.optional(CLASS_BODY()),
+          b.optional(b.invokeRule(JavaPunctuator.COMMA))));
+  }
+
+  // End of enums
+
+  // Interfaces
+
+  public ClassTreeImpl INTERFACE_DECLARATION() {
+    return b.<ClassTreeImpl>nonterminal(JavaGrammar.INTERFACE_DECLARATION)
+      .is(
+        f.completeInterfaceDeclaration(
+          b.invokeRule(JavaKeyword.INTERFACE),
+          b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.optional(TYPE_PARAMETERS()),
+          b.optional(f.newTuple11(b.invokeRule(JavaKeyword.EXTENDS), QUALIFIED_IDENTIFIER_LIST())),
+          INTERFACE_BODY()));
+  }
+
+  public ClassTreeImpl INTERFACE_BODY() {
+    return b.<ClassTreeImpl>nonterminal()
+      .is(f.newInterfaceBody(b.invokeRule(JavaPunctuator.LWING), b.zeroOrMore(CLASS_MEMBER()), b.invokeRule(JavaPunctuator.RWING)));
+  }
+
+  // End of interfaces
+
   // Annotations
 
   // TODO modifiers
@@ -232,10 +349,9 @@ public class ActionGrammar {
         b.firstOf(
           f.newAnnotationTypeMember(
             TYPE(), b.invokeRule(JavaTokenType.IDENTIFIER), ANNOTATION_METHOD_OR_CONSTANT_REST(), b.invokeRule(JavaPunctuator.SEMI)),
-          b.firstOf(
-            b.invokeRule(JavaGrammar.CLASS_DECLARATION),
-            b.invokeRule(JavaGrammar.ENUM_DECLARATION),
-            b.invokeRule(JavaGrammar.INTERFACE_DECLARATION)),
+          CLASS_DECLARATION(),
+          ENUM_DECLARATION(),
+          INTERFACE_DECLARATION(),
           ANNOTATION_TYPE_DECLARATION()));
   }
 
@@ -1019,7 +1135,8 @@ public class ActionGrammar {
             b.invokeRule(JavaKeyword.LONG),
             b.invokeRule(JavaKeyword.FLOAT),
             b.invokeRule(JavaKeyword.DOUBLE),
-            b.invokeRule(JavaKeyword.BOOLEAN))));
+            b.invokeRule(JavaKeyword.BOOLEAN),
+            b.invokeRule(JavaKeyword.VOID))));
   }
 
   public ArgumentListTreeImpl ARGUMENTS() {
@@ -1075,7 +1192,7 @@ public class ActionGrammar {
 
   public NewClassTreeImpl CLASS_CREATOR_REST() {
     return b.<NewClassTreeImpl>nonterminal(JavaGrammar.CLASS_CREATOR_REST)
-      .is(f.newClassCreatorRest(ARGUMENTS(), b.optional(b.invokeRule(JavaGrammar.CLASS_BODY))));
+      .is(f.newClassCreatorRest(ARGUMENTS(), b.optional(CLASS_BODY())));
   }
 
   public Tuple<AstNode, AstNode> DIMENSION() {

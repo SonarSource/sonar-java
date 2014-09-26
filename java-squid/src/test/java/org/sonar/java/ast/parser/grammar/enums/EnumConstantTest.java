@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.enums;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,14 +31,13 @@ public class EnumConstantTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.CLASS_BODY).override(RuleMock.word(b, "classBody"));
-
     assertThat(b, JavaGrammar.ENUM_CONSTANT)
       .matches("identifier")
+      .matches("identifier,")
       .matches("@Foo identifier")
       .matches("@Foo identifier()")
-      .matches("@Foo identifier classBody")
-      .matches("@Foo identifier() classBody");
+      .matches("@Foo identifier {}")
+      .matches("@Foo identifier() {}");
   }
 
 }

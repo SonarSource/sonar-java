@@ -23,7 +23,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -38,13 +40,14 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
 public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   private ModifiersTree modifiers;
-  private final List<TypeParameterTree> typeParameters;
+  private List<TypeParameterTree> typeParameters;
   @Nullable
   private Tree returnType;
   private IdentifierTree simpleName;
@@ -69,13 +72,32 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     }
   }
 
+  public MethodTreeImpl(
+    @Nullable Tree returnType,
+    IdentifierTree simpleName,
+    List<VariableTree> parameters,
+    List<ExpressionTree> throwsClauses,
+    @Nullable BlockTree block) {
+
+    super(returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD);
+
+    this.typeParameters = ImmutableList.<TypeParameterTree>of();
+    this.modifiers = null;
+    this.returnType = returnType;
+    this.simpleName = Preconditions.checkNotNull(simpleName);
+    this.parameters = Preconditions.checkNotNull(parameters);
+    this.block = block;
+    this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
+    this.defaultValue = null;
+  }
+
   public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, List<TypeParameterTree> typeParameters, @Nullable Tree returnType, IdentifierTree simpleName,
     List<VariableTree> parameters,
     @Nullable BlockTree block,
     List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
     super(astNode);
     this.modifiers = Preconditions.checkNotNull(modifiers);
-    this.typeParameters = typeParameters;
+    this.typeParameters = Preconditions.checkNotNull(typeParameters);
     this.returnType = returnType;
     this.simpleName = Preconditions.checkNotNull(simpleName);
     this.parameters = Preconditions.checkNotNull(parameters);
@@ -94,7 +116,12 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return this;
   }
 
-  public MethodTreeImpl complete(ModifiersTreeImpl modifiers) {
+  public MethodTreeImpl completeWithTypeParameters(TypeParameterListTreeImpl typeParameters) {
+    this.typeParameters = Preconditions.checkNotNull((List) typeParameters);
+    return this;
+  }
+
+  public MethodTreeImpl completeWithModifiers(ModifiersTreeImpl modifiers) {
     Preconditions.checkState(this.modifiers == null);
     this.modifiers = modifiers;
 
@@ -166,19 +193,24 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   @Override
+  public int getLine() {
+    return ((IdentifierTreeImpl) simpleName()).getLine();
+  }
+
+  @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-        Iterators.singletonIterator(modifiers),
-        typeParameters.iterator(),
-        Iterators.forArray(
-            returnType,
-            simpleName
+      Iterators.singletonIterator(modifiers),
+      typeParameters.iterator(),
+      Iterators.forArray(
+        returnType,
+        simpleName
         ),
-        parameters.iterator(),
-        Iterators.singletonIterator(block),
-        throwsClauses.iterator(),
-        Iterators.singletonIterator(defaultValue)
-    );
+      parameters.iterator(),
+      Iterators.singletonIterator(block),
+      throwsClauses.iterator(),
+      Iterators.singletonIterator(defaultValue)
+      );
   }
 
   /**
@@ -186,13 +218,13 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
    * @return true if overriden, null if it cannot be decided (method symbol not resolved or lack of bytecode for super types).
    */
   public Boolean isOverriding() {
-    if(isStatic() || isPrivate()) {
+    if (isStatic() || isPrivate()) {
       return false;
     }
     if (isAnnotatedOverride()) {
       return true;
     }
-    if(symbol == null) {
+    if (symbol == null) {
       return null;
     }
     return symbol.isOverriden();
@@ -217,7 +249,5 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     }
     return false;
   }
-
-
 
 }

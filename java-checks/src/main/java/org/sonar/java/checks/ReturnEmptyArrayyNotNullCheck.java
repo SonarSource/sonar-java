@@ -34,68 +34,69 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
 @Rule(
-    key = "S1168",
-    priority = Priority.MAJOR)
+  key = "S1168",
+  priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ReturnEmptyArrayyNotNullCheck extends SubscriptionBaseVisitor {
 
   private static final Set<String> COLLECTION_TYPES = ImmutableSet.of(
-      "Collection",
-      "BeanContext",
-      "BeanContextServices",
-      "BlockingDeque",
-      "BlockingQueue",
-      "Deque",
-      "List",
-      "NavigableSet",
-      "Queue",
-      "Set",
-      "SortedSet",
-      "AbstractCollection",
-      "AbstractList",
-      "AbstractQueue",
-      "AbstractSequentialList",
-      "AbstractSet",
-      "ArrayBlockingQueue",
-      "ArrayDeque",
-      "ArrayList",
-      "AttributeList",
-      "BeanContextServicesSupport",
-      "BeanContextSupport",
-      "ConcurrentLinkedQueue",
-      "ConcurrentSkipListSet",
-      "CopyOnWriteArrayList",
-      "CopyOnWriteArraySet",
-      "DelayQueue",
-      "EnumSet",
-      "HashSet",
-      "JobStateReasons",
-      "LinkedBlockingDeque",
-      "LinkedBlockingQueue",
-      "LinkedHashSet",
-      "LinkedList",
-      "PriorityBlockingQueue",
-      "PriorityQueue",
-      "RoleList",
-      "RoleUnresolvedList",
-      "Stack",
-      "SynchronousQueue",
-      "TreeSet",
-      "Vector");
+    "Collection",
+    "BeanContext",
+    "BeanContextServices",
+    "BlockingDeque",
+    "BlockingQueue",
+    "Deque",
+    "List",
+    "NavigableSet",
+    "Queue",
+    "Set",
+    "SortedSet",
+    "AbstractCollection",
+    "AbstractList",
+    "AbstractQueue",
+    "AbstractSequentialList",
+    "AbstractSet",
+    "ArrayBlockingQueue",
+    "ArrayDeque",
+    "ArrayList",
+    "AttributeList",
+    "BeanContextServicesSupport",
+    "BeanContextSupport",
+    "ConcurrentLinkedQueue",
+    "ConcurrentSkipListSet",
+    "CopyOnWriteArrayList",
+    "CopyOnWriteArraySet",
+    "DelayQueue",
+    "EnumSet",
+    "HashSet",
+    "JobStateReasons",
+    "LinkedBlockingDeque",
+    "LinkedBlockingQueue",
+    "LinkedHashSet",
+    "LinkedList",
+    "PriorityBlockingQueue",
+    "PriorityQueue",
+    "RoleList",
+    "RoleUnresolvedList",
+    "Stack",
+    "SynchronousQueue",
+    "TreeSet",
+    "Vector");
 
-  private Deque<Returns> returnType = Lists.newLinkedList();
+  private final Deque<Returns> returnType = Lists.newLinkedList();
 
   private enum Returns {
     ARRAY, COLLECTION, OTHERS;
-    public static Returns getReturnType(@Nullable Tree tree){
+    public static Returns getReturnType(@Nullable Tree tree) {
       if (tree != null) {
         Tree returnType = tree;
-        while(returnType.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+        while (returnType.is(Tree.Kind.PARAMETERIZED_TYPE)) {
           returnType = ((ParameterizedTypeTree) returnType).type();
         }
         if (returnType.is(Tree.Kind.ARRAY_TYPE)) {
@@ -110,7 +111,7 @@ public class ReturnEmptyArrayyNotNullCheck extends SubscriptionBaseVisitor {
     private static boolean isCollection(Tree methodReturnType) {
       IdentifierTree identifierTree = null;
       if (methodReturnType.is(Tree.Kind.IDENTIFIER)) {
-        identifierTree = ((IdentifierTree) methodReturnType);
+        identifierTree = (IdentifierTree) methodReturnType;
       } else if (methodReturnType.is(Tree.Kind.MEMBER_SELECT)) {
         identifierTree = ((MemberSelectExpressionTree) methodReturnType).identifier();
       }
@@ -134,10 +135,9 @@ public class ReturnEmptyArrayyNotNullCheck extends SubscriptionBaseVisitor {
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       returnType.push(Returns.getReturnType(methodTree.returnType()));
-    }else if (tree.is(Tree.Kind.CONSTRUCTOR)) {
+    } else if (tree.is(Tree.Kind.CONSTRUCTOR)) {
       returnType.push(Returns.OTHERS);
     } else {
-
       ReturnStatementTree returnStatement = (ReturnStatementTree) tree;
       if (isReturningNull(returnStatement)) {
         if (returnType.peek().equals(Returns.ARRAY)) {
@@ -159,6 +159,5 @@ public class ReturnEmptyArrayyNotNullCheck extends SubscriptionBaseVisitor {
   private boolean isReturningNull(ReturnStatementTree tree) {
     return tree.expression() != null && tree.expression().is(Tree.Kind.NULL_LITERAL);
   }
-
 
 }

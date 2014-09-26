@@ -20,17 +20,16 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
-import com.sonar.sslr.api.AstNode;
+import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConstantTree {
-  public EnumConstantTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, ExpressionTree initializer) {
-    super(astNode, modifiers, type, simpleName, Preconditions.checkNotNull(initializer));
+
+  public EnumConstantTreeImpl(ModifiersTree modifiers, IdentifierTree simpleName, NewClassTreeImpl initializer) {
+    super(Kind.ENUM_CONSTANT, modifiers, simpleName, Preconditions.checkNotNull(initializer));
   }
 
   @Override
@@ -42,4 +41,5 @@ public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConsta
   public void accept(TreeVisitor visitor) {
     visitor.visitEnumConstant(this);
   }
+
 }

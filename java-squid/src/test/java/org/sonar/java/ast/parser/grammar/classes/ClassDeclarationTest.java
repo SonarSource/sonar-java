@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.classes;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,13 +31,11 @@ public class ClassDeclarationTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.CLASS_BODY).override(RuleMock.word(b, "classBody"));
-
     assertThat(b, JavaGrammar.CLASS_DECLARATION)
-      .matches("class identifier <T, U extends Foo & Bar> extends Foo implements Foo, Bar<Integer> classBody")
-      .matches("class identifier <T, U extends Foo & Bar> extends Foo classBody")
-      .matches("class identifier <T, U extends Foo & Bar> classBody")
-      .matches("class identifier classBody");
+      .matches("class identifier <T, U extends Foo & Bar> extends Foo implements Foo, Bar<Integer> {}")
+      .matches("class identifier <T, U extends Foo & Bar> extends Foo {}")
+      .matches("class identifier <T, U extends Foo & Bar> {}")
+      .matches("class identifier {}");
   }
 
   @Test

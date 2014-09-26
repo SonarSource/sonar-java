@@ -26,10 +26,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public abstract class SubscriptionBaseVisitor extends SubscriptionVisitor {
 
-  public void addIssue(Tree tree, String message){
+  public void addIssue(Tree tree, String message) {
     context.addIssue(tree, getRuleKey(), message);
   }
-  public void addIssue(int line, String message){
+
+  public void addIssue(int line, String message) {
     context.addIssue(line, getRuleKey(), message);
   }
 

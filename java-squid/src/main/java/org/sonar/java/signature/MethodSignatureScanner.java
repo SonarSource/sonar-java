@@ -19,6 +19,7 @@
  */
 package org.sonar.java.signature;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
@@ -64,7 +65,7 @@ public final class MethodSignatureScanner {
   }
 
   public static String getReadableType(JvmJavaType jvmJavaType) {
-    return  JAVA_TYPE_MAPPING.inverse().get(jvmJavaType);
+    return JAVA_TYPE_MAPPING.inverse().get(jvmJavaType);
   }
 
   private MethodSignature scanTree() {
@@ -73,7 +74,7 @@ public final class MethodSignatureScanner {
     if (methodTree.is(Tree.Kind.CONSTRUCTOR)) {
       name = "<init>";
       returnTypeParam = new Parameter(JvmJavaType.V, false);
-    } else  {
+    } else {
       returnTypeParam = getParameter(methodTree.returnType());
     }
 
@@ -128,6 +129,7 @@ public final class MethodSignatureScanner {
   }
 
   public static MethodSignature scan(String bytecodeMethodSignature) {
+    Preconditions.checkNotNull(bytecodeMethodSignature);
     MethodSignatureScanner scanner = new MethodSignatureScanner(bytecodeMethodSignature);
     return scanner.scan();
   }
@@ -138,9 +140,8 @@ public final class MethodSignatureScanner {
     String methodName = bytecodeMethodSignature.substring(0, leftBracketIndex);
     Parameter returnType = ParameterSignatureScanner.scan(bytecodeMethodSignature.substring(rightBracketIndex + 1));
     List<Parameter> argumentTypes = ParameterSignatureScanner.scanArguments(bytecodeMethodSignature.substring(leftBracketIndex + 1,
-        rightBracketIndex));
+      rightBracketIndex));
     return new MethodSignature(methodName, returnType, argumentTypes);
   }
-
 
 }

@@ -23,7 +23,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -45,7 +44,7 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   @Nullable
   private final ClassTree classBody;
 
-  public NewClassTreeImpl(ArgumentListTreeImpl arguments, @Nullable ClassTreeImpl classBody, AstNode... children) {
+  public NewClassTreeImpl(List arguments, @Nullable ClassTreeImpl classBody, AstNode... children) {
     super(Kind.NEW_CLASS);
     this.enclosingExpression = null;
     this.arguments = Preconditions.checkNotNull(arguments);

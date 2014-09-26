@@ -25,8 +25,11 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
+import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -46,15 +49,29 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private final Kind kind;
   private ModifiersTree modifiers;
   private IdentifierTree simpleName;
-  private final List<TypeParameterTree> typeParameters;
+  private List<TypeParameterTree> typeParameters;
   @Nullable
-  private final Tree superClass;
-  private final List<Tree> superInterfaces;
+  private Tree superClass;
+  private List<Tree> superInterfaces;
   private final List<Tree> members;
 
   // FIXME(Godin): never should be null, i.e. should have default value
   @Nullable
   private Symbol.TypeSymbol symbol;
+
+  public ClassTreeImpl(Kind kind, List<Tree> members, List<AstNode> children) {
+    super(kind);
+
+    this.kind = kind;
+    this.members = members;
+    this.modifiers = ModifiersTreeImpl.EMPTY;
+    this.typeParameters = ImmutableList.<TypeParameterTree>of();
+    this.superInterfaces = ImmutableList.<Tree>of();
+
+    for (AstNode child : children) {
+      addChild(child);
+    }
+  }
 
   public ClassTreeImpl(ModifiersTree modifiers, List<Tree> members, List<AstNode> children) {
     super(Kind.ANNOTATION_TYPE);
@@ -88,6 +105,31 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     this(astNode, kind, modifiers, null, ImmutableList.<TypeParameterTree>of(), null, ImmutableList.<Tree>of(), members);
   }
 
+  public ClassTreeImpl completeModifiers(ModifiersTreeImpl modifiers) {
+    this.modifiers = modifiers;
+    return this;
+  }
+
+  public ClassTreeImpl completeIdentifier(IdentifierTree identifier) {
+    this.simpleName = identifier;
+    return this;
+  }
+
+  public ClassTreeImpl completeTypeParameters(TypeParameterListTreeImpl typeParameters) {
+    this.typeParameters = (List) typeParameters;
+    return this;
+  }
+
+  public ClassTreeImpl completeSuperclass(Tree superClass) {
+    this.superClass = superClass;
+    return this;
+  }
+
+  public ClassTreeImpl completeInterfaces(QualifiedIdentifierListTreeImpl interfaces) {
+    this.superInterfaces = (List) interfaces;
+    return this;
+  }
+
   public ClassTreeImpl complete(InternalSyntaxToken atToken, InternalSyntaxToken interfaceToken, IdentifierTree simpleName) {
     Preconditions.checkState(this.simpleName == null);
     this.simpleName = simpleName;
@@ -95,11 +137,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     prependChildren(atToken, interfaceToken, (AstNode) simpleName);
 
     return this;
-  }
-
-  // FIXME Remove
-  public void setModifiers(ModifiersTree modifiers) {
-    this.modifiers = modifiers;
   }
 
   @Override
@@ -143,7 +180,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private SyntaxToken getBrace(JavaPunctuator leftOrRightBrace) {
     if (is(Kind.ANNOTATION_TYPE)) {
       return new InternalSyntaxToken(getAstNode().getFirstChild(leftOrRightBrace).getToken());
-    } else if (getAstNode().is(JavaGrammar.CLASS_BODY)) {
+    } else if (getAstNode().is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
       return new InternalSyntaxToken(getAstNode().getFirstChild(leftOrRightBrace).getToken());
     }
     return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.CLASS_BODY, JavaGrammar.INTERFACE_BODY, JavaGrammar.ENUM_BODY)
@@ -173,6 +210,11 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   public void setSymbol(Symbol.TypeSymbol symbol) {
     Preconditions.checkState(this.symbol == null);
     this.symbol = symbol;
+  }
+
+  @Override
+  public int getLine() {
+    return ((IdentifierTreeImpl) simpleName()).getLine();
   }
 
   @Override

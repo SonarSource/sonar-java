@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
@@ -37,19 +37,18 @@ public class ReturnEmptyArrayyNotNullCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ReturnEmptyArrayyNotNullCheck.java"), new VisitorsBridge(new ReturnEmptyArrayyNotNullCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(16).withMessage("Return an empty array instead of null.")
-        .next().atLine(25)
-        .next().atLine(35)
-        .next().atLine(40)
-        .next().atLine(44)
-        .next().atLine(48)
-        .next().atLine(53).withMessage("Return an empty collection instead of null.")
-        .next().atLine(57).withMessage("Return an empty array instead of null.")
-        .next().atLine(61)
-        .next().atLine(72)
-        .next().atLine(80)
-        .next().atLine(88)
-    ;
+      .next().atLine(16).withMessage("Return an empty array instead of null.")
+      .next().atLine(25)
+      .next().atLine(35)
+      .next().atLine(40)
+      .next().atLine(44)
+      .next().atLine(48)
+      .next().atLine(53).withMessage("Return an empty collection instead of null.")
+      .next().atLine(57).withMessage("Return an empty array instead of null.")
+      .next().atLine(61)
+      .next().atLine(72)
+      .next().atLine(80)
+      .next().atLine(88);
   }
 
 }

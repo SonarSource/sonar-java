@@ -36,7 +36,7 @@ import org.sonar.squidbridge.api.SourceFile;
 import java.util.List;
 
 @Rule(key = UnusedPrivateMethodCheck.RULE_KEY, priority = Priority.MAJOR,
-    tags = {"unused"})
+  tags = {"unused"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
@@ -53,7 +53,7 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
     if (isPrivateUnused(asmMethod) && !isExcludedFromCheck(asmMethod)) {
       String messageStr = "Private method '" + asmMethod.getName() + "' is never used.";
       if ("<init>".equals(asmMethod.getName())) {
-        messageStr = "Private constructor '" + asmClass.getDisplayName()+ "(";
+        messageStr = "Private constructor '" + asmClass.getDisplayName() + "(";
         List<String> params = Lists.newArrayList();
         for (Parameter param : MethodSignatureScanner.scan(asmMethod.getSignature()).getArgumentTypes()) {
           String paramName = param.getClassName();

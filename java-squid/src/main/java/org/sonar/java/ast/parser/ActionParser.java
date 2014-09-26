@@ -206,6 +206,11 @@ public class ActionParser extends Parser {
           fromIndex = child.getFromIndex();
         }
 
+        if (!child.hasToken()) {
+          child.setFromIndex(toIndex);
+          child.setToIndex(toIndex);
+        }
+
         toIndex = child.getToIndex();
       }
       if (verifyAssertions) {

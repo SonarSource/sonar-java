@@ -106,4 +106,5 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
       usesThisIdentifier |= "this".equals(tree.name());
     }
   }
+
 }

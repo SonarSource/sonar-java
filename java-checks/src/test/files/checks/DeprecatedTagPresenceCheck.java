@@ -6,8 +6,8 @@ class Foo {
   public void foo1() { // Compliant
   }
 
-  @Deprecated          // Non-Compliant
-  public void foo2() {
+  @Deprecated
+  public void foo2() { // Non-Compliant
   }
 
   /**

@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -61,7 +62,7 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
   @Override
   public void accept(TreeVisitor visitor) {
     // TODO
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("On class: " + getClass().getSimpleName());
   }
 
   @Override

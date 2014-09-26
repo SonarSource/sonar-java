@@ -124,7 +124,7 @@ public class JavaTreeMakerTest {
 
   @Test
   public void type() {
-    ArrayTypeTree tree = (ArrayTypeTree) p.parse("class T { int[] m() { return null; } }").getFirstDescendant(JavaTreeMaker.TYPE_KINDS);
+    ArrayTypeTree tree = (ArrayTypeTree) p.parse("class T { int[] m() { return null; } }").getFirstDescendant(Kind.ARRAY_TYPE);
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
   }
 
@@ -415,6 +415,12 @@ public class JavaTreeMakerTest {
     assertThat(tree.block()).isNotNull();
     assertThat(tree.defaultValue()).isNull();
 
+    astNode = p.parse("class T { public int m()[] { return null; } }");
+    tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
+    assertThat(tree.parameters()).isEmpty();
+    assertThat(tree.returnType().is(Kind.ARRAY_TYPE));
+    assertThat(((ArrayTypeTree) tree.returnType()).is(Kind.PRIMITIVE_TYPE));
   }
 
   /*
@@ -674,6 +680,7 @@ public class JavaTreeMakerTest {
     BlockTree block = (BlockTree) p.parse("class T { void m() { abstract class Local { } } }").getFirstDescendant(Kind.BLOCK);
     ClassTree tree = (ClassTree) block.body().get(0);
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
+    assertThat(tree.simpleName().identifierToken().text()).isEqualTo("Local");
     assertThat(tree.modifiers().modifiers()).containsOnly(Modifier.ABSTRACT);
     assertThat(tree).isNotNull();
 
@@ -1111,7 +1118,7 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void this_expression() {
-    IdentifierTree tree = (IdentifierTree) p.parse("class T { Object m() { return this; } }").getDescendants(Kind.IDENTIFIER).get(1);
+    IdentifierTree tree = (IdentifierTree) ((ReturnStatementTree) p.parse("class T { Object m() { return this; } }").getFirstDescendant(Kind.RETURN_STATEMENT)).expression();
     assertThat(tree.is(Tree.Kind.IDENTIFIER)).isTrue();
     assertThat(tree).isNotNull();
     assertThat(tree.identifierToken().text()).isEqualTo("this");

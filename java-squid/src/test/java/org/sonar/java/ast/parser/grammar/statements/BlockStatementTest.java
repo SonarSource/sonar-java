@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,13 +31,10 @@ public class BlockStatementTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.CLASS_DECLARATION).override(RuleMock.word(b, "classDeclaration"));
-    b.rule(JavaGrammar.ENUM_DECLARATION).override(RuleMock.word(b, "enumDeclaration"));
-
     assertThat(b, JavaGrammar.BLOCK_STATEMENT)
       .matches("int a;")
-      .matches("public classDeclaration")
-      .matches("private enumDeclaration")
+      .matches("public class A {}")
+      .matches("private enum A {}")
       .matches(";")
       .matches("foo();");
   }

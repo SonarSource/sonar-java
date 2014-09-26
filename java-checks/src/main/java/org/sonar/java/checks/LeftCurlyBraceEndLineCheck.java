@@ -54,12 +54,11 @@ public class LeftCurlyBraceEndLineCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isExcludedBlock(AstNode node) {
-    return node.is(Kind.BLOCK) &&
-      isStaticInitializer(node) || isBlock(node);
+    return isInitializer(node) || isBlock(node);
   }
 
-  private static boolean isStaticInitializer(AstNode node) {
-    return node.getParent().is(JavaGrammar.CLASS_INIT_DECLARATION);
+  private static boolean isInitializer(AstNode node) {
+    return node.is(Kind.INITIALIZER, Kind.STATIC_INITIALIZER);
   }
 
   private static boolean isBlock(AstNode node) {

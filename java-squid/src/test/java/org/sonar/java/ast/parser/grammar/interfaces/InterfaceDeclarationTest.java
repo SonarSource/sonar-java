@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.interfaces;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,12 +31,10 @@ public class InterfaceDeclarationTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.INTERFACE_BODY).override(RuleMock.word(b, "interfaceBody"));
-
     assertThat(b, JavaGrammar.INTERFACE_DECLARATION)
-      .matches("interface identifier <T, U extends Foo & Bar> extends Foo, Bar<Integer> interfaceBody")
-      .matches("interface identifier <T, U extends Foo & Bar> interfaceBody")
-      .matches("interface identifier interfaceBody");
+      .matches("interface identifier <T, U extends Foo & Bar> extends Foo, Bar<Integer> {}")
+      .matches("interface identifier <T, U extends Foo & Bar> {}")
+      .matches("interface identifier {}");
   }
 
   @Test

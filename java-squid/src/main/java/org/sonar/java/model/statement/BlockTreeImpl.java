@@ -41,9 +41,13 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
   private final InternalSyntaxToken closeBraceToken;
 
   public BlockTreeImpl(InternalSyntaxToken openBraceToken, List<StatementTree> body, InternalSyntaxToken closeBraceToken, AstNode... children) {
-    super(Kind.BLOCK);
+    this(Kind.BLOCK, openBraceToken, body, closeBraceToken, children);
+  }
 
-    this.kind = Kind.BLOCK;
+  public BlockTreeImpl(Kind kind, InternalSyntaxToken openBraceToken, List<StatementTree> body, InternalSyntaxToken closeBraceToken, AstNode... children) {
+    super(kind);
+
+    this.kind = kind;
     this.openBraceToken = openBraceToken;
     this.body = Preconditions.checkNotNull(body);
     this.closeBraceToken = closeBraceToken;

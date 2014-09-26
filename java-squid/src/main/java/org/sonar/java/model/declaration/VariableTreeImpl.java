@@ -84,6 +84,14 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     this.type = new InferedTypeTree();
   }
 
+  public VariableTreeImpl(Kind kind, ModifiersTree modifiers, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
+    super(kind);
+    this.modifiers = Preconditions.checkNotNull(modifiers);
+    this.simpleName = Preconditions.checkNotNull(simpleName);
+    this.dims = -1;
+    this.initializer = initializer;
+  }
+
   public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
     super(astNode);
     this.modifiers = Preconditions.checkNotNull(modifiers);
@@ -106,10 +114,15 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     return this;
   }
 
-  public VariableTreeImpl completeModifiersAndType(ModifiersTreeImpl modifiers, Tree type) {
+  public VariableTreeImpl completeModifiers(ModifiersTreeImpl modifiers) {
     this.modifiers = modifiers;
 
-    return completeType(type);
+    return this;
+  }
+
+  public VariableTreeImpl completeModifiersAndType(ModifiersTreeImpl modifiers, Tree type) {
+    return completeModifiers(modifiers).
+      completeType(type);
   }
 
   public VariableTreeImpl completeTypeAndInitializer(Tree type, ExpressionTree initializer) {
@@ -175,6 +188,11 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   public void setSymbol(Symbol.VariableSymbol symbol) {
     Preconditions.checkState(this.symbol == null);
     this.symbol = symbol;
+  }
+
+  @Override
+  public int getLine() {
+    return ((IdentifierTreeImpl) simpleName()).getLine();
   }
 
   @Override

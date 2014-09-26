@@ -40,6 +40,7 @@ import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifierKeywordTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
@@ -82,10 +83,10 @@ import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collections;
@@ -265,6 +266,303 @@ public class TreeFactory {
 
   // End of types
 
+  // Classes, enums and interfaces
+
+  public ClassTreeImpl completeClassDeclaration(
+    AstNode classTokenAstNode,
+    AstNode identifierAstNode, Optional<TypeParameterListTreeImpl> typeParameters,
+    Optional<Tuple<AstNode, ExpressionTree>> extendsClause,
+    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> implementsClause,
+    ClassTreeImpl partial) {
+
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+
+    List<AstNode> children = Lists.newArrayList();
+    children.add(classTokenAstNode);
+    children.add(identifier);
+    partial.completeIdentifier(identifier);
+    if (typeParameters.isPresent()) {
+      children.add(typeParameters.get());
+      partial.completeTypeParameters(typeParameters.get());
+    }
+    if (extendsClause.isPresent()) {
+      children.add(extendsClause.get().first());
+      children.add((AstNode) extendsClause.get().second());
+      partial.completeSuperclass(extendsClause.get().second());
+    }
+    if (implementsClause.isPresent()) {
+      children.add(implementsClause.get().first());
+      children.add(implementsClause.get().second());
+      partial.completeInterfaces(implementsClause.get().second());
+    }
+
+    partial.prependChildren(children);
+
+    return partial;
+  }
+
+  private ClassTreeImpl newClassBody(Kind kind, AstNode openBraceTokenAstNode, Optional<List<AstNode>> members, AstNode closeBraceTokenAstNode) {
+    List<AstNode> children = Lists.newArrayList();
+    ImmutableList.Builder<Tree> builder = ImmutableList.builder();
+
+    children.add(openBraceTokenAstNode);
+    if (members.isPresent()) {
+      for (AstNode member : members.get()) {
+        children.add(member);
+
+        if (member instanceof VariableDeclaratorListTreeImpl) {
+          for (VariableTreeImpl variable : (VariableDeclaratorListTreeImpl) member) {
+            builder.add(variable);
+          }
+        } else if (member instanceof Tree) {
+          builder.add((Tree) member);
+        }
+      }
+    }
+    children.add(closeBraceTokenAstNode);
+
+    return new ClassTreeImpl(kind, builder.build(), children);
+  }
+
+  public ClassTreeImpl newClassBody(AstNode openBraceTokenAstNode, Optional<List<AstNode>> members, AstNode closeBraceTokenAstNode) {
+    return newClassBody(Kind.CLASS, openBraceTokenAstNode, members, closeBraceTokenAstNode);
+  }
+
+  public ClassTreeImpl newEnumDeclaration(
+    AstNode enumTokenAstNode,
+    AstNode identifierAstNode,
+    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> implementsClause,
+    AstNode openBraceTokenAstNode,
+    Optional<List<EnumConstantTreeImpl>> enumConstants,
+    Optional<AstNode> semicolonTokenAstNode,
+    Optional<List<AstNode>> enumDeclarations,
+    AstNode closeBraceTokenAstNode) {
+
+    ImmutableList.Builder<AstNode> members = ImmutableList.<AstNode>builder();
+    if (enumConstants.isPresent()) {
+      for (EnumConstantTreeImpl enumConstant : enumConstants.get()) {
+        members.add(enumConstant);
+      }
+    }
+    if (semicolonTokenAstNode.isPresent()) {
+      // TODO This is a hack
+      members.add(semicolonTokenAstNode.get());
+    }
+    if (enumDeclarations.isPresent()) {
+      for (AstNode enumDeclaration : enumDeclarations.get()) {
+        members.add(enumDeclaration);
+      }
+    }
+
+    ClassTreeImpl result = newClassBody(Kind.ENUM, openBraceTokenAstNode, Optional.of((List<AstNode>) members.build()), closeBraceTokenAstNode);
+
+    List<AstNode> children = Lists.newArrayList();
+    children.add(enumTokenAstNode);
+
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+    result.completeIdentifier(identifier);
+    children.add(identifier);
+
+    if (implementsClause.isPresent()) {
+      children.add(implementsClause.get().first());
+      children.add(implementsClause.get().second());
+
+      result.completeInterfaces(implementsClause.get().second());
+    }
+
+    result.prependChildren(children);
+
+    return result;
+  }
+
+  public EnumConstantTreeImpl newEnumConstant(
+    Optional<List<AnnotationTreeImpl>> annotations, AstNode identifierAstNode,
+    Optional<ArgumentListTreeImpl> arguments,
+    Optional<ClassTreeImpl> classBody,
+    Optional<AstNode> semicolonTokenAstNode) {
+
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+    if (annotations.isPresent()) {
+      identifier.prependChildren(annotations.get());
+    }
+
+    List<AstNode> children = Lists.newArrayList();
+    if (arguments.isPresent()) {
+      children.add(arguments.get());
+    }
+    if (classBody.isPresent()) {
+      children.add(classBody.get());
+    }
+    NewClassTreeImpl newClass = new NewClassTreeImpl(
+      arguments.isPresent() ? arguments.get() : Collections.emptyList(),
+      classBody.isPresent() ? classBody.get() : null,
+      children.toArray(new AstNode[0]));
+    newClass.completeWithIdentifier(identifier);
+
+    EnumConstantTreeImpl result = new EnumConstantTreeImpl(ModifiersTreeImpl.EMPTY, identifier, newClass);
+
+    result.addChild(identifier);
+    result.addChild(newClass);
+    if (semicolonTokenAstNode.isPresent()) {
+      result.addChild(semicolonTokenAstNode.get());
+    }
+
+    return result;
+  }
+
+  public ClassTreeImpl completeInterfaceDeclaration(
+    AstNode interfaceTokenAstNode,
+    AstNode identifierAstNode, Optional<TypeParameterListTreeImpl> typeParameters,
+    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> extendsClause,
+    ClassTreeImpl partial) {
+
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+
+    List<AstNode> children = Lists.newArrayList();
+    children.add(interfaceTokenAstNode);
+    children.add(identifier);
+    partial.completeIdentifier(identifier);
+    if (typeParameters.isPresent()) {
+      children.add(typeParameters.get());
+      partial.completeTypeParameters(typeParameters.get());
+    }
+    if (extendsClause.isPresent()) {
+      children.add(extendsClause.get().first());
+      children.add(extendsClause.get().second());
+      partial.completeInterfaces(extendsClause.get().second());
+    }
+
+    partial.prependChildren(children);
+
+    return partial;
+  }
+
+  public ClassTreeImpl newInterfaceBody(AstNode openBraceTokenAstNode, Optional<List<AstNode>> members, AstNode closeBraceTokenAstNode) {
+    return newClassBody(Kind.INTERFACE, openBraceTokenAstNode, members, closeBraceTokenAstNode);
+  }
+
+  // TODO Create an intermediate implementation interface for completing modifiers
+  public AstNode completeMember(ModifiersTreeImpl modifiers, JavaTree partial) {
+
+    if (partial instanceof ClassTreeImpl) {
+      ((ClassTreeImpl) partial).completeModifiers(modifiers);
+      partial.prependChildren(modifiers);
+    } else if (partial instanceof VariableDeclaratorListTreeImpl) {
+      for (VariableTreeImpl variable : (VariableDeclaratorListTreeImpl) partial) {
+        variable.completeModifiers(modifiers);
+      }
+      partial.prependChildren(modifiers);
+    } else if (partial instanceof MethodTreeImpl) {
+      ((MethodTreeImpl) partial).completeWithModifiers(modifiers);
+    } else {
+      throw new IllegalArgumentException();
+    }
+
+    return partial;
+  }
+
+  public BlockTreeImpl newInitializerMember(Optional<AstNode> staticTokenAstNode, BlockTreeImpl block) {
+    Kind kind = staticTokenAstNode.isPresent() ? Kind.STATIC_INITIALIZER : Kind.INITIALIZER;
+
+    List<AstNode> children = Lists.newArrayList();
+    if (staticTokenAstNode.isPresent()) {
+      children.add(staticTokenAstNode.get());
+    }
+    children.addAll(block.getChildren());
+
+    return new BlockTreeImpl(kind, (InternalSyntaxToken) block.openBraceToken(), block.body(), (InternalSyntaxToken) block.closeBraceToken(),
+      children.toArray(new AstNode[0]));
+  }
+
+  // TODO Need a proper strongly typed node for this
+  public AstNode newEmptyMember(AstNode semicolonTokenAstNode) {
+    return semicolonTokenAstNode;
+  }
+
+  public MethodTreeImpl completeGenericMethodOrConstructorDeclaration(TypeParameterListTreeImpl typeParameters, MethodTreeImpl partial) {
+    partial.prependChildren((AstNode) typeParameters);
+
+    return partial.completeWithTypeParameters(typeParameters);
+  }
+
+  private MethodTreeImpl newMethodOrConstructor(
+    Optional<ExpressionTree> type, AstNode identifierAstNode, FormalParametersListTreeImpl parameters,
+    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> annotatedDimensions,
+    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> throwsClause,
+    AstNode blockOrSemicolon) {
+
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+
+    ExpressionTree actualType;
+    if (type.isPresent()) {
+      actualType = treeMaker.applyDim(type.get(), annotatedDimensions.isPresent() ? annotatedDimensions.get().size() : 0);
+    } else {
+      actualType = null;
+    }
+
+    MethodTreeImpl result = new MethodTreeImpl(
+      actualType,
+      identifier,
+      (List) parameters,
+      throwsClause.isPresent() ? (List<ExpressionTree>) throwsClause.get().second() : ImmutableList.<ExpressionTree>of(),
+      blockOrSemicolon.is(Kind.BLOCK) ? (BlockTreeImpl) blockOrSemicolon : null);
+
+    List<AstNode> children = Lists.newArrayList();
+    if (type.isPresent()) {
+      children.add((AstNode) type.get());
+    }
+    children.add(identifier);
+    children.add(parameters);
+    if (annotatedDimensions.isPresent()) {
+      for (Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>> annotatedDimension : annotatedDimensions.get()) {
+        if (annotatedDimension.first().isPresent()) {
+          for (AnnotationTreeImpl annotation : annotatedDimension.first().get()) {
+            children.add(annotation);
+          }
+        }
+        children.add(annotatedDimension.second());
+      }
+    }
+    if (throwsClause.isPresent()) {
+      children.add(throwsClause.get().first());
+      children.add(throwsClause.get().second());
+    }
+    children.add(blockOrSemicolon);
+
+    result.prependChildren(children);
+
+    return result;
+  }
+
+  public MethodTreeImpl newMethod(
+    ExpressionTree type, AstNode identifierAstNode, FormalParametersListTreeImpl parameters,
+    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> annotatedDimensions,
+    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> throwsClause,
+    AstNode blockOrSemicolon) {
+
+    return newMethodOrConstructor(Optional.of(type), identifierAstNode, parameters, annotatedDimensions, throwsClause, blockOrSemicolon);
+  }
+
+  public MethodTreeImpl newConstructor(
+    AstNode identifierAstNode, FormalParametersListTreeImpl parameters,
+    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> annotatedDimensions,
+    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> throwsClause,
+    AstNode blockOrSemicolon) {
+
+    return newMethodOrConstructor(Optional.<ExpressionTree>absent(), identifierAstNode, parameters, annotatedDimensions, throwsClause, blockOrSemicolon);
+  }
+
+  public VariableDeclaratorListTreeImpl completeFieldDeclaration(ExpressionTree type, VariableDeclaratorListTreeImpl partial, AstNode semicolonTokenAstNode) {
+    partial.prependChildren((AstNode) type);
+    for (VariableTreeImpl variable : partial) {
+      variable.completeType(type);
+    }
+    partial.addChild(semicolonTokenAstNode);
+    return partial;
+  }
+
+  // End of classes, enums and interfaces
+
   // Annotations
 
   public ClassTreeImpl completeAnnotationType(AstNode atTokenAstNode, AstNode interfaceTokenAstNode, AstNode identifier, ClassTreeImpl partial) {
@@ -298,19 +596,19 @@ public class TreeFactory {
 
           if (declaration.is(Kind.METHOD)) {
             // method
-            members.add(((MethodTreeImpl) declaration).complete(modifiers));
+            members.add(((MethodTreeImpl) declaration).completeWithModifiers(modifiers));
             children.add(declaration);
           } else if (declaration.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST)) {
             // constant
-            treeMaker.appendConstantDeclarations(ModifiersTreeImpl.EMPTY, members, declaration);
+            appendConstantDeclarations(ModifiersTreeImpl.EMPTY, members, declaration);
             children.add(annotationTypeElementDeclaration);
           } else if (declaration.is(Kind.ANNOTATION_TYPE)) {
             // TODO Complete with modifiers
             members.add((Tree) declaration);
             children.add(annotationTypeElementDeclaration);
-          } else {
+          } else if (declaration.is(Kind.CLASS, Kind.INTERFACE, Kind.ENUM)) {
             // interface, class, enum
-            members.add(modifiers, treeMaker.typeDeclaration(modifiers, declaration));
+            members.add(modifiers, treeMaker.typeDeclaration(modifiers, (ClassTreeImpl) declaration));
             children.add(annotationTypeElementDeclaration);
           }
         } else {
@@ -323,6 +621,25 @@ public class TreeFactory {
     children.add(closeBraceToken);
 
     return new ClassTreeImpl(emptyModifiers, members.build(), children);
+  }
+
+  // TODO Must be deleted
+  private void appendConstantDeclarations(ModifiersTree modifiers, ImmutableList.Builder<Tree> members, AstNode astNode) {
+    AstNode typeAstNode = astNode.getFirstChild(JavaTreeMaker.TYPE_KINDS);
+    if (typeAstNode == null) {
+      typeAstNode = astNode.getFirstChild(JavaKeyword.VOID);
+    }
+    ExpressionTree type = typeAstNode instanceof Tree ? (ExpressionTree) typeAstNode : treeMaker.referenceType(typeAstNode);
+    for (AstNode constantDeclaratorRestNode : astNode.getDescendants(JavaGrammar.CONSTANT_DECLARATOR_REST)) {
+      AstNode identifierNode = constantDeclaratorRestNode.getPreviousAstNode();
+      Preconditions.checkState(identifierNode.is(JavaTokenType.IDENTIFIER));
+      members.add(new VariableTreeImpl(
+        constantDeclaratorRestNode,
+        modifiers,
+        treeMaker.applyDim(type, constantDeclaratorRestNode.getChildren(TreeFactory.WRAPPER_AST_NODE).size()),
+        treeMaker.identifier(identifierNode),
+        (ExpressionTree) constantDeclaratorRestNode.getLastChild()));
+    }
   }
 
   public AstNode completeAnnotationTypeMember(ModifiersTreeImpl modifiers, AstNode annotationTypeElementRest) {
@@ -1579,29 +1896,15 @@ public class TreeFactory {
     return result;
   }
 
-  public NewClassTreeImpl newClassCreatorRest(ArgumentListTreeImpl arguments, Optional<AstNode> classBodyAstNode) {
+  public NewClassTreeImpl newClassCreatorRest(ArgumentListTreeImpl arguments, Optional<ClassTreeImpl> classBody) {
     List<AstNode> children = Lists.newArrayList();
     children.add(arguments);
 
-    ClassTreeImpl classBody = null;
-
-    if (classBodyAstNode.isPresent()) {
-      List<Tree> body = treeMaker.classBody(classBodyAstNode.get());
-      // TODO Legacy node
-      classBody = new ClassTreeImpl(
-        classBodyAstNode.get(),
-        Tree.Kind.CLASS,
-        ModifiersTreeImpl.EMPTY,
-        null,
-        ImmutableList.<TypeParameterTree>of(),
-        null,
-        ImmutableList.<Tree>of(),
-        body);
-
-      children.add(classBodyAstNode.get());
+    if (classBody.isPresent()) {
+      children.add(classBody.get());
     }
 
-    return new NewClassTreeImpl(arguments, classBody,
+    return new NewClassTreeImpl(arguments, classBody.isPresent() ? classBody.get() : null,
       children.toArray(new AstNode[0]));
   }
 
@@ -1844,8 +2147,16 @@ public class TreeFactory {
         Optional opt = (Optional) o;
         if (opt.isPresent()) {
           Object o2 = opt.get();
-          Preconditions.checkArgument(o2 instanceof AstNode, "Unsupported optional type: " + o2.getClass().getSimpleName());
-          addChild((AstNode) o2);
+          if (o2 instanceof AstNode) {
+            addChild((AstNode) o2);
+          } else if (o2 instanceof List) {
+            for (Object o3 : (List) o2) {
+              Preconditions.checkArgument(o3 instanceof AstNode, "Unsupported type: " + o3.getClass().getSimpleName());
+              addChild((AstNode) o3);
+            }
+          } else {
+            throw new IllegalArgumentException("Unsupported type: " + o2.getClass().getSimpleName());
+          }
         }
       } else {
         throw new IllegalStateException("Unsupported argument type: " + o.getClass().getSimpleName());
@@ -1881,5 +2192,47 @@ public class TreeFactory {
   public <T, U> Tuple<T, U> newTuple6(T first, U second) {
     return newTuple(first, second);
   }
+
+  public <T, U> Tuple<T, U> newTuple7(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple8(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple9(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple10(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple11(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple12(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple13(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple14(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple15(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple16(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  // End
 
 }

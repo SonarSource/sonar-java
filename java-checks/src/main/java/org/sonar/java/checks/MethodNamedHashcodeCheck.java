@@ -29,9 +29,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.List;
 
 @Rule(
-    key = "S1221",
-    priority = Priority.CRITICAL,
-    tags = {"pitfall"})
+  key = "S1221",
+  priority = Priority.CRITICAL,
+  tags = {"pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class MethodNamedHashcodeCheck extends SubscriptionBaseVisitor {
 
@@ -43,7 +43,7 @@ public class MethodNamedHashcodeCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if ("hashcode".equals(((MethodTree) tree).simpleName().name())) {
-      addIssue(tree, "Either override Object.hashCode(), or totally rename the method to prevent any confusion.");
+      addIssue(((MethodTree) tree).simpleName(), "Either override Object.hashCode(), or totally rename the method to prevent any confusion.");
     }
   }
 

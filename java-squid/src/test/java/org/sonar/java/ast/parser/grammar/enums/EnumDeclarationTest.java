@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.enums;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,10 +31,8 @@ public class EnumDeclarationTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
 
-    b.rule(JavaGrammar.ENUM_BODY).override(RuleMock.word(b, "enumBody"));
-
     assertThat(b, JavaGrammar.ENUM_DECLARATION)
-      .matches("enum identifier implements Foo, Bar<Integer> enumBody");
+      .matches("enum identifier implements Foo, Bar<Integer> {}");
   }
 
   @Test
