@@ -1673,6 +1673,19 @@
           <txt>mn</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1948</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>30</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
     <chc>
       <key>EXCEPTION_HANDLING</key>
@@ -1789,6 +1802,19 @@
     <chc>
       <key>INSTRUCTION_RELIABILITY</key>
       <name>Instruction</name>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S2039</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>5</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S1215</rule-key>
