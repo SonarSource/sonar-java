@@ -19,10 +19,9 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.api.source.Symbol;
 import org.sonar.api.source.Symbolizable;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -38,11 +37,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
-  private SemanticModel semanticModel;
-  private Symbolizable symbolizable;
-  private Symbolizable.SymbolTableBuilder symbolTableBuilder;
+  private final SemanticModel semanticModel;
+  private final Symbolizable symbolizable;
+  private final Symbolizable.SymbolTableBuilder symbolTableBuilder;
   private CompilationUnitTree outerClass;
-
 
   public SonarSymbolTableVisitor(Symbolizable symbolizable, SemanticModel semanticModel) {
     this.symbolizable = symbolizable;
@@ -64,7 +62,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitClass(ClassTree tree) {
-    if(tree.simpleName() != null) {
+    if (tree.simpleName() != null) {
       createSymbol(tree, tree.simpleName());
     }
     super.visitClass(tree);
@@ -97,7 +95,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   @Override
   public void visitImport(ImportTree tree) {
     IdentifierTree identifierTree;
-    if(tree.qualifiedIdentifier().is(Tree.Kind.IDENTIFIER)) {
+    if (tree.qualifiedIdentifier().is(Tree.Kind.IDENTIFIER)) {
       identifierTree = (IdentifierTree) tree.qualifiedIdentifier();
     } else {
       identifierTree = ((MemberSelectExpressionTree) tree.qualifiedIdentifier()).identifier();
@@ -114,13 +112,11 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   }
 
   private int startOffsetFor(IdentifierTree tree) {
-    AstNode astNode = ((JavaTree) tree).getAstNode();
-    return astNode.getFromIndex();
+    return ((InternalSyntaxToken) tree.identifierToken()).getFromIndex();
   }
 
   private int endOffsetFor(IdentifierTree tree) {
-    AstNode astNode = ((JavaTree) tree).getAstNode();
-    return astNode.getFromIndex() + astNode.getTokenValue().length();
+    return ((InternalSyntaxToken) tree.identifierToken()).getToIndex();
   }
 
 }
