@@ -21,7 +21,6 @@ package org.sonar.java.bytecode;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.design.Dependency;
 import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.Project;
@@ -69,7 +68,7 @@ public class BytecodeVisitorsTest {
     File baseDir = new File("src/test/files/bytecode/src");
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, mock(NoSonarFilter.class));
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null);
     JavaSquid squid = new JavaSquid(conf, javaResourceLocator);
     squid.scanDirectories(
         Collections.singleton(new File("src/test/files/bytecode/src")),

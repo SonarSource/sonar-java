@@ -219,9 +219,10 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     }
 
     @Override
-    public Set<Integer> getNoSonarLines() {
-      return sourceFile.getNoSonarTagLines();
+    public void addNoSonarLines(Set<Integer> lines) {
+      sourceFile.addNoSonarTagLines(lines);
     }
+
 
   }
 

@@ -26,6 +26,7 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
+import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
@@ -47,7 +48,7 @@ public class Bridges {
     this.settings = settings;
   }
 
-  public void save(SensorContext context, Project project, CheckFactory checkFactory, ResourceMapping resourceMapping, ResourcePerspectives resourcePerspectives) {
+  public void save(SensorContext context, Project project, CheckFactory checkFactory, ResourceMapping resourceMapping, ResourcePerspectives resourcePerspectives, NoSonarFilter noSonarFilter) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     //Design
     if (!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
@@ -56,10 +57,10 @@ public class Bridges {
     }
     //Report Issues
     ChecksBridge checksBridge = new ChecksBridge(checkFactory, resourcePerspectives);
-    reportIssues(resourceMapping, checksBridge);
+    reportIssues(resourceMapping, noSonarFilter, checksBridge);
   }
 
-  private void reportIssues(ResourceMapping resourceMapping, ChecksBridge checksBridge) {
+  private void reportIssues(ResourceMapping resourceMapping, NoSonarFilter noSonarFilter, ChecksBridge checksBridge) {
     for (Resource directory : resourceMapping.directories()) {
       for (Resource sonarFile : resourceMapping.files((Directory) directory)) {
         String key = resourceMapping.getFileKeyByResource((org.sonar.api.resources.File) sonarFile);
@@ -67,6 +68,7 @@ public class Bridges {
         if(key != null) {
           SourceFile squidFile = (SourceFile) squid.search(key);
           if (squidFile != null) {
+            noSonarFilter.addResource(sonarFile, squidFile.getNoSonarTagLines());
             checksBridge.reportIssues(squidFile, sonarFile);
           } else {
             LOG.error("Could not report issue on file: " + sonarFile.getKey());

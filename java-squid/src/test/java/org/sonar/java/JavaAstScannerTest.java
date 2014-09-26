@@ -46,4 +46,10 @@ public class JavaAstScannerTest {
     assertThat(file.getKey()).startsWith(FileVisitor.UNRESOLVED_PACKAGE);
   }
 
+  @Test
+  public void noSonarLines() throws Exception {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/NoSonar.java"));
+    assertThat(file.getNoSonarTagLines()).hasSize(1);
+    assertThat(file.getNoSonarTagLines()).contains(8);
+  }
 }

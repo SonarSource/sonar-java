@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import org.junit.Test;
-import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.java.model.VisitorsBridge;
@@ -40,7 +39,7 @@ public class DefaultJavaResourceLocatorTest {
     File baseDir = new File("src/test/java");
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, mock(NoSonarFilter.class));
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null);
     JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java"), new VisitorsBridge(javaResourceLocator));
 
     assertThat(javaResourceLocator.resourcesByClass.keySet()).hasSize(5);
@@ -49,9 +48,8 @@ public class DefaultJavaResourceLocatorTest {
     assertThat(javaResourceLocator.resourcesByClass.keySet()).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$I");
     assertThat(javaResourceLocator.resourcesByClass.keySet()).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$1B");
     assertThat(javaResourceLocator.resourcesByClass.keySet()).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$1B$1");
-
   }
-  static class A {
+  static class A { //NOSONAR
     interface I{
       void foo();
     }

@@ -24,10 +24,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
@@ -38,7 +36,6 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFileScanner {
 
@@ -46,17 +43,15 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
 
   private final Project project;
   private final JavaClasspath javaClasspath;
-  private final NoSonarFilter noSonarFilter;
   @VisibleForTesting
   Map<String, Resource> resourcesByClass;
   private Map<String, String> sourceFileByClass;
   private Map<String, Integer> methodStartLines;
   private ResourceMapping resourceMapping;
 
-  public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath, NoSonarFilter noSonarFilter) {
+  public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath) {
     this.project = project;
     this.javaClasspath = javaClasspath;
-    this.noSonarFilter = noSonarFilter;
     resourcesByClass = Maps.newHashMap();
     sourceFileByClass = Maps.newHashMap();
     methodStartLines = Maps.newHashMap();
@@ -123,9 +118,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
         sourceFileByClass.put(classIOFileEntry.getKey(), context.getFileKey());
       }
     }
-    Set<Integer> ignoredLines = Sets.newHashSet(context.getNoSonarLines());
-    ignoredLines.addAll(javaFilesCache.ignoredLines());
-    noSonarFilter.addResource(currentResource, ignoredLines);
+    context.addNoSonarLines(javaFilesCache.ignoredLines());
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
   }
 

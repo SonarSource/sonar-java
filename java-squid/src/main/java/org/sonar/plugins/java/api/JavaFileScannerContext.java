@@ -52,6 +52,6 @@ public interface JavaFileScannerContext {
 
   int getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree);
 
-  Set<Integer> getNoSonarLines();
+  void addNoSonarLines(Set<Integer> lines);
 
 }
