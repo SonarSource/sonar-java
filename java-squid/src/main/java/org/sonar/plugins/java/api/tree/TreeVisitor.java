@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 
 /**
  * @see BaseTreeVisitor
@@ -125,5 +126,8 @@ public interface TreeVisitor {
 
   void visitTypeParameter(TypeParameterTree typeParameter);
 
+  void visitTypeArguments(TypeArgumentListTreeImpl trees);
+
   void visitOther(Tree tree);
+
 }

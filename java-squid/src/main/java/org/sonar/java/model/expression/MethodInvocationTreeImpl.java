@@ -20,7 +20,6 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
@@ -29,7 +28,9 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeArguments;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,21 +38,18 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
 
   private final ExpressionTree methodSelect;
   private final List<ExpressionTree> arguments;
+  @Nullable
+  private TypeArguments typeArguments;
 
-  public MethodInvocationTreeImpl(ExpressionTree methodSelect, List<ExpressionTree> arguments, AstNode... children) {
+  public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, List<ExpressionTree> arguments, AstNode... children) {
     super(Kind.METHOD_INVOCATION);
     this.methodSelect = Preconditions.checkNotNull(methodSelect);
+    this.typeArguments = typeArguments;
     this.arguments = Preconditions.checkNotNull(arguments);
 
     for (AstNode child : children) {
       addChild(child);
     }
-  }
-
-  public MethodInvocationTreeImpl(AstNode astNode, ExpressionTree methodSelect, List<ExpressionTree> arguments) {
-    super(astNode);
-    this.methodSelect = Preconditions.checkNotNull(methodSelect);
-    this.arguments = Preconditions.checkNotNull(arguments);
   }
 
   @Override
@@ -60,9 +58,8 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   }
 
   @Override
-  public List<Tree> typeArguments() {
-    // TODO implement
-    return ImmutableList.of();
+  public TypeArguments typeArguments() {
+    return typeArguments;
   }
 
   @Override
@@ -92,8 +89,9 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>concat(
+    return Iterators.concat(
       Iterators.singletonIterator(methodSelect),
+      Iterators.singletonIterator(typeArguments),
       arguments.iterator()
       );
   }

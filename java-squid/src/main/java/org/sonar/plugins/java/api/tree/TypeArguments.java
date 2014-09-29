@@ -19,15 +19,10 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+public interface TypeArguments extends ListTree<Tree> {
 
-import static org.fest.assertions.Assertions.assertThat;
+  public SyntaxToken openBracketToken();
 
-public class TreeTest {
-
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(104);
-  }
+  public SyntaxToken closeBracketToken();
 
 }

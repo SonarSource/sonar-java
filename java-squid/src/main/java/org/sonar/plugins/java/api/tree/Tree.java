@@ -609,7 +609,12 @@ public interface Tree {
 
     TRIVIA(SyntaxTrivia.class),
 
-    INFERED_TYPE(InferedTypeTree.class);
+    INFERED_TYPE(InferedTypeTree.class),
+
+    /**
+     * {@link TypeArguments}
+     */
+    TYPE_ARGUMENTS(TypeArguments.class);
 
     final Class<? extends Tree> associatedInterface;
 

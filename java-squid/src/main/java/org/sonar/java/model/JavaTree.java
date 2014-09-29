@@ -25,7 +25,7 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.AstNodeHacks;
-import org.sonar.java.ast.parser.TypeArgumentListTreeImpl;
+import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;

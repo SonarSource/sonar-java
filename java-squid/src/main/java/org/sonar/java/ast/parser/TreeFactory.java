@@ -60,6 +60,7 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
+import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
@@ -1918,8 +1919,7 @@ public class TreeFactory {
     ExpressionTree result = identifier;
 
     if (arguments.isPresent()) {
-      result = new MethodInvocationTreeImpl(identifier, arguments.get(),
-        identifier, arguments.get());
+      result = new MethodInvocationTreeImpl(identifier, typeArguments.orNull(), arguments.get(), identifier, arguments.get());
     }
 
     return result;
@@ -1976,8 +1976,7 @@ public class TreeFactory {
           children.add(memberSelect);
           children.add((ArgumentListTreeImpl) methodInvocation.arguments());
 
-          result = new MethodInvocationTreeImpl(memberSelect, methodInvocation.arguments(),
-            children.toArray(new AstNode[0]));
+          result = new MethodInvocationTreeImpl(memberSelect, methodInvocation.typeArguments(), methodInvocation.arguments(), children.toArray(new AstNode[0]));
         } else if (selector.is(Kind.NEW_CLASS)) {
           NewClassTreeImpl newClass = (NewClassTreeImpl) selector;
           newClass.prependChildren((AstNode) result);

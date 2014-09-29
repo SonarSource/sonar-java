@@ -21,6 +21,7 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -41,7 +42,8 @@ public interface MethodInvocationTree extends ExpressionTree {
   /**
    * @since Java 1.5
    */
-  List<Tree> typeArguments();
+  @Nullable
+  TypeArguments typeArguments();
 
   ExpressionTree methodSelect();
 

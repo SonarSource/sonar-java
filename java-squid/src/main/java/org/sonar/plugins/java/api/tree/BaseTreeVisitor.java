@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 
 import javax.annotation.Nullable;
 
@@ -43,7 +44,7 @@ public class BaseTreeVisitor implements TreeVisitor {
     }
   }
 
-  protected void scan(ListTree<? extends Tree> listTree) {
+  protected void scan(@Nullable ListTree<? extends Tree> listTree) {
     scan((Tree) listTree);
   }
 
@@ -344,6 +345,11 @@ public class BaseTreeVisitor implements TreeVisitor {
   public void visitTypeParameter(TypeParameterTree typeParameter) {
     scan(typeParameter.identifier());
     scan(typeParameter.bounds());
+  }
+
+  @Override
+  public void visitTypeArguments(TypeArgumentListTreeImpl trees) {
+    scan((List<Tree>)trees);
   }
 
   @Override

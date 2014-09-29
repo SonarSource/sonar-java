@@ -26,6 +26,7 @@ import pkg.NonCompliant1;           // Non-Compliant
 import pkg.CompliantClass1;         // Compliant
 import pkg.CompliantClass2;         // Compliant
 import pkg.CompliantClass3;         // Compliant
+import pkg.CompliantClass4;         // Compliant
 
 import java.lang.reflect.Array;     // Compliant
 
@@ -45,7 +46,7 @@ class Foo2 extends Foo {
 
   @a.b.c.NonCompliant
   a.b.c.NonCompliant foo(a.b.c.NonCompliant bar) {
-    List<CompliantClass1> ok;
+    List<CompliantClass1> ok = ImmutableList.<CompliantClass4>of();
     Class ok = CompliantClass2.class;
     CompliantClass3.staticMethod("OK");
 
@@ -62,3 +63,4 @@ class Foo2 extends Foo {
   void foo(@Nullable int x){}
 
 }
+

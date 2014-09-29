@@ -17,17 +17,22 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser;
+package org.sonar.java.model.expression;
 
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeArguments;
 
+import java.util.Iterator;
 import java.util.List;
 
-public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> {
+public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements TypeArguments {
 
   private final InternalSyntaxToken openBracketToken;
   private final InternalSyntaxToken closeBracketToken;
@@ -53,4 +58,23 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> {
     return closeBracketToken;
   }
 
+  @Override
+  public void accept(TreeVisitor visitor) {
+    visitor.visitTypeArguments(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return ImmutableList.<Tree>builder().addAll(this).build().iterator();
+  }
+
+  @Override
+  public boolean isLeaf() {
+    return false;
+  }
+
+  @Override
+  public Kind getKind() {
+    return Kind.TYPE_ARGUMENTS;
+  }
 }

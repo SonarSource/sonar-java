@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.ast.parser.TypeArgumentListTreeImpl;
+import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
