@@ -100,7 +100,10 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
     } else {
       identifierTree = ((MemberSelectExpressionTree) tree.qualifiedIdentifier()).identifier();
     }
-    createSymbol(tree, identifierTree);
+    //Exclude on demands imports
+    if (!"*".equals(identifierTree.name())) {
+      createSymbol(tree, identifierTree);
+    }
     super.visitImport(tree);
   }
 

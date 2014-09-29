@@ -73,4 +73,30 @@ public class SonarSymbolTableVisitorTest {
     verify(symboltableBuilder).build();
     verifyNoMoreInteractions(symboltableBuilder);
   }
+
+  @Test
+  public void sonar_symbol_table_on_demand() throws Exception {
+    File file = new File("src/test/files/highlighter/SonarSymTableOnDemand.java");
+    when(sonarComponents.symbolizableFor(any(File.class))).thenReturn(symbolizable);
+    when(symbolizable.newSymbolTableBuilder()).thenReturn(symboltableBuilder);
+    JavaAstScanner.scanSingleFile(file, new VisitorsBridge(Lists.newArrayList(new JavaFileScanner() {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+      }
+    }), sonarComponents));
+    //Example class declaration
+    verify(symboltableBuilder).newSymbol(30, 38);
+    //list field
+    verify(symboltableBuilder).newSymbol(55, 59);
+    verify(symboltableBuilder).newReference(any(Symbol.class), eq(101));
+    //Example constructor
+    verify(symboltableBuilder).newSymbol(63, 70);
+    //list local var
+    verify(symboltableBuilder).newSymbol(84, 88);
+    verify(symboltableBuilder).newReference(any(Symbol.class), eq(108));
+    //method
+    verify(symboltableBuilder).newSymbol(124, 130);
+    verify(symboltableBuilder).build();
+    verifyNoMoreInteractions(symboltableBuilder);
+  }
 }
