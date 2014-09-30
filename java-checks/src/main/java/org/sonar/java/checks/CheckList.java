@@ -196,7 +196,8 @@ public final class CheckList {
       StaticFinalArrayNotPrivateCheck.class,
       FieldModifierCheck.class,
       SerializableFieldInSerializableClassCheck.class,
-      PackageInfoCheck.class
+      PackageInfoCheck.class,
+      SwitchWithTooManyCasesCheck.class
     );
   }
 

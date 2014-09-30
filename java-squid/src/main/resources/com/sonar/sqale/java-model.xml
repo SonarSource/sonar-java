@@ -1373,6 +1373,19 @@
       <name>Data</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S1479</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>30</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S109</rule-key>
         <prop>
           <key>remediationFunction</key>
