@@ -115,3 +115,8 @@ static class Baz {
     } catch (NoSuchElementException e) { }
   }
 }
+public @interface Example {
+  public static class Inner {
+    public static final String FOO = "foo";
+  }
+}

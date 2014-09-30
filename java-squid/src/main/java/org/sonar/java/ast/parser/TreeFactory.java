@@ -609,7 +609,7 @@ public class TreeFactory {
             children.add(annotationTypeElementDeclaration);
           } else if (declaration.is(Kind.CLASS, Kind.INTERFACE, Kind.ENUM)) {
             // interface, class, enum
-            members.add(modifiers, treeMaker.typeDeclaration(modifiers, (ClassTreeImpl) declaration));
+            members.add(treeMaker.typeDeclaration(modifiers, (ClassTreeImpl) declaration));
             children.add(annotationTypeElementDeclaration);
           }
         } else {

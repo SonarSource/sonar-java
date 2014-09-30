@@ -47,6 +47,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
       Kind.CLASS,
       Kind.INTERFACE,
       Kind.ENUM,
+      Kind.ANNOTATION_TYPE,
       Kind.CLASS,
       Kind.BLOCK,
       Kind.STATIC_INITIALIZER,
@@ -83,7 +84,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
+    if (isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
       //Exclude anonymous classes
         isInAnonymousClass.push(classTree.simpleName() == null);
@@ -101,7 +102,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
       }
     }
 
-    if (tree.is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
+    if (isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
       //Exclude anonymous classes
       if (classTree.simpleName() != null) {
@@ -135,7 +136,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
         return typeColumn;
       }
       return Math.min(typeColumn, ((JavaTree) variableTree.modifiers()).getToken().getColumn());
-    } else if(tree.is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
+    } else if(isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
       if (!classTree.modifiers().isEmpty()) {
         return ((JavaTree) classTree.modifiers()).getToken().getColumn();
@@ -156,7 +157,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
     expectedLevel -= indentationLevel;
     isBlockAlreadyReported = false;
     lastCheckedLine = ((JavaTree) tree).getLastToken().getLine();
-    if (tree.is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
+    if (isClassTree(tree)) {
       isInAnonymousClass.pop();
     }
   }
@@ -167,6 +168,10 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
 
   private boolean isLineFirstStatement(JavaTree javaTree) {
     return lastCheckedLine != javaTree.getTokenLine();
+  }
+
+  private boolean isClassTree(Tree tree) {
+    return tree.is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE, Kind.ANNOTATION_TYPE);
   }
 
 }
