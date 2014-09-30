@@ -195,7 +195,8 @@ public final class CheckList {
       ReplaceLambdaByMethodRefCheck.class,
       StaticFinalArrayNotPrivateCheck.class,
       FieldModifierCheck.class,
-      SerializableFieldInSerializableClassCheck.class
+      SerializableFieldInSerializableClassCheck.class,
+      PackageInfoCheck.class
     );
   }
 

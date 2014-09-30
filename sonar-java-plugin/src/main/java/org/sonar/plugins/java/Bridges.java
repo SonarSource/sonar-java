@@ -24,9 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.checks.CheckFactory;
+import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
-import org.sonar.api.checks.NoSonarFilter;
+import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
@@ -48,7 +49,8 @@ public class Bridges {
     this.settings = settings;
   }
 
-  public void save(SensorContext context, Project project, CheckFactory checkFactory, ResourceMapping resourceMapping, ResourcePerspectives resourcePerspectives, NoSonarFilter noSonarFilter) {
+  public void save(SensorContext context, Project project, CheckFactory checkFactory, ResourceMapping resourceMapping,
+                   ResourcePerspectives resourcePerspectives, NoSonarFilter noSonarFilter, RulesProfile rulesProfile) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     //Design
     if (!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
@@ -56,12 +58,13 @@ public class Bridges {
       designBridge.saveDesign(project);
     }
     //Report Issues
-    ChecksBridge checksBridge = new ChecksBridge(checkFactory, resourcePerspectives);
-    reportIssues(resourceMapping, noSonarFilter, checksBridge);
+    ChecksBridge checksBridge = new ChecksBridge(checkFactory, resourcePerspectives, rulesProfile);
+    reportIssues(resourceMapping, noSonarFilter, checksBridge, project);
   }
 
-  private void reportIssues(ResourceMapping resourceMapping, NoSonarFilter noSonarFilter, ChecksBridge checksBridge) {
+  private void reportIssues(ResourceMapping resourceMapping, NoSonarFilter noSonarFilter, ChecksBridge checksBridge, Project project) {
     for (Resource directory : resourceMapping.directories()) {
+      checksBridge.reportIssueForPackageInfo((Directory) directory, project);
       for (Resource sonarFile : resourceMapping.files((Directory) directory)) {
         String key = resourceMapping.getFileKeyByResource((org.sonar.api.resources.File) sonarFile);
         //key would be null for test files as they are not in squid index.

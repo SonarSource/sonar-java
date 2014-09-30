@@ -700,6 +700,19 @@
       <key>UNDERSTANDABILITY</key>
       <name>Understandability</name>
       <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1228</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>LINEAR</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>20</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
         <rule-repo>common-java</rule-repo>
         <rule-key>InsufficientCommentDensity</rule-key>
         <prop>

@@ -19,26 +19,40 @@
  */
 package org.sonar.plugins.java.bridges;
 
+import com.google.common.collect.Sets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
+import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.resources.Directory;
+import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
+import org.sonar.java.checks.CheckList;
+import org.sonar.java.checks.PackageInfoCheck;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
+import java.io.File;
 import java.util.Set;
 
 public class ChecksBridge {
 
+  private static final Logger LOG = LoggerFactory.getLogger(ChecksBridge.class);
+
   private final CheckFactory checkFactory;
   private final ResourcePerspectives resourcePerspectives;
+  private final RulesProfile rulesProfile;
+  private Set<Directory> dirsWithPackageInfo;
 
-  public ChecksBridge(CheckFactory checkFactory, ResourcePerspectives resourcePerspectives) {
+  public ChecksBridge(CheckFactory checkFactory, ResourcePerspectives resourcePerspectives, RulesProfile rulesProfile) {
     this.checkFactory = checkFactory;
     this.resourcePerspectives = resourcePerspectives;
+    this.rulesProfile = rulesProfile;
   }
 
   public void reportIssues(SourceFile squidFile, Resource sonarFile) {
@@ -70,4 +84,26 @@ public class ChecksBridge {
     }
   }
 
+  public void reportIssueForPackageInfo(Directory directory, Project project) {
+    if (dirsWithPackageInfo == null) {
+      initSetOfDirs(project);
+    }
+    if (!dirsWithPackageInfo.contains(directory)) {
+      Issuable issuable = resourcePerspectives.as(Issuable.class, directory);
+      Issue issue = issuable.newIssueBuilder().ruleKey(RuleKey.of(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY))
+          .message("Add a 'package-info.java' file to document the '" + directory.getPath() + "' package").build();
+      issuable.addIssue(issue);
+    }
+  }
+
+  private void initSetOfDirs(Project project) {
+    dirsWithPackageInfo = Sets.newHashSet();
+    ActiveRule activeRule = rulesProfile.getActiveRule(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY);
+    if (activeRule != null) {
+      Set<File> dirs = ((PackageInfoCheck) checkFactory.getCheck(activeRule)).getDirectoriesWithPackageFile();
+      for (File dir : dirs) {
+        dirsWithPackageInfo.add(Directory.fromIOFile(dir, project));
+      }
+    }
+  }
 }
