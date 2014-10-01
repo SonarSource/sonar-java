@@ -2029,6 +2029,19 @@
       <name>Logic</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S1871</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>1  0</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S128</rule-key>
         <prop>
           <key>remediationFunction</key>
