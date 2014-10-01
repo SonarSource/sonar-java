@@ -1,0 +1,43 @@
+<p>Having two cases in the same switch statement with the same implementation is at best duplicate code, and at worst a coding error. If the same logic is truly needed for both cases, then one should fall through to the other.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+switch (i) {
+  case 1:
+    doSomething();
+    break;
+  case 2:
+    doSomethingDifferent();
+    break;
+  case 3:  // Noncompliant; duplicates case 1's implementation
+    doSomething();
+    break;
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+switch (i) {
+  case 1:
+  case 3:
+    doSomething();
+    break;
+  case 2:
+    doSomethingDifferent();
+    break;
+}
+</pre>
+or
+<pre>
+switch (i) {
+  case 1:
+    doSomething();
+    break;
+  case 2:Check
+    doSomethingDifferent();
+    break;
+  case 3:
+    doThirdThing();
+    break;
+}
+</pre>

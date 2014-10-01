@@ -197,7 +197,8 @@ public final class CheckList {
       FieldModifierCheck.class,
       SerializableFieldInSerializableClassCheck.class,
       PackageInfoCheck.class,
-      SwitchWithTooManyCasesCheck.class
+      SwitchWithTooManyCasesCheck.class,
+      IdenticalCasesInSwitchCheck.class
     );
   }
 
