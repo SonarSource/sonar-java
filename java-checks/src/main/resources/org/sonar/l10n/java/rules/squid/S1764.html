@@ -1,0 +1,48 @@
+<p>Using the same value on either side of a binary operator is almost always a mistake. In the case of logical operators, it is simply wasted code, and should be simplified. In the case of bitwise operators and most binary mathematical operators, it yields predictable results, and should be simplified.</p>
+
+<p>This rule ignores <code>*</code>, <code>+</code> and <code>-</code>.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+if ( a == a ) { // always true
+  doZ();
+}
+if ( a != a ) { // always false
+  doY();
+}
+if ( a == b && a == b ) { // if the first one is true, the second one is too
+  doX();
+}
+if ( a == b || a == b ) { // if the first one is true, the second one is too
+  doW();
+}
+
+if (5 / 5) { // always 1
+  doV();
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+doZ();
+
+if ( a == b ) {
+  doX();
+}
+if ( a == b ) {
+  doW();
+}
+
+doV();
+</pre>
+
+<h2>Exceptions</h2>
+<pre>
+  float f;
+  double d;
+  if(f !=f || d != d) { //test for NaN value
+    System.out.println("f or d is NaN");
+  }
+  int i = 1 << 1; //Construction used in bit masks.
+
+</pre>

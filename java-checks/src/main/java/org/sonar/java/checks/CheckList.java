@@ -198,7 +198,8 @@ public final class CheckList {
       SerializableFieldInSerializableClassCheck.class,
       PackageInfoCheck.class,
       SwitchWithTooManyCasesCheck.class,
-      IdenticalCasesInSwitchCheck.class
+      IdenticalCasesInSwitchCheck.class,
+      IdenticalOperandOnBinaryExpressionCheck.class
     );
   }
 
