@@ -1358,29 +1358,14 @@ public class TreeFactory {
       return expression;
     }
 
-    // TODO SONARJAVA-610
-    ExpressionTree result = null;
-    InternalSyntaxToken lastOperator = null;
-    for (OperatorAndOperand operatorAndOperand : Lists.reverse(operatorAndOperands.get())) {
-      if (lastOperator == null) {
-        result = operatorAndOperand.operand();
-      } else {
-        result = new BinaryExpressionTreeImpl(
-          kindMaps.getBinaryOperator((JavaPunctuator) lastOperator.getType()),
-          operatorAndOperand.operand(),
-          lastOperator,
-          result);
-      }
-
-      lastOperator = operatorAndOperand.operator();
+    ExpressionTree result = expression;
+    for (OperatorAndOperand operatorAndOperand : operatorAndOperands.get()) {
+      result = new BinaryExpressionTreeImpl(
+          kindMaps.getBinaryOperator((JavaPunctuator) operatorAndOperand.operator().getType()),
+          result,
+          operatorAndOperand.operator(),
+          operatorAndOperand.operand());
     }
-
-    result = new BinaryExpressionTreeImpl(
-      kindMaps.getBinaryOperator((JavaPunctuator) lastOperator.getType()),
-      expression,
-      lastOperator,
-      result);
-
     return result;
   }
 

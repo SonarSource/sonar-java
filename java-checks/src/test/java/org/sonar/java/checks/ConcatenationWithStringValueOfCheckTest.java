@@ -43,7 +43,9 @@ public class ConcatenationWithStringValueOfCheckTest {
       .next().atLine(9)
       .next().atLine(10)
       .next().atLine(19)
-      .next().atLine(20);
+      .next().atLine(20)
+      .next().atLine(23)
+      .noMore();
   }
 
 }

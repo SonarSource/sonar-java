@@ -20,5 +20,6 @@ class A {
     "" + ("" + String.valueOf('a')); // Noncompliant
 
     0 + String.valueOf('a'); // Compliant
+    buf = buf + "tab @" + String.valueOf(position);
   }
 }

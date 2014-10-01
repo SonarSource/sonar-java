@@ -67,7 +67,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
     if (hasEquivalentOperand(binaryExpressionTree)) {
-      addIssue(binaryExpressionTree, "Identical sub-expressions on both sides of operator \"" + binaryExpressionTree.operatorToken().text() + "\"");
+      addIssue(binaryExpressionTree.rightOperand(), "Identical sub-expressions on both sides of operator \"" + binaryExpressionTree.operatorToken().text() + "\"");
     }
   }
 
@@ -83,9 +83,9 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
     if (SyntacticEquivalence.areEquivalent(left, right)) {
       return true;
     }
-    if (right.is(binaryKind)) {
-      return areOperandEquivalent(left, ((BinaryExpressionTree) right).leftOperand(), binaryKind)
-          || areOperandEquivalent(left, ((BinaryExpressionTree) right).rightOperand(), binaryKind);
+    if (left.is(binaryKind)) {
+      return areOperandEquivalent(((BinaryExpressionTree) left).leftOperand(), right, binaryKind)
+          || areOperandEquivalent(((BinaryExpressionTree) left).rightOperand(), right, binaryKind);
     }
     return false;
   }

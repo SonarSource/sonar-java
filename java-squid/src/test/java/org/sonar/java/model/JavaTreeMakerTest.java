@@ -1386,20 +1386,20 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void multiplicative_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 * 2 / 3 % 4; } }").getFirstDescendant(Kind.MULTIPLY);
-    assertThat(tree.is(Tree.Kind.MULTIPLY)).isTrue();
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 * 2 / 3 % 4; } }").getFirstDescendant(Kind.REMAINDER);
+    assertThat(tree.is(Kind.REMAINDER)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
-    assertThat(tree.operatorToken().text()).isEqualTo("*");
+    assertThat(tree.operatorToken().text()).isEqualTo("%");
     assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
+    tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.DIVIDE)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("/");
     assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
-    assertThat(tree.is(Tree.Kind.REMAINDER)).isTrue();
+    tree = (BinaryExpressionTree) tree.leftOperand();
+    assertThat(tree.is(Kind.MULTIPLY)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
-    assertThat(tree.operatorToken().text()).isEqualTo("%");
+    assertThat(tree.operatorToken().text()).isEqualTo("*");
     assertThat(tree.rightOperand()).isNotNull();
   }
 
@@ -1408,15 +1408,16 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void additive_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 + 2 - 3; } }").getFirstDescendant(Kind.PLUS);
-    assertThat(tree.is(Tree.Kind.PLUS)).isTrue();
-    assertThat(tree.leftOperand()).isNotNull();
-    assertThat(tree.operatorToken().text()).isEqualTo("+");
-    assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
-    assertThat(tree.is(Tree.Kind.MINUS)).isTrue();
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 + 2 - 3; } }").getFirstDescendant(Kind.MINUS);
+    assertThat(tree.is(Kind.MINUS)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("-");
+    assertThat(tree.rightOperand()).isNotNull();
+    assertThat(tree.rightOperand().is(Kind.INT_LITERAL)).isTrue();
+    tree = (BinaryExpressionTree) tree.leftOperand();
+    assertThat(tree.is(Kind.PLUS)).isTrue();
+    assertThat(tree.leftOperand()).isNotNull();
+    assertThat(tree.operatorToken().text()).isEqualTo("+");
     assertThat(tree.rightOperand()).isNotNull();
   }
 
@@ -1425,20 +1426,20 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void shift_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 >> 2 << 3 >>> 4; } }").getFirstDescendant(Kind.RIGHT_SHIFT);
-    assertThat(tree.is(Tree.Kind.RIGHT_SHIFT)).isTrue();
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 >> 2 << 3 >>> 4; } }").getFirstDescendant(Kind.UNSIGNED_RIGHT_SHIFT);
+    assertThat(tree.is(Tree.Kind.UNSIGNED_RIGHT_SHIFT)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
-    assertThat(tree.operatorToken().text()).isEqualTo(">>");
+    assertThat(tree.operatorToken().text()).isEqualTo(">>>");
     assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
+    tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.LEFT_SHIFT)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("<<");
     assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
-    assertThat(tree.is(Tree.Kind.UNSIGNED_RIGHT_SHIFT)).isTrue();
+    tree = (BinaryExpressionTree) tree.leftOperand();
+    assertThat(tree.is(Kind.RIGHT_SHIFT)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
-    assertThat(tree.operatorToken().text()).isEqualTo(">>>");
+    assertThat(tree.operatorToken().text()).isEqualTo(">>");
     assertThat(tree.rightOperand()).isNotNull();
   }
 
@@ -1447,15 +1448,15 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void relational_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return 1 < 2 > 3; } }").getFirstDescendant(Kind.LESS_THAN);
-    assertThat(tree.is(Tree.Kind.LESS_THAN)).isTrue();
-    assertThat(tree.leftOperand()).isNotNull();
-    assertThat(tree.operatorToken().text()).isEqualTo("<");
-    assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return 1 < 2 > 3; } }").getFirstDescendant(Kind.GREATER_THAN);
     assertThat(tree.is(Tree.Kind.GREATER_THAN)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo(">");
+    assertThat(tree.rightOperand()).isNotNull();
+    tree = (BinaryExpressionTree) tree.leftOperand();
+    assertThat(tree.is(Kind.LESS_THAN)).isTrue();
+    assertThat(tree.leftOperand()).isNotNull();
+    assertThat(tree.operatorToken().text()).isEqualTo("<");
     assertThat(tree.rightOperand()).isNotNull();
   }
 
@@ -1476,15 +1477,15 @@ public class JavaTreeMakerTest {
    */
   @Test
   public void equality_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return false == false != true; } }").getFirstDescendant(Kind.EQUAL_TO);
-    assertThat(tree.is(Tree.Kind.EQUAL_TO)).isTrue();
-    assertThat(tree.leftOperand()).isNotNull();
-    assertThat(tree.operatorToken().text()).isEqualTo("==");
-    assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
+    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return false == false != true; } }").getFirstDescendant(Kind.NOT_EQUAL_TO);
     assertThat(tree.is(Tree.Kind.NOT_EQUAL_TO)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("!=");
+    assertThat(tree.rightOperand()).isNotNull();
+    tree = (BinaryExpressionTree) tree.leftOperand();
+    assertThat(tree.is(Tree.Kind.EQUAL_TO)).isTrue();
+    assertThat(tree.leftOperand()).isNotNull();
+    assertThat(tree.operatorToken().text()).isEqualTo("==");
     assertThat(tree.rightOperand()).isNotNull();
   }
 
@@ -1498,7 +1499,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("&");
     assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
+    tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.AND)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("&");
@@ -1509,7 +1510,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("^");
     assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
+    tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.XOR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("^");
@@ -1520,7 +1521,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("|");
     assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
+    tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.OR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("|");
@@ -1537,7 +1538,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("&&");
     assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
+    tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.CONDITIONAL_AND)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("&&");
@@ -1554,7 +1555,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("||");
     assertThat(tree.rightOperand()).isNotNull();
-    tree = (BinaryExpressionTree) tree.rightOperand();
+    tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.CONDITIONAL_OR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("||");

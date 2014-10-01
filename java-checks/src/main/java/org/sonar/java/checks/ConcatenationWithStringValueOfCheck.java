@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.Sets;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
@@ -33,9 +34,11 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.Set;
+
 @Rule(
-  key = ConcatenationWithStringValueOfCheck.RULE_KEY,
-  priority = Priority.MINOR)
+    key = ConcatenationWithStringValueOfCheck.RULE_KEY,
+    priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -57,32 +60,32 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
       return;
     }
 
-    // TODO This code exploits the associativity bug SONARJAVA-610
-    boolean seenStringLiteral = false;
+    Set<ExpressionTree> valueOfTrees = Sets.newHashSet();
+    boolean flagIssue = false;
     ExpressionTree current = tree;
     while (current.is(Kind.PLUS)) {
       BinaryExpressionTree binOp = (BinaryExpressionTree) current;
-      scan(binOp.leftOperand());
-
-      if (!seenStringLiteral) {
-        if (binOp.leftOperand().is(Kind.STRING_LITERAL)) {
-          seenStringLiteral = true;
-          check(binOp.rightOperand());
-        }
-      } else if (isStringValueOf(binOp.leftOperand())) {
-        check(binOp.leftOperand());
+      scan(binOp.rightOperand());
+      if (isStringValueOf(binOp.rightOperand())) {
+        valueOfTrees.add(binOp.rightOperand());
       }
-
-      current = ((BinaryExpressionTree) current).rightOperand();
+      flagIssue |= binOp.leftOperand().is(Kind.STRING_LITERAL);
+      if (!valueOfTrees.isEmpty()) {
+        flagIssue |= binOp.rightOperand().is(Kind.STRING_LITERAL);
+      }
+      current = ((BinaryExpressionTree) current).leftOperand();
     }
 
+    if (flagIssue) {
+      for (ExpressionTree valueOfTree : valueOfTrees) {
+        addIssue(valueOfTree);
+      }
+    }
     scan(current);
   }
 
-  private void check(ExpressionTree tree) {
-    if (isStringValueOf(tree)) {
-      context.addIssue(tree, ruleKey, "Directly append the argument of String.valueOf().");
-    }
+  private void addIssue(ExpressionTree tree) {
+    context.addIssue(tree, ruleKey, "Directly append the argument of String.valueOf().");
   }
 
   private static boolean isStringValueOf(ExpressionTree tree) {
@@ -99,7 +102,7 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
     }
 
     return tree.arguments().size() == 1 &&
-      isStringValueOf((MemberSelectExpressionTree) tree.methodSelect());
+        isStringValueOf((MemberSelectExpressionTree) tree.methodSelect());
   }
 
   private static boolean isStringValueOf(MemberSelectExpressionTree tree) {
@@ -108,7 +111,7 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
     }
 
     return "valueOf".equals(tree.identifier().name()) &&
-      "String".equals(((IdentifierTree) tree.expression()).name());
+        "String".equals(((IdentifierTree) tree.expression()).name());
   }
 
 }

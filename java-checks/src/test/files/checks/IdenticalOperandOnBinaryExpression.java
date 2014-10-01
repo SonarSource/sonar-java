@@ -11,6 +11,9 @@ class A {
     if(a || a || b) {}
     if(a || b || c || e && a) {}
     if(a && b && c && e && a) {}
+    if(b
+        || a
+        || a) {}
 
     double d = 0.0d;
     float f = 0.0f;
