@@ -57,7 +57,8 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
           CaseLabelTree labelToReport = getLastLabel(cases.get(i));
           if (!reportedLabels.contains(labelToReport)) {
             reportedLabels.add(labelToReport);
-            addIssue(labelToReport, "Either merge this case with the identical one on line \"" + ((JavaTree) getLastLabel(caseGroupTree)).getLine() + "\" or change one of the implementations.");
+            addIssue(labelToReport,
+                "Either merge this case with the identical one on line \"" + ((JavaTree) getLastLabel(caseGroupTree)).getLine() + "\" or change one of the implementations.");
           }
         }
       }

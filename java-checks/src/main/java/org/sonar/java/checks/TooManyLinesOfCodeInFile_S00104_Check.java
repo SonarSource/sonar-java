@@ -31,16 +31,16 @@ import java.text.MessageFormat;
 import java.util.List;
 
 @Rule(
-  key = "S00104",
-  priority = Priority.MAJOR,
-  tags={"brain-overload"})
+    key = "S00104",
+    priority = Priority.MAJOR,
+    tags = {"brain-overload"})
 public class TooManyLinesOfCodeInFile_S00104_Check extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAXIMUM = 1000;
 
   @RuleProperty(
-    key = "maximumFileLocThreshold",
-    defaultValue = "" + DEFAULT_MAXIMUM)
+      key = "maximumFileLocThreshold",
+      defaultValue = "" + DEFAULT_MAXIMUM)
   public int maximum = DEFAULT_MAXIMUM;
 
 
@@ -51,7 +51,7 @@ public class TooManyLinesOfCodeInFile_S00104_Check extends SubscriptionBaseVisit
 
   @Override
   public void visitToken(SyntaxToken token) {
-      InternalSyntaxToken internalSyntaxToken = (InternalSyntaxToken) token;
+    InternalSyntaxToken internalSyntaxToken = (InternalSyntaxToken) token;
     if (internalSyntaxToken.isEOF()) {
       int lines = internalSyntaxToken.getLine();
       if (lines > maximum) {

@@ -87,8 +87,8 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
     if (isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
       //Exclude anonymous classes
-        isInAnonymousClass.push(classTree.simpleName() == null);
-      if(!isInAnonymousClass.peek()){
+      isInAnonymousClass.push(classTree.simpleName() == null);
+      if (!isInAnonymousClass.peek()) {
         checkIndentation(Lists.newArrayList(classTree));
       }
     }
@@ -136,7 +136,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
         return typeColumn;
       }
       return Math.min(typeColumn, ((JavaTree) variableTree.modifiers()).getToken().getColumn());
-    } else if(isClassTree(tree)) {
+    } else if (isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
       if (!classTree.modifiers().isEmpty()) {
         return ((JavaTree) classTree.modifiers()).getToken().getColumn();
@@ -146,10 +146,10 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
   }
 
   private int getTypeColumn(Tree typeTree) {
-    if(typeTree.is(Kind.ARRAY_TYPE)) {
+    if (typeTree.is(Kind.ARRAY_TYPE)) {
       return getTypeColumn(((ArrayTypeTree) typeTree).type());
     }
-    return ((JavaTree)typeTree).getToken().getColumn();
+    return ((JavaTree) typeTree).getToken().getColumn();
   }
 
   @Override

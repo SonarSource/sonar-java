@@ -72,7 +72,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
   }
 
   public boolean hasEquivalentOperand(BinaryExpressionTree tree) {
-    if(isNanTest(tree) || isLeftShiftOnOne(tree)) {
+    if (isNanTest(tree) || isLeftShiftOnOne(tree)) {
       return false;
     }
     Tree.Kind binaryKind = ((JavaTree) tree).getKind();
@@ -91,9 +91,9 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
   }
 
   private boolean isNanTest(BinaryExpressionTree tree) {
-    if(tree.is(Tree.Kind.NOT_EQUAL_TO)) {
+    if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
       Type symbolType = ((AbstractTypedTree) tree.leftOperand()).getSymbolType();
-      if((symbolType.isTagged(Type.FLOAT) || symbolType.isTagged(Type.DOUBLE)) ) {
+      if (symbolType.isTagged(Type.FLOAT) || symbolType.isTagged(Type.DOUBLE)) {
         return true;
       }
     }
@@ -102,10 +102,10 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
 
   private boolean isLeftShiftOnOne(BinaryExpressionTree tree) {
     //1 << 1 is used for bit masks construction and should be excluded.
-    if(tree.is(Tree.Kind.LEFT_SHIFT) && tree.leftOperand().is(Tree.Kind.INT_LITERAL) && tree.rightOperand().is(Tree.Kind.INT_LITERAL)) {
+    if (tree.is(Tree.Kind.LEFT_SHIFT) && tree.leftOperand().is(Tree.Kind.INT_LITERAL) && tree.rightOperand().is(Tree.Kind.INT_LITERAL)) {
       String left = ((LiteralTree) tree.leftOperand()).value();
       String right = ((LiteralTree) tree.rightOperand()).value();
-      if("1".equals(right) && "1".equals(left)){
+      if ("1".equals(right) && "1".equals(left)) {
         return true;
       }
     }

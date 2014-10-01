@@ -33,10 +33,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import java.util.List;
 
 @Rule(
-  key = "S1118",
-  priority = Priority.MAJOR)
+    key = "S1118",
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisitor{
+public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -55,7 +55,7 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
         }
       }
       if (hasImplicitPublicConstructor) {
-          addIssue(classTree, "Add a private constructor to hide the implicit public one.");
+        addIssue(classTree, "Add a private constructor to hide the implicit public one.");
       }
     }
   }
@@ -65,7 +65,7 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
   }
 
   private static boolean hasOnlyStaticMembers(ClassTree classTree) {
-    if(classTree.members().isEmpty()) {
+    if (classTree.members().isEmpty()) {
       return false;
     }
     for (Tree member : classTree.members()) {
@@ -77,17 +77,17 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
   }
 
   private static boolean isStatic(Tree member) {
-    if(member.is(Tree.Kind.STATIC_INITIALIZER)) {
+    if (member.is(Tree.Kind.STATIC_INITIALIZER)) {
       return true;
-    } else if(member.is(Tree.Kind.VARIABLE)) {
+    } else if (member.is(Tree.Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) member;
-      return  hasStaticModifier(variableTree.modifiers());
-    } else if(member.is(Tree.Kind.METHOD)) {
+      return hasStaticModifier(variableTree.modifiers());
+    } else if (member.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) member;
-      return  hasStaticModifier(methodTree.modifiers());
-    } else if(isClassTree(member)) {
+      return hasStaticModifier(methodTree.modifiers());
+    } else if (isClassTree(member)) {
       ClassTree classTree = (ClassTree) member;
-      return  hasStaticModifier(classTree.modifiers());
+      return hasStaticModifier(classTree.modifiers());
     }
     return false;
   }
@@ -96,7 +96,7 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
     return member.is(Tree.Kind.CLASS) || member.is(Tree.Kind.ANNOTATION_TYPE) || member.is(Tree.Kind.INTERFACE) || member.is(Tree.Kind.ENUM);
   }
 
-  private static boolean hasStaticModifier(ModifiersTree modifiers){
+  private static boolean hasStaticModifier(ModifiersTree modifiers) {
     return modifiers.modifiers().contains(Modifier.STATIC);
   }
 
