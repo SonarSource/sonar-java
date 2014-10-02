@@ -26,7 +26,7 @@ import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.Rule;
 import org.fest.assertions.GenericAssert;
 import org.sonar.java.ast.parser.ActionGrammar;
-import org.sonar.java.ast.parser.ActionParser;
+import org.sonar.java.ast.parser.ActionParser2;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.sslr.grammar.GrammarRuleKey;
@@ -39,7 +39,7 @@ public class Assertions {
   }
 
   public static ParserAssert assertThat(GrammarRuleKey rule) {
-    return new ParserAssert(new ActionParser(
+    return new ParserAssert(new ActionParser2(
       Charsets.UTF_8,
       JavaGrammar.createGrammarBuilder(),
       ActionGrammar.class,
@@ -49,7 +49,7 @@ public class Assertions {
   }
 
   public static ParserAssert assertThat(LexerlessGrammarBuilder b, GrammarRuleKey rule) {
-    return new ParserAssert(new ActionParser(
+    return new ParserAssert(new ActionParser2(
       Charsets.UTF_8,
       b,
       ActionGrammar.class,
@@ -58,9 +58,9 @@ public class Assertions {
       true));
   }
 
-  public static class ParserAssert extends GenericAssert<ParserAssert, ActionParser> {
+  public static class ParserAssert extends GenericAssert<ParserAssert, ActionParser2> {
 
-    public ParserAssert(ActionParser actual) {
+    public ParserAssert(ActionParser2 actual) {
       super(ParserAssert.class, actual);
     }
 

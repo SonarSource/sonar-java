@@ -405,9 +405,9 @@ public enum JavaGrammar implements GrammarRuleKey {
       b.skippedTrivia(whitespace(b)),
       b.zeroOrMore(
         b.commentTrivia(b.firstOf(inlineComment(b), multilineComment(b))),
-        b.skippedTrivia(whitespace(b)))).skip();
+        b.skippedTrivia(whitespace(b))));
 
-    b.rule(EOF).is(b.token(GenericTokenType.EOF, b.endOfInput())).skip();
+    b.rule(EOF).is(b.token(GenericTokenType.EOF, b.endOfInput()));
 
     b.rule(CHARACTER_LITERAL).is(characterLiteral(b), SPACING);
     b.rule(JavaTokenType.LITERAL).is(stringLiteral(b), SPACING);

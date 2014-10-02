@@ -40,6 +40,7 @@ public class JavaAstScannerTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/filesInError/ParseError.java"));
     assertThat(file.getKey()).startsWith(FileVisitor.UNRESOLVED_PACKAGE);
   }
+
   @Test
   public void emptyFile() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/filesInError/EmptyFile.java"));
@@ -52,4 +53,5 @@ public class JavaAstScannerTest {
     assertThat(file.getNoSonarTagLines()).hasSize(1);
     assertThat(file.getNoSonarTagLines()).contains(8);
   }
+
 }

@@ -17,20 +17,38 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser;
+package org.sonar.java;
 
-import java.nio.charset.Charset;
+import com.google.common.base.Charsets;
+import com.sonar.sslr.api.AstNode;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.sonar.java.ast.parser.ActionGrammar;
+import org.sonar.java.ast.parser.ActionParser2;
+import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.TreeFactory;
+import org.sonar.java.ast.visitors.FileVisitor;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
-public class JavaParser {
+import java.io.File;
 
-  public static ActionParser2 createParser(Charset charset, boolean verifyAssertions) {
-    return new ActionParser2(
-      charset,
-      JavaGrammar.createGrammarBuilder(),
+public class ActionParser2Test {
+
+  @Test
+  @Ignore
+  public void test() throws Exception {
+    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+
+    ActionParser2 parser = new ActionParser2(
+      Charsets.UTF_8,
+      b,
       ActionGrammar.class,
       new TreeFactory(),
       JavaGrammar.COMPILATION_UNIT,
-      verifyAssertions);
+      false);
+
+    AstNode astNode = parser.parse(new File("/Users/alex/Desktop/sonarsource/java/test/src/main/java/NamedNodeMapImpl.java"));
+    System.out.println("Got: " + FileVisitor.getPackageKey(astNode));
   }
 
 }

@@ -31,6 +31,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
 
+// FIXME TEST THIS CLASS!!!
 public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
   public static final String UNRESOLVED_PACKAGE = "!error!";
 
@@ -57,12 +58,13 @@ public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
     return new SourceFile(key.toString(), file.getPath());
   }
 
-  private String getPackageKey(AstNode astNode) {
+  // TODO Reduce visibility
+  public static String getPackageKey(AstNode astNode) {
     if (isEmptyFileOrParseError(astNode)) {
       // Cannot resolve package for empty file and parse error.
       return UNRESOLVED_PACKAGE;
-    } else if (astNode.getFirstChild().is(JavaGrammar.PACKAGE_DECLARATION)) {
-      AstNode packageNameNode = astNode.getFirstChild().getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
+    } else if (astNode.hasDirectChildren(JavaGrammar.PACKAGE_DECLARATION)) {
+      AstNode packageNameNode = astNode.getFirstChild(JavaGrammar.PACKAGE_DECLARATION).getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
       return getAstNodeValue(packageNameNode).replace('.', '/');
     } else {
       // unnamed package
@@ -70,11 +72,11 @@ public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
     }
   }
 
-  private boolean isEmptyFileOrParseError(AstNode astNode) {
-    return astNode == null || astNode.getFirstChild().is(GenericTokenType.EOF);
+  private static boolean isEmptyFileOrParseError(AstNode astNode) {
+    return astNode == null || GenericTokenType.EOF.equals(astNode.getToken().getType());
   }
 
-  private String getAstNodeValue(AstNode astNode) {
+  private static String getAstNodeValue(AstNode astNode) {
     StringBuilder sb = new StringBuilder();
     for (AstNode child : AstNodeHacks.getDescendants(astNode)) {
       if (!child.hasChildren() && child.hasToken()) {
@@ -83,6 +85,5 @@ public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
     }
     return sb.toString();
   }
-
 
 }
