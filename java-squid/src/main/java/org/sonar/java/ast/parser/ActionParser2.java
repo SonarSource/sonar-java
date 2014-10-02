@@ -174,7 +174,8 @@ public class ActionParser2 extends Parser {
     private final BiMap<Method, GrammarRuleKey> mapping = HashBiMap.create();
     private final BiMap<Method, GrammarRuleKey> actions = HashBiMap.create();
     private final Set<GrammarRuleKey> optionals = Sets.newHashSet();
-    private final Set<GrammarRuleKey> repeated = Sets.newHashSet();
+    private final Set<GrammarRuleKey> oneOrMores = Sets.newHashSet();
+    private final Set<GrammarRuleKey> zeroOrMores = Sets.newHashSet();
 
     private Method buildingMethod = null;
     private GrammarRuleKey ruleKey = null;
@@ -248,7 +249,7 @@ public class ActionParser2 extends Parser {
     public <T> List<T> oneOrMore(T method) {
       ParsingExpression expression = pop();
       GrammarRuleKey ruleKey = new DummyGrammarRuleKey("oneOrMore", expression);
-      repeated.add(ruleKey);
+      oneOrMores.add(ruleKey);
       b.rule(ruleKey).is(b.oneOrMore(expression));
       invokeRule(ruleKey);
       return null;
@@ -256,8 +257,11 @@ public class ActionParser2 extends Parser {
 
     @Override
     public <T> Optional<List<T>> zeroOrMore(T method) {
-      oneOrMore(method);
-      optional(method);
+      ParsingExpression expression = pop();
+      GrammarRuleKey ruleKey = new DummyGrammarRuleKey("zeroOrMore", expression);
+      zeroOrMores.add(ruleKey);
+      b.rule(ruleKey).is(b.zeroOrMore(expression));
+      invokeRule(ruleKey);
       return null;
     }
 
@@ -325,8 +329,12 @@ public class ActionParser2 extends Parser {
       return optionals.contains(ruleKey);
     }
 
-    public boolean isRepeatedRule(Object ruleKey) {
-      return repeated.contains(ruleKey);
+    public boolean isOneOrMoreRule(Object ruleKey) {
+      return oneOrMores.contains(ruleKey);
+    }
+
+    public boolean isZeroOrMoreRule(Object ruleKey) {
+      return zeroOrMores.contains(ruleKey);
     }
 
   }
