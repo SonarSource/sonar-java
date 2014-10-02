@@ -19,6 +19,43 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.sonar.sslr.api.AstNode;
+import org.junit.Test;
+import org.sonar.squidbridge.SquidAstVisitorContextImpl;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourceProject;
+import org.sonar.squidbridge.measures.MetricDef;
+
+import java.io.File;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FileVisitorTest {
+
+  @Test
+  public void test() {
+    SquidAstVisitorContextImpl context = new SquidAstVisitorContextImpl(new SourceProject(""));
+    FileVisitor visitor = new FileVisitor();
+    visitor.setContext(context);
+
+    AstNode astNode = mock(AstNode.class);
+    File file = mock(File.class);
+    when(file.getAbsolutePath()).thenReturn("/some/path");
+    when(file.getPath()).thenReturn("/some/other/path");
+    context.setFile(file, mock(MetricDef.class));
+
+    assertThat(context.peekSourceCode() instanceof SourceProject);
+
+    visitor.visitFile(astNode);
+    assertThat(context.peekSourceCode() instanceof SourceFile);
+    SourceFile sourceFile = (SourceFile) context.peekSourceCode();
+    assertThat(sourceFile.getKey()).isEqualTo("/some/path");
+    assertThat(sourceFile.getName()).isEqualTo("/some/other/path");
+
+    visitor.leaveFile(astNode);
+    assertThat(context.peekSourceCode() instanceof SourceProject);
+  }
+
 }
