@@ -20,14 +20,12 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 
 import javax.annotation.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 public class AstNodeHacks {
 
@@ -74,22 +72,6 @@ public class AstNodeHacks {
       return field.get(instance);
     } catch (IllegalAccessException e) {
       throw Throwables.propagate(e);
-    }
-  }
-
-  // SSLR-367
-  public static List<AstNode> getDescendants(AstNode astNode) {
-    List<AstNode> result = Lists.newArrayList();
-    for (AstNode child : astNode.getChildren()) {
-      addDescendants(result, child);
-    }
-    return result;
-  }
-
-  private static void addDescendants(List<AstNode> result, AstNode astNode) {
-    result.add(astNode);
-    for (AstNode child : astNode.getChildren()) {
-      addDescendants(result, child);
     }
   }
 
