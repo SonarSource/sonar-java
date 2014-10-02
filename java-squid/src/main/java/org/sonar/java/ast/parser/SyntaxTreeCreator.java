@@ -42,8 +42,7 @@ import java.util.List;
 
 public class SyntaxTreeCreator<T> {
 
-  // TODO Reduce visibility
-  public static final TokenType UNDEFINED_TOKEN_TYPE = new TokenType() {
+  private static final TokenType UNDEFINED_TOKEN_TYPE = new TokenType() {
 
     @Override
     public String getName() {
