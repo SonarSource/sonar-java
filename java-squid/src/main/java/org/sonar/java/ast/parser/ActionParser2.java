@@ -38,6 +38,7 @@ import org.sonar.java.ast.parser.ActionGrammar.GrammarBuilder;
 import org.sonar.java.ast.parser.ActionGrammar.NonterminalBuilder;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
+import org.sonar.sslr.internal.grammar.MutableParsingRule;
 import org.sonar.sslr.internal.matchers.InputBuffer;
 import org.sonar.sslr.internal.vm.CompilationHandler;
 import org.sonar.sslr.internal.vm.FirstOfExpression;
@@ -54,12 +55,14 @@ import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ActionParser2 extends Parser {
@@ -408,8 +411,19 @@ public class ActionParser2 extends Parser {
 
   private static class RuleExpression implements ParsingExpression {
 
-    private final LexerlessGrammarBuilder b;
+    private static Field DEFINITIONS_FIELD;
+    static {
+      try {
+        DEFINITIONS_FIELD = LexerlessGrammarBuilder.class.getDeclaredField("definitions");
+      } catch (NoSuchFieldException e) {
+        throw Throwables.propagate(e);
+      } catch (SecurityException e) {
+        throw Throwables.propagate(e);
+      }
+      DEFINITIONS_FIELD.setAccessible(true);
+    }
 
+    private final LexerlessGrammarBuilder b;
     private GrammarRuleKey ruleKey;
     private final GrammarBuilderInterceptor grammarBuilderInterceptor;
     private final Method method;
@@ -438,7 +452,14 @@ public class ActionParser2 extends Parser {
         Preconditions.checkState(ruleKey != null, "Cannot find rule key for method: " + method.getName());
       }
 
-      return compiler.compile((ParsingExpression) b.sequence(b.nextNot(b.nothing()), ruleKey));
+      try {
+        b.rule(ruleKey); // Ensure the MutableParsingRule is created in the definitions
+        return compiler.compile((MutableParsingRule) ((Map) DEFINITIONS_FIELD.get(b)).get(ruleKey));
+      } catch (IllegalArgumentException e) {
+        throw Throwables.propagate(e);
+      } catch (IllegalAccessException e) {
+        throw Throwables.propagate(e);
+      }
     }
 
     @Override
