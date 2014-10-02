@@ -19,13 +19,8 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.GenericTokenType;
-import org.sonar.java.ast.parser.AstNodeHacks;
-import org.sonar.java.ast.parser.JavaGrammar;
-import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -33,12 +28,10 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 import java.io.File;
 
 public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
-  public static final String UNRESOLVED_PACKAGE = "!error!";
 
   @Override
   public void visitFile(AstNode astNode) {
-    String packageKey = getPackageKey(astNode);
-    SourceFile sourceFile = createSourceFile(packageKey, getContext().getFile());
+    SourceFile sourceFile = createSourceFile(getContext().getFile());
     getContext().addSourceCode(sourceFile);
   }
 
@@ -48,42 +41,8 @@ public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
     getContext().popSourceCode();
   }
 
-  private SourceFile createSourceFile(String parentPackage, File file) {
-    StringBuilder key = new StringBuilder();
-    if (!"".equals(parentPackage)) {
-      key.append(parentPackage);
-      key.append("/");
-    }
-    key.append(file.getName());
-    return new SourceFile(key.toString(), file.getPath());
-  }
-
-  @VisibleForTesting
-  static String getPackageKey(AstNode astNode) {
-    if (isEmptyFileOrParseError(astNode)) {
-      // Cannot resolve package for empty file and parse error.
-      return UNRESOLVED_PACKAGE;
-    } else if (astNode.hasDirectChildren(JavaGrammar.PACKAGE_DECLARATION)) {
-      AstNode packageNameNode = astNode.getFirstChild(JavaGrammar.PACKAGE_DECLARATION).getFirstChild(JavaTreeMaker.QUALIFIED_EXPRESSION_KINDS);
-      return getAstNodeValue(packageNameNode).replace('.', '/');
-    } else {
-      // unnamed package
-      return "";
-    }
-  }
-
-  private static boolean isEmptyFileOrParseError(AstNode astNode) {
-    return astNode == null || GenericTokenType.EOF.equals(astNode.getToken().getType());
-  }
-
-  private static String getAstNodeValue(AstNode astNode) {
-    StringBuilder sb = new StringBuilder();
-    for (AstNode child : AstNodeHacks.getDescendants(astNode)) {
-      if (!child.hasChildren() && child.hasToken()) {
-        sb.append(child.getTokenValue());
-      }
-    }
-    return sb.toString();
+  private SourceFile createSourceFile(File file) {
+    return new SourceFile(file.getAbsolutePath(), file.getPath());
   }
 
 }

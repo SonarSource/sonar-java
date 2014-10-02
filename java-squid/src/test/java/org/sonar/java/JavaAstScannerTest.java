@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import org.junit.Test;
-import org.sonar.java.ast.visitors.FileVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 
 import java.io.File;
@@ -33,18 +32,6 @@ public class JavaAstScannerTest {
   public void comments() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Comments.java"));
     assertThat(file.getNoSonarTagLines()).contains(15).hasSize(1);
-  }
-
-  @Test
-  public void parseError() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/filesInError/ParseError.java"));
-    assertThat(file.getKey()).startsWith(FileVisitor.UNRESOLVED_PACKAGE);
-  }
-
-  @Test
-  public void emptyFile() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/filesInError/EmptyFile.java"));
-    assertThat(file.getKey()).startsWith(FileVisitor.UNRESOLVED_PACKAGE);
   }
 
   @Test

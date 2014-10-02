@@ -19,26 +19,6 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Charsets;
-import org.junit.Test;
-import org.sonar.java.ast.parser.ActionParser2;
-import org.sonar.java.ast.parser.JavaParser;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class FileVisitorTest {
-
-  @Test
-  public void getPackageKey() {
-    ActionParser2 parser = JavaParser.createParser(Charsets.UTF_8, false);
-    assertThat(FileVisitor.getPackageKey(parser.parse("public class Foo {}"))).isEqualTo("");
-    assertThat(FileVisitor.getPackageKey(parser.parse("package foo;"))).isEqualTo("foo");
-    assertThat(FileVisitor.getPackageKey(parser.parse("  /* comments */ package foo;"))).isEqualTo("foo");
-    assertThat(FileVisitor.getPackageKey(parser.parse("package foo.bar;"))).isEqualTo("foo/bar");
-    assertThat(FileVisitor.getPackageKey(parser.parse("/* comments */  @NonNull package foo.bar.baz; public class Foo {}"))).isEqualTo("foo/bar/baz");
-
-    // TODO Should be default package?
-    assertThat(FileVisitor.getPackageKey(parser.parse(""))).isEqualTo(FileVisitor.UNRESOLVED_PACKAGE);
-  }
-
 }
