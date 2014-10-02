@@ -17,9 +17,8 @@ if ( a == b || a == b ) { // if the first one is true, the second one is too
   doW();
 }
 
-if (5 / 5) { // always 1
-  doV();
-}
+int j = 5 / 5; //always 1
+int k = 5 - 5; //always 0
 </pre>
 
 <h2>Compliant Solution</h2>
@@ -32,17 +31,22 @@ if ( a == b ) {
 if ( a == b ) {
   doW();
 }
+int j = 1;
+int k = 0;
 
-doV();
 </pre>
 
 <h2>Exceptions</h2>
+<p>The specific case of testing a floating point values against itself is a valid test for NaN and is therefore ignored.</p>
+<p>Similarly, left-shifting 1 onto 1 is common in the construction of bit masks, and is ignored.</p>
 <pre>
   float f;
   double d;
   if(f !=f || d != d) { //test for NaN value
     System.out.println("f or d is NaN");
+  } else if ( f != d) { //Noncomliant
+    //...
   }
-  int i = 1 << 1; //Construction used in bit masks.
-
+  int i = 1 << 1; //Compliant
+  int j = a << a; //Noncompliant
 </pre>
