@@ -19,6 +19,7 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.GenericTokenType;
@@ -31,7 +32,6 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
 
-// FIXME TEST THIS CLASS!!!
 public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
   public static final String UNRESOLVED_PACKAGE = "!error!";
 
@@ -58,8 +58,8 @@ public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
     return new SourceFile(key.toString(), file.getPath());
   }
 
-  // TODO Reduce visibility
-  public static String getPackageKey(AstNode astNode) {
+  @VisibleForTesting
+  static String getPackageKey(AstNode astNode) {
     if (isEmptyFileOrParseError(astNode)) {
       // Cannot resolve package for empty file and parse error.
       return UNRESOLVED_PACKAGE;
