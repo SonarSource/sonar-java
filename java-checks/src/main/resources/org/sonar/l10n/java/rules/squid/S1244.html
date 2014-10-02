@@ -1,0 +1,34 @@
+<h2>Noncompliant Code Example</h2>
+<pre>
+float myNumber = 3.146;
+if ( myNumber == 3.146f ) {  //Noncompliant. Because of floating point imprecision, this will be false
+// ...
+}
+if ( myNumber != 3.146f ) {  //Noncompliant. Because of floating point imprecision, this will be true
+// ...
+}
+</pre>
+
+<h2>Compliant Code Example</h2>
+<p>As a general rule of thumb float comparison for equality should not be performed as it is really error prone.
+However, if you really require to do it, you should compare the absolute value of the difference against an acceptable error.
+Please note that even this does not cover all cases (<code>NaN</code> and <code>Infinity</code> for instance).</p>
+<pre>
+float myNumber = 3.146f;
+
+if(Math.abs(myNumber - 3.146f) < 0.00001)) {
+}
+</pre>
+
+<h2>Exceptions</h2>
+The specific case of testing a floating point value against itself is a valid test for <code>NaN</code> and is therefore ignored.
+
+<pre>
+float f;
+float d;
+if(f != f) { // Compliant; test for NaN value
+  System.out.println("f is NaN");
+} else if (f != d) { // Noncompliant
+  // ...
+}
+</pre>

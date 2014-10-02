@@ -199,7 +199,8 @@ public final class CheckList {
       PackageInfoCheck.class,
       SwitchWithTooManyCasesCheck.class,
       IdenticalCasesInSwitchCheck.class,
-      IdenticalOperandOnBinaryExpressionCheck.class
+      IdenticalOperandOnBinaryExpressionCheck.class,
+      FloatEqualityCheck.class
     );
   }
 
