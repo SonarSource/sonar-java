@@ -22,7 +22,7 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -38,7 +38,7 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
   private final List<StatementTree> body;
 
   public CaseGroupTreeImpl(List<CaseLabelTreeImpl> labels, List<StatementTree> body, AstNode child) {
-    super(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP);
+    super(JavaLexer.SWITCH_BLOCK_STATEMENT_GROUP);
     this.labels = Preconditions.checkNotNull(labels);
     this.body = Preconditions.checkNotNull(body);
 

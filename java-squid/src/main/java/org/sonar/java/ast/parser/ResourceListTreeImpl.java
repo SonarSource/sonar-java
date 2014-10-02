@@ -27,7 +27,7 @@ import java.util.List;
 public class ResourceListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
 
   public ResourceListTreeImpl(List<VariableTreeImpl> resources, List<AstNode> children) {
-    super(JavaGrammar.RESOURCE_SPECIFICATION, resources, children);
+    super(JavaLexer.RESOURCE_SPECIFICATION, resources, children);
   }
 
 }

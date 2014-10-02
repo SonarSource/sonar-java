@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class ReturnStatementTest {
 
   @Test
   public void okReturn() {
-    assertThat(JavaGrammar.RETURN_STATEMENT)
+    assertThat(JavaLexer.RETURN_STATEMENT)
       .matches("return;")
       .matches("return expression;");
   }

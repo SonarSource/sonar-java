@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -183,7 +183,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     } else if (getAstNode().is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
       return new InternalSyntaxToken(getAstNode().getFirstChild(leftOrRightBrace).getToken());
     }
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaGrammar.CLASS_BODY, JavaGrammar.INTERFACE_BODY, JavaGrammar.ENUM_BODY)
+    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaLexer.CLASS_BODY, JavaLexer.INTERFACE_BODY, JavaLexer.ENUM_BODY)
       .getFirstChild(leftOrRightBrace).getToken());
   }
 

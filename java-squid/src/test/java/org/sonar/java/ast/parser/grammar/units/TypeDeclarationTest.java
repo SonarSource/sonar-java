@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.units;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -29,9 +29,9 @@ public class TypeDeclarationTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    assertThat(b, JavaGrammar.TYPE_DECLARATION)
+    assertThat(b, JavaLexer.TYPE_DECLARATION)
       .matches("class Foo {}")
       .matches("enum Foo {}")
       .matches("interface Foo {}")
@@ -43,7 +43,7 @@ public class TypeDeclarationTest {
 
   @Test
   public void realLife() {
-    assertThat(JavaGrammar.TYPE_DECLARATION)
+    assertThat(JavaLexer.TYPE_DECLARATION)
       .matches("public static final class HelloWorld { }")
       .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>  extends java.util. @Foo HashMap implements @Foo Serializable, InterfaceTest{}");
   }

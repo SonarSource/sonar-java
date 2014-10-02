@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class SwitchBlockStatementGroupTest {
 
   @Test
   public void ok() {
-    assertThat(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP)
+    assertThat(JavaLexer.SWITCH_BLOCK_STATEMENT_GROUP)
       .matches("case 0:")
       .matches("case 0: break;")
       .matches("case 0: int i = 0; break;")

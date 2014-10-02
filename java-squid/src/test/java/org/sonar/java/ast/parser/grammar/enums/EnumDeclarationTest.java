@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.enums;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -29,15 +29,15 @@ public class EnumDeclarationTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    assertThat(b, JavaGrammar.ENUM_DECLARATION)
+    assertThat(b, JavaLexer.ENUM_DECLARATION)
       .matches("enum identifier implements Foo, Bar<Integer> {}");
   }
 
   @Test
   public void realLife() {
-    assertThat(JavaGrammar.ENUM_DECLARATION)
+    assertThat(JavaLexer.ENUM_DECLARATION)
       .matches("enum HelloWorld { }");
   }
 

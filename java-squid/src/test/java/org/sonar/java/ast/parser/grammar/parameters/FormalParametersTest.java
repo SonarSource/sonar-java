@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -29,9 +29,9 @@ public class FormalParametersTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    assertThat(b, JavaGrammar.FORMAL_PARAMETERS)
+    assertThat(b, JavaLexer.FORMAL_PARAMETERS)
       .matches("( )")
       .matches("( int foo, int... bar )");
   }

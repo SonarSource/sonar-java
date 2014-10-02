@@ -21,7 +21,7 @@ package org.sonar.java.model.expression;
 
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -38,7 +38,7 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
   private final InternalSyntaxToken closeBracketToken;
 
   public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, List<Tree> expressions, List<AstNode> children, InternalSyntaxToken closeBracketToken) {
-    super(JavaGrammar.TYPE_ARGUMENTS, expressions, ImmutableList.<AstNode>of());
+    super(JavaLexer.TYPE_ARGUMENTS, expressions, ImmutableList.<AstNode>of());
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;

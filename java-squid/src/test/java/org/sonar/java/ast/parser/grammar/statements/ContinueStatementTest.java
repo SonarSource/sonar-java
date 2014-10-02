@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class ContinueStatementTest {
 
   @Test
   public void ok() {
-    assertThat(JavaGrammar.CONTINUE_STATEMENT)
+    assertThat(JavaLexer.CONTINUE_STATEMENT)
       .matches("continue;")
       .matches("continue identifier;");
   }

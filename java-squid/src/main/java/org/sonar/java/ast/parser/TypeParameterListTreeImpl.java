@@ -33,7 +33,7 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTreeImp
   private final InternalSyntaxToken closeBracketToken;
 
   public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTreeImpl> typeParameters, List<AstNode> children, InternalSyntaxToken closeBracketToken) {
-    super(JavaGrammar.TYPE_PARAMETERS, typeParameters, ImmutableList.<AstNode>of());
+    super(JavaLexer.TYPE_PARAMETERS, typeParameters, ImmutableList.<AstNode>of());
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;

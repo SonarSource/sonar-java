@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -29,9 +29,9 @@ public class TryStatementTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    assertThat(b, JavaGrammar.STATEMENT)
+    assertThat(b, JavaLexer.STATEMENT)
       .matches("try {} catch (Exception e) {} catch (Exception e) {} finally {}")
       .matches("try {} catch (Exception e) {} finally {}")
       .matches("try {} catch (Exception e) {}")
@@ -41,10 +41,10 @@ public class TryStatementTest {
   @Test
   public void realLife() {
     // Java 7: multi-catch
-    assertThat(JavaGrammar.STATEMENT)
+    assertThat(JavaLexer.STATEMENT)
       .matches("try {} catch (ClassNotFoundException | IllegalAccessException ex) {}");
     // Java 7: try-with-resources
-    assertThat(JavaGrammar.STATEMENT)
+    assertThat(JavaLexer.STATEMENT)
       .matches("try (Resource resource = new Resource()) {}")
       .matches("try (Resource resource = new Resource()) {} catch (Expception e) {} finally {}");
   }

@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class BoundTest {
 
   @Test
   public void ok() {
-    assertThat(JavaGrammar.BOUND)
+    assertThat(JavaLexer.BOUND)
       .matches("classType")
       .matches("classType & classType")
       .matches("@Foo classType & @Foo classType");

@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.literals;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class LiteralTest {
 
   @Test
   public void realLife() {
-    assertThat(JavaGrammar.LITERAL)
+    assertThat(JavaLexer.LITERAL)
       .matches("1.0")
       .matches("1")
       .matches("'a'")

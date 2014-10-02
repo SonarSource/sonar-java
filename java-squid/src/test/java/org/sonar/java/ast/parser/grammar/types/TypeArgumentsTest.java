@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class TypeArgumentsTest {
 
   @Test
   public void ok() {
-    assertThat(JavaGrammar.TYPE_ARGUMENTS)
+    assertThat(JavaLexer.TYPE_ARGUMENTS)
       .matches("< typeArgument >")
       .matches("< typeArgument , typeArgument >")
       .matches("< @Foo typeArgument , @Foo typeArgument >");

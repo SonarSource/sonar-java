@@ -25,7 +25,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
@@ -47,14 +47,14 @@ public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessG
   @Override
   public void init() {
     subscribeTo(JavaTreeMaker.STATEMENTS_KINDS);
-    subscribeTo(JavaGrammar.VARIABLE_DECLARATORS);
+    subscribeTo(JavaLexer.VARIABLE_DECLARATORS);
   }
 
   public boolean isExcluded(AstNode astNode) {
     return astNode.is(Kind.BLOCK)
       || astNode.is(Kind.EMPTY_STATEMENT)
       || astNode.is(Kind.LABELED_STATEMENT)
-      || astNode.getParent().is(JavaGrammar.STATEMENT_EXPRESSION);
+      || astNode.getParent().is(JavaLexer.STATEMENT_EXPRESSION);
   }
 
   @Override
@@ -65,7 +65,7 @@ public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessG
 
   @Override
   public void visitNode(AstNode statementNode) {
-    if (statementNode.is(JavaGrammar.VARIABLE_DECLARATORS) && !statementNode.hasParent(JavaGrammar.BLOCK_STATEMENT)) {
+    if (statementNode.is(JavaLexer.VARIABLE_DECLARATORS) && !statementNode.hasParent(JavaLexer.BLOCK_STATEMENT)) {
       return;
     }
 

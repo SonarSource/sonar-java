@@ -28,7 +28,7 @@ import java.util.List;
 public class StatementExpressionListTreeImpl extends ListTreeImpl<StatementTree> {
 
   public StatementExpressionListTreeImpl(List<? extends StatementTree> statements) {
-    super(JavaGrammar.STATEMENT_EXPRESSION, (List<StatementTree>) statements, ImmutableList.<AstNode>of());
+    super(JavaLexer.STATEMENT_EXPRESSION, (List<StatementTree>) statements, ImmutableList.<AstNode>of());
   }
 
 }

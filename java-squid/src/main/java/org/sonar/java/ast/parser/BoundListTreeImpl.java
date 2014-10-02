@@ -27,7 +27,7 @@ import java.util.List;
 public class BoundListTreeImpl extends ListTreeImpl<Tree> {
 
   public BoundListTreeImpl(List<Tree> classTypes, List<AstNode> children) {
-    super(JavaGrammar.BOUND, classTypes, children);
+    super(JavaLexer.BOUND, classTypes, children);
   }
 
 }

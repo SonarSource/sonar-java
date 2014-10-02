@@ -27,7 +27,7 @@ import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
@@ -127,9 +127,9 @@ public class JavaTreeMaker {
    */
 
   public CompilationUnitTree compilationUnit(AstNode astNode) {
-    checkType(astNode, JavaGrammar.COMPILATION_UNIT);
+    checkType(astNode, JavaLexer.COMPILATION_UNIT);
     ImmutableList.Builder<ImportTree> imports = ImmutableList.builder();
-    for (AstNode importNode : astNode.getChildren(JavaGrammar.IMPORT_DECLARATION)) {
+    for (AstNode importNode : astNode.getChildren(JavaLexer.IMPORT_DECLARATION)) {
       ExpressionTree qualifiedIdentifier = (ExpressionTree) importNode.getFirstChild(QUALIFIED_EXPRESSION_KINDS);
       AstNode astNodeQualifiedIdentifier = (AstNode) qualifiedIdentifier;
       // star import : if there is a star then add it as an identifier.
@@ -147,21 +147,21 @@ public class JavaTreeMaker {
         qualifiedIdentifier));
     }
     ImmutableList.Builder<Tree> types = ImmutableList.builder();
-    for (AstNode typeNode : astNode.getChildren(JavaGrammar.TYPE_DECLARATION)) {
+    for (AstNode typeNode : astNode.getChildren(JavaLexer.TYPE_DECLARATION)) {
       ClassTreeImpl declarationNode = (ClassTreeImpl) typeNode.getFirstChild(
         Kind.CLASS,
         Kind.ENUM,
         Kind.INTERFACE,
         Kind.ANNOTATION_TYPE);
       if (declarationNode != null) {
-        types.add(typeDeclaration((ModifiersTree) typeNode.getFirstChild(JavaGrammar.MODIFIERS), declarationNode));
+        types.add(typeDeclaration((ModifiersTree) typeNode.getFirstChild(JavaLexer.MODIFIERS), declarationNode));
       }
     }
 
     ExpressionTree packageDeclaration = null;
     ImmutableList.Builder<AnnotationTree> packageAnnotations = ImmutableList.builder();
-    if (astNode.hasDirectChildren(JavaGrammar.PACKAGE_DECLARATION)) {
-      AstNode packageDeclarationNode = astNode.getFirstChild(JavaGrammar.PACKAGE_DECLARATION);
+    if (astNode.hasDirectChildren(JavaLexer.PACKAGE_DECLARATION)) {
+      AstNode packageDeclarationNode = astNode.getFirstChild(JavaLexer.PACKAGE_DECLARATION);
       packageDeclaration = (ExpressionTree) packageDeclarationNode.getFirstChild(QUALIFIED_EXPRESSION_KINDS);
       for (AstNode annotationNode : packageDeclarationNode.getChildren(Kind.ANNOTATION)) {
         packageAnnotations.add((AnnotationTree) annotationNode);
@@ -185,18 +185,18 @@ public class JavaTreeMaker {
    */
 
   public List<StatementTree> blockStatements(AstNode astNode) {
-    checkType(astNode, JavaGrammar.BLOCK_STATEMENTS);
+    checkType(astNode, JavaLexer.BLOCK_STATEMENTS);
     ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
-    for (AstNode blockStatementNode : astNode.getChildren(JavaGrammar.BLOCK_STATEMENT)) {
+    for (AstNode blockStatementNode : astNode.getChildren(JavaLexer.BLOCK_STATEMENT)) {
       statements.addAll(blockStatement(blockStatementNode));
     }
     return statements.build();
   }
 
   public List<StatementTree> blockStatement(AstNode astNode) {
-    checkType(astNode, JavaGrammar.BLOCK_STATEMENT);
+    checkType(astNode, JavaLexer.BLOCK_STATEMENT);
     AstNode statementNode = astNode.getFirstChild(
-      JavaGrammar.VARIABLE_DECLARATORS,
+      JavaLexer.VARIABLE_DECLARATORS,
       Kind.CLASS,
       Kind.ENUM);
 
@@ -205,10 +205,10 @@ public class JavaTreeMaker {
       statementNode = astNode.getFirstChild();
     }
 
-    if (statementNode.is(JavaGrammar.VARIABLE_DECLARATORS)) {
+    if (statementNode.is(JavaLexer.VARIABLE_DECLARATORS)) {
       return (List<StatementTree>) statementNode;
     } else if (statementNode.is(Kind.CLASS) || statementNode.is(Kind.ENUM)) {
-      return ImmutableList.<StatementTree>of(((ClassTreeImpl) statementNode).completeModifiers((ModifiersTreeImpl) astNode.getFirstChild(JavaGrammar.MODIFIERS)));
+      return ImmutableList.<StatementTree>of(((ClassTreeImpl) statementNode).completeModifiers((ModifiersTreeImpl) astNode.getFirstChild(JavaLexer.MODIFIERS)));
     } else if (statementNode instanceof StatementTree && !((JavaTree) statementNode).isLegacy()) {
       return ImmutableList.of((StatementTree) statementNode);
     } else {

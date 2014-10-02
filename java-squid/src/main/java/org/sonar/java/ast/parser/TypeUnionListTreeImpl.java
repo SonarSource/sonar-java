@@ -27,7 +27,7 @@ import java.util.List;
 public class TypeUnionListTreeImpl extends ListTreeImpl<Tree> {
 
   public TypeUnionListTreeImpl(List<Tree> types, List<AstNode> children) {
-    super(JavaGrammar.CATCH_TYPE, types, children);
+    super(JavaLexer.CATCH_TYPE, types, children);
   }
 
 }

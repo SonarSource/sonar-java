@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class ForStatementTest {
 
   @Test
   public void realLife() {
-    assertThat(JavaGrammar.FOR_STATEMENT)
+    assertThat(JavaLexer.FOR_STATEMENT)
       .matches("for (int i = 0; i < 10; i++) {}")
       .matches("for (; i < 10; i++) {}")
       .matches("for (;; i++) {}")

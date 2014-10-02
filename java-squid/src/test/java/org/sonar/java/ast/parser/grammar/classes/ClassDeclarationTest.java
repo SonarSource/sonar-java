@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.classes;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -29,9 +29,9 @@ public class ClassDeclarationTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    assertThat(b, JavaGrammar.CLASS_DECLARATION)
+    assertThat(b, JavaLexer.CLASS_DECLARATION)
       .matches("class identifier <T, U extends Foo & Bar> extends Foo implements Foo, Bar<Integer> {}")
       .matches("class identifier <T, U extends Foo & Bar> extends Foo {}")
       .matches("class identifier <T, U extends Foo & Bar> {}")
@@ -40,7 +40,7 @@ public class ClassDeclarationTest {
 
   @Test
   public void realLife() {
-    assertThat(JavaGrammar.CLASS_DECLARATION)
+    assertThat(JavaLexer.CLASS_DECLARATION)
       .matches("class HelloWorld { }")
       .matches("class HelloWorld<@Foo T> { }")
       .matches("class AnnotationOnType<@Bar T extends @Foo HashMap & @Foo Serializable>{}")

@@ -24,7 +24,7 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -62,7 +62,7 @@ public class LeftCurlyBraceEndLineCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isBlock(AstNode node) {
-    return node.getParent().is(JavaGrammar.BLOCK_STATEMENT);
+    return node.getParent().is(JavaLexer.BLOCK_STATEMENT);
   }
 
 }

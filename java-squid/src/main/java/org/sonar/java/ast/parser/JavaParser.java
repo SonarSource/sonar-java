@@ -28,10 +28,10 @@ public class JavaParser {
   public static ActionParser2 createParser(Charset charset) {
     return new ActionParser2(
       charset,
-      JavaGrammar.createGrammarBuilder(),
-      ActionGrammar.class,
+      JavaLexer.createGrammarBuilder(),
+      JavaGrammar.class,
       new TreeFactory(),
-      JavaGrammar.COMPILATION_UNIT);
+      JavaLexer.COMPILATION_UNIT);
   }
 
 }

@@ -34,7 +34,7 @@ public class FormalParametersListTreeImpl extends ListTreeImpl<VariableTreeImpl>
   private InternalSyntaxToken closeParenToken;
 
   public FormalParametersListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    super(JavaGrammar.FORMAL_PARAMETERS, ImmutableList.<VariableTreeImpl>of(), ImmutableList.<AstNode>of());
+    super(JavaLexer.FORMAL_PARAMETERS, ImmutableList.<VariableTreeImpl>of(), ImmutableList.<AstNode>of());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
@@ -44,13 +44,13 @@ public class FormalParametersListTreeImpl extends ListTreeImpl<VariableTreeImpl>
   }
 
   public FormalParametersListTreeImpl(VariableTreeImpl variable) {
-    super(JavaGrammar.FORMAL_PARAMETERS, Lists.newArrayList(variable), ImmutableList.<AstNode>of());
+    super(JavaLexer.FORMAL_PARAMETERS, Lists.newArrayList(variable), ImmutableList.<AstNode>of());
 
     addChild(variable);
   }
 
   public FormalParametersListTreeImpl(List<AnnotationTreeImpl> annotations, InternalSyntaxToken ellipsisToken, VariableTreeImpl variable) {
-    super(JavaGrammar.FORMAL_PARAMETERS, Lists.newArrayList(variable), ImmutableList.<AstNode>of());
+    super(JavaLexer.FORMAL_PARAMETERS, Lists.newArrayList(variable), ImmutableList.<AstNode>of());
 
     for (AstNode annotation : annotations) {
       addChild(annotation);

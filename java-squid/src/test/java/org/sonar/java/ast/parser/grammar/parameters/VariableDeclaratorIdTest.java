@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class VariableDeclaratorIdTest {
 
   @Test
   public void ok() {
-    assertThat(JavaGrammar.VARIABLE_DECLARATOR_ID)
+    assertThat(JavaLexer.VARIABLE_DECLARATOR_ID)
       .matches("identifier")
       .matches("identifier []")
       .matches("identifier @Foo []")

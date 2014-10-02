@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.types;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -29,9 +29,9 @@ public class TypeParametersTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    assertThat(b, JavaGrammar.TYPE_PARAMETERS)
+    assertThat(b, JavaLexer.TYPE_PARAMETERS)
       .matches("< T >")
       .matches("< T , U extends Foo & Bar >");
   }

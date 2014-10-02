@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.units;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class PackageDeclarationTest {
 
   @Test
   public void realLife() {
-    assertThat(JavaGrammar.PACKAGE_DECLARATION)
+    assertThat(JavaLexer.PACKAGE_DECLARATION)
       .matches("package org.example;")
       .matches("@javax.annotation.ParametersAreNonnullByDefault @Beta package org.example;");
   }

@@ -23,7 +23,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -39,9 +39,9 @@ public class ArrayDesignatorOnVariableCheck extends SquidCheck<LexerlessGrammar>
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.CONSTANT_DECLARATOR_REST);
+    subscribeTo(JavaLexer.CONSTANT_DECLARATOR_REST);
     subscribeTo(Kind.VARIABLE);
-    subscribeTo(JavaGrammar.VARIABLE_DECLARATOR);
+    subscribeTo(JavaLexer.VARIABLE_DECLARATOR);
   }
 
   @Override

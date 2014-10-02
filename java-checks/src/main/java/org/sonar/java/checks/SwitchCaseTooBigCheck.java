@@ -25,7 +25,7 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.squidbridge.checks.SquidCheck;
@@ -45,7 +45,7 @@ public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
   public void init() {
-    subscribeTo(JavaGrammar.SWITCH_BLOCK_STATEMENT_GROUP);
+    subscribeTo(JavaLexer.SWITCH_BLOCK_STATEMENT_GROUP);
   }
 
   @Override

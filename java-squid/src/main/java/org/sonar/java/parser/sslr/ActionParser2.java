@@ -34,8 +34,6 @@ import com.sonar.sslr.impl.matcher.RuleDefinition;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.sonar.java.ast.parser.ActionGrammar.GrammarBuilder;
-import org.sonar.java.ast.parser.ActionGrammar.NonterminalBuilder;
 import org.sonar.java.ast.parser.AstNodeSanitizer;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;

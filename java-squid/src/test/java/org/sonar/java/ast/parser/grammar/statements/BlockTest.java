@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
@@ -30,11 +30,11 @@ public class BlockTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    b.rule(JavaGrammar.BLOCK_STATEMENTS).override(RuleMock.word(b, "blockStatements"));
+    b.rule(JavaLexer.BLOCK_STATEMENTS).override(RuleMock.word(b, "blockStatements"));
 
-    assertThat(b, JavaGrammar.BLOCK)
+    assertThat(b, JavaLexer.BLOCK)
       .matches("{ blockStatements }");
   }
 

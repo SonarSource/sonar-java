@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -29,9 +29,9 @@ public class ResourceTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    assertThat(b, JavaGrammar.RESOURCE)
+    assertThat(b, JavaLexer.RESOURCE)
       .matches("final List<Integer> foo = 0")
       .matches("final @Nullable List<Integer> foo = 0")
       .matches("List<Integer> foo[] = foo");
@@ -39,7 +39,7 @@ public class ResourceTest {
 
   @Test
   public void realLife() {
-    assertThat(JavaGrammar.RESOURCE)
+    assertThat(JavaLexer.RESOURCE)
       .matches("Closeable resource = open()")
       .notMatches("byte resource = open()");
   }

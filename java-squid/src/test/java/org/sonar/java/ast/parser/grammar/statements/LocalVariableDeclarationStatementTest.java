@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -29,9 +29,9 @@ public class LocalVariableDeclarationStatementTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    assertThat(b, JavaGrammar.LOCAL_VARIABLE_DECLARATION_STATEMENT)
+    assertThat(b, JavaLexer.LOCAL_VARIABLE_DECLARATION_STATEMENT)
       .matches("final int a ;")
       .matches("@Foo List<Integer> a, b ;")
       .matches("int a;");

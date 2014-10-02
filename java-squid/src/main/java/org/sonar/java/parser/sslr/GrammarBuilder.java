@@ -17,17 +17,29 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser;
+package org.sonar.java.parser.sslr;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.List;
 
-public class VariableDeclaratorListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
+public interface GrammarBuilder {
 
-  public VariableDeclaratorListTreeImpl(List<VariableTreeImpl> variables, List<AstNode> children) {
-    super(JavaLexer.VARIABLE_DECLARATORS, variables, children);
-  }
+  <T> NonterminalBuilder<T> nonterminal();
+
+  <T> NonterminalBuilder<T> nonterminal(GrammarRuleKey ruleKey);
+
+  <T> T firstOf(T... methods);
+
+  <T> Optional<T> optional(T method);
+
+  <T> List<T> oneOrMore(T method);
+
+  <T> Optional<List<T>> zeroOrMore(T method);
+
+  AstNode invokeRule(GrammarRuleKey ruleKey);
+
+  AstNode token(String value);
 
 }

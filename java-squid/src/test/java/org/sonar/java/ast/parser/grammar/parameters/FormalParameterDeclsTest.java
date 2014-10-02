@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.parameters;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -29,9 +29,9 @@ public class FormalParameterDeclsTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    assertThat(b, JavaGrammar.FORMAL_PARAMETER_DECLS)
+    assertThat(b, JavaLexer.FORMAL_PARAMETER_DECLS)
       .matches("type foo")
       .matches("final type foo, type bar")
       .matches("@Foo type ... foo")

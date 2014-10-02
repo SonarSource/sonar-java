@@ -31,7 +31,7 @@ import com.sonar.sslr.api.Trivia;
 import org.sonar.api.source.Highlightable;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.SquidAstVisitor;
@@ -109,7 +109,7 @@ public class SyntaxHighlighterVisitor extends SquidAstVisitor<LexerlessGrammar> 
       AstNode target = astNode;
       if (astNode.hasChildren()) {
         for (AstNode child : astNode.getChildren()) {
-          if (!child.is(JavaGrammar.SPACING)) {
+          if (!child.is(JavaLexer.SPACING)) {
             target = child;
           }
         }

@@ -21,7 +21,7 @@ package org.sonar.java.ast.parser.grammar.units;
 
 import com.google.common.base.Joiner;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -29,7 +29,7 @@ public class CompilationUnitTest {
 
   @Test
   public void realLife() {
-    assertThat(JavaGrammar.COMPILATION_UNIT)
+    assertThat(JavaLexer.COMPILATION_UNIT)
       .matches(lines(
         "package org.example;",
         "",

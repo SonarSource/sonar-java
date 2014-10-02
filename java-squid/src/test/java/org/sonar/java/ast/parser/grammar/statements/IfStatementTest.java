@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class IfStatementTest {
 
   @Test
   public void ok() {
-    assertThat(JavaGrammar.IF_STATEMENT)
+    assertThat(JavaLexer.IF_STATEMENT)
       .matches("if (expression) { }")
       .matches("if (expression) { } else { }");
   }

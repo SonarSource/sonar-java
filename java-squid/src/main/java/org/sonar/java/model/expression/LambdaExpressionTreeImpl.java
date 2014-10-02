@@ -21,7 +21,7 @@ package org.sonar.java.model.expression;
 
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -42,7 +42,7 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
   private InternalSyntaxToken closeParenToken;
 
   public LambdaExpressionTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTree> parameters, @Nullable InternalSyntaxToken closeParenToken, Tree body, AstNode... children) {
-    super(JavaGrammar.LAMBDA_EXPRESSION);
+    super(JavaLexer.LAMBDA_EXPRESSION);
     this.openParenToken = openParenToken;
     this.parameters = parameters;
     this.closeParenToken = closeParenToken;

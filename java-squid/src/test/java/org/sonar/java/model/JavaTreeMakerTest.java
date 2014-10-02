@@ -26,7 +26,7 @@ import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
@@ -213,7 +213,7 @@ public class JavaTreeMakerTest {
   @Test
   public void type_arguments() {
     List<Tree> typeArguments = (TypeArgumentListTreeImpl) p.parse("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }")
-      .getFirstDescendant(JavaGrammar.TYPE_ARGUMENTS);
+      .getFirstDescendant(JavaLexer.TYPE_ARGUMENTS);
     assertThat(typeArguments).hasSize(4);
 
     WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
@@ -1618,7 +1618,7 @@ public class JavaTreeMakerTest {
 
   @Test
   public void type_parameters_and_bounds() {
-    TypeParameterListTreeImpl tree = (TypeParameterListTreeImpl) p.parse("class Foo<T, U extends Object & Number> {}").getFirstDescendant(JavaGrammar.TYPE_PARAMETERS);
+    TypeParameterListTreeImpl tree = (TypeParameterListTreeImpl) p.parse("class Foo<T, U extends Object & Number> {}").getFirstDescendant(JavaLexer.TYPE_PARAMETERS);
     assertThat(tree.openBracketToken().text()).isEqualTo("<");
     assertThat(tree.closeBracketToken().text()).isEqualTo(">");
 

@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.interfaces;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -29,9 +29,9 @@ public class InterfaceDeclarationTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    assertThat(b, JavaGrammar.INTERFACE_DECLARATION)
+    assertThat(b, JavaLexer.INTERFACE_DECLARATION)
       .matches("interface identifier <T, U extends Foo & Bar> extends Foo, Bar<Integer> {}")
       .matches("interface identifier <T, U extends Foo & Bar> {}")
       .matches("interface identifier {}");
@@ -39,7 +39,7 @@ public class InterfaceDeclarationTest {
 
   @Test
   public void realLife() {
-    assertThat(JavaGrammar.INTERFACE_DECLARATION)
+    assertThat(JavaLexer.INTERFACE_DECLARATION)
       .matches("interface HelloWorld { }")
       .matches("interface HelloWorld { int method() @Foo [];}")
       .matches("interface HelloWorld { default int method(){} default void methodVoid(){} default <T> Map<K,V>  methodGeneric(T t){} }");

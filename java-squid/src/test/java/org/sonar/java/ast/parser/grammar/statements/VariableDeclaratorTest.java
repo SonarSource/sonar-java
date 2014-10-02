@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -29,9 +29,9 @@ public class VariableDeclaratorTest {
 
   @Test
   public void ok() {
-    LexerlessGrammarBuilder b = JavaGrammar.createGrammarBuilder();
+    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    assertThat(b, JavaGrammar.VARIABLE_DECLARATOR)
+    assertThat(b, JavaLexer.VARIABLE_DECLARATOR)
       .matches("identifier [] [] = 0")
       .matches("identifier [] []")
       .matches("identifier [] = {}")
@@ -42,7 +42,7 @@ public class VariableDeclaratorTest {
 
   @Test
   public void ko() {
-    assertThat(JavaGrammar.VARIABLE_DECLARATOR)
+    assertThat(JavaLexer.VARIABLE_DECLARATOR)
       .notMatches("");
   }
 

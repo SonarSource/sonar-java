@@ -591,17 +591,17 @@ public class TreeFactory {
     if (annotationTypeElementDeclarations.isPresent()) {
       for (AstNode annotationTypeElementDeclaration : annotationTypeElementDeclarations.get()) {
         // FIXME
-        if (annotationTypeElementDeclaration.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION)) {
+        if (annotationTypeElementDeclaration.is(JavaLexer.ANNOTATION_TYPE_ELEMENT_DECLARATION)) {
           Preconditions.checkArgument(annotationTypeElementDeclaration.getNumberOfChildren() == 2);
 
-          ModifiersTreeImpl modifiers = (ModifiersTreeImpl) annotationTypeElementDeclaration.getFirstChild(JavaGrammar.MODIFIERS);
+          ModifiersTreeImpl modifiers = (ModifiersTreeImpl) annotationTypeElementDeclaration.getFirstChild(JavaLexer.MODIFIERS);
           AstNode declaration = annotationTypeElementDeclaration.getLastChild();
 
           if (declaration.is(Kind.METHOD)) {
             // method
             members.add(((MethodTreeImpl) declaration).completeWithModifiers(modifiers));
             children.add(declaration);
-          } else if (declaration.is(JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST)) {
+          } else if (declaration.is(JavaLexer.ANNOTATION_TYPE_ELEMENT_REST)) {
             // constant
             appendConstantDeclarations(ModifiersTreeImpl.EMPTY, members, declaration);
             children.add(annotationTypeElementDeclaration);
@@ -633,7 +633,7 @@ public class TreeFactory {
       typeAstNode = astNode.getFirstChild(JavaKeyword.VOID);
     }
     ExpressionTree type = typeAstNode instanceof Tree ? (ExpressionTree) typeAstNode : treeMaker.referenceType(typeAstNode);
-    for (AstNode constantDeclaratorRestNode : astNode.getDescendants(JavaGrammar.CONSTANT_DECLARATOR_REST)) {
+    for (AstNode constantDeclaratorRestNode : astNode.getDescendants(JavaLexer.CONSTANT_DECLARATOR_REST)) {
       AstNode identifierNode = constantDeclaratorRestNode.getPreviousAstNode();
       Preconditions.checkState(identifierNode.is(JavaTokenType.IDENTIFIER));
       members.add(new VariableTreeImpl(
@@ -646,7 +646,7 @@ public class TreeFactory {
   }
 
   public AstNode completeAnnotationTypeMember(ModifiersTreeImpl modifiers, AstNode annotationTypeElementRest) {
-    AstNodeType type = JavaGrammar.ANNOTATION_TYPE_ELEMENT_DECLARATION;
+    AstNodeType type = JavaLexer.ANNOTATION_TYPE_ELEMENT_DECLARATION;
     AstNode result = new AstNode(type, type.toString(), null);
     result.addChild(modifiers);
     result.addChild(annotationTypeElementRest);
@@ -662,7 +662,7 @@ public class TreeFactory {
       return partial;
     }
 
-    AstNodeType type2 = JavaGrammar.ANNOTATION_TYPE_ELEMENT_REST;
+    AstNodeType type2 = JavaLexer.ANNOTATION_TYPE_ELEMENT_REST;
     AstNode result = new AstNode(type2, type2.toString(), null);
 
     result.addChild((AstNode) type);

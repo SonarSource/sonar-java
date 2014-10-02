@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class EmptyStatementTest {
 
   @Test
   public void ok() {
-    assertThat(JavaGrammar.EMPTY_STATEMENT)
+    assertThat(JavaLexer.EMPTY_STATEMENT)
       .matches(";");
   }
 

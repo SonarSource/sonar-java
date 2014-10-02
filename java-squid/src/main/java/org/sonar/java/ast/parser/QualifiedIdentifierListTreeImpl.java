@@ -27,7 +27,7 @@ import java.util.List;
 public class QualifiedIdentifierListTreeImpl extends ListTreeImpl<ExpressionTree> {
 
   public QualifiedIdentifierListTreeImpl(List<? extends ExpressionTree> qualifiedIdentifiers, List<AstNode> children) {
-    super(JavaGrammar.QUALIFIED_IDENTIFIER_LIST, (List<ExpressionTree>) qualifiedIdentifiers, children);
+    super(JavaLexer.QUALIFIED_IDENTIFIER_LIST, (List<ExpressionTree>) qualifiedIdentifiers, children);
   }
 
 }

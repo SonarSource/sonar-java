@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.classes;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class MemberDeclTest {
 
   @Test
   public void realLife() {
-    assertThat(JavaGrammar.MEMBER_DECL)
+    assertThat(JavaLexer.MEMBER_DECL)
       .matches("Map<SomeType<?>,SomeType<?>> member;")
       .matches("Map < SomeType < ? > , SomeType < ? > > member;")
       .matches("int member()@Foo[]{}")

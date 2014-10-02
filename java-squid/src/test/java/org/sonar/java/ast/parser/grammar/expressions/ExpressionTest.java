@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.expressions;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -31,13 +31,13 @@ public class ExpressionTest {
    */
   @Test
   public void error() {
-    assertThat(JavaGrammar.EXPRESSION)
+    assertThat(JavaLexer.EXPRESSION)
       .matches("a = b + 1 = c + 2");
   }
 
   @Test
   public void realLife() {
-    assertThat(JavaGrammar.EXPRESSION)
+    assertThat(JavaLexer.EXPRESSION)
       .matches("b >> 4")
       .matches("b >>= 4")
       .matches("b >>> 4")

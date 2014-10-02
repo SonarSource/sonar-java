@@ -33,7 +33,7 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> {
   private InternalSyntaxToken closeParenToken;
 
   public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    super(JavaGrammar.ARGUMENTS, ImmutableList.<ExpressionTree>of(), ImmutableList.<AstNode>of());
+    super(JavaLexer.ARGUMENTS, ImmutableList.<ExpressionTree>of(), ImmutableList.<AstNode>of());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
@@ -43,7 +43,7 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> {
   }
 
   public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken) {
-    super(JavaGrammar.ARGUMENTS, ImmutableList.of(expression), ImmutableList.<AstNode>of());
+    super(JavaLexer.ARGUMENTS, ImmutableList.of(expression), ImmutableList.<AstNode>of());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
@@ -54,7 +54,7 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> {
   }
 
   public ArgumentListTreeImpl(List<ExpressionTree> expressions, List<AstNode> children) {
-    super(JavaGrammar.ARGUMENTS, expressions, children);
+    super(JavaLexer.ARGUMENTS, expressions, children);
   }
 
   public ArgumentListTreeImpl complete(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {

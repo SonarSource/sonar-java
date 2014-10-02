@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaGrammar;
+import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class SwitchStatementTest {
 
   @Test
   public void okSwitch() {
-    assertThat(JavaGrammar.SWITCH_STATEMENT)
+    assertThat(JavaLexer.SWITCH_STATEMENT)
       .matches("switch (foo) {}")
       .matches("switch (foo) { case 0: break; }")
       .matches("switch (foo) { case 0: break; default: break; }");
