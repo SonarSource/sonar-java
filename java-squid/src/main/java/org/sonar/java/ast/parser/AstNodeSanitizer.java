@@ -29,6 +29,11 @@ public class AstNodeSanitizer {
   private int toIndex;
 
   public void sanitize(AstNode astNode) {
+    toIndex = 0;
+    doSanitize(astNode);
+  }
+
+  private void doSanitize(AstNode astNode) {
     List<AstNode> children = astNode.getChildren();
 
     if (!children.isEmpty()) {
@@ -37,7 +42,7 @@ public class AstNodeSanitizer {
       int fromIndex = -1;
 
       for (AstNode child : astNode.getChildren()) {
-        sanitize(child);
+        doSanitize(child);
 
         if (token == null && child.hasToken()) {
           token = child.getToken();
