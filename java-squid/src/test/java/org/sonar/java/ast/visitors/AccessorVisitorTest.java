@@ -34,9 +34,9 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class AccessorVisitorTest {
 
-  private final Parser p = JavaParser.createParser(Charsets.UTF_8, true);
+  private final Parser p = JavaParser.createParser(Charsets.UTF_8);
   private final JavaTreeMaker maker = new JavaTreeMaker();
-  private AccessorVisitor accessorVisitor = new AccessorVisitor();
+  private final AccessorVisitor accessorVisitor = new AccessorVisitor();
 
   @Test
   public void method_badly_named_is_not_accessor() {
@@ -116,14 +116,14 @@ public class AccessorVisitorTest {
     assertThat(isAccessor("class T { private int a; public void setA(int a) { a++; } }")).isFalse();
     assertThat(isAccessor("class T { private int a; public void setA(int a) { b=0; } }")).isFalse();
     assertThat(isAccessor("class T { private int a; public void setA(int a) { b = a; } }")).isFalse();
-    //limitation
+    // limitation
     assertThat(isAccessor("class T { private int a; public void setA(int a) { a = b; } }")).isTrue();
     assertThat(isAccessor("class T { private int a; public void setA(int a) { this.a = b; } }")).isTrue();
   }
 
   @Test
   public void getter_using_this_are_not_accessor() throws Exception {
-    //FIXME : those getters should be considered as accessors
+    // FIXME : those getters should be considered as accessors
     assertThat(isAccessor("class T { private int a; public int getA() { return this.a; } }")).isFalse();
   }
 
@@ -138,13 +138,10 @@ public class AccessorVisitorTest {
     return accessorVisitor.isAccessor(classTree, extractMethod(classTree));
   }
 
-
-
   private ClassTree parseClass(String code) {
     AstNode astNode = p.parse(code);
     return extractClass(maker.compilationUnit(astNode));
   }
-
 
   private ClassTree extractClass(CompilationUnitTree cut) {
     return (ClassTree) cut.types().get(0);
@@ -152,7 +149,7 @@ public class AccessorVisitorTest {
 
   private MethodTree extractMethod(ClassTree classTree) {
     for (Tree tree : classTree.members()) {
-      if(tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR)) {
+      if (tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR)) {
         return (MethodTree) tree;
       }
     }

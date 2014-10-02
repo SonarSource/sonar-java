@@ -19,8 +19,6 @@
  */
 package org.sonar.sslr.tests;
 
-import org.sonar.java.parser.sslr.ActionParser2;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
@@ -30,6 +28,7 @@ import org.fest.assertions.GenericAssert;
 import org.sonar.java.ast.parser.ActionGrammar;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.TreeFactory;
+import org.sonar.java.parser.sslr.ActionParser2;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
@@ -40,13 +39,7 @@ public class Assertions {
   }
 
   public static ParserAssert assertThat(GrammarRuleKey rule) {
-    return new ParserAssert(new ActionParser2(
-      Charsets.UTF_8,
-      JavaGrammar.createGrammarBuilder(),
-      ActionGrammar.class,
-      new TreeFactory(),
-      rule,
-      true));
+    return assertThat(JavaGrammar.createGrammarBuilder(), rule);
   }
 
   public static ParserAssert assertThat(LexerlessGrammarBuilder b, GrammarRuleKey rule) {
@@ -55,8 +48,7 @@ public class Assertions {
       b,
       ActionGrammar.class,
       new TreeFactory(),
-      rule,
-      true));
+      rule));
   }
 
   public static class ParserAssert extends GenericAssert<ParserAssert, ActionParser2> {

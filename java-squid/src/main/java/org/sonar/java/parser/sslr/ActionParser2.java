@@ -77,7 +77,7 @@ public class ActionParser2 extends Parser {
   private final Grammar grammar;
   private final ParseRunner parseRunner;
 
-  public ActionParser2(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object treeFactory, GrammarRuleKey rootRule, boolean verifyAssertions) {
+  public ActionParser2(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object treeFactory, GrammarRuleKey rootRule) {
     super(null);
 
     this.charset = charset;

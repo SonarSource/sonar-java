@@ -89,7 +89,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaTreeMakerTest {
 
-  private final Parser p = JavaParser.createParser(Charsets.UTF_8, true);
+  private final Parser p = JavaParser.createParser(Charsets.UTF_8);
   private final JavaTreeMaker maker = new JavaTreeMaker();
 
   @Test

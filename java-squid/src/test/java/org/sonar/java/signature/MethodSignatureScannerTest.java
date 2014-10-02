@@ -76,15 +76,15 @@ public class MethodSignatureScannerTest {
 
   @Test
   public void scanMethodTree() {
-    Parser p = JavaParser.createParser(Charsets.UTF_8, true);
+    Parser p = JavaParser.createParser(Charsets.UTF_8);
     JavaTreeMaker maker = new JavaTreeMaker();
     List<Tree> members = ((ClassTree) maker.compilationUnit(p.parse("class A { " +
-        "A(){} " +
-        "String[] method(int a){} " +
-        "int foo(String a){}" +
-        "java.lang.String bar(java.lang.String a){}" +
-        "String qix(List<String> list){}" +
-        "}")).types().get(0)).members();
+      "A(){} " +
+      "String[] method(int a){} " +
+      "int foo(String a){}" +
+      "java.lang.String bar(java.lang.String a){}" +
+      "String qix(List<String> list){}" +
+      "}")).types().get(0)).members();
     MethodTree constructorTree = (MethodTree) members.get(0);
     MethodTree methodTree = (MethodTree) members.get(1);
     MethodTree primitiveReturnType = (MethodTree) members.get(2);

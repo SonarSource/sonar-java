@@ -43,7 +43,7 @@ class Result {
     return new Result(SemanticModel.createFor(new JavaTreeMaker().compilationUnit(astNode), Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
   }
 
-  private static final Parser parser = JavaParser.createParser(Charsets.UTF_8, true);
+  private static final Parser parser = JavaParser.createParser(Charsets.UTF_8);
 
   private final SemanticModel semanticModel;
 

@@ -55,7 +55,7 @@ public class JavaConfigurationModel extends AbstractConfigurationModel {
 
   @Override
   public Parser<? extends Grammar> doGetParser() {
-    return JavaParser.createParser(getCharset(), false);
+    return JavaParser.createParser(getCharset());
   }
 
   @Override

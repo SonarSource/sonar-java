@@ -36,7 +36,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class MethodTreeImplTest {
 
-  private final Parser p = JavaParser.createParser(Charsets.UTF_8, true);
+  private final Parser p = JavaParser.createParser(Charsets.UTF_8);
   private final JavaTreeMaker maker = new JavaTreeMaker();
 
   @Test
@@ -83,7 +83,7 @@ public class MethodTreeImplTest {
 
   private MethodTreeImpl getUniqueMethod(String code) {
     CompilationUnitTree cut = createTree(code);
-    return (MethodTreeImpl) ((ClassTree)cut.types().get(0)).members().get(0);
+    return (MethodTreeImpl) ((ClassTree) cut.types().get(0)).members().get(0);
   }
 
   private CompilationUnitTree createTree(String code) {

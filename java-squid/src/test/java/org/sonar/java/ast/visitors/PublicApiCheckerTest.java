@@ -47,7 +47,7 @@ public class PublicApiCheckerTest {
 
   @Before
   public void setUp() {
-    Parser p = JavaParser.createParser(Charsets.UTF_8, true);
+    Parser p = JavaParser.createParser(Charsets.UTF_8);
     publicApiChecker = new PublicApiChecker();
     cut = new JavaTreeMaker().compilationUnit(p.parse(new File("src/test/files/ast/PublicApi.java")));
   }
@@ -56,8 +56,8 @@ public class PublicApiCheckerTest {
   public void isPublicApi() {
     new SubscriptionVisitor() {
 
-      private Deque<ClassTree> classTrees = Lists.newLinkedList();
-      private Deque<MethodTree> methodTrees = Lists.newLinkedList();
+      private final Deque<ClassTree> classTrees = Lists.newLinkedList();
+      private final Deque<MethodTree> methodTrees = Lists.newLinkedList();
 
       @Override
       public List<Tree.Kind> nodesToVisit() {
@@ -70,7 +70,7 @@ public class PublicApiCheckerTest {
           VariableTree variableTree = (VariableTree) tree;
           String name = variableTree.simpleName().name();
           Tree parent = classTrees.peek();
-          if(!methodTrees.isEmpty()) {
+          if (!methodTrees.isEmpty()) {
             parent = methodTrees.peek();
           }
           assertThat(publicApiChecker.isPublicApi(parent, tree)).as(name).isEqualTo(name.endsWith("Public"));
@@ -80,7 +80,7 @@ public class PublicApiCheckerTest {
           String name = methodTree.simpleName().name();
           assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public"));
         } else if (tree.is(PublicApiChecker.CLASS_KINDS)) {
-          IdentifierTree className = ((ClassTree)tree).simpleName();
+          IdentifierTree className = ((ClassTree) tree).simpleName();
           assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(className.name()).isEqualTo(className != null && className.name().endsWith("Public"));
           classTrees.push((ClassTree) tree);
         } else {
@@ -92,7 +92,7 @@ public class PublicApiCheckerTest {
       public void leaveNode(Tree tree) {
         if (tree.is(PublicApiChecker.CLASS_KINDS)) {
           classTrees.pop();
-        } else if(tree.is(PublicApiChecker.METHOD_KINDS)) {
+        } else if (tree.is(PublicApiChecker.METHOD_KINDS)) {
           methodTrees.pop();
         }
       }
@@ -118,8 +118,8 @@ public class PublicApiCheckerTest {
           checkApi(tree, methodTree.simpleName().name());
         } else if (tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
           IdentifierTree idTree = ((ClassTree) tree).simpleName();
-          checkApi(tree, idTree==null ? "":idTree.name() );
-        }else {
+          checkApi(tree, idTree == null ? "" : idTree.name());
+        } else {
           checkApi(tree, "");
         }
       }
@@ -128,9 +128,9 @@ public class PublicApiCheckerTest {
   }
 
   private void checkApi(Tree tree, String name) {
-    if(name.startsWith("documented")) {
+    if (name.startsWith("documented")) {
       assertThat(publicApiChecker.getApiJavadoc(tree)).as(name).isNotNull();
-    }else {
+    } else {
       assertThat(publicApiChecker.getApiJavadoc(tree)).isNull();
     }
   }

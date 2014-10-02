@@ -25,14 +25,13 @@ import java.nio.charset.Charset;
 
 public class JavaParser {
 
-  public static ActionParser2 createParser(Charset charset, boolean verifyAssertions) {
+  public static ActionParser2 createParser(Charset charset) {
     return new ActionParser2(
       charset,
       JavaGrammar.createGrammarBuilder(),
       ActionGrammar.class,
       new TreeFactory(),
-      JavaGrammar.COMPILATION_UNIT,
-      verifyAssertions);
+      JavaGrammar.COMPILATION_UNIT);
   }
 
 }

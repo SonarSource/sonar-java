@@ -90,7 +90,7 @@ public class JavaSquidSensor implements Sensor {
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, checks.toArray(new CodeVisitor[checks.size()]));
     squid.scan(getSourceFiles(project), getTestFiles(project), getBytecodeFiles());
     new Bridges(squid, settings).save(context, project, annotationCheckFactory, javaResourceLocator.getResourceMapping(),
-        sonarComponents.getResourcePerspectives(), noSonarFilter, profile);
+      sonarComponents.getResourcePerspectives(), noSonarFilter, profile);
   }
 
   private List<InputFile> getSourceFiles(Project project) {
@@ -113,7 +113,6 @@ public class JavaSquidSensor implements Sensor {
     Charset charset = moduleFileSystem.sourceCharset();
     JavaConfiguration conf = new JavaConfiguration(charset);
     conf.setAnalyzePropertyAccessors(analyzePropertyAccessors);
-    conf.setVerifyAssertions(false);
     return conf;
   }
 
