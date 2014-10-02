@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 
 import java.lang.reflect.Field;
 
-public class AstNodeHacks {
+public class AstNodeReflector {
 
   private static final Field TOKEN_FIELD = getAstNodeField("token");
   private static final Field CHILD_INDEX_FIELD = getAstNodeField("childIndex");
@@ -35,10 +35,6 @@ public class AstNodeHacks {
 
   public static void setToken(AstNode astNode, @Nullable Token token) {
     setField(TOKEN_FIELD, astNode, token);
-  }
-
-  public static int getChildIndex(AstNode astNode) {
-    return (Integer) getField(CHILD_INDEX_FIELD, astNode);
   }
 
   public static void setChildIndex(AstNode astNode, int childIndex) {
@@ -62,14 +58,6 @@ public class AstNodeHacks {
   private static void setField(Field field, Object instance, Object value) {
     try {
       field.set(instance, value);
-    } catch (IllegalAccessException e) {
-      throw Throwables.propagate(e);
-    }
-  }
-
-  private static Object getField(Field field, Object instance) {
-    try {
-      return field.get(instance);
     } catch (IllegalAccessException e) {
       throw Throwables.propagate(e);
     }

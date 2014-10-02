@@ -53,7 +53,7 @@ public class AstNodeSanitizer {
         }
       }
 
-      AstNodeHacks.setToken(astNode, token);
+      AstNodeReflector.setToken(astNode, token);
       astNode.setFromIndex(fromIndex);
       astNode.setToIndex(toIndex);
     } else if (astNode.hasToken()) {

@@ -24,7 +24,7 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
-import org.sonar.java.ast.parser.AstNodeHacks;
+import org.sonar.java.ast.parser.AstNodeReflector;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -95,12 +95,12 @@ public abstract class JavaTree extends AstNode implements Tree {
       // addChild() will take care of everything
       addChild(astNode);
     } else {
-      AstNodeHacks.setParent(astNode, this);
+      AstNodeReflector.setParent(astNode, this);
       children.add(0, astNode);
 
       // Reset the childIndex field of all children
       for (int i = 0; i < children.size(); i++) {
-        AstNodeHacks.setChildIndex(children.get(i), i);
+        AstNodeReflector.setChildIndex(children.get(i), i);
       }
     }
   }
