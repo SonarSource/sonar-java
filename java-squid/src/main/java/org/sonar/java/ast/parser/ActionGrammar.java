@@ -19,6 +19,8 @@
  */
 package org.sonar.java.ast.parser;
 
+import org.sonar.java.parser.sslr.Optional;
+
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;

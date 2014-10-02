@@ -19,6 +19,8 @@
  */
 package org.sonar.java.ast.parser;
 
+import org.sonar.java.parser.sslr.ActionParser2;
+
 import java.nio.charset.Charset;
 
 public class JavaParser {

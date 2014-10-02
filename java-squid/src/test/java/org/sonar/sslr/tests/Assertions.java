@@ -19,6 +19,8 @@
  */
 package org.sonar.sslr.tests;
 
+import org.sonar.java.parser.sslr.ActionParser2;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
@@ -26,7 +28,6 @@ import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.Rule;
 import org.fest.assertions.GenericAssert;
 import org.sonar.java.ast.parser.ActionGrammar;
-import org.sonar.java.ast.parser.ActionParser2;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.sslr.grammar.GrammarRuleKey;

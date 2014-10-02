@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser;
+package org.sonar.java.parser.sslr;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
@@ -36,6 +36,7 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.sonar.java.ast.parser.ActionGrammar.GrammarBuilder;
 import org.sonar.java.ast.parser.ActionGrammar.NonterminalBuilder;
+import org.sonar.java.ast.parser.AstNodeSanitizer;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.internal.grammar.MutableParsingRule;

@@ -19,6 +19,8 @@
  */
 package org.sonar.java.ast.parser;
 
+import org.sonar.java.parser.sslr.Optional;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;

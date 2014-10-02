@@ -17,7 +17,9 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser;
+package org.sonar.java.parser.sslr;
+
+import org.sonar.java.parser.sslr.Input;
 
 import org.junit.Test;
 
