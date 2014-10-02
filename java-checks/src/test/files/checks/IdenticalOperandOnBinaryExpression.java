@@ -22,5 +22,7 @@ class A {
     int j,k;
     int k = 1 << 1; //exclude this case for bit masks
     j = 12 - k -k; //case why minus is excluded.
+    j = k - k;
+    j = k*3/12%2 - k*3/12%2;
   }
 }

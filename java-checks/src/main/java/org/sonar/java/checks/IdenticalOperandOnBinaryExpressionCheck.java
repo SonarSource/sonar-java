@@ -41,11 +41,25 @@ import java.util.List;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVisitor {
 
+  /**
+   * symetric operators : a OP b is equivalent to b OP a
+   */
+  private static final List<Tree.Kind> SYMETRIC_OPERATORS = ImmutableList.<Tree.Kind>builder()
+      .add(Tree.Kind.EQUAL_TO)
+      .add(Tree.Kind.NOT_EQUAL_TO)
+      .add(Tree.Kind.AND)
+      .add(Tree.Kind.XOR)
+      .add(Tree.Kind.OR)
+      .add(Tree.Kind.CONDITIONAL_AND)
+      .add(Tree.Kind.CONDITIONAL_OR)
+      .build();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.<Tree.Kind>builder()
         .add(Tree.Kind.DIVIDE)
         .add(Tree.Kind.REMAINDER)
+        .add(Tree.Kind.MINUS)
         .add(Tree.Kind.LEFT_SHIFT)
         .add(Tree.Kind.RIGHT_SHIFT)
         .add(Tree.Kind.UNSIGNED_RIGHT_SHIFT)
@@ -83,7 +97,8 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
     if (SyntacticEquivalence.areEquivalent(left, right)) {
       return true;
     }
-    if (left.is(binaryKind)) {
+    //Check other operands if operator is symetric.
+    if (SYMETRIC_OPERATORS.contains(binaryKind) && left.is(binaryKind)) {
       return areOperandEquivalent(((BinaryExpressionTree) left).leftOperand(), right, binaryKind)
           || areOperandEquivalent(((BinaryExpressionTree) left).rightOperand(), right, binaryKind);
     }

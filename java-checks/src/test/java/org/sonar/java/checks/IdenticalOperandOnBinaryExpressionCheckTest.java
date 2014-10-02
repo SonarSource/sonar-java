@@ -44,6 +44,8 @@ public class IdenticalOperandOnBinaryExpressionCheckTest {
         .next().atLine(11).withMessage("Identical sub-expressions on both sides of operator \"||\"")
         .next().atLine(13).withMessage("Identical sub-expressions on both sides of operator \"&&\"")
         .next().atLine(16).withMessage("Identical sub-expressions on both sides of operator \"||\"")
+        .next().atLine(25).withMessage("Identical sub-expressions on both sides of operator \"-\"")
+        .next().atLine(26).withMessage("Identical sub-expressions on both sides of operator \"-\"")
         .noMore();
   }
 }
