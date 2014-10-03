@@ -47,8 +47,8 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
-    if(isFloat(binaryExpressionTree.leftOperand()) && isFloat(binaryExpressionTree.rightOperand()) && !isNanTest(binaryExpressionTree)) {
-      addIssue(binaryExpressionTree, "float comparison should rely on absolute value of their difference compared to an arbitrary epsilon.");
+    if((hasFloatingType(binaryExpressionTree.leftOperand()) || hasFloatingType(binaryExpressionTree.rightOperand())) && !isNanTest(binaryExpressionTree)) {
+      addIssue(binaryExpressionTree, "Equality tests should not be made with floating point values.");
     }
   }
 
@@ -56,8 +56,9 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
     return SyntacticEquivalence.areEquivalent(binaryExpressionTree.leftOperand(), binaryExpressionTree.rightOperand());
   }
 
-  private boolean isFloat(ExpressionTree expressionTree){
-    return ((AbstractTypedTree) expressionTree).getSymbolType().isTagged(Type.FLOAT);
+  private boolean hasFloatingType(ExpressionTree expressionTree){
+    Type symbolType = ((AbstractTypedTree) expressionTree).getSymbolType();
+    return symbolType.isTagged(Type.FLOAT) || symbolType.isTagged(Type.DOUBLE);
   }
 
 }

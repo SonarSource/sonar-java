@@ -35,8 +35,14 @@ public class FloatEqualityCheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FloatEquality.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("float comparison should rely on absolute value of their difference compared to an arbitrary epsilon.")
-        .next().atLine(6).withMessage("float comparison should rely on absolute value of their difference compared to an arbitrary epsilon.")
+        .next().atLine(6).withMessage("Equality tests should not be made with floating point values.")
+        .next().atLine(7).withMessage("Equality tests should not be made with floating point values.")
+        .next().atLine(8).withMessage("Equality tests should not be made with floating point values.")
+        .next().atLine(9)
+        .next().atLine(16)
+        .next().atLine(17)
+        .next().atLine(18)
+        .next().atLine(19)
         .noMore();
   }
 }
