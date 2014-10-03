@@ -31,7 +31,7 @@ import java.util.Set;
 @Rule(
     key = PackageInfoCheck.RULE_KEY,
     priority = Priority.MAJOR,
-    tags = {"java8"})
+    tags = {"convention"})
 public class PackageInfoCheck implements JavaFileScanner {
 
 
