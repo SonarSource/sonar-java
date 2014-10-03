@@ -37,11 +37,8 @@ import net.sf.cglib.proxy.MethodProxy;
 import org.sonar.java.ast.parser.AstNodeSanitizer;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
-import org.sonar.sslr.internal.grammar.MutableParsingRule;
 import org.sonar.sslr.internal.matchers.InputBuffer;
-import org.sonar.sslr.internal.vm.CompilationHandler;
 import org.sonar.sslr.internal.vm.FirstOfExpression;
-import org.sonar.sslr.internal.vm.Instruction;
 import org.sonar.sslr.internal.vm.ParsingExpression;
 import org.sonar.sslr.internal.vm.SequenceExpression;
 import org.sonar.sslr.internal.vm.StringExpression;
@@ -54,14 +51,12 @@ import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class ActionParser2 extends Parser {
@@ -194,7 +189,7 @@ public class ActionParser2 extends Parser {
       }
 
       if (buildingMethod != null) {
-        push(new RuleExpression(b, this, method));
+        push(new DelayedRuleInvocationExpression(b, this, method));
         return null;
       }
 
@@ -269,7 +264,7 @@ public class ActionParser2 extends Parser {
 
     @Override
     public AstNode invokeRule(GrammarRuleKey ruleKey) {
-      push(new RuleExpression(b, ruleKey));
+      push(new DelayedRuleInvocationExpression(b, ruleKey));
       return null;
     }
 
@@ -404,70 +399,6 @@ public class ActionParser2 extends Parser {
       sb.append(')');
 
       return sb.toString();
-    }
-
-  }
-
-  private static class RuleExpression implements ParsingExpression {
-
-    private static Field DEFINITIONS_FIELD;
-    static {
-      try {
-        DEFINITIONS_FIELD = LexerlessGrammarBuilder.class.getDeclaredField("definitions");
-      } catch (NoSuchFieldException e) {
-        throw Throwables.propagate(e);
-      } catch (SecurityException e) {
-        throw Throwables.propagate(e);
-      }
-      DEFINITIONS_FIELD.setAccessible(true);
-    }
-
-    private final LexerlessGrammarBuilder b;
-    private GrammarRuleKey ruleKey;
-    private final GrammarBuilderInterceptor grammarBuilderInterceptor;
-    private final Method method;
-
-    public RuleExpression(LexerlessGrammarBuilder b, GrammarRuleKey ruleKey) {
-      this.b = b;
-
-      this.ruleKey = ruleKey;
-      this.grammarBuilderInterceptor = null;
-      this.method = null;
-    }
-
-    public RuleExpression(LexerlessGrammarBuilder b, GrammarBuilderInterceptor grammarBuilderInterceptor, Method method) {
-      this.b = b;
-
-      this.ruleKey = null;
-      this.grammarBuilderInterceptor = grammarBuilderInterceptor;
-      this.method = method;
-    }
-
-    @Override
-    public Instruction[] compile(CompilationHandler compiler) {
-      // TODO Horrible
-      if (ruleKey == null) {
-        ruleKey = grammarBuilderInterceptor.ruleKeyForMethod(method);
-        Preconditions.checkState(ruleKey != null, "Cannot find rule key for method: " + method.getName());
-      }
-
-      try {
-        b.rule(ruleKey); // Ensure the MutableParsingRule is created in the definitions
-        return compiler.compile((MutableParsingRule) ((Map) DEFINITIONS_FIELD.get(b)).get(ruleKey));
-      } catch (IllegalArgumentException e) {
-        throw Throwables.propagate(e);
-      } catch (IllegalAccessException e) {
-        throw Throwables.propagate(e);
-      }
-    }
-
-    @Override
-    public String toString() {
-      if (ruleKey != null) {
-        return ruleKey.toString();
-      } else {
-        return method.getName() + "()";
-      }
     }
 
   }
