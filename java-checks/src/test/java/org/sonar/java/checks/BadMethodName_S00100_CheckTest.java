@@ -58,13 +58,4 @@ public class BadMethodName_S00100_CheckTest {
         .next().atLine(16)
         .noMore();
   }
-//
-//  @Test
-//  public void testName() throws Exception {
-//    SourceFile file = JavaAstScanner.scanSingleFile(new File("/home/benzonico/Development/SonarSource/it-sources/sslr/oracle-jdk-1.7.0.3/org/omg/CORBA/DynAny.java"), new VisitorsBridge(check));
-//    CheckMessagesVerifier.verify(file.getCheckMessages())
-//        .next().atLine(69)
-//        .next().atLine(81)
-//        .noMore();
-//  }
 }
