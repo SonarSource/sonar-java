@@ -47,7 +47,7 @@ public class ChecksBridge {
   private final CheckFactory checkFactory;
   private final ResourcePerspectives resourcePerspectives;
   private final RulesProfile rulesProfile;
-  private Set<Directory> dirsWithPackageInfo;
+  private Set<Directory> dirsWithoutPackageInfo;
 
   public ChecksBridge(CheckFactory checkFactory, ResourcePerspectives resourcePerspectives, RulesProfile rulesProfile) {
     this.checkFactory = checkFactory;
@@ -85,10 +85,10 @@ public class ChecksBridge {
   }
 
   public void reportIssueForPackageInfo(Directory directory, Project project) {
-    if (dirsWithPackageInfo == null) {
+    if (dirsWithoutPackageInfo == null) {
       initSetOfDirs(project);
     }
-    if (!dirsWithPackageInfo.contains(directory)) {
+    if (dirsWithoutPackageInfo.contains(directory)) {
       Issuable issuable = resourcePerspectives.as(Issuable.class, directory);
       Issue issue = issuable.newIssueBuilder().ruleKey(RuleKey.of(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY))
           .message("Add a 'package-info.java' file to document the '" + directory.getPath() + "' package").build();
@@ -97,12 +97,12 @@ public class ChecksBridge {
   }
 
   private void initSetOfDirs(Project project) {
-    dirsWithPackageInfo = Sets.newHashSet();
+    dirsWithoutPackageInfo = Sets.newHashSet();
     ActiveRule activeRule = rulesProfile.getActiveRule(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY);
     if (activeRule != null) {
-      Set<File> dirs = ((PackageInfoCheck) checkFactory.getCheck(activeRule)).getDirectoriesWithPackageFile();
+      Set<File> dirs = ((PackageInfoCheck) checkFactory.getCheck(activeRule)).getDirectoriesWithoutPackageFile();
       for (File dir : dirs) {
-        dirsWithPackageInfo.add(Directory.fromIOFile(dir, project));
+        dirsWithoutPackageInfo.add(Directory.fromIOFile(dir, project));
       }
     }
   }

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.fest.assertions.Assertions;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
@@ -27,15 +26,25 @@ import org.sonar.java.model.VisitorsBridge;
 import java.io.File;
 import java.util.Set;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class PackageInfoCheckTest {
 
   @Test
   public void test() throws Exception {
     PackageInfoCheck check = new PackageInfoCheck();
     JavaAstScanner.scanSingleFile(new File("src/test/files/checks/packageInfo/package-info.java"), new VisitorsBridge(check));
-    Set<File> set = check.getDirectoriesWithPackageFile();
-    Assertions.assertThat(set).hasSize(1);
-    Assertions.assertThat(set.iterator().next().getName()).isEqualTo("packageInfo");
-
+    Set<File> set = check.getDirectoriesWithoutPackageFile();
+    assertThat(set).hasSize(0);
   }
+
+  @Test
+  public void testNoPackageInfo() throws Exception {
+    PackageInfoCheck check = new PackageInfoCheck();
+    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/packageInfo/nopackageinfo/nopackageinfo.java"), new VisitorsBridge(check));
+    Set<File> set = check.getDirectoriesWithoutPackageFile();
+    assertThat(set).hasSize(1);
+    assertThat(set.iterator().next().getName()).isEqualTo("nopackageinfo");
+  }
+
 }

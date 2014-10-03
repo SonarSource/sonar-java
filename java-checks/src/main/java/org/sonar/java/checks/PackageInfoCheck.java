@@ -34,20 +34,24 @@ import java.util.Set;
     tags = {"convention"})
 public class PackageInfoCheck implements JavaFileScanner {
 
-
   public static final String RULE_KEY = "S1228";
 
-
   private Set<File> directoriesWithPackageFile = Sets.newHashSet();
+  private Set<File> directoriesWithoutPackageFile = Sets.newHashSet();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    File parentFile = context.getFile().getParentFile();
+    if(!directoriesWithPackageFile.contains(parentFile)) {
+      directoriesWithoutPackageFile.add(parentFile);
+    }
     if ("package-info.java".equals(context.getFile().getName())) {
-      directoriesWithPackageFile.add(context.getFile().getParentFile());
+      directoriesWithoutPackageFile.remove(parentFile);
+      directoriesWithPackageFile.add(parentFile);
     }
   }
 
-  public Set<File> getDirectoriesWithPackageFile() {
-    return directoriesWithPackageFile;
+  public Set<File> getDirectoriesWithoutPackageFile() {
+    return directoriesWithoutPackageFile;
   }
 }
