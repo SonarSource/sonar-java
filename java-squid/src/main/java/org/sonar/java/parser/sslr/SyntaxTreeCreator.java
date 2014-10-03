@@ -126,7 +126,7 @@ public class SyntaxTreeCreator<T> {
     }
 
     if (mapping.isZeroOrMoreRule(ruleKey)) {
-      return convertedChildren.size() == 0 ? Optional.absent() : Optional.of(Lists.newArrayList(convertedChildren));
+      return convertedChildren.isEmpty() ? Optional.absent() : Optional.of(Lists.newArrayList(convertedChildren));
     }
 
     Method method = mapping.actionForRuleKey(ruleKey);

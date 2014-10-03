@@ -236,7 +236,6 @@ public class ActionParser2 extends Parser {
       ParsingExpression expression = pop();
       GrammarRuleKey ruleKey = new DummyGrammarRuleKey("optional", expression);
       optionals.add(ruleKey);
-      // FIXME Fix corner case where "expression" can already match the empty string...
       b.rule(ruleKey).is(b.optional(expression));
       invokeRule(ruleKey);
       return null;
