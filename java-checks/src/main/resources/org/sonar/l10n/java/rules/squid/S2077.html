@@ -1,0 +1,47 @@
+<p>Applications that execute SQL commands should neutralize any externally-provided values used in those commands. Failure to do so could allow an attacker to include input that changes the query so that unintended commands are executed, or sensitive data is exposed.</p>
+
+<p>This rule checks that method parameters are not used directly in SQL statements.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public User getUser(Connection con, String user) throws SQLException {
+
+  Statement stmt1 = null;
+  Statement stmt2 = null;
+  PreparedStatement pstmt;
+  try {
+    stmt1 = con.createStatement();
+    ResultSet rs1 = stmt1.executeQuery("GETDATE()"); // Compliant; parameters not used here
+
+    stmt2 = con.createStatement();
+    ResultSet rs2 = stmt2.executeQuery("select FNAME, LNAME, SSN " +
+    "from USERS where UNAME=" + user;);  // Noncompliant; parameter concatenated directly into query
+
+    pstmt = con.prepareStatement("select FNAME, LNAME, SSN " +
+    "from USERS where UNAME=" + user;);  // Noncompliant; parameter concatenated directly into query
+    ResultSet rs3 = pstmt.executeQuery();
+
+    //...
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public User getUser(Connection con, String user) throws SQLException {
+
+  Statement stmt1 = null;
+  PreparedStatement pstmt = null;
+  String query = "select FNAME, LNAME, SSN " + "from USERS where UNAME=?"
+  try {
+    stmt1 = con.createStatement();
+    ResultSet rs1 = stmt1.executeQuery("GETDATE()");
+
+    pstmt = con.prepareStatement(query);
+    pstmt.setString(1, user);  // Compliant; PreparedStatements escape their inputs.
+    ResultSet rs2 = pstmt.executeQuery();
+    //...
+</pre>
+
+<h2>See</h2>
+<ul>
+  <li><a href="http://cwe.mitre.org/data/definitions/89">MITRE, CWE-89</a> - Improper Neutralization of Special Elements used in an SQL Command</li>
+</ul>

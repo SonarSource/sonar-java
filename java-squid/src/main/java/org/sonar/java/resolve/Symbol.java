@@ -332,6 +332,10 @@ public class Symbol {
     return (flags & Flags.STATIC) != 0;
   }
 
+  public boolean isFinal() {
+    return (flags & Flags.FINAL) != 0;
+  }
+
   public boolean isEnum() {
     return (flags & Flags.ENUM) != 0;
   }

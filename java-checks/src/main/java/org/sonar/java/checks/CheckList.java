@@ -200,7 +200,8 @@ public final class CheckList {
       SwitchWithTooManyCasesCheck.class,
       IdenticalCasesInSwitchCheck.class,
       IdenticalOperandOnBinaryExpressionCheck.class,
-      FloatEqualityCheck.class
+      FloatEqualityCheck.class,
+      SQLInjectionCheck.class
     );
   }
 

@@ -137,6 +137,7 @@ public class SymbolTest {
     Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(Flags.STATIC | Flags.ABSTRACT, "name", typeSymbol);
     Symbol.TypeSymbol enumeration = new Symbol.TypeSymbol(Flags.ENUM, "enumeration", packageSymbol);
     assertThat(methodSymbol.isEnum()).isFalse();
+    assertThat(methodSymbol.isFinal()).isFalse();
     assertThat(methodSymbol.isAbstract()).isTrue();
     assertThat(methodSymbol.isStatic()).isTrue();
     assertThat(methodSymbol.isPackageVisibility()).isTrue();
