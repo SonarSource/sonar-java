@@ -25,6 +25,9 @@ import java.nio.charset.Charset;
 
 public class JavaParser {
 
+  private JavaParser() {
+  }
+
   public static ActionParser2 createParser(Charset charset) {
     return new ActionParser2(
       charset,

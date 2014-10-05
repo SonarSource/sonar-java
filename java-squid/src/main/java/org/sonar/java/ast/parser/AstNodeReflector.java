@@ -33,6 +33,9 @@ public class AstNodeReflector {
   private static final Field CHILD_INDEX_FIELD = getAstNodeField("childIndex");
   private static final Field PARENT_FIELD = getAstNodeField("parent");
 
+  private AstNodeReflector() {
+  }
+
   public static void setToken(AstNode astNode, @Nullable Token token) {
     setField(TOKEN_FIELD, astNode, token);
   }
