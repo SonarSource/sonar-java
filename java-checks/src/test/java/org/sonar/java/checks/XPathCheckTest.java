@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.squidbridge.api.SourceFile;
@@ -27,15 +26,13 @@ import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 import java.io.File;
 
-// FIXME
-@Ignore("FIXME")
 public class XPathCheckTest {
 
   private final XPathCheck check = new XPathCheck();
 
   @Test
   public void test_JavaTokenType() {
-    check.xpathQuery = "//IDENTIFIER[string-length(@tokenValue) >= 10]";
+    check.xpathQuery = "//IDENTIFIER[not(IDENTIFIER) and string-length(@tokenValue) >= 10]";
     check.message = "Avoid identifiers which are too long!";
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/XPath.java"), check);
@@ -46,7 +43,7 @@ public class XPathCheckTest {
 
   @Test
   public void test_AstNodeType() {
-    check.xpathQuery = "//classDeclaration";
+    check.xpathQuery = "//CLASS[not(spacing)]";
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/XPath.java"), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
