@@ -65,7 +65,7 @@ public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessG
 
   @Override
   public void visitNode(AstNode statementNode) {
-    if (statementNode.is(JavaLexer.VARIABLE_DECLARATORS) && !statementNode.hasParent(JavaLexer.BLOCK_STATEMENT)) {
+    if (statementNode.is(JavaLexer.VARIABLE_DECLARATORS) && !statementNode.hasParent(JavaLexer.BLOCK_STATEMENTS)) {
       return;
     }
 

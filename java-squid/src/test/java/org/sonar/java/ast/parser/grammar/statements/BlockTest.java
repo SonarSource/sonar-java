@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser.grammar.statements;
 
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaLexer;
-import org.sonar.java.ast.parser.grammar.RuleMock;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -32,10 +31,9 @@ public class BlockTest {
   public void ok() {
     LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
 
-    b.rule(JavaLexer.BLOCK_STATEMENTS).override(RuleMock.word(b, "blockStatements"));
-
     assertThat(b, JavaLexer.BLOCK)
-      .matches("{ blockStatements }");
+      .matches("{ ; }")
+      .matches("{ int a; foo(); }");
   }
 
 }

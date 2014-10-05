@@ -17,24 +17,17 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser.grammar.statements;
+package org.sonar.java.ast.parser;
 
-import org.junit.Test;
-import org.sonar.java.ast.parser.JavaLexer;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
+import com.sonar.sslr.api.AstNode;
+import org.sonar.plugins.java.api.tree.StatementTree;
 
-import static org.sonar.sslr.tests.Assertions.assertThat;
+import java.util.List;
 
-public class BlockStatementsTest {
+public class BlockStatementListTreeImpl extends ListTreeImpl<StatementTree> {
 
-  @Test
-  public void ok() {
-    LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
-
-    assertThat(b, JavaLexer.BLOCK_STATEMENTS)
-      .matches("")
-      .matches(";")
-      .matches("int a; foo();");
+  public BlockStatementListTreeImpl(List<? extends StatementTree> statements, List<AstNode> children) {
+    super(JavaLexer.BLOCK_STATEMENTS, (List<StatementTree>) statements, children);
   }
 
 }

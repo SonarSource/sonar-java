@@ -19,8 +19,6 @@
  */
 package org.sonar.java.ast.parser;
 
-import org.sonar.java.parser.sslr.Optional;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -84,6 +82,7 @@ import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
+import org.sonar.java.parser.sslr.Optional;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -923,12 +922,12 @@ public class TreeFactory {
       equalToken, (AstNode) initializer);
   }
 
-  public BlockTreeImpl block(AstNode openBraceTokenAstNode, AstNode statements, AstNode closeBraceTokenAstNode) {
+  public BlockTreeImpl block(AstNode openBraceTokenAstNode, BlockStatementListTreeImpl blockStatements, AstNode closeBraceTokenAstNode) {
     InternalSyntaxToken openBraceToken = InternalSyntaxToken.create(openBraceTokenAstNode);
     InternalSyntaxToken closeBraceToken = InternalSyntaxToken.create(closeBraceTokenAstNode);
 
-    return new BlockTreeImpl(openBraceToken, treeMaker.blockStatements(statements), closeBraceToken,
-      openBraceToken, statements, closeBraceToken);
+    return new BlockTreeImpl(openBraceToken, blockStatements, closeBraceToken,
+      openBraceToken, blockStatements, closeBraceToken);
   }
 
   public AssertStatementTreeImpl completeAssertStatement(AstNode assertToken, ExpressionTree expression, Optional<AssertStatementTreeImpl> detailExpression, AstNode semicolonToken) {
@@ -1197,15 +1196,9 @@ public class TreeFactory {
       children.build());
   }
 
-  public CaseGroupTreeImpl switchGroup(List<CaseLabelTreeImpl> labels, AstNode blockStatementsAstNode) {
-    List<AstNode> blockStatements = blockStatementsAstNode.getChildren();
-
-    ImmutableList.Builder<StatementTree> builder = ImmutableList.builder();
-    for (AstNode blockStatement : blockStatements) {
-      builder.addAll(treeMaker.blockStatement(blockStatement));
-    }
-
-    return new CaseGroupTreeImpl(labels, builder.build(), blockStatementsAstNode);
+  public CaseGroupTreeImpl switchGroup(List<CaseLabelTreeImpl> labels, BlockStatementListTreeImpl blockStatements) {
+    return new CaseGroupTreeImpl(labels, blockStatements,
+      blockStatements);
   }
 
   public CaseLabelTreeImpl newCaseSwitchLabel(AstNode caseToken, ExpressionTree expression, AstNode colonToken) {
@@ -1269,6 +1262,38 @@ public class TreeFactory {
 
   public EmptyStatementTreeImpl emptyStatement(AstNode semicolon) {
     return new EmptyStatementTreeImpl(semicolon);
+  }
+
+  public BlockStatementListTreeImpl blockStatements(Optional<List<BlockStatementListTreeImpl>> blockStatements) {
+    List<AstNode> children = Lists.newArrayList();
+    ImmutableList.Builder<StatementTree> builder = ImmutableList.builder();
+
+    if (blockStatements.isPresent()) {
+      for (BlockStatementListTreeImpl blockStatement : blockStatements.get()) {
+        children.add(blockStatement);
+        builder.addAll(blockStatement);
+      }
+    }
+
+    return new BlockStatementListTreeImpl(builder.build(),
+      children);
+  }
+
+  public BlockStatementListTreeImpl wrapInBlockStatements(VariableDeclaratorListTreeImpl variables) {
+    return new BlockStatementListTreeImpl(variables,
+      ImmutableList.<AstNode>of(variables));
+  }
+
+  public BlockStatementListTreeImpl newInnerClassOrEnum(ModifiersTreeImpl modifiers, ClassTreeImpl classTree) {
+    classTree.prependChildren(modifiers);
+    classTree.completeModifiers(modifiers);
+    return new BlockStatementListTreeImpl(ImmutableList.<StatementTree>of(classTree),
+      ImmutableList.<AstNode>of(classTree));
+  }
+
+  public BlockStatementListTreeImpl wrapInBlockStatements(StatementTree statement) {
+    return new BlockStatementListTreeImpl(ImmutableList.of(statement),
+      ImmutableList.of((AstNode) statement));
   }
 
   // End of statements
@@ -1363,10 +1388,10 @@ public class TreeFactory {
     ExpressionTree result = expression;
     for (OperatorAndOperand operatorAndOperand : operatorAndOperands.get()) {
       result = new BinaryExpressionTreeImpl(
-          kindMaps.getBinaryOperator((JavaPunctuator) operatorAndOperand.operator().getType()),
-          result,
-          operatorAndOperand.operator(),
-          operatorAndOperand.operand());
+        kindMaps.getBinaryOperator((JavaPunctuator) operatorAndOperand.operator().getType()),
+        result,
+        operatorAndOperand.operator(),
+        operatorAndOperand.operand());
     }
     return result;
   }

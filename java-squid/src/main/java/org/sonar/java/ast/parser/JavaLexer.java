@@ -287,7 +287,6 @@ public enum JavaLexer implements GrammarRuleKey {
     keywords(b);
 
     compilationsUnits(b);
-    blocksAndStatements(b);
     literals(b);
 
     b.setRootRule(COMPILATION_UNIT);
@@ -471,19 +470,6 @@ public enum JavaLexer implements GrammarRuleKey {
     b.rule(CONSTANT_DECLARATORS_REST).is(CONSTANT_DECLARATOR_REST, b.zeroOrMore(COMMA, CONSTANT_DECLARATOR));
     b.rule(CONSTANT_DECLARATOR).is(JavaTokenType.IDENTIFIER, CONSTANT_DECLARATOR_REST);
     b.rule(CONSTANT_DECLARATOR_REST).is(b.zeroOrMore(DIM), EQU, VARIABLE_INITIALIZER);
-  }
-
-  /**
-   * 14. Blocks and Statements
-   */
-  private static void blocksAndStatements(LexerlessGrammarBuilder b) {
-    // 14.2. Blocks
-    b.rule(BLOCK_STATEMENTS).is(b.zeroOrMore(BLOCK_STATEMENT));
-    b.rule(BLOCK_STATEMENT).is(
-      b.firstOf(
-        LOCAL_VARIABLE_DECLARATION_STATEMENT,
-        b.sequence(MODIFIERS, b.firstOf(CLASS_DECLARATION, ENUM_DECLARATION)),
-        STATEMENT));
   }
 
   private final String internalName;

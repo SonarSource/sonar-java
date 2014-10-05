@@ -41,7 +41,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -178,42 +177,6 @@ public class JavaTreeMaker {
   public ClassTree typeDeclaration(ModifiersTree modifiers, ClassTreeImpl tree) {
     tree.completeModifiers((ModifiersTreeImpl) modifiers);
     return tree;
-  }
-
-  /*
-   * 14. Blocks and Statements
-   */
-
-  public List<StatementTree> blockStatements(AstNode astNode) {
-    checkType(astNode, JavaLexer.BLOCK_STATEMENTS);
-    ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
-    for (AstNode blockStatementNode : astNode.getChildren(JavaLexer.BLOCK_STATEMENT)) {
-      statements.addAll(blockStatement(blockStatementNode));
-    }
-    return statements.build();
-  }
-
-  public List<StatementTree> blockStatement(AstNode astNode) {
-    checkType(astNode, JavaLexer.BLOCK_STATEMENT);
-    AstNode statementNode = astNode.getFirstChild(
-      JavaLexer.VARIABLE_DECLARATORS,
-      Kind.CLASS,
-      Kind.ENUM);
-
-    if (statementNode == null && astNode.getNumberOfChildren() == 1) {
-      // Statement hack (note that they are not all yet migrated to Kinds)
-      statementNode = astNode.getFirstChild();
-    }
-
-    if (statementNode.is(JavaLexer.VARIABLE_DECLARATORS)) {
-      return (List<StatementTree>) statementNode;
-    } else if (statementNode.is(Kind.CLASS) || statementNode.is(Kind.ENUM)) {
-      return ImmutableList.<StatementTree>of(((ClassTreeImpl) statementNode).completeModifiers((ModifiersTreeImpl) astNode.getFirstChild(JavaLexer.MODIFIERS)));
-    } else if (statementNode instanceof StatementTree && !((JavaTree) statementNode).isLegacy()) {
-      return ImmutableList.of((StatementTree) statementNode);
-    } else {
-      throw new IllegalStateException("Unexpected AstNodeType: " + statementNode.getType().toString());
-    }
   }
 
   public ExpressionTree applyDim(ExpressionTree expression, int count) {

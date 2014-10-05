@@ -62,7 +62,7 @@ public class LeftCurlyBraceEndLineCheck extends SquidCheck<LexerlessGrammar> {
   }
 
   private static boolean isBlock(AstNode node) {
-    return node.getParent().is(JavaLexer.BLOCK_STATEMENT);
+    return node.getParent().is(JavaLexer.BLOCK_STATEMENTS);
   }
 
 }

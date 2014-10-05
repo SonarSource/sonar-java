@@ -547,7 +547,7 @@ public class JavaGrammar {
 
   public BlockTreeImpl BLOCK() {
     return b.<BlockTreeImpl>nonterminal(JavaLexer.BLOCK)
-      .is(f.block(b.invokeRule(JavaPunctuator.LWING), b.invokeRule(JavaLexer.BLOCK_STATEMENTS), b.invokeRule(JavaPunctuator.RWING)));
+      .is(f.block(b.invokeRule(JavaPunctuator.LWING), BLOCK_STATEMENTS(), b.invokeRule(JavaPunctuator.RWING)));
   }
 
   public AssertStatementTreeImpl ASSERT_STATEMENT() {
@@ -724,7 +724,7 @@ public class JavaGrammar {
 
   public CaseGroupTreeImpl SWITCH_GROUP() {
     return b.<CaseGroupTreeImpl>nonterminal(JavaLexer.SWITCH_BLOCK_STATEMENT_GROUP)
-      .is(f.switchGroup(b.oneOrMore(SWITCH_LABEL()), b.invokeRule(JavaLexer.BLOCK_STATEMENTS)));
+      .is(f.switchGroup(b.oneOrMore(SWITCH_LABEL()), BLOCK_STATEMENTS()));
   }
 
   public CaseLabelTreeImpl SWITCH_LABEL() {
@@ -775,6 +775,24 @@ public class JavaGrammar {
   public EmptyStatementTreeImpl EMPTY_STATEMENT() {
     return b.<EmptyStatementTreeImpl>nonterminal(JavaLexer.EMPTY_STATEMENT)
       .is(f.emptyStatement(b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
+  public BlockStatementListTreeImpl BLOCK_STATEMENTS() {
+    return b.<BlockStatementListTreeImpl>nonterminal(JavaLexer.BLOCK_STATEMENTS)
+      .is(f.blockStatements(b.zeroOrMore(BLOCK_STATEMENT())));
+  }
+
+  public BlockStatementListTreeImpl BLOCK_STATEMENT() {
+    return b.<BlockStatementListTreeImpl>nonterminal(JavaLexer.BLOCK_STATEMENT)
+      .is(
+        b.firstOf(
+          f.wrapInBlockStatements(LOCAL_VARIABLE_DECLARATION_STATEMENT()),
+          f.newInnerClassOrEnum(
+            MODIFIERS(),
+            b.firstOf(
+              CLASS_DECLARATION(),
+              ENUM_DECLARATION())),
+          f.wrapInBlockStatements(STATEMENT())));
   }
 
   // End of statements
