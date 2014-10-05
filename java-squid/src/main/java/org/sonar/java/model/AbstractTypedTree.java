@@ -24,6 +24,8 @@ import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.resolve.Type;
 
+import javax.annotation.Nullable;
+
 public abstract class AbstractTypedTree extends JavaTree {
 
   /**
@@ -32,7 +34,7 @@ public abstract class AbstractTypedTree extends JavaTree {
   // TODO(Godin): never should be null, i.e. better to assign default value
   private Type type;
 
-  public AbstractTypedTree(AstNode astNode) {
+  public AbstractTypedTree(@Nullable AstNode astNode) {
     super(astNode);
   }
 

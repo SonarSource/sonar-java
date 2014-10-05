@@ -194,9 +194,8 @@ public class ActionParser2 extends Parser {
       }
 
       buildingMethod = method;
-      Object result = proxy.invokeSuper(obj, args);
 
-      return result;
+      return proxy.invokeSuper(obj, args);
     }
 
     @Override

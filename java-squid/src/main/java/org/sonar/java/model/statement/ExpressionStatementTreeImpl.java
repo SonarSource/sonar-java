@@ -30,6 +30,8 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionStatementTree {
@@ -37,7 +39,7 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
   private final ExpressionTree expression;
   private final InternalSyntaxToken semicolonToken;
 
-  public ExpressionStatementTreeImpl(ExpressionTree expression, InternalSyntaxToken semicolonToken, AstNode... children) {
+  public ExpressionStatementTreeImpl(ExpressionTree expression, /* FIXME */@Nullable InternalSyntaxToken semicolonToken, AstNode... children) {
     super(Kind.EXPRESSION_STATEMENT);
 
     this.expression = Preconditions.checkNotNull(expression);

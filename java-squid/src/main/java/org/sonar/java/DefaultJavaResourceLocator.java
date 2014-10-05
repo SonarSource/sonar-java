@@ -110,7 +110,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
     javaFilesCache.scanFile(context);
     org.sonar.api.resources.File currentResource = org.sonar.api.resources.File.fromIOFile(context.getFile(), project);
     if (currentResource == null) {
-      throw new NullPointerException("resource not found : " + context.getFileKey());
+      throw new IllegalStateException("resource not found : " + context.getFileKey());
     }
     resourceMapping.addResource(currentResource, context.getFileKey());
     for (Map.Entry<String, File> classIOFileEntry : javaFilesCache.getResourcesCache().entrySet()) {

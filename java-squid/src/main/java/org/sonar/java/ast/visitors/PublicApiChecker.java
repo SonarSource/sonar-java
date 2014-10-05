@@ -197,7 +197,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
   }
 
   private boolean isEmptyDefaultConstructor(MethodTree constructor) {
-    return constructor.is(Tree.Kind.CONSTRUCTOR) && constructor.parameters().size() == 0 && constructor.block().body().size() == 0;
+    return constructor.is(Tree.Kind.CONSTRUCTOR) && constructor.parameters().isEmpty() && constructor.block().body().isEmpty();
   }
 
   @Nullable

@@ -726,9 +726,8 @@ public class TreeFactory {
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
 
     FormalParametersListTreeImpl parameters = new FormalParametersListTreeImpl(openParenToken, closeParenToken);
-    MethodTreeImpl tree = new MethodTreeImpl(parameters, defaultValue.isPresent() ? defaultValue.get() : null);
 
-    return tree;
+    return new MethodTreeImpl(parameters, defaultValue.orNull());
   }
 
   public ExpressionTree newDefaultValue(AstNode defaultTokenAstNode, ExpressionTree elementValue) {
@@ -979,7 +978,9 @@ public class TreeFactory {
       openBraceToken, blockStatements, closeBraceToken);
   }
 
-  public AssertStatementTreeImpl completeAssertStatement(AstNode assertToken, ExpressionTree expression, Optional<AssertStatementTreeImpl> detailExpression, AstNode semicolonToken) {
+  public AssertStatementTreeImpl completeAssertStatement(
+    AstNode assertToken, ExpressionTree expression, Optional<AssertStatementTreeImpl> detailExpression, AstNode semicolonToken) {
+
     return detailExpression.isPresent() ?
       detailExpression.get().complete(expression,
         assertToken, (AstNode) expression, semicolonToken) :

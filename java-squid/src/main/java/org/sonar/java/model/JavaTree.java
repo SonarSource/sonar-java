@@ -59,8 +59,6 @@ public abstract class JavaTree extends AstNode implements Tree {
       return "[null]";
     }
 
-    ;
-
   };
 
   private final AstNode astNode;
