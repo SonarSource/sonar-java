@@ -20,13 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multiset;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.AstNodeType;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaLexer;
-import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -41,12 +42,33 @@ import java.util.Map;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessGrammar> {
 
+  private static final AstNodeType[] STATEMENTS_KINDS = new ImmutableList.Builder<AstNodeType>()
+    .add(
+      Kind.EMPTY_STATEMENT,
+      Kind.LABELED_STATEMENT,
+      Kind.IF_STATEMENT,
+      Kind.ASSERT_STATEMENT,
+      Kind.SWITCH_STATEMENT,
+      Kind.WHILE_STATEMENT,
+      Kind.DO_STATEMENT,
+      Kind.BREAK_STATEMENT,
+      Kind.CONTINUE_STATEMENT,
+      Kind.RETURN_STATEMENT,
+      Kind.THROW_STATEMENT,
+      Kind.SYNCHRONIZED_STATEMENT,
+      Kind.EXPRESSION_STATEMENT,
+      Kind.FOR_STATEMENT,
+      Kind.FOR_EACH_STATEMENT,
+      Kind.TRY_STATEMENT)
+    .build()
+    .toArray(new AstNodeType[0]);
+
   private final Multiset<Integer> statementsPerLine = HashMultiset.create();
   private final Map<Integer, Integer> columnsByLine = new HashMap<Integer, Integer>();
 
   @Override
   public void init() {
-    subscribeTo(JavaTreeMaker.STATEMENTS_KINDS);
+    subscribeTo(STATEMENTS_KINDS);
     subscribeTo(JavaLexer.VARIABLE_DECLARATORS);
   }
 

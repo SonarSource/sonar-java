@@ -37,7 +37,6 @@ import org.sonar.java.model.JavaTree.ParameterizedTypeTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.JavaTree.UnionTypeTreeImpl;
 import org.sonar.java.model.JavaTree.WildcardTreeImpl;
-import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.model.KindMaps;
 import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -99,8 +98,6 @@ import java.util.List;
 public class TreeFactory {
 
   private final KindMaps kindMaps = new KindMaps();
-
-  private final JavaTreeMaker treeMaker = new JavaTreeMaker();
 
   public ModifiersTreeImpl modifiers(Optional<List<ModifierTree>> modifierNodes) {
     if (!modifierNodes.isPresent()) {
@@ -590,7 +587,7 @@ public class TreeFactory {
 
     ExpressionTree actualType;
     if (type.isPresent()) {
-      actualType = treeMaker.applyDim(type.get(), annotatedDimensions.isPresent() ? annotatedDimensions.get().size() : 0);
+      actualType = applyDim(type.get(), annotatedDimensions.isPresent() ? annotatedDimensions.get().size() : 0);
     } else {
       actualType = null;
     }
@@ -1271,20 +1268,28 @@ public class TreeFactory {
       synchronizedKeyword, openParenToken, (AstNode) expression, closeParenToken, block);
   }
 
-  public BreakStatementTreeImpl breakStatement(AstNode breakToken, Optional<AstNode> identifier, AstNode semicolonToken) {
-    return identifier.isPresent() ?
-      new BreakStatementTreeImpl(treeMaker.identifier(identifier.get()),
-        breakToken, identifier.get(), semicolonToken) :
-      new BreakStatementTreeImpl(null,
+  public BreakStatementTreeImpl breakStatement(AstNode breakToken, Optional<AstNode> identifierAstNode, AstNode semicolonToken) {
+    if (identifierAstNode.isPresent()) {
+      IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode.get()));
+
+      return new BreakStatementTreeImpl(identifier,
+        breakToken, identifier, semicolonToken);
+    } else {
+      return new BreakStatementTreeImpl(null,
         breakToken, semicolonToken);
+    }
   }
 
-  public ContinueStatementTreeImpl continueStatement(AstNode continueToken, Optional<AstNode> identifier, AstNode semicolonToken) {
-    return identifier.isPresent() ?
-      new ContinueStatementTreeImpl(treeMaker.identifier(identifier.get()),
-        continueToken, identifier.get(), semicolonToken) :
-      new ContinueStatementTreeImpl(null,
+  public ContinueStatementTreeImpl continueStatement(AstNode continueToken, Optional<AstNode> identifierAstNode, AstNode semicolonToken) {
+    if (identifierAstNode.isPresent()) {
+      IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode.get()));
+
+      return new ContinueStatementTreeImpl(identifier,
+        continueToken, identifier, semicolonToken);
+    } else {
+      return new ContinueStatementTreeImpl(null,
         continueToken, semicolonToken);
+    }
   }
 
   public ReturnStatementTreeImpl returnStatement(AstNode returnToken, Optional<ExpressionTree> expression, AstNode semicolonToken) {
@@ -1300,8 +1305,10 @@ public class TreeFactory {
       throwToken, (AstNode) expression, semicolonToken);
   }
 
-  public LabeledStatementTreeImpl labeledStatement(AstNode identifier, AstNode colon, StatementTree statement) {
-    return new LabeledStatementTreeImpl(treeMaker.identifier(identifier), statement,
+  public LabeledStatementTreeImpl labeledStatement(AstNode identifierAstNode, AstNode colon, StatementTree statement) {
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+
+    return new LabeledStatementTreeImpl(identifier, statement,
       identifier, colon, (AstNode) statement);
   }
 
@@ -1762,10 +1769,12 @@ public class TreeFactory {
       children);
   }
 
-  public ExpressionTree basicClassExpression(PrimitiveTypeTreeImpl basicType, Optional<List<Tuple<AstNode, AstNode>>> dimensions, AstNode dotToken, AstNode classToken) {
+  public ExpressionTree basicClassExpression(PrimitiveTypeTreeImpl basicType, Optional<List<Tuple<AstNode, AstNode>>> dimensions, AstNode dotToken, AstNode classTokenAstNode) {
     // 15.8.2. Class Literals
     // int.class
     // int[].class
+
+    IdentifierTreeImpl classToken = new IdentifierTreeImpl(InternalSyntaxToken.create(classTokenAstNode));
 
     List<AstNode> children = Lists.newArrayList();
     children.add(basicType);
@@ -1779,14 +1788,20 @@ public class TreeFactory {
     children.add(classToken);
 
     return new MemberSelectExpressionTreeImpl(
-      treeMaker.applyDim(basicType, dimensions.isPresent() ? dimensions.get().size() : 0), treeMaker.identifier(classToken),
+      applyDim(basicType, dimensions.isPresent() ? dimensions.get().size() : 0), classToken,
       children.toArray(new AstNode[children.size()]));
   }
 
-  public ExpressionTree voidClassExpression(AstNode voidToken, AstNode dotToken, AstNode classToken) {
+  public ExpressionTree voidClassExpression(AstNode voidTokenAstNode, AstNode dotToken, AstNode classTokenAstNode) {
     // void.class
-    return new MemberSelectExpressionTreeImpl(treeMaker.basicType(voidToken), treeMaker.identifier(classToken),
-      voidToken, dotToken, classToken);
+    InternalSyntaxToken voidToken = InternalSyntaxToken.create(voidTokenAstNode);
+    PrimitiveTypeTreeImpl voidType = new PrimitiveTypeTreeImpl(voidToken,
+      ImmutableList.<AstNode>of(voidToken));
+
+    IdentifierTreeImpl classToken = new IdentifierTreeImpl(InternalSyntaxToken.create(classTokenAstNode));
+
+    return new MemberSelectExpressionTreeImpl(voidType, classToken,
+      voidType, dotToken, classToken);
   }
 
   public PrimitiveTypeTreeImpl newBasicType(Optional<List<AnnotationTreeImpl>> annotations, AstNode basicType) {
@@ -2300,5 +2315,13 @@ public class TreeFactory {
   }
 
   // End
+
+  private ExpressionTree applyDim(ExpressionTree expression, int count) {
+    ExpressionTree result = expression;
+    for (int i = 0; i < count; i++) {
+      result = new JavaTree.ArrayTypeTreeImpl(/* FIXME should not be null */null, result);
+    }
+    return result;
+  }
 
 }

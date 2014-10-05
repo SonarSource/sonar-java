@@ -448,11 +448,6 @@ public abstract class JavaTree extends AstNode implements Tree {
       }
     }
 
-    public PrimitiveTypeTreeImpl(AstNode astNode) {
-      super(astNode);
-      this.token = null;
-    }
-
     @Override
     public Kind getKind() {
       return Kind.PRIMITIVE_TYPE;

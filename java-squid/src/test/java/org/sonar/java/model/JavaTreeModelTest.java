@@ -21,11 +21,11 @@ package org.sonar.java.model;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
@@ -87,10 +87,19 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class JavaTreeMakerTest {
+public class JavaTreeModelTest {
 
   private final Parser p = JavaParser.createParser(Charsets.UTF_8);
-  private final JavaTreeMaker maker = new JavaTreeMaker();
+
+  private static Kind[] getKindsAssociatedTo(Class<? extends Tree> associatedInterface) {
+    List<Kind> result = Lists.newArrayList();
+    for (Kind kind : Kind.values()) {
+      if (associatedInterface.equals(kind.getAssociatedInterface())) {
+        result.add(kind);
+      }
+    }
+    return result.toArray(new Kind[result.size()]);
+  }
 
   @Test
   public void integration_test() {
@@ -117,8 +126,7 @@ public class JavaTreeMakerTest {
     PrimitiveTypeTree tree = (PrimitiveTypeTree) astNode;
     assertThat(tree.keyword().text()).isEqualTo("int");
 
-    astNode = p.parse("class T { void m() { return null; } }").getFirstDescendant(JavaKeyword.VOID);
-    tree = maker.basicType(astNode);
+    tree = (PrimitiveTypeTree) p.parse("class T { void m() { return null; } }").getFirstDescendant(Kind.PRIMITIVE_TYPE);
     assertThat(tree.keyword().text()).isEqualTo("void");
   }
 
@@ -130,39 +138,39 @@ public class JavaTreeMakerTest {
 
   @Test
   public void literal() {
-    LiteralTree tree = (LiteralTree) p.parse("class T { int m() { return 1; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
+    LiteralTree tree = (LiteralTree) p.parse("class T { int m() { return 1; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.INT_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1");
 
-    tree = (LiteralTree) p.parse("class T { long m() { return 1L; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) p.parse("class T { long m() { return 1L; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.LONG_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1L");
 
-    tree = (LiteralTree) p.parse("class T { float m() { return 1F; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) p.parse("class T { float m() { return 1F; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.FLOAT_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1F");
 
-    tree = (LiteralTree) p.parse("class T { double m() { return 1d; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) p.parse("class T { double m() { return 1d; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.DOUBLE_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1d");
 
-    tree = (LiteralTree) p.parse("class T { boolean m() { return true; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) p.parse("class T { boolean m() { return true; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.BOOLEAN_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("true");
 
-    tree = (LiteralTree) p.parse("class T { boolean m() { return false; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) p.parse("class T { boolean m() { return false; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.BOOLEAN_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("false");
 
-    tree = (LiteralTree) p.parse("class T { char m() { return 'c'; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) p.parse("class T { char m() { return 'c'; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.CHAR_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("'c'");
 
-    tree = (LiteralTree) p.parse("class T { String m() { return \"s\"; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) p.parse("class T { String m() { return \"s\"; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.STRING_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("\"s\"");
 
-    tree = (LiteralTree) p.parse("class T { Object m() { return null; } }").getFirstDescendant(JavaTreeMaker.getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) p.parse("class T { Object m() { return null; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.NULL_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("null");
   }
