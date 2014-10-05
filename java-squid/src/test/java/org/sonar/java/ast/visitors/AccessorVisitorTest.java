@@ -24,7 +24,6 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -35,7 +34,6 @@ import static org.fest.assertions.Assertions.assertThat;
 public class AccessorVisitorTest {
 
   private final Parser p = JavaParser.createParser(Charsets.UTF_8);
-  private final JavaTreeMaker maker = new JavaTreeMaker();
   private final AccessorVisitor accessorVisitor = new AccessorVisitor();
 
   @Test
@@ -140,7 +138,7 @@ public class AccessorVisitorTest {
 
   private ClassTree parseClass(String code) {
     AstNode astNode = p.parse(code);
-    return extractClass(maker.compilationUnit(astNode));
+    return extractClass((CompilationUnitTree) astNode);
   }
 
   private ClassTree extractClass(CompilationUnitTree cut) {

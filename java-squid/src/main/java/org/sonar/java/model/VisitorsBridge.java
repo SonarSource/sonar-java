@@ -44,6 +44,7 @@ import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -55,7 +56,6 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
 
   private static final Logger LOG = LoggerFactory.getLogger(VisitorsBridge.class);
 
-  private final JavaTreeMaker treeMaker = new JavaTreeMaker();
   private final List<JavaFileScanner> scanners;
 
   private SemanticModel semanticModel;
@@ -64,7 +64,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
   private boolean analyseAccessors;
 
   @VisibleForTesting
-  public VisitorsBridge(JavaFileScanner visitor){
+  public VisitorsBridge(JavaFileScanner visitor) {
     this(Arrays.asList(visitor), null);
   }
 
@@ -83,7 +83,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     }
     this.scanners = scannersBuilder.build();
     this.sonarComponents = sonarComponents;
-    if(sonarComponents!=null) {
+    if (sonarComponents != null) {
       projectClasspath = sonarComponents.getJavaClasspath();
     } else {
       projectClasspath = Lists.newArrayList();
@@ -97,7 +97,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
   @Override
   public void setCharset(Charset charset) {
     for (JavaFileScanner scanner : scanners) {
-      if(scanner instanceof CharsetAwareVisitor) {
+      if (scanner instanceof CharsetAwareVisitor) {
         ((CharsetAwareVisitor) scanner).setCharset(charset);
       }
     }
@@ -107,7 +107,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
   public void visitFile(@Nullable AstNode astNode) {
     semanticModel = null;
     if (astNode != null) {
-      CompilationUnitTree tree = treeMaker.compilationUnit(astNode);
+      CompilationUnitTree tree = (CompilationUnitTree) astNode;
       if (isNotJavaLangOrSerializable()) {
         try {
           semanticModel = SemanticModel.createFor(tree, getProjectClasspath());
@@ -123,8 +123,8 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
       for (JavaFileScanner scanner : scanners) {
         scanner.scanFile(context);
       }
-      if(semanticModel != null) {
-        //Close class loader after all the checks.
+      if (semanticModel != null) {
+        // Close class loader after all the checks.
         semanticModel.done();
       }
     }
@@ -134,7 +134,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     String[] path = getContext().peekSourceCode().getName().split(Pattern.quote(File.separator));
     boolean isJavaLang = path.length > 3 && "java".equals(path[path.length - 3]) && "lang".equals(path[path.length - 2]);
     boolean isJavaLangAnnotation = path.length > 4 && "Annotation.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 4])
-        && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);
+      && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);
     boolean isSerializable = path.length > 3 && "Serializable.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 3]) && "io".equals(path[path.length - 2]);
     return !(isJavaLang || isJavaLangAnnotation || isSerializable);
   }
@@ -155,7 +155,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     private final SourceFile sourceFile;
     private final SemanticModel semanticModel;
     private final ComplexityVisitor complexityVisitor;
-    private File file;
+    private final File file;
 
     public DefaultJavaFileScannerContext(CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors) {
       this.tree = tree;
@@ -222,7 +222,6 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     public void addNoSonarLines(Set<Integer> lines) {
       sourceFile.addNoSonarTagLines(lines);
     }
-
 
   }
 

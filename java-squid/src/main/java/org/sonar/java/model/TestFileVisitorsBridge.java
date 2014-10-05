@@ -31,6 +31,7 @@ import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.Set;
 
@@ -39,7 +40,6 @@ import java.util.Set;
  */
 public class TestFileVisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
 
-  private final JavaTreeMaker treeMaker = new JavaTreeMaker();
   private final JavaFileScanner visitor;
 
   public TestFileVisitorsBridge(JavaFileScanner visitor) {
@@ -49,7 +49,7 @@ public class TestFileVisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
   @Override
   public void visitFile(@Nullable AstNode astNode) {
     if (astNode != null) {
-      CompilationUnitTree tree = treeMaker.compilationUnit(astNode);
+      CompilationUnitTree tree = (CompilationUnitTree) astNode;
       JavaFileScannerContext context = new JavaTestFileScannerContext(tree, getContext().getFile());
       visitor.scanFile(context);
     }
@@ -57,7 +57,7 @@ public class TestFileVisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
 
   private static class JavaTestFileScannerContext implements JavaFileScannerContext {
     private final CompilationUnitTree tree;
-    private File file;
+    private final File file;
 
     public JavaTestFileScannerContext(CompilationUnitTree tree, File file) {
       this.tree = tree;
@@ -112,7 +112,7 @@ public class TestFileVisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
 
     @Override
     public void addNoSonarLines(Set<Integer> lines) {
-      //NOOP for tests.
+      // NOOP for tests.
     }
   }
 

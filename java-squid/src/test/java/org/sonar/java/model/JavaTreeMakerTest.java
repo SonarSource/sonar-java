@@ -101,7 +101,7 @@ public class JavaTreeMakerTest {
       );
     BaseTreeVisitor visitor = new BaseTreeVisitor();
     for (File file : files) {
-      Tree tree = maker.compilationUnit(p.parse(file));
+      Tree tree = (CompilationUnitTree) p.parse(file);
       tree.accept(visitor);
     }
   }
@@ -169,15 +169,13 @@ public class JavaTreeMakerTest {
 
   @Test
   public void compilation_unit() {
-    AstNode astNode = p.parse("import foo; import bar; class Foo {} class Bar {}");
-    CompilationUnitTree tree = maker.compilationUnit(astNode);
+    CompilationUnitTree tree = (CompilationUnitTree) p.parse("import foo; import bar; class Foo {} class Bar {}");
     assertThat(tree.is(Tree.Kind.COMPILATION_UNIT)).isTrue();
     assertThat(tree.packageName()).isNull();
     assertThat(tree.imports()).hasSize(2);
     assertThat(tree.types()).hasSize(2);
 
-    astNode = p.parse("package pkg; import foo; import bar; class Foo {} class Bar {}");
-    tree = maker.compilationUnit(astNode);
+    tree = (CompilationUnitTree) p.parse("package pkg; import foo; import bar; class Foo {} class Bar {}");
     assertThat(tree.is(Tree.Kind.COMPILATION_UNIT)).isTrue();
     assertThat(tree.packageName()).isNotNull();
     assertThat(tree.imports()).hasSize(2);
@@ -187,22 +185,22 @@ public class JavaTreeMakerTest {
   @Test
   public void import_declaration() {
     AstNode astNode = p.parse("import foo.Bar;");
-    ImportTree tree = maker.compilationUnit(astNode).imports().get(0);
+    ImportTree tree = ((CompilationUnitTree) astNode).imports().get(0);
     assertThat(tree.isStatic()).isFalse();
     assertThat(tree.qualifiedIdentifier()).isNotNull();
 
     astNode = p.parse("import foo.bar.*;");
-    tree = maker.compilationUnit(astNode).imports().get(0);
+    tree = ((CompilationUnitTree) astNode).imports().get(0);
     assertThat(tree.isStatic()).isFalse();
     assertThat(tree.qualifiedIdentifier()).isNotNull();
 
     astNode = p.parse("import static foo.Bar.method;");
-    tree = maker.compilationUnit(astNode).imports().get(0);
+    tree = ((CompilationUnitTree) astNode).imports().get(0);
     assertThat(tree.isStatic()).isTrue();
     assertThat(tree.qualifiedIdentifier()).isNotNull();
 
     astNode = p.parse("import static foo.Bar.*;");
-    tree = maker.compilationUnit(astNode).imports().get(0);
+    tree = ((CompilationUnitTree) astNode).imports().get(0);
     assertThat(tree.isStatic()).isTrue();
     assertThat(tree.qualifiedIdentifier()).isNotNull();
   }
@@ -238,7 +236,7 @@ public class JavaTreeMakerTest {
   @Test
   public void class_declaration() {
     AstNode astNode = p.parse("public class T<U> extends C implements I1, I2 { }");
-    ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    ClassTree tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
@@ -250,7 +248,7 @@ public class JavaTreeMakerTest {
 
     astNode = p.parse("public class T { }");
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
-    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.typeParameters()).isEmpty();
@@ -259,14 +257,14 @@ public class JavaTreeMakerTest {
 
     astNode = p.parse("@Deprecated class T { }");
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
-    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.modifiers().annotations()).hasSize(1);
   }
 
   @Test
   public void annotations() {
     AstNode astNode = p.parse("@SuppressWarnings(\"unchecked\") class T { }");
-    ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    ClassTree tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     List<AnnotationTree> annotations = tree.modifiers().annotations();
     assertThat(annotations).hasSize(1);
     AnnotationTree annotation = annotations.get(0);
@@ -275,14 +273,14 @@ public class JavaTreeMakerTest {
     assertThat(annotation.arguments().get(0).is(Tree.Kind.STRING_LITERAL)).isTrue();
 
     astNode = p.parse("@Target( ) class U {}");
-    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     annotations = tree.modifiers().annotations();
     assertThat(annotations).hasSize(1);
     annotation = annotations.get(0);
     assertThat(annotation.arguments()).hasSize(0);
 
     astNode = p.parse("@Target({ElementType.METHOD}) class U {}");
-    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     annotations = tree.modifiers().annotations();
     assertThat(annotations).hasSize(1);
     annotation = annotations.get(0);
@@ -290,7 +288,7 @@ public class JavaTreeMakerTest {
     assertThat(annotation.arguments().get(0).is(Tree.Kind.NEW_ARRAY)).isTrue();
 
     astNode = p.parse("@Target(value={ElementType.METHOD}, value2=\"toto\") class T { }");
-    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     annotations = tree.modifiers().annotations();
     assertThat(annotations).hasSize(1);
     annotation = annotations.get(0);
@@ -299,7 +297,7 @@ public class JavaTreeMakerTest {
     assertThat(annotation.arguments().get(0).is(Tree.Kind.ASSIGNMENT)).isTrue();
 
     astNode = p.parse("class T { private void meth() { @NonNullable String str;}}");
-    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     VariableTree variable = (VariableTree) ((MethodTree) tree.members().get(0)).block().body().get(0);
     annotations = variable.modifiers().annotations();
     assertThat(annotations).hasSize(1);
@@ -307,21 +305,21 @@ public class JavaTreeMakerTest {
     assertThat(annotation.annotationType().is(Tree.Kind.IDENTIFIER)).isTrue();
 
     astNode = p.parse("@PackageLevelAnnotation package blammy;");
-    annotations = maker.compilationUnit(astNode).packageAnnotations();
+    annotations = ((CompilationUnitTree) astNode).packageAnnotations();
     assertThat(annotations).hasSize(1);
   }
 
   @Test
   public void class_init_declaration() {
     AstNode astNode = p.parse("class T { { ; ; } }");
-    BlockTree tree = (BlockTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    BlockTree tree = (BlockTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.INITIALIZER)).isTrue();
     assertThat(tree.body()).hasSize(2);
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
 
     astNode = p.parse("class T { static { ; ; } }");
-    tree = (BlockTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    tree = (BlockTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.STATIC_INITIALIZER)).isTrue();
     assertThat(tree.body()).hasSize(2);
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
@@ -331,7 +329,7 @@ public class JavaTreeMakerTest {
   @Test
   public void class_constructor() {
     AstNode astNode = p.parse("class T { T(int p1, int... p2) throws Exception1, Exception2 {} }");
-    MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    MethodTree tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.CONSTRUCTOR)).isTrue();
     assertThat(tree.returnType()).isNull();
     assertThat(tree.simpleName().name()).isEqualTo("T");
@@ -346,7 +344,7 @@ public class JavaTreeMakerTest {
   @Test
   public void class_field() {
     AstNode astNode = p.parse("class T { public int f1 = 42, f2[]; }");
-    List<Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
+    List<Tree> declarations = ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members();
     assertThat(declarations).hasSize(2);
 
     VariableTree tree = (VariableTree) declarations.get(0);
@@ -367,14 +365,14 @@ public class JavaTreeMakerTest {
   @Test
   public void class_method() {
     AstNode astNode = p.parse("class T { public int m(int p[][]){} }");
-    MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    MethodTree tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.parameters()).hasSize(1);
     assertThat(tree.parameters().get(0).type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(((ArrayTypeTree) tree.parameters().get(0).type()).type()).isInstanceOf(ArrayTypeTree.class);
 
     astNode = p.parse("class T { public <T> int m(int p1, int... p2) throws Exception1, Exception2 {} }");
-    tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.typeParameters()).isNotEmpty();
@@ -389,7 +387,7 @@ public class JavaTreeMakerTest {
 
     // void method
     astNode = p.parse("class T { public void m(int p) throws Exception1, Exception2 {} }");
-    tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.typeParameters()).isEmpty();
@@ -401,7 +399,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.defaultValue()).isNull();
 
     astNode = p.parse("class T { public int[] m(int p1, int... p2)[] throws Exception1, Exception2 {} }");
-    tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.returnType()).isNotNull();
@@ -416,7 +414,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.defaultValue()).isNull();
 
     astNode = p.parse("class T { public int m()[] { return null; } }");
-    tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.parameters()).isEmpty();
     assertThat(tree.returnType().is(Kind.ARRAY_TYPE));
@@ -430,7 +428,7 @@ public class JavaTreeMakerTest {
   @Test
   public void enum_declaration() {
     AstNode astNode = p.parse("public enum T implements I1, I2 { }");
-    ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    ClassTree tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
@@ -438,7 +436,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.superInterfaces()).hasSize(2);
 
     astNode = p.parse("public enum T { }");
-    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
@@ -451,7 +449,7 @@ public class JavaTreeMakerTest {
   @Test
   public void enum_constant() {
     AstNode astNode = p.parse("enum T { C1, C2(2) { }; }");
-    List<Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
+    List<Tree> declarations = ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members();
     assertThat(declarations).hasSize(2);
 
     EnumConstantTree tree = (EnumConstantTree) declarations.get(0);
@@ -474,7 +472,7 @@ public class JavaTreeMakerTest {
   @Test
   public void enum_field() {
     AstNode astNode = p.parse("enum T { ; public int f1 = 42, f2[]; }");
-    List<Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
+    List<Tree> declarations = ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members();
     assertThat(declarations).hasSize(2);
 
     VariableTree tree = (VariableTree) declarations.get(0);
@@ -495,7 +493,7 @@ public class JavaTreeMakerTest {
   @Test
   public void enum_constructor() {
     AstNode astNode = p.parse("enum T { ; T(int p1, int... p2) throws Exception1, Exception2 {} }");
-    MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    MethodTree tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.CONSTRUCTOR)).isTrue();
     assertThat(tree.returnType()).isNull();
     assertThat(tree.simpleName().name()).isEqualTo("T");
@@ -510,7 +508,7 @@ public class JavaTreeMakerTest {
   @Test
   public void enum_method() {
     AstNode astNode = p.parse("enum T { ; int m(int p1, int... p2) throws Exception1, Exception2 {} }");
-    MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    MethodTree tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
@@ -523,7 +521,7 @@ public class JavaTreeMakerTest {
 
     // void method
     astNode = p.parse("enum T { ; void m(int p) throws Exception1, Exception2; }");
-    tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
@@ -540,7 +538,7 @@ public class JavaTreeMakerTest {
   @Test
   public void interface_declaration() {
     AstNode astNode = p.parse("public interface T<U> extends I1, I2 { }");
-    ClassTree tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    ClassTree tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
@@ -549,7 +547,7 @@ public class JavaTreeMakerTest {
     assertThat(tree.superInterfaces()).hasSize(2);
 
     astNode = p.parse("public interface T { }");
-    tree = (ClassTree) maker.compilationUnit(astNode).types().get(0);
+    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");
@@ -563,7 +561,7 @@ public class JavaTreeMakerTest {
   @Test
   public void interface_field() {
     AstNode astNode = p.parse("interface T { public int f1 = 42, f2[] = { 13 }; }");
-    List<Tree> declarations = ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members();
+    List<Tree> declarations = ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members();
     assertThat(declarations).hasSize(2);
 
     VariableTree tree = (VariableTree) declarations.get(0);
@@ -584,7 +582,7 @@ public class JavaTreeMakerTest {
   @Test
   public void interface_method() {
     AstNode astNode = p.parse("interface T { <T> int m(int p1, int... p2) throws Exception1, Exception2; }");
-    MethodTree tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    MethodTree tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.typeParameters()).isNotEmpty();
     assertThat(tree.returnType()).isNotNull();
@@ -598,7 +596,7 @@ public class JavaTreeMakerTest {
 
     // void method
     astNode = p.parse("interface T { void m(int p) throws Exception1, Exception2; }");
-    tree = (MethodTree) ((ClassTree) maker.compilationUnit(astNode).types().get(0)).members().get(0);
+    tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.typeParameters()).isEmpty();
     assertThat(tree.returnType()).isNotNull();
@@ -615,7 +613,7 @@ public class JavaTreeMakerTest {
 
   @Test
   public void annotation_declaration() {
-    ClassTree tree = (ClassTree) maker.compilationUnit(p.parse("public @interface T { }")).types().get(0);
+    ClassTree tree = (ClassTree) ((CompilationUnitTree) p.parse("public @interface T { }")).types().get(0);
     assertThat(tree.is(Tree.Kind.ANNOTATION_TYPE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.simpleName().name()).isEqualTo("T");

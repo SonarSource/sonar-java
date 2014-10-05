@@ -23,8 +23,8 @@ import com.google.common.base.Charsets;
 import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -77,8 +77,7 @@ public class MethodSignatureScannerTest {
   @Test
   public void scanMethodTree() {
     Parser p = JavaParser.createParser(Charsets.UTF_8);
-    JavaTreeMaker maker = new JavaTreeMaker();
-    List<Tree> members = ((ClassTree) maker.compilationUnit(p.parse("class A { " +
+    List<Tree> members = ((ClassTree) ((CompilationUnitTree) p.parse("class A { " +
       "A(){} " +
       "String[] method(int a){} " +
       "int foo(String a){}" +

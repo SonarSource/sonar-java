@@ -25,7 +25,6 @@ import com.sonar.sslr.impl.Parser;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -49,7 +48,7 @@ public class PublicApiCheckerTest {
   public void setUp() {
     Parser p = JavaParser.createParser(Charsets.UTF_8);
     publicApiChecker = new PublicApiChecker();
-    cut = new JavaTreeMaker().compilationUnit(p.parse(new File("src/test/files/ast/PublicApi.java")));
+    cut = (CompilationUnitTree) p.parse(new File("src/test/files/ast/PublicApi.java"));
   }
 
   @Test

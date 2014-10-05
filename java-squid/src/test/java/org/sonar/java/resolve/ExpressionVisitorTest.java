@@ -27,7 +27,6 @@ import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -390,7 +389,7 @@ public class ExpressionVisitorTest {
 
     String p = "class Test { void wrapperMethod() { " + input + "; } }";
     AstNode node = JavaParser.createParser(Charsets.UTF_8).parse(p);
-    CompilationUnitTree tree = new JavaTreeMaker().compilationUnit(node);
+    CompilationUnitTree tree = (CompilationUnitTree) node;
     tree.accept(visitor);
 
     TestedNodeExtractor testedNodeExtractor = new TestedNodeExtractor();

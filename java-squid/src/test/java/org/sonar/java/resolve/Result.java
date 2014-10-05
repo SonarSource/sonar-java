@@ -26,7 +26,7 @@ import com.sonar.sslr.api.Token;
 import com.sonar.sslr.impl.Parser;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.JavaTreeMaker;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import java.io.File;
@@ -40,7 +40,7 @@ class Result {
   public static Result createForJavaFile(String filePath) {
     File file = new File(filePath + ".java");
     AstNode astNode = parser.parse(file);
-    return new Result(SemanticModel.createFor(new JavaTreeMaker().compilationUnit(astNode), Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
+    return new Result(SemanticModel.createFor((CompilationUnitTree) astNode, Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
   }
 
   private static final Parser parser = JavaParser.createParser(Charsets.UTF_8);

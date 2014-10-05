@@ -25,7 +25,6 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.model.JavaTreeMaker;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -37,7 +36,6 @@ import static org.fest.assertions.Assertions.assertThat;
 public class MethodTreeImplTest {
 
   private final Parser p = JavaParser.createParser(Charsets.UTF_8);
-  private final JavaTreeMaker maker = new JavaTreeMaker();
 
   @Test
   public void override_without_annotation_should_be_detected() {
@@ -76,7 +74,7 @@ public class MethodTreeImplTest {
   @Test
   public void symbol_not_set_should_lead_to_null_result() throws Exception {
     AstNode astNode = p.parse("class A { String toString(){return \"\";}}");
-    CompilationUnitTree cut = maker.compilationUnit(astNode);
+    CompilationUnitTree cut = (CompilationUnitTree) astNode;
     MethodTreeImpl methodTree = (MethodTreeImpl) ((ClassTree) cut.types().get(0)).members().get(0);
     assertThat(methodTree.isOverriding()).isNull();
   }
@@ -88,7 +86,7 @@ public class MethodTreeImplTest {
 
   private CompilationUnitTree createTree(String code) {
     AstNode astNode = p.parse(code);
-    CompilationUnitTree compilationUnitTree = maker.compilationUnit(astNode);
+    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) astNode;
     SemanticModel.createFor(compilationUnitTree, Lists.<File>newArrayList());
     return compilationUnitTree;
   }

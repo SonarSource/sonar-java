@@ -26,15 +26,9 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
-import org.sonar.java.ast.parser.JavaLexer;
-import org.sonar.java.ast.parser.TreeFactory;
-import org.sonar.java.model.JavaTree.ImportTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -101,54 +95,6 @@ public class JavaTreeMaker {
   public PrimitiveTypeTree basicType(AstNode astNode) {
     checkType(astNode, JavaKeyword.VOID);
     return new JavaTree.PrimitiveTypeTreeImpl(astNode);
-  }
-
-  public ExpressionTree referenceType(AstNode astNode) {
-    if (astNode instanceof ExpressionTree && ((JavaTree) astNode).isLegacy()) {
-      return (ExpressionTree) astNode;
-    }
-
-    return referenceType(astNode, 0);
-  }
-
-  ExpressionTree referenceType(AstNode astNode, int dimSize) {
-    ExpressionTree result = astNode.getFirstChild().is(Kind.PRIMITIVE_TYPE) ? (PrimitiveTypeTree) astNode.getFirstChild() : (ExpressionTree) astNode.getFirstChild();
-    return applyDim(result, dimSize + astNode.getChildren(TreeFactory.WRAPPER_AST_NODE).size());
-  }
-
-  /*
-   * 7.3. Compilation Units
-   */
-
-  public CompilationUnitTree compilationUnit(AstNode astNode) {
-    checkType(astNode, JavaLexer.COMPILATION_UNIT);
-    ImmutableList.Builder<ImportTree> imports = ImmutableList.builder();
-    for (AstNode importTree : astNode.getChildren(Kind.IMPORT)) {
-      imports.add((ImportTreeImpl) importTree);
-    }
-    ImmutableList.Builder<Tree> types = ImmutableList.builder();
-    for (AstNode typeNode : astNode.getChildren(Kind.CLASS,
-      Kind.ENUM,
-      Kind.INTERFACE,
-      Kind.ANNOTATION_TYPE)) {
-      types.add((Tree) typeNode);
-    }
-
-    ExpressionTree packageDeclaration = null;
-    ImmutableList.Builder<AnnotationTree> packageAnnotations = ImmutableList.builder();
-    if (astNode.hasDirectChildren(JavaLexer.PACKAGE_DECLARATION)) {
-      AstNode packageDeclarationNode = astNode.getFirstChild(JavaLexer.PACKAGE_DECLARATION);
-      packageDeclaration = (ExpressionTree) packageDeclarationNode.getFirstChild(QUALIFIED_EXPRESSION_KINDS);
-      for (AstNode annotationNode : packageDeclarationNode.getChildren(Kind.ANNOTATION)) {
-        packageAnnotations.add((AnnotationTree) annotationNode);
-      }
-    }
-    return new JavaTree.CompilationUnitTreeImpl(
-      astNode,
-      packageDeclaration,
-      imports.build(),
-      types.build(),
-      packageAnnotations.build());
   }
 
   public ExpressionTree applyDim(ExpressionTree expression, int count) {
