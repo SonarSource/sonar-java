@@ -30,6 +30,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.ArrayTypeTreeImpl;
+import org.sonar.java.model.JavaTree.ImportTreeImpl;
 import org.sonar.java.model.JavaTree.NotImplementedTreeImpl;
 import org.sonar.java.model.JavaTree.ParameterizedTypeTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
@@ -121,6 +122,27 @@ public class TreeFactory {
   // End of literals
 
   // Compilation unit
+
+  public ImportTreeImpl newImportDeclaration(AstNode importTokenAstNode, Optional<AstNode> staticTokenAstNode, ExpressionTree qualifiedIdentifier,
+    Optional<Tuple<AstNode, AstNode>> dotStar,
+    AstNode semicolonTokenAstNode) {
+
+    ExpressionTree target = qualifiedIdentifier;
+    if (dotStar.isPresent()) {
+      IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(dotStar.get().second()));
+
+      target = new MemberSelectExpressionTreeImpl(qualifiedIdentifier, identifier,
+        (AstNode) qualifiedIdentifier, dotStar.get().first(), identifier);
+    }
+
+    if (staticTokenAstNode.isPresent()) {
+      return new ImportTreeImpl(true, target,
+        importTokenAstNode, staticTokenAstNode.get(), (AstNode) target, semicolonTokenAstNode);
+    } else {
+      return new ImportTreeImpl(false, target,
+        importTokenAstNode, (AstNode) target, semicolonTokenAstNode);
+    }
+  }
 
   public ClassTreeImpl newTypeDeclaration(ModifiersTreeImpl modifiers, ClassTreeImpl partial) {
     partial.prependChildren(modifiers);
@@ -2207,6 +2229,10 @@ public class TreeFactory {
   }
 
   public <T, U> Tuple<T, U> newTuple16(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple17(T first, U second) {
     return newTuple(first, second);
   }
 

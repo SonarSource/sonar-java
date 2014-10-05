@@ -25,9 +25,9 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.AstNodeReflector;
-import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
+import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -241,15 +241,19 @@ public abstract class JavaTree extends AstNode implements Tree {
     private final boolean isStatic;
     private final Tree qualifiedIdentifier;
 
-    public ImportTreeImpl(AstNode astNode, boolean aStatic, Tree qualifiedIdentifier) {
-      super(astNode);
+    public ImportTreeImpl(boolean aStatic, Tree qualifiedIdentifier, AstNode... children) {
+      super(Kind.IMPORT);
       isStatic = aStatic;
       this.qualifiedIdentifier = qualifiedIdentifier;
+
+      for (AstNode child : children) {
+        addChild(child);
+      }
     }
 
     @Override
     public Kind getKind() {
-      return null;
+      return Kind.IMPORT;
     }
 
     @Override

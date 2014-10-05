@@ -29,9 +29,7 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import java.util.Arrays;
 
 import static org.sonar.java.ast.api.JavaKeyword.ENUM;
-import static org.sonar.java.ast.api.JavaKeyword.IMPORT;
 import static org.sonar.java.ast.api.JavaKeyword.PACKAGE;
-import static org.sonar.java.ast.api.JavaKeyword.STATIC;
 import static org.sonar.java.ast.api.JavaPunctuator.AND;
 import static org.sonar.java.ast.api.JavaPunctuator.ANDAND;
 import static org.sonar.java.ast.api.JavaPunctuator.ANDEQU;
@@ -455,7 +453,6 @@ public enum JavaLexer implements GrammarRuleKey {
     b.rule(COMPILATION_UNIT).is(SPACING, b.optional(PACKAGE_DECLARATION), b.zeroOrMore(IMPORT_DECLARATION), b.zeroOrMore(TYPE_DECLARATION), EOF);
 
     b.rule(PACKAGE_DECLARATION).is(b.zeroOrMore(ANNOTATION), PACKAGE, QUALIFIED_IDENTIFIER, SEMI);
-    b.rule(IMPORT_DECLARATION).is(IMPORT, b.optional(STATIC), QUALIFIED_IDENTIFIER, b.optional(DOT, STAR), SEMI);
   }
 
   private final String internalName;

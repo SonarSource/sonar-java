@@ -599,6 +599,8 @@ public interface Tree {
      */
     TYPE_PARAMETER(TypeParameterTree.class),
 
+    IMPORT(ImportTree.class),
+
     /**
      *An implementation-reserved node.
      *

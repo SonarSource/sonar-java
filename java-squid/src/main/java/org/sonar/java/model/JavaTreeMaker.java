@@ -25,12 +25,11 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.TreeFactory;
+import org.sonar.java.model.JavaTree.ImportTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -124,22 +123,8 @@ public class JavaTreeMaker {
   public CompilationUnitTree compilationUnit(AstNode astNode) {
     checkType(astNode, JavaLexer.COMPILATION_UNIT);
     ImmutableList.Builder<ImportTree> imports = ImmutableList.builder();
-    for (AstNode importNode : astNode.getChildren(JavaLexer.IMPORT_DECLARATION)) {
-      ExpressionTree qualifiedIdentifier = (ExpressionTree) importNode.getFirstChild(QUALIFIED_EXPRESSION_KINDS);
-      AstNode astNodeQualifiedIdentifier = (AstNode) qualifiedIdentifier;
-      // star import : if there is a star then add it as an identifier.
-      AstNode nextNextSibling = astNodeQualifiedIdentifier.getNextSibling().getNextSibling();
-      if (astNodeQualifiedIdentifier.getNextSibling().is(JavaPunctuator.DOT) && nextNextSibling.is(JavaPunctuator.STAR)) {
-        qualifiedIdentifier = new MemberSelectExpressionTreeImpl(
-          astNodeQualifiedIdentifier.getNextSibling().getNextSibling(),
-          qualifiedIdentifier,
-          new IdentifierTreeImpl(InternalSyntaxToken.createLegacy(nextNextSibling), nextNextSibling));
-      }
-
-      imports.add(new JavaTree.ImportTreeImpl(
-        importNode,
-        importNode.hasDirectChildren(JavaKeyword.STATIC),
-        qualifiedIdentifier));
+    for (AstNode importTree : astNode.getChildren(Kind.IMPORT)) {
+      imports.add((ImportTreeImpl) importTree);
     }
     ImmutableList.Builder<Tree> types = ImmutableList.builder();
     for (AstNode typeNode : astNode.getChildren(Kind.CLASS,

@@ -24,6 +24,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.TreeFactory.Tuple;
+import org.sonar.java.model.JavaTree.ImportTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -127,6 +128,15 @@ public class JavaGrammar {
   // End of literals
 
   // Compilation unit
+
+  public ImportTreeImpl IMPORT_DECLARATION() {
+    return b.<ImportTreeImpl>nonterminal(JavaLexer.IMPORT_DECLARATION)
+      .is(
+        f.newImportDeclaration(
+          b.invokeRule(JavaKeyword.IMPORT), b.optional(b.invokeRule(JavaKeyword.STATIC)), QUALIFIED_IDENTIFIER(),
+          b.optional(f.newTuple17(b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaPunctuator.STAR))),
+          b.invokeRule(JavaPunctuator.SEMI)));
+  }
 
   public AstNode TYPE_DECLARATION() {
     return b.<AstNode>nonterminal(JavaLexer.TYPE_DECLARATION)
