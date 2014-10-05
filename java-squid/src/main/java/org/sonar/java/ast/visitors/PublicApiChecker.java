@@ -40,33 +40,54 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.LinkedList;
 
-
 public class PublicApiChecker extends BaseTreeVisitor {
 
-  public static final Tree.Kind[] CLASS_KINDS = {
-      Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE
+  private static final Tree.Kind[] CLASS_KINDS = {
+    Tree.Kind.CLASS,
+    Tree.Kind.INTERFACE,
+    Tree.Kind.ENUM,
+    Tree.Kind.ANNOTATION_TYPE
   };
 
-  public static final Tree.Kind[] METHOD_KINDS = {
-      Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR
+  private static final Tree.Kind[] METHOD_KINDS = {
+    Tree.Kind.METHOD,
+    Tree.Kind.CONSTRUCTOR
   };
 
-  public static final Tree.Kind[] API_KINDS = {
-      Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE,
-      Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR,
-      Tree.Kind.VARIABLE
+  private static final Tree.Kind[] API_KINDS = {
+    Tree.Kind.CLASS,
+    Tree.Kind.INTERFACE,
+    Tree.Kind.ENUM,
+    Tree.Kind.ANNOTATION_TYPE,
+    Tree.Kind.METHOD,
+    Tree.Kind.CONSTRUCTOR,
+    Tree.Kind.VARIABLE
   };
-  private Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
-  private Deque<Tree> currentParents = new LinkedList<Tree>();
+
+  private final Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
+  private final Deque<Tree> currentParents = new LinkedList<Tree>();
   private double publicApi;
   private double documentedPublicApi;
 
+  public static Kind[] classKinds() {
+    return CLASS_KINDS.clone();
+  }
+
+  public static Kind[] methodKinds() {
+    return METHOD_KINDS.clone();
+  }
+
+  public static Kind[] apiKinds() {
+    return API_KINDS.clone();
+  }
 
   public void scan(CompilationUnitTree tree) {
     classTrees.clear();
@@ -78,7 +99,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    //don't visit anonymous classes, nothing in an anonymous class is part of public api.
+    // don't visit anonymous classes, nothing in an anonymous class is part of public api.
   }
 
   @Override
@@ -111,17 +132,16 @@ public class PublicApiChecker extends BaseTreeVisitor {
       currentParents.push(tree);
     }
 
-    if(isPublicApi(currentParent, tree)) {
+    if (isPublicApi(currentParent, tree)) {
       publicApi++;
-      if(getApiJavadoc(tree) != null) {
+      if (getApiJavadoc(tree) != null) {
         documentedPublicApi++;
       }
     }
   }
 
-
   public boolean isPublicApi(ClassTree currentClass, ClassTree classTree) {
-    return (currentClass != null && isPublicInterface(currentClass)) || hasPublic(classTree.modifiers());
+    return currentClass != null && isPublicInterface(currentClass) || hasPublic(classTree.modifiers());
   }
 
   public boolean isPublicApi(ClassTree classTree, MethodTree methodTree) {
@@ -191,7 +211,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
       } else if (tree.is(Tree.Kind.VARIABLE)) {
         modifiersTree = ((VariableTree) tree).modifiers();
       }
-      //FIXME token should be retrieved in a much simpler way.
+      // FIXME token should be retrieved in a much simpler way.
       Tree tokenTree = null;
       if (modifiersTree != null && !(modifiersTree.modifiers().isEmpty() && modifiersTree.annotations().isEmpty())) {
         tokenTree = modifiersTree;
@@ -237,18 +257,18 @@ public class PublicApiChecker extends BaseTreeVisitor {
     return null;
   }
 
-
   public double getPublicApi() {
     return publicApi;
   }
+
   public double getUndocumentedPublicApi() {
     return publicApi - documentedPublicApi;
   }
 
   public double getDocumentedPublicApiDensity() {
-    if(publicApi == 0) {
+    if (publicApi == 0) {
       return 100.0;
     }
-    return ParsingUtils.scaleValue(documentedPublicApi/publicApi*100,2);
+    return ParsingUtils.scaleValue(documentedPublicApi / publicApi * 100, 2);
   }
 }

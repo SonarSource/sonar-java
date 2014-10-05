@@ -73,12 +73,12 @@ public class PublicApiCheckerTest {
             parent = methodTrees.peek();
           }
           assertThat(publicApiChecker.isPublicApi(parent, tree)).as(name).isEqualTo(name.endsWith("Public"));
-        } else if (tree.is(PublicApiChecker.METHOD_KINDS)) {
+        } else if (tree.is(PublicApiChecker.methodKinds())) {
           MethodTree methodTree = (MethodTree) tree;
           methodTrees.push(methodTree);
           String name = methodTree.simpleName().name();
           assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public"));
-        } else if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+        } else if (tree.is(PublicApiChecker.classKinds())) {
           IdentifierTree className = ((ClassTree) tree).simpleName();
           assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(className.name()).isEqualTo(className != null && className.name().endsWith("Public"));
           classTrees.push((ClassTree) tree);
@@ -89,9 +89,9 @@ public class PublicApiCheckerTest {
 
       @Override
       public void leaveNode(Tree tree) {
-        if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+        if (tree.is(PublicApiChecker.classKinds())) {
           classTrees.pop();
-        } else if (tree.is(PublicApiChecker.METHOD_KINDS)) {
+        } else if (tree.is(PublicApiChecker.methodKinds())) {
           methodTrees.pop();
         }
       }
@@ -133,4 +133,5 @@ public class PublicApiCheckerTest {
       assertThat(publicApiChecker.getApiJavadoc(tree)).isNull();
     }
   }
+
 }

@@ -552,7 +552,7 @@ public abstract class JavaTree extends AstNode implements Tree {
       }
     }
 
-    public ArrayTypeTreeImpl(AstNode astNode, Tree type) {
+    public ArrayTypeTreeImpl(@Nullable AstNode astNode, Tree type) {
       super(astNode);
       this.type = Preconditions.checkNotNull(type);
     }

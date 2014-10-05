@@ -1414,19 +1414,14 @@ public class TreeFactory {
       (AstNode) type);
   }
 
-  private static class OperatorAndOperand extends AstNode {
+  private static class OperatorAndOperand {
 
     private final InternalSyntaxToken operator;
     private final ExpressionTree operand;
 
     public OperatorAndOperand(InternalSyntaxToken operator, ExpressionTree operand) {
-      super(null, null, null);
-
       this.operator = operator;
       this.operand = operand;
-
-      addChild(operator);
-      addChild((AstNode) operand);
     }
 
     public InternalSyntaxToken operator() {

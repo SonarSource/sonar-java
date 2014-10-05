@@ -33,12 +33,15 @@ import java.util.List;
 
 public class AbstractDeprecatedChecker extends SubscriptionBaseVisitor {
 
+  private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
+  private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
+  private static final Kind[] API_KINDS = PublicApiChecker.apiKinds();
 
-  private PublicApiChecker publicApiChecker = new PublicApiChecker();
+  private final PublicApiChecker publicApiChecker = new PublicApiChecker();
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Lists.newArrayList(PublicApiChecker.API_KINDS);
+    return Lists.newArrayList(API_KINDS);
   }
 
   public boolean hasJavadocDeprecatedTag(Tree tree) {
@@ -51,9 +54,9 @@ public class AbstractDeprecatedChecker extends SubscriptionBaseVisitor {
   }
 
   public boolean hasDeprecatedAnnotation(Tree tree) {
-    if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+    if (tree.is(CLASS_KINDS)) {
       return hasDeprecatedAnnotation((ClassTree) tree);
-    } else if (tree.is(PublicApiChecker.METHOD_KINDS)) {
+    } else if (tree.is(METHOD_KINDS)) {
       return hasDeprecatedAnnotation((MethodTree) tree);
     } else if (tree.is(Kind.VARIABLE)) {
       return hasDeprecatedAnnotation((VariableTree) tree);
@@ -84,7 +87,7 @@ public class AbstractDeprecatedChecker extends SubscriptionBaseVisitor {
 
   public boolean isDeprecated(AnnotationTree tree) {
     return tree.annotationType().is(Kind.IDENTIFIER) &&
-        "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());
+      "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());
   }
 
 }

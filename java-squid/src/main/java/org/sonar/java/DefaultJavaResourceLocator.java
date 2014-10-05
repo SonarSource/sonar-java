@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
@@ -45,9 +44,9 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   private final JavaClasspath javaClasspath;
   @VisibleForTesting
   Map<String, Resource> resourcesByClass;
-  private Map<String, String> sourceFileByClass;
-  private Map<String, Integer> methodStartLines;
-  private ResourceMapping resourceMapping;
+  private final Map<String, String> sourceFileByClass;
+  private final Map<String, Integer> methodStartLines;
+  private final ResourceMapping resourceMapping;
 
   public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath) {
     this.project = project;
@@ -110,7 +109,9 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     javaFilesCache.scanFile(context);
     org.sonar.api.resources.File currentResource = org.sonar.api.resources.File.fromIOFile(context.getFile(), project);
-    Preconditions.checkNotNull(currentResource, "resource not found : " + context.getFileKey());
+    if (currentResource == null) {
+      throw new NullPointerException("resource not found : " + context.getFileKey());
+    }
     resourceMapping.addResource(currentResource, context.getFileKey());
     for (Map.Entry<String, File> classIOFileEntry : javaFilesCache.getResourcesCache().entrySet()) {
       resourcesByClass.put(classIOFileEntry.getKey(), currentResource);
@@ -121,6 +122,5 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
     context.addNoSonarLines(javaFilesCache.ignoredLines());
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
   }
-
 
 }

@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -49,27 +50,31 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Rule(key = UndocumentedApiCheck.RULE_KEY, priority = Priority.MAJOR,
-    tags = {"convention"})
+  tags = {"convention"})
 public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
+  private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
+  private static final Kind[] API_KINDS = PublicApiChecker.apiKinds();
 
   private static final String DEFAULT_FOR_CLASSES = "**";
   public static final String RULE_KEY = "UndocumentedApi";
 
   @RuleProperty(
-      key = "forClasses",
-      defaultValue = DEFAULT_FOR_CLASSES)
+    key = "forClasses",
+    defaultValue = DEFAULT_FOR_CLASSES)
   public String forClasses = DEFAULT_FOR_CLASSES;
 
   private WildcardPattern[] patterns;
-  private Deque<ClassTree> classTrees = Lists.newLinkedList();
-  private Deque<Tree> currentParents = Lists.newLinkedList();
+  private final Deque<ClassTree> classTrees = Lists.newLinkedList();
+  private final Deque<Tree> currentParents = Lists.newLinkedList();
 
   private PublicApiChecker publicApiChecker;
   private String packageName;
-  private Pattern setterPattern = Pattern.compile("set[A-Z].*");
-  private Pattern getterPattern = Pattern.compile("(get|is)[A-Z].*");
+  private final Pattern setterPattern = Pattern.compile("set[A-Z].*");
+  private final Pattern getterPattern = Pattern.compile("(get|is)[A-Z].*");
   private JavaFileScannerContext context;
-  private RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -92,7 +97,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    //don't visit anonymous classes, nothing in an anonymous class is part of public api.
+    // don't visit anonymous classes, nothing in an anonymous class is part of public api.
   }
 
   @Override
@@ -161,18 +166,18 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     if (!classTrees.isEmpty() && !classTrees.peek().is(Tree.Kind.INTERFACE) && tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       String name = methodTree.simpleName().name();
-      return (setterPattern.matcher(name).matches() && methodTree.parameters().size() == 1) ||
-          (getterPattern.matcher(name).matches() && methodTree.parameters().isEmpty());
+      return setterPattern.matcher(name).matches() && methodTree.parameters().size() == 1 ||
+        getterPattern.matcher(name).matches() && methodTree.parameters().isEmpty();
     }
     return false;
   }
 
   private boolean isPublicApi(Tree tree) {
     Tree currentParent = currentParents.peek();
-    if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+    if (tree.is(CLASS_KINDS)) {
       classTrees.push((ClassTree) tree);
       currentParents.push(tree);
-    } else if (tree.is(PublicApiChecker.METHOD_KINDS)) {
+    } else if (tree.is(METHOD_KINDS)) {
       currentParents.push(tree);
     }
 
@@ -211,13 +216,13 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private List<String> getParameters(Tree tree) {
     ImmutableList.Builder<String> builder = ImmutableList.builder();
-    if (tree.is(PublicApiChecker.METHOD_KINDS)) {
+    if (tree.is(METHOD_KINDS)) {
       MethodTree methodTree = (MethodTree) tree;
       for (VariableTree variableTree : methodTree.parameters()) {
         builder.add(variableTree.simpleName().name());
       }
-      //don't check type paramters documentation for methods
-    } else if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+      // don't check type paramters documentation for methods
+    } else if (tree.is(CLASS_KINDS)) {
       for (TypeParameterTree typeParam : ((ClassTree) tree).typeParameters()) {
         builder.add("<" + typeParam.identifier().name() + ">");
       }
@@ -230,7 +235,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private boolean hasNonVoidReturnType(Tree tree) {
-    //Backward compatibility : ignore methods from annotations.
+    // Backward compatibility : ignore methods from annotations.
     if (tree.is(Tree.Kind.METHOD) && !classTrees.peek().is(Tree.Kind.ANNOTATION_TYPE)) {
       Tree returnType = ((MethodTree) tree).returnType();
       return returnType == null || !(returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text()));
@@ -263,4 +268,5 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     }
     return sb.toString();
   }
+
 }

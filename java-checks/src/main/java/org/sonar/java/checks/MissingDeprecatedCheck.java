@@ -24,24 +24,29 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.Deque;
 import java.util.LinkedList;
 
 @Rule(
-    key = "MissingDeprecatedCheck",
-    priority = Priority.MAJOR)
+  key = "MissingDeprecatedCheck",
+  priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
-  private Deque<Tree> currentParent = new LinkedList<Tree>();
-  private Deque<Boolean> classOrInterfaceIsDeprecated = new LinkedList<Boolean>();
+  private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
+  private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
+  private static final Kind[] API_KINDS = PublicApiChecker.apiKinds();
+
+  private final Deque<Tree> currentParent = new LinkedList<Tree>();
+  private final Deque<Boolean> classOrInterfaceIsDeprecated = new LinkedList<Boolean>();
 
   @Override
   public void visitNode(Tree tree) {
     boolean isLocalVar = false;
-    if(tree.is(Tree.Kind.VARIABLE)) {
-      isLocalVar = currentParent.peek().is(PublicApiChecker.METHOD_KINDS);
+    if (tree.is(Tree.Kind.VARIABLE)) {
+      isLocalVar = currentParent.peek().is(METHOD_KINDS);
     } else {
       currentParent.push(tree);
     }
@@ -55,7 +60,7 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
         addIssue(tree, "Add the missing @Deprecated annotation.");
       }
     }
-    if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+    if (tree.is(CLASS_KINDS)) {
       classOrInterfaceIsDeprecated.push(hasDeprecatedAnnotation || hasJavadocDeprecatedTag);
     }
   }
@@ -64,14 +69,14 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
     return classOrInterfaceIsDeprecated.isEmpty() || !classOrInterfaceIsDeprecated.peek();
   }
 
-
   @Override
   public void leaveNode(Tree tree) {
     if (!tree.is(Tree.Kind.VARIABLE)) {
       currentParent.pop();
     }
-    if (tree.is(PublicApiChecker.CLASS_KINDS)) {
+    if (tree.is(CLASS_KINDS)) {
       classOrInterfaceIsDeprecated.pop();
     }
   }
+
 }
