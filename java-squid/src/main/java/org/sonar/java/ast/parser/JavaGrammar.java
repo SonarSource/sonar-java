@@ -346,20 +346,13 @@ public class JavaGrammar {
     return b.<AstNode>nonterminal(JavaLexer.ANNOTATION_TYPE_ELEMENT_REST)
       .is(
         b.firstOf(
-          f.newAnnotationTypeMember(
-            TYPE(), b.invokeRule(JavaTokenType.IDENTIFIER), ANNOTATION_METHOD_OR_CONSTANT_REST(), b.invokeRule(JavaPunctuator.SEMI)),
+          f.completeAnnotationMethod(
+            TYPE(), b.invokeRule(JavaTokenType.IDENTIFIER), ANNOTATION_METHOD_REST(), b.invokeRule(JavaPunctuator.SEMI)),
+          FIELD_DECLARATION(),
           CLASS_DECLARATION(),
           ENUM_DECLARATION(),
           INTERFACE_DECLARATION(),
           ANNOTATION_TYPE_DECLARATION()));
-  }
-
-  public AstNode ANNOTATION_METHOD_OR_CONSTANT_REST() {
-    return b.<AstNode>nonterminal(JavaLexer.ANNOTATION_METHOD_OR_CONSTANT_REST)
-      .is(
-        b.firstOf(
-          ANNOTATION_METHOD_REST(),
-          b.invokeRule(JavaLexer.CONSTANT_DECLARATORS_REST)));
   }
 
   public MethodTreeImpl ANNOTATION_METHOD_REST() {

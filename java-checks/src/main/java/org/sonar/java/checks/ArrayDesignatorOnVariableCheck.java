@@ -39,7 +39,6 @@ public class ArrayDesignatorOnVariableCheck extends SquidCheck<LexerlessGrammar>
 
   @Override
   public void init() {
-    subscribeTo(JavaLexer.CONSTANT_DECLARATOR_REST);
     subscribeTo(Kind.VARIABLE);
     subscribeTo(JavaLexer.VARIABLE_DECLARATOR);
   }

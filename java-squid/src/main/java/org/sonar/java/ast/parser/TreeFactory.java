@@ -85,7 +85,6 @@ import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.java.parser.sslr.Optional;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -589,33 +588,13 @@ public class TreeFactory {
 
     if (annotationTypeElementDeclarations.isPresent()) {
       for (AstNode annotationTypeElementDeclaration : annotationTypeElementDeclarations.get()) {
-        // FIXME
-        if (annotationTypeElementDeclaration.is(JavaLexer.ANNOTATION_TYPE_ELEMENT_DECLARATION)) {
-          Preconditions.checkArgument(annotationTypeElementDeclaration.getNumberOfChildren() == 2);
-
-          ModifiersTreeImpl modifiers = (ModifiersTreeImpl) annotationTypeElementDeclaration.getFirstChild(JavaLexer.MODIFIERS);
-          AstNode declaration = annotationTypeElementDeclaration.getLastChild();
-
-          if (declaration.is(Kind.METHOD)) {
-            // method
-            members.add(((MethodTreeImpl) declaration).completeWithModifiers(modifiers));
-            children.add(declaration);
-          } else if (declaration.is(JavaLexer.ANNOTATION_TYPE_ELEMENT_REST)) {
-            // constant
-            appendConstantDeclarations(ModifiersTreeImpl.EMPTY, members, declaration);
-            children.add(annotationTypeElementDeclaration);
-          } else if (declaration.is(Kind.ANNOTATION_TYPE)) {
-            // TODO Complete with modifiers
-            members.add((Tree) declaration);
-            children.add(annotationTypeElementDeclaration);
-          } else if (declaration.is(Kind.CLASS, Kind.INTERFACE, Kind.ENUM)) {
-            // interface, class, enum
-            members.add(treeMaker.typeDeclaration(modifiers, (ClassTreeImpl) declaration));
-            children.add(annotationTypeElementDeclaration);
+        children.add(annotationTypeElementDeclaration);
+        if (annotationTypeElementDeclaration.is(JavaLexer.VARIABLE_DECLARATORS)) {
+          for (VariableTreeImpl variable : (VariableDeclaratorListTreeImpl) annotationTypeElementDeclaration) {
+            members.add(variable);
           }
-        } else {
-          // semi
-          children.add(annotationTypeElementDeclaration);
+        } else if (!annotationTypeElementDeclaration.is(JavaPunctuator.SEMI)) {
+          members.add((Tree) annotationTypeElementDeclaration);
         }
       }
     }
@@ -625,51 +604,30 @@ public class TreeFactory {
     return new ClassTreeImpl(emptyModifiers, members.build(), children);
   }
 
-  // TODO Must be deleted
-  private void appendConstantDeclarations(ModifiersTree modifiers, ImmutableList.Builder<Tree> members, AstNode astNode) {
-    AstNode typeAstNode = astNode.getFirstChild(JavaTreeMaker.TYPE_KINDS);
-    if (typeAstNode == null) {
-      typeAstNode = astNode.getFirstChild(JavaKeyword.VOID);
+  public AstNode completeAnnotationTypeMember(ModifiersTreeImpl modifiers, AstNode partialAstNode) {
+    JavaTree partial = (JavaTree) partialAstNode;
+    partial.prependChildren(modifiers);
+
+    if (partial.is(JavaLexer.VARIABLE_DECLARATORS)) {
+      for (VariableTreeImpl variable : (VariableDeclaratorListTreeImpl) partial) {
+        variable.completeModifiers(modifiers);
+      }
+    } else if (partial.is(Kind.CLASS) || partial.is(Kind.INTERFACE) || partial.is(Kind.ENUM) || partial.is(Kind.ANNOTATION_TYPE)) {
+      ((ClassTreeImpl) partial).completeModifiers(modifiers);
+    } else if (partial.is(Kind.METHOD)) {
+      ((MethodTreeImpl) partial).completeWithModifiers(modifiers);
+    } else {
+      throw new IllegalArgumentException("Unsupported type: " + partial);
     }
-    ExpressionTree type = typeAstNode instanceof Tree ? (ExpressionTree) typeAstNode : treeMaker.referenceType(typeAstNode);
-    for (AstNode constantDeclaratorRestNode : astNode.getDescendants(JavaLexer.CONSTANT_DECLARATOR_REST)) {
-      AstNode identifierNode = constantDeclaratorRestNode.getPreviousAstNode();
-      Preconditions.checkState(identifierNode.is(JavaTokenType.IDENTIFIER));
-      members.add(new VariableTreeImpl(
-        constantDeclaratorRestNode,
-        modifiers,
-        treeMaker.applyDim(type, constantDeclaratorRestNode.getChildren(TreeFactory.WRAPPER_AST_NODE).size()),
-        treeMaker.identifier(identifierNode),
-        (ExpressionTree) constantDeclaratorRestNode.getLastChild()));
-    }
+
+    return partial;
   }
 
-  public AstNode completeAnnotationTypeMember(ModifiersTreeImpl modifiers, AstNode annotationTypeElementRest) {
-    AstNodeType type = JavaLexer.ANNOTATION_TYPE_ELEMENT_DECLARATION;
-    AstNode result = new AstNode(type, type.toString(), null);
-    result.addChild(modifiers);
-    result.addChild(annotationTypeElementRest);
-    return result;
-  }
+  public AstNode completeAnnotationMethod(ExpressionTree type, AstNode identifierAstNode, MethodTreeImpl partial, AstNode semiTokenAstNode) {
+    partial.complete(type, new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode)));
+    partial.addChild(semiTokenAstNode);
 
-  public AstNode newAnnotationTypeMember(ExpressionTree type, AstNode identifierAstNode, AstNode annotationMethodOrConstantRest, AstNode semiTokenAstNode) {
-    if (annotationMethodOrConstantRest.is(Kind.METHOD)) {
-      MethodTreeImpl partial = (MethodTreeImpl) annotationMethodOrConstantRest;
-      partial.complete(type, new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode)));
-      partial.addChild(semiTokenAstNode);
-
-      return partial;
-    }
-
-    AstNodeType type2 = JavaLexer.ANNOTATION_TYPE_ELEMENT_REST;
-    AstNode result = new AstNode(type2, type2.toString(), null);
-
-    result.addChild((AstNode) type);
-    result.addChild(identifierAstNode);
-    result.addChild(annotationMethodOrConstantRest);
-    result.addChild(semiTokenAstNode);
-
-    return result;
+    return partial;
   }
 
   public MethodTreeImpl newAnnotationTypeMethod(AstNode openParenTokenAstNode, AstNode closeParenTokenAstNode, Optional<ExpressionTree> defaultValue) {
