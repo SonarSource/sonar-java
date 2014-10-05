@@ -120,6 +120,15 @@ public class TreeFactory {
 
   // End of literals
 
+  // Compilation unit
+
+  public ClassTreeImpl newTypeDeclaration(ModifiersTreeImpl modifiers, ClassTreeImpl partial) {
+    partial.prependChildren(modifiers);
+    return partial.completeModifiers(modifiers);
+  }
+
+  // End of compilation unit
+
   // Types
 
   public ExpressionTree newType(ExpressionTree basicOrClassType, Optional<List<AstNode>> dims) {

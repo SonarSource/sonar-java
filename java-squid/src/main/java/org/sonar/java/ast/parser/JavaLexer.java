@@ -456,10 +456,6 @@ public enum JavaLexer implements GrammarRuleKey {
 
     b.rule(PACKAGE_DECLARATION).is(b.zeroOrMore(ANNOTATION), PACKAGE, QUALIFIED_IDENTIFIER, SEMI);
     b.rule(IMPORT_DECLARATION).is(IMPORT, b.optional(STATIC), QUALIFIED_IDENTIFIER, b.optional(DOT, STAR), SEMI);
-    b.rule(TYPE_DECLARATION).is(
-      b.firstOf(
-        b.sequence(MODIFIERS, b.firstOf(CLASS_DECLARATION, ENUM_DECLARATION, INTERFACE_DECLARATION, ANNOTATION_TYPE_DECLARATION)),
-        SEMI));
   }
 
   private final String internalName;

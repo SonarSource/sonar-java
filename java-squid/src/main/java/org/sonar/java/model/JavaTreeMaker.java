@@ -29,17 +29,13 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.TreeFactory;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -146,15 +142,11 @@ public class JavaTreeMaker {
         qualifiedIdentifier));
     }
     ImmutableList.Builder<Tree> types = ImmutableList.builder();
-    for (AstNode typeNode : astNode.getChildren(JavaLexer.TYPE_DECLARATION)) {
-      ClassTreeImpl declarationNode = (ClassTreeImpl) typeNode.getFirstChild(
-        Kind.CLASS,
-        Kind.ENUM,
-        Kind.INTERFACE,
-        Kind.ANNOTATION_TYPE);
-      if (declarationNode != null) {
-        types.add(typeDeclaration((ModifiersTree) typeNode.getFirstChild(JavaLexer.MODIFIERS), declarationNode));
-      }
+    for (AstNode typeNode : astNode.getChildren(Kind.CLASS,
+      Kind.ENUM,
+      Kind.INTERFACE,
+      Kind.ANNOTATION_TYPE)) {
+      types.add((Tree) typeNode);
     }
 
     ExpressionTree packageDeclaration = null;
@@ -172,11 +164,6 @@ public class JavaTreeMaker {
       imports.build(),
       types.build(),
       packageAnnotations.build());
-  }
-
-  public ClassTree typeDeclaration(ModifiersTree modifiers, ClassTreeImpl tree) {
-    tree.completeModifiers((ModifiersTreeImpl) modifiers);
-    return tree;
   }
 
   public ExpressionTree applyDim(ExpressionTree expression, int count) {

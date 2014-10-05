@@ -126,6 +126,25 @@ public class JavaGrammar {
 
   // End of literals
 
+  // Compilation unit
+
+  public AstNode TYPE_DECLARATION() {
+    return b.<AstNode>nonterminal(JavaLexer.TYPE_DECLARATION)
+      .is(
+        b.firstOf(
+          // TODO Unfactor MODIFIERS? It always seems to precede CLASS_DECLARATION()
+          f.newTypeDeclaration(
+            MODIFIERS(),
+            b.firstOf(
+              CLASS_DECLARATION(),
+              ENUM_DECLARATION(),
+              INTERFACE_DECLARATION(),
+              ANNOTATION_TYPE_DECLARATION())),
+          b.invokeRule(JavaPunctuator.SEMI)));
+  }
+
+  // End of compilation unit
+
   // Types
 
   public ExpressionTree TYPE() {
