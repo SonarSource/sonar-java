@@ -19,13 +19,16 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.CharsetAwareVisitor;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
@@ -34,21 +37,23 @@ import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Rule(
-  key = "S00103",
-  priority = Priority.MINOR,
-  tags={"convention"})
+    key = "S00103",
+    priority = Priority.MINOR,
+    tags = {"convention"})
 public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
   private static final int DEFAULT_MAXIMUM_LINE_LENHGTH = 80;
 
   @RuleProperty(
-    key = "maximumLineLength",
-    defaultValue = "" + DEFAULT_MAXIMUM_LINE_LENHGTH)
+      key = "maximumLineLength",
+      defaultValue = "" + DEFAULT_MAXIMUM_LINE_LENHGTH)
   public int maximumLineLength = DEFAULT_MAXIMUM_LINE_LENHGTH;
 
   private Charset charset;
+  private Set<Integer> ignoredLines = Sets.newHashSet();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -63,10 +68,23 @@ public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements
   @Override
   public void scanFile(JavaFileScannerContext context) {
     super.context = context;
+    ignoredLines.clear();
+    ignoreLines(context.getTree());
+    super.scanFile(context);
     visitFile(context.getFile());
   }
 
-  public void visitFile(File file) {
+  public void ignoreLines(CompilationUnitTree tree) {
+    if (!tree.imports().isEmpty()) {
+      int start = ((InternalSyntaxToken) tree.imports().get(0).importKeyword()).getLine();
+      int end = ((InternalSyntaxToken) tree.imports().get(tree.imports().size() - 1).semicolonToken()).getLine();
+      for (int i = start; i <= end; i++) {
+        ignoredLines.add(i);
+      }
+    }
+  }
+
+  private void visitFile(File file) {
     List<String> lines;
     try {
       lines = Files.readLines(file, charset);
@@ -74,13 +92,14 @@ public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements
       throw new SonarException(e);
     }
     for (int i = 0; i < lines.size(); i++) {
-      String line = lines.get(i);
-      if (line.length() > maximumLineLength) {
-        addIssue(i+1, MessageFormat.format("Split this {0} characters long line (which is greater than {1} authorized).", line.length(), maximumLineLength));
+      if (!ignoredLines.contains(i + 1)) {
+        String line = lines.get(i);
+        if (line.length() > maximumLineLength) {
+          addIssue(i + 1, MessageFormat.format("Split this {0} characters long line (which is greater than {1} authorized).", line.length(), maximumLineLength));
+        }
       }
     }
   }
-
 
 
 }

@@ -36,8 +36,8 @@ public class TooLongLine_S00103_CheckTest {
     check.maximumLineLength = 20;
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/LineLength.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Split this 28 characters long line (which is greater than 20 authorized).")
-        .next().atLine(4)
+        .next().atLine(6).withMessage("Split this 28 characters long line (which is greater than 20 authorized).")
+        .next().atLine(7)
         .noMore();
   }
 
