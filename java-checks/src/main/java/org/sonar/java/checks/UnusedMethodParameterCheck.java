@@ -83,15 +83,15 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
   }
 
   private boolean isExcluded(MethodTree tree) {
-    return isMainMethod(tree) ||isOverriding(tree) || isSerializableMethod(tree);
+    return isMainMethod(tree) || isOverriding(tree) || isSerializableMethod(tree);
   }
 
   private boolean isSerializableMethod(MethodTree methodTree) {
     boolean result = false;
     //FIXME detect methods based on type of arg and throws, not arity.
     if (methodTree.modifiers().modifiers().contains(Modifier.PRIVATE) && methodTree.parameters().size() == 1) {
-      result |= "writeObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size()==1;
-      result |= "readObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size()==2;
+      result |= "writeObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 1;
+      result |= "readObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 2;
     }
     return result;
   }
@@ -108,7 +108,7 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
   private boolean isParameterStringArray(MethodTree tree) {
     VariableTree variableTree = tree.parameters().get(0);
     boolean result = false;
-    if(variableTree.type().is(Tree.Kind.ARRAY_TYPE)) {
+    if (variableTree.type().is(Tree.Kind.ARRAY_TYPE)) {
       ArrayTypeTree arrayTypeTree = (ArrayTypeTree) variableTree.type();
       Type arrayType = ((AbstractTypedTree) arrayTypeTree.type()).getSymbolType();
       result = arrayType.isTagged(Type.CLASS) && "String".equals(((Type.ClassType) arrayType).getSymbol().getName());
