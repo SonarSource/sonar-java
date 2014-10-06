@@ -38,5 +38,8 @@ class A {
     if(a > c || c > a) {} //Non-Compliant
     if(c > a || a > c) {} //Non-Compliant
 
+    if(c < a || a > c) {} //Compliant
+    if(c > a || a < c) {} //Compliant
+
   }
 }
