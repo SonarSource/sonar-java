@@ -13,3 +13,9 @@ class C {
     return 1;
   }
 }
+
+abstract class D {
+  protected void method() {
+
+  }
+}

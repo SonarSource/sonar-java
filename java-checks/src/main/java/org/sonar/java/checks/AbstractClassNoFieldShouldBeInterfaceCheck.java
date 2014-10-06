@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -48,10 +49,19 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends BaseTreeVisitor 
 
   @Override
   public void visitClass(ClassTree tree) {
-    if(classIsAbstract(tree) && classHasNoField(tree)) {
+    if(classIsAbstract(tree) && classHasNoField(tree) && !classHasProtectedMethod(tree)) {
       context.addIssue(tree, RULE, "Convert the abstract class \""+tree.simpleName().name()+"\" into an interface");
     }
     super.visitClass(tree);
+  }
+
+  private boolean classHasProtectedMethod(ClassTree tree) {
+    for(Tree member : tree.members()) {
+      if(member.is(Tree.Kind.METHOD) && ((MethodTree) member).modifiers().modifiers().contains(Modifier.PROTECTED)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private boolean classIsAbstract(ClassTree tree) {
