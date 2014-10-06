@@ -21,6 +21,8 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
+
 /**
  * Import declaration.
  *
@@ -28,7 +30,7 @@ import com.google.common.annotations.Beta;
  *
  * <pre>
  *   import {@link #qualifiedIdentifier()} ;
- *   static import {@link #qualifiedIdentifier()} ;
+ *   import static {@link #qualifiedIdentifier()} ;
  * </pre>
  *
  * @since Java 1.3
@@ -41,6 +43,12 @@ public interface ImportTree extends Tree {
    */
   boolean isStatic();
 
+  SyntaxToken importKeyword();
+
+  @Nullable
+  SyntaxToken staticKeyword();
+
   Tree qualifiedIdentifier();
 
+  SyntaxToken semicolonToken();
 }

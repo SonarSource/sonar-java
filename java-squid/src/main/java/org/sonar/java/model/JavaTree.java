@@ -242,15 +242,25 @@ public abstract class JavaTree extends AstNode implements Tree {
   public static class ImportTreeImpl extends JavaTree implements ImportTree {
     private final boolean isStatic;
     private final Tree qualifiedIdentifier;
+    private final SyntaxToken semiColonToken;
+    private final SyntaxToken importToken;
+    private final SyntaxToken staticToken;
 
-    public ImportTreeImpl(boolean aStatic, Tree qualifiedIdentifier, AstNode... children) {
+    public ImportTreeImpl(InternalSyntaxToken importToken, InternalSyntaxToken staticToken,
+                          Tree qualifiedIdentifier, InternalSyntaxToken semiColonToken) {
       super(Kind.IMPORT);
-      isStatic = aStatic;
+      this.importToken = importToken;
+      this.staticToken = staticToken;
       this.qualifiedIdentifier = qualifiedIdentifier;
-
-      for (AstNode child : children) {
-        addChild(child);
+      this.semiColonToken = semiColonToken;
+      isStatic = staticToken != null;
+      addChild(importToken);
+      if(isStatic) {
+        addChild(staticToken);
       }
+      addChild((AstNode) qualifiedIdentifier);
+      addChild(semiColonToken);
+
     }
 
     @Override
@@ -264,8 +274,24 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
 
     @Override
+    public SyntaxToken importKeyword() {
+      return importToken;
+    }
+
+    @Nullable
+    @Override
+    public SyntaxToken staticKeyword() {
+      return staticToken;
+    }
+
+    @Override
     public Tree qualifiedIdentifier() {
       return qualifiedIdentifier;
+    }
+
+    @Override
+    public SyntaxToken semicolonToken() {
+      return semiColonToken;
     }
 
     @Override

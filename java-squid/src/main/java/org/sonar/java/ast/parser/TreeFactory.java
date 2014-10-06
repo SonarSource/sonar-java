@@ -88,6 +88,7 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -195,13 +196,13 @@ public class TreeFactory {
         (AstNode) qualifiedIdentifier, dotStar.get().first(), identifier);
     }
 
+    InternalSyntaxToken importToken = InternalSyntaxToken.create(importTokenAstNode);
+    InternalSyntaxToken staticToken = null;
     if (staticTokenAstNode.isPresent()) {
-      return new ImportTreeImpl(true, target,
-        importTokenAstNode, staticTokenAstNode.get(), (AstNode) target, semicolonTokenAstNode);
-    } else {
-      return new ImportTreeImpl(false, target,
-        importTokenAstNode, (AstNode) target, semicolonTokenAstNode);
+      staticToken = InternalSyntaxToken.create(staticTokenAstNode.get());
     }
+    InternalSyntaxToken semiColonToken = InternalSyntaxToken.create(semicolonTokenAstNode);
+    return new ImportTreeImpl(importToken, staticToken, target, semiColonToken);
   }
 
   public ClassTreeImpl newTypeDeclaration(ModifiersTreeImpl modifiers, ClassTreeImpl partial) {
