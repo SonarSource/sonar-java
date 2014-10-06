@@ -55,7 +55,6 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
   private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
-  private static final Kind[] API_KINDS = PublicApiChecker.apiKinds();
 
   private static final String DEFAULT_FOR_CLASSES = "**";
   public static final String RULE_KEY = "UndocumentedApi";

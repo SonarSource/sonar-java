@@ -81,17 +81,17 @@ public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean hasParentExpression(Tree tree) {
-    Tree parent = this.parent.peek();
+    Tree parentTree = this.parent.peek();
     //Exclude condition of conditional expression
-    if(parent.is(Kind.CONDITIONAL_EXPRESSION)) {
-      ConditionalExpressionTree conditionalExpressionTree = (ConditionalExpressionTree) parent;
+    if(parentTree.is(Kind.CONDITIONAL_EXPRESSION)) {
+      ConditionalExpressionTree conditionalExpressionTree = (ConditionalExpressionTree) parentTree;
       return !(tree.equals(conditionalExpressionTree.condition()) || tree.equals(conditionalExpressionTree.falseExpression()));
     }
     //Exclude expression of array access expression
-    if(parent.is(Kind.ARRAY_ACCESS_EXPRESSION) && tree.equals(((ArrayAccessExpressionTree) parent).expression()) ) {
+    if(parentTree.is(Kind.ARRAY_ACCESS_EXPRESSION) && tree.equals(((ArrayAccessExpressionTree) parentTree).expression()) ) {
       return false;
     }
-    return parent.is(PARENT_EXPRESSION);
+    return parentTree.is(PARENT_EXPRESSION);
   }
 
   @Override

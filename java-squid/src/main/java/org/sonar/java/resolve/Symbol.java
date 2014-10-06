@@ -246,8 +246,8 @@ public class Symbol {
         //FIXME : SONARJAVA-645 : exclude methods within anonymous classes
         return null;
       }
-      for (Type.ClassType type : superTypes(enclosingClass)) {
-        Boolean overrideFromType = overridesFromSymbol(type);
+      for (Type.ClassType superType : superTypes(enclosingClass)) {
+        Boolean overrideFromType = overridesFromSymbol(superType);
         if (overrideFromType == null) {
           result = null;
         } else if (BooleanUtils.isTrue(overrideFromType)) {
@@ -272,8 +272,8 @@ public class Symbol {
 
     private Set<Type.ClassType> interfacesOfType(Symbol.TypeSymbol typeSymbol) {
       ImmutableSet.Builder<Type.ClassType> builder = ImmutableSet.builder();
-      for (Type type : typeSymbol.getInterfaces()) {
-        Type.ClassType classType = (Type.ClassType) type;
+      for (Type interfaceType : typeSymbol.getInterfaces()) {
+        Type.ClassType classType = (Type.ClassType) interfaceType;
         builder.add(classType);
         builder.addAll(interfacesOfType(classType.getSymbol()));
       }

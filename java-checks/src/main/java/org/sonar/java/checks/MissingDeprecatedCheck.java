@@ -37,7 +37,6 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
   private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
-  private static final Kind[] API_KINDS = PublicApiChecker.apiKinds();
 
   private final Deque<Tree> currentParent = new LinkedList<Tree>();
   private final Deque<Boolean> classOrInterfaceIsDeprecated = new LinkedList<Boolean>();

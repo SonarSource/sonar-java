@@ -89,8 +89,8 @@ public class TrailingCommentCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean containsExcludedPattern(String comment) {
-    for (String pattern : EXCLUDED_PATTERNS) {
-      if (StringUtils.containsIgnoreCase(comment, pattern)) {
+    for (String excludePattern : EXCLUDED_PATTERNS) {
+      if (StringUtils.containsIgnoreCase(comment, excludePattern)) {
         return true;
       }
     }

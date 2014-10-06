@@ -127,7 +127,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.ANNOTATION_TYPE)) {
+    if (isClassTree(tree)) {
       classes++;
       classTrees.push((ClassTree) tree);
     }
@@ -153,16 +153,18 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.ANNOTATION_TYPE)) {
+    if (isClassTree(tree)) {
       classTrees.pop();
     }
   }
 
-  private void saveMetricOnFile(Metric metric, double value) {
-    sensorContext.saveMeasure(sonarFile, new Measure(metric, value));
-
+  private boolean isClassTree(Tree tree) {
+    return tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.ANNOTATION_TYPE);
   }
 
+  private void saveMetricOnFile(Metric metric, double value) {
+    sensorContext.saveMeasure(sonarFile, new Measure(metric, value));
+  }
 
   @Override
   public void setCharset(Charset charset) {

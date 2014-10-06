@@ -20,8 +20,6 @@
 package org.sonar.plugins.java.bridges;
 
 import com.google.common.collect.Sets;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.issue.Issuable;
@@ -41,8 +39,6 @@ import java.io.File;
 import java.util.Set;
 
 public class ChecksBridge {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ChecksBridge.class);
 
   private final CheckFactory checkFactory;
   private final ResourcePerspectives resourcePerspectives;
