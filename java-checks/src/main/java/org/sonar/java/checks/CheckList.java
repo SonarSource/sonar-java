@@ -201,7 +201,8 @@ public final class CheckList {
       IdenticalCasesInSwitchCheck.class,
       IdenticalOperandOnBinaryExpressionCheck.class,
       FloatEqualityCheck.class,
-      SQLInjectionCheck.class
+      SQLInjectionCheck.class,
+      TernaryOperatorCheck.class
     );
   }
 
