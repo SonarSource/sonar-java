@@ -58,6 +58,7 @@ class A {
       new A().prepareStatement(query);
       A a = new A();
       a.prepareStatement(query);
+      ps.executeQuery();
     } catch (Exception e) {
     }
   }

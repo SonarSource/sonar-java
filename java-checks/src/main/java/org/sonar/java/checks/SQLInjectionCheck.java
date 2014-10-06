@@ -112,9 +112,9 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
   private boolean isExecuteQueryOrPrepareStatement(MethodInvocationTree methodTree) {
     if (methodTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodTree.methodSelect();
-      return isMethodCall("java.sql.Statement", "executeQuery", memberSelectExpressionTree)
+      return !methodTree.arguments().isEmpty() && (isMethodCall("java.sql.Statement", "executeQuery", memberSelectExpressionTree)
           || isMethodCall("java.sql.Connection", "prepareStatement", memberSelectExpressionTree)
-          || isMethodCall("java.sql.Connection", "prepareCall", memberSelectExpressionTree);
+          || isMethodCall("java.sql.Connection", "prepareCall", memberSelectExpressionTree));
     }
     return false;
   }
