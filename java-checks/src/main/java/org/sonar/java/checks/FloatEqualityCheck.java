@@ -41,22 +41,54 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO);
+    return ImmutableList.of(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO, Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR);
   }
 
   @Override
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
-    if((hasFloatingType(binaryExpressionTree.leftOperand()) || hasFloatingType(binaryExpressionTree.rightOperand())) && !isNanTest(binaryExpressionTree)) {
+    if (binaryExpressionTree.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR) && isIndirectEquality(binaryExpressionTree)) {
+      binaryExpressionTree = (BinaryExpressionTree) binaryExpressionTree.leftOperand();
+    }
+    if ((hasFloatingType(binaryExpressionTree.leftOperand()) || hasFloatingType(binaryExpressionTree.rightOperand())) && !isNanTest(binaryExpressionTree)) {
       addIssue(binaryExpressionTree, "Equality tests should not be made with floating point values.");
     }
   }
+
+  private boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree) {
+    return isIndirectEquality(binaryExpressionTree, Tree.Kind.CONDITIONAL_AND, Tree.Kind.GREATER_THAN_OR_EQUAL_TO, Tree.Kind.LESS_THAN_OR_EQUAL_TO)
+        || isIndirectEquality(binaryExpressionTree, Tree.Kind.CONDITIONAL_OR, Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN);
+  }
+
+  private boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree, Tree.Kind indirectOperator, Tree.Kind comparator1, Tree.Kind comparator2) {
+    if (binaryExpressionTree.is(indirectOperator) && binaryExpressionTree.leftOperand().is(comparator1, comparator2)) {
+      BinaryExpressionTree leftOp = (BinaryExpressionTree) binaryExpressionTree.leftOperand();
+      if (binaryExpressionTree.rightOperand().is(comparator1, comparator2)) {
+        BinaryExpressionTree rightOp = (BinaryExpressionTree) binaryExpressionTree.rightOperand();
+        if (leftOp.is(comparator1)) {
+          if (rightOp.is(comparator1)) {
+            return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.rightOperand()) && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.leftOperand());
+          } else {
+            return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.leftOperand()) && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.rightOperand());
+          }
+        } else {
+          if (rightOp.is(comparator1)) {
+            return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.leftOperand()) && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.rightOperand());
+          } else {
+            return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.rightOperand()) && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.leftOperand());
+          }
+        }
+      }
+    }
+    return false;
+  }
+
 
   private boolean isNanTest(BinaryExpressionTree binaryExpressionTree) {
     return SyntacticEquivalence.areEquivalent(binaryExpressionTree.leftOperand(), binaryExpressionTree.rightOperand());
   }
 
-  private boolean hasFloatingType(ExpressionTree expressionTree){
+  private boolean hasFloatingType(ExpressionTree expressionTree) {
     Type symbolType = ((AbstractTypedTree) expressionTree).getSymbolType();
     return symbolType.isTagged(Type.FLOAT) || symbolType.isTagged(Type.DOUBLE);
   }

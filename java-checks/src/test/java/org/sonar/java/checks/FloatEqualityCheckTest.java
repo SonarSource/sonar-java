@@ -43,6 +43,22 @@ public class FloatEqualityCheckTest {
         .next().atLine(17)
         .next().atLine(18)
         .next().atLine(19)
+        .next().atLine(22)
+        .next().atLine(23)
+        .next().atLine(24)
+        .next().atLine(25)
+        .next().atLine(26)
+        .next().atLine(27)
+        .next().atLine(28)
+        .next().atLine(29)
+        .next().atLine(32)
+        .next().atLine(33)
+        .next().atLine(34)
+        .next().atLine(35)
+        .next().atLine(36)
+        .next().atLine(37)
+        .next().atLine(38)
+        .next().atLine(39)
         .noMore();
   }
 }

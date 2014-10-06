@@ -11,12 +11,32 @@ class A {
 
 
 
-    double d1 = 0.1d;
-    double d2 = 0.1d;
-    if(d1 == d2) {} //Non-Compliant
-    if( d1 != d2 ){}//Non-Compliant
-    if( d1 == i ){}//Non-Compliant
-    if( i == d1 ){}//Non-Compliant
-    if(d1 != d1){} //compliant NaN test
+    double a = 0.1d;
+    double c = 0.1d;
+    if( a == c ) {} //Non-Compliant
+    if( a != c ){}//Non-Compliant
+    if( a == i ){}//Non-Compliant
+    if( i == a ){}//Non-Compliant
+    if( a != a ){} //compliant NaN test
+
+    if(c <= a && a <= c) {} //Non-Compliant
+    if(a <= c && c <= a) {} //Non-Compliant
+    if(c <= a && c >= a) {} //Non-Compliant
+    if(c >= a && c <= a) {} //Non-Compliant
+    if(a >= c && a <= c) {} //Non-Compliant
+    if(a <= c && a >= c) {} //Non-Compliant
+    if(a >= c && c >= a) {} //Non-Compliant
+    if(c >= a && a >= c) {} //Non-Compliant
+
+
+    if(c < a || a < c) {} //Non-Compliant
+    if(a < c || c < a) {} //Non-Compliant
+    if(c < a || c > a) {} //Non-Compliant
+    if(c > a || c < a) {} //Non-Compliant
+    if(a > c || a < c) {} //Non-Compliant
+    if(a < c || a > c) {} //Non-Compliant
+    if(a > c || c > a) {} //Non-Compliant
+    if(c > a || a > c) {} //Non-Compliant
+
   }
 }
