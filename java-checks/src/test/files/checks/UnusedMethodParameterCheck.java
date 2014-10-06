@@ -34,7 +34,7 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int b, int a) { //false negative
+  void foo(int b, int a) {
   }
 }
 
@@ -57,4 +57,19 @@ class F {
   public static Object main(String[] args) { }
   public static void main(String args) { }
   public static void main(Double[] args) { }
+}
+
+class G implements inter {
+  void foo(int a) {
+    System.out.println("plop");
+  }
+  private void writeObject(ObjectOutputStream out)
+      throws IOException {
+    throw new NotSerializableException(getClass().getName());
+  }
+
+  private void readObject(ObjectInputStream in)
+      throws IOException, ClassNotFoundException {
+    throw new NotSerializableException(getClass().getName());
+  }
 }

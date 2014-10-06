@@ -38,6 +38,7 @@ public class UnusedMethodParameterCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UnusedMethodParameterCheck.java"), new VisitorsBridge(new UnusedMethodParameterCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(2).withMessage("Remove the unused method parameter(s) \"b\".")
+      .next().atLine(37).withMessage("Remove the unused method parameter(s) \"b,a\".")
       .next().atLine(42).withMessage("Remove the unused method parameter(s) \"a\".")
       .next().atLine(49).withMessage("Remove the unused method parameter(s) \"a\".")
       .next().atLine(55).withMessage("Remove the unused method parameter(s) \"args\".")
@@ -45,7 +46,7 @@ public class UnusedMethodParameterCheckTest {
       .next().atLine(57).withMessage("Remove the unused method parameter(s) \"args\".")
       .next().atLine(58).withMessage("Remove the unused method parameter(s) \"args\".")
       .next().atLine(59).withMessage("Remove the unused method parameter(s) \"args\".")
-    ;
+    .noMore();
   }
 
 }

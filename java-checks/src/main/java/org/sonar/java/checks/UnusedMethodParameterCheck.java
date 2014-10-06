@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
@@ -32,10 +33,8 @@ import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -69,7 +68,7 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    if (tree.block() != null && !isMainMethod(tree) && !isOverriden(tree)) {
+    if (tree.block() != null && !isExcluded(tree)) {
       List<String> unused = Lists.newArrayList();
       for (VariableTree var : tree.parameters()) {
         Symbol sym = semanticModel.getSymbol(var);
@@ -81,6 +80,20 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
         context.addIssue(tree, ruleKey, "Remove the unused method parameter(s) \"" + Joiner.on(",").join(unused) + "\".");
       }
     }
+  }
+
+  private boolean isExcluded(MethodTree tree) {
+    return isMainMethod(tree) ||isOverriding(tree) || isSerializableMethod(tree);
+  }
+
+  private boolean isSerializableMethod(MethodTree methodTree) {
+    boolean result = false;
+    //FIXME detect methods based on type of arg and throws, not arity.
+    if (methodTree.modifiers().modifiers().contains(Modifier.PRIVATE) && methodTree.parameters().size() == 1) {
+      result |= "writeObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size()==1;
+      result |= "readObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size()==2;
+    }
+    return result;
   }
 
   // TODO(Godin): It seems to be quite common need - operate with signature of methods, so this operation should be generalized and simplified.
@@ -121,25 +134,8 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
     return tree.parameters().size() == 1;
   }
 
-  private boolean isOverriden(MethodTree tree) {
-    for (AnnotationTree annotationTree : tree.modifiers().annotations()) {
-      Tree annotationType = annotationTree.annotationType();
-      if (annotationType.is(Tree.Kind.IDENTIFIER) && "Override".equals(((IdentifierTree) annotationType).name())) {
-        return true;
-      }
-    }
-    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) semanticModel.getSymbol(tree);
-    Type.ClassType superClass = (Type.ClassType) methodSymbol.enclosingClass().getSuperclass();
-    while (superClass != null) {
-      List<Symbol> symbols = superClass.getSymbol().members().lookup(tree.simpleName().name());
-      for (Symbol symbol : symbols) {
-        if (symbol.isKind(Symbol.MTH)) {
-          //FIXME : better way to detect method overrides
-          return true;
-        }
-      }
-      superClass = (Type.ClassType) superClass.getSymbol().getSuperclass();
-    }
-    return false;
+  private boolean isOverriding(MethodTree tree) {
+    //if overriding cannot be determined, we consider it is overriding to avoid FP.
+    return !BooleanUtils.isFalse(((MethodTreeImpl) tree).isOverriding());
   }
 }
