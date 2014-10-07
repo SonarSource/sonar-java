@@ -6,14 +6,14 @@
 <pre>
 public class Foo {
 
-  private string fiz;
-  public String fiz() {
+  private String query;
+  public String query() {
     // do something...
   }
 
   private void doSomething() {
 
-    String tmp = fiz; // is this what was intended? Should this have been a call to fiz()?
+    String tmp = query; // is this what was intended? Should this have been a call to query()?
 
   }
 }
@@ -23,15 +23,15 @@ public class Foo {
 <pre>
 public class Foo {
 
-  private string fizbah; // member has been renamed
-  public String fiz() {
+  private string queryString; // member has been renamed
+  public String query() {
     // do something...
   }
 
   private void doSomething() {
 
-    String tmp = fiz; // results in a compile error
-    String tmp2 = fiz(); // no question now what was intended
+    String tmp = query; // results in a compile error
+    String tmp2 = query(); // no question now what was intended
   }
 }
 </pre>
