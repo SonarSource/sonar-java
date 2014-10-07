@@ -22,6 +22,11 @@ public User getUser(Connection con, String user) throws SQLException {
     ResultSet rs3 = pstmt.executeQuery();
 
     //...
+public User getUserHibernate(org.hibernate.Session session, String userInput) {
+
+  org.hibernate.Query query = session.createQuery(
+            "FROM students where fname = " + userInput);  // Noncompliant; parameter binding should be used instead
+  // ...
 </pre>
 
 <h2>Compliant Solution</h2>
@@ -39,9 +44,18 @@ public User getUser(Connection con, String user) throws SQLException {
     pstmt.setString(1, user);  // Compliant; PreparedStatements escape their inputs.
     ResultSet rs2 = pstmt.executeQuery();
     //...
+
+public User getUserHibernate(org.hibernate.Session session, String userInput) {
+
+  org.hibernate.Query query =  session.createQuery("FROM students where fname = ?"); //Compliant
+  query = query.setParameter(0,userInput);  // Parameter binding escapes all input
+  // ...
 </pre>
 
 <h2>See</h2>
 <ul>
   <li><a href="http://cwe.mitre.org/data/definitions/89">MITRE, CWE-89</a> - Improper Neutralization of Special Elements used in an SQL Command</li>
+  <li><a href="http://cwe.mitre.org/data/definitions/564.html">MITRE, CWE-564</a> - SQL Injection: Hibernate</li>
+  <li><a href="http://cwe.mitre.org/data/definitions/20.html">MITRE, CWE-20</a> - Improper Input Validation</li>
+  <li><a href="http://cwe.mitre.org/data/definitions/943.html">MITRE, CWE-943</a> - Improper Neutralization of Special Elements in Data Query Logic</li>
 </ul>

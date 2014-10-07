@@ -114,7 +114,9 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodTree.methodSelect();
       return !methodTree.arguments().isEmpty() && (isMethodCall("java.sql.Statement", "executeQuery", memberSelectExpressionTree)
           || isMethodCall("java.sql.Connection", "prepareStatement", memberSelectExpressionTree)
-          || isMethodCall("java.sql.Connection", "prepareCall", memberSelectExpressionTree));
+          || isMethodCall("java.sql.Connection", "prepareCall", memberSelectExpressionTree)
+          || isMethodCall("org.hibernate.Session", "createQuery", memberSelectExpressionTree)
+      );
     }
     return false;
   }

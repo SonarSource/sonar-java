@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
@@ -33,7 +34,7 @@ public class SQLInjectionCheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SQLInjection.java"), new VisitorsBridge(check));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SQLInjection.java"), new VisitorsBridge(check, ImmutableList.of(new File("target/test-classes"))));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(14).withMessage("\"param\" is provided externally to the method and not sanitized before use.")
         .next().atLine(16)
@@ -43,6 +44,8 @@ public class SQLInjectionCheckTest {
         .next().atLine(37)
         .next().atLine(38).withMessage("\"param2\" is provided externally to the method and not sanitized before use.")
         .next().atLine(39)
+        .next().atLine(66)
+        .next().atLine(67)
         .noMore();
   }
 

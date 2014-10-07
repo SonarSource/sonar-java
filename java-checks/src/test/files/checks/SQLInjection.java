@@ -3,12 +3,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import org.hibernate.Session;
 class A {
   private static final String CONSTANT = "SELECT * FROM TABLE";
   public void method(String param, String param2) {
     try {
       Connection conn = DriverManager.getConnection("url", "user1", "password");
-      //Statement
       Statement stmt = conn.createStatement();
       ResultSet rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = 2001");//Compliant
       rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); //NonCompliant
@@ -59,6 +59,13 @@ class A {
       A a = new A();
       a.prepareStatement(query);
       ps.executeQuery();
+
+
+      Session session;
+      session.createQuery("From Customer where id > ?");
+      session.createQuery("From Customer where id > "+param); //NonCompliant
+      session.createQuery(query); //NonCompliant
+
     } catch (Exception e) {
     }
   }
