@@ -239,7 +239,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return modifiers.modifiers().contains(Modifier.PRIVATE);
   }
 
-  private boolean isAnnotatedOverride() {
+  public boolean isAnnotatedOverride() {
     for (AnnotationTree annotationTree : modifiers.annotations()) {
       if (annotationTree.annotationType().is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) annotationTree.annotationType();
