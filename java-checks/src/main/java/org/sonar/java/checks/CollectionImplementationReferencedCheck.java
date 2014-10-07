@@ -47,6 +47,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   private static final String DEQUE = "Deque";
   private static final String LIST = "List";
   private static final String MAP = "Map";
+  private static final String CONCURRENT_MAP = "ConcurrentMap";
   private static final String QUEUE = "Queue";
   private static final String SET = "Set";
   private static final String SORTED_MAP = "SortedMap";
@@ -63,13 +64,14 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     .put("LinkedList", LIST)
 
     .put("AbstractMap", MAP)
-    .put("ConcurrentHashMap", MAP)
     .put("EnumMap", MAP)
     .put("HashMap", MAP)
     .put("Hashtable", MAP)
     .put("IdentityHashMap", MAP)
     .put("LinkedHashMap", MAP)
     .put("WeakHashMap", MAP)
+
+    .put("ConcurrentHashMap", CONCURRENT_MAP)
 
     .put("AbstractQueue", QUEUE)
     .put("ConcurrentLinkedQueue", QUEUE)

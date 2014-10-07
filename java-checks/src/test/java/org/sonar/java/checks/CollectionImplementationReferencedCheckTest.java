@@ -42,7 +42,9 @@ public class CollectionImplementationReferencedCheckTest {
       .next().atLine(2).withMessage("The type of the \"employees\" object should be an interface such as \"Set\" rather than the implementation \"HashSet\".")
       .next().atLine(4).withMessage("The return type of this method should be an interface such as \"Set\" rather than the implementation \"HashSet\".")
       .next().atLine(8).withMessage("The return type of this method should be an interface such as \"List\" rather than the implementation \"LinkedList\".")
-      .next().atLine(14).withMessage("The return type of this method should be an interface such as \"Map\" rather than the implementation \"HashMap\".");
+      .next().atLine(14).withMessage("The return type of this method should be an interface such as \"Map\" rather than the implementation \"HashMap\".")
+      .next().atLine(22).withMessage("The return type of this method should be an interface such as \"ConcurrentMap\" rather than the implementation \"ConcurrentHashMap\".")
+      .noMore();
   }
 
 }

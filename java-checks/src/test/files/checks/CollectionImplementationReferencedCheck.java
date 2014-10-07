@@ -19,6 +19,9 @@ public class EmployeesTopLevel {
 
   private Stack stack;
   private Vector vector;
+  public ConcurrentHashMap concurrentHashMap() { //NonCompliant
+    return null;
+  }
 }
 
 public class Employees {
