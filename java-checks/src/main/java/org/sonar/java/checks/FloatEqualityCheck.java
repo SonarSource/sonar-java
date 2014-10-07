@@ -24,6 +24,7 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -65,18 +66,14 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
       BinaryExpressionTree leftOp = (BinaryExpressionTree) binaryExpressionTree.leftOperand();
       if (binaryExpressionTree.rightOperand().is(comparator1, comparator2)) {
         BinaryExpressionTree rightOp = (BinaryExpressionTree) binaryExpressionTree.rightOperand();
-        if (leftOp.is(comparator1)) {
-          if (rightOp.is(comparator1)) {
-            return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.rightOperand()) && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.leftOperand());
-          } else {
-            return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.leftOperand()) && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.rightOperand());
-          }
+        if (((JavaTree) leftOp).getKind().equals(((JavaTree) rightOp).getKind())) {
+          //same operator
+          return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.rightOperand())
+              && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.leftOperand());
         } else {
-          if (rightOp.is(comparator1)) {
-            return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.leftOperand()) && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.rightOperand());
-          } else {
-            return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.rightOperand()) && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.leftOperand());
-          }
+          //different operator
+          return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.leftOperand())
+              && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.rightOperand());
         }
       }
     }

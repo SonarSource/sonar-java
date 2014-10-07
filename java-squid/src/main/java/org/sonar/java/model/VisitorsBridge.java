@@ -188,7 +188,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
       if (line > 0) {
         checkMessage.setLine(line);
       }
-      checkMessage.setBypassExclusion(ruleKey.rule().equals("NoSonar"));
+      checkMessage.setBypassExclusion("NoSonar".equals(ruleKey.rule()));
       sourceFile.log(checkMessage);
     }
 

@@ -246,7 +246,7 @@ public abstract class JavaTree extends AstNode implements Tree {
     private final SyntaxToken importToken;
     private final SyntaxToken staticToken;
 
-    public ImportTreeImpl(InternalSyntaxToken importToken, InternalSyntaxToken staticToken,
+    public ImportTreeImpl(InternalSyntaxToken importToken, @Nullable InternalSyntaxToken staticToken,
                           Tree qualifiedIdentifier, InternalSyntaxToken semiColonToken) {
       super(Kind.IMPORT);
       this.importToken = importToken;

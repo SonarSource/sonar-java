@@ -47,7 +47,7 @@ import java.util.List;
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class HiddenFieldCheck extends SubscriptionBaseVisitor {
 
-  private final LinkedList<ImmutableMap<String, VariableTree>> fields = Lists.newLinkedList();
+  private final Deque<ImmutableMap<String, VariableTree>> fields = Lists.newLinkedList();
   private final Deque<List<VariableTree>> excludedVariables = Lists.newLinkedList();
   private final List<VariableTree> flattenExcludedVariables = Lists.newArrayList();
 
