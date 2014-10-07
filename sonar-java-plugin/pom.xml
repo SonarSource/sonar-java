@@ -14,7 +14,12 @@
   <name>SonarQube Java :: Plugin</name>
   <description>SonarQube rule engine.</description>
   <url>http://docs.codehaus.org/x/tZC7DQ</url>
-
+  <scm>
+    <connection>scm:git:git@github.com:SonarSource/sonar-java.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarSource/sonar-java.git</developerConnection>
+    <url>https://github.com/SonarSource/sonar-java</url>
+    <tag>HEAD</tag>
+  </scm>
   <properties>
     <!-- Configuration for sonar-packaging-maven-plugin -->
     <sonar.pluginClass>org.sonar.plugins.java.JavaPlugin</sonar.pluginClass>
