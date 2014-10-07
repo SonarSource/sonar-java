@@ -33,6 +33,11 @@
       <name>Evgeny Mandrikov</name>
       <organization>SonarSource</organization>
     </developer>
+    <developer>
+      <id>benzonico</id>
+      <name>Nicolas Peru</name>
+      <organization>SonarSource</organization>
+    </developer>
   </developers>
 
   <modules>
