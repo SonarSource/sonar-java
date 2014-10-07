@@ -24,7 +24,7 @@ public User getUser(Connection con, String user) throws SQLException {
     //...
 public User getUserHibernate(org.hibernate.Session session, String userInput) {
 
-  org.hibernate.Query query = session.createQuery(
+  org.hibernate.Query query = session.createQuery( // Compliant
             "FROM students where fname = " + userInput);  // Noncompliant; parameter binding should be used instead
   // ...
 </pre>
