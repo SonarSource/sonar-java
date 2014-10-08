@@ -57,12 +57,17 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree methodTree = (MethodInvocationTree) tree;
-    if (isExecuteQueryOrPrepareStatement(methodTree)) {
+    boolean isHibernateCall = isHibernateCall(methodTree);
+    if (isHibernateCall(methodTree) || isExecuteQueryOrPrepareStatement(methodTree)) {
       //We want to check the argument for the three methods.
       ExpressionTree arg = methodTree.arguments().get(0);
       parameterName = "";
       if (isDynamicString(methodTree, arg)) {
-        addIssue(methodTree, "\""+parameterName+"\" is provided externally to the method and not sanitized before use.");
+        String message = "\""+parameterName+"\" is provided externally to the method and not sanitized before use.";
+        if(isHibernateCall) {
+          message = "Use Hibernate's parameter binding instead of concatenation.";
+        }
+        addIssue(methodTree, message);
       }
     }
   }
@@ -117,6 +122,14 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
           || isMethodCall("java.sql.Connection", "prepareCall", memberSelectExpressionTree)
           || isMethodCall("org.hibernate.Session", "createQuery", memberSelectExpressionTree)
       );
+    }
+    return false;
+  }
+
+  private boolean isHibernateCall(MethodInvocationTree methodTree) {
+    if (methodTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodTree.methodSelect();
+      return !methodTree.arguments().isEmpty() && isMethodCall("org.hibernate.Session", "createQuery", memberSelectExpressionTree);
     }
     return false;
   }

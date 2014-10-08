@@ -44,8 +44,8 @@ public class SQLInjectionCheckTest {
         .next().atLine(37)
         .next().atLine(38).withMessage("\"param2\" is provided externally to the method and not sanitized before use.")
         .next().atLine(39)
-        .next().atLine(66)
-        .next().atLine(67)
+        .next().atLine(66).withMessage("Use Hibernate's parameter binding instead of concatenation.")
+        .next().atLine(67).withMessage("Use Hibernate's parameter binding instead of concatenation.")
         .noMore();
   }
 
