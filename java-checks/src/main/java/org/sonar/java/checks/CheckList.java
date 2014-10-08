@@ -204,7 +204,8 @@ public final class CheckList {
       SQLInjectionCheck.class,
       TernaryOperatorCheck.class,
       OverrideAnnotationCheck.class,
-      ForLoopIncrementAndUpdateCheck.class
+      ForLoopIncrementAndUpdateCheck.class,
+      EmptyClassCheck.class
     );
   }
 
