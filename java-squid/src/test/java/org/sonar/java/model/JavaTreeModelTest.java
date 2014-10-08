@@ -379,7 +379,7 @@ public class JavaTreeModelTest {
     assertThat(tree.parameters().get(0).type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(((ArrayTypeTree) tree.parameters().get(0).type()).type()).isInstanceOf(ArrayTypeTree.class);
 
-    astNode = p.parse("class T { public <T> int m(int p1, int... p2) throws Exception1, Exception2 {} }");
+    astNode = p.parse("class T { public <T> int m(@Annotate int p1, int... p2) throws Exception1, Exception2 {} }");
     tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
@@ -388,6 +388,7 @@ public class JavaTreeModelTest {
     assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(2);
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
+    assertThat(tree.parameters().get(0).modifiers().annotations()).hasSize(1);
     assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.throwsClauses()).hasSize(2);
     assertThat(tree.block()).isNotNull();
