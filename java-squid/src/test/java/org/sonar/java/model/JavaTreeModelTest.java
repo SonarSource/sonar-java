@@ -640,8 +640,10 @@ public class JavaTreeModelTest {
     assertThat(tree.parameters()).isEmpty();
     assertThat(tree.throwsClauses()).isEmpty();
     assertThat(tree.block()).isNull();
-    // FIXME
-    // assertThat(tree.defaultValue()).isNotNull();
+    assertThat(tree.defaultValue()).isNotNull();
+    tree = (MethodTree) p.parse("@interface plop{ public String method(); }").getFirstDescendant(Kind.METHOD);
+    assertThat(tree.modifiers().modifiers()).hasSize(1);
+
   }
 
   @Test

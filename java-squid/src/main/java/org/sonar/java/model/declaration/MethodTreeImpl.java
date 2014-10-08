@@ -61,10 +61,10 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   public MethodTreeImpl(FormalParametersListTreeImpl parameters, @Nullable ExpressionTree defaultValue) {
     super(Kind.METHOD);
-    this.typeParameters = ImmutableList.<TypeParameterTree>of();
+    this.typeParameters = ImmutableList.of();
     this.parameters = parameters;
     this.block = null;
-    this.throwsClauses = ImmutableList.<ExpressionTree>of();
+    this.throwsClauses = ImmutableList.of();
     this.defaultValue = defaultValue;
 
     addChild(parameters);
@@ -82,7 +82,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
     super(returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD);
 
-    this.typeParameters = ImmutableList.<TypeParameterTree>of();
+    this.typeParameters = ImmutableList.of();
     this.modifiers = null;
     this.returnType = returnType;
     this.simpleName = Preconditions.checkNotNull(simpleName);
