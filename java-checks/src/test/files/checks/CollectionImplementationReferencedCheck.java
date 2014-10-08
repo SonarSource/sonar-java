@@ -22,6 +22,9 @@ public class EmployeesTopLevel {
   public ConcurrentHashMap concurrentHashMap() { //NonCompliant
     return null;
   }
+  public ConcurrentSkipListMap concurrentSkipListMap() { //NonCompliant
+    return null;
+  }
 }
 
 public class Employees {

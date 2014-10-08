@@ -44,6 +44,7 @@ public class CollectionImplementationReferencedCheckTest {
       .next().atLine(8).withMessage("The return type of this method should be an interface such as \"List\" rather than the implementation \"LinkedList\".")
       .next().atLine(14).withMessage("The return type of this method should be an interface such as \"Map\" rather than the implementation \"HashMap\".")
       .next().atLine(22).withMessage("The return type of this method should be an interface such as \"ConcurrentMap\" rather than the implementation \"ConcurrentHashMap\".")
+      .next().atLine(25).withMessage("The return type of this method should be an interface such as \"ConcurrentMap\" rather than the implementation \"ConcurrentSkipListMap\".")
       .noMore();
   }
 

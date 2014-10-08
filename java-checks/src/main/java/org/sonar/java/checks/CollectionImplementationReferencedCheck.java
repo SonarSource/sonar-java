@@ -72,6 +72,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     .put("WeakHashMap", MAP)
 
     .put("ConcurrentHashMap", CONCURRENT_MAP)
+    .put("ConcurrentSkipListMap", CONCURRENT_MAP)
 
     .put("AbstractQueue", QUEUE)
     .put("ConcurrentLinkedQueue", QUEUE)
