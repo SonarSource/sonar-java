@@ -35,28 +35,28 @@ class C extends B {
 
 class D extends C {
   void foo(int b, int a) {
+    System.out.println("");
   }
 }
-
 class E extends C {
-  void bar(int a){ }
+  void bar(int a){
+    System.out.println("");
+  }
 }
-
 interface inter {
   default void foo(int a) {
     compute(a);
   }
-  default void bar(int a) {
-  }
+  default void bar(int a) { System.out.println("");}
   void qix(int a);
 }
 class F {
   public static void main(String[] args) { }
-  public static int main(String[] args) { }
-  public static void main(int[] args) { }
-  public static Object main(String[] args) { }
-  public static void main(String args) { }
-  public static void main(Double[] args) { }
+  public static int main(String[] args) { System.out.println("");}
+  public static void main(int[] args) { System.out.println("");}
+  public static Object main(String[] args) { System.out.println("");}
+  public static void main(String args) { System.out.println("");}
+  public static void main(Double[] args) { System.out.println("");}
 }
 
 class G implements inter {
@@ -71,5 +71,21 @@ class G implements inter {
   private void readObject(ObjectInputStream in)
       throws IOException, ClassNotFoundException {
     throw new NotSerializableException(getClass().getName());
+  }
+}
+
+class OpenForExtension {
+  public foo(int arg) {
+    //no-op
+  }
+  protected bar(int arg) {
+    //no-op
+  }
+  public void qix(int arg) {
+    throw new UnsupportedOperationException("not implemented");
+  }
+
+  private baz(int arg) { //Noncompliant
+    //no-op
   }
 }

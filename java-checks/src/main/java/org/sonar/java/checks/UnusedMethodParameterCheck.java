@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -83,7 +84,15 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
   }
 
   private boolean isExcluded(MethodTree tree) {
-    return isMainMethod(tree) || isOverriding(tree) || isSerializableMethod(tree);
+    return isMainMethod(tree) || isOverriding(tree) || isSerializableMethod(tree) || isDesignedForExtension(tree);
+  }
+
+  private boolean isDesignedForExtension(MethodTree tree) {
+    return !tree.modifiers().modifiers().contains(Modifier.PRIVATE) && isEmptyOrThrowStatement(tree.block());
+  }
+
+  private boolean isEmptyOrThrowStatement(BlockTree block) {
+    return block.body().isEmpty() || (block.body().size()==1 && block.body().get(0).is(Tree.Kind.THROW_STATEMENT));
   }
 
   private boolean isSerializableMethod(MethodTree methodTree) {
