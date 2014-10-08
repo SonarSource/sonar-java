@@ -203,7 +203,8 @@ public final class CheckList {
       FloatEqualityCheck.class,
       SQLInjectionCheck.class,
       TernaryOperatorCheck.class,
-      OverrideAnnotationCheck.class
+      OverrideAnnotationCheck.class,
+      ForLoopIncrementAndUpdateCheck.class
     );
   }
 

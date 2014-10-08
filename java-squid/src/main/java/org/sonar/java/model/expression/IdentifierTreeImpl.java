@@ -51,11 +51,6 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
     }
   }
 
-  public IdentifierTreeImpl(InternalSyntaxToken nameToken, AstNode astNode) {
-    super(astNode);
-    this.nameToken = Preconditions.checkNotNull(nameToken);
-  }
-
   @Override
   public Kind getKind() {
     return Kind.IDENTIFIER;
