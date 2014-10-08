@@ -18,13 +18,24 @@ void doSomething(int a) {
 
 <h2>Exceptions</h2>
 
-<h3>For Java</h3>
-Methods overriding or implementing another one should be excluded
+<p>Override and implementation methods are excluded, as are methods that are intended to be overridden.</p>
 
 <pre>
-@override
+@Override
 void doSomething(int a, int b) {     // no issue reported on b
   compute(a);
+}
+
+public void foo(String s) {
+  // designed to be extended but noop in standard case
+}
+
+protected void bar(String s) {
+  //open-closed principle
+}
+
+public void qix(String s) {
+  throw new UnsupportedOperationException("This method should be implemented in subclasses");
 }
 </pre>
 
