@@ -77,33 +77,7 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
   }
   private boolean isDynamicString(MethodInvocationTree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {
     if (arg.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = getSemanticModel().getReference((IdentifierTree) arg);
-      if(symbol.equals(currentlyChecking)) {
-        return false;
-      }
-      if (symbol.isStatic() && symbol.isFinal()) {
-        return false;
-      }
-
-      Tree enclosingBlockTree = getSemanticModel().getTree(getSemanticModel().getEnv(methodTree));
-      Tree argEnclosingDeclarationTree = getSemanticModel().getTree(getSemanticModel().getEnv(symbol));
-      if(enclosingBlockTree.equals(argEnclosingDeclarationTree)) {
-        //symbol is a local variable, check it is not a dynamic string.
-
-        //Check declaration
-        VariableTree declaration = (VariableTree) getSemanticModel().getTree(symbol);
-        if(declaration.initializer() != null && isDynamicString(methodTree, declaration.initializer())) {
-          return true;
-        }
-        //check usages by revisiting the enclosing tree.
-        Collection<IdentifierTree> usages = getSemanticModel().getUsages(symbol);
-        LocalVariableDynamicStringVisitor visitor = new LocalVariableDynamicStringVisitor(symbol, usages, methodTree);
-        argEnclosingDeclarationTree.accept(visitor);
-        return visitor.dynamicString;
-      }
-      //arg is not a local variable nor a constant, so it is a parameter
-      parameterName = ((IdentifierTree) arg).name();
-      return true;
+      return isIdentifierDynamicString(methodTree, (IdentifierTree) arg, currentlyChecking);
     } else if (arg.is(Tree.Kind.PLUS)) {
       BinaryExpressionTree binaryArg = (BinaryExpressionTree) arg;
       return isDynamicString(methodTree, binaryArg.rightOperand(), currentlyChecking) || isDynamicString(methodTree, binaryArg.leftOperand(), currentlyChecking);
@@ -112,6 +86,37 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
       return false;
     }
     return !arg.is(Tree.Kind.STRING_LITERAL);
+  }
+
+  private boolean isIdentifierDynamicString(MethodInvocationTree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking) {
+    Symbol symbol = getSemanticModel().getReference(arg);
+    if(symbol.equals(currentlyChecking) || isConstant(symbol)) {
+      return false;
+    }
+
+    Tree enclosingBlockTree = getSemanticModel().getTree(getSemanticModel().getEnv(methodTree));
+    Tree argEnclosingDeclarationTree = getSemanticModel().getTree(getSemanticModel().getEnv(symbol));
+    if(enclosingBlockTree.equals(argEnclosingDeclarationTree)) {
+      //symbol is a local variable, check it is not a dynamic string.
+
+      //Check declaration
+      VariableTree declaration = (VariableTree) getSemanticModel().getTree(symbol);
+      if(declaration.initializer() != null && isDynamicString(methodTree, declaration.initializer())) {
+        return true;
+      }
+      //check usages by revisiting the enclosing tree.
+      Collection<IdentifierTree> usages = getSemanticModel().getUsages(symbol);
+      LocalVariableDynamicStringVisitor visitor = new LocalVariableDynamicStringVisitor(symbol, usages, methodTree);
+      argEnclosingDeclarationTree.accept(visitor);
+      return visitor.dynamicString;
+    }
+    //arg is not a local variable nor a constant, so it is a parameter
+    parameterName =  arg.name();
+    return true;
+  }
+
+  private boolean isConstant(Symbol symbol) {
+    return symbol.isStatic() && symbol.isFinal();
   }
 
   private boolean isExecuteQueryOrPrepareStatement(MethodInvocationTree methodTree) {
