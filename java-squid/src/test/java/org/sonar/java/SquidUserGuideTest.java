@@ -92,6 +92,11 @@ public class SquidUserGuideTest {
       }
 
       @Override
+      public Collection<File> classpath() {
+        return null;
+      }
+
+      @Override
       public Integer getMethodStartLine(String fullyQualifiedMethodName) {
         return null;
       }

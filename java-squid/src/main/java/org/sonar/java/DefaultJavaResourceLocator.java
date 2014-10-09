@@ -95,6 +95,11 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   }
 
   @Override
+  public Collection<File> classpath() {
+    return javaClasspath.getElements();
+  }
+
+  @Override
   public Integer getMethodStartLine(String fullyQualifiedMethodName) {
     return methodStartLines.get(fullyQualifiedMethodName);
   }

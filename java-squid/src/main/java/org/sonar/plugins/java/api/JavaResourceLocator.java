@@ -43,6 +43,8 @@ public interface JavaResourceLocator extends BatchExtension, JavaFileScanner {
 
   Collection<File> classFilesToAnalyze();
 
+  Collection<File> classpath();
+
   Integer getMethodStartLine(String fullyQualifiedMethodName);
 
   ResourceMapping getResourceMapping();
