@@ -24,8 +24,19 @@ if ( myNumber != 3.146f ) { //Noncompliant. Because of floating point imprecisio
 if (myNumber < 4 || myNumber > 4) { // Noncompliant indirect inequality test
   // ...
 }
+
+float zeroFloat = 0.0f;
+if(zeroFloat == 0) { //Noncompliant any computation on your float can end up to a value close to, but not equal to, zero.
+}
 </pre>
-    
+
+<h2>Compliant Solution</h2>
+<pre>
+float zeroFloat = 0.0f;
+if(Float.floatToRawIntBits(zeroFloat) == 0) { //compliant getting back to bit comparison it is ensured we compare zero values
+}
+</pre>
+
 <h2>Exceptions</h2>
 <p>Since <code>NaN</code> is not equal to itself, the specific case of testing a floating point value against itself is a valid test for <code>NaN</code> and is therefore ignored.</p>
 
