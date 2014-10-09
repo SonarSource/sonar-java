@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
@@ -29,13 +30,15 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
-import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
+import org.sonar.api.utils.SonarException;
 import org.sonar.api.utils.WildcardPattern;
 
 import javax.annotation.Nullable;
@@ -59,15 +62,40 @@ public class JavaClasspath implements BatchExtension {
     this(settings, fileSystem, null);
   }
 
-  public JavaClasspath(Settings settings, FileSystem fileSystem, @Nullable ProjectClasspath projectClasspath) {
+  public JavaClasspath(Settings settings, FileSystem fileSystem, @Nullable MavenProject pom) {
     binaries = getFilesFromProperty(SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
     libraries = getFilesFromProperty(SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
-    if (projectClasspath != null && binaries.isEmpty() && libraries.isEmpty()) {
+    if (binaries.isEmpty() && libraries.isEmpty()) {
       binaries = getFilesFromProperty("sonar.binaries", settings, fileSystem.baseDir());
       libraries = getFilesFromProperty("sonar.libraries", settings, fileSystem.baseDir());
     }
-    elements = Lists.newArrayList(binaries);
-    elements.addAll(libraries);
+    if (pom != null && libraries.isEmpty()) {
+      //check mojo
+      elements = getLibrariesFromMaven(pom);
+    } else {
+      elements = Lists.newArrayList(binaries);
+      elements.addAll(libraries);
+    }
+  }
+
+  private List<File> getLibrariesFromMaven(MavenProject pom) {
+    try {
+      List<File> files = Lists.newArrayList();
+      if (pom.getCompileClasspathElements() != null) {
+        for (String classPathString : (List<String>) pom.getCompileClasspathElements()) {
+          files.add(new File(classPathString));
+        }
+      }
+      if (pom.getBuild().getOutputDirectory() != null) {
+        File outputDirectoryFile = new File(pom.getBuild().getOutputDirectory());
+        if (outputDirectoryFile.exists()) {
+          files.add(outputDirectoryFile);
+        }
+      }
+      return files;
+    } catch (DependencyResolutionRequiredException e) {
+      throw new SonarException("Fail to create the project classloader", e);
+    }
   }
 
 
@@ -75,7 +103,7 @@ public class JavaClasspath implements BatchExtension {
     List<File> result = Lists.newArrayList();
     String fileList = settings.getString(property);
     if (StringUtils.isNotEmpty(fileList)) {
-      List<String> fileNames = Lists.newArrayList(StringUtils.split(fileList, SEPARATOR));
+      Iterable<String> fileNames = Splitter.on(SEPARATOR).omitEmptyStrings().split(fileList);
       for (String pathPattern : fileNames) {
         if (property.endsWith("binaries")) {
           File binaryFile = resolvePath(baseDir, pathPattern);
@@ -101,7 +129,7 @@ public class JavaClasspath implements BatchExtension {
     if (wildcardIndex > 0) {
       pattern = pattern.substring(0, wildcardIndex);
     }
-    int lastPathSeparator = Math.max(pattern.lastIndexOf('/'), pattern.lastIndexOf('\\'));
+    int lastPathSeparator = Math.max(Math.max(pattern.lastIndexOf('/'), pattern.lastIndexOf('\\')),0);
     File filenameDir = new File(pattern.substring(0, lastPathSeparator));
     if (filenameDir.isAbsolute()) {
       dir = filenameDir;

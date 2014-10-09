@@ -19,9 +19,11 @@
  */
 package org.sonar.java;
 
+import com.google.common.collect.Lists;
+import org.apache.maven.model.Build;
+import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.batch.ProjectClasspath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.Settings;
 
@@ -30,6 +32,7 @@ import java.io.File;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JavaClasspathTest {
 
@@ -59,11 +62,27 @@ public class JavaClasspathTest {
     settings.setProperty("sonar.binaries", "bin");
     settings.setProperty("sonar.libraries", "lib/hello.jar");
     fs.setBaseDir(new File("src/test/files/classpath/"));
-    javaClasspath = new JavaClasspath(settings, fs, mock(ProjectClasspath.class));
+    javaClasspath = new JavaClasspath(settings, fs, mock(MavenProject.class));
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
     assertThat(javaClasspath.getLibraries()).hasSize(1);
+  }
+
+  @Test
+  public void old_maven_mojo_binaries_filled_but_not_libraries() throws Exception {
+    settings.setProperty("sonar.binaries", "bin");
+    fs.setBaseDir(new File("src/test/files/classpath/"));
+    MavenProject pom = mock(MavenProject.class);
+    when(pom.getCompileClasspathElements()).thenReturn(Lists.newArrayList("hello.jar"));
+    Build build = mock(Build.class);
+    when(build.getOutputDirectory()).thenReturn("src/test/files/classpath/bin");
+    when(pom.getBuild()).thenReturn(build);
+    javaClasspath = new JavaClasspath(settings, fs, pom);
+    assertThat(javaClasspath.getElements()).hasSize(2);
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
+    assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
+    assertThat(javaClasspath.getLibraries()).isEmpty();
   }
 
   @Test
@@ -160,7 +179,14 @@ public class JavaClasspathTest {
     fs.setBaseDir(baseDir);
     settings.setProperty(JavaClasspath.SONAR_JAVA_LIBRARIES, "toto/**/hello.jar");
     checkIllegalStateException("No files nor directories matching 'toto/**/hello.jar'");
+  }
 
+  @Test
+  public void libraries_without_dir() throws Exception {
+    settings.setProperty("sonar.binaries", "bin");
+    settings.setProperty("sonar.libraries", "hello.jar");
+    fs.setBaseDir(new File("src/test/files/classpath/"));
+    checkIllegalStateException("No files nor directories matching 'hello.jar'");
   }
 
   private void checkIllegalStateException(String message) {
