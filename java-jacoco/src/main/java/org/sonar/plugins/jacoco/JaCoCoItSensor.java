@@ -49,6 +49,7 @@ public class JaCoCoItSensor implements Sensor {
     this.javaResourceLocator = javaResourceLocator;
   }
 
+  @Override
   public boolean shouldExecuteOnProject(Project project) {
     File report = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
     boolean foundReport = report.exists() && report.isFile();
@@ -59,6 +60,7 @@ public class JaCoCoItSensor implements Sensor {
     return shouldExecute;
   }
 
+  @Override
   public void analyse(Project project, SensorContext context) {
     new ITAnalyzer(perspectives).analyse(project, context);
   }

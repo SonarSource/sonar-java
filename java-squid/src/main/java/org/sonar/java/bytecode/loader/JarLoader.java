@@ -51,6 +51,7 @@ class JarLoader implements Loader {
     }
   }
 
+  @Override
   public URL findResource(String name) {
     ZipEntry entry = jarFile.getEntry(name);
     if (entry != null) {
@@ -63,6 +64,7 @@ class JarLoader implements Loader {
     return null;
   }
 
+  @Override
   public byte[] loadBytes(String name) {
     InputStream is = null;
     try {
@@ -81,6 +83,7 @@ class JarLoader implements Loader {
     }
   }
 
+  @Override
   public void close() {
     try {
       jarFile.close();

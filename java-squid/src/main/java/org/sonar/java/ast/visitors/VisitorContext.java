@@ -138,6 +138,7 @@ public class VisitorContext extends SquidAstVisitorContext<LexerlessGrammar> {
     log(checkMessage);
   }
 
+  @Override
   public void log(CheckMessage message) {
     if (peekSourceCode() instanceof SourceFile) {
       peekSourceCode().log(message);

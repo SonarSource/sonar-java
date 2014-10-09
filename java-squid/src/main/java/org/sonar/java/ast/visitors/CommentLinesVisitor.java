@@ -70,6 +70,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
 
   public static class JavaCommentAnalyser extends CommentAnalyser {
 
+    @Override
     public boolean isBlank(String line) {
       // Implementation of this method was taken from org.sonar.squidbridge.text.Line#isThereBlankComment()
       // TODO Godin: for some languages we use Character.isLetterOrDigit instead of Character.isWhitespace
@@ -82,6 +83,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
       return true;
     }
 
+    @Override
     public String getContents(String comment) {
       return comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
     }

@@ -35,14 +35,17 @@ public enum JavaTokenType implements TokenType, GrammarRuleKey {
 
   IDENTIFIER;
 
+  @Override
   public String getName() {
     return name();
   }
 
+  @Override
   public String getValue() {
     return name();
   }
 
+  @Override
   public boolean hasToBeSkippedFromAst(AstNode node) {
     return false;
   }

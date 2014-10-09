@@ -26,6 +26,9 @@ import java.util.List;
 
 public class JavaClasspathProperties {
 
+  private JavaClasspathProperties(){
+  }
+
   public static final String SONAR_JAVA_BINARIES = "sonar.java.binaries";
   public static final String SONAR_JAVA_LIBRARIES = "sonar.java.libraries";
 

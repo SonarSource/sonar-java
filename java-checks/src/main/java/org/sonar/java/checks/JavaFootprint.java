@@ -38,6 +38,7 @@ public final class JavaFootprint implements LanguageFootprint {
     detectors.add(new CamelCaseDetector(0.5));
   }
 
+  @Override
   public Set<Detector> getDetectors() {
     return detectors;
   }

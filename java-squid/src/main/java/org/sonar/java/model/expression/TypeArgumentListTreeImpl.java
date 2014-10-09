@@ -50,10 +50,12 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
     addChild(closeBracketToken);
   }
 
+  @Override
   public SyntaxToken openBracketToken() {
     return openBracketToken;
   }
 
+  @Override
   public SyntaxToken closeBracketToken() {
     return closeBracketToken;
   }

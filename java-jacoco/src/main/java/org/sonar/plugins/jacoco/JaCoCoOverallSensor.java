@@ -64,6 +64,7 @@ public class JaCoCoOverallSensor implements Sensor {
     this.javaResourceLocator = javaResourceLocator;
   }
 
+  @Override
   public boolean shouldExecuteOnProject(Project project) {
     File reportUTs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
     File reportITs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
@@ -75,6 +76,7 @@ public class JaCoCoOverallSensor implements Sensor {
     return shouldExecute;
   }
 
+  @Override
   public void analyse(Project project, SensorContext context) {
     File reportUTs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
     File reportITs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());

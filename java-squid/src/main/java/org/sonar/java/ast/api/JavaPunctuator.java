@@ -87,14 +87,17 @@ public enum JavaPunctuator implements TokenType, GrammarRuleKey {
     this.value = word;
   }
 
+  @Override
   public String getName() {
     return name();
   }
 
+  @Override
   public String getValue() {
     return value;
   }
 
+  @Override
   public boolean hasToBeSkippedFromAst(AstNode node) {
     return false;
   }

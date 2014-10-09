@@ -35,6 +35,7 @@ public class ExecutionDataVisitor implements ISessionInfoVisitor, IExecutionData
   private ExecutionDataStore executionDataStore;
   private ExecutionDataStore merged = new ExecutionDataStore();
 
+  @Override
   public void visitSessionInfo(SessionInfo info) {
     String sessionId = info.getId();
     executionDataStore = sessions.get(sessionId);
@@ -44,6 +45,7 @@ public class ExecutionDataVisitor implements ISessionInfoVisitor, IExecutionData
     }
   }
 
+  @Override
   public void visitClassExecution(ExecutionData data) {
     executionDataStore.put(data);
     merged.put(defensiveCopy(data));

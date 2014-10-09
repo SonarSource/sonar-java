@@ -58,10 +58,12 @@ public class JaCoCoSensor implements Sensor {
     return "surefire-java";
   }
 
+  @Override
   public void analyse(Project project, SensorContext context) {
     new UnitTestsAnalyzer(perspectives).analyse(project, context);
   }
 
+  @Override
   public boolean shouldExecuteOnProject(Project project) {
     File report = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
     boolean foundReport = report.exists() && report.isFile();

@@ -36,6 +36,7 @@ public class TestNGListener extends JUnitListener implements ITestListener {
     super(jacoco);
   }
 
+  @Override
   public void onTestStart(ITestResult result) {
     jacoco.onTestStart(getName(result));
   }
@@ -44,26 +45,32 @@ public class TestNGListener extends JUnitListener implements ITestListener {
     return result.getTestClass().getName() + " " + result.getMethod().getMethodName();
   }
 
+  @Override
   public void onTestSuccess(ITestResult result) {
     jacoco.onTestFinish(getName(result));
   }
 
+  @Override
   public void onTestFailure(ITestResult result) {
     jacoco.onTestFinish(getName(result));
   }
 
+  @Override
   public void onTestSkipped(ITestResult result) {
     jacoco.onTestFinish(getName(result));
   }
 
+  @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
     jacoco.onTestFinish(getName(result));
   }
 
+  @Override
   public void onStart(ITestContext context) {
     // nop
   }
 
+  @Override
   public void onFinish(ITestContext context) {
     // nop
   }

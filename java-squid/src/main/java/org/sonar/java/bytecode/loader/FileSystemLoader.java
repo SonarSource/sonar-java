@@ -39,6 +39,7 @@ class FileSystemLoader implements Loader {
     this.baseDir = baseDir;
   }
 
+  @Override
   public URL findResource(String name) {
     if (baseDir == null) {
       throw new IllegalStateException("Loader closed");
@@ -54,6 +55,7 @@ class FileSystemLoader implements Loader {
     return null;
   }
 
+  @Override
   public byte[] loadBytes(String name) {
     if (baseDir == null) {
       throw new IllegalStateException("Loader closed");
@@ -73,6 +75,7 @@ class FileSystemLoader implements Loader {
     }
   }
 
+  @Override
   public void close() {
     baseDir = null;
   }

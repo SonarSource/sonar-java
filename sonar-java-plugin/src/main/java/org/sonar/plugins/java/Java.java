@@ -72,6 +72,7 @@ public class Java extends AbstractLanguage {
    *
    * @see org.sonar.api.resources.AbstractLanguage#getFileSuffixes()
    */
+  @Override
   public String[] getFileSuffixes() {
     String[] suffixes = filterEmptyStrings(settings.getStringArray(Java.FILE_SUFFIXES_KEY));
     if (suffixes.length == 0) {
