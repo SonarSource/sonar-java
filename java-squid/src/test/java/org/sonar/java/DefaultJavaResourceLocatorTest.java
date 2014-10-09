@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
@@ -32,14 +33,18 @@ import static org.mockito.Mockito.when;
 
 public class DefaultJavaResourceLocatorTest {
 
+
   @Test
   public void test() throws Exception {
     Project project = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
+
+    JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    when(javaClasspath.getBinaryDirs()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
     File baseDir = new File("src/test/java");
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null);
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, javaClasspath);
     JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java"), new VisitorsBridge(javaResourceLocator));
 
     assertThat(javaResourceLocator.resourcesByClass.keySet()).hasSize(5);
@@ -48,6 +53,14 @@ public class DefaultJavaResourceLocatorTest {
     assertThat(javaResourceLocator.resourcesByClass.keySet()).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$I");
     assertThat(javaResourceLocator.resourcesByClass.keySet()).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$1B");
     assertThat(javaResourceLocator.resourcesByClass.keySet()).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$1B$1");
+
+    assertThat(javaResourceLocator.classKeys()).hasSize(5);
+    assertThat(javaResourceLocator.findSourceFileKeyByClassName("org/sonar/java/DefaultJavaResourceLocatorTest")).endsWith("org/sonar/java/DefaultJavaResourceLocatorTest.java");
+    assertThat(javaResourceLocator.findSourceFileKeyByClassName("org.sonar.java.DefaultJavaResourceLocatorTest")).endsWith("org/sonar/java/DefaultJavaResourceLocatorTest.java");
+    assertThat(javaResourceLocator.findResourceByClassName("org.sonar.java.DefaultJavaResourceLocatorTest")).isNotNull();
+
+    assertThat(javaResourceLocator.classFilesToAnalyze()).hasSize(5);
+
   }
   static class A { //NOSONAR
     interface I{
