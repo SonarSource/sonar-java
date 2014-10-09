@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -36,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.utils.SonarException;
 import org.sonar.api.utils.WildcardPattern;
@@ -49,8 +47,7 @@ import java.util.List;
 import static org.apache.commons.io.filefilter.FileFilterUtils.suffixFileFilter;
 
 public class JavaClasspath implements BatchExtension {
-  public static final String SONAR_JAVA_BINARIES = "sonar.java.binaries";
-  public static final String SONAR_JAVA_LIBRARIES = "sonar.java.libraries";
+
   private static final char SEPARATOR = ',';
   private static final Logger LOG = LoggerFactory.getLogger(JavaClasspath.class);
 
@@ -63,8 +60,8 @@ public class JavaClasspath implements BatchExtension {
   }
 
   public JavaClasspath(Settings settings, FileSystem fileSystem, @Nullable MavenProject pom) {
-    binaries = getFilesFromProperty(SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
-    libraries = getFilesFromProperty(SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
+    binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
+    libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
     if (binaries.isEmpty() && libraries.isEmpty()) {
       binaries = getFilesFromProperty("sonar.binaries", settings, fileSystem.baseDir());
       libraries = getFilesFromProperty("sonar.libraries", settings, fileSystem.baseDir());
@@ -159,21 +156,6 @@ public class JavaClasspath implements BatchExtension {
 
   public List<File> getElements() {
     return elements;
-  }
-
-  public static List<PropertyDefinition> getProperties() {
-    ImmutableList.Builder<PropertyDefinition> extensions = ImmutableList.builder();
-    extensions.add(PropertyDefinition.builder(SONAR_JAVA_BINARIES)
-            .description("Comma-separated paths to directories containing the binary files (directories with class files).")
-            .hidden()
-            .build()
-    );
-    extensions.add(PropertyDefinition.builder(SONAR_JAVA_LIBRARIES)
-            .description("Comma-separated paths to libraries required by the project.")
-            .hidden()
-            .build()
-    );
-    return extensions.build();
   }
 
   public List<File> getBinaryDirs() {
