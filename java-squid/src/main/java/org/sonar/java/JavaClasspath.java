@@ -60,63 +60,56 @@ public class JavaClasspath implements BatchExtension {
   }
 
   public JavaClasspath(Settings settings, FileSystem fileSystem, @Nullable ProjectClasspath projectClasspath) {
-    binaries = getBinaryDirFromProperty(SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
-    libraries = getLibraryFilesFromProperty(SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
+    binaries = getFilesFromProperty(SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
+    libraries = getFilesFromProperty(SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
     if (projectClasspath != null && binaries.isEmpty() && libraries.isEmpty()) {
-      binaries = getBinaryDirFromProperty("sonar.binaries", settings, fileSystem.baseDir());
-      libraries = getLibraryFilesFromProperty("sonar.libraries", settings, fileSystem.baseDir());
+      binaries = getFilesFromProperty("sonar.binaries", settings, fileSystem.baseDir());
+      libraries = getFilesFromProperty("sonar.libraries", settings, fileSystem.baseDir());
     }
     elements = Lists.newArrayList(binaries);
     elements.addAll(libraries);
   }
 
 
-  private List<File> getBinaryDirFromProperty(String property, Settings settings, File baseDir) {
+  private List<File> getFilesFromProperty(String property, Settings settings, File baseDir) {
     List<File> result = Lists.newArrayList();
     String fileList = settings.getString(property);
     if (StringUtils.isNotEmpty(fileList)) {
       List<String> fileNames = Lists.newArrayList(StringUtils.split(fileList, SEPARATOR));
-      for (String path : fileNames) {
-        File file = resolvePath(baseDir, path);
-        result.add(file);
+      for (String pathPattern : fileNames) {
+        if (property.endsWith("binaries")) {
+          File binaryFile = resolvePath(baseDir, pathPattern);
+          result.add(binaryFile);
+        } else {
+          List<File> libraryFilesForPattern = getLibraryFilesForPattern(baseDir, pathPattern);
+          if (libraryFilesForPattern.isEmpty()) {
+            LOG.error("Invalid value for " + property);
+            String message = "No files nor directories matching '" + pathPattern + "'";
+            throw new IllegalStateException(message);
+          }
+          result.addAll(libraryFilesForPattern);
+        }
       }
     }
     return result;
   }
 
-  private List<File> getLibraryFilesFromProperty(String property, Settings settings, File baseDir) {
-    List<File> result = Lists.newArrayList();
-    String fileList = settings.getString(property);
-    if (StringUtils.isNotEmpty(fileList)) {
-      List<String> fileNames = Lists.newArrayList(StringUtils.split(fileList, SEPARATOR));
-      for (String fileName : fileNames) {
-        String pattern = fileName;
-        File dir = baseDir;
-        int wildcardIndex = pattern.indexOf('*');
-        if (wildcardIndex > 0) {
-          pattern = pattern.substring(0, wildcardIndex);
-        }
-        int lastPathSeparator = Math.max(pattern.lastIndexOf('/'), pattern.lastIndexOf('\\'));
-        File filenameDir = new File(pattern.substring(0, lastPathSeparator));
-        if (filenameDir.isAbsolute()) {
-          dir = filenameDir;
-          pattern = fileName.substring(dir.getAbsolutePath().length());
-        } else {
-          pattern = fileName;
-        }
-        List<File> matchingFiles = getMatchingFiles(pattern, dir);
-        if (matchingFiles.isEmpty()) {
-          LOG.error("Invalid value for " + property);
-          String message = "No files nor directories matching '" + fileName + "' ";
-          if (!filenameDir.isAbsolute()) {
-            message += "in directory " + baseDir;
-          }
-          throw new IllegalStateException(message);
-        }
-        result.addAll(matchingFiles);
-      }
+  private List<File> getLibraryFilesForPattern(File baseDir, String pathPattern) {
+    String pattern = pathPattern;
+    File dir = baseDir;
+    int wildcardIndex = pattern.indexOf('*');
+    if (wildcardIndex > 0) {
+      pattern = pattern.substring(0, wildcardIndex);
     }
-    return result;
+    int lastPathSeparator = Math.max(pattern.lastIndexOf('/'), pattern.lastIndexOf('\\'));
+    File filenameDir = new File(pattern.substring(0, lastPathSeparator));
+    if (filenameDir.isAbsolute()) {
+      dir = filenameDir;
+      pattern = pathPattern.substring(dir.getAbsolutePath().length());
+    } else {
+      pattern = pathPattern;
+    }
+    return getMatchingFiles(pattern, dir);
   }
 
   private List<File> getMatchingFiles(String pattern, File dir) {
@@ -143,14 +136,14 @@ public class JavaClasspath implements BatchExtension {
   public static List<PropertyDefinition> getProperties() {
     ImmutableList.Builder<PropertyDefinition> extensions = ImmutableList.builder();
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_BINARIES)
-        .description("Comma-separated paths to directories containing the binary files (directories with class files).")
-        .hidden()
-        .build()
+            .description("Comma-separated paths to directories containing the binary files (directories with class files).")
+            .hidden()
+            .build()
     );
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_LIBRARIES)
-        .description("Comma-separated paths to libraries required by the project.")
-        .hidden()
-        .build()
+            .description("Comma-separated paths to libraries required by the project.")
+            .hidden()
+            .build()
     );
     return extensions.build();
   }

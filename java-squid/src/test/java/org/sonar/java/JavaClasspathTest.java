@@ -159,7 +159,7 @@ public class JavaClasspathTest {
     File baseDir = new File("src/test/files/classpath");
     fs.setBaseDir(baseDir);
     settings.setProperty(JavaClasspath.SONAR_JAVA_LIBRARIES, "toto/**/hello.jar");
-    checkIllegalStateException("No files nor directories matching 'toto/**/hello.jar' in directory "+baseDir.getAbsolutePath());
+    checkIllegalStateException("No files nor directories matching 'toto/**/hello.jar'");
 
   }
 
