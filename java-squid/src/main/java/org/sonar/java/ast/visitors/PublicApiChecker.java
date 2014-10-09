@@ -266,7 +266,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
   }
 
   public double getDocumentedPublicApiDensity() {
-    if (publicApi == 0) {
+    if (Double.doubleToRawLongBits(publicApi) == 0L) {
       return 100.0;
     }
     return ParsingUtils.scaleValue(documentedPublicApi / publicApi * 100, 2);

@@ -26,7 +26,6 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
@@ -47,11 +46,6 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.FOR_STATEMENT);
-  }
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
   }
 
   @Override
