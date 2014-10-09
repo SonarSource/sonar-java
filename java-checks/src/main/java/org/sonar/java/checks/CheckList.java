@@ -43,7 +43,6 @@ public final class CheckList {
       NoSonarCheck.class,
       CommentedOutCodeLineCheck.class,
       EmptyFileCheck.class,
-      XPathCheck.class,
       EmptyBlock_S00108_Check.class,
       TooManyLinesOfCodeInFile_S00104_Check.class,
       TooManyParameters_S00107_Check.class,
