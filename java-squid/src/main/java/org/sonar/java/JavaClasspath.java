@@ -70,11 +70,11 @@ public class JavaClasspath implements BatchExtension {
       //check mojo
       elements = getLibrariesFromMaven(pom);
     } else {
-      if(useDeprecatedProperties) {
-        LOG.warn("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
-      }
       elements = Lists.newArrayList(binaries);
       elements.addAll(libraries);
+      if(useDeprecatedProperties && !elements.isEmpty()) {
+        LOG.warn("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
+      }
     }
   }
 
