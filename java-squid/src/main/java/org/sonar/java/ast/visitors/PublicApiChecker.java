@@ -44,32 +44,31 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Deque;
 import java.util.LinkedList;
 
 public class PublicApiChecker extends BaseTreeVisitor {
 
   private static final Tree.Kind[] CLASS_KINDS = {
-    Tree.Kind.CLASS,
-    Tree.Kind.INTERFACE,
-    Tree.Kind.ENUM,
-    Tree.Kind.ANNOTATION_TYPE
+      Tree.Kind.CLASS,
+      Tree.Kind.INTERFACE,
+      Tree.Kind.ENUM,
+      Tree.Kind.ANNOTATION_TYPE
   };
 
   private static final Tree.Kind[] METHOD_KINDS = {
-    Tree.Kind.METHOD,
-    Tree.Kind.CONSTRUCTOR
+      Tree.Kind.METHOD,
+      Tree.Kind.CONSTRUCTOR
   };
 
   private static final Tree.Kind[] API_KINDS = {
-    Tree.Kind.CLASS,
-    Tree.Kind.INTERFACE,
-    Tree.Kind.ENUM,
-    Tree.Kind.ANNOTATION_TYPE,
-    Tree.Kind.METHOD,
-    Tree.Kind.CONSTRUCTOR,
-    Tree.Kind.VARIABLE
+      Tree.Kind.CLASS,
+      Tree.Kind.INTERFACE,
+      Tree.Kind.ENUM,
+      Tree.Kind.ANNOTATION_TYPE,
+      Tree.Kind.METHOD,
+      Tree.Kind.CONSTRUCTOR,
+      Tree.Kind.VARIABLE
   };
 
   private final Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
@@ -202,45 +201,55 @@ public class PublicApiChecker extends BaseTreeVisitor {
 
   @Nullable
   public String getApiJavadoc(Tree tree) {
-    if (tree.is(API_KINDS)) {
-      ModifiersTree modifiersTree = null;
-      if (tree.is(CLASS_KINDS)) {
-        modifiersTree = ((ClassTree) tree).modifiers();
-      } else if (tree.is(METHOD_KINDS)) {
-        modifiersTree = ((MethodTree) tree).modifiers();
-      } else if (tree.is(Tree.Kind.VARIABLE)) {
-        modifiersTree = ((VariableTree) tree).modifiers();
-      }
-      // FIXME token should be retrieved in a much simpler way.
-      Tree tokenTree = null;
-      if (modifiersTree != null && !(modifiersTree.modifiers().isEmpty() && modifiersTree.annotations().isEmpty())) {
-        tokenTree = modifiersTree;
-      }
-      if (tokenTree == null && tree.is(Tree.Kind.METHOD)) {
-        MethodTree methodTree = (MethodTree) tree;
-        if (methodTree.typeParameters().isEmpty()) {
-          tokenTree = methodTree.returnType();
-          while (tokenTree != null && tokenTree.is(Tree.Kind.ARRAY_TYPE, Tree.Kind.PARAMETERIZED_TYPE, Tree.Kind.MEMBER_SELECT)) {
-            if (tokenTree.is(Tree.Kind.ARRAY_TYPE)) {
-              tokenTree = ((ArrayTypeTree) tokenTree).type();
-            } else if (tokenTree.is(Tree.Kind.MEMBER_SELECT)) {
-              tokenTree = ((MemberSelectExpressionTree) tokenTree).expression();
-            } else if (tokenTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-              tokenTree = ((ParameterizedTypeTree) tokenTree).type();
-            }
-          }
-        } else {
-          SyntaxToken syntaxToken = ((TypeParameterListTreeImpl) ((JavaTree) methodTree.typeParameters().get(0)).getAstNode().getParent()).openBracketToken();
-          return getCommentFromSyntaxToken(syntaxToken);
+    if (!tree.is(API_KINDS)) {
+      return null;
+    }
+    ModifiersTree modifiersTree = getModifierTrees(tree);
+    // FIXME token should be retrieved in a much simpler way.
+    if (modifiersTree != null && !(modifiersTree.modifiers().isEmpty() && modifiersTree.annotations().isEmpty())) {
+      return getCommentFromTree(modifiersTree);
+    }
+    if (tree.is(Tree.Kind.METHOD)) {
+      MethodTree methodTree = (MethodTree) tree;
+      return getCommentFromMethod(methodTree);
+    }
+    return getCommentFromTree(tree);
+  }
+
+  private String getCommentFromMethod(MethodTree methodTree) {
+    if (methodTree.typeParameters().isEmpty()) {
+      Tree tokenTree = methodTree.returnType();
+      while (tokenTree != null && tokenTree.is(Kind.ARRAY_TYPE, Kind.PARAMETERIZED_TYPE, Kind.MEMBER_SELECT)) {
+        if (tokenTree.is(Kind.ARRAY_TYPE)) {
+          tokenTree = ((ArrayTypeTree) tokenTree).type();
+        } else if (tokenTree.is(Kind.MEMBER_SELECT)) {
+          tokenTree = ((MemberSelectExpressionTree) tokenTree).expression();
+        } else if (tokenTree.is(Kind.PARAMETERIZED_TYPE)) {
+          tokenTree = ((ParameterizedTypeTree) tokenTree).type();
         }
       }
-      if (tokenTree == null) {
-        tokenTree = tree;
-      }
-      Token token = ((JavaTree) tokenTree).getToken();
-      return getCommentFromToken(token);
+      return getCommentFromTree(tokenTree);
+    } else {
+      SyntaxToken syntaxToken = ((TypeParameterListTreeImpl) ((JavaTree) methodTree.typeParameters().get(0)).getAstNode().getParent()).openBracketToken();
+      return getCommentFromSyntaxToken(syntaxToken);
     }
-    return null;
+  }
+
+  private String getCommentFromTree(Tree tokenTree) {
+    Token token = ((JavaTree) tokenTree).getToken();
+    return getCommentFromToken(token);
+  }
+
+  private ModifiersTree getModifierTrees(Tree tree) {
+    ModifiersTree modifiersTree = null;
+    if (tree.is(CLASS_KINDS)) {
+      modifiersTree = ((ClassTree) tree).modifiers();
+    } else if (tree.is(METHOD_KINDS)) {
+      modifiersTree = ((MethodTree) tree).modifiers();
+    } else if (tree.is(Kind.VARIABLE)) {
+      modifiersTree = ((VariableTree) tree).modifiers();
+    }
+    return modifiersTree;
   }
 
   public String getCommentFromToken(Token token) {
