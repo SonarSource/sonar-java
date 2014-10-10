@@ -109,7 +109,11 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     if ("java.io.Serializable".equals(interfaceName)) {
       return true;
     }
-    Symbol.TypeSymbol symbol = ((Type.ClassType) type).getSymbol();
+    return hasSupertypeSerializable((Type.ClassType) type);
+  }
+
+  private boolean hasSupertypeSerializable(Type.ClassType type) {
+    Symbol.TypeSymbol symbol = type.getSymbol();
     for (Type interfaceType : symbol.getInterfaces()) {
       if(implementsSerializable(interfaceType)) {
         return true;
