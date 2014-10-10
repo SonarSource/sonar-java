@@ -26,14 +26,11 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -84,7 +81,7 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
   }
 
   private boolean isExcluded(MethodTree tree) {
-    return isMainMethod(tree) || isOverriding(tree) || isSerializableMethod(tree) || isDesignedForExtension(tree);
+    return ((MethodTreeImpl) tree).isMainMethod() || isOverriding(tree) || isSerializableMethod(tree) || isDesignedForExtension(tree);
   }
 
   private boolean isDesignedForExtension(MethodTree tree) {
@@ -103,44 +100,6 @@ public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaF
       result |= "readObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 2;
     }
     return result;
-  }
-
-  // TODO(Godin): It seems to be quite common need - operate with signature of methods, so this operation should be generalized and simplified.
-  private boolean isMainMethod(MethodTree tree) {
-    return isPublicStatic(tree) && isCalledMain(tree) && returnsVoid(tree) && hasStringArrayParameter(tree);
-  }
-
-  private boolean hasStringArrayParameter(MethodTree tree) {
-    return hasOneParameter(tree) && isParameterStringArray(tree);
-  }
-
-  private boolean isParameterStringArray(MethodTree tree) {
-    VariableTree variableTree = tree.parameters().get(0);
-    boolean result = false;
-    if (variableTree.type().is(Tree.Kind.ARRAY_TYPE)) {
-      ArrayTypeTree arrayTypeTree = (ArrayTypeTree) variableTree.type();
-      Type arrayType = ((AbstractTypedTree) arrayTypeTree.type()).getSymbolType();
-      result = arrayType.isTagged(Type.CLASS) && "String".equals(((Type.ClassType) arrayType).getSymbol().getName());
-    }
-    return result;
-  }
-
-  private boolean isPublicStatic(MethodTree tree) {
-    return tree.modifiers().modifiers().contains(Modifier.STATIC) && tree.modifiers().modifiers().contains(Modifier.PUBLIC);
-  }
-
-  private boolean isCalledMain(MethodTree tree) {
-    return "main".equals(tree.simpleName().name());
-  }
-
-  private boolean returnsVoid(MethodTree tree) {
-    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
-    // TODO(Godin): Not very convenient way to get a return type
-    return (methodSymbol != null) && (methodSymbol.getReturnType().getType().isTagged(Type.VOID));
-  }
-
-  private boolean hasOneParameter(MethodTree tree) {
-    return tree.parameters().size() == 1;
   }
 
   private boolean isOverriding(MethodTree tree) {

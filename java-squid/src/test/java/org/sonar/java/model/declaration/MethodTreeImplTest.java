@@ -79,6 +79,20 @@ public class MethodTreeImplTest {
     assertThat(methodTree.isOverriding()).isNull();
   }
 
+
+  @Test
+  public void is_main_method() throws Exception {
+    assertThat(getUniqueMethod("class A { public static void main(String[] args){} }").isMainMethod()).isTrue();
+    assertThat(getUniqueMethod("class A { public static void main(String... args){} }").isMainMethod()).isTrue();
+    assertThat(getUniqueMethod("class A { public void main(String[] args){} }").isMainMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { static void main(String[] args){} }").isMainMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public static void amain(String[] args){} }").isMainMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public static void main(String args){} }").isMainMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public static int main(String[] args){} }").isMainMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public static void main(String[] args, String[] second){} }").isMainMethod()).isFalse();
+
+  }
+
   private MethodTreeImpl getUniqueMethod(String code) {
     CompilationUnitTree cut = createTree(code);
     return (MethodTreeImpl) ((ClassTree) cut.types().get(0)).members().get(0);

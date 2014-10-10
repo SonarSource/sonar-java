@@ -25,22 +25,25 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -238,6 +241,9 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   private boolean isPrivate() {
     return modifiers.modifiers().contains(Modifier.PRIVATE);
   }
+  private boolean isPublic() {
+    return modifiers.modifiers().contains(Modifier.PUBLIC);
+  }
 
   public boolean isAnnotatedOverride() {
     for (AnnotationTree annotationTree : modifiers.annotations()) {
@@ -250,5 +256,36 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     }
     return false;
   }
+
+  public boolean isMainMethod() {
+    return isStatic() && isPublic() && isNamed("main") && returnsVoid() && hasStringArrayParameter();
+  }
+
+  private boolean hasStringArrayParameter() {
+    return parameters.size() == 1 && isParameterStringArray();
+  }
+
+  private boolean isParameterStringArray() {
+    VariableTree variableTree = parameters.get(0);
+    boolean result = false;
+    if (variableTree.type().is(Tree.Kind.ARRAY_TYPE)) {
+      ArrayTypeTree arrayTypeTree = (ArrayTypeTree) variableTree.type();
+      Type arrayType = ((AbstractTypedTree) arrayTypeTree.type()).getSymbolType();
+      result = arrayType.isTagged(Type.CLASS) && "String".equals(((Type.ClassType) arrayType).getSymbol().getName());
+    }
+    return result;
+  }
+
+  private boolean returnsVoid() {
+    if(returnType != null) {
+      return returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
+    }
+    return false;
+  }
+
+  private boolean isNamed(String name) {
+    return name.equals(simpleName().name());
+  }
+
 
 }

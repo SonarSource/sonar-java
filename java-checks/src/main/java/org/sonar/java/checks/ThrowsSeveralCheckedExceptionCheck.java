@@ -28,11 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
-import org.sonar.plugins.java.api.tree.ArrayTypeTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -49,39 +45,12 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (hasSemantic() && isPublic(methodTree) && !isPublicStaticVoidMain(methodTree)) {
+    if (hasSemantic() && isPublic(methodTree) && !((MethodTreeImpl)methodTree).isMainMethod()) {
       List<String> thrownCheckedExceptions = getThrownCheckedExceptions(methodTree);
       if (thrownCheckedExceptions.size() > 1 && isNotOverriden(methodTree)) {
         addIssue(methodTree, "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
       }
     }
-  }
-
-  private boolean isPublicStaticVoidMain(MethodTree methodTree) {
-    return "main".equals(methodTree.simpleName().name()) && hasStringArrayParam(methodTree) && returnsVoid(methodTree) && isStatic(methodTree);
-  }
-
-  private boolean hasStringArrayParam(MethodTree methodTree) {
-    if(methodTree.parameters().size()==1){
-      Tree argType = methodTree.parameters().get(0).type();
-      if(argType.is(Tree.Kind.ARRAY_TYPE) && ((ArrayTypeTree) argType).type().is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifierTree = (IdentifierTree) ((ArrayTypeTree) argType).type();
-        return "String".equals(identifierTree.name()) || "java.lang.String".equals(identifierTree.name());
-      }
-    }
-    return false;
-  }
-
-  private boolean returnsVoid(MethodTree methodTree) {
-    Tree returnType = methodTree.returnType();
-    if(returnType != null) {
-      return returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
-    }
-    return false;
-  }
-
-  private boolean isStatic(MethodTree methodTree) {
-    return methodTree.modifiers().modifiers().contains(Modifier.STATIC);
   }
 
   private boolean isNotOverriden(MethodTree methodTree) {
