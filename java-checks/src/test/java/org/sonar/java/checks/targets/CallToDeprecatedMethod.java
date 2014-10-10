@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks.targets;
 
+import java.util.Date;
+
 public class CallToDeprecatedMethod {
 
   public CallToDeprecatedMethod() {
@@ -26,6 +28,7 @@ public class CallToDeprecatedMethod {
     string.getBytes(1, 1, new byte[3], 7); // call to deprecated method
     new DeprecatedConstructor(); // call to deprecated constructor
     new MyDeprecatedClass();
+    new Date().getDate();
   }
 
   @Deprecated

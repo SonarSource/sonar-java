@@ -241,6 +241,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   private boolean isPrivate() {
     return modifiers.modifiers().contains(Modifier.PRIVATE);
   }
+
   private boolean isPublic() {
     return modifiers.modifiers().contains(Modifier.PUBLIC);
   }
@@ -258,7 +259,11 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   public boolean isMainMethod() {
-    return isStatic() && isPublic() && isNamed("main") && returnsVoid() && hasStringArrayParameter();
+    return isPublicStatic() && isNamed("main") && returnsVoid() && hasStringArrayParameter();
+  }
+
+  private boolean isPublicStatic() {
+    return isStatic() && isPublic();
   }
 
   private boolean hasStringArrayParameter() {
