@@ -66,7 +66,6 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
-    assertThat(javaClasspath.getLibraries()).hasSize(1);
   }
 
   @Test
@@ -82,7 +81,6 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
-    assertThat(javaClasspath.getLibraries()).isEmpty();
   }
 
   @Test
@@ -91,7 +89,6 @@ public class JavaClasspathTest {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "bin");
     javaClasspath = new JavaClasspath(settings, fs);
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
-    assertThat(javaClasspath.getLibraries()).isEmpty();
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
   }
@@ -102,7 +99,6 @@ public class JavaClasspathTest {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/hello.jar");
     javaClasspath = new JavaClasspath(settings, fs);
     assertThat(javaClasspath.getBinaryDirs()).isEmpty();
-    assertThat(javaClasspath.getLibraries()).hasSize(1);
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
   }

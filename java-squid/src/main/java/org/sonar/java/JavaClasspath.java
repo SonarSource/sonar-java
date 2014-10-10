@@ -52,7 +52,6 @@ public class JavaClasspath implements BatchExtension {
   private static final Logger LOG = LoggerFactory.getLogger(JavaClasspath.class);
 
   private List<File> binaries;
-  private List<File> libraries;
   private List<File> elements;
 
   public JavaClasspath(Settings settings, FileSystem fileSystem) {
@@ -61,7 +60,7 @@ public class JavaClasspath implements BatchExtension {
 
   public JavaClasspath(Settings settings, FileSystem fileSystem, @Nullable MavenProject pom) {
     binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
-    libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
+    List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
     if (binaries.isEmpty() && libraries.isEmpty()) {
       binaries = getFilesFromProperty("sonar.binaries", settings, fileSystem.baseDir());
       libraries = getFilesFromProperty("sonar.libraries", settings, fileSystem.baseDir());
@@ -126,7 +125,7 @@ public class JavaClasspath implements BatchExtension {
     if (wildcardIndex > 0) {
       pattern = pattern.substring(0, wildcardIndex);
     }
-    int lastPathSeparator = Math.max(Math.max(pattern.lastIndexOf('/'), pattern.lastIndexOf('\\')),0);
+    int lastPathSeparator = Math.max(Math.max(pattern.lastIndexOf('/'), pattern.lastIndexOf('\\')), 0);
     File filenameDir = new File(pattern.substring(0, lastPathSeparator));
     if (filenameDir.isAbsolute()) {
       dir = filenameDir;
@@ -160,10 +159,6 @@ public class JavaClasspath implements BatchExtension {
 
   public List<File> getBinaryDirs() {
     return binaries;
-  }
-
-  public List<File> getLibraries() {
-    return libraries;
   }
 
   private static class WilcardPatternFileFilter implements IOFileFilter {
