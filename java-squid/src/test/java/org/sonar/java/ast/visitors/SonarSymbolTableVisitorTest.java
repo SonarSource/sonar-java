@@ -66,7 +66,7 @@ public class SonarSymbolTableVisitorTest {
     verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(5, 3)));
     verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(6, 11)));
     // Example class declaration
-    verify(symboltableBuilder).newSymbol(offset(4, 7), offset(4, 15)); // FIXME should be 14
+    verify(symboltableBuilder).newSymbol(offset(4, 7), offset(4, 14));
     // list field
     verify(symboltableBuilder).newSymbol(offset(5, 16), offset(5, 20));
     verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(7, 10)));

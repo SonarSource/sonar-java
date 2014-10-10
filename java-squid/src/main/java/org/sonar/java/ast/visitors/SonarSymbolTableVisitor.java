@@ -100,7 +100,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
     } else {
       identifierTree = ((MemberSelectExpressionTree) tree.qualifiedIdentifier()).identifier();
     }
-    //Exclude on demands imports
+    // Exclude on demands imports
     if (!"*".equals(identifierTree.name())) {
       createSymbol(tree, identifierTree);
     }
@@ -119,7 +119,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   }
 
   private int endOffsetFor(IdentifierTree tree) {
-    return ((InternalSyntaxToken) tree.identifierToken()).getToIndex();
+    return ((InternalSyntaxToken) tree.identifierToken()).getFromIndex() + tree.identifierToken().text().length();
   }
 
 }
