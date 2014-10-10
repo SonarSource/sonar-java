@@ -63,14 +63,18 @@ public class MissingCurlyBraces_S00121_Check extends SubscriptionBaseVisitor {
         break;
       case IF_STATEMENT:
         IfStatementTree ifStmt = (IfStatementTree) tree;
-        checkStatement(ifStmt.thenStatement(), tree);
-        StatementTree elseStmt = ifStmt.elseStatement();
-        if (elseStmt != null && !elseStmt.is(Tree.Kind.IF_STATEMENT)) {
-          checkStatement(elseStmt, ifStmt.elseKeyword());
-        }
+        checkIfStatement(ifStmt);
         break;
       default:
         break;
+    }
+  }
+
+  private void checkIfStatement(IfStatementTree ifStmt) {
+    checkStatement(ifStmt.thenStatement(), ifStmt);
+    StatementTree elseStmt = ifStmt.elseStatement();
+    if (elseStmt != null && !elseStmt.is(Tree.Kind.IF_STATEMENT)) {
+      checkStatement(elseStmt, ifStmt.elseKeyword());
     }
   }
 
