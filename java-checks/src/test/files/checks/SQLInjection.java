@@ -66,6 +66,7 @@ class A {
       session.createQuery("From Customer where id > "+param); //NonCompliant
       session.createQuery(query); //NonCompliant
       conn.prepareStatement(param);
+      conn.prepareStatement(sqlQuery + "plop"); //compliant sqlQuery is a field
     } catch (Exception e) {
     }
   }
@@ -74,6 +75,7 @@ class A {
     return "SELECT * ";
   }
 
+  private String sqlQuery;
   class A {
     void prepareStatement(String s) {
 
