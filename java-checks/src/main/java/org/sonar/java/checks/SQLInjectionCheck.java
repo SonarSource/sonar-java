@@ -111,11 +111,8 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
       return visitor.dynamicString;
     }
     //arg is not a local variable nor a constant, so it is a parameter or a field.
-    if(symbol.owner().isKind(Symbol.MTH)) {
-      parameterName =  arg.name();
-      return !firstLevel;
-    }
-    return false;
+    parameterName =  arg.name();
+    return symbol.owner().isKind(Symbol.MTH) && !firstLevel;
   }
 
   private boolean isConstant(Symbol symbol) {
