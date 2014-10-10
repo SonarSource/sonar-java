@@ -60,7 +60,7 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
 
   @Override
   public void visitMethod(MethodTree tree) {
-    if (tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverriden(tree)) {
+    if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverriden(tree)) && !((MethodTreeImpl) tree).isMainMethod()) {
       for (ExpressionTree throwClause : tree.throwsClauses()) {
         checkExceptionAndRaiseIssue(throwClause);
       }

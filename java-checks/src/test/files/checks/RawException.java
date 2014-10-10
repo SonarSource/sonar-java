@@ -64,4 +64,6 @@ class SubClass extends Example {
   public void throws_Exception() throws Exception { //Compliant because overrides.
     super.throws_Exception();
   }
+  public static void main(String[] args) throws Exception { //should not raise issue SONARJAVA-671
+  }
 }
