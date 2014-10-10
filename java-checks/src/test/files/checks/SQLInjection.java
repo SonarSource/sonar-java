@@ -65,7 +65,7 @@ class A {
       session.createQuery("From Customer where id > ?");
       session.createQuery("From Customer where id > "+param); //NonCompliant
       session.createQuery(query); //NonCompliant
-
+      conn.prepareStatement(param);
     } catch (Exception e) {
     }
   }

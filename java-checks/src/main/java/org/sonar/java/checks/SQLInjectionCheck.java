@@ -62,7 +62,7 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
       //We want to check the argument for the three methods.
       ExpressionTree arg = methodTree.arguments().get(0);
       parameterName = "";
-      if (isDynamicString(methodTree, arg)) {
+      if (isDynamicString(methodTree, arg, null, true)) {
         String message = "\""+parameterName+"\" is provided externally to the method and not sanitized before use.";
         if(isHibernateCall) {
           message = "Use Hibernate's parameter binding instead of concatenation.";
@@ -72,12 +72,12 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isDynamicString(MethodInvocationTree methodTree, ExpressionTree arg) {
-    return isDynamicString(methodTree, arg, null);
-  }
   private boolean isDynamicString(MethodInvocationTree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {
+    return isDynamicString(methodTree, arg, currentlyChecking, false);
+  }
+  private boolean isDynamicString(MethodInvocationTree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
     if (arg.is(Tree.Kind.IDENTIFIER)) {
-      return isIdentifierDynamicString(methodTree, (IdentifierTree) arg, currentlyChecking);
+      return isIdentifierDynamicString(methodTree, (IdentifierTree) arg, currentlyChecking, firstLevel);
     } else if (arg.is(Tree.Kind.PLUS)) {
       BinaryExpressionTree binaryArg = (BinaryExpressionTree) arg;
       return isDynamicString(methodTree, binaryArg.rightOperand(), currentlyChecking) || isDynamicString(methodTree, binaryArg.leftOperand(), currentlyChecking);
@@ -88,7 +88,7 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
     return !arg.is(Tree.Kind.STRING_LITERAL);
   }
 
-  private boolean isIdentifierDynamicString(MethodInvocationTree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking) {
+  private boolean isIdentifierDynamicString(MethodInvocationTree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
     Symbol symbol = getSemanticModel().getReference(arg);
     if(symbol.equals(currentlyChecking) || isConstant(symbol)) {
       return false;
@@ -101,7 +101,7 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
 
       //Check declaration
       VariableTree declaration = (VariableTree) getSemanticModel().getTree(symbol);
-      if(declaration.initializer() != null && isDynamicString(methodTree, declaration.initializer())) {
+      if(declaration.initializer() != null && isDynamicString(methodTree, declaration.initializer(), currentlyChecking)) {
         return true;
       }
       //check usages by revisiting the enclosing tree.
@@ -112,7 +112,7 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
     }
     //arg is not a local variable nor a constant, so it is a parameter
     parameterName =  arg.name();
-    return true;
+    return !firstLevel;
   }
 
   private boolean isConstant(Symbol symbol) {
