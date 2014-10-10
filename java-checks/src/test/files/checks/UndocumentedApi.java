@@ -278,3 +278,17 @@ public class MyRunner extends Foo {
       boolean value() default true;
   }
 }
+class AnonymousInnerClass {
+  Comparator<String> doJob(){
+    return new Comparator<String>() { // anon-inner-class
+      class Hello { // inner-class
+        public void doJob() { // false-positive
+        }
+      }
+
+      public int compare(String o1, String o2) {
+        return 0;
+      }
+    };
+  }
+}

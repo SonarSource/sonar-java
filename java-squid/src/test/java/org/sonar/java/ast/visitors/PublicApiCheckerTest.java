@@ -80,7 +80,11 @@ public class PublicApiCheckerTest {
           assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public"));
         } else if (tree.is(PublicApiChecker.classKinds())) {
           IdentifierTree className = ((ClassTree) tree).simpleName();
-          assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(className.name()).isEqualTo(className != null && className.name().endsWith("Public"));
+          if(className==null) {
+            assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).isFalse();
+          }else {
+            assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(className.name()).isEqualTo(className != null && className.name().endsWith("Public"));
+          }
           classTrees.push((ClassTree) tree);
         } else {
           assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).isFalse();

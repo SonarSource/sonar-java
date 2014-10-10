@@ -130,3 +130,12 @@ interface deprec {
   @Deprecated
   void documentedMethodPublic();
 }
+
+class F {
+  Anonymous i = new Anonymous() {
+    @Override
+    public void undocumentedMethod() {
+
+    }
+  };
+}
