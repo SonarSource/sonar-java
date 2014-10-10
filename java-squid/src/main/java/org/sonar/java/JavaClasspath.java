@@ -61,7 +61,8 @@ public class JavaClasspath implements BatchExtension {
   public JavaClasspath(Settings settings, FileSystem fileSystem, @Nullable MavenProject pom) {
     binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
     List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
-    if (binaries.isEmpty() && libraries.isEmpty()) {
+    boolean useDeprecatedProperties = binaries.isEmpty() && libraries.isEmpty();
+    if (useDeprecatedProperties) {
       binaries = getFilesFromProperty("sonar.binaries", settings, fileSystem.baseDir());
       libraries = getFilesFromProperty("sonar.libraries", settings, fileSystem.baseDir());
     }
@@ -69,6 +70,9 @@ public class JavaClasspath implements BatchExtension {
       //check mojo
       elements = getLibrariesFromMaven(pom);
     } else {
+      if(useDeprecatedProperties) {
+        LOG.warn("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
+      }
       elements = Lists.newArrayList(binaries);
       elements.addAll(libraries);
     }
