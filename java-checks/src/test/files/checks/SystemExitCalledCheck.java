@@ -9,5 +9,6 @@ class A {
     Runtime.getRuntime().foo; // Compliant
     Runtime.getRuntime().foo(); // Compliant
     Runtime.getRuntime()++; // Compliant
+    Runtime.getRuntime().halt(12); //Non-Compliant
   }
 }

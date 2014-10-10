@@ -39,6 +39,7 @@ import java.util.List;
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class SystemExitCalledCheck extends SubscriptionBaseVisitor {
 
+  private String idName;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -47,15 +48,18 @@ public class SystemExitCalledCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    idName = "";
     MethodInvocationTree mit = (MethodInvocationTree)tree;
     if (isCallToExitMethod(mit)) {
-      addIssue(tree, "Remove this exit() call or ensure it is really required.");
+      addIssue(tree, "Remove this call to \""+idName+"\" or ensure it is really required.");
     }
   }
 
   private boolean isCallToExitMethod(MethodInvocationTree tree) {
     String selection = concatenate(tree.methodSelect());
-    return "System.exit".equals(selection) || "Runtime.getRuntime().exit".equals(selection);
+    return "System.exit".equals(selection)
+        || "Runtime.getRuntime().exit".equals(selection)
+        || "Runtime.getRuntime().halt".equals(selection);
   }
 
   private String concatenate(ExpressionTree tree) {
@@ -78,6 +82,7 @@ public class SystemExitCalledCheck extends SubscriptionBaseVisitor {
     }
 
     StringBuilder sb = new StringBuilder();
+    idName = pieces.getLast();
     for (String piece: pieces) {
       sb.append(piece);
     }

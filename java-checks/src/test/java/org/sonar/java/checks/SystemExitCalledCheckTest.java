@@ -37,9 +37,11 @@ public class SystemExitCalledCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SystemExitCalledCheck.java"), new VisitorsBridge(new SystemExitCalledCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Remove this exit() call or ensure it is really required.")
+        .next().atLine(3).withMessage("Remove this call to \"exit\" or ensure it is really required.")
         .next().atLine(4)
-        .next().atLine(8);
+        .next().atLine(8)
+        .next().atLine(12).withMessage("Remove this call to \"halt\" or ensure it is really required.")
+    .noMore();
   }
 
 }
