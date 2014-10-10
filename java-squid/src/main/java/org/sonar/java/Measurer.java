@@ -131,21 +131,19 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
       classes++;
       classTrees.push((ClassTree) tree);
     }
-    if(tree.is(Tree.Kind.NEW_CLASS) && ((NewClassTree)tree).classBody() != null ) {
+    if (tree.is(Tree.Kind.NEW_CLASS) && ((NewClassTree) tree).classBody() != null) {
       classes--;
     }
-    if (tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR)) {
+    if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && classTrees.peek().simpleName() != null) {
       //don't count methods in anonymous classes.
-      if (classTrees.peek().simpleName() != null) {
-        MethodTree methodTree = (MethodTree) tree;
-        if (analyseAccessors && accessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
-          accessors++;
-        } else {
-          methods++;
-          int methodComplexity = context.getMethodComplexity(classTrees.peek(), methodTree);
-          methodComplexityDistribution.add(methodComplexity);
-          complexityInMethods += methodComplexity;
-        }
+      MethodTree methodTree = (MethodTree) tree;
+      if (analyseAccessors && accessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
+        accessors++;
+      } else {
+        methods++;
+        int methodComplexity = context.getMethodComplexity(classTrees.peek(), methodTree);
+        methodComplexityDistribution.add(methodComplexity);
+        complexityInMethods += methodComplexity;
       }
     }
 
