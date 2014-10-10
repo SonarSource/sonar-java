@@ -19,17 +19,19 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
+import com.google.common.io.Files;
+import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.source.Symbol;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import java.io.File;
+import java.util.List;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -40,63 +42,52 @@ import static org.mockito.Mockito.when;
 
 public class SonarSymbolTableVisitorTest {
 
-  private SonarComponents sonarComponents = mock(SonarComponents.class);
-  private Symbolizable symbolizable = mock(Symbolizable.class);
-  private Symbolizable.SymbolTableBuilder symboltableBuilder = mock(Symbolizable.SymbolTableBuilder.class);
+  private final SonarComponents sonarComponents = mock(SonarComponents.class);
+  private final Symbolizable symbolizable = mock(Symbolizable.class);
+  private final Symbolizable.SymbolTableBuilder symboltableBuilder = mock(Symbolizable.SymbolTableBuilder.class);
+
+  private static final String EOL = "\n";
+  private List<String> lines;
+
+  @Before
+  public void init() {
+    when(sonarComponents.symbolizableFor(any(File.class))).thenReturn(symbolizable);
+    when(symbolizable.newSymbolTableBuilder()).thenReturn(symboltableBuilder);
+  }
 
   @Test
   public void sonar_symbol_table() throws Exception {
     File file = new File("src/test/files/highlighter/SonarSymTable.java");
-    when(sonarComponents.symbolizableFor(any(File.class))).thenReturn(symbolizable);
-    when(symbolizable.newSymbolTableBuilder()).thenReturn(symboltableBuilder);
-    JavaAstScanner.scanSingleFile(file, new VisitorsBridge(Lists.newArrayList(new JavaFileScanner() {
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-      }
-    }), sonarComponents));
-    //import List
-    verify(symboltableBuilder).newSymbol(17, 21);
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(42));
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(71));
-    //Example class declaration
-    verify(symboltableBuilder).newSymbol(30, 38);
-    //list field
-    verify(symboltableBuilder).newSymbol(55, 59);
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(101));
-    //Example constructor
-    verify(symboltableBuilder).newSymbol(63, 70);
-    //list local var
-    verify(symboltableBuilder).newSymbol(84, 88);
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(108));
-    //method
-    verify(symboltableBuilder).newSymbol(124, 130);
+    lines = Files.readLines(file, Charsets.UTF_8);
+    JavaAstScanner.scanSingleFile(file, new VisitorsBridge(ImmutableList.of(), sonarComponents));
+
+    // import List
+    verify(symboltableBuilder).newSymbol(offset(1, 18), offset(1, 22));
+    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(5, 3)));
+    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(6, 11)));
+    // Example class declaration
+    verify(symboltableBuilder).newSymbol(offset(4, 7), offset(4, 15)); // FIXME should be 14
+    // list field
+    verify(symboltableBuilder).newSymbol(offset(5, 16), offset(5, 20));
+    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(7, 10)));
+    // Example constructor
+    verify(symboltableBuilder).newSymbol(offset(6, 3), offset(6, 10));
+    // list local var
+    verify(symboltableBuilder).newSymbol(offset(6, 24), offset(6, 28));
+    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(7, 17)));
+    // method
+    verify(symboltableBuilder).newSymbol(offset(9, 7), offset(9, 13));
     verify(symboltableBuilder).build();
     verifyNoMoreInteractions(symboltableBuilder);
   }
 
-  @Test
-  public void sonar_symbol_table_on_demand() throws Exception {
-    File file = new File("src/test/files/highlighter/SonarSymTableOnDemand.java");
-    when(sonarComponents.symbolizableFor(any(File.class))).thenReturn(symbolizable);
-    when(symbolizable.newSymbolTableBuilder()).thenReturn(symboltableBuilder);
-    JavaAstScanner.scanSingleFile(file, new VisitorsBridge(Lists.newArrayList(new JavaFileScanner() {
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-      }
-    }), sonarComponents));
-    //Example class declaration
-    verify(symboltableBuilder).newSymbol(30, 38);
-    //list field
-    verify(symboltableBuilder).newSymbol(55, 59);
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(101));
-    //Example constructor
-    verify(symboltableBuilder).newSymbol(63, 70);
-    //list local var
-    verify(symboltableBuilder).newSymbol(84, 88);
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(108));
-    //method
-    verify(symboltableBuilder).newSymbol(124, 130);
-    verify(symboltableBuilder).build();
-    verifyNoMoreInteractions(symboltableBuilder);
+  private int offset(int line, int column) {
+    int result = 0;
+    for (int i = 0; i < line - 1; i++) {
+      result += lines.get(i).length() + EOL.length();
+    }
+    result += column - 1;
+    return result;
   }
+
 }

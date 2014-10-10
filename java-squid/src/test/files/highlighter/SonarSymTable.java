@@ -1,4 +1,5 @@
 import java.util.List;
+import java.lang.*;
 
 class Example {
   List<String> list;
