@@ -1,7 +1,7 @@
 class A {
 
   void foo() {
-    int i,j,k,l = 0;
+    int i,j,k,l = 0; A a = new A();
     for (i = 0; i< 10; j++) { //Noncompliant
     }
 
@@ -23,6 +23,9 @@ class A {
     for(Enumeration serverIds = db.serverTable.keys(); serverIds.hasMoreElements();){}
 
     for(i = 0; i<10; foo()){}
+
+    for (; !a.foo(); l++) {}
+    for (; foo(); l++) {}
   }
 
 }

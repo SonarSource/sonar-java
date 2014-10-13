@@ -26,10 +26,13 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
@@ -127,10 +130,25 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
       scan(tree.condition());
     }
 
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      checkIdentifier(tree.identifier());
+    }
+
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      conditionNames.add(tree.name());
-      if (updateSymbols.contains(getSemanticModel().getReference(tree))) {
+      checkIdentifier(tree);
+    }
+
+    private void checkIdentifier(IdentifierTree tree) {
+      Symbol reference = getSemanticModel().getReference(tree);
+      String name = tree.name();
+      if(reference.isKind(Symbol.MTH)) {
+        name += "()";
+      }
+      conditionNames.add(name);
+      if (updateSymbols.contains(reference)) {
         shouldRaiseIssue = false;
       }
     }
