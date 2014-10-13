@@ -43,6 +43,7 @@ public class ForLoopIncrementAndUpdateCheckTest {
       .next().atLine(19).withMessage("This loop's stop condition tests \"k\" but the incrementer updates \"i\".")
       .next().atLine(27).withMessage("This loop's stop condition tests \"foo()\" but the incrementer updates \"l\".")
       .next().atLine(28).withMessage("This loop's stop condition tests \"foo()\" but the incrementer updates \"l\".")
+      .next().atLine(29).withMessage("This loop's stop condition tests \"bar\" but the incrementer updates \"l\".")
       .noMore();
   }
 

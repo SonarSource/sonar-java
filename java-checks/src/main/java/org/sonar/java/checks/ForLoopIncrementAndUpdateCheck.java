@@ -26,7 +26,6 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
@@ -130,10 +129,15 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
       scan(tree.condition());
     }
 
-
     @Override
-    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      checkIdentifier(tree.identifier());
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if(tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        checkIdentifier(((MemberSelectExpressionTree) tree.methodSelect()).identifier());
+      } else {
+        scan(tree.methodSelect());
+      }
+      scan(tree.typeArguments());
+      scan(tree.arguments());
     }
 
     @Override
@@ -144,7 +148,7 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     private void checkIdentifier(IdentifierTree tree) {
       Symbol reference = getSemanticModel().getReference(tree);
       String name = tree.name();
-      if(reference.isKind(Symbol.MTH)) {
+      if (reference != null && reference.isKind(Symbol.MTH)) {
         name += "()";
       }
       conditionNames.add(name);

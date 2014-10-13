@@ -26,6 +26,8 @@ class A {
 
     for (; !a.foo(); l++) {}
     for (; foo(); l++) {}
+    for (; bar(); l++) {}
+    for (; (p=h.next) !=null; h = p) {}
   }
 
 }
