@@ -18,7 +18,7 @@ public User getUser(Connection con, String user) throws SQLException {
     "from USERS where UNAME=" + user;);  // Noncompliant; parameter concatenated directly into query
 
     pstmt = con.prepareStatement("select FNAME, LNAME, SSN " +
-    "from USERS where UNAME=" + user;);  // Noncompliant; parameter concatenated directly into query
+    "from USERS where UNAME=" + user);  // Noncompliant; parameter concatenated directly into query
     ResultSet rs3 = pstmt.executeQuery();
 
     //...
