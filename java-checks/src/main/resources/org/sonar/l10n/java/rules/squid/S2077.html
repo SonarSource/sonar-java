@@ -35,7 +35,7 @@ public User getUser(Connection con, String user) throws SQLException {
 
   Statement stmt1 = null;
   PreparedStatement pstmt = null;
-  String query = "select FNAME, LNAME, SSN " + "from USERS where UNAME=?"
+  String query = "select FNAME, LNAME, SSN from USERS where UNAME=?";
   try {
     stmt1 = con.createStatement();
     ResultSet rs1 = stmt1.executeQuery("GETDATE()");
