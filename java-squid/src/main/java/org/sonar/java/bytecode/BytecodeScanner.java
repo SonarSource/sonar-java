@@ -27,12 +27,12 @@ import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.plugins.java.api.JavaResourceLocator;
+import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.CodeScanner;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -52,10 +52,6 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
     // TODO unchecked cast
     ((SquidClassLoader) classLoader).close();
     return this;
-  }
-
-  public BytecodeScanner scanDirectory(File bytecodeDirectory) {
-    return scan(Arrays.asList(bytecodeDirectory));
   }
 
   protected BytecodeScanner scanClasses(Collection<String> classes, AsmClassProvider classProvider) {
@@ -78,9 +74,13 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
   private void notifyBytecodeVisitors(Collection<String> keys, AsmClassProvider classProvider) {
     BytecodeVisitor[] visitorArray = getVisitors().toArray(new BytecodeVisitor[getVisitors().size()]);
     for (String key : keys) {
-      AsmClass asmClass = classProvider.getClass(key, DETAIL_LEVEL.STRUCTURE_AND_CALLS);
-      BytecodeVisitorNotifier visitorNotifier = new BytecodeVisitorNotifier(asmClass, visitorArray);
-      visitorNotifier.notifyVisitors(indexer, javaResourceLocator);
+      try {
+        AsmClass asmClass = classProvider.getClass(key, DETAIL_LEVEL.STRUCTURE_AND_CALLS);
+        BytecodeVisitorNotifier visitorNotifier = new BytecodeVisitorNotifier(asmClass, visitorArray);
+        visitorNotifier.notifyVisitors(indexer, javaResourceLocator);
+      } catch (Exception exception) {
+        throw new AnalysisException("Unable to analyze .class file " + key, exception);
+      }
     }
   }
 
