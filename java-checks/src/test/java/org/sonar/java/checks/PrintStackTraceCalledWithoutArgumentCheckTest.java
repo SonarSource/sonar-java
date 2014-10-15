@@ -41,6 +41,7 @@ public class PrintStackTraceCalledWithoutArgumentCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("Use a logger to log this exception.")
         .next().atLine(4)
+        .next().atLine(6)
         .next().atLine(10)
     ;
   }

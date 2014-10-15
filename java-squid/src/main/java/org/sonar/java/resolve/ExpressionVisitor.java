@@ -31,11 +31,15 @@ import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
+import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -79,6 +83,28 @@ public class ExpressionVisitor extends BaseTreeVisitor {
     typesOfLiterals.put(Tree.Kind.INT_LITERAL, symbols.intType);
   }
 
+
+  @Override
+  public void visitImport(ImportTree tree) {
+    //Noop, imports are not expression
+  }
+
+  @Override
+  public void visitLabeledStatement(LabeledStatementTree tree) {
+    //Ignore label (dedicated visitor)
+    scan(tree.statement());
+  }
+
+  @Override
+  public void visitBreakStatement(BreakStatementTree tree) {
+    //Ignore break (dedicated visitor)
+  }
+
+  @Override
+  public void visitContinueStatement(ContinueStatementTree tree) {
+    //Ignore continue (dedicated visitor)
+  }
+
   @Override
   public void visitExpressionStatement(ExpressionStatementTree tree) {
     super.visitExpressionStatement(tree);
@@ -88,7 +114,6 @@ public class ExpressionVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    super.visitMethodInvocation(tree);
     Tree methodSelect = tree.methodSelect();
     Resolve.Env env = semanticModel.getEnv(tree);
     IdentifierTree identifier;
@@ -96,6 +121,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
     String name;
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
+      scan(mset.expression());
       type = getType(mset.expression());
       identifier = mset.identifier();
     } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
@@ -104,6 +130,8 @@ public class ExpressionVisitor extends BaseTreeVisitor {
     } else {
       throw new IllegalStateException("Method select in method invocation is not of the expected type " + methodSelect);
     }
+    scan(tree.typeArguments());
+    scan(tree.arguments());
     name = identifier.name();
     if (type == null) {
       type = symbols.unknownType;

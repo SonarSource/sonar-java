@@ -49,7 +49,7 @@ public class MethodSymbols {
   }
 
   class A3 extends org.sonar.java.resolve.targets.subpackage.MethodSymbolsParentTypes.A {
-    //Cannot decide because of unresolved full qualified type name.
+    //
     public int bar(String str) {
       return super.bar(str);
     }

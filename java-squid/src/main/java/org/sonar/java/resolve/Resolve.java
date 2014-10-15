@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -291,6 +292,9 @@ public class Resolve {
    * @param kind subset of {@link org.sonar.java.resolve.Symbol#VAR}, {@link org.sonar.java.resolve.Symbol#TYP}, {@link org.sonar.java.resolve.Symbol#PCK}
    */
   public Symbol findIdent(Env env, String name, int kind) {
+    return findIdent(env, name, kind, null);
+  }
+  public Symbol findIdent(Env env, String name, int kind, @Nullable Symbol site) {
     Symbol bestSoFar = symbolNotFound;
     Symbol symbol;
     if ((kind & Symbol.VAR) != 0) {
@@ -312,7 +316,17 @@ public class Resolve {
       }
     }
     if ((kind & Symbol.PCK) != 0) {
-      //TODO read package
+      Symbol packageSite = site;
+      if(site == null) {
+        packageSite = symbols.defaultPackage;
+      }
+      symbol = findIdentInPackage(packageSite, name, Symbol.PCK);
+      if (symbol.kind < Symbol.ERRONEOUS) {
+        // symbol exists
+        return symbol;
+      } else if (symbol.kind < bestSoFar.kind) {
+        bestSoFar = symbol;
+      }
     }
     return bestSoFar;
   }

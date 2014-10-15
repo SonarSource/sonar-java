@@ -3,7 +3,7 @@ class A {
     e.printStackTrace(); // Non-Compliant
     e.printStackTrace(System.out); // Non-Compliant
     e.getMessage(); // Compliant
-    new java.lang.Throwable().printStackTrace(); // Non-Compliant false negative
+    new java.lang.Throwable().printStackTrace(); // Non-Compliant
     e.printStackTrace[0]; // Compliant
   }
   void fun(MyException e) {

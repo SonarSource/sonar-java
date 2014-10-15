@@ -257,7 +257,7 @@ public class SecondPass implements Symbol.Completer {
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      site = resolve.findIdent(env, tree.name(), Symbol.TYP | Symbol.PCK);
+      site = resolve.findIdent(env, tree.name(), Symbol.TYP | Symbol.PCK, site);
       associateReference(tree, site);
     }
 

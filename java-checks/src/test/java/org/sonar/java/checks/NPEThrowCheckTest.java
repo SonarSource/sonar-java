@@ -37,6 +37,7 @@ public class NPEThrowCheckTest {
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(2).withMessage("Throw some other exception here, such as \"IllegalArgumentException\".")
       .next().atLine(6).withMessage("Throw some other exception here, such as \"IllegalArgumentException\".")
+      .next().atLine(10).withMessage("Throw some other exception here, such as \"IllegalArgumentException\".")
       .noMore();
   }
 
