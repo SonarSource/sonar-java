@@ -254,7 +254,7 @@ public class Resolve {
       }
     }
     //package types
-    Symbol sym = findIdentInPackage(env, env.packge(), name, Symbol.TYP);
+    Symbol sym = findIdentInPackage(env.packge(), name, Symbol.TYP);
     if (sym.kind < bestSoFar.kind) {
       return sym;
     }
@@ -275,7 +275,7 @@ public class Resolve {
   }
 
   /**
-   * @param kind subset of {@link Symbol#VAR}, {@link Symbol#TYP}, {@link Symbol#PCK}
+   * @param kind subset of {@link org.sonar.java.resolve.Symbol#VAR}, {@link org.sonar.java.resolve.Symbol#TYP}, {@link org.sonar.java.resolve.Symbol#PCK}
    */
   public Symbol findIdent(Env env, String name, int kind) {
     Symbol bestSoFar = symbolNotFound;
@@ -299,7 +299,7 @@ public class Resolve {
       }
     }
     if ((kind & Symbol.PCK) != 0) {
-      // TODO read package
+      //TODO read package
     }
     return bestSoFar;
   }
@@ -307,7 +307,7 @@ public class Resolve {
   /**
    * @param kind subset of {@link Symbol#TYP}, {@link Symbol#PCK}
    */
-  public Symbol findIdentInPackage(Env env, Symbol site, String name, int kind) {
+  public Symbol findIdentInPackage(Symbol site, String name, int kind) {
     String fullname = bytecodeCompleter.formFullName(name, site);
     Symbol bestSoFar = symbolNotFound;
     //Try to find a type matching the name.

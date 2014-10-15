@@ -300,7 +300,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
         } else if (site.kind == Symbol.TYP) {
           site = resolve.findIdentInType(env, (Symbol.TypeSymbol) site, name, Symbol.VAR | Symbol.TYP);
         } else if (site.kind == Symbol.PCK) {
-          site = resolve.findIdentInPackage(env, site, name, Symbol.TYP | Symbol.PCK);
+          site = resolve.findIdentInPackage(site, name, Symbol.TYP | Symbol.PCK);
         } else if (site.kind == Symbol.MTH) {
           // FIXME(Godin): Unhandled case! For example see org.sonar.duplications.java.JavaStatementBuilder , which uses fluent interface
           registerType(tree, symbols.unknownType);

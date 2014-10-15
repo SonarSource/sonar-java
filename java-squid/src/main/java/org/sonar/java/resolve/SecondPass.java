@@ -247,7 +247,7 @@ public class SecondPass implements Symbol.Completer {
       String name = tree.identifier().name();
       if (site.kind == Symbol.PCK) {
         env.packge = (Symbol.PackageSymbol) site;
-        site = resolve.findIdentInPackage(env, site, name, Symbol.TYP | Symbol.PCK);
+        site = resolve.findIdentInPackage(site, name, Symbol.TYP | Symbol.PCK);
       } else {
         env.enclosingClass = (Symbol.TypeSymbol) site;
         site = resolve.findMemberType(env, (Symbol.TypeSymbol) site, name, (Symbol.TypeSymbol) site);
