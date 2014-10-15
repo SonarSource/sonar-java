@@ -300,8 +300,7 @@ public class ExpressionVisitor extends BaseTreeVisitor {
         } else if (site.kind == Symbol.TYP) {
           site = resolve.findIdentInType(env, (Symbol.TypeSymbol) site, name, Symbol.VAR | Symbol.TYP);
         } else if (site.kind == Symbol.PCK) {
-          // FIXME(Godin): contract of method says that kind should be mask of "TYP" and "PCK", but not "VAR" as here:
-          site = resolve.findIdentInPackage(env, site, name, Symbol.VAR | Symbol.PCK);
+          site = resolve.findIdentInPackage(env, site, name, Symbol.TYP | Symbol.PCK);
         } else if (site.kind == Symbol.MTH) {
           // FIXME(Godin): Unhandled case! For example see org.sonar.duplications.java.JavaStatementBuilder , which uses fluent interface
           registerType(tree, symbols.unknownType);
