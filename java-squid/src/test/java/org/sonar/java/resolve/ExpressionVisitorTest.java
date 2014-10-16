@@ -78,7 +78,7 @@ public class ExpressionVisitorTest {
 
     // int method()
     methodSymbol = new Symbol.MethodSymbol(0, "method", classSymbol);
-    methodSymbol.type = new Type.MethodType(ImmutableList.<Type>of(), symbols.intType, ImmutableList.<Type>of(), /* TODO defining class? */null);
+    ((Symbol.MethodSymbol)methodSymbol).setMethodType(new Type.MethodType(ImmutableList.<Type>of(), symbols.intType, ImmutableList.<Type>of(), /* TODO defining class? */null));
     classSymbol.members.enter(methodSymbol);
 
     classSymbol.members.enter(new Symbol.VariableSymbol(0, "this", classType, classSymbol));
@@ -169,9 +169,9 @@ public class ExpressionVisitorTest {
     assertThat(typeOf("id[][].class")).isSameAs(symbols.classType);
 
     // qualified_identifier(arguments)
-    assertThat(typeOf("method(arguments)")).isSameAs(methodSymbol.type);
-    assertThat(typeOf("var2.method()")).isSameAs(methodSymbol.type);
-    assertThat(typeOf("MyClass.var2.method()")).isSameAs(methodSymbol.type);
+    assertThat(typeOf("method(arguments)")).isSameAs(symbols.intType);
+    assertThat(typeOf("var2.method()")).isSameAs(symbols.intType);
+    assertThat(typeOf("MyClass.var2.method()")).isSameAs(symbols.intType);
 
     // qualified_identifier.class
     assertThat(typeOf("id.class")).isSameAs(symbols.classType);
@@ -227,7 +227,7 @@ public class ExpressionVisitorTest {
   @Test
   public void selector() {
     // method call
-    assertThat(typeOf("this.method(arguments)")).isInstanceOf(Type.MethodType.class);// isSameAs(symbols.unknownType);
+    assertThat(typeOf("this.method(arguments)").isTagged(Type.INT)).isTrue();
     assertThat(typeOf("var[42].clone()")).isSameAs(symbols.unknownType);
 
     // field access

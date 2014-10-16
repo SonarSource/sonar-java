@@ -39,10 +39,11 @@ public class PrintStackTraceCalledWithoutArgumentCheckTest {
         new File("src/test/files/checks/PrintStackTraceCalledWithoutArgumentCheck.java"),
         new VisitorsBridge(new PrintStackTraceCalledWithoutArgumentCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Use a logger to log this exception.")
-        .next().atLine(4)
+        .next().atLine(5).withMessage("Use a logger to log this exception.")
         .next().atLine(6)
-        .next().atLine(10)
+        .next().atLine(8)
+        .next().atLine(12)
+        .next().atLine(20)
     ;
   }
 

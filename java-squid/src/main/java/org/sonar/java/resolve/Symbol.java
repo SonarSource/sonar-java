@@ -237,6 +237,9 @@ public class Symbol {
 
     public void setMethodType(Type.MethodType methodType) {
       super.type = methodType;
+      if(methodType.resultType != null) {
+        this.type = methodType.resultType.symbol;
+      }
     }
 
     public Boolean isOverriden() {

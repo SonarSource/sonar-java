@@ -139,10 +139,13 @@ public class ExpressionVisitor extends BaseTreeVisitor {
     Symbol symbol = resolve.findMethod(env, type.symbol, name, ImmutableList.<Type>of());
     associateReference(identifier, symbol);
     type = getTypeOfSymbol(symbol);
-    if (type == null) {
-      type = symbols.unknownType;
+    //Register return type for method invocation.
+    //TODO register method type for method select ?
+    if (type == null || symbol.kind >= Symbol.ERRONEOUS) {
+      registerType(tree, symbols.unknownType);
+    } else {
+      registerType(tree, ((Symbol.MethodSymbol) symbol).getReturnType().getType());
     }
-    registerType(tree, type);
   }
 
   @Override

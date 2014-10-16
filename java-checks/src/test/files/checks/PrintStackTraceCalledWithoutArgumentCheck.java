@@ -1,3 +1,5 @@
+import java.lang.reflect.InvocationTargetException;
+
 class A {
   private void f(Throwable e) {
     e.printStackTrace(); // Non-Compliant
@@ -10,8 +12,12 @@ class A {
     e.printStackTrace(); //Non-Compliant
   }
   void fun(CustomException e) {
-    e.printStackTrace(); //Compliant
-    A.CustomException.printStackTrace(); //compliant
+    e.printStackTrace(); //Compliant : e is not extending Throwable
+    A.CustomException.printStackTrace(); //compliant : CustomException is not extending Throwable
+  }
+
+  void fun(InvocationTargetException ite) {
+    ite.getTargetException().printStackTrace(); //Non-Compliant
   }
 
   static class CustomException {
