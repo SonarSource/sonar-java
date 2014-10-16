@@ -177,19 +177,33 @@ public class Resolve {
       env1 = env1.outer();
     }
 
+    Symbol sym = findInStaticImport(env, name, Symbol.VAR);
+    if (sym.kind < Symbol.ERRONEOUS) {
+      // symbol exists
+      return sym;
+    } else if (sym.kind < bestSoFar.kind) {
+      bestSoFar = sym;
+    }
+    return bestSoFar;
+  }
+
+  /**
+   * @param kind subset of {@link org.sonar.java.resolve.Symbol#VAR}, {@link org.sonar.java.resolve.Symbol#MTH}
+   */
+  private Symbol findInStaticImport(Env env,String name, int kind) {
+    Symbol bestSoFar = symbolNotFound;
     //imports
-    //TODO rules to distinguish static imports ??
+    //Ok because clash of name between type and var/method result in compile error: JLS8 7.5.3
     for (Symbol symbol : env.namedImports().lookup(name)) {
-      if (symbol.kind < bestSoFar.kind) {
+      if ((kind & symbol.kind) != 0) {
         return symbol;
       }
     }
     for (Symbol symbol : env.staticStarImports().lookup(name)) {
-      if (symbol.kind < bestSoFar.kind) {
+      if ((kind & symbol.kind) != 0) {
         return symbol;
       }
     }
-
     return bestSoFar;
   }
 
@@ -246,10 +260,9 @@ public class Resolve {
     }
 
     //JLS8 6.4.1 Shadowing rules
-    //TODO check that symbol is indeed a type.
     //named imports
     for (Symbol symbol : env.namedImports().lookup(name)) {
-      if (symbol.kind < bestSoFar.kind) {
+      if (symbol.kind == Symbol.TYP) {
         return symbol;
       }
     }
@@ -260,14 +273,14 @@ public class Resolve {
     }
     //on demand imports
     for (Symbol symbol : env.starImports().lookup(name)) {
-      if (symbol.kind < bestSoFar.kind) {
+      if (symbol.kind == Symbol.TYP) {
         return symbol;
       }
     }
     //java.lang
     Symbol.PackageSymbol javaLang = bytecodeCompleter.enterPackage("java.lang");
     for (Symbol symbol : javaLang.members().lookup(name)) {
-      if (symbol.kind < bestSoFar.kind) {
+      if (symbol.kind == Symbol.TYP) {
         return symbol;
       }
     }
@@ -368,7 +381,13 @@ public class Resolve {
       }
       env1 = env1.outer;
     }
-    // TODO imports
+    Symbol sym = findInStaticImport(env, name, Symbol.MTH);
+    if (sym.kind < Symbol.ERRONEOUS) {
+      // symbol exists
+      return sym;
+    } else if (sym.kind < bestSoFar.kind) {
+      bestSoFar = sym;
+    }
     return bestSoFar;
   }
 
@@ -395,7 +414,13 @@ public class Resolve {
         bestSoFar = symbol;
       }
     }
-
+    Symbol sym = findInStaticImport(env, name, Symbol.MTH);
+    if (sym.kind < Symbol.ERRONEOUS) {
+      // symbol exists
+      return sym;
+    } else if (sym.kind < bestSoFar.kind) {
+      bestSoFar = sym;
+    }
     return bestSoFar;
   }
 
