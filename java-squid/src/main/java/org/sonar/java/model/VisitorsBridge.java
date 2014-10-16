@@ -112,7 +112,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
         try {
           semanticModel = SemanticModel.createFor(tree, getProjectClasspath());
         } catch (Exception e) {
-          LOG.error("Unable to create symbol table for : " + getContext().getFile().getName(), e);
+          LOG.error("Unable to create symbol table for : " + getContext().getFile().getAbsolutePath(), e);
           return;
         }
         createSonarSymbolTable(tree);
