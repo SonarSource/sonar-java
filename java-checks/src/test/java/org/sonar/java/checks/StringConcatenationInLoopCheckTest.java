@@ -43,6 +43,8 @@ public class StringConcatenationInLoopCheckTest {
       .next().atLine(17).withMessage("Use a StringBuilder instead.")
       .next().atLine(18).withMessage("Use a StringBuilder instead.")
       .next().atLine(19).withMessage("Use a StringBuilder instead.")
+      .next().atLine(28).withMessage("Use a StringBuilder instead.")
+      .next().atLine(29).withMessage("Use a StringBuilder instead.")
     ;
   }
 

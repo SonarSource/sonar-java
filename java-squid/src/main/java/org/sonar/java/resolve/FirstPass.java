@@ -63,10 +63,10 @@ public class FirstPass extends BaseTreeVisitor {
    */
   private Resolve.Env env;
 
-  public FirstPass(SemanticModel semanticModel, Symbols symbols, Resolve resolve) {
+  public FirstPass(SemanticModel semanticModel, Symbols symbols, Resolve resolve, TypeAndReferenceSolver typeAndReferenceSolver) {
     this.semanticModel = semanticModel;
     this.resolve = resolve;
-    this.completer = new SecondPass(semanticModel, resolve, symbols);
+    this.completer = new SecondPass(semanticModel, resolve, symbols, typeAndReferenceSolver);
     this.symbols = symbols;
   }
 

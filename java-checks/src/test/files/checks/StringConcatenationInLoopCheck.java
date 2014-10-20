@@ -25,8 +25,8 @@ class A {
       MyObject myObject = new MyObject();
       myObject.stringProperty = "a" + "b";  //Compliant, var is local in the loop
       myObject.stringProperty += "a";//Compliant, var is local in the loop
-      MyObject.newInstance().stringProperty = "a"+"b"; //Compliant because type is not solved properly but should be a FP.
-      MyObject.newInstance().stringProperty += "b"; //Compliant because type is not solved properly but should be a FP.
+      MyObject.newInstance().stringProperty = "a"+"b"; //False positive.
+      MyObject.newInstance().stringProperty += "b"; //Non-Compliant
     }
   }
 

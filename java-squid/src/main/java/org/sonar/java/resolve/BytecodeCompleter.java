@@ -181,7 +181,10 @@ public class BytecodeCompleter implements Symbol.Completer {
    */
   // TODO(Godin): Method name is misleading because of lazy loading.
   public Symbol loadClass(String fullname) {
-    // TODO(Godin): avoid unnecessary checks of the same class
+    Symbol.TypeSymbol symbol = classes.get(fullname);
+    if(symbol != null) {
+      return symbol;
+    }
 
     // TODO(Godin): pull out conversion of name from the next method to avoid unnecessary conversion afterwards:
     InputStream inputStream = inputStreamFor(fullname);

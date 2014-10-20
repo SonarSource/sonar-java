@@ -20,11 +20,11 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.AbstractTypedTree;
 
 import java.util.Iterator;
 
-public class InferedTypeTree extends JavaTree {
+public class InferedTypeTree extends AbstractTypedTree {
 
 
   public InferedTypeTree(){
@@ -50,4 +50,5 @@ public class InferedTypeTree extends JavaTree {
   public void accept(TreeVisitor visitor) {
     //Do nothing.
   }
+
 }

@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
 import java.util.Arrays;
@@ -40,7 +41,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ExpressionVisitorTest {
+public class TypeAndReferenceSolverTest {
 
   private final BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
   private final Symbols symbols = new Symbols(bytecodeCompleter);
@@ -118,7 +119,7 @@ public class ExpressionVisitorTest {
 
   @Test
   public void primary_this() {
-    assertThat(typeOf("this")).isSameAs(classType);
+    assertThat(typeOfExpression("this")).isSameAs(classType);
 
     // constructor call
     assertThat(typeOf("this(arguments)")).isSameAs(symbols.unknownType);
@@ -133,7 +134,7 @@ public class ExpressionVisitorTest {
     assertThat(typeOf("super.method(arguments)")).isSameAs(symbols.unknownType);
 
     // field access
-    assertThat(typeOf("super.field")).isSameAs(classType.supertype);
+    assertThat(typeOfExpression("super.field")).isSameAs(classType.supertype);
   }
 
   @Test
@@ -157,16 +158,17 @@ public class ExpressionVisitorTest {
   public void primary_qualified_identifier() {
 
     // qualified_identifier
-    assertThat(typeOf("var")).isSameAs(variableSymbol.type);
-    assertThat(typeOf("var.length")).isSameAs(symbols.intType);
-    assertThat(typeOf("MyClass.var")).isSameAs(variableSymbol.type);
+    assertThat(typeOfExpression("var")).isSameAs(variableSymbol.type);
+    assertThat(typeOfExpression("var.length")).isSameAs(symbols.intType);
+    assertThat(typeOfExpression("MyClass.var")).isSameAs(variableSymbol.type);
 
     // qualified_identifier[expression]
-    assertThat(typeOf("var[42]")).isSameAs(((Type.ArrayType) variableSymbol.type).elementType);
+    assertThat(typeOf("var[42] = 12")).isSameAs(((Type.ArrayType) variableSymbol.type).elementType);
+    assertThat(typeOfExpression("var[42]")).isSameAs(((Type.ArrayType) variableSymbol.type).elementType);
 
     // qualified_identifier[].class
-    assertThat(typeOf("id[].class")).isSameAs(symbols.classType);
-    assertThat(typeOf("id[][].class")).isSameAs(symbols.classType);
+    assertThat(typeOfExpression("id[].class")).isSameAs(symbols.classType);
+    assertThat(typeOfExpression("id[][].class")).isSameAs(symbols.classType);
 
     // qualified_identifier(arguments)
     assertThat(typeOf("method(arguments)")).isSameAs(symbols.intType);
@@ -174,24 +176,24 @@ public class ExpressionVisitorTest {
     assertThat(typeOf("MyClass.var2.method()")).isSameAs(symbols.intType);
 
     // qualified_identifier.class
-    assertThat(typeOf("id.class")).isSameAs(symbols.classType);
+    assertThat(typeOfExpression("id.class")).isSameAs(symbols.classType);
 
     // TODO id.<...>...
-    assertThat(typeOf("MyClass.this")).isSameAs(classSymbol.type);
+    assertThat(typeOfExpression("MyClass.this")).isSameAs(classSymbol.type);
     assertThat(typeOf("id.super(arguments)")).isSameAs(symbols.unknownType);
     // TODO id.new...
   }
 
   @Test
   public void primary_basic_type() {
-    assertThat(typeOf("int.class")).isSameAs(symbols.classType);
-    assertThat(typeOf("int[].class")).isSameAs(symbols.classType);
-    assertThat(typeOf("int[][].class")).isSameAs(symbols.classType);
+    assertThat(typeOfExpression("int.class")).isSameAs(symbols.classType);
+    assertThat(typeOfExpression("int[].class")).isSameAs(symbols.classType);
+    assertThat(typeOfExpression("int[][].class")).isSameAs(symbols.classType);
   }
 
   @Test
   public void primary_void() {
-    assertThat(typeOf("void.class")).isSameAs(symbols.classType);
+    assertThat(typeOfExpression("void.class")).isSameAs(symbols.classType);
   }
 
   @Test
@@ -231,11 +233,11 @@ public class ExpressionVisitorTest {
     assertThat(typeOf("var[42].clone()")).isSameAs(symbols.unknownType);
 
     // field access
-    assertThat(typeOf("this.var")).isSameAs(variableSymbol.type);
-    assertThat(typeOf("var[42].length")).isSameAs(symbols.intType);
+    assertThat(typeOfExpression("this.var")).isSameAs(variableSymbol.type);
+    assertThat(typeOfExpression("var[42].length")).isSameAs(symbols.intType);
 
     // array access
-    assertThat(typeOf("var[42][42]")).isSameAs(((Type.ArrayType) ((Type.ArrayType) variableSymbol.type).elementType).elementType);
+    assertThat(typeOfExpression("var[42][42]")).isSameAs(((Type.ArrayType) ((Type.ArrayType) variableSymbol.type).elementType).elementType);
   }
 
   @Test
@@ -385,26 +387,48 @@ public class ExpressionVisitorTest {
   private Type typeOf(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
     when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
-    ExpressionVisitor visitor = new ExpressionVisitor(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter));
+    TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter));
 
     String p = "class Test { void wrapperMethod() { " + input + "; } }";
     AstNode node = JavaParser.createParser(Charsets.UTF_8).parse(p);
     CompilationUnitTree tree = (CompilationUnitTree) node;
     tree.accept(visitor);
 
-    TestedNodeExtractor testedNodeExtractor = new TestedNodeExtractor();
+    TestedNodeExtractor testedNodeExtractor = new TestedNodeExtractor(false);
     testedNodeExtractor.visitCompilationUnit(tree);
     return visitor.getType(testedNodeExtractor.testedNode);
   }
+  private Type typeOfExpression(String input) {
+    SemanticModel semanticModel = mock(SemanticModel.class);
+    when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
+    TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter));
 
+    String p = "class Test { void wrapperMethod() { Object o = " + input + "; } }";
+    AstNode node = JavaParser.createParser(Charsets.UTF_8).parse(p);
+    CompilationUnitTree tree = (CompilationUnitTree) node;
+    tree.accept(visitor);
+
+    TestedNodeExtractor testedNodeExtractor = new TestedNodeExtractor(true);
+    testedNodeExtractor.visitCompilationUnit(tree);
+    return visitor.getType(testedNodeExtractor.testedNode);
+  }
   private static class TestedNodeExtractor extends BaseTreeVisitor {
+    private final boolean extractExpression;
     private Tree testedNode;
+
+    public TestedNodeExtractor(boolean extractExpression) {
+
+      this.extractExpression = extractExpression;
+    }
 
     @Override
     public void visitMethod(MethodTree tree) {
       super.visitMethod(tree);
       if ("wrapperMethod".equals(tree.simpleName().name())) {
         testedNode = tree.block().body().get(0);
+        if(extractExpression && testedNode.is(Tree.Kind.VARIABLE)) {
+          testedNode = ((VariableTree)testedNode).initializer();
+        }
       }
     }
   }

@@ -61,8 +61,9 @@ public class SemanticModel {
     semanticModel.createParentLink((JavaTree) tree);
     try {
       Resolve resolve = new Resolve(symbols, bytecodeCompleter);
-      new FirstPass(semanticModel, symbols, resolve).visitCompilationUnit(tree);
-      new ExpressionVisitor(semanticModel, symbols, resolve).visitCompilationUnit(tree);
+      TypeAndReferenceSolver typeAndReferenceSolver = new TypeAndReferenceSolver(semanticModel, symbols, resolve);
+      new FirstPass(semanticModel, symbols, resolve, typeAndReferenceSolver).visitCompilationUnit(tree);
+      typeAndReferenceSolver.visitCompilationUnit(tree);
       new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
     } finally {
       handleMissingTypes(symbols, tree);

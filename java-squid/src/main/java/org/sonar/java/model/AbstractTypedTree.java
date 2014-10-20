@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
@@ -51,8 +52,8 @@ public abstract class AbstractTypedTree extends JavaTree {
   }
 
   public void setType(Type type) {
-    // FIXME(Godin): type should be computed and set only once, but currently this is not the case and this contract is violated
-    // Preconditions.checkState(this.type == null);
+    //type are computed and set only once
+    Preconditions.checkState(this.type == null);
     this.type = type;
   }
 

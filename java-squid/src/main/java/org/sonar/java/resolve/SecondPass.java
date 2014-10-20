@@ -49,11 +49,13 @@ public class SecondPass implements Symbol.Completer {
   private final SemanticModel semanticModel;
   private final Resolve resolve;
   private final Symbols symbols;
+  private final TypeAndReferenceSolver typeAndReferenceSolver;
 
-  public SecondPass(SemanticModel semanticModel, Resolve resolve, Symbols symbols) {
+  public SecondPass(SemanticModel semanticModel, Resolve resolve, Symbols symbols, TypeAndReferenceSolver typeAndReferenceSolver) {
     this.semanticModel = semanticModel;
     this.resolve = resolve;
     this.symbols = symbols;
+    this.typeAndReferenceSolver = typeAndReferenceSolver;
   }
 
   @Override
@@ -179,7 +181,12 @@ public class SecondPass implements Symbol.Completer {
     if (variableTree.is(Tree.Kind.ENUM_CONSTANT)) {
       symbol.type = env.enclosingClass().type;
     } else {
-      symbol.type = resolveType(env, variableTree.type());
+      Type type = ((AbstractTypedTree) variableTree.type()).getSymbolType();
+      //FIXME(benzonico) as long as Variables share the same node type, (int i,j; or worse : int i[], j[];) check nullity to respect invariance.
+      if(type==null) {
+        typeAndReferenceSolver.resolveAs(variableTree.type(), Symbol.TYP);
+      }
+      symbol.type = ((AbstractTypedTree) variableTree.type()).getSymbolType();
     }
   }
 
@@ -257,7 +264,7 @@ public class SecondPass implements Symbol.Completer {
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      site = resolve.findIdent(env, tree.name(), Symbol.TYP | Symbol.PCK, site);
+      site = resolve.findIdent(env, tree.name(), Symbol.TYP | Symbol.PCK);
       associateReference(tree, site);
     }
 

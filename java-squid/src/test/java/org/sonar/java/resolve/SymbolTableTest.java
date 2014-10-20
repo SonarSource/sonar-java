@@ -381,6 +381,14 @@ public class SymbolTableTest {
     assertThat(result.symbol("strings3").type.symbol.name).isEqualTo("Array");
     assertThat(result.symbol("strings3").type.toString()).isEqualTo("String[][][]");
     assertThat(result.symbol("objects").type.toString()).isEqualTo("Object[][][]");
+  }
+
+  @Test
+  public void ThisReference() throws Exception {
+    Result result = Result.createFor("references/ThisReference");
+    Symbol classA = result.symbol("A");
+    assertThat(result.reference(7, 5).type.symbol).isEqualTo(classA);
+    assertThat(result.reference(17, 17).type.symbol).isEqualTo(result.symbol("theHashtable").type.symbol);
 
   }
 }

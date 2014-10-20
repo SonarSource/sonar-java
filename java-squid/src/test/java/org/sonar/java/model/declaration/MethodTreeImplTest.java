@@ -49,6 +49,25 @@ public class MethodTreeImplTest {
   }
 
   @Test
+  public void override_with_generic_parameters_should_be_detected() throws Exception {
+    CompilationUnitTree cut = createTree("public class ReferenceQueue<T> {\n" +
+        "\n" +
+        "    private static class Null extends ReferenceQueue {\n" +
+        "        boolean enqueue(Reference r) {\n" +
+        "            return false;\n" +
+        "        }\n" +
+        "    }\n" +
+        "  boolean enqueue(Reference<? extends T> r) {}}" +
+        "public abstract class Reference<T> {}");
+
+    ClassTree innerClass = (ClassTree) cut.types().get(0);
+    MethodTreeImpl methodInterface = (MethodTreeImpl) ((ClassTree) innerClass.members().get(0)).members().get(0);
+
+    assertThat(methodInterface.isOverriding()).isTrue();
+
+  }
+
+  @Test
   public void override_from_object_should_be_detected() {
     MethodTreeImpl method = getUniqueMethod("class A { String toString(){return \"\";}}");
     assertThat(method.isOverriding()).isTrue();

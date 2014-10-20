@@ -376,7 +376,7 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
   }
 
-  public static class UnionTypeTreeImpl extends JavaTree implements UnionTypeTree {
+  public static class UnionTypeTreeImpl extends AbstractTypedTree implements UnionTypeTree {
     private final List<Tree> typeAlternatives;
 
     public UnionTypeTreeImpl(TypeUnionListTreeImpl typeAlternatives) {
