@@ -76,7 +76,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   private final Resolve resolve;
 
   private final Map<Tree, Type> types = Maps.newHashMap();
-  public Resolve.Env env;
+  Resolve.Env env;
 
   public TypeAndReferenceSolver(SemanticModel semanticModel, Symbols symbols, Resolve resolve) {
     this.semanticModel = semanticModel;
@@ -140,7 +140,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
     Tree methodSelect = tree.methodSelect();
-    Resolve.Env env = semanticModel.getEnv(tree);
+    Resolve.Env methodEnv = semanticModel.getEnv(tree);
     IdentifierTree identifier;
     Type type;
     String name;
@@ -150,7 +150,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       type = getType(mset.expression());
       identifier = mset.identifier();
     } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-      type = env.enclosingClass.type;
+      type = methodEnv.enclosingClass.type;
       identifier = (IdentifierTree) methodSelect;
     } else {
       throw new IllegalStateException("Method select in method invocation is not of the expected type " + methodSelect);
@@ -163,7 +163,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (type == null) {
       type = symbols.unknownType;
     }
-    Symbol symbol = resolve.findMethod(env, type.symbol, name, ImmutableList.<Type>of());
+    Symbol symbol = resolve.findMethod(methodEnv, type.symbol, name, ImmutableList.<Type>of());
     associateReference(identifier, symbol);
     type = getTypeOfSymbol(symbol);
     //Register return type for method invocation.
@@ -185,39 +185,27 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     return resolveAs(tree, kind, env);
   }
   
-  public Symbol resolveAs(Tree tree, int kind, Resolve.Env env) {
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifierTree = (IdentifierTree) tree;
-      Symbol ident = resolve.findIdent(env, identifierTree.name(), kind);
-      associateReference(identifierTree, ident);
-      registerType(identifierTree, getTypeOfSymbol(ident));
-      return ident;
-    } else if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
-      if (JavaKeyword.CLASS.getValue().equals(mse.identifier().name())) {
-        // member select ending with .class
-        registerType(tree, symbols.classType);
-        return null;
+  public Symbol resolveAs(Tree tree, int kind, Resolve.Env resolveEnv) {
+    if (tree.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
+      Symbol resolvedSymbol;
+      IdentifierTree identifierTree;
+      if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
+        if (JavaKeyword.CLASS.getValue().equals(mse.identifier().name())) {
+          // member select ending with .class
+          registerType(tree, symbols.classType);
+          return null;
+        }
+        identifierTree = mse.identifier();
+        resolvedSymbol = getSymbolOfMemberSelectExpression(mse, kind, resolveEnv);
+        registerType(identifierTree, getTypeOfSymbol(resolvedSymbol));
+      } else {
+        identifierTree = (IdentifierTree) tree;
+        resolvedSymbol = resolve.findIdent(resolveEnv, identifierTree.name(), kind);
       }
-      int expressionKind = Symbol.TYP | Symbol.VAR;
-      if ((kind & (Symbol.PCK | Symbol.TYP)) != 0) {
-        expressionKind = Symbol.PCK | Symbol.TYP | kind;
-      }
-      Symbol site = resolveAs(mse.expression(), expressionKind, env);
-      if (site.kind == Symbol.VAR) {
-        site = site.type.symbol;
-      }
-      Symbol ident = symbols.unknownSymbol;
-      if (site.kind == Symbol.TYP) {
-        ident = resolve.findIdentInType(env, (Symbol.TypeSymbol) site, mse.identifier().name(), kind);
-      } else if (site.kind == Symbol.PCK) {
-        //package
-        ident = resolve.findIdentInPackage(site, mse.identifier().name(), kind);
-      }
-      associateReference(mse.identifier(), ident);
-      registerType(mse.identifier(), getTypeOfSymbol(ident));
-      registerType(tree, getTypeOfSymbol(ident));
-      return ident;
+      associateReference(identifierTree, resolvedSymbol);
+      registerType(tree, getTypeOfSymbol(resolvedSymbol));
+      return resolvedSymbol;
     }
     tree.accept(this);
     Type type = getType(tree);
@@ -228,6 +216,25 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       throw new IllegalStateException("Type not resolved " + tree);
     }
     return type.symbol;
+  }
+
+  private Symbol getSymbolOfMemberSelectExpression(MemberSelectExpressionTree mse, int kind, Resolve.Env resolveEnv) {
+    int expressionKind = Symbol.TYP | Symbol.VAR;
+    if ((kind & (Symbol.PCK | Symbol.TYP)) != 0) {
+      expressionKind = Symbol.PCK | Symbol.TYP | kind;
+    }
+    Symbol site = resolveAs(mse.expression(), expressionKind, resolveEnv);
+    if (site.kind == Symbol.VAR) {
+      site = site.type.symbol;
+    }
+    Symbol ident = symbols.unknownSymbol;
+    if (site.kind == Symbol.TYP) {
+      ident = resolve.findIdentInType(resolveEnv, (Symbol.TypeSymbol) site, mse.identifier().name(), kind);
+    } else if (site.kind == Symbol.PCK) {
+      //package
+      ident = resolve.findIdentInPackage(site, mse.identifier().name(), kind);
+    }
+    return ident;
   }
 
   private void resolveAs(List<? extends Tree> trees, int kind) {
@@ -318,7 +325,6 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     resolveAs(tree.leftOperand(), Symbol.VAR);
     resolveAs(tree.rightOperand(), Symbol.VAR);
-    Resolve.Env env = semanticModel.getEnv(tree);
     Type left = getType(tree.leftOperand());
     Type right = getType(tree.rightOperand());
     // TODO avoid nulls
@@ -326,7 +332,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       registerType(tree, symbols.unknownType);
       return;
     }
-    Symbol symbol = resolve.findMethod(env, tree.operatorToken().text(), ImmutableList.of(left, right));
+    Symbol symbol = resolve.findMethod(semanticModel.getEnv(tree), tree.operatorToken().text(), ImmutableList.of(left, right));
     if (symbol.kind != Symbol.MTH) {
       // not found
       registerType(tree, symbols.unknownType);

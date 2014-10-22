@@ -56,12 +56,13 @@ public class PrinterVisitor extends BaseTreeVisitor {
   public PrinterVisitor(@Nullable SemanticModel semanticModel) {
     sb = new StringBuilder();
     indentLevel = 0;
-    this.semanticModel =semanticModel;
+    this.semanticModel = semanticModel;
   }
 
   public static String print(Tree tree) {
-   return print(tree, null);
+    return print(tree, null);
   }
+
   public static String print(Tree tree, @Nullable SemanticModel semanticModel) {
     PrinterVisitor pv = new PrinterVisitor(semanticModel);
     pv.scan(tree);
@@ -120,11 +121,11 @@ public class PrinterVisitor extends BaseTreeVisitor {
         line = node.getTokenLine();
         sb.append(" ").append(line);
       }
-      if(idents.get(tree) != null) {
-        Preconditions.checkState(sym==null);
+      if (idents.get(tree) != null) {
+        Preconditions.checkState(sym == null);
         sym = idents.get(tree);
       }
-      if(tree instanceof AbstractTypedTree) {
+      if (tree instanceof AbstractTypedTree) {
         sb.append(" ").append(((AbstractTypedTree) tree).getSymbolType());
       }
 
@@ -134,8 +135,8 @@ public class PrinterVisitor extends BaseTreeVisitor {
           idents.put(identifierTree, sym);
           sb.append(" ").append(sym.getName());
         }
-        int refLine = ((JavaTree)semanticModel.getTree(sym)).getTokenLine();
-        if(refLine!=line) {
+        int refLine = ((JavaTree) semanticModel.getTree(sym)).getTokenLine();
+        if (refLine != line) {
           sb.append(" ref#").append(refLine);
         }
       }
