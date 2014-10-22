@@ -5,7 +5,7 @@ import java.util.List;
 @SuppressWarnings("all")
 class TypesOfDeclarations {
 
-  interface Interface1 extends List{
+  interface Interface1 extends List<byte[]>{
   }
 
   interface Interface2 extends Interface1 {

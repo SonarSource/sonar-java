@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
@@ -45,6 +46,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -74,6 +76,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   private final Resolve resolve;
 
   private final Map<Tree, Type> types = Maps.newHashMap();
+  public Resolve.Env env;
 
   public TypeAndReferenceSolver(SemanticModel semanticModel, Symbols symbols, Resolve resolve) {
     this.semanticModel = semanticModel;
@@ -87,6 +90,23 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     typesOfLiterals.put(Tree.Kind.DOUBLE_LITERAL, symbols.doubleType);
     typesOfLiterals.put(Tree.Kind.LONG_LITERAL, symbols.longType);
     typesOfLiterals.put(Tree.Kind.INT_LITERAL, symbols.intType);
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    //skip return type, args, and throw clauses : visited in second pass.
+    scan(tree.modifiers());
+    scan(tree.typeParameters());
+    scan(tree.defaultValue());
+    scan(tree.block());
+  }
+
+  @Override
+  public void visitClass(ClassTree tree) {
+    //skip superclass and interfaces : visited in second pass.
+    scan(tree.modifiers());
+    scan(tree.typeParameters());
+    scan(tree.members());
   }
 
   @Override
@@ -155,13 +175,20 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
   }
 
-  public Symbol resolveAs(@Nullable Tree tree, int kind) {
+  private Symbol resolveAs(@Nullable Tree tree, int kind) {
     if (tree == null) {
       return null;
     }
+    if(env == null) {
+      return resolveAs(tree, kind, semanticModel.getEnv(tree));
+    }
+    return resolveAs(tree, kind, env);
+  }
+  
+  public Symbol resolveAs(Tree tree, int kind, Resolve.Env env) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) tree;
-      Symbol ident = resolve.findIdent(semanticModel.getEnv(tree), identifierTree.name(), kind);
+      Symbol ident = resolve.findIdent(env, identifierTree.name(), kind);
       associateReference(identifierTree, ident);
       registerType(identifierTree, getTypeOfSymbol(ident));
       return ident;
@@ -176,13 +203,13 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       if ((kind & (Symbol.PCK | Symbol.TYP)) != 0) {
         expressionKind = Symbol.PCK | Symbol.TYP | kind;
       }
-      Symbol site = resolveAs(mse.expression(), expressionKind);
+      Symbol site = resolveAs(mse.expression(), expressionKind, env);
       if (site.kind == Symbol.VAR) {
         site = site.type.symbol;
       }
       Symbol ident = symbols.unknownSymbol;
       if (site.kind == Symbol.TYP) {
-        ident = resolve.findIdentInType(semanticModel.getEnv(tree), (Symbol.TypeSymbol) site, mse.identifier().name(), kind);
+        ident = resolve.findIdentInType(env, (Symbol.TypeSymbol) site, mse.identifier().name(), kind);
       } else if (site.kind == Symbol.PCK) {
         //package
         ident = resolve.findIdentInPackage(site, mse.identifier().name(), kind);
@@ -203,7 +230,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     return type.symbol;
   }
 
-  public void resolveAs(List<? extends Tree> trees, int kind) {
+  private void resolveAs(List<? extends Tree> trees, int kind) {
     for (Tree tree : trees) {
       resolveAs(tree, kind);
     }
@@ -327,7 +354,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
-    Type type = resolve.findIdent(semanticModel.getEnv(tree), tree.keyword().text(), Symbol.TYP).type;
+    Type type;
+    if(env==null) {
+      type = resolve.findIdent(semanticModel.getEnv(tree), tree.keyword().text(), Symbol.TYP).type;
+    } else {
+      type = resolve.findIdent(env, tree.keyword().text(), Symbol.TYP).type;
+    }
     registerType(tree, type);
   }
 

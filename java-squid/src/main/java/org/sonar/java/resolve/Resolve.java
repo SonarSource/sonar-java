@@ -86,7 +86,6 @@ public class Resolve {
     }
 
     Symbol.TypeSymbol enclosingClass() {
-      enclosingClass.complete();
       return enclosingClass;
     }
 

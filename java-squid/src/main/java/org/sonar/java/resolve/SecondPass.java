@@ -25,15 +25,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
-import org.sonar.plugins.java.api.tree.ArrayTypeTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -47,13 +41,11 @@ import java.util.Set;
 public class SecondPass implements Symbol.Completer {
 
   private final SemanticModel semanticModel;
-  private final Resolve resolve;
   private final Symbols symbols;
   private final TypeAndReferenceSolver typeAndReferenceSolver;
 
-  public SecondPass(SemanticModel semanticModel, Resolve resolve, Symbols symbols, TypeAndReferenceSolver typeAndReferenceSolver) {
+  public SecondPass(SemanticModel semanticModel, Symbols symbols, TypeAndReferenceSolver typeAndReferenceSolver) {
     this.semanticModel = semanticModel;
-    this.resolve = resolve;
     this.symbols = symbols;
     this.typeAndReferenceSolver = typeAndReferenceSolver;
   }
@@ -146,7 +138,6 @@ public class SecondPass implements Symbol.Completer {
       Type thrownType = resolveType(env, throwClause);
       if (thrownType != null) {
         thrownTypes.add(thrownType);
-        ((AbstractTypedTree) throwClause).setType(thrownType);
         thrown.add(((Type.ClassType) thrownType).symbol);
       }
     }
@@ -181,23 +172,21 @@ public class SecondPass implements Symbol.Completer {
     if (variableTree.is(Tree.Kind.ENUM_CONSTANT)) {
       symbol.type = env.enclosingClass().type;
     } else {
-      Type type = ((AbstractTypedTree) variableTree.type()).getSymbolType();
-      //FIXME(benzonico) as long as Variables share the same node type, (int i,j; or worse : int i[], j[];) check nullity to respect invariance.
-      if(type==null) {
-        typeAndReferenceSolver.resolveAs(variableTree.type(), Symbol.TYP);
-      }
-      symbol.type = ((AbstractTypedTree) variableTree.type()).getSymbolType();
+      symbol.type = resolveType(env, variableTree.type());
     }
   }
 
   private Type resolveType(Resolve.Env env, Tree tree) {
     Preconditions.checkArgument(checkTypeOfTree(tree), "Kind of tree unexpected " + ((JavaTree) tree).getKind());
-    TypeResolverVisitor typeResolverVisitor = new TypeResolverVisitor(env.dup());
-    tree.accept(typeResolverVisitor);
-    if (typeResolverVisitor.arrayType != null) {
-      return typeResolverVisitor.arrayType;
+    //FIXME(benzonico) as long as Variables share the same node type, (int i,j; or worse : int i[], j[];) check nullity to respect invariance.
+    Type type = ((AbstractTypedTree) tree).getSymbolType();
+    if(type != null) {
+      return type;
     }
-    return castToTypeIfPossible(typeResolverVisitor.site);
+    typeAndReferenceSolver.env = env;
+    typeAndReferenceSolver.resolveAs(tree, Symbol.TYP, env);
+    typeAndReferenceSolver.env = null;
+    return ((AbstractTypedTree) tree).getSymbolType();
   }
 
   private boolean checkTypeOfTree(Tree tree) {
@@ -208,70 +197,6 @@ public class SecondPass implements Symbol.Completer {
       tree.is(Tree.Kind.UNION_TYPE) ||
       tree.is(Tree.Kind.PRIMITIVE_TYPE) ||
       tree.is(Tree.Kind.INFERED_TYPE);
-  }
-
-  private Type castToTypeIfPossible(Symbol symbol) {
-    return symbol instanceof Symbol.TypeSymbol ? ((Symbol.TypeSymbol) symbol).type : symbols.unknownType;
-  }
-
-  private void associateReference(IdentifierTree tree, Symbol symbol) {
-    if (symbol.kind < Symbol.ERRONEOUS && semanticModel.getTree(symbol) != null) {
-      semanticModel.associateReference(tree, symbol);
-    }
-  }
-
-  private class TypeResolverVisitor extends BaseTreeVisitor {
-    private final Resolve.Env env;
-    private Symbol site;
-    private Type.ArrayType arrayType;
-
-    public TypeResolverVisitor(Resolve.Env env) {
-      this.env = env;
-    }
-
-    @Override
-    public void visitParameterizedType(ParameterizedTypeTree tree) {
-      // Scan only the type, the generic arguments are not yet handled
-      scan(tree.type());
-    }
-
-    @Override
-    public void visitArrayType(ArrayTypeTree tree) {
-      super.visitArrayType(tree);
-      if (arrayType == null) {
-        arrayType = new Type.ArrayType(site.type, symbols.arrayClass);
-      } else {
-        arrayType = new Type.ArrayType(arrayType, symbols.arrayClass);
-      }
-    }
-
-    @Override
-    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      scan(tree.expression());
-      if (site.kind >= Symbol.ERRONEOUS) {
-        return;
-      }
-      String name = tree.identifier().name();
-      if (site.kind == Symbol.PCK) {
-        env.packge = (Symbol.PackageSymbol) site;
-        site = resolve.findIdentInPackage(site, name, Symbol.TYP | Symbol.PCK);
-      } else {
-        env.enclosingClass = (Symbol.TypeSymbol) site;
-        site = resolve.findMemberType(env, (Symbol.TypeSymbol) site, name, (Symbol.TypeSymbol) site);
-      }
-      associateReference(tree.identifier(), site);
-    }
-
-    @Override
-    public void visitIdentifier(IdentifierTree tree) {
-      site = resolve.findIdent(env, tree.name(), Symbol.TYP | Symbol.PCK);
-      associateReference(tree, site);
-    }
-
-    @Override
-    public void visitPrimitiveType(PrimitiveTypeTree tree) {
-      site = resolve.findIdent(semanticModel.getEnv(tree), tree.keyword().text(), Symbol.TYP);
-    }
   }
 
 }
