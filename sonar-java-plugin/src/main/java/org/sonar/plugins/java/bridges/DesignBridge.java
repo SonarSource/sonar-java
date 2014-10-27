@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.java.bridges;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
@@ -100,9 +101,8 @@ public class DesignBridge {
   }
 
   private void onPackage(Resource sonarPackage) {
-    Collection<Resource> squidFiles = resourceMapping.files((Directory) sonarPackage);
+    Collection<Resource> squidFiles = getResourcesForDirectory(sonarPackage);
     if (squidFiles != null && !squidFiles.isEmpty()) {
-
       IncrementalCyclesAndFESSolver<Resource> cycleDetector = new IncrementalCyclesAndFESSolver<Resource>(graph, squidFiles);
       Set<Cycle> cycles = cycleDetector.getCycles();
 
@@ -114,10 +114,17 @@ public class DesignBridge {
       savePositiveMeasure(sonarPackage, CoreMetrics.FILE_FEEDBACK_EDGES, feedbackEdges.size());
       savePositiveMeasure(sonarPackage, CoreMetrics.FILE_TANGLES, tangles);
       savePositiveMeasure(sonarPackage, CoreMetrics.FILE_EDGES_WEIGHT, getEdgesWeight(squidFiles));
-
       String dsmJson = serializeDsm(graph, squidFiles, feedbackEdges);
       context.saveMeasure(sonarPackage, new Measure(CoreMetrics.DEPENDENCY_MATRIX, dsmJson));
     }
+  }
+
+  private Collection<Resource> getResourcesForDirectory(Resource sonarPackage) {
+    List<Resource> result = Lists.newArrayList();
+    for (Resource resource : resourceMapping.files((Directory) sonarPackage)){
+      result.add(context.getResource(resource));
+    }
+    return result;
   }
 
   private double getEdgesWeight(Collection<Resource> resources) {

@@ -67,6 +67,7 @@ public class DependenciesVisitor extends BytecodeVisitor {
       dependency = graph.getEdge(from, to);
       if (dependency == null) {
         dependency = new Dependency(from, to).setUsage("USES");
+        dependency.setWeight(1);
         graph.addEdge(dependency);
       }
       if (subDependency != null && !resourceMapping.getSubDependencies(dependency).contains(subDependency)) {

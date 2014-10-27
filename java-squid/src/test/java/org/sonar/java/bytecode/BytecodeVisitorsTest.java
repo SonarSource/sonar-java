@@ -157,7 +157,7 @@ public class BytecodeVisitorsTest {
   @Test
   public void testPackageDependencies() {
     assertThat(graph.getEdge(pacImpl, pacTag).getUsage()).isEqualTo("USES");
-    assertThat(graph.getEdge(pacImpl, pacTag).getWeight()).isEqualTo(13);
+    assertThat(graph.getEdge(pacImpl, pacTag).getWeight()).isEqualTo(14);
   }
 
   @Test
