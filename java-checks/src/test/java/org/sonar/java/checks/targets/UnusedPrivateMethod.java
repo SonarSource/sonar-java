@@ -21,7 +21,7 @@ package org.sonar.java.checks.targets;
 
 public class UnusedPrivateMethod {
 
-  public UnusedPrivateMethod() {
+  public UnusedPrivateMethod(String s) {
     init();
   }
 
@@ -67,6 +67,10 @@ public class UnusedPrivateMethod {
     Attribute(String prettyName, String[][] martrix, int i) {
     }
 
+  }
+
+  private class A {
+    private A(){}
   }
 
 }
