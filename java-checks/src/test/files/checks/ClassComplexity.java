@@ -4,5 +4,11 @@ public class HelloWorld {
     while (false) {
     }
   }
-
+  HelloWorld helloWorld = new HelloWorld() {
+    @Override
+    public void sayHello() {
+      while (false){
+      }
+    }
+  };
 }

@@ -214,7 +214,10 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public int getLine() {
-    return ((IdentifierTreeImpl) simpleName()).getLine();
+    if(simpleName==null) {
+      return super.getLine();
+    }
+    return ((IdentifierTreeImpl) simpleName).getLine();
   }
 
   @Override
