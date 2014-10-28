@@ -72,7 +72,7 @@ public class JavaClasspath implements BatchExtension {
     } else {
       elements = Lists.newArrayList(binaries);
       elements.addAll(libraries);
-      if(useDeprecatedProperties && !elements.isEmpty()) {
+      if (useDeprecatedProperties && !elements.isEmpty()) {
         LOG.warn("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
       }
     }
@@ -123,21 +123,25 @@ public class JavaClasspath implements BatchExtension {
   }
 
   private List<File> getLibraryFilesForPattern(File baseDir, String pathPattern) {
-    String pattern = pathPattern;
-    File dir = baseDir;
-    int wildcardIndex = pattern.indexOf('*');
-    if (wildcardIndex > 0) {
-      pattern = pattern.substring(0, wildcardIndex);
+    String dirPath = pathPattern;
+    String filePattern;
+    int wildcardIndex = pathPattern.indexOf('*');
+    if (wildcardIndex >= 0) {
+      dirPath = pathPattern.substring(0, wildcardIndex);
     }
-    int lastPathSeparator = Math.max(Math.max(pattern.lastIndexOf('/'), pattern.lastIndexOf('\\')), 0);
-    File filenameDir = new File(pattern.substring(0, lastPathSeparator));
-    if (filenameDir.isAbsolute()) {
-      dir = filenameDir;
-      pattern = pathPattern.substring(dir.getAbsolutePath().length());
+    int lastPathSeparator = Math.max(dirPath.lastIndexOf('/'), dirPath.lastIndexOf('\\'));
+    if (lastPathSeparator == -1) {
+      dirPath = ".";
+      filePattern = pathPattern;
     } else {
-      pattern = pathPattern;
+      dirPath = pathPattern.substring(0, lastPathSeparator);
+      filePattern = pathPattern.substring(lastPathSeparator + 1);
     }
-    return getMatchingFiles(pattern, dir);
+    File dir = resolvePath(baseDir, dirPath);
+    if (!dir.isDirectory()) {
+      return Lists.newArrayList();
+    }
+    return getMatchingFiles(filePattern, dir);
   }
 
   private List<File> getMatchingFiles(String pattern, File dir) {
