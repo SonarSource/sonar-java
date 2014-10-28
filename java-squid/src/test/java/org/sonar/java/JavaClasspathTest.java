@@ -198,6 +198,18 @@ public class JavaClasspathTest {
     checkIllegalStateException("No files nor directories matching 'hello.jar'");
   }
 
+  @Test
+  public void libraries_should_read_dir_of_class_files() {
+    File baseDir = new File("src/test/files/");
+    fs.setBaseDir(baseDir);
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath");
+    javaClasspath = new JavaClasspath(settings, fs);
+    assertThat(javaClasspath.getElements()).hasSize(1);
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath/");
+    javaClasspath = new JavaClasspath(settings, fs);
+    assertThat(javaClasspath.getElements()).hasSize(1);
+  }
+
   private void checkIllegalStateException(String message) {
     try {
       javaClasspath = new JavaClasspath(settings, fs);

@@ -25,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.AndFileFilter;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -141,16 +142,26 @@ public class JavaClasspath implements BatchExtension {
     if (!dir.isDirectory()) {
       return Lists.newArrayList();
     }
+    if(filePattern.isEmpty()) {
+      return Lists.newArrayList(dir);
+    }
     return getMatchingFiles(filePattern, dir);
   }
 
   private List<File> getMatchingFiles(String pattern, File dir) {
-    FileFilter fileFilter = new WilcardPatternFileFilter(dir, pattern);
+    WilcardPatternFileFilter wilcardPatternFileFilter = new WilcardPatternFileFilter(dir, pattern);
+    FileFilter fileFilter = wilcardPatternFileFilter;
     if (pattern.endsWith("*")) {
       fileFilter = new AndFileFilter((IOFileFilter) fileFilter,
           new OrFileFilter(Lists.newArrayList(suffixFileFilter(".jar", IOCase.INSENSITIVE), suffixFileFilter(".zip", IOCase.INSENSITIVE))));
     }
-    return Lists.newArrayList(FileUtils.listFiles(dir, (IOFileFilter) fileFilter, TrueFileFilter.TRUE));
+    //find jar and zip files
+    List<File> files = Lists.newArrayList(FileUtils.listFiles(dir, (IOFileFilter) fileFilter, TrueFileFilter.TRUE));
+    //find directories matching pattern.
+    files.addAll(FileUtils.listFilesAndDirs(dir, new AndFileFilter(wilcardPatternFileFilter, DirectoryFileFilter.DIRECTORY), wilcardPatternFileFilter));
+    //remove searching dir from matching as listFilesAndDirs always includes it in the list.
+    files.remove(dir);
+    return files;
   }
 
   private File resolvePath(File baseDir, String fileName) {
