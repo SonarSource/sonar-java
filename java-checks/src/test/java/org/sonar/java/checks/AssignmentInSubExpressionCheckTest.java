@@ -44,7 +44,9 @@ public class AssignmentInSubExpressionCheckTest {
       .next().atLine(23)
       .next().atLine(41)
       .next().atLine(44)
-      .next().atLine(48);
+      .next().atLine(48)
+      .next().atLine(57)
+    ;
   }
 
 }

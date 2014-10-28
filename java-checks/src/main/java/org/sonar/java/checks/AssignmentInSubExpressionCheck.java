@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -59,6 +60,14 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
   public void visitAnnotation(AnnotationTree annotationTree) {
     //skip scanning of annotation : assignment in annotation is normal behaviour
     scan(annotationTree.annotationType());
+  }
+
+  @Override
+  public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+    //skip lambda if body is an assignement
+    if(!lambdaExpressionTree.body().is(Kind.ASSIGNMENT)) {
+      super.visitLambdaExpression(lambdaExpressionTree);
+    }
   }
 
   @Override

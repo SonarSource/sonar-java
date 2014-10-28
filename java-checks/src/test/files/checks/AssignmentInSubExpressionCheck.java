@@ -52,6 +52,9 @@ class Foo {
   }
   @MyAnnotation(name="toto", type=Type.SubType) // Compliant
   void bar(){
-
+    eventBus.register((NextPlayer) event -> isPlaying = !isPlaying);
+    eventBus.register((NextPlayer) event -> {isPlaying = !isPlaying;});
+    eventBus.register((NextPlayer) event -> {if(isPlaying = !isPlaying) return false;});
   }
+
 }
