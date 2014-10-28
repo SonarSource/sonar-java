@@ -13,7 +13,7 @@ class A {
    f11,                                                 // Compliant
    f12 = foo(),                                         // Compliant
    f13 = BAR;                                           // Non-Compliant
-
+  private final int object = (Type<?>) foo;
   private final int[] foo = new int[42];                // Compliant
   public class InnerClass{
     private final int POSSIBLE = 4; //Non-Compliant

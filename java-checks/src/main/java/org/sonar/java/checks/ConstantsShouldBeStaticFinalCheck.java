@@ -106,11 +106,11 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
         return true;
       }
     }
-    if(!tree.isLeaf()) {
+    if (!tree.isLeaf()) {
       Iterator<Tree> treeIterator = tree.childrenIterator();
       while (treeIterator.hasNext()) {
         JavaTree javaTree = (JavaTree) treeIterator.next();
-        if(containsChildrenOfKind(javaTree, kinds)){
+        if (javaTree != null && containsChildrenOfKind(javaTree, kinds)) {
           return true;
         }
       }
