@@ -175,16 +175,17 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
   }
 
-  private Symbol resolveAs(@Nullable Tree tree, int kind) {
+  private void resolveAs(@Nullable Tree tree, int kind) {
     if (tree == null) {
-      return null;
+      return;
     }
-    if(env == null) {
-      return resolveAs(tree, kind, semanticModel.getEnv(tree));
+    if (env == null) {
+      resolveAs(tree, kind, semanticModel.getEnv(tree));
+    } else {
+      resolveAs(tree, kind, env);
     }
-    return resolveAs(tree, kind, env);
   }
-  
+
   public Symbol resolveAs(Tree tree, int kind, Resolve.Env resolveEnv) {
     if (tree.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
       Symbol resolvedSymbol;
