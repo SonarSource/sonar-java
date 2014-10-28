@@ -220,22 +220,25 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   private Symbol getSymbolOfMemberSelectExpression(MemberSelectExpressionTree mse, int kind, Resolve.Env resolveEnv) {
-    int expressionKind = Symbol.TYP | Symbol.VAR;
-    if ((kind & (Symbol.PCK | Symbol.TYP)) != 0) {
-      expressionKind = Symbol.PCK | Symbol.TYP | kind;
+    int expressionKind = Symbol.TYP;
+    if ((kind & Symbol.VAR) != 0) {
+      expressionKind |= Symbol.VAR;
     }
+    if ((kind & Symbol.TYP) != 0) {
+      expressionKind |= Symbol.PCK;
+    }
+
     Symbol site = resolveAs(mse.expression(), expressionKind, resolveEnv);
     if (site.kind == Symbol.VAR) {
-      site = site.type.symbol;
+      return resolve.findIdentInType(resolveEnv, site.type.symbol, mse.identifier().name(), Symbol.VAR);
     }
-    Symbol ident = symbols.unknownSymbol;
     if (site.kind == Symbol.TYP) {
-      ident = resolve.findIdentInType(resolveEnv, (Symbol.TypeSymbol) site, mse.identifier().name(), kind);
-    } else if (site.kind == Symbol.PCK) {
-      //package
-      ident = resolve.findIdentInPackage(site, mse.identifier().name(), kind);
+      return resolve.findIdentInType(resolveEnv, (Symbol.TypeSymbol) site, mse.identifier().name(), kind);
     }
-    return ident;
+    if (site.kind == Symbol.PCK) {
+      return resolve.findIdentInPackage(site, mse.identifier().name(), kind);
+    }
+    return symbols.unknownSymbol;
   }
 
   private void resolveAs(List<? extends Tree> trees, int kind) {
@@ -362,7 +365,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
     Type type;
-    if(env==null) {
+    if (env == null) {
       type = resolve.findIdent(semanticModel.getEnv(tree), tree.keyword().text(), Symbol.TYP).type;
     } else {
       type = resolve.findIdent(env, tree.keyword().text(), Symbol.TYP).type;
