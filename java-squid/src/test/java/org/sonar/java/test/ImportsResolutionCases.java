@@ -20,6 +20,8 @@
 package org.sonar.java.test;
 
 public class ImportsResolutionCases {
-  public class ImportInnerClass {
+  public static class ImportInnerClass {
   }
+
+  private static int ImportInnerClass;
 }
