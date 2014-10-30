@@ -76,7 +76,7 @@ public class BytecodeCompleter implements Symbol.Completer {
 
   public Symbol.TypeSymbol registerClass(Symbol.TypeSymbol classSymbol) {
     String flatName = formFullName(classSymbol);
-    Preconditions.checkState(!classes.containsKey(flatName), "Registering class 2 times : "+flatName);
+    Preconditions.checkState(!classes.containsKey(flatName), "Registering class 2 times : " + flatName);
     classes.put(flatName, classSymbol);
     return classSymbol;
   }
@@ -148,7 +148,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       String enclosingClassName = Convert.enclosingClassName(shortName);
       if (StringUtils.isNotEmpty(enclosingClassName)) {
         //handle innerClasses
-        symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), Convert.innerClassName(shortName), getClassSymbol(Convert.fullName(packageName,enclosingClassName)));
+        symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), Convert.innerClassName(shortName), getClassSymbol(Convert.fullName(packageName, enclosingClassName)));
       } else {
         symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), shortName, enterPackage(packageName));
       }
@@ -182,7 +182,7 @@ public class BytecodeCompleter implements Symbol.Completer {
   // TODO(Godin): Method name is misleading because of lazy loading.
   public Symbol loadClass(String fullname) {
     Symbol.TypeSymbol symbol = classes.get(fullname);
-    if(symbol != null) {
+    if (symbol != null) {
       return symbol;
     }
 
@@ -251,8 +251,8 @@ public class BytecodeCompleter implements Symbol.Completer {
 
     @Override
     public void visit(int version, int flags, String name, @Nullable String signature, @Nullable String superName, @Nullable String[] interfaces) {
-      Preconditions.checkState(name.endsWith(classSymbol.name), "Name : '"+name+"' should ends with "+classSymbol.name);
-      Preconditions.checkState(!isSynthetic(flags), name+" is synthetic");
+      Preconditions.checkState(name.endsWith(classSymbol.name), "Name : '" + name + "' should ends with " + classSymbol.name);
+      Preconditions.checkState(!isSynthetic(flags), name + " is synthetic");
       className = name;
       classSymbol.flags = filterBytecodeFlags(flags);
       classSymbol.members = new Scope(classSymbol);
