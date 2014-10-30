@@ -117,6 +117,20 @@ public class BytecodeCompleterTest {
     Symbol method = symbols.get(0);
     assertThat(method.type).isInstanceOf(Type.MethodType.class);
     assertThat(((Type.MethodType)method.type).resultType.symbol.name).isEqualTo("void");
+  }
+
+  @Test
+  public void inner_class_should_be_correctly_flagged() {
+    Symbol.TypeSymbol interfaceWithInnerEnum = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.subpackage.FlagCompletion");
+    List<Symbol> members = interfaceWithInnerEnum.members().lookup("bar");
+    Symbol.TypeSymbol innerEnum = ((Symbol.MethodSymbol) members.get(0)).getReturnType();
+    //complete outer class
+    innerEnum.owner().complete();
+    //verify flag are set for inner class.
+    assertThat(innerEnum.isEnum()).isEqualTo(true);
+    assertThat(innerEnum.isPublic()).isEqualTo(true);
+    assertThat(innerEnum.isStatic()).isEqualTo(true);
+    assertThat(innerEnum.isFinal()).isEqualTo(true);
 
   }
 }

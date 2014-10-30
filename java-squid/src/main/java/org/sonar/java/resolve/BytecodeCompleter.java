@@ -326,7 +326,8 @@ public class BytecodeCompleter implements Symbol.Completer {
      */
     private void defineInnerClass(String bytecodeName, int flags) {
       Symbol.TypeSymbol innerClass = getClassSymbol(bytecodeName, flags);
-      Preconditions.checkState(innerClass.owner == classSymbol, "Innerclass : "+innerClass.owner.getName()+" and classSymbol : "+classSymbol.getName()+" are not the same.");
+      innerClass.flags = filterBytecodeFlags(flags);
+      Preconditions.checkState(innerClass.owner == classSymbol, "Innerclass : " + innerClass.owner.getName() + " and classSymbol : " + classSymbol.getName() + " are not the same.");
       classSymbol.members.enter(innerClass);
     }
 
