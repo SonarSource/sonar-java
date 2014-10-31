@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -155,10 +156,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     } else {
       throw new IllegalStateException("Method select in method invocation is not of the expected type " + methodSelect);
     }
-    if (tree.typeArguments() != null) {
-      resolveAs((List<? extends Tree>) tree.typeArguments(), Symbol.VAR);
-    }
-    resolveAs(tree.arguments(), Symbol.VAR);
+
+    scan(tree.arguments());
     name = identifier.name();
     if (type == null) {
       type = symbols.unknownType;
@@ -245,6 +244,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     for (Tree tree : trees) {
       resolveAs(tree, kind);
     }
+  }
+
+  @Override
+  public void visitTypeArguments(TypeArgumentListTreeImpl trees) {
+    resolveAs((List<? extends Tree>) trees, Symbol.TYP);
   }
 
   @Override
