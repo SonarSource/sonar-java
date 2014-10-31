@@ -579,12 +579,10 @@ public class Resolve {
   private boolean isAccessible(Env env, Symbol.TypeSymbol site, Symbol symbol) {
     switch (symbol.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
-        if (env.enclosingClass == null) {
-          //no enclosing class : checking accessibility for imports.
-          return false;
-        }
+        //enclosing class == null : checking accessibility for imports.
         // no check of overriding, because private members cannot be overridden
-        return (env.enclosingClass().outermostClass() == symbol.owner().outermostClass())
+        return env.enclosingClass != null
+            && (env.enclosingClass().outermostClass() == symbol.owner().outermostClass())
             && isInheritedIn(symbol, site);
       case 0:
         return (env.packge() == symbol.packge())
