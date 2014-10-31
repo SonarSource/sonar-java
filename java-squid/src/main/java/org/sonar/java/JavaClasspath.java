@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Settings;
+import org.sonar.api.resources.Project;
 import org.sonar.api.utils.SonarException;
 import org.sonar.api.utils.WildcardPattern;
 
@@ -54,12 +55,14 @@ public class JavaClasspath implements BatchExtension {
 
   private List<File> binaries;
   private List<File> elements;
+  private boolean validateLibraries;
 
-  public JavaClasspath(Settings settings, FileSystem fileSystem) {
-    this(settings, fileSystem, null);
+  public JavaClasspath(Project project, Settings settings, FileSystem fileSystem) {
+    this(project, settings, fileSystem, null);
   }
 
-  public JavaClasspath(Settings settings, FileSystem fileSystem, @Nullable MavenProject pom) {
+  public JavaClasspath(Project project, Settings settings, FileSystem fileSystem, @Nullable MavenProject pom) {
+    validateLibraries = project.getModules().isEmpty();
     binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
     List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
     boolean useDeprecatedProperties = binaries.isEmpty() && libraries.isEmpty();
@@ -111,7 +114,7 @@ public class JavaClasspath implements BatchExtension {
           result.add(binaryFile);
         } else {
           List<File> libraryFilesForPattern = getLibraryFilesForPattern(baseDir, pathPattern);
-          if (libraryFilesForPattern.isEmpty()) {
+          if (validateLibraries && libraryFilesForPattern.isEmpty()) {
             LOG.error("Invalid value for " + property);
             String message = "No files nor directories matching '" + pathPattern + "'";
             throw new IllegalStateException(message);

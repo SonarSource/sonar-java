@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.Settings;
+import org.sonar.api.resources.Project;
 
 import java.io.File;
 
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.when;
 
 public class JavaClasspathTest {
 
+  private Project project;
   private DefaultFileSystem fs;
   private Settings settings;
   private JavaClasspath javaClasspath;
@@ -44,6 +46,7 @@ public class JavaClasspathTest {
   public void setUp() throws Exception {
     fs = new DefaultFileSystem();
     settings = new Settings();
+    project = mock(Project.class);
   }
 
   @Test
@@ -53,7 +56,7 @@ public class JavaClasspathTest {
 
   @Test
   public void when_property_not_defined_project_classpath_null_getElements_should_be_empty() {
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).isEmpty();
   }
 
@@ -62,7 +65,7 @@ public class JavaClasspathTest {
     settings.setProperty("sonar.binaries", "bin");
     settings.setProperty("sonar.libraries", "lib/hello.jar");
     fs.setBaseDir(new File("src/test/files/classpath/"));
-    javaClasspath = new JavaClasspath(settings, fs, mock(MavenProject.class));
+    javaClasspath = new JavaClasspath(project, settings, fs, mock(MavenProject.class));
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
@@ -77,7 +80,7 @@ public class JavaClasspathTest {
     Build build = mock(Build.class);
     when(build.getOutputDirectory()).thenReturn("src/test/files/classpath/bin");
     when(pom.getBuild()).thenReturn(build);
-    javaClasspath = new JavaClasspath(settings, fs, pom);
+    javaClasspath = new JavaClasspath(project, settings, fs, pom);
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
@@ -87,7 +90,7 @@ public class JavaClasspathTest {
   public void setting_binary_prop_should_fill_elements() {
     fs.setBaseDir(new File("src/test/files/classpath/"));
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "bin");
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
@@ -97,7 +100,7 @@ public class JavaClasspathTest {
   public void setting_library_prop_should_fill_elements() {
     fs.setBaseDir(new File("src/test/files/classpath"));
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/hello.jar");
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getBinaryDirs()).isEmpty();
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
@@ -107,7 +110,7 @@ public class JavaClasspathTest {
   public void absolute_file_name_should_be_resolved() {
     fs.setBaseDir(new File("src/test/files/classpath"));
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/bytecode/lib/hello.jar").getAbsolutePath());
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
   }
@@ -116,7 +119,7 @@ public class JavaClasspathTest {
   public void libraries_should_accept_path_ending_with_wildcard() {
     fs.setBaseDir(new File("src/test/files/classpath"));
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/*");
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements().get(0)).exists();
     assertThat(javaClasspath.getElements().get(1)).exists();
@@ -127,7 +130,7 @@ public class JavaClasspathTest {
   public void libraries_should_accept_relative_paths() throws Exception {
     fs.setBaseDir(new File("src/test/files/classpath"));
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/classpath/lib/*.jar");
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(2);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
@@ -139,14 +142,14 @@ public class JavaClasspathTest {
     fs.setBaseDir(new File("src/test/files/classpath"));
 
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/h*.jar");
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
     assertThat(jar.getName()).isEqualTo("hello.jar");
 
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/*.jar");
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(2);
     jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
@@ -158,7 +161,7 @@ public class JavaClasspathTest {
   public void directory_wildcard_should_be_resolved() {
     fs.setBaseDir(new File("src/test/files/classpath"));
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "**/*.jar");
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(2);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
@@ -169,13 +172,13 @@ public class JavaClasspathTest {
   public void both_path_separator_should_be_supported_on_one_JVM() {
     fs.setBaseDir(new File("src/test/files/classpath"));
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "**/*.jar");
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(2);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
     assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar","world.jar");
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "**\\*.jar");
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(2);
     jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
@@ -203,19 +206,37 @@ public class JavaClasspathTest {
     File baseDir = new File("src/test/files/");
     fs.setBaseDir(baseDir);
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath");
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath/");
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
+  }
+
+  @Test
+  public void parent_module_should_not_validate_sonar_libraries() {
+    when(project.getModules()).thenReturn(Lists.newArrayList(mock(Project.class)));
+    File baseDir = new File("src/test/files/classpath");
+    fs.setBaseDir(baseDir);
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "non-existing.jar");
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).isEmpty();
+
+    when(project.getModules()).thenReturn(Lists.<Project>newArrayList());
+    checkIllegalStateException("No files nor directories matching 'non-existing.jar'");
+
   }
 
   private void checkIllegalStateException(String message) {
     try {
-      javaClasspath = new JavaClasspath(settings, fs);
+      javaClasspath = createJavaClasspath();
       fail("Exception should have been raised");
     }catch (IllegalStateException ise) {
       assertThat(ise.getMessage()).isEqualTo(message);
     }
+  }
+
+  private JavaClasspath createJavaClasspath() {
+    return new JavaClasspath(project, settings, fs);
   }
 }

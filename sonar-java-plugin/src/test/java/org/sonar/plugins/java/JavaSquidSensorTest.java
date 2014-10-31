@@ -47,7 +47,7 @@ public class JavaSquidSensorTest {
 
   @Before
   public void setUp() {
-    sensor = new JavaSquidSensor(mock(RulesProfile.class), new JavaClasspath(new Settings(), new DefaultFileSystem()), mock(SonarComponents.class), moduleFileSystem,
+    sensor = new JavaSquidSensor(mock(RulesProfile.class), new JavaClasspath(mock(Project.class), new Settings(), new DefaultFileSystem()), mock(SonarComponents.class), moduleFileSystem,
         mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class));
   }
 
