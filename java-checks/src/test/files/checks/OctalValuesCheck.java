@@ -7,4 +7,6 @@ class A {
   int f = 0.; // Compliant
   int g = 0x00; // Compliant
   int h = 0X00; // Compliant
+  int j = 0b0101; // Compliant
+  int k = 0B0101; // Compliant
 }
