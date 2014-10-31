@@ -204,7 +204,8 @@ public final class CheckList {
       TernaryOperatorCheck.class,
       OverrideAnnotationCheck.class,
       ForLoopIncrementAndUpdateCheck.class,
-      EmptyClassCheck.class
+      EmptyClassCheck.class,
+      InstanceOfAlwaysTrueCheck.class
     );
   }
 

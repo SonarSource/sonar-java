@@ -176,6 +176,33 @@ public class Symbol {
       return members;
     }
 
+    /**
+     * Includes superclass and super interface hierarchy.
+     * @return list of classTypes.
+     */
+    public Set<Type.ClassType> superTypes() {
+      ImmutableSet.Builder<Type.ClassType> types = ImmutableSet.builder();
+      Type.ClassType superClassType = (Type.ClassType) this.getSuperclass();
+      types.addAll(this.interfacesOfType());
+      while (superClassType != null) {
+        types.add(superClassType);
+        Symbol.TypeSymbol superClassSymbol = superClassType.getSymbol();
+        types.addAll(superClassSymbol.interfacesOfType());
+        superClassType = (Type.ClassType) superClassSymbol.getSuperclass();
+      }
+      return types.build();
+    }
+
+    private Set<Type.ClassType> interfacesOfType() {
+      ImmutableSet.Builder<Type.ClassType> builder = ImmutableSet.builder();
+      for (Type interfaceType : getInterfaces()) {
+        Type.ClassType classType = (Type.ClassType) interfaceType;
+        builder.add(classType);
+        builder.addAll(classType.getSymbol().interfacesOfType());
+      }
+      return builder.build();
+    }
+
     @Override
     public String toString() {
       return name;
@@ -249,7 +276,7 @@ public class Symbol {
         //FIXME : SONARJAVA-645 : exclude methods within anonymous classes
         return null;
       }
-      for (Type.ClassType superType : superTypes(enclosingClass)) {
+      for (Type.ClassType superType : enclosingClass.superTypes()) {
         Boolean overrideFromType = overridesFromSymbol(superType);
         if (overrideFromType == null) {
           result = null;
@@ -260,28 +287,6 @@ public class Symbol {
       return result;
     }
 
-    private Set<Type.ClassType> superTypes(Symbol.TypeSymbol enclosingClass) {
-      ImmutableSet.Builder<Type.ClassType> types = ImmutableSet.builder();
-      Type.ClassType superClassType = (Type.ClassType) enclosingClass.getSuperclass();
-      types.addAll(interfacesOfType(enclosingClass));
-      while (superClassType != null) {
-        types.add(superClassType);
-        Symbol.TypeSymbol superClassSymbol = superClassType.getSymbol();
-        types.addAll(interfacesOfType(superClassSymbol));
-        superClassType = (Type.ClassType) superClassSymbol.getSuperclass();
-      }
-      return types.build();
-    }
-
-    private Set<Type.ClassType> interfacesOfType(Symbol.TypeSymbol typeSymbol) {
-      ImmutableSet.Builder<Type.ClassType> builder = ImmutableSet.builder();
-      for (Type interfaceType : typeSymbol.getInterfaces()) {
-        Type.ClassType classType = (Type.ClassType) interfaceType;
-        builder.add(classType);
-        builder.addAll(interfacesOfType(classType.getSymbol()));
-      }
-      return builder.build();
-    }
     private Boolean overridesFromSymbol(Type.ClassType classType) {
       Boolean result = false;
       if (classType.isTagged(Type.UNKNOWN)) {
