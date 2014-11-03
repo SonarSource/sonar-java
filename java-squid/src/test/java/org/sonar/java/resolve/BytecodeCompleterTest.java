@@ -127,10 +127,10 @@ public class BytecodeCompleterTest {
     //complete outer class
     innerEnum.owner().complete();
     //verify flag are set for inner class.
-    assertThat(innerEnum.isEnum()).isEqualTo(true);
-    assertThat(innerEnum.isPublic()).isEqualTo(true);
-    assertThat(innerEnum.isStatic()).isEqualTo(true);
-    assertThat(innerEnum.isFinal()).isEqualTo(true);
+    assertThat(innerEnum.isEnum()).isTrue();
+    assertThat(innerEnum.isPublic()).isTrue();
+    assertThat(innerEnum.isStatic()).isTrue();
+    assertThat(innerEnum.isFinal()).isTrue();
   }
 
   @Test
