@@ -205,7 +205,8 @@ public final class CheckList {
       OverrideAnnotationCheck.class,
       ForLoopIncrementAndUpdateCheck.class,
       EmptyClassCheck.class,
-      InstanceOfAlwaysTrueCheck.class
+      InstanceOfAlwaysTrueCheck.class,
+      RedundantTypeCastCheck.class
     );
   }
 
