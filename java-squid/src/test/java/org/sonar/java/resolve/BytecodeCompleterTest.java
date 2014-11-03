@@ -136,7 +136,10 @@ public class BytecodeCompleterTest {
   @Test
   public void deprecated_classes_should_be_flagged() throws Exception {
     Symbol.TypeSymbol deprecatedClass = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.DeprecatedClass");
-    deprecatedClass.complete();
     assertThat(deprecatedClass.isDeprecated()).isTrue();
+    Symbol.TypeSymbol staticInnerClass = (Symbol.TypeSymbol) deprecatedClass.members().lookup("StaticInnerClass").get(0);
+    assertThat(staticInnerClass.isDeprecated()).isTrue();
+    Symbol.TypeSymbol innerClass = (Symbol.TypeSymbol) deprecatedClass.members().lookup("InnerClass").get(0);
+    assertThat(innerClass.isDeprecated()).isTrue();
   }
 }

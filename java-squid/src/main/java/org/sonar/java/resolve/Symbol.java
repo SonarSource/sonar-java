@@ -337,34 +337,41 @@ public class Symbol {
   }
 
   public boolean isStatic() {
-    return (flags & Flags.STATIC) != 0;
+    return isFlag(Flags.STATIC);
   }
 
   public boolean isFinal() {
-    return (flags & Flags.FINAL) != 0;
+    return isFlag(Flags.FINAL);
   }
 
   public boolean isEnum() {
-    return (flags & Flags.ENUM) != 0;
+    return isFlag(Flags.ENUM);
   }
 
   public boolean isAbstract() {
-    return (flags & Flags.ABSTRACT) != 0;
+    return isFlag(Flags.ABSTRACT);
   }
 
   public boolean isPublic() {
-    return (flags & Flags.PUBLIC) != 0;
+    return isFlag(Flags.PUBLIC);
   }
 
   public boolean isPrivate() {
-    return (flags & Flags.PRIVATE) != 0;
-  }
-
-  public boolean isPackageVisibility() {
-    return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
+    return isFlag(Flags.PRIVATE);
   }
 
   public boolean isDeprecated() {
-    return (flags & Flags.DEPRECATED) != 0;
+    return isFlag(Flags.DEPRECATED);
   }
+
+  private boolean isFlag(int flag) {
+    complete();
+    return (flags & flag) != 0;
+  }
+
+  public boolean isPackageVisibility() {
+    complete();
+    return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
+  }
+
 }

@@ -254,7 +254,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       Preconditions.checkState(name.endsWith(classSymbol.name), "Name : '" + name + "' should ends with " + classSymbol.name);
       Preconditions.checkState(!isSynthetic(flags), name + " is synthetic");
       className = name;
-      classSymbol.flags = filterBytecodeFlags(flags);
+      classSymbol.flags |= filterBytecodeFlags(flags);
       classSymbol.members = new Scope(classSymbol);
       if (superName == null) {
         Preconditions.checkState("java/lang/Object".equals(className), "superName must be null only for java/lang/Object, but not for " + className);
@@ -326,7 +326,7 @@ public class BytecodeCompleter implements Symbol.Completer {
      */
     private void defineInnerClass(String bytecodeName, int flags) {
       Symbol.TypeSymbol innerClass = getClassSymbol(bytecodeName, flags);
-      innerClass.flags = filterBytecodeFlags(flags);
+      innerClass.flags |= filterBytecodeFlags(flags);
       Preconditions.checkState(innerClass.owner == classSymbol, "Innerclass: " + innerClass.owner.getName() + " and classSymbol: " + classSymbol.getName() + " are not the same.");
       classSymbol.members.enter(innerClass);
     }
