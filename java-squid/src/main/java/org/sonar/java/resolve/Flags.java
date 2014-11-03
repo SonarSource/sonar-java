@@ -66,6 +66,8 @@ public class Flags {
    */
   public static final int DEFAULT = 1 << 15;
 
+  public static final int DEPRECATED = 1 << 17;
+
   /**
    * Masks.
    */

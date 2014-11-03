@@ -53,7 +53,7 @@ public class BytecodeCompleter implements Symbol.Completer {
   private static final int ACCEPTABLE_BYTECODE_FLAGS = Flags.ACCESS_FLAGS |
       Flags.INTERFACE | Flags.ANNOTATION | Flags.ENUM |
       Flags.STATIC | Flags.FINAL | Flags.SYNCHRONIZED | Flags.VOLATILE | Flags.TRANSIENT | Flags.NATIVE |
-      Flags.ABSTRACT | Flags.STRICTFP;
+      Flags.ABSTRACT | Flags.STRICTFP | Flags.DEPRECATED;
 
   private Symbols symbols;
   private final List<File> projectClasspath;

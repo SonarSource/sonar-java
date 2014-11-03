@@ -131,6 +131,12 @@ public class BytecodeCompleterTest {
     assertThat(innerEnum.isPublic()).isEqualTo(true);
     assertThat(innerEnum.isStatic()).isEqualTo(true);
     assertThat(innerEnum.isFinal()).isEqualTo(true);
+  }
 
+  @Test
+  public void deprecated_classes_should_be_flagged() throws Exception {
+    Symbol.TypeSymbol deprecatedClass = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.DeprecatedClass");
+    deprecatedClass.complete();
+    assertThat(deprecatedClass.isDeprecated()).isTrue();
   }
 }

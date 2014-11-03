@@ -364,4 +364,7 @@ public class Symbol {
     return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
   }
 
+  public boolean isDeprecated() {
+    return (flags & Flags.DEPRECATED) != 0;
+  }
 }
