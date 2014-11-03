@@ -25,6 +25,7 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -304,7 +305,24 @@ public class FirstPass extends BaseTreeVisitor {
     for (Modifier modifier : modifiers.modifiers()) {
       result |= Flags.flagForModifier(modifier);
     }
+    if(hasDeprecatedAnnotation(modifiers.annotations())) {
+      result |= Flags.DEPRECATED;
+    }
     return result;
+  }
+
+  private boolean hasDeprecatedAnnotation(Iterable<AnnotationTree> annotations) {
+    for (AnnotationTree annotationTree : annotations) {
+      if (isDeprecated(annotationTree)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isDeprecated(AnnotationTree tree) {
+    return tree.annotationType().is(Tree.Kind.IDENTIFIER) &&
+        "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());
   }
 
   private void declareVariable(int flags, IdentifierTree identifierTree, VariableTreeImpl tree) {

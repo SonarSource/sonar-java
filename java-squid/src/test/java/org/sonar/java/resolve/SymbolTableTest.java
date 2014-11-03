@@ -39,8 +39,8 @@ public class SymbolTableTest {
     assertThat(typeSymbol.flags()).isEqualTo(Flags.PRIVATE);
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass").type);
     assertThat(typeSymbol.getInterfaces()).containsExactly(
-      result.symbol("FirstInterface").type,
-      result.symbol("SecondInterface").type);
+        result.symbol("FirstInterface").type,
+        result.symbol("SecondInterface").type);
     assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Superclass");
@@ -109,8 +109,8 @@ public class SymbolTableTest {
     assertThat(interfaceSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.INTERFACE);
     assertThat(interfaceSymbol.getSuperclass()).isNull(); // TODO should it be java.lang.Object?
     assertThat(interfaceSymbol.getInterfaces()).containsExactly(
-      result.symbol("FirstInterface").type,
-      result.symbol("SecondInterface").type);
+        result.symbol("FirstInterface").type,
+        result.symbol("SecondInterface").type);
     assertThat(interfaceSymbol.members.lookup("this")).isEmpty();
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
@@ -152,8 +152,8 @@ public class SymbolTableTest {
     assertThat(superclass.owner.getName()).isEqualTo("java.lang");
 
     assertThat(enumSymbol.getInterfaces()).containsExactly(
-      result.symbol("FirstInterface").type,
-      result.symbol("SecondInterface").type);
+        result.symbol("FirstInterface").type,
+        result.symbol("SecondInterface").type);
     assertThat(enumSymbol.members.lookup("this")).isNotEmpty();
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) result.symbol("FIRST_CONSTANT");
@@ -237,8 +237,8 @@ public class SymbolTableTest {
     assertThat(methodSymbol.flags()).isEqualTo(Flags.PROTECTED);
     assertThat(methodSymbol.getReturnType()).isSameAs(result.symbol("ReturnType"));
     assertThat(methodSymbol.getThrownTypes()).containsExactly(
-      result.symbol("FirstExceptionType"),
-      result.symbol("SecondExceptionType"));
+        result.symbol("FirstExceptionType"),
+        result.symbol("SecondExceptionType"));
   }
 
   @Test
@@ -251,8 +251,8 @@ public class SymbolTableTest {
     assertThat(methodSymbol.getReturnType()).isNull(); // TODO should it be result.symbol("ConstructorDeclaration")?
     assertThat(methodSymbol.getParametersTypes()).hasSize(1);
     assertThat(methodSymbol.getThrownTypes()).containsExactly(
-      result.symbol("FirstExceptionType"),
-      result.symbol("SecondExceptionType"));
+        result.symbol("FirstExceptionType"),
+        result.symbol("SecondExceptionType"));
   }
 
   @Test
@@ -384,11 +384,21 @@ public class SymbolTableTest {
   }
 
   @Test
-  public void ThisReference() throws Exception {
+  public void ThisReference() {
     Result result = Result.createFor("references/ThisReference");
     Symbol classA = result.symbol("A");
     assertThat(result.reference(7, 5).type.symbol).isEqualTo(classA);
     assertThat(result.reference(17, 17).type.symbol).isEqualTo(result.symbol("theHashtable").type.symbol);
+  }
 
+  @Test
+  public void DeprecatedSymbols() {
+    Result result = Result.createFor("DeprecatedSymbols");
+    Symbol sym = result.symbol("A");
+    assertThat(sym.isDeprecated()).isTrue();
+    sym = result.symbol("field");
+    assertThat(sym.isDeprecated()).isTrue();
+    sym = result.symbol("fun");
+    assertThat(sym.isDeprecated()).isTrue();
   }
 }
