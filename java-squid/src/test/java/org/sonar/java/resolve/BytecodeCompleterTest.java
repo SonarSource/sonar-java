@@ -142,4 +142,15 @@ public class BytecodeCompleterTest {
     Symbol.TypeSymbol innerClass = (Symbol.TypeSymbol) deprecatedClass.members().lookup("InnerClass").get(0);
     assertThat(innerClass.isDeprecated()).isTrue();
   }
+
+  @Test
+  public void complete_flags_for_inner_class() throws Exception {
+    Symbol.TypeSymbol classSymbol = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ProtectedInnerClassChild");
+    Symbol.MethodSymbol foo = (Symbol.MethodSymbol) classSymbol.members().lookup("foo").get(0);
+    Symbol.TypeSymbol innerClassRef = foo.getReturnType();
+    assertThat(innerClassRef.isPrivate()).isFalse();
+    assertThat(innerClassRef.isPublic()).isFalse();
+    assertThat(innerClassRef.isPackageVisibility()).isFalse();
+    assertThat(innerClassRef.isDeprecated());
+  }
 }
