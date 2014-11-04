@@ -116,7 +116,7 @@ public class BytecodeCompleterTest {
     assertThat(symbols).hasSize(1);
     Symbol method = symbols.get(0);
     assertThat(method.type).isInstanceOf(Type.MethodType.class);
-    assertThat(((Type.MethodType)method.type).resultType.symbol.name).isEqualTo("void");
+    assertThat(((Type.MethodType) method.type).resultType.symbol.name).isEqualTo("void");
   }
 
   @Test

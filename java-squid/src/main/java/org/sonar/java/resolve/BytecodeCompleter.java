@@ -85,7 +85,7 @@ public class BytecodeCompleter implements Symbol.Completer {
   public void complete(Symbol symbol) {
     LOG.debug("Completing symbol : " + symbol.name);
     //complete outer class to set flags for inner class properly.
-    if(symbol.owner.isKind(Symbol.TYP)) {
+    if (symbol.owner.isKind(Symbol.TYP)) {
       symbol.owner.complete();
     }
     String bytecodeName = formFullName(symbol);
@@ -260,7 +260,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       className = name;
       //if class has already access flags set (inner class) then do not reset those.
       //The important access flags are the one defined in the outer class.
-      if((classSymbol.flags & Flags.ACCESS_FLAGS) != 0) {
+      if ((classSymbol.flags & Flags.ACCESS_FLAGS) != 0) {
         classSymbol.flags |= filterBytecodeFlags(flags & ~Flags.ACCESS_FLAGS);
       } else {
         classSymbol.flags |= filterBytecodeFlags(flags);
