@@ -162,7 +162,15 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (type == null) {
       type = symbols.unknownType;
     }
-    Symbol symbol = resolve.findMethod(methodEnv, type.symbol, name, ImmutableList.<Type>of());
+    ImmutableList.Builder<Type> builder = ImmutableList.builder();
+    for (ExpressionTree expressionTree : tree.arguments()) {
+      Type symbolType = ((AbstractTypedTree) expressionTree).getSymbolType();
+      if(symbolType == null) {
+        symbolType = symbols.unknownType;
+      }
+      builder.add(symbolType);
+    }
+    Symbol symbol = resolve.findMethod(methodEnv, type.symbol, name, builder.build());
     associateReference(identifier, symbol);
     type = getTypeOfSymbol(symbol);
     //Register return type for method invocation.

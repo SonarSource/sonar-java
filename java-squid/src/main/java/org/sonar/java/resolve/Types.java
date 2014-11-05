@@ -46,6 +46,20 @@ public class Types {
         case Type.VOID:
           result = t.tag == s.tag;
           break;
+        case Type.ARRAY:
+          if(t.tag != s.tag) {
+            result = false;
+            break;
+          }
+          result = isSubtype(((Type.ArrayType) t).elementType(), ((Type.ArrayType) s).elementType());
+          break;
+        case Type.CLASS:
+          if(t.tag != s.tag) {
+            result = false;
+            break;
+          }
+          result = ((Type.ClassType) t).getSymbol().superTypes().contains(s);
+          break;
         case Type.BOT:
           result = s.tag == Type.BOT || s.tag == Type.CLASS || s.tag == Type.ARRAY;
           break;

@@ -207,7 +207,8 @@ public final class CheckList {
       EmptyClassCheck.class,
       InstanceOfAlwaysTrueCheck.class,
       RedundantTypeCastCheck.class,
-      ExtendDeprecatedSymbolCheck.class
+      ExtendDeprecatedSymbolCheck.class,
+      CollectionCallingItselfCheck.class
     );
   }
 

@@ -1947,6 +1947,19 @@
       </chc>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S2114</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>15</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S2039</rule-key>
         <prop>
           <key>remediationFunction</key>

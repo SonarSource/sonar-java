@@ -63,9 +63,21 @@ public class TypesTest {
     // TODO test void
 
     // null
-    Type.ArrayType arrayType = new Type.ArrayType(symbols.intType, symbols.arrayClass);
+    Type.ArrayType arrayTypeInt = new Type.ArrayType(symbols.intType, symbols.arrayClass);
+    Type.ArrayType arrayTypeShort = new Type.ArrayType(symbols.shortType, symbols.arrayClass);
+    shouldBeSubtype(arrayTypeShort, Arrays.<Type>asList(arrayTypeShort, arrayTypeInt));
     shouldNotBeSubtype(symbols.nullType, Arrays.asList(symbols.booleanType, symbols.byteType, symbols.charType, symbols.shortType, symbols.intType, symbols.longType, symbols.floatType, symbols.doubleType));
-    shouldBeSubtype(symbols.nullType, Arrays.asList(symbols.nullType, arrayType, symbols.objectType));
+    shouldBeSubtype(symbols.nullType, Arrays.asList(symbols.nullType, arrayTypeInt, symbols.objectType));
+
+    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", symbols.defaultPackage);
+    Type.ClassType classType = (Type.ClassType) typeSymbol.type;
+    classType.interfaces = Lists.newArrayList();
+    Symbol.TypeSymbol subtypeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MySubtype", symbols.defaultPackage);
+    Type.ClassType subClassType = (Type.ClassType) subtypeSymbol.type;
+    subClassType.supertype = classType;
+    subClassType.interfaces = Lists.newArrayList();
+    shouldBeSubtype(subClassType, Arrays.<Type>asList(classType, subClassType));
+
   }
 
   @Test

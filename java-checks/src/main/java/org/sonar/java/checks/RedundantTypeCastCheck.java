@@ -67,6 +67,7 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
     }
   }
 
+  //FIXME : to be replaced by Types.isSubtype
   private boolean typeInherits(Type type, Type cast) {
     if (type.isTagged(Type.ARRAY) && cast.isTagged(Type.ARRAY)) {
       //Handle covariance of arrays.
