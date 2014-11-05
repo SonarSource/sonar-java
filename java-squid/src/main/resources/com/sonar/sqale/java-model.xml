@@ -1528,6 +1528,19 @@
       </chc>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S1724</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>30</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S1210</rule-key>
         <prop>
           <key>remediationFunction</key>

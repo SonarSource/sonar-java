@@ -206,7 +206,8 @@ public final class CheckList {
       ForLoopIncrementAndUpdateCheck.class,
       EmptyClassCheck.class,
       InstanceOfAlwaysTrueCheck.class,
-      RedundantTypeCastCheck.class
+      RedundantTypeCastCheck.class,
+      ExtendDeprecatedSymbolCheck.class
     );
   }
 
