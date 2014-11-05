@@ -674,7 +674,6 @@ public class TreeFactory {
     ImmutableList.Builder<Tree> members = ImmutableList.builder();
 
     List<AstNode> children = Lists.newArrayList();
-    children.add(emptyModifiers);
     children.add(openBraceToken);
 
     if (annotationTypeElementDeclarations.isPresent()) {

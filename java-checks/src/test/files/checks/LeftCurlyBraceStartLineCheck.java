@@ -28,3 +28,7 @@ class Exceptions
 {
   int[] numbers = new int[] { 0, 1 }; // Compliant
 }
+public @interface Resolver
+{
+  String codeRuleId();
+}
