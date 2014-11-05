@@ -16,7 +16,7 @@ class Bar extends Fee { ... }
 </pre>
 
 <h2>Exception</h2>
-<p>When the class extending a deprecated class is deprecated itself.</p>
+<p>When the class that extends a deprecated class is itself deprecated, the extending class will be ignored.</p>
 <pre>
 @Deprecated
 class Bar extends Foo { ... } // compliant Bar is deprecated.
