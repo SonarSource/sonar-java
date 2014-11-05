@@ -24,6 +24,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.TreeFactory.Tuple;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.JavaTree.ImportTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
@@ -410,10 +411,9 @@ public class JavaGrammar {
           b.optional(DEFAULT_VALUE())));
   }
 
-  public ExpressionTree DEFAULT_VALUE() {
-    return b.<ExpressionTree>nonterminal(JavaLexer.DEFAULT_VALUE)
-      .is(
-        f.newDefaultValue(
+  public Tuple<InternalSyntaxToken, ExpressionTree> DEFAULT_VALUE() {
+    return b.<Tuple<InternalSyntaxToken, ExpressionTree>>nonterminal(JavaLexer.DEFAULT_VALUE)
+      .is(f.newDefaultValue(
           b.invokeRule(JavaKeyword.DEFAULT),
           ELEMENT_VALUE()));
   }

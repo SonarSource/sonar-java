@@ -22,7 +22,6 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 /**
@@ -65,6 +64,12 @@ public interface MethodTree extends Tree {
 
   @Nullable
   BlockTree block();
+
+  /**
+   * @since Java 1.5
+   */
+  @Nullable
+  SyntaxToken defaultToken();
 
   /**
    * @since Java 1.5

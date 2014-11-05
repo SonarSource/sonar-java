@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
@@ -58,30 +59,35 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Nullable
   private final BlockTree block;
   private final List<ExpressionTree> throwsClauses;
+  private final SyntaxToken defaultToken;
   private final ExpressionTree defaultValue;
 
   private Symbol.MethodSymbol symbol;
 
-  public MethodTreeImpl(FormalParametersListTreeImpl parameters, @Nullable ExpressionTree defaultValue) {
+  public MethodTreeImpl(FormalParametersListTreeImpl parameters, @Nullable SyntaxToken defaultToken, @Nullable ExpressionTree defaultValue) {
     super(Kind.METHOD);
     this.typeParameters = ImmutableList.of();
     this.parameters = parameters;
     this.block = null;
     this.throwsClauses = ImmutableList.of();
+    this.defaultToken = defaultToken;
     this.defaultValue = defaultValue;
 
     addChild(parameters);
+    if (defaultToken != null) {
+      addChild((AstNode) defaultToken);
+    }
     if (defaultValue != null) {
       addChild((AstNode) defaultValue);
     }
   }
 
   public MethodTreeImpl(
-    @Nullable Tree returnType,
-    IdentifierTree simpleName,
-    FormalParametersListTreeImpl parameters,
-    List<ExpressionTree> throwsClauses,
-    @Nullable BlockTree block) {
+      @Nullable Tree returnType,
+      IdentifierTree simpleName,
+      FormalParametersListTreeImpl parameters,
+      List<ExpressionTree> throwsClauses,
+      @Nullable BlockTree block) {
 
     super(returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD);
 
@@ -92,13 +98,14 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.parameters = Preconditions.checkNotNull(parameters);
     this.block = block;
     this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
+    this.defaultToken = null;
     this.defaultValue = null;
   }
 
   public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, List<TypeParameterTree> typeParameters, @Nullable Tree returnType, IdentifierTree simpleName,
-    FormalParametersListTreeImpl parameters,
-    @Nullable BlockTree block,
-    List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
+                        FormalParametersListTreeImpl parameters,
+                        @Nullable BlockTree block,
+                        List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
     super(astNode);
     this.modifiers = Preconditions.checkNotNull(modifiers);
     this.typeParameters = Preconditions.checkNotNull(typeParameters);
@@ -107,6 +114,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.parameters = Preconditions.checkNotNull(parameters);
     this.block = block;
     this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
+    this.defaultToken = null;
     this.defaultValue = defaultValue;
   }
 
@@ -178,6 +186,12 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Nullable
   @Override
+  public SyntaxToken defaultToken() {
+    return defaultToken;
+  }
+
+  @Nullable
+  @Override
   public ExpressionTree defaultValue() {
     return defaultValue;
   }
@@ -204,21 +218,22 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-      Iterators.singletonIterator(modifiers),
-      typeParameters.iterator(),
-      Iterators.forArray(
-        returnType,
-        simpleName
+        Iterators.singletonIterator(modifiers),
+        typeParameters.iterator(),
+        Iterators.forArray(
+            returnType,
+            simpleName
         ),
-      parameters.iterator(),
-      Iterators.singletonIterator(block),
-      throwsClauses.iterator(),
-      Iterators.singletonIterator(defaultValue)
-      );
+        parameters.iterator(),
+        Iterators.singletonIterator(block),
+        throwsClauses.iterator(),
+        Iterators.singletonIterator(defaultValue)
+    );
   }
 
   /**
    * Check if a methodTree is overriden.
+   *
    * @return true if overriden, null if it cannot be decided (method symbol not resolved or lack of bytecode for super types).
    */
   public Boolean isOverriding() {
@@ -282,7 +297,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   private boolean returnsVoid() {
-    if(returnType != null) {
+    if (returnType != null) {
       return returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
     }
     return false;

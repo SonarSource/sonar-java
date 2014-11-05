@@ -721,20 +721,23 @@ public class TreeFactory {
     return partial;
   }
 
-  public MethodTreeImpl newAnnotationTypeMethod(AstNode openParenTokenAstNode, AstNode closeParenTokenAstNode, Optional<ExpressionTree> defaultValue) {
+  public MethodTreeImpl newAnnotationTypeMethod(AstNode openParenTokenAstNode, AstNode closeParenTokenAstNode, Optional<Tuple<InternalSyntaxToken, ExpressionTree>> defaultValue) {
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
 
     FormalParametersListTreeImpl parameters = new FormalParametersListTreeImpl(openParenToken, closeParenToken);
-
-    return new MethodTreeImpl(parameters, defaultValue.orNull());
+    InternalSyntaxToken defaultToken = null;
+    ExpressionTree defaultExpression = null;
+    if(defaultValue.isPresent()){
+      defaultToken = defaultValue.get().first();
+      defaultExpression = defaultValue.get().second();
+    }
+    return new MethodTreeImpl(parameters, defaultToken, defaultExpression);
   }
 
-  public ExpressionTree newDefaultValue(AstNode defaultTokenAstNode, ExpressionTree elementValue) {
+  public Tuple<InternalSyntaxToken, ExpressionTree> newDefaultValue(AstNode defaultTokenAstNode, ExpressionTree elementValue) {
     InternalSyntaxToken defaultToken = InternalSyntaxToken.create(defaultTokenAstNode);
-
-    ((JavaTree) elementValue).prependChildren(defaultToken);
-    return elementValue;
+    return new Tuple<InternalSyntaxToken, ExpressionTree>(defaultToken, elementValue);
   }
 
   public AnnotationTreeImpl newAnnotation(AstNode atTokenAstNode, ExpressionTree qualifiedIdentifier, Optional<ArgumentListTreeImpl> arguments) {
