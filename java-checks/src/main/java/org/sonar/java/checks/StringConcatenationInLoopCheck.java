@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
@@ -117,7 +119,20 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
   }
 
   private boolean isConcatenation(AssignmentExpressionTree tree) {
-    return tree.is(Tree.Kind.PLUS_ASSIGNMENT) || (tree.is(Tree.Kind.ASSIGNMENT) && removeParenthesis(tree.expression()).is(Tree.Kind.PLUS));
+    return tree.is(Tree.Kind.PLUS_ASSIGNMENT) || (tree.is(Tree.Kind.ASSIGNMENT) && removeParenthesis(tree.expression()).is(Tree.Kind.PLUS)
+      && concatenateVariable(tree.variable(), (BinaryExpressionTree) removeParenthesis(tree.expression()))
+    );
+  }
+
+  private boolean concatenateVariable(ExpressionTree variable, BinaryExpressionTree plus) {
+    return concatenateVariable(variable, plus.leftOperand()) || concatenateVariable(variable, plus.rightOperand());
+  }
+
+  private boolean concatenateVariable(ExpressionTree variable, ExpressionTree operand) {
+    if(operand.is(Tree.Kind.PLUS)) {
+      return concatenateVariable(variable, (BinaryExpressionTree) operand);
+    }
+    return SyntacticEquivalence.areEquivalent(variable, operand);
   }
 
   private Tree removeParenthesis(Tree tree) {
