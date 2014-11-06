@@ -72,14 +72,12 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
         }
       }
     }
-
   }
 
   private boolean isMethodFromCollection(Symbol.MethodSymbol methodSymbol) {
     Symbol.TypeSymbol owner = (Symbol.TypeSymbol) methodSymbol.owner();
     for (Type.ClassType classType : owner.superTypes()) {
-      String fullname = classType.getSymbol().owner().getName() + "." + classType.getSymbol().getName();
-      if ("java.util.Collection".equals(fullname)) {
+      if (classType.is("java.util.Collection")) {
         return true;
       }
     }
