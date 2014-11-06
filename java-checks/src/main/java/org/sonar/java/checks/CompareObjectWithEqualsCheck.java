@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(
     key = CompareObjectWithEqualsCheck.RULE_KEY,
     priority = Priority.MAJOR,
-    tags = {"error-handling"})
+    tags = {"cwe"})
 public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1698";

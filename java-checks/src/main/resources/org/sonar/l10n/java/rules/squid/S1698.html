@@ -43,3 +43,16 @@ if (str1 == str3)
   System.out.println("they're the same object"); // this still prints, but it's probably not what you meant to do
 }
 </pre>
+
+<h2>Exception</h2>
+Comparing two instances of the <code>Class</code> object will not raise an issue.
+<pre>
+Class c;
+if(c == Integer.class) { //No issue raised
+}
+</pre>
+
+<h2>See</h2>
+    <ul>
+      <li><a href="http://cwe.mitre.org/data/definitions/595.html">MITRE, CWE-595</a> - Comparison of Object References Instead of Object Contents</li>
+    </ul>
