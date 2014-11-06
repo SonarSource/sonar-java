@@ -67,4 +67,16 @@ public class TypeTest {
     String methodToString  = new Type.MethodType(ImmutableList.<Type>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList())).intType, ImmutableList.<Type>of(), null).toString();
     assertThat(methodToString).isEqualTo("returns int");
   }
+
+  @Test
+  public void type_is_fully_qualified_name() {
+    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
+    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    Type.ClassType classType = (Type.ClassType) typeSymbol.type;
+    classType.interfaces = Lists.newArrayList();
+
+    assertThat(new Type(Type.BYTE, null).is("org.foo.bar.MyType")).isFalse();
+    assertThat(classType.is("org.foo.bar.MyType")).isTrue();
+
+  }
 }

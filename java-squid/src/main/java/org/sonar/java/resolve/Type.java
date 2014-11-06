@@ -63,6 +63,14 @@ public class Type {
     return tag <= DOUBLE;
   }
 
+  //TODO support more than just class (array and primitive types, methods?)
+  public boolean is(String fullyQualifiedName) {
+    if(!isTagged(CLASS)) {
+      return false;
+    }
+    return fullyQualifiedName.equals(symbol.owner.name+"."+symbol.name);
+  }
+
   public static class ClassType extends Type {
 
     /**

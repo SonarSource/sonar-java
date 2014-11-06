@@ -58,4 +58,12 @@ class C{
     if(i == 1F){}
     if(i == 1D){}
   }
+
+  Class<?> c1;
+  Class<?> c2;
+  void foo() {
+    if(c1 == c2);
+  }
+
+
 }

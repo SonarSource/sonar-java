@@ -83,26 +83,36 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     super.visitBinaryExpression(tree);
-    if (tree.is(Tree.Kind.EQUAL_TO) || tree.is(Tree.Kind.NOT_EQUAL_TO)) {
-      Type leftOperandType = ((AbstractTypedTree) tree.leftOperand()).getSymbolType();
-      Type rightOperandType = ((AbstractTypedTree) tree.rightOperand()).getSymbolType();
-      if (!isNullComparison(leftOperandType, rightOperandType)
-          && !isNumericalComparison(leftOperandType, rightOperandType)
-          && (isClass(leftOperandType) || isClass(rightOperandType))) {
+    if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+      Type leftOpType = ((AbstractTypedTree) tree.leftOperand()).getSymbolType();
+      Type rightOpType = ((AbstractTypedTree) tree.rightOperand()).getSymbolType();
+      if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType)) {
         context.addIssue(tree, ruleKey, "Change this comparison to use the equals method.");
       }
     }
   }
 
-  private boolean isClass(Type operandType) {
+  private boolean hasObjectOperand(Type leftOpType, Type rightOpType) {
+    return (isObject(leftOpType) || isObject(rightOpType));
+  }
+
+  private boolean isExcluded(Type leftOpType, Type rightOpType) {
+    return isNullComparison(leftOpType, rightOpType) || isNumericalComparison(leftOpType, rightOpType) || isJavaLangClassComparison(leftOpType, rightOpType);
+  }
+
+  private boolean isObject(Type operandType) {
     return operandType.isTagged(Type.CLASS) && !((Type.ClassType) operandType).getSymbol().isEnum();
   }
 
-  private boolean isNullComparison(Type leftOperandType, Type rightOperandType) {
-    return leftOperandType.isTagged(Type.BOT) || rightOperandType.isTagged(Type.BOT);
+  private boolean isNullComparison(Type leftOpType, Type rightOpType) {
+    return leftOpType.isTagged(Type.BOT) || rightOpType.isTagged(Type.BOT);
   }
 
   private boolean isNumericalComparison(Type leftOperandType, Type rightOperandType) {
     return leftOperandType.isNumerical() || rightOperandType.isNumerical();
+  }
+
+  private boolean isJavaLangClassComparison(Type leftOpType, Type rightOpType) {
+    return leftOpType.is("java.lang.Class") || rightOpType.is("java.lang.Class");
   }
 }
