@@ -4,12 +4,12 @@
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-List &lt;String&gt; strings = new ArrayList&lt;String&gt;();
-  strings.add("Hello");
+List &lt;Object&gt; objs = new ArrayList&lt;Object&gt;();
+  objs.add("Hello");
 
-  strings.add(strings); // Noncompliant; StackOverflowException if strings.hashCode() called
-  strings.addAll(strings); // Noncompliant; behavior undefined
-  strings.containsAll(strings); // Noncompliant; always true
-  strings.removeAll(strings); // Noncompliant; confusing. Use clear() instead
-  strings.retainAll(strings); // Noncompliant; NOOP
+  objs.add(objs); // Noncompliant; StackOverflowException if objs.hashCode() called
+  objs.addAll(objs); // Noncompliant; behavior undefined
+  objs.containsAll(objs); // Noncompliant; always true
+  objs.removeAll(objs); // Noncompliant; confusing. Use clear() instead
+  objs.retainAll(objs); // Noncompliant; NOOP
 </pre>
