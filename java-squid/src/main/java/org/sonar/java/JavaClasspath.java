@@ -44,6 +44,8 @@ import org.sonar.api.utils.WildcardPattern;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.apache.commons.io.filefilter.FileFilterUtils.suffixFileFilter;
@@ -109,7 +111,8 @@ public class JavaClasspath implements BatchExtension {
     if (StringUtils.isNotEmpty(fileList)) {
       Iterable<String> fileNames = Splitter.on(SEPARATOR).omitEmptyStrings().split(fileList);
       for (String pathPattern : fileNames) {
-        List<File> libraryFilesForPattern = getFilesForPattern(baseDir, pathPattern, property.endsWith("libraries"));
+        boolean isLibraryProperty = property.endsWith("libraries");
+        List<File> libraryFilesForPattern = getFilesForPattern(baseDir, pathPattern, isLibraryProperty);
         if (validateLibraries && libraryFilesForPattern.isEmpty()) {
           LOG.error("Invalid value for " + property);
           String message = "No files nor directories matching '" + pathPattern + "'";
@@ -140,9 +143,6 @@ public class JavaClasspath implements BatchExtension {
     if (!dir.isDirectory()) {
       return Lists.newArrayList();
     }
-    if (filePattern.isEmpty()) {
-      return Lists.newArrayList(dir);
-    }
     return getMatchingFiles(filePattern, dir, libraryProperty);
   }
 
@@ -159,9 +159,18 @@ public class JavaClasspath implements BatchExtension {
       files.addAll(Lists.newArrayList(FileUtils.listFiles(dir, (IOFileFilter) fileFilter, TrueFileFilter.TRUE)));
     }
     //find directories matching pattern.
-    files.addAll(FileUtils.listFilesAndDirs(dir, new AndFileFilter(wilcardPatternFileFilter, DirectoryFileFilter.DIRECTORY), wilcardPatternFileFilter));
+    Collection<File> dirs = FileUtils.listFilesAndDirs(dir, new AndFileFilter(wilcardPatternFileFilter, DirectoryFileFilter.DIRECTORY), wilcardPatternFileFilter);
     //remove searching dir from matching as listFilesAndDirs always includes it in the list see https://issues.apache.org/jira/browse/IO-328
-    files.remove(dir);
+    if(!pattern.isEmpty()) {
+      dirs.remove(dir);
+    }
+    if(libraryProperty) {
+      for (File directory : dirs) {
+        files.addAll(getMatchingFiles("**/*.jar", directory, true));
+        files.addAll(getMatchingFiles("**/*.zip", directory, true));
+      }
+    }
+    files.addAll(dirs);
     return files;
   }
 
