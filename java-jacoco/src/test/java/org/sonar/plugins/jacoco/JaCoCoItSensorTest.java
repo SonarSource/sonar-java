@@ -33,6 +33,7 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
+import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
 
@@ -54,11 +55,10 @@ public class JaCoCoItSensorTest {
   private static File jacocoExecutionData;
 
   private JacocoConfiguration configuration;
-  private ResourcePerspectives perspectives;
-  private ModuleFileSystem fileSystem;
   private PathResolver pathResolver;
   private JaCoCoItSensor sensor;
   private JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
+  private JavaClasspath javaClasspath = mock(JavaClasspath.class);
 
   @BeforeClass
   public static void setUpOutputDir() throws IOException {
@@ -71,10 +71,10 @@ public class JaCoCoItSensorTest {
   @Before
   public void setUp() {
     configuration = mock(JacocoConfiguration.class);
-    perspectives = mock(ResourcePerspectives.class);
-    fileSystem = mock(ModuleFileSystem.class);
+    ResourcePerspectives perspectives = mock(ResourcePerspectives.class);
+    ModuleFileSystem fileSystem = mock(ModuleFileSystem.class);
     pathResolver = mock(PathResolver.class);
-    sensor = new JaCoCoItSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator);
+    sensor = new JaCoCoItSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
   }
 
   @Test
@@ -103,7 +103,7 @@ public class JaCoCoItSensorTest {
     SensorContext context = mock(SensorContext.class);
     Project project = mock(Project.class);
     when(context.getResource(any(Resource.class))).thenReturn(resource);
-    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
     when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
 
     sensor.analyse(project, context);
@@ -124,7 +124,7 @@ public class JaCoCoItSensorTest {
     SensorContext context = mock(SensorContext.class);
     Project project = mock(Project.class);
     when(context.getResource(any(Resource.class))).thenReturn(null);
-    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
 
     sensor.analyse(project, context);
 

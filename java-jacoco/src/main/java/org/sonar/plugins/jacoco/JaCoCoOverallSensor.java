@@ -34,6 +34,7 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.utils.SonarException;
+import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.BufferedInputStream;
@@ -54,14 +55,16 @@ public class JaCoCoOverallSensor implements Sensor {
   private final ModuleFileSystem fileSystem;
   private final PathResolver pathResolver;
   private final JavaResourceLocator javaResourceLocator;
+  private final JavaClasspath javaClasspath;
 
   public JaCoCoOverallSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver,
-                             JavaResourceLocator javaResourceLocator) {
+                             JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
     this.configuration = configuration;
     this.perspectives = perspectives;
     this.fileSystem = fileSystem;
     this.pathResolver = pathResolver;
     this.javaResourceLocator = javaResourceLocator;
+    this.javaClasspath = javaClasspath;
   }
 
   @Override
@@ -132,7 +135,7 @@ public class JaCoCoOverallSensor implements Sensor {
     private final File report;
 
     OverallAnalyzer(File report, ResourcePerspectives perspectives) {
-      super(perspectives, fileSystem, pathResolver, javaResourceLocator, false);
+      super(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath, false);
       this.report = report;
     }
 

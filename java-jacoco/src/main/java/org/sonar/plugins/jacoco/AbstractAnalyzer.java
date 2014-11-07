@@ -44,6 +44,7 @@ import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
 import org.sonar.api.test.Testable;
 import org.sonar.api.utils.SonarException;
+import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.BufferedInputStream;
@@ -66,17 +67,19 @@ public abstract class AbstractAnalyzer {
   private final boolean readCoveragePerTests;
 
   private Map<String, File> classFilesCache;
+  private JavaClasspath javaClasspath;
 
-  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator) {
-    this(perspectives, fileSystem, pathResolver, javaResourceLocator, true);
+  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
+    this(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath, true);
   }
   public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem,
-                          PathResolver pathResolver, JavaResourceLocator javaResourceLocator, boolean readCoveragePerTests) {
+                          PathResolver pathResolver, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath, boolean readCoveragePerTests) {
     this.perspectives = perspectives;
     this.fileSystem = fileSystem;
     this.pathResolver = pathResolver;
     this.javaResourceLocator = javaResourceLocator;
     this.readCoveragePerTests = readCoveragePerTests;
+    this.javaClasspath = javaClasspath;
   }
 
   private static String fullyQualifiedClassName(String packageName, String simpleClassName) {
@@ -101,7 +104,7 @@ public abstract class AbstractAnalyzer {
 
   public final void analyse(Project project, SensorContext context) {
     classFilesCache = Maps.newHashMap();
-    for (File classesDir : fileSystem.binaryDirs()) {
+    for (File classesDir : javaClasspath.getBinaryDirs()) {
       populateClassFilesCache(classesDir, "");
     }
 

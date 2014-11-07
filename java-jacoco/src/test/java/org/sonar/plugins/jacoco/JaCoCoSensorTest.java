@@ -35,6 +35,7 @@ import org.sonar.api.test.IsMeasure;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
+import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
 
@@ -60,11 +61,11 @@ public class JaCoCoSensorTest {
   private JacocoConfiguration configuration;
   private ResourcePerspectives perspectives;
   private SensorContext context;
-  private ModuleFileSystem fileSystem;
   private PathResolver pathResolver;
   private Project project;
   private JaCoCoSensor sensor;
   private JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
+  private JavaClasspath javaClasspath;
 
   @Before
   public void setUp() throws Exception {
@@ -74,13 +75,14 @@ public class JaCoCoSensorTest {
     Files.copy(TestUtils.getResource("Hello.class.toCopy"), new File(jacocoExecutionData.getParentFile(), "Hello.class"));
 
     context = mock(SensorContext.class);
-    fileSystem = mock(ModuleFileSystem.class);
+    ModuleFileSystem fileSystem = mock(ModuleFileSystem.class);
     pathResolver = mock(PathResolver.class);
     project = mock(Project.class);
 
     configuration = mock(JacocoConfiguration.class);
     perspectives = mock(ResourcePerspectives.class);
-    sensor = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator);
+    javaClasspath = mock(JavaClasspath.class);
+    sensor = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
   }
 
   @Test
@@ -112,7 +114,7 @@ public class JaCoCoSensorTest {
     when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
     when(context.getResource(any(Resource.class))).thenReturn(resource);
 
-    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
     when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
 
     sensor.analyse(project, context);
@@ -137,7 +139,7 @@ public class JaCoCoSensorTest {
 
     org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
     when(context.getResource(any(Resource.class))).thenReturn(resource);
-    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
     when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
 
     MutableTestable testAbleFile = mock(MutableTestable.class);
@@ -158,7 +160,7 @@ public class JaCoCoSensorTest {
   @Test
   public void do_not_save_measure_on_resource_which_doesnt_exist_in_the_context() {
     when(context.getResource(any(Resource.class))).thenReturn(null);
-    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
 
     sensor.analyse(project, context);
 
@@ -167,7 +169,7 @@ public class JaCoCoSensorTest {
 
   @Test
   public void should_do_nothing_if_output_dir_does_not_exists() {
-    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(new File("nowhere")));
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(new File("nowhere")));
 
     sensor.analyse(project, context);
 

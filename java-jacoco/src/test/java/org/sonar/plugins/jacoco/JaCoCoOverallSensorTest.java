@@ -31,6 +31,7 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
+import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
 
@@ -56,6 +57,7 @@ public class JaCoCoOverallSensorTest {
   private ResourcePerspectives perspectives;
   private JaCoCoOverallSensor sensor;
   private JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
+  private JavaClasspath javaClasspath = mock(JavaClasspath.class);
 
   @Before
   public void before() {
@@ -67,7 +69,7 @@ public class JaCoCoOverallSensorTest {
     pathResolver = mock(PathResolver.class);
     project = mock(Project.class);
     perspectives = mock(ResourcePerspectives.class);
-    sensor = new JaCoCoOverallSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator);
+    sensor = new JaCoCoOverallSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
   }
 
   @Test
@@ -164,7 +166,7 @@ public class JaCoCoOverallSensorTest {
     when(javaResourceLocator.findResourceByClassName("com/sonar/coverages/HelloWorld")).thenReturn(resource);
     when(configuration.getReportPath()).thenReturn(utReport);
     when(configuration.getItReportPath()).thenReturn(itReport);
-    when(fileSystem.binaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
     when(pathResolver.relativeFile(any(File.class), eq(utReport))).thenReturn(new File(outputDir, utReport));
     when(pathResolver.relativeFile(any(File.class), eq(itReport))).thenReturn(new File(outputDir, itReport));
     when(pathResolver.relativeFile(any(File.class), eq(new File("target/sonar/jacoco-overall.exec").getAbsolutePath()))).thenReturn(new File("target/sonar/jacoco-overall.exec"));
