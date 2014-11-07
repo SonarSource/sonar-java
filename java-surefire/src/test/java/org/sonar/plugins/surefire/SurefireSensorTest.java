@@ -33,7 +33,6 @@ import org.sonar.api.config.Settings;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.InputFile;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Qualifiers;
@@ -78,11 +77,17 @@ public class SurefireSensorTest {
     when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(new Answer<Resource>() {
       @Override
       public Resource answer(InvocationOnMock invocation) throws Throwable {
-        return new JavaFile((String) invocation.getArguments()[0], true);
+        return resource((String) invocation.getArguments()[0]);
       }
     });
 
     surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs);
+  }
+
+  private org.sonar.api.resources.File resource(String key) {
+    org.sonar.api.resources.File resource = org.sonar.api.resources.File.create(key);
+    resource.setQualifier(Qualifiers.UNIT_TEST_FILE);
+    return resource;
   }
 
   @Test
@@ -127,58 +132,51 @@ public class SurefireSensorTest {
     SensorContext context = mockContext();
 
     surefireSensor.collect(context, new File(getClass().getResource(
-      "/org/sonar/plugins/surefire/SurefireSensorTest/shouldHandleTestSuiteDetails/").toURI()));
+        "/org/sonar/plugins/surefire/SurefireSensorTest/shouldHandleTestSuiteDetails/").toURI()));
 
     // 3 classes, 6 measures by class
     verify(context, times(3)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.UNIT_TEST_FILE)),
-      eq(CoreMetrics.SKIPPED_TESTS), anyDouble());
+        eq(CoreMetrics.SKIPPED_TESTS), anyDouble());
     verify(context, times(3)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.UNIT_TEST_FILE)),
-      eq(CoreMetrics.TESTS), anyDouble());
+        eq(CoreMetrics.TESTS), anyDouble());
     verify(context, times(18)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.UNIT_TEST_FILE)),
-      any(Metric.class), anyDouble());
+        any(Metric.class), anyDouble());
 
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest", true)), eq(CoreMetrics.TESTS), eq(4d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest", true)), eq(CoreMetrics.TEST_EXECUTION_TIME),
-      eq(111d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest", true)), eq(CoreMetrics.TEST_FAILURES), eq(1d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest", true)), eq(CoreMetrics.TEST_ERRORS), eq(1d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest", true)), eq(CoreMetrics.SKIPPED_TESTS), eq(0d));
-    // verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest", true)),
-    // argThat(getTestDetailsMatcher("shouldHandleTestSuiteDetails/ExtensionsFinderTest-expected-result.xml")));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest")), eq(CoreMetrics.TESTS), eq(4d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest")), eq(CoreMetrics.TEST_EXECUTION_TIME),
+        eq(111d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest")), eq(CoreMetrics.TEST_FAILURES), eq(1d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest")), eq(CoreMetrics.TEST_ERRORS), eq(1d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest")), eq(CoreMetrics.SKIPPED_TESTS), eq(0d));
 
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest2", true)), eq(CoreMetrics.TESTS), eq(2d));
-    verify(context)
-      .saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest2", true)), eq(CoreMetrics.TEST_EXECUTION_TIME), eq(2d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest2", true)), eq(CoreMetrics.TEST_FAILURES), eq(0d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest2", true)), eq(CoreMetrics.TEST_ERRORS), eq(0d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest2", true)), eq(CoreMetrics.SKIPPED_TESTS), eq(0d));
-    // verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest2", true)),
-    // argThat(getTestDetailsMatcher("shouldHandleTestSuiteDetails/ExtensionsFinderTest2-expected-result.xml")));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest2")), eq(CoreMetrics.TESTS), eq(2d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest2")), eq(CoreMetrics.TEST_EXECUTION_TIME), eq(2d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest2")), eq(CoreMetrics.TEST_FAILURES), eq(0d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest2")), eq(CoreMetrics.TEST_ERRORS), eq(0d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest2")), eq(CoreMetrics.SKIPPED_TESTS), eq(0d));
 
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest3", true)), eq(CoreMetrics.TESTS), eq(1d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest3", true)), eq(CoreMetrics.TEST_EXECUTION_TIME),
-      eq(16d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest3", true)), eq(CoreMetrics.TEST_FAILURES), eq(0d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest3", true)), eq(CoreMetrics.TEST_ERRORS), eq(0d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest3", true)), eq(CoreMetrics.SKIPPED_TESTS), eq(1d));
-    // verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest3", true)),
-    // argThat(getTestDetailsMatcher("shouldHandleTestSuiteDetails/ExtensionsFinderTest3-expected-result.xml")));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest3")), eq(CoreMetrics.TESTS), eq(1d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest3")), eq(CoreMetrics.TEST_EXECUTION_TIME),
+        eq(16d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest3")), eq(CoreMetrics.TEST_FAILURES), eq(0d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest3")), eq(CoreMetrics.TEST_ERRORS), eq(0d));
+    verify(context).saveMeasure(eq(resource("org.sonar.core.ExtensionsFinderTest3")), eq(CoreMetrics.SKIPPED_TESTS), eq(1d));
   }
 
   @Test
   public void shouldSaveErrorsAndFailuresInXML() throws URISyntaxException {
     SensorContext context = mockContext();
     surefireSensor.collect(context, new File(getClass().getResource(
-      "/org/sonar/plugins/surefire/SurefireSensorTest/shouldSaveErrorsAndFailuresInXML/").toURI()));
+        "/org/sonar/plugins/surefire/SurefireSensorTest/shouldSaveErrorsAndFailuresInXML/").toURI()));
 
     // 1 classes, 6 measures by class
     verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.UNIT_TEST_FILE)),
-      eq(CoreMetrics.SKIPPED_TESTS), anyDouble());
+        eq(CoreMetrics.SKIPPED_TESTS), anyDouble());
 
     verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.UNIT_TEST_FILE)),
-      eq(CoreMetrics.TESTS), anyDouble());
+        eq(CoreMetrics.TESTS), anyDouble());
     verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.UNIT_TEST_FILE)),
-      any(Metric.class), anyDouble());
+        any(Metric.class), anyDouble());
 
     // verify(context).saveMeasure(eq(new JavaFile("org.sonar.core.ExtensionsFinderTest", true)),
     // argThat(getTestDetailsMatcher("shouldSaveErrorsAndFailuresInXML/expected-test-details.xml")));
@@ -188,57 +186,57 @@ public class SurefireSensorTest {
   public void shouldManageClassesWithDefaultPackage() throws URISyntaxException {
     SensorContext context = mockContext();
     surefireSensor.collect(context, new File(getClass().getResource(
-      "/org/sonar/plugins/surefire/SurefireSensorTest/shouldManageClassesWithDefaultPackage/").toURI()));
+        "/org/sonar/plugins/surefire/SurefireSensorTest/shouldManageClassesWithDefaultPackage/").toURI()));
 
-    verify(context).saveMeasure(new JavaFile("NoPackagesTest", true), CoreMetrics.TESTS, 2d);
+    verify(context).saveMeasure(resource("NoPackagesTest"), CoreMetrics.TESTS, 2d);
   }
 
   @Test
   public void successRatioIsZeroWhenAllTestsFail() throws URISyntaxException {
     SensorContext context = mockContext();
     surefireSensor.collect(context, new File(getClass().getResource(
-      "/org/sonar/plugins/surefire/SurefireSensorTest/successRatioIsZeroWhenAllTestsFail/").toURI()));
+        "/org/sonar/plugins/surefire/SurefireSensorTest/successRatioIsZeroWhenAllTestsFail/").toURI()));
 
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TESTS), eq(2d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TEST_FAILURES), eq(1d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TEST_ERRORS), eq(1d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TEST_SUCCESS_DENSITY), eq(0d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TESTS), eq(2d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_FAILURES), eq(1d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_ERRORS), eq(1d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_SUCCESS_DENSITY), eq(0d));
   }
 
   @Test
   public void measuresShouldNotIncludeSkippedTests() throws URISyntaxException {
     SensorContext context = mockContext();
     surefireSensor.collect(context, new File(getClass().getResource(
-      "/org/sonar/plugins/surefire/SurefireSensorTest/measuresShouldNotIncludeSkippedTests/").toURI()));
+        "/org/sonar/plugins/surefire/SurefireSensorTest/measuresShouldNotIncludeSkippedTests/").toURI()));
 
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TESTS), eq(2d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TEST_FAILURES), eq(1d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TEST_ERRORS), eq(0d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.SKIPPED_TESTS), eq(1d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TEST_SUCCESS_DENSITY), eq(50d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TESTS), eq(2d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_FAILURES), eq(1d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_ERRORS), eq(0d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.SKIPPED_TESTS), eq(1d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_SUCCESS_DENSITY), eq(50d));
   }
 
   @Test
   public void noSuccessRatioIfNoTests() throws URISyntaxException {
     SensorContext context = mockContext();
     surefireSensor.collect(context, new File(getClass().getResource(
-      "/org/sonar/plugins/surefire/SurefireSensorTest/noSuccessRatioIfNoTests/").toURI()));
+        "/org/sonar/plugins/surefire/SurefireSensorTest/noSuccessRatioIfNoTests/").toURI()));
 
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TESTS), eq(0d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TEST_FAILURES), eq(0d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.TEST_ERRORS), eq(0d));
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.Foo", true)), eq(CoreMetrics.SKIPPED_TESTS), eq(2d));
-    verify(context, never()).saveMeasure(eq(new JavaFile("org.sonar.Foo")), eq(CoreMetrics.TEST_SUCCESS_DENSITY), anyDouble());
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TESTS), eq(0d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_FAILURES), eq(0d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_ERRORS), eq(0d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.SKIPPED_TESTS), eq(2d));
+    verify(context, never()).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_SUCCESS_DENSITY), anyDouble());
   }
 
   @Test
   public void ignoreSuiteAsInnerClass() throws URISyntaxException {
     SensorContext context = mockContext();
     surefireSensor.collect(context, new File(getClass().getResource(
-      "/org/sonar/plugins/surefire/SurefireSensorTest/ignoreSuiteAsInnerClass/").toURI()));
+        "/org/sonar/plugins/surefire/SurefireSensorTest/ignoreSuiteAsInnerClass/").toURI()));
 
     // ignore TestHandler$Input.xml
-    verify(context).saveMeasure(eq(new JavaFile("org.apache.shindig.protocol.TestHandler")), eq(CoreMetrics.TESTS), eq(0.0));
-    verify(context).saveMeasure(eq(new JavaFile("org.apache.shindig.protocol.TestHandler")), eq(CoreMetrics.SKIPPED_TESTS), eq(1.0));
+    verify(context).saveMeasure(eq(resource("org.apache.shindig.protocol.TestHandler")), eq(CoreMetrics.TESTS), eq(0.0));
+    verify(context).saveMeasure(eq(resource("org.apache.shindig.protocol.TestHandler")), eq(CoreMetrics.SKIPPED_TESTS), eq(1.0));
   }
 }
