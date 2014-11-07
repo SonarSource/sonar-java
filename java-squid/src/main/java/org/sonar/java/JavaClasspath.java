@@ -44,7 +44,6 @@ import org.sonar.api.utils.WildcardPattern;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -161,10 +160,10 @@ public class JavaClasspath implements BatchExtension {
     //find directories matching pattern.
     Collection<File> dirs = FileUtils.listFilesAndDirs(dir, new AndFileFilter(wilcardPatternFileFilter, DirectoryFileFilter.DIRECTORY), wilcardPatternFileFilter);
     //remove searching dir from matching as listFilesAndDirs always includes it in the list see https://issues.apache.org/jira/browse/IO-328
-    if(!pattern.isEmpty()) {
+    if (!pattern.isEmpty()) {
       dirs.remove(dir);
     }
-    if(libraryProperty) {
+    if (libraryProperty) {
       for (File directory : dirs) {
         files.addAll(getMatchingFiles("**/*.jar", directory, true));
         files.addAll(getMatchingFiles("**/*.zip", directory, true));
