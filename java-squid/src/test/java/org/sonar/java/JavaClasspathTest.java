@@ -224,7 +224,13 @@ public class JavaClasspathTest {
 
     when(project.getModules()).thenReturn(Lists.<Project>newArrayList());
     checkIllegalStateException("No files nor directories matching 'non-existing.jar'");
+  }
 
+  @Test
+  public void invalid_sonar_java_binaries_should_fail_analysis() {
+    settings.setProperty("sonar.java.binaries", "dummyDir");
+    fs.setBaseDir(new File("src/test/files/classpath/"));
+    checkIllegalStateException("No files nor directories matching 'dummyDir'");
   }
 
   private void checkIllegalStateException(String message) {

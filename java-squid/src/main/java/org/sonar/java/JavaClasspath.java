@@ -109,24 +109,19 @@ public class JavaClasspath implements BatchExtension {
     if (StringUtils.isNotEmpty(fileList)) {
       Iterable<String> fileNames = Splitter.on(SEPARATOR).omitEmptyStrings().split(fileList);
       for (String pathPattern : fileNames) {
-        if (property.endsWith("binaries")) {
-          File binaryFile = resolvePath(baseDir, pathPattern);
-          result.add(binaryFile);
-        } else {
-          List<File> libraryFilesForPattern = getLibraryFilesForPattern(baseDir, pathPattern);
-          if (validateLibraries && libraryFilesForPattern.isEmpty()) {
-            LOG.error("Invalid value for " + property);
-            String message = "No files nor directories matching '" + pathPattern + "'";
-            throw new IllegalStateException(message);
-          }
-          result.addAll(libraryFilesForPattern);
+        List<File> libraryFilesForPattern = getFilesForPattern(baseDir, pathPattern, property.endsWith("libraries"));
+        if (validateLibraries && libraryFilesForPattern.isEmpty()) {
+          LOG.error("Invalid value for " + property);
+          String message = "No files nor directories matching '" + pathPattern + "'";
+          throw new IllegalStateException(message);
         }
+        result.addAll(libraryFilesForPattern);
       }
     }
     return result;
   }
 
-  private List<File> getLibraryFilesForPattern(File baseDir, String pathPattern) {
+  private List<File> getFilesForPattern(File baseDir, String pathPattern, boolean libraryProperty) {
     String dirPath = pathPattern;
     String filePattern;
     int wildcardIndex = pathPattern.indexOf('*');
@@ -145,24 +140,27 @@ public class JavaClasspath implements BatchExtension {
     if (!dir.isDirectory()) {
       return Lists.newArrayList();
     }
-    if(filePattern.isEmpty()) {
+    if (filePattern.isEmpty()) {
       return Lists.newArrayList(dir);
     }
-    return getMatchingFiles(filePattern, dir);
+    return getMatchingFiles(filePattern, dir, libraryProperty);
   }
 
-  private List<File> getMatchingFiles(String pattern, File dir) {
+  private List<File> getMatchingFiles(String pattern, File dir, boolean libraryProperty) {
     WilcardPatternFileFilter wilcardPatternFileFilter = new WilcardPatternFileFilter(dir, pattern);
     FileFilter fileFilter = wilcardPatternFileFilter;
-    if (pattern.endsWith("*")) {
-      fileFilter = new AndFileFilter((IOFileFilter) fileFilter,
-          new OrFileFilter(Lists.newArrayList(suffixFileFilter(".jar", IOCase.INSENSITIVE), suffixFileFilter(".zip", IOCase.INSENSITIVE))));
+    List<File> files = Lists.newArrayList();
+    if (libraryProperty) {
+      if (pattern.endsWith("*")) {
+        fileFilter = new AndFileFilter((IOFileFilter) fileFilter,
+            new OrFileFilter(Lists.newArrayList(suffixFileFilter(".jar", IOCase.INSENSITIVE), suffixFileFilter(".zip", IOCase.INSENSITIVE))));
+      }
+      //find jar and zip files
+      files.addAll(Lists.newArrayList(FileUtils.listFiles(dir, (IOFileFilter) fileFilter, TrueFileFilter.TRUE)));
     }
-    //find jar and zip files
-    List<File> files = Lists.newArrayList(FileUtils.listFiles(dir, (IOFileFilter) fileFilter, TrueFileFilter.TRUE));
     //find directories matching pattern.
     files.addAll(FileUtils.listFilesAndDirs(dir, new AndFileFilter(wilcardPatternFileFilter, DirectoryFileFilter.DIRECTORY), wilcardPatternFileFilter));
-    //remove searching dir from matching as listFilesAndDirs always includes it in the list.
+    //remove searching dir from matching as listFilesAndDirs always includes it in the list see https://issues.apache.org/jira/browse/IO-328
     files.remove(dir);
     return files;
   }
