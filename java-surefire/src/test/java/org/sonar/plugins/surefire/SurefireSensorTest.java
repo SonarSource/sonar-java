@@ -33,6 +33,7 @@ import org.sonar.api.config.Settings;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.InputFile;
+import org.sonar.api.resources.InputFileUtils;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Qualifiers;
@@ -95,7 +96,7 @@ public class SurefireSensorTest {
     ProjectFileSystem projectFileSystem = mock(ProjectFileSystem.class);
     Project project = mock(Project.class);
     when(project.getFileSystem()).thenReturn(projectFileSystem);
-    when(projectFileSystem.mainFiles("java")).thenReturn(Lists.<InputFile>newArrayList(new DefaultInputFile("")));
+    when(projectFileSystem.mainFiles("java")).thenReturn(Lists.<InputFile>newArrayList(InputFileUtils.create(new File(""), "")));
     surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs);
     Assertions.assertThat(surefireSensor.shouldExecuteOnProject(project)).isTrue();
   }

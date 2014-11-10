@@ -28,7 +28,6 @@ import org.sonar.api.utils.ParsingUtils;
 import org.sonar.api.utils.StaxParser.XmlStreamHandler;
 
 import javax.xml.stream.XMLStreamException;
-
 import java.text.ParseException;
 import java.util.Locale;
 

@@ -188,11 +188,11 @@ public class SurefireJavaParserTest {
     parser.collect(context, getDir("innerClasses"));
 
     verify(context)
-      .saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap")), eq(CoreMetrics.TESTS), eq(7.0));
+        .saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap")), eq(CoreMetrics.TESTS), eq(7.0));
     verify(context).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap")), eq(CoreMetrics.TEST_ERRORS),
-      eq(1.0));
+        eq(1.0));
     verify(context, never()).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap$TestBidiMapEntrySet")),
-      any(Metric.class), anyDouble());
+        any(Metric.class), anyDouble());
   }
 
   @Test
@@ -202,9 +202,9 @@ public class SurefireJavaParserTest {
     parser.collect(context, getDir("nestedInnerClasses"));
 
     verify(context).saveMeasure(
-      argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.sonar.plugins.surefire.NestedInnerTest")),
-      eq(CoreMetrics.TESTS),
-      eq(3.0));
+        argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.sonar.plugins.surefire.NestedInnerTest")),
+        eq(CoreMetrics.TESTS),
+        eq(3.0));
   }
 
   @Test
