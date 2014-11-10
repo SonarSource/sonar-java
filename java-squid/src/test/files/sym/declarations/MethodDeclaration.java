@@ -18,7 +18,7 @@ class MethodDeclaration {
   class ParameterType {
   }
 
-  protected ReturnType declaration(ParameterType param) throws FirstExceptionType, SecondExceptionType {
+  protected <T> ReturnType declaration(ParameterType param) throws FirstExceptionType, SecondExceptionType {
     return null;
   }
 

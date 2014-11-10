@@ -215,6 +215,7 @@ public class FirstPass extends BaseTreeVisitor {
       flag = computeClassFlags(tree);
     }
     Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
+    symbol.isParametrized = !tree.typeParameters().isEmpty();
     ((ClassTreeImpl) tree).setSymbol(symbol);
     //Only register classes that can be accessible, so classes owned by a method are not registered.
     //TODO : register also based on flags ?
@@ -268,6 +269,7 @@ public class FirstPass extends BaseTreeVisitor {
   private void visitMethodDeclaration(MethodTreeImpl tree) {
     String name = tree.returnType() == null ? "<init>" : tree.simpleName().name();
     Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeFlags(tree.modifiers()), name, env.scope.owner);
+    symbol.isParametrized = !tree.typeParameters().isEmpty();
     enterSymbol(tree, symbol);
     symbol.parameters = new Scope(symbol);
     symbol.completer = completer;

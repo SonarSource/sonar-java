@@ -51,6 +51,8 @@ public class Symbol {
 
   Type type;
 
+  boolean isParametrized = false;
+
   public Symbol(int kind, int flags, @Nullable String name, @Nullable Symbol owner) {
     this.kind = kind;
     this.flags = flags;

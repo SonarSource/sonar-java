@@ -33,6 +33,8 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
+import org.objectweb.asm.signature.SignatureReader;
+import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
@@ -258,6 +260,16 @@ public class BytecodeCompleter implements Symbol.Completer {
       Preconditions.checkState(name.endsWith(classSymbol.name), "Name : '" + name + "' should ends with " + classSymbol.name);
       Preconditions.checkState(!isSynthetic(flags), name + " is synthetic");
       className = name;
+      if(signature != null) {
+        new SignatureReader(signature).accept(new SignatureVisitor(Opcodes.ASM5) {
+
+          @Override
+          public void visitFormalTypeParameter(String name) {
+            //TODO improve generics
+            classSymbol.isParametrized = true;
+          }
+        });
+      }
       //if class has already access flags set (inner class) then do not reset those.
       //The important access flags are the one defined in the outer class.
       if ((classSymbol.flags & Flags.ACCESS_FLAGS) != 0) {
@@ -360,8 +372,18 @@ public class BytecodeCompleter implements Symbol.Completer {
       Preconditions.checkNotNull(desc);
       if (!isSynthetic(flags)) {
         //Flags from asm lib are defined in Opcodes class and map to flags defined in Flags class
-        Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(filterBytecodeFlags(flags), name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
+        final Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(filterBytecodeFlags(flags), name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
         classSymbol.members.enter(symbol);
+        if(signature != null) {
+          new SignatureReader(signature).accept(new SignatureVisitor(Opcodes.ASM5) {
+
+            @Override
+            public void visitFormalTypeParameter(String name) {
+              //TODO improve generics
+              symbol.isParametrized = true;
+            }
+          });
+        }
       }
       // (Godin): can return FieldVisitor to read annotations
       return null;
@@ -380,8 +402,18 @@ public class BytecodeCompleter implements Symbol.Completer {
             getCompletedClassSymbolsType(exceptions),
             classSymbol
         );
-        Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(filterBytecodeFlags(flags), name, type, classSymbol);
+        final Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(filterBytecodeFlags(flags), name, type, classSymbol);
         classSymbol.members.enter(methodSymbol);
+        if(signature != null) {
+          new SignatureReader(signature).accept(new SignatureVisitor(Opcodes.ASM5) {
+
+            @Override
+            public void visitFormalTypeParameter(String name) {
+              //TODO improve generics
+              methodSymbol.isParametrized = true;
+            }
+          });
+        }
       }
       // (Godin): can return MethodVisitor to read annotations
       return null;

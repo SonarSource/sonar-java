@@ -35,7 +35,9 @@ public class SymbolTableTest {
   public void ClassDeclaration() {
     Result result = Result.createFor("declarations/ClassDeclaration");
     Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration");
-    assertThat(typeSymbol.owner()).isSameAs(result.symbol("ClassDeclaration"));
+    Symbol classDeclaration = result.symbol("ClassDeclaration");
+    assertThat(classDeclaration.isParametrized).isTrue();
+    assertThat(typeSymbol.owner()).isSameAs(classDeclaration);
     assertThat(typeSymbol.flags()).isEqualTo(Flags.PRIVATE);
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass").type);
     assertThat(typeSymbol.getInterfaces()).containsExactly(
@@ -239,6 +241,7 @@ public class SymbolTableTest {
     assertThat(methodSymbol.getThrownTypes()).containsExactly(
         result.symbol("FirstExceptionType"),
         result.symbol("SecondExceptionType"));
+    assertThat(methodSymbol.isParametrized).isTrue();
   }
 
   @Test
