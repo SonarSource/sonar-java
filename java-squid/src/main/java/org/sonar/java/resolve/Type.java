@@ -71,6 +71,11 @@ public class Type {
     return fullyQualifiedName.equals(symbol.owner.name+"."+symbol.name);
   }
 
+  public boolean isParametrized() {
+    symbol.complete();
+    return symbol.isParametrized;
+  }
+
   public static class ClassType extends Type {
 
     /**

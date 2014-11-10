@@ -61,7 +61,7 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
       TypeCastTree typeCastTree = (TypeCastTree) tree;
       Type cast = ((AbstractTypedTree) typeCastTree.type()).getSymbolType();
       Type expressionType = ((AbstractTypedTree) typeCastTree.expression()).getSymbolType();
-      if (typeInherits(expressionType, cast)) {
+      if (!cast.isParametrized() && typeInherits(expressionType, cast)) {
         addIssue(tree, "Remove this unnecessary cast to \"" + cast + "\".");
       }
     }

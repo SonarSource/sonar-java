@@ -1,9 +1,9 @@
+import java.util.List;
 class Outer {
   class A {
   }
   class B extends A {
   }
-
   List<String> foo() {
     Object obj;
     Object o1 = (List<String>) foo(); //NonCompliant - false negative because of generics
@@ -16,6 +16,8 @@ class Outer {
     B b;
     fun(b);
     fun((A)b);
+    List<B> bees = new java.util.ArrayList<B>();
+    java.util.List<A> aaas = (java.util.List) bees;
   }
   void fun(A a) {
   }
