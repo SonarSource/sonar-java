@@ -6,7 +6,7 @@ class A {
     else if (a == b) {}
     else if (c.equals(d)) {}
     else if (c.equals(d)) {}
-    else if (method().equals(b)) {} //false negative requiring method type resolution
+    else if (method().equals(b)) {}
     else if ((matrix()[0].c).equals(d)) {}
   }
 

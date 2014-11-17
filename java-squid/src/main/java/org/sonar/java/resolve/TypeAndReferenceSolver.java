@@ -178,7 +178,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (type == null || symbol.kind >= Symbol.ERRONEOUS) {
       registerType(tree, symbols.unknownType);
     } else {
-      registerType(tree, ((Symbol.MethodSymbol) symbol).getReturnType().getType());
+      registerType(tree, ((Type.MethodType) type).resultType);
     }
   }
 

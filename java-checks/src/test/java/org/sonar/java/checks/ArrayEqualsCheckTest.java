@@ -36,6 +36,7 @@ public class ArrayEqualsCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ArrayEqualsCheck.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(5).withMessage("Use the '==' operator instead of calling the equals() method to prevent any misunderstandings")
+        .next().atLine(9).withMessage("Use the '==' operator instead of calling the equals() method to prevent any misunderstandings")
         .noMore();
   }
 
