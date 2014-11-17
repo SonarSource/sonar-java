@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Type;
+import org.sonar.java.resolve.Types;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -61,22 +62,9 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
       TypeCastTree typeCastTree = (TypeCastTree) tree;
       Type cast = ((AbstractTypedTree) typeCastTree.type()).getSymbolType();
       Type expressionType = ((AbstractTypedTree) typeCastTree.expression()).getSymbolType();
-      if (!cast.isParametrized() && typeInherits(expressionType, cast)) {
+      if (!cast.isParametrized() && new Types().isSubtype(expressionType, cast)) {
         addIssue(tree, "Remove this unnecessary cast to \"" + cast + "\".");
       }
     }
-  }
-
-  //FIXME : to be replaced by Types.isSubtype
-  private boolean typeInherits(Type type, Type cast) {
-    if (type.isTagged(Type.ARRAY) && cast.isTagged(Type.ARRAY)) {
-      //Handle covariance of arrays.
-      return typeInherits(((Type.ArrayType) type).elementType(), ((Type.ArrayType) cast).elementType());
-    } else if (type.isTagged(Type.CLASS) && cast.isTagged(Type.CLASS)) {
-      Type.ClassType expressionType = (Type.ClassType) type;
-      Type.ClassType instanceOfType = (Type.ClassType) cast;
-      return expressionType == instanceOfType || expressionType.getSymbol().superTypes().contains(instanceOfType);
-    }
-    return false;
   }
 }
