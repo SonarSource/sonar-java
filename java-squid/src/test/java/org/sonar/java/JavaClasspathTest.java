@@ -133,6 +133,16 @@ public class JavaClasspathTest {
   }
 
   @Test
+  public void libraries_should_accept_relative_paths_with_wildcard() throws Exception {
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/**/lib");
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).hasSize(5);
+    File jar = javaClasspath.getElements().get(0);
+    assertThat(jar).exists();
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar","world.jar", "lib", "lib", "hello.jar");
+  }
+
+  @Test
   public void libraries_should_accept_path_ending_with_wildcard_jar() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/h*.jar");
     javaClasspath = createJavaClasspath();

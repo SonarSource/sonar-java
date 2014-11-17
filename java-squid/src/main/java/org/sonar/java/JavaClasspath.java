@@ -26,6 +26,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -45,6 +46,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.apache.commons.io.filefilter.FileFilterUtils.suffixFileFilter;
@@ -158,11 +160,21 @@ public class JavaClasspath implements BatchExtension {
       files.addAll(Lists.newArrayList(FileUtils.listFiles(dir, (IOFileFilter) fileFilter, TrueFileFilter.TRUE)));
     }
     //find directories matching pattern.
-    Collection<File> dirs = FileUtils.listFilesAndDirs(dir, new AndFileFilter(wilcardPatternFileFilter, DirectoryFileFilter.DIRECTORY), wilcardPatternFileFilter);
+    IOFileFilter subdirectories = pattern.isEmpty() ? FalseFileFilter.FALSE : TrueFileFilter.TRUE;
+    Collection<File> dirs = FileUtils.listFilesAndDirs(dir, new AndFileFilter(wilcardPatternFileFilter, DirectoryFileFilter.DIRECTORY), subdirectories);
     //remove searching dir from matching as listFilesAndDirs always includes it in the list see https://issues.apache.org/jira/browse/IO-328
     if (!pattern.isEmpty()) {
       dirs.remove(dir);
+      //remove subdirectories that were included during search
+      Iterator<File> iterator = dirs.iterator();
+      while (iterator.hasNext()) {
+        File matchingDir = iterator.next();
+        if (!wilcardPatternFileFilter.accept(matchingDir)) {
+          iterator.remove();
+        }
+      }
     }
+
     if (libraryProperty) {
       for (File directory : dirs) {
         files.addAll(getMatchingFiles("**/*.jar", directory, true));
