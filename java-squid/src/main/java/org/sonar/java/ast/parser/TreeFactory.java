@@ -727,7 +727,7 @@ public class TreeFactory {
     FormalParametersListTreeImpl parameters = new FormalParametersListTreeImpl(openParenToken, closeParenToken);
     InternalSyntaxToken defaultToken = null;
     ExpressionTree defaultExpression = null;
-    if(defaultValue.isPresent()){
+    if (defaultValue.isPresent()) {
       defaultToken = defaultValue.get().first();
       defaultExpression = defaultValue.get().second();
     }
