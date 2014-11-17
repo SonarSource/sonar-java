@@ -69,7 +69,8 @@ public abstract class AbstractAnalyzer {
   private Map<String, File> classFilesCache;
   private JavaClasspath javaClasspath;
 
-  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
+  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver,
+                          JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
     this(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath, true);
   }
   public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem,

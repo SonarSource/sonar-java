@@ -62,13 +62,17 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
         }
       }
       if (symbolReference != null && method != null && isMethodFromCollection(method)) {
-        for (ExpressionTree arg : methodInvocationTree.arguments()) {
-          if (arg.is(Tree.Kind.IDENTIFIER)) {
-            Symbol reference = getSemanticModel().getReference((IdentifierTree) arg);
-            if (reference == symbolReference) {
-              addIssue(tree, "Remove or correct this \"" + reportedName + "\" call.");
-            }
-          }
+        reportIssueForParameters(methodInvocationTree, symbolReference, reportedName);
+      }
+    }
+  }
+
+  private void reportIssueForParameters(MethodInvocationTree methodInvocationTree, Symbol symbolReference, String reportedName) {
+    for (ExpressionTree arg : methodInvocationTree.arguments()) {
+      if (arg.is(Tree.Kind.IDENTIFIER)) {
+        Symbol reference = getSemanticModel().getReference((IdentifierTree) arg);
+        if (reference == symbolReference) {
+          addIssue(methodInvocationTree, "Remove or correct this \"" + reportedName + "\" call.");
         }
       }
     }

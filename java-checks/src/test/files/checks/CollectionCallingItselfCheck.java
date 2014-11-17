@@ -10,5 +10,6 @@ class A {
     strings.containsAll(strings); // Noncompliant; always true
     strings.removeAll(strings); // Noncompliant; confusing. Use clear() instead
     strings.retainAll(strings); // Noncompliant; NOOP
+    strings.wait();
   }
 }

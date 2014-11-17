@@ -93,7 +93,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   }
 
   private boolean hasObjectOperand(Type leftOpType, Type rightOpType) {
-    return (isObject(leftOpType) || isObject(rightOpType));
+    return isObject(leftOpType) || isObject(rightOpType);
   }
 
   private boolean isExcluded(Type leftOpType, Type rightOpType) {
