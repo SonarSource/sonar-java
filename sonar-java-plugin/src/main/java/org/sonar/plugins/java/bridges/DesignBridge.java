@@ -121,7 +121,7 @@ public class DesignBridge {
 
   private Collection<Resource> getResourcesForDirectory(Resource sonarPackage) {
     List<Resource> result = Lists.newArrayList();
-    for (Resource resource : resourceMapping.files((Directory) sonarPackage)){
+    for (Resource resource : resourceMapping.files((Directory) sonarPackage)) {
       result.add(context.getResource(resource));
     }
     return result;
@@ -148,11 +148,13 @@ public class DesignBridge {
         Resource fromFile = subDependency.getFrom();
         Resource toFile = subDependency.getTo();
         Issuable issuable = resourcePerspectives.as(Issuable.class, fromFile);
-        issuable.addIssue(issuable.newIssueBuilder()
-            .ruleKey(CycleBetweenPackagesCheck.RULE_KEY)
-            .effortToFix((double) subDependency.getWeight())
-            .message("Remove the dependency on the source file \"" + toFile.getLongName() + "\" to break a package cycle.")
-            .build());
+        if (issuable != null) {
+          issuable.addIssue(issuable.newIssueBuilder()
+              .ruleKey(CycleBetweenPackagesCheck.RULE_KEY)
+              .effortToFix((double) subDependency.getWeight())
+              .message("Remove the dependency on the source file \"" + toFile.getLongName() + "\" to break a package cycle.")
+              .build());
+        }
       }
     }
   }

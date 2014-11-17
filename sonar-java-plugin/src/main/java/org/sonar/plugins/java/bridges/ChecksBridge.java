@@ -86,9 +86,11 @@ public class ChecksBridge {
     }
     if (dirsWithoutPackageInfo.contains(directory)) {
       Issuable issuable = resourcePerspectives.as(Issuable.class, directory);
-      Issue issue = issuable.newIssueBuilder().ruleKey(RuleKey.of(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY))
-          .message("Add a 'package-info.java' file to document the '" + directory.getPath() + "' package").build();
-      issuable.addIssue(issue);
+      if (issuable != null) {
+        Issue issue = issuable.newIssueBuilder().ruleKey(RuleKey.of(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY))
+            .message("Add a 'package-info.java' file to document the '" + directory.getPath() + "' package").build();
+        issuable.addIssue(issue);
+      }
     }
   }
 
