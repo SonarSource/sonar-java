@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.sonar.api.resources.InputFile;
+import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.sslr.grammar.GrammarRuleKey;
@@ -121,7 +122,7 @@ public class AstScannerTest {
     scanner.scan(ImmutableList.of(mockInputFile(new File("src/test/resources/AstScannerNoParseError.txt"))));
   }
 
-  private static class FakeAuditListener extends SquidAstVisitor<LexerlessGrammar> implements AuditListener {
+  private static class FakeAuditListener extends SquidAstVisitor<LexerlessGrammar> implements AstScannerExceptionHandler {
 
     @Override
     public void processRecognitionException(RecognitionException e) {

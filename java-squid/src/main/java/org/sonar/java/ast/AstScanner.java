@@ -21,7 +21,6 @@ package org.sonar.java.ast;
 
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AuditListener;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.impl.Parser;
@@ -31,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.InputFile;
 import org.sonar.java.ProgressReport;
 import org.sonar.java.ast.visitors.VisitorContext;
+import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.CommentAnalyser;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -51,7 +51,7 @@ public class AstScanner {
 
   private final SquidIndex index;
   private final List<SquidAstVisitor<LexerlessGrammar>> visitors = Lists.newArrayList();
-  private final List<AuditListener> auditListeners = Lists.newArrayList();
+  private final List<AstScannerExceptionHandler> astScannerExceptionHandlers = Lists.newArrayList();
   private final Parser<LexerlessGrammar> parser;
   private CommentAnalyser commentAnalyser;
 
@@ -129,8 +129,8 @@ public class AstScanner {
         visitor.visitFile(null);
       }
 
-      for (AuditListener auditListener : auditListeners) {
-        auditListener.processRecognitionException(e);
+      for (AstScannerExceptionHandler astScannerExceptionHandler : astScannerExceptionHandlers) {
+        astScannerExceptionHandler.processRecognitionException(e);
       }
 
       for (SquidAstVisitor<? extends Grammar> visitor : Lists.reverse(visitors)) {
@@ -147,8 +147,8 @@ public class AstScanner {
   }
 
   public void withSquidAstVisitor(SquidAstVisitor<LexerlessGrammar> visitor) {
-    if (visitor instanceof AuditListener) {
-      auditListeners.add((AuditListener) visitor);
+    if (visitor instanceof AstScannerExceptionHandler) {
+      astScannerExceptionHandlers.add((AstScannerExceptionHandler) visitor);
     }
     this.visitors.add(visitor);
   }
