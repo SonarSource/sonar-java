@@ -208,7 +208,8 @@ public final class CheckList {
       InstanceOfAlwaysTrueCheck.class,
       RedundantTypeCastCheck.class,
       ExtendDeprecatedSymbolCheck.class,
-      CollectionCallingItselfCheck.class
+      CollectionCallingItselfCheck.class,
+      UnusedLabelCheck.class
     );
   }
 

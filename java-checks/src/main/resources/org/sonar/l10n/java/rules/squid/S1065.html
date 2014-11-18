@@ -1,0 +1,20 @@
+<p>
+  If a label is declared but not used in the program, it can be considered as dead code and should therefore be removed.
+  This will improve maintainability as developers will not wonder what this label is used for.
+</p>
+
+<h2>Noncompliant code example</h2>
+
+<pre>
+void foo() {
+  outer: //label is not used.
+  for(int i = 0; i<10; i++) {
+    break;
+  }
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+  <li>MISRA C:2012, 2.6 - A function should not contain unused label declarations</li>
+</ul>
