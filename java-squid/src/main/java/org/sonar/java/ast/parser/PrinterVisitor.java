@@ -150,7 +150,11 @@ public class PrinterVisitor extends BaseTreeVisitor {
   public static String printFile(String file, String bytecodePath) {
     final Parser p = JavaParser.createParser(Charsets.UTF_8);
     CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(file));
-    SemanticModel semanticModel = SemanticModel.createFor(cut, Lists.newArrayList(new File(bytecodePath)));
+    List<File> bytecodeFiles = Lists.newArrayList();
+    if (!bytecodePath.isEmpty()) {
+      bytecodeFiles.add(new File(bytecodePath));
+    }
+    SemanticModel semanticModel = SemanticModel.createFor(cut, bytecodeFiles);
     return PrinterVisitor.print(cut, semanticModel);
   }
 }
