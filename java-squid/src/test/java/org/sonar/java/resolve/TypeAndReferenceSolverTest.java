@@ -230,7 +230,7 @@ public class TypeAndReferenceSolverTest {
   public void selector() {
     // method call
     assertThat(typeOf("this.method(arguments)").isTagged(Type.INT)).isTrue();
-    assertThat(typeOf("var[42].clone()")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("var[42].clone()")).isSameAs(symbols.objectType);
 
     // field access
     assertThat(typeOfExpression("this.var")).isSameAs(variableSymbol.type);

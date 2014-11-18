@@ -23,6 +23,7 @@ import com.google.common.collect.Iterables;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.sonar.java.ast.parser.PrinterVisitor;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -363,6 +364,7 @@ public class SymbolTableTest {
   public void MethodCall() {
     Result result = Result.createFor("references/MethodCall");
     assertThat(result.reference(10, 5)).isSameAs(result.symbol("target"));
+    assertThat(result.reference(11, 5)).isSameAs(result.symbol("foo"));
   }
 
   @Test
