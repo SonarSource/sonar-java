@@ -43,7 +43,7 @@ import java.util.List;
 @Rule(
     key = "S2077",
     priority = Priority.CRITICAL,
-    tags = {"cwe", "owasp-top-10", "security", "sql"})
+    tags = {"cwe", "owasp-top10", "security", "sql"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class SQLInjectionCheck extends SubscriptionBaseVisitor {
 
