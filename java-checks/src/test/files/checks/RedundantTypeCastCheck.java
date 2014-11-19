@@ -18,6 +18,11 @@ class Outer {
     fun((A)b);
     List<B> bees = new java.util.ArrayList<B>();
     java.util.List<A> aaas = (java.util.List) bees;
+    int a = 1;
+    int b = 2;
+    double d = (double) a / (double) b;
+    int c = (int)a;
+    int e = (int) d;
   }
   void fun(A a) {
   }
