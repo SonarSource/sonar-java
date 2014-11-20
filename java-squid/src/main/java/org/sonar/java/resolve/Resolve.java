@@ -443,6 +443,10 @@ public class Resolve {
       Symbol method = findMethodInType(env, site.getSuperclass().symbol, name, argTypes);
       bestSoFar = selectBest(env, site, argTypes, method, bestSoFar);
     }
+    for (Type interfaceType : site.getInterfaces()) {
+      Symbol method = findMethodInType(env, interfaceType.symbol, name, argTypes);
+      bestSoFar = selectBest(env, site, argTypes, method, bestSoFar);
+    }
     return bestSoFar;
   }
 
@@ -468,7 +472,12 @@ public class Resolve {
     if (!isAccessible(env, site, symbol)) {
       return new AccessErrorSymbol(symbol);
     }
-    return selectMostSpecific(symbol, bestSoFar);
+    Symbol mostSpecific = selectMostSpecific(symbol, bestSoFar);
+    if(mostSpecific.isKind(Symbol.AMBIGUOUS)) {
+      //same signature, we keep the first symbol found (overrides the other one).
+      return bestSoFar;
+    }
+    return mostSpecific;
   }
 
   /**
