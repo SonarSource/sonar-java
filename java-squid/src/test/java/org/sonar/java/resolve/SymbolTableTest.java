@@ -365,6 +365,7 @@ public class SymbolTableTest {
     Result result = Result.createFor("references/MethodCall");
     assertThat(result.reference(10, 5)).isSameAs(result.symbol("target"));
     assertThat(result.reference(11, 5)).isSameAs(result.symbol("foo"));
+    assertThat(result.reference(31, 5)).isSameAs(result.symbol("fun", 22));
   }
 
   @Test

@@ -406,18 +406,7 @@ public class Resolve {
   }
 
   public Symbol findMethod(Env env, Symbol.TypeSymbol site, String name, List<Type> argTypes) {
-    Symbol bestSoFar = symbolNotFound;
-
-    for (Symbol symbol : site.members().lookup(name)) {
-      if (symbol.kind == Symbol.MTH) {
-        bestSoFar = selectBest(env, site, argTypes, symbol, bestSoFar);
-      }
-    }
-    //Symbol not found, look in supertypes.
-    if (bestSoFar.kind >= Symbol.ERRONEOUS && site.getSuperclass() != null) {
-      Symbol method = findMethod(env, site.getSuperclass().symbol, name, argTypes);
-      bestSoFar = selectBest(env, site, argTypes, method, bestSoFar);
-    }
+    Symbol bestSoFar = findMethodInType(env, site, name, argTypes);
 
     // best guess: method with unique name
     // TODO remove, when search will be improved
@@ -438,6 +427,21 @@ public class Resolve {
       return sym;
     } else if (sym.kind < bestSoFar.kind) {
       bestSoFar = sym;
+    }
+    return bestSoFar;
+  }
+
+  private Symbol findMethodInType(Env env, Symbol.TypeSymbol site, String name, List<Type> argTypes) {
+    Symbol bestSoFar = symbolNotFound;
+    for (Symbol symbol : site.members().lookup(name)) {
+      if (symbol.kind == Symbol.MTH) {
+        bestSoFar = selectBest(env, site, argTypes, symbol, bestSoFar);
+      }
+    }
+    //look in supertypes for more specialized method (overloading).
+    if (site.getSuperclass() != null) {
+      Symbol method = findMethodInType(env, site.getSuperclass().symbol, name, argTypes);
+      bestSoFar = selectBest(env, site, argTypes, method, bestSoFar);
     }
     return bestSoFar;
   }

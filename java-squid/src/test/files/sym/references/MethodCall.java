@@ -14,5 +14,20 @@ class MethodCall extends Parent {
 }
 
 class Parent {
-  void foo(){}
+  void foo() {
+  }
+}
+
+class C1 {
+  void fun(String a) {
+  }
+}
+
+class C2 extends C1 {
+  void fun(Object a) {
+  }
+
+  void test() {
+    fun("");
+  }
 }
