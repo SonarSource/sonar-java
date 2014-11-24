@@ -210,7 +210,8 @@ public final class CheckList {
       ExtendDeprecatedSymbolCheck.class,
       CollectionCallingItselfCheck.class,
       UnusedLabelCheck.class,
-      ThrowCheckedExceptionCheck.class
+      ThrowCheckedExceptionCheck.class,
+      CastArithmeticOperandCheck.class
     );
   }
 

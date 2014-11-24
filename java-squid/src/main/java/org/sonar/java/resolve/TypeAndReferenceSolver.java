@@ -348,7 +348,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       registerType(tree, symbols.unknownType);
       return;
     }
-    Symbol symbol = resolve.findMethod(semanticModel.getEnv(tree), tree.operatorToken().text(), ImmutableList.of(left, right));
+    Symbol symbol = resolve.findMethod(semanticModel.getEnv(tree), symbols.predefClass, tree.operatorToken().text(), ImmutableList.of(left, right));
     if (symbol.kind != Symbol.MTH) {
       // not found
       registerType(tree, symbols.unknownType);

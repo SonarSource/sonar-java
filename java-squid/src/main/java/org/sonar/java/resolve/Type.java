@@ -62,6 +62,9 @@ public class Type {
     //JLS8 4.2
     return tag <= DOUBLE;
   }
+  public Symbol.TypeSymbol getSymbol() {
+    return symbol;
+  }
 
   //TODO support more than just class (array and primitive types, methods?)
   public boolean is(String fullyQualifiedName) {
@@ -90,10 +93,6 @@ public class Type {
 
     public ClassType(Symbol.TypeSymbol symbol) {
       super(CLASS, symbol);
-    }
-
-    public Symbol.TypeSymbol getSymbol() {
-      return symbol;
     }
   }
 
