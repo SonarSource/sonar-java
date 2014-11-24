@@ -23,6 +23,8 @@ class Outer {
     double d = (double) a / (double) b;
     int c = (int)a;
     int e = (int) d;
+    obj = (Plop<String>) bar;
+    C c = new C((A)null);
   }
   void fun(A a) {
   }
@@ -30,4 +32,8 @@ class Outer {
   void fun(B b) {
   }
 
+  class C {
+    C(A a) {}
+    C(B a) {}
+  }
 }

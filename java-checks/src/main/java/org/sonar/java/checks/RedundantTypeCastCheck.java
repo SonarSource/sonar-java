@@ -29,6 +29,7 @@ import org.sonar.java.resolve.Type;
 import org.sonar.java.resolve.Types;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
@@ -46,27 +47,42 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TYPE_CAST, Tree.Kind.METHOD_INVOCATION);
+    return ImmutableList.of(Tree.Kind.TYPE_CAST, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      for (ExpressionTree arg : mit.arguments()) {
-        if (arg.is(Tree.Kind.TYPE_CAST)) {
-          excluded.add(arg);
-        }
-      }
+    if (tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
+      addArgsToExclusion(tree);
     } else if (!excluded.contains(tree)) {
       TypeCastTree typeCastTree = (TypeCastTree) tree;
       Type cast = ((AbstractTypedTree) typeCastTree.type()).getSymbolType();
       Type expressionType = ((AbstractTypedTree) typeCastTree.expression()).getSymbolType();
       Types types = new Types();
-      if (isRedundantNumericalCast(cast, expressionType) || isRedundantCast(cast, expressionType, types)) {
+      if (!isExcluded(cast, expressionType) && (isRedundantNumericalCast(cast, expressionType) || isRedundantCast(cast, expressionType, types))) {
         addIssue(tree, "Remove this unnecessary cast to \"" + cast + "\".");
       }
     }
+  }
+
+  private void addArgsToExclusion(Tree tree) {
+    List<ExpressionTree> args;
+    if(tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      args = mit.arguments();
+    } else {
+      NewClassTree newClassTree = (NewClassTree) tree;
+      args = newClassTree.arguments();
+    }
+    for (ExpressionTree arg : args) {
+      if (arg.is(Tree.Kind.TYPE_CAST)) {
+        excluded.add(arg);
+      }
+    }
+  }
+
+  private boolean isExcluded(Type cast, Type expressionType) {
+    return cast.isTagged(Type.UNKNOWN);
   }
 
   private boolean isRedundantCast(Type cast, Type expressionType, Types types) {
