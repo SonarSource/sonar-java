@@ -22,12 +22,15 @@ package org.sonar.java.resolve;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class TypeTest {
+
+  private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList()));
 
   @Test
   public void test_order_of_tags() {
@@ -72,11 +75,14 @@ public class TypeTest {
   public void type_is_fully_qualified_name() {
     Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
     Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    Symbol.TypeSymbol typeSymbol2 = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", symbols.rootPackage);
     Type.ClassType classType = (Type.ClassType) typeSymbol.type;
     classType.interfaces = Lists.newArrayList();
-
-    assertThat(new Type(Type.BYTE, null).is("org.foo.bar.MyType")).isFalse();
+    assertThat(symbols.byteType.is("byte")).isTrue();
+    assertThat(symbols.byteType.is("int")).isFalse();
     assertThat(classType.is("org.foo.bar.MyType")).isTrue();
+    assertThat(typeSymbol2.type.is("MyType")).isTrue();
+    assertThat(classType.is("org.foo.bar.SomeClass")).isFalse();
 
   }
 }

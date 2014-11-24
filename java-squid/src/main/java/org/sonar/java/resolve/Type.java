@@ -66,12 +66,19 @@ public class Type {
     return symbol;
   }
 
-  //TODO support more than just class (array and primitive types, methods?)
   public boolean is(String fullyQualifiedName) {
-    if(!isTagged(CLASS)) {
-      return false;
+    if(isTagged(CLASS)) {
+      String ownerName = "";
+      if(!symbol.owner.name.isEmpty()) {
+        ownerName = symbol.owner.name + ".";
+      }
+      return fullyQualifiedName.equals(ownerName+symbol.name);
+    } else if(tag<CLASS) {
+      //primitive type
+      return fullyQualifiedName.equals(symbol.name);
     }
-    return fullyQualifiedName.equals(symbol.owner.name+"."+symbol.name);
+    //TODO arrays and null
+    return false;
   }
 
   public boolean isParametrized() {
