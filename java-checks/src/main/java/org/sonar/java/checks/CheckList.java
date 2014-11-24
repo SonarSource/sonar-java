@@ -209,7 +209,8 @@ public final class CheckList {
       RedundantTypeCastCheck.class,
       ExtendDeprecatedSymbolCheck.class,
       CollectionCallingItselfCheck.class,
-      UnusedLabelCheck.class
+      UnusedLabelCheck.class,
+      ThrowCheckedExceptionCheck.class
     );
   }
 
