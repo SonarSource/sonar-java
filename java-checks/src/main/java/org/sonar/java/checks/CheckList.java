@@ -213,7 +213,8 @@ public final class CheckList {
       ThrowCheckedExceptionCheck.class,
       CastArithmeticOperandCheck.class,
       IgnoredReturnValueCheck.class,
-      ToStringReturningNullCheck.class
+      ToStringReturningNullCheck.class,
+      TransactionalMethodVisibilityCheck.class
     );
   }
 
