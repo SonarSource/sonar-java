@@ -1,0 +1,19 @@
+Calling <code>toString</code> on an object should always return a string. Returning <code>null</code> instead contravenes the method's implicit contract.
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public override string ToString () {
+  if (this.collection.Count == 0) {
+    return null; // Noncompliant
+  } else {
+    // ...
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public override string ToString () {
+  if (this.collection.Count == 0) {
+    return "";
+  } else {
+    // ...
+</pre>

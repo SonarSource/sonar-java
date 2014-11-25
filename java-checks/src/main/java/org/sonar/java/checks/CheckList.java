@@ -212,7 +212,8 @@ public final class CheckList {
       UnusedLabelCheck.class,
       ThrowCheckedExceptionCheck.class,
       CastArithmeticOperandCheck.class,
-      IgnoredReturnValueCheck.class
+      IgnoredReturnValueCheck.class,
+      ToStringReturningNullCheck.class
     );
   }
 
