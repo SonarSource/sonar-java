@@ -142,44 +142,48 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitMethodInvocation(MethodInvocationTree tree) {
     Tree methodSelect = tree.methodSelect();
     Resolve.Env methodEnv = semanticModel.getEnv(tree);
-    IdentifierTree identifier;
-    Type type;
-    String name;
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
-      resolveAs(mset.expression(), Symbol.TYP | Symbol.VAR);
-      type = getType(mset.expression());
-      identifier = mset.identifier();
-    } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-      type = methodEnv.enclosingClass.type;
-      identifier = (IdentifierTree) methodSelect;
-    } else {
-      throw new IllegalStateException("Method select in method invocation is not of the expected type " + methodSelect);
-    }
-
     scan(tree.arguments());
-    name = identifier.name();
-    if (type == null) {
-      type = symbols.unknownType;
+    List<Type> argTypes = getParameterTypes(tree);
+    Symbol symbol = resolveMethodSymbol(methodSelect, methodEnv, argTypes);
+    Type methodType = getTypeOfSymbol(symbol);
+    //Register return type for method invocation.
+    //TODO register method type for method select ?
+    if (methodType == null || symbol.kind >= Symbol.ERRONEOUS) {
+      registerType(tree, symbols.unknownType);
+    } else {
+      registerType(tree, ((Type.MethodType) methodType).resultType);
     }
+  }
+
+  private List<Type> getParameterTypes(MethodInvocationTree tree) {
     ImmutableList.Builder<Type> builder = ImmutableList.builder();
     for (ExpressionTree expressionTree : tree.arguments()) {
       Type symbolType = ((AbstractTypedTree) expressionTree).getSymbolType();
-      if(symbolType == null) {
+      if (symbolType == null) {
         symbolType = symbols.unknownType;
       }
       builder.add(symbolType);
     }
-    Symbol symbol = resolve.findMethod(methodEnv, type.symbol, name, builder.build());
-    associateReference(identifier, symbol);
-    type = getTypeOfSymbol(symbol);
-    //Register return type for method invocation.
-    //TODO register method type for method select ?
-    if (type == null || symbol.kind >= Symbol.ERRONEOUS) {
-      registerType(tree, symbols.unknownType);
+    return builder.build();
+  }
+
+  private Symbol resolveMethodSymbol(Tree methodSelect, Resolve.Env methodEnv, List<Type> argTypes) {
+    Symbol symbol;
+    IdentifierTree identifier;
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
+      resolveAs(mset.expression(), Symbol.TYP | Symbol.VAR);
+      Type type = getType(mset.expression());
+      identifier = mset.identifier();
+      symbol = resolve.findMethod(methodEnv, type.symbol, identifier.name(), argTypes);
+    } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
+      identifier = (IdentifierTree) methodSelect;
+      symbol = resolve.findMethod(methodEnv, identifier.name(), argTypes);
     } else {
-      registerType(tree, ((Type.MethodType) type).resultType);
+      throw new IllegalStateException("Method select in method invocation is not of the expected type " + methodSelect);
     }
+    associateReference(identifier, symbol);
+    return symbol;
   }
 
   private void resolveAs(@Nullable Tree tree, int kind) {

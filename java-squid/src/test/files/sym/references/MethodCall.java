@@ -80,4 +80,14 @@ class CDefault extends ADefault implements IDefault {
   }
 }
 
+class Outer {
+  void func() {
+  }
+  class Inner {
+    void a() {
+      func(); // this is not resolved properly
+    }
+  }
+}
+
 
