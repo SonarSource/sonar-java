@@ -43,7 +43,7 @@ import java.util.Map;
 public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
 
 
-  private static final Map<Tree.Kind, String> operationByKind = ImmutableMap.<Tree.Kind, String>builder()
+  private static final Map<Tree.Kind, String> OPERATION_BY_KIND = ImmutableMap.<Tree.Kind, String>builder()
       .put(Tree.Kind.MULTIPLY, "multiplication")
       .put(Tree.Kind.DIVIDE, "division")
       .build();
@@ -70,7 +70,7 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
     if (expr != null && expr.is(Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE) && isVarTypeErrorProne(varType)) {
       Type exprType = ((AbstractTypedTree) expr).getSymbolType();
       if (exprType.isTagged(Type.INT)) {
-        addIssue(tree, "Cast one of the operands of this " + operationByKind.get(((JavaTree) expr).getKind()) + " operation to a \"" + varType.getSymbol().getName() + "\".");
+        addIssue(tree, "Cast one of the operands of this " + OPERATION_BY_KIND.get(((JavaTree) expr).getKind()) + " operation to a \"" + varType.getSymbol().getName() + "\".");
       }
     }
   }

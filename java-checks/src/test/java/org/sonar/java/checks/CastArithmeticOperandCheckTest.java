@@ -39,6 +39,8 @@ public class CastArithmeticOperandCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(3).withMessage("Cast one of the operands of this multiplication operation to a \"long\".")
         .next().atLine(5).withMessage("Cast one of the operands of this division operation to a \"float\".")
+        .next().atLine(7).withMessage("Cast one of the operands of this multiplication operation to a \"long\".")
+        .next().atLine(9).withMessage("Cast one of the operands of this division operation to a \"double\".")
     .noMore();
   }
 }
