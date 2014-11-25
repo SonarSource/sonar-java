@@ -48,8 +48,7 @@ public class ToStringReturningNullCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD)) {
       insideToString = isToStringDeclaration((MethodTree) tree);
-    }
-    if (insideToString && isReturnNull(tree)) {
+    } else if (insideToString && isReturnNull((ReturnStatementTree) tree)) {
       addIssue(tree, "Return empty string instead.");
     }
   }
@@ -65,11 +64,7 @@ public class ToStringReturningNullCheck extends SubscriptionBaseVisitor {
     return "toString".equals(method.simpleName().name()) && method.parameters().isEmpty();
   }
 
-  private boolean isReturnNull(Tree tree) {
-    if (!tree.is(Tree.Kind.RETURN_STATEMENT)) {
-      return false;
-    }
-    ReturnStatementTree returnStatement = (ReturnStatementTree) tree;
+  private boolean isReturnNull(ReturnStatementTree returnStatement) {
     return returnStatement.expression().is(Tree.Kind.NULL_LITERAL);
   }
 
