@@ -211,7 +211,8 @@ public final class CheckList {
       CollectionCallingItselfCheck.class,
       UnusedLabelCheck.class,
       ThrowCheckedExceptionCheck.class,
-      CastArithmeticOperandCheck.class
+      CastArithmeticOperandCheck.class,
+      IgnoredReturnValueCheck.class
     );
   }
 

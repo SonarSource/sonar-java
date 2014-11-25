@@ -1,0 +1,34 @@
+<p>A non-void return value typically means one of two things:
+<ul>
+  <li>the returned value indicates the success/status of the method</li>
+  <li>the returned value is the result of the method operations.</li>
+</ul>
+</p>
+
+<p>Thus, ignoring a return value is at best a waste of operations, and at worst a serious error. In either case, it is likely a bug.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public void doSomething(String arg) {
+
+if (isOkay(arg)) {
+  try {
+    arg.toLowerCase(); // Noncompliant; result of method thrown away
+
+    File file = new File(arg);
+    file.createNewFile();  // Noncompliant; result indicates operation success
+    // use file
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public void doSomething(String arg) {
+
+if (isOkay(arg)) {
+  try {
+    String fileName = arg.toLowerCase();
+
+    File file = new File(arg);
+    if (file.createNewFile()) {
+    // use file
+</pre>
