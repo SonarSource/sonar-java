@@ -55,12 +55,12 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
   }
 
   private String methodName(MethodInvocationTree mit) {
-    IdentifierTree id = null;
+    IdentifierTree id;
     if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
       id = (IdentifierTree) mit.methodSelect();
-    } else if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+    } else {
       id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
     }
-    return id == null ? "" : id.name();
+    return id.name();
   }
 }
