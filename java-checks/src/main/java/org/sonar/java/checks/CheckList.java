@@ -214,7 +214,8 @@ public final class CheckList {
       CastArithmeticOperandCheck.class,
       IgnoredReturnValueCheck.class,
       ToStringReturningNullCheck.class,
-      TransactionalMethodVisibilityCheck.class
+      TransactionalMethodVisibilityCheck.class,
+      CompareToResultTestCheck.class
     );
   }
 
