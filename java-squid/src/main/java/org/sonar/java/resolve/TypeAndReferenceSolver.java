@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -145,9 +146,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     scan(tree.arguments());
     List<Type> argTypes = getParameterTypes(tree);
     Symbol symbol = resolveMethodSymbol(methodSelect, methodEnv, argTypes);
+    ((MethodInvocationTreeImpl) tree).setSymbol(symbol);
     Type methodType = getTypeOfSymbol(symbol);
     //Register return type for method invocation.
-    //TODO register method type for method select ?
     if (methodType == null || symbol.kind >= Symbol.ERRONEOUS) {
       registerType(tree, symbols.unknownType);
     } else {

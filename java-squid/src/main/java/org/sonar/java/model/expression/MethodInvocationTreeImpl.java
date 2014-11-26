@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -40,6 +41,7 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   private final List<ExpressionTree> arguments;
   @Nullable
   private TypeArguments typeArguments;
+  private Symbol symbol;
 
   public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, List<ExpressionTree> arguments, AstNode... children) {
     super(Kind.METHOD_INVOCATION);
@@ -96,4 +98,15 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
       );
   }
 
+  public Symbol getSymbol() {
+    if(symbol==null) {
+      throw new IllegalStateException("Symbol method should not be null");
+    }
+    return symbol;
+  }
+
+  public void setSymbol(Symbol symbol) {
+    Preconditions.checkState(this.symbol == null);
+    this.symbol = symbol;
+  }
 }
