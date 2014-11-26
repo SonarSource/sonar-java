@@ -32,7 +32,7 @@ import java.util.List;
 @Rule(
     key = "S1162",
     priority = Priority.MAJOR,
-    tags = {})
+    tags = {"error-handling"})
 public class ThrowCheckedExceptionCheck extends SubscriptionBaseVisitor {
 
   @Override
@@ -46,7 +46,7 @@ public class ThrowCheckedExceptionCheck extends SubscriptionBaseVisitor {
     Type symbolType = ((AbstractTypedTree) throwStatementTree.expression()).getSymbolType();
     //do not handle unknown symbols.
     if (symbolType.isTagged(Type.CLASS) && isCheckedException((Type.ClassType) symbolType)) {
-      addIssue(tree, "Remove the usage of the checked exception '"+((Type.ClassType) symbolType).getSymbol().getName()+"'.");
+      addIssue(tree, "Remove the usage of the checked exception '"+symbolType.getSymbol().getName()+"'.");
     }
   }
 
