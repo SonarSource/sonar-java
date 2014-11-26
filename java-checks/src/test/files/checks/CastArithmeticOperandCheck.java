@@ -7,5 +7,7 @@ class A{
     l2 = 1000*3600*24*365; // Noncompliant
     l2 = 1000L*3600*24*365; // compliant
     double d = 2/3; // Noncompliant
+    long l3 = 2+ Integer.MAX_VALUE; // Noncompliant
+    l3 = 2 - Integer.MIN_VALUE; // Noncompliant
   }
 }

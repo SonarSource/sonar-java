@@ -41,6 +41,8 @@ public class CastArithmeticOperandCheckTest {
         .next().atLine(5).withMessage("Cast one of the operands of this division operation to a \"float\".")
         .next().atLine(7).withMessage("Cast one of the operands of this multiplication operation to a \"long\".")
         .next().atLine(9).withMessage("Cast one of the operands of this division operation to a \"double\".")
+        .next().atLine(10).withMessage("Cast one of the operands of this addition operation to a \"long\".")
+        .next().atLine(11).withMessage("Cast one of the operands of this substraction operation to a \"long\".")
     .noMore();
   }
 }
