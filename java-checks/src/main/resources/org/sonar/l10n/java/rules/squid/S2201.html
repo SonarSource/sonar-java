@@ -32,3 +32,19 @@ if (isOkay(arg)) {
     if (file.createNewFile()) {
     // use file
 </pre>
+
+<h2>Exceptions</h2>
+<p>Fluent APIs are excluded from this check.</p>
+<pre>
+class A {
+  A fluentMethod(String s) {
+    //...
+    return this;
+  }
+
+  public void doSomething() {
+    A a = new A();
+    a.fluentMethod(s);
+  }
+}
+</pre>

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -48,19 +49,34 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
     if (est.expression().is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) est.expression();
       Type methodType = ((AbstractTypedTree) mit).getSymbolType();
-      if (!methodType.isTagged(Type.VOID) && !methodType.isTagged(Type.UNKNOWN)) {
+      if (!returnsVoid(methodType) && !isFluentAPI(mit)) {
         addIssue(tree, "The return value of \"" + methodName(mit) + "\" is not used.");
       }
     }
   }
 
+  private boolean returnsVoid(Type methodType) {
+    return methodType.isTagged(Type.VOID) || methodType.isTagged(Type.UNKNOWN);
+  }
+
+  private boolean isFluentAPI(MethodInvocationTree mit) {
+    Symbol method = getSemanticModel().getReference(getIdentifier(mit));
+    Type methodType = ((AbstractTypedTree) mit).getSymbolType();
+    //fluent api : owner type is return type.
+    return method.owner().getType().equals(methodType);
+  }
+
   private String methodName(MethodInvocationTree mit) {
+    return getIdentifier(mit).name();
+  }
+
+  private IdentifierTree getIdentifier(MethodInvocationTree mit) {
     IdentifierTree id;
     if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
       id = (IdentifierTree) mit.methodSelect();
     } else {
       id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
     }
-    return id.name();
+    return id;
   }
 }

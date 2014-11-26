@@ -10,7 +10,9 @@ class A {
     new A().voidMethod();//Compliant
     unknownTypeMethod();//Compliant type is unknown
     unresolvedMethod();//Compliant method is not resolved so type is unknown
+    fluentMethod(""); //Compliant : fluent API
   }
 
+  A fluentMethod(String s) {}
 
 }
