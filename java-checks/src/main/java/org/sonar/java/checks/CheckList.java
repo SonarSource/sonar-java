@@ -215,7 +215,8 @@ public final class CheckList {
       IgnoredReturnValueCheck.class,
       ToStringReturningNullCheck.class,
       TransactionalMethodVisibilityCheck.class,
-      CompareToResultTestCheck.class
+      CompareToResultTestCheck.class,
+      SecureCookieCheck.class
     );
   }
 
