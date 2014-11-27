@@ -19,7 +19,31 @@ class A {
   }
 
 
-  void longMethod(int a, long l) { }
-  void doubleMethod(int a, double d) { }
-  void floatMethod(int a, float f) { }
+  void longMethod(int a, long l) {}
+  void doubleMethod(int a, double d) {}
+  void floatMethod(int a, float f) {}
+
+  long l() {
+    if (true) {
+      return 1 + 2l; // compliant
+    } else {
+      return 1 + 2; // Noncompliant
+    }
+  }
+
+  double d() {
+    if (true) {
+      return 1 + 2d; // compliant
+    } else {
+      return 1 + 2; // Noncompliant
+    }
+  }
+
+  float f() {
+    if (true) {
+      return 1 + 2f; // compliant
+    } else {
+      return 1 + 2; // Noncompliant
+    }
+  }
 }

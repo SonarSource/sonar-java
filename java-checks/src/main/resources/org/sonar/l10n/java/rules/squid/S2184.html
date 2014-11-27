@@ -9,6 +9,12 @@
 float twoThirds = 2/3; // Noncompliant; int division. Yields 0.0
 long millisInYear = 1000*3600*24*365; // Noncompliant; int multiplication. Yields 1471228928
 long bigNum = Integer.MAX_VALUE + 2; // Noncompliant. Yields -2147483647
+long bigNegNum =  Integer.MIN_VALUE-1; //Noncompliant, gives a positive result instead of a negative one.
+Date myDate = new Date(seconds * 1_000); //Noncompliant, won't produce the expected result if seconds > 2_147_483
+...
+public long compute(int factor){
+  return factor * 10_000;  //Noncompliant, won't produce the expected result if factor > 214_748
+}
 </pre>
 
 <h2>Compliant Solution</h2>
@@ -16,10 +22,22 @@ long bigNum = Integer.MAX_VALUE + 2; // Noncompliant. Yields -2147483647
 float twoThirds = 2f/3; // 2 promoted to float. Yields 0.6666667
 long millisInYear = 1000L*3600*24*365; // 1000 promoted to long. Yields 31536000000
 long bigNum = Integer.MAX_VALUE + 2L; // 2 promoted to long. Yields 2147483649
+long bigNegNum =  Integer.MIN_VALUE-1L; // Yields -2_147_483_649
+Date myDate = new Date(seconds * 1_000L);
+...
+public long compute(int factor){
+  return factor * 10_000L;
+}
 </pre>
 or
 <pre>
 float twoThirds = (float)2/3; // 2 cast to float
 long millisInYear = (long)1000*3600*24*365; // 1000 cast to long
 long bigNum = (long)Integer.MAX_VALUE + 2;
+long bigNegNum =  (long)Integer.MIN_VALUE-1;
+Date myDate = new Date((long)seconds * 1_000);
+...
+public long compute(long factor){
+  return factor * 10_000;
+}
 </pre>

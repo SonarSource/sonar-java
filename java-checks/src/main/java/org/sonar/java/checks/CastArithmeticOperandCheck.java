@@ -26,11 +26,14 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -55,7 +58,7 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION);
+    return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD);
   }
 
   @Override
@@ -73,7 +76,7 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
         varType = ((AbstractTypedTree) variableTree.type()).getSymbolType();
         expr = variableTree.initializer();
         checkExpression(varType, expr);
-      } else {
+      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
         Symbol symbol = mit.getSymbol();
         if (symbol.isKind(Symbol.MTH)) {
@@ -85,6 +88,12 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
               i++;
             }
           }
+        }
+      } else if (tree.is(Tree.Kind.METHOD)) {
+        MethodTreeImpl methodTree = (MethodTreeImpl) tree;
+        Type returnType = methodTree.getSymbol().getReturnType().getType();
+        if (isVarTypeErrorProne(returnType)) {
+          methodTree.accept(new ReturnStatementVisitor(returnType));
         }
       }
     }
@@ -101,6 +110,19 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
 
   private boolean isVarTypeErrorProne(Type varType) {
     return varType.isTagged(Type.LONG) || varType.isTagged(Type.FLOAT) || varType.isTagged(Type.DOUBLE);
+  }
+
+  private class ReturnStatementVisitor extends BaseTreeVisitor {
+    private Type returnType;
+
+    public ReturnStatementVisitor(Type returnType) {
+      this.returnType = returnType;
+    }
+
+    @Override
+    public void visitReturnStatement(ReturnStatementTree tree) {
+      checkExpression(returnType, tree.expression());
+    }
   }
 }
 
