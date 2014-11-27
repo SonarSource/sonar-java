@@ -217,7 +217,8 @@ public final class CheckList {
       TransactionalMethodVisibilityCheck.class,
       CompareToResultTestCheck.class,
       SecureCookieCheck.class,
-      UselessObjectCreationCheck.class
+      UselessObjectCreationCheck.class,
+      CatchIllegalMonitorStateExceptionCheck.class
     );
   }
 
