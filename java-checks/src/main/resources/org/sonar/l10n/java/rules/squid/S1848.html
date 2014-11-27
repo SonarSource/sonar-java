@@ -1,0 +1,13 @@
+There is no good reason to create a new object to not do anything with it. Most of the time, this is due to a missing piece of code and so could lead to an unexpected behavior in production.
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+if (x &lt; 0)
+  new IllegalArgumentException("x must be nonnegative");
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+if (x &lt; 0)
+  throw new IllegalArgumentException("x must be nonnegative");
+</pre>
