@@ -90,4 +90,10 @@ class Outer {
   }
 }
 
+class NumericalPromotion{
+  void num(long l){
+    num(1+2);
+  }
+}
+
 

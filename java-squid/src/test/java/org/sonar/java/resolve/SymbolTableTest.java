@@ -372,6 +372,7 @@ public class SymbolTableTest {
     assertThat(result.reference(67, 5)).isSameAs(result.symbol("bar", 35));
     assertThat(result.reference(79, 5)).isSameAs(result.symbol("defaultMethod", 72));
     assertThat(result.reference(88, 7)).isSameAs(result.symbol("func", 84));
+    assertThat(result.reference(95, 5)).isSameAs(result.symbol("num", 94));
   }
 
   @Test

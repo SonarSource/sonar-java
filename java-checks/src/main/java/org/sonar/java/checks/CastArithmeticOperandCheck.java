@@ -26,6 +26,8 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -53,26 +55,46 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.VARIABLE);
+    return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    Type varType;
-    ExpressionTree expr;
-    if (tree.is(Tree.Kind.ASSIGNMENT)) {
-      AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
-      varType = ((AbstractTypedTree) aet.variable()).getSymbolType();
-      expr = aet.expression();
-    } else {
-      VariableTree variableTree = (VariableTree) tree;
-      varType = ((AbstractTypedTree) variableTree.type()).getSymbolType();
-      expr = variableTree.initializer();
+    if (hasSemantic()) {
+      Type varType;
+      ExpressionTree expr;
+      if (tree.is(Tree.Kind.ASSIGNMENT)) {
+        AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
+        varType = ((AbstractTypedTree) aet.variable()).getSymbolType();
+        expr = aet.expression();
+        checkExpression(varType, expr);
+      } else if (tree.is(Tree.Kind.VARIABLE)) {
+        VariableTree variableTree = (VariableTree) tree;
+        varType = ((AbstractTypedTree) variableTree.type()).getSymbolType();
+        expr = variableTree.initializer();
+        checkExpression(varType, expr);
+      } else {
+        MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
+        Symbol symbol = mit.getSymbol();
+        if (symbol.isKind(Symbol.MTH)) {
+          List<Type> parametersTypes = ((Symbol.MethodSymbol) symbol).getParametersTypes();
+          if (mit.arguments().size() == parametersTypes.size()) {
+            int i = 0;
+            for (Type argType : parametersTypes) {
+              checkExpression(argType, mit.arguments().get(i));
+              i++;
+            }
+          }
+        }
+      }
     }
+  }
+
+  private void checkExpression(Type varType, ExpressionTree expr) {
     if (expr != null && expr.is(Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE, Tree.Kind.PLUS, Tree.Kind.MINUS) && isVarTypeErrorProne(varType)) {
       Type exprType = ((AbstractTypedTree) expr).getSymbolType();
       if (exprType.isTagged(Type.INT)) {
-        addIssue(tree, "Cast one of the operands of this " + OPERATION_BY_KIND.get(((JavaTree) expr).getKind()) + " operation to a \"" + varType.getSymbol().getName() + "\".");
+        addIssue(expr, "Cast one of the operands of this " + OPERATION_BY_KIND.get(((JavaTree) expr).getKind()) + " operation to a \"" + varType.getSymbol().getName() + "\".");
       }
     }
   }
