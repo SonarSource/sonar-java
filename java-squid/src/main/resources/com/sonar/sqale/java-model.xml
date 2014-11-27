@@ -2263,6 +2263,19 @@
       <name>Logic</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S888</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>2</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S2201</rule-key>
         <prop>
           <key>remediationFunction</key>

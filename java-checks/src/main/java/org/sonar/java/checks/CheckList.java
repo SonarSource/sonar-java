@@ -218,7 +218,8 @@ public final class CheckList {
       CompareToResultTestCheck.class,
       SecureCookieCheck.class,
       UselessObjectCreationCheck.class,
-      CatchIllegalMonitorStateExceptionCheck.class
+      CatchIllegalMonitorStateExceptionCheck.class,
+      ForLoopTerminationConditionCheck.class
     );
   }
 
