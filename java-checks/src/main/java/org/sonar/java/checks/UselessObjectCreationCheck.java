@@ -57,16 +57,13 @@ public class UselessObjectCreationCheck extends SubscriptionBaseVisitor {
   }
 
   private String getClassName(Tree identifier) {
-    String name = null;
+    String name = "";
     if (identifier.is(Tree.Kind.IDENTIFIER)) {
       name = ((IdentifierTree) identifier).name();
-
     } else if (identifier.is(Tree.Kind.MEMBER_SELECT)) {
       name = ((MemberSelectExpressionTree) identifier).identifier().name();
-
     } else if (identifier.is(Tree.Kind.PARAMETERIZED_TYPE)) {
       name = getClassName(((ParameterizedTypeTree) identifier).type());
-
     }
     return name;
   }
