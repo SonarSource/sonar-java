@@ -420,5 +420,7 @@ public class SymbolTableTest {
     Result result = Result.createFor("Lambdas");
     Symbol sym = result.symbol("o");
     assertThat(sym.type.toString()).isEqualTo("!unknown!");
+    assertThat(result.reference(8, 16)).isEqualTo(result.symbol("v", 8));
+    assertThat(result.reference(9, 16)).isEqualTo(result.symbol("v", 9));
   }
 }

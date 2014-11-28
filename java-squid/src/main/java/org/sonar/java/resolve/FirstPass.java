@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -368,6 +369,14 @@ public class FirstPass extends BaseTreeVisitor {
     // Create new environment - this is required, because new scope is created
     createNewEnvironment(tree);
     super.visitCatch(tree);
+    restoreEnvironment(tree);
+  }
+
+  @Override
+  public void visitLambdaExpression(LambdaExpressionTree tree) {
+    // Create new environment - this is required, because new scope is created
+    createNewEnvironment(tree);
+    super.visitLambdaExpression(tree);
     restoreEnvironment(tree);
   }
 
