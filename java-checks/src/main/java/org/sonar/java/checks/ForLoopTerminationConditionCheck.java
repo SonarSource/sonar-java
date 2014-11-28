@@ -37,6 +37,8 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
@@ -144,7 +146,7 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
   private class LoopVariableAssignmentVisitor extends BaseTreeVisitor {
 
     private final IdentifierTree loopIdentifier;
-    public boolean foundAssignment = false;
+    private boolean foundAssignment = false;
 
     public LoopVariableAssignmentVisitor(IdentifierTree loopIdentifier) {
       this.loopIdentifier = loopIdentifier;
@@ -206,7 +208,7 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
   
     private Integer increment = null;
   
-    public LoopUpdate(Integer increment) {
+    public LoopUpdate(@Nullable Integer increment) {
       this.increment = increment;
     }
   
