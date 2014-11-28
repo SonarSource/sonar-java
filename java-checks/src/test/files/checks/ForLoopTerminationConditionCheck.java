@@ -1,7 +1,7 @@
 class A {
   void myMethod() {
-    int j = 0;
-  //for (    j = 1; j != 4; j += 2) {} // Noncompliant
+    int j = 0, k = 0;
+    for (    j = 1; j != 4; j += 2) {} // Noncompliant
     for (int i = 1; i != 4; i += 2) {} // Noncompliant
     for (int i =-1; i !=-4; i -= 2) {} // Noncompliant
     for (int i = 1; i != 4; i = i+2){} // Noncompliant
@@ -13,6 +13,7 @@ class A {
     for (int i = 1; i != 4; j++)    {} // Noncompliant
     for (int i = 1; i != 4; j+=1)   {} // Noncompliant
     for (int i = 1; i != 4; j=j+1)  {} // Noncompliant
+    for (k=0,j = 1; j != 4; j += 2) {} // Noncompliant
     for (int i = 1; i != 4; aMethod()) {}       // Noncompliant
     for (int i = 1; i != 4; i++)    { i = 5;    } // Noncompliant
     for (int i = 1; i != 4; i++)    { j = i+=1; } // Noncompliant

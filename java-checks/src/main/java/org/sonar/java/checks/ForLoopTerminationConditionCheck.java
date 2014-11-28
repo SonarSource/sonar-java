@@ -61,12 +61,12 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
       return;
     }
     BinaryExpressionTree inequalityCondition = (BinaryExpressionTree) condition;
-    VariableTree loopVariable = loopVariable(forStatement);
-    if (loopVariable != null) {
-      Integer initialValue = initialValue(loopVariable);
-      IdentifierTree loopIdentifier = loopVariable.simpleName();
-      Integer terminationValue = otherOperandValue(inequalityCondition, loopIdentifier);
-      if (initialValue != null && terminationValue != null) {
+    IntAndIdentifierExpression loopVarAndTerminalValue = IntAndIdentifierExpression.of(inequalityCondition);
+    if (loopVarAndTerminalValue != null) {
+      IdentifierTree loopIdentifier = loopVarAndTerminalValue.identifier;
+      Integer initialValue = initialValue(loopIdentifier, forStatement);
+      if (initialValue != null) {
+        int terminationValue = loopVarAndTerminalValue.value;
         if (initialValue < terminationValue) {
           checkLoopUpdate(forStatement, loopIdentifier, 1);
         }
@@ -182,43 +182,49 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
   }
 
   private Integer otherOperandValue(BinaryExpressionTree binaryExp, IdentifierTree loopIdentifier) {
-    Integer value = null;
-    boolean foundVariable = false;
-    for (ExpressionTree expressionTree : ImmutableList.of(binaryExp.leftOperand(), binaryExp.rightOperand())) {
-      if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
-        foundVariable = ((IdentifierTree) expressionTree).name().equals(loopIdentifier.name());
-      } else {
-        value = intLiteralValue(expressionTree);
-      }
-    }
-    return foundVariable ? value : null;
-  }
-
-  private VariableTree loopVariable(ForStatementTree forStatement) {
-    List<StatementTree> initializers = forStatement.initializer();
-    if (initializers.size() != 1) {
-      return null;
-    }
-    StatementTree statementTree = initializers.get(0);
-    if (!statementTree.is(Tree.Kind.VARIABLE)) {
-      return null;
-    }
-    return (VariableTree) statementTree;
-  }
-
-  private Integer initialValue(VariableTree loopVariable) {
-    ExpressionTree initializer = loopVariable.initializer();
-    if (initializer != null) {
-      return intLiteralValue(initializer);
+    IntAndIdentifierExpression intAndIdentifierExpression = IntAndIdentifierExpression.of(binaryExp);
+    if (intAndIdentifierExpression != null && isSameIdentifier(intAndIdentifierExpression.identifier, loopIdentifier)) {
+      return intAndIdentifierExpression.value;
     }
     return null;
   }
 
-  private Integer intLiteralValue(LiteralTree literal) {
+  private Integer initialValue(IdentifierTree loopIdentifier, ForStatementTree forStatement) {
+    Integer value = null;
+    for (StatementTree statement : forStatement.initializer()) {
+      if (statement.is(Tree.Kind.VARIABLE)) {
+        VariableTree variable = (VariableTree) statement;
+        ExpressionTree initializer = variable.initializer();
+        if (isSameIdentifier(variable.simpleName(), loopIdentifier) && initializer != null) {
+          value = intLiteralValue(initializer);
+        }
+      }
+      if (statement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+        ExpressionTree expression = ((ExpressionStatementTree) statement).expression();
+        AssignmentExpressionTree assignment = assignment(expression, loopIdentifier);
+        if (assignment != null) {
+          value = intLiteralValue(assignment.expression());
+        }
+      }
+    }
+    return value;
+  }
+
+  private AssignmentExpressionTree assignment(ExpressionTree expression, IdentifierTree identifier) {
+    if (expression.is(Tree.Kind.ASSIGNMENT)) {
+      AssignmentExpressionTree assignment = (AssignmentExpressionTree) expression;
+      if (isSameIdentifier(assignment.variable(), identifier)) {
+        return assignment;
+      }
+    }
+    return null;
+  }
+
+  private static Integer intLiteralValue(LiteralTree literal) {
     return Integer.valueOf(literal.value());
   }
 
-  private Integer intLiteralValue(ExpressionTree expression) {
+  private static Integer intLiteralValue(ExpressionTree expression) {
     if (expression.is(Tree.Kind.INT_LITERAL)) {
       return intLiteralValue((LiteralTree) expression);
     }
@@ -231,6 +237,33 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
       }
     }
     return null;
+  }
+  
+  private static class IntAndIdentifierExpression {
+    
+    private final IdentifierTree identifier;
+    private final int value;
+    
+    private IntAndIdentifierExpression(IdentifierTree identifier, int value) {
+      this.identifier = identifier;
+      this.value = value;
+    }
+    
+    public static IntAndIdentifierExpression of(BinaryExpressionTree binaryExp) {
+      Integer value = null;
+      IdentifierTree identifier = null;
+      for (ExpressionTree expressionTree : ImmutableList.of(binaryExp.leftOperand(), binaryExp.rightOperand())) {
+        if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
+          identifier = (IdentifierTree) expressionTree;
+        } else {
+          value = intLiteralValue(expressionTree);
+        }
+      }
+      if (identifier != null && value != null) {
+        return new IntAndIdentifierExpression(identifier, value);
+      }
+      return null;
+    }
   }
 
   private static class LoopUpdate {

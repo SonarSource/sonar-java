@@ -38,7 +38,7 @@ public class ForLoopTerminationConditionCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ForLoopTerminationConditionCheck.java"),
       new VisitorsBridge(new ForLoopTerminationConditionCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      // .next().atLine(4).withMessage("Replace '!=' operator with one of '<=', '>=', '<', or '>' comparison operators.")
+      .next().atLine(4).withMessage("Replace '!=' operator with one of '<=', '>=', '<', or '>' comparison operators.")
       .next().atLine(5)
       .next().atLine(6)
       .next().atLine(7)
@@ -53,7 +53,8 @@ public class ForLoopTerminationConditionCheckTest {
       .next().atLine(16)
       .next().atLine(17)
       .next().atLine(18)
-      .next().atLine(19);
+      .next().atLine(19)
+      .next().atLine(20);
   }
 
 }
