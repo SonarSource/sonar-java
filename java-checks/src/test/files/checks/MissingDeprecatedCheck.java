@@ -64,8 +64,8 @@ interface Bar {
 }
 
 /**
- * @deprecated
- */
+* @deprecated
+*/
 class Qix  {
 
   /**
@@ -86,4 +86,13 @@ interface Plop {
    */
   public void foo(); // Compliant interface is deprecated
 
+}
+interface mockito {
+  /**
+   * ...
+   *
+   * @deprecated Use {@link EasyMock#createMockBuilder(Class)} instead
+   */
+  @Deprecated
+  <T> T createMock(Class<T> toMock, Method... mockedMethods);
 }

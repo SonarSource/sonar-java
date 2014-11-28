@@ -423,7 +423,8 @@ public class JavaGrammar {
       .is(
         f.newAnnotation(
           b.invokeRule(JavaPunctuator.AT),
-          QUALIFIED_IDENTIFIER(),
+          f.annotationIdentifier(b.invokeRule(JavaTokenType.IDENTIFIER),
+              b.zeroOrMore(f.newTuple8(b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaTokenType.IDENTIFIER)))),
           b.optional(ANNOTATION_REST())));
   }
 
@@ -1211,7 +1212,7 @@ public class JavaGrammar {
     return b.<ExpressionTree>nonterminal(JavaLexer.QUALIFIED_IDENTIFIER)
       .is(
         f.newQualifiedIdentifier(
-          ANNOTATED_PARAMETERIZED_IDENTIFIER(), b.zeroOrMore(f.newTuple5(b.invokeRule(JavaPunctuator.DOT), ANNOTATED_PARAMETERIZED_IDENTIFIER()))));
+            ANNOTATED_PARAMETERIZED_IDENTIFIER(), b.zeroOrMore(f.newTuple5(b.invokeRule(JavaPunctuator.DOT), ANNOTATED_PARAMETERIZED_IDENTIFIER()))));
   }
 
   public ExpressionTree ANNOTATED_PARAMETERIZED_IDENTIFIER() {

@@ -430,7 +430,7 @@ public class TreeFactory {
     Optional<List<AstNode>> enumDeclarations,
     AstNode closeBraceTokenAstNode) {
 
-    ImmutableList.Builder<AstNode> members = ImmutableList.<AstNode>builder();
+    ImmutableList.Builder<AstNode> members = ImmutableList.builder();
     if (enumConstants.isPresent()) {
       for (EnumConstantTreeImpl enumConstant : enumConstants.get()) {
         members.add(enumConstant);
@@ -1840,15 +1840,13 @@ public class TreeFactory {
     return new ArgumentListTreeImpl(expressions.build(), children);
   }
 
-  public ExpressionTree newQualifiedIdentifier(Optional<List<AnnotationTreeImpl>> annotations, AstNode firstIdentifier, Optional<List<AstNode>> rests) {
+  public ExpressionTree annotationIdentifier(AstNode firstIdentifier, Optional<List<Tuple<AstNode, AstNode>>> rests) {
     List<AstNode> children = Lists.newArrayList();
-    if (annotations.isPresent()) {
-      children.addAll(annotations.get());
-    }
     children.add(firstIdentifier);
     if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        children.addAll(rest.getChildren());
+      for (Tuple<AstNode,AstNode> rest : rests.get()) {
+        children.add(rest.first());
+        children.add(rest.second());
       }
     }
 
@@ -2106,18 +2104,6 @@ public class TreeFactory {
     }
   }
 
-  public AstNode newWrapperAstNode(AstNode e1, Optional<List<AstNode>> e2, AstNode e3) {
-    AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
-    astNode.addChild(e1);
-    if (e2.isPresent()) {
-      for (AstNode child : e2.get()) {
-        astNode.addChild(child);
-      }
-    }
-    astNode.addChild(e3);
-    return astNode;
-  }
-
   public AstNode newWrapperAstNode(AstNode e1, AstNode e2) {
     AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
     astNode.addChild(e1);
@@ -2137,10 +2123,6 @@ public class TreeFactory {
   // TODO Enable the same method call multiple times
 
   public AstNode newWrapperAstNode2(AstNode e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode3(AstNode e1, AstNode e2) {
     return newWrapperAstNode(e1, e2);
   }
 
@@ -2289,10 +2271,6 @@ public class TreeFactory {
   }
 
   public <T, U> Tuple<T, U> newTuple12(T first, U second) {
-    return newTuple(first, second);
-  }
-
-  public <T, U> Tuple<T, U> newTuple13(T first, U second) {
     return newTuple(first, second);
   }
 
