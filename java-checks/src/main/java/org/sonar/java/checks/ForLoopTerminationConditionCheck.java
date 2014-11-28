@@ -113,11 +113,11 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
   private LoopUpdate assignmentLoopUpdate(IdentifierTree loopIdentifier, AssignmentExpressionTree assignmentExpression, int sign) {
     ExpressionTree assignedValue = assignmentExpression.expression();
     if (isSameIdentifier(assignmentExpression.variable(), loopIdentifier)) {
-      if (assignedValue.is(Tree.Kind.INT_LITERAL)) {
-        return new LoopUpdate(intLiteralValue((LiteralTree) assignedValue) * sign);
-      } else {
-        return new LoopUpdate(null);
+      Integer intAssignedValue = intLiteralValue(assignedValue);
+      if (intAssignedValue != null) {
+        intAssignedValue = intAssignedValue * sign;
       }
+      return new LoopUpdate(intAssignedValue);
     }
     return null;
   }
@@ -173,8 +173,8 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
     for (ExpressionTree expressionTree : ImmutableList.of(condition.leftOperand(), condition.rightOperand())) {
       if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
         foundVariable = ((IdentifierTree) expressionTree).name().equals(loopIdentifier.name());
-      } else if (expressionTree.is(Tree.Kind.INT_LITERAL)) {
-        value = intLiteralValue((LiteralTree) expressionTree);
+      } else {
+        value = intLiteralValue(expressionTree);
       }
     }
     return foundVariable ? value : null;
@@ -194,14 +194,29 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
 
   private Integer initialValue(VariableTree loopVariable) {
     ExpressionTree initializer = loopVariable.initializer();
-    if (initializer != null && initializer.is(Tree.Kind.INT_LITERAL)) {
-      return intLiteralValue((LiteralTree) initializer);
+    if (initializer != null) {
+      return intLiteralValue(initializer);
     }
     return null;
   }
 
   private Integer intLiteralValue(LiteralTree literal) {
     return Integer.valueOf(literal.value());
+  }
+
+  private Integer intLiteralValue(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.INT_LITERAL)) {
+      return intLiteralValue((LiteralTree) expression);
+    }
+    if (expression.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
+      UnaryExpressionTree unaryExp = (UnaryExpressionTree) expression;
+      ExpressionTree subExpression = unaryExp.expression();
+      if (subExpression.is(Tree.Kind.INT_LITERAL)) {
+        Integer subExpressionValue = intLiteralValue((LiteralTree) subExpression);
+        return expression.is(Tree.Kind.UNARY_MINUS) ? subExpressionValue * -1 : subExpressionValue;
+      }
+    }
+    return null;
   }
 
   private static class LoopUpdate {

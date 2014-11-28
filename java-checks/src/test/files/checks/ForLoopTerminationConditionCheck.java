@@ -3,10 +3,11 @@ class A {
     int j = 0;
   //for (    j = 1; j != 4; j += 2) {} // Noncompliant
     for (int i = 1; i != 4; i += 2) {} // Noncompliant
-    for (int i = 4; i != 1; i -= 2) {} // Noncompliant
+    for (int i =-1; i !=-4; i -= 2) {} // Noncompliant
     for (int i = 4; i != 1; i++)    {} // Noncompliant
     for (int i = 1; i != 4; i--)    {} // Noncompliant
     for (int i = 1; i != 4;    )    {} // Noncompliant
+    for (int i = 4; i != 1; i -= -1){} // Noncompliant
     for (int i = 1; i != 4; j++)    {} // Noncompliant
     for (int i = 1; i != 4; j+=1)   {} // Noncompliant
     for (int i = 1; i != 4; j=j+1)  {} // Noncompliant
@@ -21,13 +22,14 @@ class A {
     for (int i = 4; i != 1; i--)    {}
     for (int i = 1; i != 4; i+=1)   {}
     for (int i = 4; i != 1; i-=1)   {}
+    for (int i = 4; i != 1; i--)    {}
     for (int i = 1; i >= 4; i += 2) {}
     for (int i = 1; i >= 4; i += 2) {}
     for (int i = 1; i >  4; i += 2) {}
     for (int i = 4; i <  1; i -= 2) {}
     for (int i = 4; i <= 1; i -= 2) {}
     for (int i = 1; j != 4; i += 2) {}
-    for (int i = 1; i != 4; i += x) {}
+    for (int i =+1; i != 4; i += -x){}
     for (         ; i != 4; i--)    {}
     for (int i = 1;       ; i++)    {}
     for (int i    ; i != 4; i++)    {}
