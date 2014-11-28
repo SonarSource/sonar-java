@@ -154,9 +154,11 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitUnaryExpression(UnaryExpressionTree unaryExp) {
-      if (isSameIdentifier(unaryExp.expression(), loopIdentifier)) {
+      if (isSameIdentifier(unaryExp.expression(), loopIdentifier)
+        && unaryExp.is(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT)) {
         foundAssignment = true;
       }
+      super.visitUnaryExpression(unaryExp);
     }
 
     @Override
@@ -164,6 +166,7 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
       if (isSameIdentifier(assignmentExpression.variable(), loopIdentifier)) {
         foundAssignment = true;
       }
+      super.visitAssignmentExpression(assignmentExpression);
     }
   }
 
