@@ -25,6 +25,7 @@ class A {
     for (int i = 4; i != 1; i--)    {}
     for (int i = 1; i != 4; i+=1)   {}
     for (int i = 4; i != 1; i-=1)   {}
+    for (int i = 1; i != 4; i-= -1) {}
     for (int i = 4; i != 1; i = i-1){}
     for (int i = 1; i >= 4; i += 2) {}
     for (int i = 1; i >= 4; i += 2) {}
@@ -39,6 +40,7 @@ class A {
     for (int i    ; i != 4; i++)    {}
     for (int i = 1; i != 4; i = x + 2)   {}
     for (int i = 1; i != 4; i += 2, i++) {}
+    for (int i = 1; i != 1; i++)    {}
     for (method() ; i != 4; i--)    {}
     for (double i = 1.; i != 4.; i += 2.) {}
     for (String s = "abc"; s.length() > 0; s = s.substring(1)) {}

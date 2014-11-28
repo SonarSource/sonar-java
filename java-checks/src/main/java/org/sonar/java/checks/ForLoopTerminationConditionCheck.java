@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -36,8 +37,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -64,80 +63,76 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
     IntAndIdentifierExpression loopVarAndTerminalValue = IntAndIdentifierExpression.of(inequalityCondition);
     if (loopVarAndTerminalValue != null) {
       IdentifierTree loopIdentifier = loopVarAndTerminalValue.identifier;
+      int terminationValue = loopVarAndTerminalValue.value;
       Integer initialValue = initialValue(loopIdentifier, forStatement);
-      if (initialValue != null) {
-        int terminationValue = loopVarAndTerminalValue.value;
-        if (initialValue < terminationValue) {
-          checkLoopUpdate(forStatement, loopIdentifier, 1);
-        }
-        if (initialValue > terminationValue) {
-          checkLoopUpdate(forStatement, loopIdentifier, -1);
-        }
+      if (initialValue != null && initialValue != terminationValue) {
+        checkIncrement(forStatement, loopIdentifier, initialValue < terminationValue);
       }
     }
   }
 
-  private void checkLoopUpdate(ForStatementTree forStatement, IdentifierTree loopIdentifier, int requiredIncrement) {
+  private void checkIncrement(ForStatementTree forStatement, IdentifierTree loopIdentifier, boolean positiveIncrement) {
     List<StatementTree> updates = forStatement.update();
     if (updates.isEmpty()) {
       addIssue(forStatement);
     } else if (updates.size() == 1) {
-      LoopUpdate loopUpdate = loopUpdate(loopIdentifier, (ExpressionStatementTree) updates.get(0));
+      ExpressionStatementTree statement = (ExpressionStatementTree) updates.get(0);
       StatementTree body = forStatement.statement();
-      if (loopUpdate == null || loopUpdate.hasInvalidIncrement(requiredIncrement) || forBodyUpdatesLoopIdentifier(body, loopIdentifier)) {
+      Boolean isIncrementByOne = isIncrementByOne(statement.expression(), loopIdentifier, positiveIncrement);
+      if (BooleanUtils.isFalse(isIncrementByOne) || forBodyUpdatesLoopIdentifier(body, loopIdentifier)) {
         addIssue(forStatement);
       }
     }
   }
 
-  private LoopUpdate loopUpdate(IdentifierTree loopIdentifier, ExpressionStatementTree expressionStatementTree) {
-    ExpressionTree expression = expressionStatementTree.expression();
-    LoopUpdate loopUpdate = null;
+  private Boolean isIncrementByOne(ExpressionTree expression, IdentifierTree loopIdentifier, boolean positiveIncrement) {
+    Boolean result = false;
     if (expression.is(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_INCREMENT)) {
-      loopUpdate = incrementLoopUpdate(loopIdentifier, (UnaryExpressionTree) expression, 1);
+      result = isValidIncrementUpdate(loopIdentifier, (UnaryExpressionTree) expression, positiveIncrement);
     } else if (expression.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.PREFIX_DECREMENT)) {
-      loopUpdate = incrementLoopUpdate(loopIdentifier, (UnaryExpressionTree) expression, -1);
+      result = isValidIncrementUpdate(loopIdentifier, (UnaryExpressionTree) expression, !positiveIncrement);
     } else if (expression.is(Tree.Kind.PLUS_ASSIGNMENT)) {
-      loopUpdate = assignmentLoopUpdate(loopIdentifier, (AssignmentExpressionTree) expression, 1);
+      result = isValidAssignmentUpdate(loopIdentifier, (AssignmentExpressionTree) expression, positiveIncrement);
     } else if (expression.is(Tree.Kind.MINUS_ASSIGNMENT)) {
-      loopUpdate = assignmentLoopUpdate(loopIdentifier, (AssignmentExpressionTree) expression, -1);
+      result = isValidAssignmentUpdate(loopIdentifier, (AssignmentExpressionTree) expression, !positiveIncrement);
     } else if (expression.is(Tree.Kind.ASSIGNMENT)) {
-      loopUpdate = assignmentLoopUpdate(loopIdentifier, (AssignmentExpressionTree) expression);
+      result = isValidSimpleAssignmentUpdate(loopIdentifier, (AssignmentExpressionTree) expression, positiveIncrement);
     }
-    return loopUpdate;
+    return result;
   }
 
-  private LoopUpdate assignmentLoopUpdate(IdentifierTree loopIdentifier, AssignmentExpressionTree assignmentExpression) {
+  private Boolean isValidSimpleAssignmentUpdate(IdentifierTree loopIdentifier, AssignmentExpressionTree assignmentExpression, boolean positiveIncrement) {
     if (isSameIdentifier(assignmentExpression.variable(), loopIdentifier)) {
       ExpressionTree expression = assignmentExpression.expression();
       if (expression.is(Tree.Kind.PLUS, Tree.Kind.MINUS)) {
         Integer otherOperandValue = otherOperandValue((BinaryExpressionTree) expression, loopIdentifier);
-        if (otherOperandValue != null && expression.is(Tree.Kind.MINUS)) {
-          otherOperandValue = -otherOperandValue;
+        if (otherOperandValue == null) {
+          return null;
         }
-        return new LoopUpdate(otherOperandValue);
+        boolean isPlus = expression.is(Tree.Kind.PLUS);
+        return (positiveIncrement ? isPlus : !isPlus) && otherOperandValue == 1;
       }
     }
-    return null;
+    return false;
   }
 
-  private LoopUpdate assignmentLoopUpdate(IdentifierTree loopIdentifier, AssignmentExpressionTree assignmentExpression, int sign) {
+  private Boolean isValidAssignmentUpdate(IdentifierTree loopIdentifier, AssignmentExpressionTree assignmentExpression, boolean positiveIncrement) {
     ExpressionTree assignedValue = assignmentExpression.expression();
     if (isSameIdentifier(assignmentExpression.variable(), loopIdentifier)) {
       Integer intAssignedValue = intLiteralValue(assignedValue);
       if (intAssignedValue != null) {
-        intAssignedValue = intAssignedValue * sign;
+        return intAssignedValue == (positiveIncrement ? 1 : -1);
       }
-      return new LoopUpdate(intAssignedValue);
+      return null;
     }
-    return null;
+    return false;
   }
 
-  private LoopUpdate incrementLoopUpdate(IdentifierTree loopIdentifier, UnaryExpressionTree unaryExp, int increment) {
+  private Boolean isValidIncrementUpdate(IdentifierTree loopIdentifier, UnaryExpressionTree unaryExp, boolean isExpectedIncrement) {
     if (isSameIdentifier(unaryExp.expression(), loopIdentifier)) {
-      return new LoopUpdate(increment);
+      return isExpectedIncrement;
     }
-    return null;
+    return false;
   }
 
   private boolean isSameIdentifier(ExpressionTree expression, IdentifierTree identifier) {
@@ -263,19 +258,6 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
         return new IntAndIdentifierExpression(identifier, value);
       }
       return null;
-    }
-  }
-
-  private static class LoopUpdate {
-  
-    private Integer increment = null;
-  
-    public LoopUpdate(@Nullable Integer increment) {
-      this.increment = increment;
-    }
-  
-    public boolean hasInvalidIncrement(int requiredIncrement) {
-      return increment != null && increment != requiredIncrement;
     }
   }
 
