@@ -223,7 +223,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     tree.accept(this);
     Type type = getType(tree);
     if (tree.is(Tree.Kind.INFERED_TYPE)) {
-      return null;
+      registerType(tree, symbols.unknownType);
+      return symbols.unknownSymbol;
     }
     if (type == null) {
       throw new IllegalStateException("Type not resolved " + tree);

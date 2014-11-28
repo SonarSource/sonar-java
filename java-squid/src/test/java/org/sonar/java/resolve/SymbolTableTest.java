@@ -414,4 +414,11 @@ public class SymbolTableTest {
     sym = result.symbol("fun");
     assertThat(sym.isDeprecated()).isTrue();
   }
+
+  @Test
+  public void Lambdas() throws Exception {
+    Result result = Result.createFor("Lambdas");
+    Symbol sym = result.symbol("o");
+    assertThat(sym.type.toString()).isEqualTo("!unknown!");
+  }
 }
