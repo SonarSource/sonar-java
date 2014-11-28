@@ -51,7 +51,9 @@ public class ForLoopTerminationConditionCheckTest {
       .next().atLine(14)
       .next().atLine(15)
       .next().atLine(16)
-      .next().atLine(17);
+      .next().atLine(17)
+      .next().atLine(18)
+      .next().atLine(19);
   }
 
 }

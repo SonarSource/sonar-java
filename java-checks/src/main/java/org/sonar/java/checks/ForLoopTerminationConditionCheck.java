@@ -65,7 +65,7 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
     if (loopVariable != null) {
       Integer initialValue = initialValue(loopVariable);
       IdentifierTree loopIdentifier = loopVariable.simpleName();
-      Integer terminationValue = comparisonValue(inequalityCondition, loopIdentifier);
+      Integer terminationValue = otherOperandValue(inequalityCondition, loopIdentifier);
       if (initialValue != null && terminationValue != null) {
         if (initialValue < terminationValue) {
           checkLoopUpdate(forStatement, loopIdentifier, 1);
@@ -102,12 +102,23 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
     } else if (expression.is(Tree.Kind.MINUS_ASSIGNMENT)) {
       loopUpdate = assignmentLoopUpdate(loopIdentifier, (AssignmentExpressionTree) expression, -1);
     } else if (expression.is(Tree.Kind.ASSIGNMENT)) {
-      AssignmentExpressionTree assignmentExpression = (AssignmentExpressionTree) expression;
-      if (isSameIdentifier(assignmentExpression.variable(), loopIdentifier)) {
-        loopUpdate = new LoopUpdate(null);
-      }
+      loopUpdate = assignmentLoopUpdate(loopIdentifier, (AssignmentExpressionTree) expression);
     }
     return loopUpdate;
+  }
+
+  private LoopUpdate assignmentLoopUpdate(IdentifierTree loopIdentifier, AssignmentExpressionTree assignmentExpression) {
+    if (isSameIdentifier(assignmentExpression.variable(), loopIdentifier)) {
+      ExpressionTree expression = assignmentExpression.expression();
+      if (expression.is(Tree.Kind.PLUS, Tree.Kind.MINUS)) {
+        Integer otherOperandValue = otherOperandValue((BinaryExpressionTree) expression, loopIdentifier);
+        if (otherOperandValue != null && expression.is(Tree.Kind.MINUS)) {
+          otherOperandValue = -otherOperandValue;
+        }
+        return new LoopUpdate(otherOperandValue);
+      }
+    }
+    return null;
   }
 
   private LoopUpdate assignmentLoopUpdate(IdentifierTree loopIdentifier, AssignmentExpressionTree assignmentExpression, int sign) {
@@ -170,10 +181,10 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private Integer comparisonValue(BinaryExpressionTree condition, IdentifierTree loopIdentifier) {
+  private Integer otherOperandValue(BinaryExpressionTree binaryExp, IdentifierTree loopIdentifier) {
     Integer value = null;
     boolean foundVariable = false;
-    for (ExpressionTree expressionTree : ImmutableList.of(condition.leftOperand(), condition.rightOperand())) {
+    for (ExpressionTree expressionTree : ImmutableList.of(binaryExp.leftOperand(), binaryExp.rightOperand())) {
       if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
         foundVariable = ((IdentifierTree) expressionTree).name().equals(loopIdentifier.name());
       } else {
