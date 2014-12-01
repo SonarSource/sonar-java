@@ -35,8 +35,6 @@ public class HiddenFieldCheckTest {
 
   @Test
   public void test() {
-    new HiddenFieldCheck();
-
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/HiddenFieldCheck.java"), new VisitorsBridge(new HiddenFieldCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(7).withMessage("Rename \"foo\" which hides the field declared at line 3.")
