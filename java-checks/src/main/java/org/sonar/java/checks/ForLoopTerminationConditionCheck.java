@@ -38,6 +38,8 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
+
 import java.util.List;
 
 @Rule(
@@ -85,6 +87,7 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
     }
   }
 
+  @CheckForNull
   private Boolean isIncrementByOne(ExpressionTree expression, IdentifierTree loopIdentifier, boolean positiveIncrement) {
     Boolean result = false;
     if (expression.is(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_INCREMENT)) {
@@ -101,6 +104,7 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
     return result;
   }
 
+  @CheckForNull
   private Boolean isValidSimpleAssignmentUpdate(IdentifierTree loopIdentifier, AssignmentExpressionTree assignmentExpression, boolean positiveIncrement) {
     if (isSameIdentifier(assignmentExpression.variable(), loopIdentifier)) {
       ExpressionTree expression = assignmentExpression.expression();
@@ -116,12 +120,13 @@ public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
+  @CheckForNull
   private Boolean isValidAssignmentUpdate(IdentifierTree loopIdentifier, AssignmentExpressionTree assignmentExpression, boolean positiveIncrement) {
     ExpressionTree assignedValue = assignmentExpression.expression();
     if (isSameIdentifier(assignmentExpression.variable(), loopIdentifier)) {
       Integer intAssignedValue = intLiteralValue(assignedValue);
       if (intAssignedValue != null) {
-        return intAssignedValue == (positiveIncrement ? 1 : -1);
+        return intAssignedValue.equals(positiveIncrement ? 1 : -1);
       }
       return null;
     }
