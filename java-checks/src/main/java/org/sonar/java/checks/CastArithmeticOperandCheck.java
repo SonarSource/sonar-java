@@ -77,23 +77,26 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
         expr = variableTree.initializer();
         checkExpression(varType, expr);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
-        Symbol symbol = mit.getSymbol();
-        if (symbol.isKind(Symbol.MTH)) {
-          List<Type> parametersTypes = ((Symbol.MethodSymbol) symbol).getParametersTypes();
-          if (mit.arguments().size() == parametersTypes.size()) {
-            int i = 0;
-            for (Type argType : parametersTypes) {
-              checkExpression(argType, mit.arguments().get(i));
-              i++;
-            }
-          }
-        }
+        checkMethodInvocationArgument((MethodInvocationTreeImpl) tree);
       } else if (tree.is(Tree.Kind.METHOD)) {
         MethodTreeImpl methodTree = (MethodTreeImpl) tree;
         Type returnType = methodTree.getSymbol().getReturnType().getType();
         if (isVarTypeErrorProne(returnType)) {
           methodTree.accept(new ReturnStatementVisitor(returnType));
+        }
+      }
+    }
+  }
+
+  private void checkMethodInvocationArgument(MethodInvocationTreeImpl mit) {
+    Symbol symbol = mit.getSymbol();
+    if (symbol.isKind(Symbol.MTH)) {
+      List<Type> parametersTypes = ((Symbol.MethodSymbol) symbol).getParametersTypes();
+      if (mit.arguments().size() == parametersTypes.size()) {
+        int i = 0;
+        for (Type argType : parametersTypes) {
+          checkExpression(argType, mit.arguments().get(i));
+          i++;
         }
       }
     }
