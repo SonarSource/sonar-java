@@ -45,8 +45,11 @@ public class SymbolTableTest {
         result.symbol("FirstInterface").type,
         result.symbol("SecondInterface").type);
     assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
+    assertThat(typeSymbol.members.lookup("super")).hasSize(1);
+    Symbol superSymbol = typeSymbol.members.lookup("super").get(0);
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Superclass");
+    assertThat(superSymbol.type.symbol).isSameAs(typeSymbol);
 
     Symbol superclass = typeSymbol.getSuperclass().symbol;
     assertThat(superclass.getName()).isEqualTo("Object");
@@ -57,6 +60,8 @@ public class SymbolTableTest {
 
     typeSymbol = (Symbol.TypeSymbol) result.symbol("Foo");
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Baz").type);
+
+    assertThat(result.reference(25,21)).isSameAs(result.symbol("method"));
   }
 
   @Test

@@ -19,10 +19,17 @@ class ClassDeclaration<T> {
   }
 
   class Example {
-    static class Foo extends Bar.Baz {} // Bar.Baz cannot be resolved if hierarchy of Bar is incomplete
+    static class Foo extends Bar.Baz { // Bar.Baz cannot be resolved if hierarchy of Bar is incomplete
+      class inner {
+        void foo(){
+          Foo.super.method();
+        }
+      }
+    }
     static class Bar extends Base {}
     static class Base {
       static class Baz extends Declaration{
+        void method(){}
       }
     }
   }

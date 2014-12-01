@@ -65,13 +65,11 @@ public class SecondPass implements Symbol.Completer {
 
   private void complete(Symbol.TypeSymbol symbol) {
     Resolve.Env env = semanticModel.getEnv(symbol);
-
     Type.ClassType type = (Type.ClassType) symbol.type;
 
     if ((symbol.flags() & Flags.INTERFACE) == 0) {
-      // If this is a class, enter symbols for "this" and "super".
+      // If this is a class, enter symbol for "this"
       symbol.members.enter(new Symbol.VariableSymbol(Flags.FINAL, "this", symbol.type, symbol));
-      // TODO super
     }
 
     if ("".equals(symbol.name)) {
@@ -86,6 +84,8 @@ public class SecondPass implements Symbol.Completer {
     if (superClassTree != null) {
       type.supertype = resolveType(env, superClassTree);
       checkHierarchyCycles(symbol.type);
+      //enter symbol for super for superclass.
+      symbol.members.enter(new Symbol.VariableSymbol(Flags.FINAL, "super", ((Type.ClassType) symbol.type).supertype, symbol));
     } else {
       if (tree.is(Tree.Kind.ENUM)) {
         // JLS8 8.9: The direct superclass of an enum type E is Enum<E>.
@@ -180,7 +180,7 @@ public class SecondPass implements Symbol.Completer {
     Preconditions.checkArgument(checkTypeOfTree(tree), "Kind of tree unexpected " + ((JavaTree) tree).getKind());
     //FIXME(benzonico) as long as Variables share the same node type, (int i,j; or worse : int i[], j[];) check nullity to respect invariance.
     Type type = ((AbstractTypedTree) tree).getSymbolType();
-    if(type != null) {
+    if (type != null) {
       return type;
     }
     typeAndReferenceSolver.env = env;
@@ -191,12 +191,12 @@ public class SecondPass implements Symbol.Completer {
 
   private boolean checkTypeOfTree(Tree tree) {
     return tree.is(Tree.Kind.MEMBER_SELECT) ||
-      tree.is(Tree.Kind.IDENTIFIER) ||
-      tree.is(Tree.Kind.PARAMETERIZED_TYPE) ||
-      tree.is(Tree.Kind.ARRAY_TYPE) ||
-      tree.is(Tree.Kind.UNION_TYPE) ||
-      tree.is(Tree.Kind.PRIMITIVE_TYPE) ||
-      tree.is(Tree.Kind.INFERED_TYPE);
+        tree.is(Tree.Kind.IDENTIFIER) ||
+        tree.is(Tree.Kind.PARAMETERIZED_TYPE) ||
+        tree.is(Tree.Kind.ARRAY_TYPE) ||
+        tree.is(Tree.Kind.UNION_TYPE) ||
+        tree.is(Tree.Kind.PRIMITIVE_TYPE) ||
+        tree.is(Tree.Kind.INFERED_TYPE);
   }
 
 }
