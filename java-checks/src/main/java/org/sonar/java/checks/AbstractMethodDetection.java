@@ -53,22 +53,12 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
   }
 
 
-  protected void onMethodFound(MethodInvocationTree mit){
+  protected void onMethodFound(MethodInvocationTree mit) {
     //Do nothing by default
   }
 
-
   protected static class MethodDefinition {
 
-  private IdentifierTree getIdentifier(MethodInvocationTree mit) {
-    IdentifierTree id = null;
-    if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
-      id = (IdentifierTree) mit.methodSelect();
-    } else if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
-    }
-    return id;
-  }
     private String fullyQualifiedTypeName;
     private String methodName;
     private List<String> parameterTypes;
@@ -79,6 +69,16 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
 
     public static MethodDefinition create() {
       return new MethodDefinition();
+    }
+
+    private IdentifierTree getIdentifier(MethodInvocationTree mit) {
+      IdentifierTree id = null;
+      if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
+        id = (IdentifierTree) mit.methodSelect();
+      } else if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
+      }
+      return id;
     }
 
     public MethodDefinition name(String methodName) {
