@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -38,6 +39,19 @@ import java.util.List;
     priority = Priority.CRITICAL,
     tags = {"bug"})
 public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
+
+  private static List<String> CHECKED_TYPES = ImmutableList.<String>builder()
+      .add("java.lang.String")
+      .add("java.lang.Boolean")
+      .add("java.lang.Integer")
+      .add("java.lang.Double")
+      .add("java.lang.Float")
+      .add("java.lang.Byte")
+      .add("java.lang.Character")
+      .add("java.lang.Short")
+      .add("java.lang.StackTraceElement")
+      .build();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.EXPRESSION_STATEMENT);
@@ -49,21 +63,24 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
     if (est.expression().is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) est.expression();
       Type methodType = ((AbstractTypedTree) mit).getSymbolType();
-      if (!returnsVoid(methodType) && !isFluentAPI(mit)) {
+      if (!returnsVoid(methodType) && isCheckedType(mit)) {
         addIssue(tree, "The return value of \"" + methodName(mit) + "\" is not used.");
       }
     }
   }
 
-  private boolean returnsVoid(Type methodType) {
-    return methodType.isTagged(Type.VOID) || methodType.isTagged(Type.UNKNOWN);
+  private boolean isCheckedType(MethodInvocationTree mit) {
+    Symbol owner = ((MethodInvocationTreeImpl) mit).getSymbol().owner();
+    for (String type : CHECKED_TYPES) {
+      if (owner.getType().is(type)) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  private boolean isFluentAPI(MethodInvocationTree mit) {
-    Symbol method = getSemanticModel().getReference(getIdentifier(mit));
-    Type methodType = ((AbstractTypedTree) mit).getSymbolType();
-    //fluent api : owner type is return type.
-    return method.owner().getType().equals(methodType);
+  private boolean returnsVoid(Type methodType) {
+    return methodType.isTagged(Type.VOID) || methodType.isTagged(Type.UNKNOWN);
   }
 
   private String methodName(MethodInvocationTree mit) {

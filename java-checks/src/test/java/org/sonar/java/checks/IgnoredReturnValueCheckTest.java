@@ -37,8 +37,9 @@ public class IgnoredReturnValueCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IgnoredReturnValueCheck.java"), new VisitorsBridge(new IgnoredReturnValueCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(7).withMessage("The return value of \"intMethod\" is not used.")
-        .next().atLine(9).withMessage("The return value of \"intMethod\" is not used.")
+        .next().atLine(14).withMessage("The return value of \"byteValue\" is not used.")
+        .next().atLine(15).withMessage("The return value of \"replace\" is not used.")
+        .next().atLine(16).withMessage("The return value of \"getClassName\" is not used.")
         .noMore();
   }
 }
