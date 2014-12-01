@@ -223,7 +223,8 @@ public final class CheckList {
       HttpRefererCheck.class,
       HardCodedCredentialsCheck.class,
       PseudoRandomCheck.class,
-      MainMethodThrowsExceptionCheck.class
+      MainMethodThrowsExceptionCheck.class,
+      ResultSetIsLastCheck.class
     );
   }
 

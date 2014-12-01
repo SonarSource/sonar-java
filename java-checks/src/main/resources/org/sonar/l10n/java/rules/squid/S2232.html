@@ -1,0 +1,18 @@
+<p>There are several reasons to avoid <code>ResultSet.isLast()</code>. First, support for this method is optional for <code>TYPE_FORWARD_ONLY</code> result sets. Second, it can be expensive (the driver may need to fetch the next row to answer the question). Finally, the specification is not clear on what should be returned when the <code>ResultSet</code> is empty, so some drivers may return the opposite of what is expected.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+stmt.executeQuery("SELECT name, address FROM PERSON");
+ResultSet rs = stmt.getResultSet();
+while (! rs.isLast()) { // Noncompliant
+// process row
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+ResultSet rs = stmt.executeQuery("SELECT name, address FROM PERSON");
+while (! rs.next()) {
+// process row
+}
+</pre>
