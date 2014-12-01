@@ -45,7 +45,7 @@ import java.util.List;
 @Rule(
   key = "S888",
   priority = Priority.CRITICAL,
-  tags = {"bug", "cert", "cwe"})
+  tags = {"bug", "cert", "cwe", "misra"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class ForLoopTerminationConditionCheck extends SubscriptionBaseVisitor {
 
