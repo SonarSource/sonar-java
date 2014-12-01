@@ -1,0 +1,16 @@
+Calling <code>Iterator.hasNext()</code> is not supposed to have any side effects, and therefore should not change the state of the iterator. <code>Iterator.next()</code> advances the iterator by one item. So calling it inside <code>Iterator.hasNext()</code>, breaks the <code>hasNext()</code> contract, and will lead to unexpected behavior in production.
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class FibonacciIterator implements Iterator&lt;Integer&gt;{
+...
+@Override
+public boolean hasNext() {
+  if(next() != null) {
+    return true;
+  }
+  return false;
+}
+...
+}
+</pre>

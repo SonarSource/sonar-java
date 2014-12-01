@@ -224,7 +224,8 @@ public final class CheckList {
       HardCodedCredentialsCheck.class,
       PseudoRandomCheck.class,
       MainMethodThrowsExceptionCheck.class,
-      ResultSetIsLastCheck.class
+      ResultSetIsLastCheck.class,
+      HasNextCallingNextCheck.class
     );
   }
 
