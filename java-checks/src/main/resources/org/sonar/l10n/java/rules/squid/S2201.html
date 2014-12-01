@@ -1,50 +1,19 @@
-<p>A non-void return value typically means one of two things:
-<ul>
-  <li>the returned value indicates the success/status of the method</li>
-  <li>the returned value is the result of the method operations.</li>
-</ul>
-</p>
+<p>When the call to a function doesn't have any side effect, what is the point of ignoring the result of the function call ? In such case, either the function call is useless and should be dropped or the source code doesn't behave as expected.</p>
 
-<p>Thus, ignoring a return value is at best a waste of operations, and at worst a serious error. In either case, it is likely a bug.</p>
+<p>To prevent generating any false-positives, this rule triggers an issues only on the following predefined list of immutable classes in the Java API : String, Boolean, Integer, Double, Float, Byte, Character, Short, StackTraceElement.</p>
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-public void doSomething(String arg) {
-
-if (isOkay(arg)) {
-  try {
-    arg.toLowerCase(); // Noncompliant; result of method thrown away
-
-    File file = new File(arg);
-    file.createNewFile();  // Noncompliant; result indicates operation success
-    // use file
+public void handle(String command){
+  command.toLowerCase(); // Noncompliant; result of method thrown away
+  ...
+}
 </pre>
 
 <h2>Compliant Solution</h2>
 <pre>
-public void doSomething(String arg) {
-
-if (isOkay(arg)) {
-  try {
-    String fileName = arg.toLowerCase();
-
-    File file = new File(arg);
-    if (file.createNewFile()) {
-    // use file
-</pre>
-
-<h2>Exceptions</h2>
-<p>Fluent APIs are excluded from this check.</p>
-<pre>
-class A {
-  A fluentMethod(String s) {
-    //...
-    return this;
-  }
-
-  public void doSomething() {
-    A a = new A();
-    a.fluentMethod(s);
-  }
+public void handle(String command){
+  String formattedCommand = command.toLowerCase();
+  ...
 }
 </pre>

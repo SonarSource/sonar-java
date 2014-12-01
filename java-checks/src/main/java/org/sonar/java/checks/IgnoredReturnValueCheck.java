@@ -64,7 +64,7 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
       MethodInvocationTree mit = (MethodInvocationTree) est.expression();
       Type methodType = ((AbstractTypedTree) mit).getSymbolType();
       if (!returnsVoid(methodType) && isCheckedType(mit)) {
-        addIssue(tree, "The return value of \"" + methodName(mit) + "\" is not used.");
+        addIssue(tree, "The return value of \"" + methodName(mit) + "\" must be used.");
       }
     }
   }
