@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -46,42 +47,18 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
-    if (hasSemantic()) {
-      IdentifierTree id = getIdentifier(mit);
-      if (id != null) {
-        Symbol symbol = getSemanticModel().getReference(id);
-        if (symbol!=null && symbol.isKind(Symbol.MTH)) {
-          Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-          if (isSearchedMethod(methodSymbol)) {
-            onMethodFound(mit);
-          }
-        }
-      }
+    if (hasSemantic() && methodDefinition.findMethod(mit, getSemanticModel())) {
+      onMethodFound(mit);
     }
   }
 
-  private boolean isSearchedMethod(Symbol.MethodSymbol symbol) {
-    return symbol.owner().getType().is(methodDefinition.getFullyQualifiedTypeName()) && symbol.getName().equals(methodDefinition.getMethodName()) && parametersAcceptable(symbol);
+
+  protected void onMethodFound(MethodInvocationTree mit){
+    //Do nothing by default
   }
 
-  private boolean parametersAcceptable(Symbol.MethodSymbol methodSymbol) {
-    boolean isSeekCall = true;
-    List<Type> parametersTypes = methodSymbol.getParametersTypes();
-    List<String> arguments = methodDefinition.getParameterTypes();
-    if (parametersTypes.size() == arguments.size()) {
-      int i = 0;
-      for (Type parameterType : parametersTypes) {
-        if (!parameterType.is(arguments.get(i))) {
-          isSeekCall = false;
-          break;
-        }
-        i++;
-      }
-    }
-    return isSeekCall;
-  }
 
-  protected abstract void onMethodFound(MethodInvocationTree mit);
+  protected static class MethodDefinition {
 
   private IdentifierTree getIdentifier(MethodInvocationTree mit) {
     IdentifierTree id = null;
@@ -92,14 +69,11 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
     }
     return id;
   }
-
-  protected static class MethodDefinition {
-
     private String fullyQualifiedTypeName;
     private String methodName;
     private List<String> parameterTypes;
 
-    private MethodDefinition(){
+    private MethodDefinition() {
       parameterTypes = Lists.newArrayList();
     }
 
@@ -122,16 +96,39 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
       return this;
     }
 
-    public String getFullyQualifiedTypeName() {
-      return fullyQualifiedTypeName;
+    public boolean findMethod(MethodInvocationTree mit, SemanticModel semanticModel) {
+      IdentifierTree id = getIdentifier(mit);
+      if (id != null) {
+        Symbol symbol = semanticModel.getReference(id);
+        if (symbol != null && symbol.isKind(Symbol.MTH)) {
+          Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+          if (isSearchedMethod(methodSymbol)) {
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
-    public String getMethodName() {
-      return methodName;
+    private boolean isSearchedMethod(Symbol.MethodSymbol symbol) {
+      return symbol.owner().getType().is(fullyQualifiedTypeName) && symbol.getName().equals(methodName) && parametersAcceptable(symbol);
     }
 
-    public List<String> getParameterTypes() {
-      return parameterTypes;
+    private boolean parametersAcceptable(Symbol.MethodSymbol methodSymbol) {
+      boolean isSeekCall = true;
+      List<Type> parametersTypes = methodSymbol.getParametersTypes();
+      List<String> arguments = parameterTypes;
+      if (parametersTypes.size() == arguments.size()) {
+        int i = 0;
+        for (Type parameterType : parametersTypes) {
+          if (!parameterType.is(arguments.get(i))) {
+            isSeekCall = false;
+            break;
+          }
+          i++;
+        }
+      }
+      return isSeekCall;
     }
 
   }
