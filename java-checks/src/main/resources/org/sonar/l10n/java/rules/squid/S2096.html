@@ -1,0 +1,13 @@
+<p>There's no reason for a <code>main</code> method to <code>throw</code> anything. After all, what's going to catch it?</p>
+
+<p>Instead, the method should itself gracefully handle any exceptions that may bubble up to it and perform whatever logging or user communication is necessary.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public static void main(String args[]) throws Exception { // Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public static void main(String args[]) {
+</pre>

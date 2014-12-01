@@ -222,7 +222,8 @@ public final class CheckList {
       ForLoopTerminationConditionCheck.class,
       HttpRefererCheck.class,
       HardCodedCredentialsCheck.class,
-      PseudoRandomCheck.class
+      PseudoRandomCheck.class,
+      MainMethodThrowsExceptionCheck.class
     );
   }
 
