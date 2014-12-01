@@ -5,13 +5,13 @@
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class MyServlet extends HttpServlet {
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-throws ServletException, IOException {
-String referer = request.getHeader("referer");  // Noncompliant
-if(isTrustedReferer(referer)){
-//..
-}
-//...
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String referer = request.getHeader("referer");  // Noncompliant
+    if(isTrustedReferer(referer)){
+    //..
+    }
+  //...
+  }
 }
 </pre>
 
