@@ -34,6 +34,65 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
 
   private MethodDefinition methodDefinition;
 
+  protected AbstractMethodDetection(MethodDefinition methodDefinition) {
+    this.methodDefinition = methodDefinition;
+  }
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    MethodInvocationTree mit = (MethodInvocationTree) tree;
+    if (hasSemantic()) {
+      IdentifierTree id = getIdentifier(mit);
+      if (id != null) {
+        Symbol symbol = getSemanticModel().getReference(id);
+        if (symbol!=null && symbol.isKind(Symbol.MTH)) {
+          Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+          if (isSearchedMethod(methodSymbol)) {
+            onMethodFound(mit);
+          }
+        }
+      }
+    }
+  }
+
+  private boolean isSearchedMethod(Symbol.MethodSymbol symbol) {
+    return symbol.owner().getType().is(methodDefinition.getFullyQualifiedTypeName()) && symbol.getName().equals(methodDefinition.getMethodName()) && parametersAcceptable(symbol);
+  }
+
+  private boolean parametersAcceptable(Symbol.MethodSymbol methodSymbol) {
+    boolean isSeekCall = true;
+    List<Type> parametersTypes = methodSymbol.getParametersTypes();
+    List<String> arguments = methodDefinition.getParameterTypes();
+    if (parametersTypes.size() == arguments.size()) {
+      int i = 0;
+      for (Type parameterType : parametersTypes) {
+        if (!parameterType.is(arguments.get(i))) {
+          isSeekCall = false;
+          break;
+        }
+        i++;
+      }
+    }
+    return isSeekCall;
+  }
+
+  protected abstract void onMethodFound(MethodInvocationTree mit);
+
+  private IdentifierTree getIdentifier(MethodInvocationTree mit) {
+    IdentifierTree id = null;
+    if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
+      id = (IdentifierTree) mit.methodSelect();
+    } else if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
+    }
+    return id;
+  }
+
   protected static class MethodDefinition {
 
     private String fullyQualifiedTypeName;
@@ -75,64 +134,5 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
       return parameterTypes;
     }
 
-  }
-
-  protected AbstractMethodDetection(MethodDefinition methodDefinition) {
-    this.methodDefinition = methodDefinition;
-  }
-
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
-  }
-
-  @Override
-  public void visitNode(Tree tree) {
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
-    if (hasSemantic()) {
-      IdentifierTree id = getIdentifier(mit);
-      if (id != null) {
-        Symbol symbol = getSemanticModel().getReference(id);
-        if (symbol.isKind(Symbol.MTH)) {
-          Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-          if (isSearchedMethod(methodSymbol)) {
-            onMethodFound(mit);
-          }
-        }
-      }
-    }
-  }
-
-  private boolean isSearchedMethod(Symbol.MethodSymbol symbol) {
-    return symbol.owner().getType().is(methodDefinition.getFullyQualifiedTypeName()) && symbol.getName().equals(methodDefinition.getMethodName()) && parametersAcceptable(symbol);
-  }
-
-  private boolean parametersAcceptable(Symbol.MethodSymbol methodSymbol) {
-    boolean isSeekCall = true;
-    List<Type> parametersTypes = methodSymbol.getParametersTypes();
-    List<String> arguments = methodDefinition.getParameterTypes();
-    if (parametersTypes.size() == arguments.size()) {
-      int i = 0;
-      for (Type parameterType : parametersTypes) {
-        if (!parameterType.is(arguments.get(i))) {
-          isSeekCall = false;
-          break;
-        }
-        i++;
-      }
-    }
-    return isSeekCall;
-  }
-
-  protected abstract void onMethodFound(MethodInvocationTree mit);
-
-  private IdentifierTree getIdentifier(MethodInvocationTree mit) {
-    IdentifierTree id = null;
-    if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
-      id = (IdentifierTree) mit.methodSelect();
-    } else if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
-    }
-    return id;
   }
 }

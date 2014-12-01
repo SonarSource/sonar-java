@@ -219,7 +219,8 @@ public final class CheckList {
       SecureCookieCheck.class,
       UselessObjectCreationCheck.class,
       CatchIllegalMonitorStateExceptionCheck.class,
-      ForLoopTerminationConditionCheck.class
+      ForLoopTerminationConditionCheck.class,
+      HttpRefererCheck.class
     );
   }
 
