@@ -220,7 +220,8 @@ public final class CheckList {
       UselessObjectCreationCheck.class,
       CatchIllegalMonitorStateExceptionCheck.class,
       ForLoopTerminationConditionCheck.class,
-      HttpRefererCheck.class
+      HttpRefererCheck.class,
+      HardCodedCredentialsCheck.class
     );
   }
 
