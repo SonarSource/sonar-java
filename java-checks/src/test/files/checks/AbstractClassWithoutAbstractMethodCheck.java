@@ -56,3 +56,11 @@ public abstract class Lamp {
 public abstract class Empty {
 
 }
+abstract class A {
+  abstract void foo();
+  abstract void bar();
+}
+
+abstract class B extends A { //Compliant, partial implementation.
+  void foo() {};
+}

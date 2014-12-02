@@ -56,11 +56,12 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
       if (typeSymbol != null && typeSymbol.isAbstract()) {
         Collection<Symbol> symbols = typeSymbol.members().scopeSymbols();
         int abstractMethod = countAbstractMethods(symbols);
+        //only count "this" in symbols and not "super" because abstract classes extending cannot be converted to interface
         if (symbols.size() == 1 || abstractMethod == symbols.size() - 1) {
           //emtpy abstract class or only abstract method
           context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to an interface");
         }
-        if (symbols.size()>1 && abstractMethod == 0) {
+        if (symbols.size() > 1 && abstractMethod == 0 && tree.superClass()==null) {
           //Not empty abstract class with no abstract method
           context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to a concrete class with a private constructor");
         }
@@ -72,8 +73,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
   private int countAbstractMethods(Collection<Symbol> symbols) {
     int abstractMethod = 0;
     for (Symbol sym : symbols) {
-      //skip "this"
-      if (!"this".equals(sym.getName()) && isAbstractMethod(sym)) {
+      if (isAbstractMethod(sym)) {
         abstractMethod++;
       }
     }
