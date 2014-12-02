@@ -38,13 +38,14 @@ public class CompareToResultTestCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CompareToResultTestCheck.java"),
       new VisitorsBridge(new CompareToResultTestCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(8).withMessage("Only the sign of the result should be examined.")
-      .next().atLine(9)
+      .next().atLine(10).withMessage("Only the sign of the result should be examined.")
       .next().atLine(11)
-      .next().atLine(12)
       .next().atLine(13)
       .next().atLine(14)
       .next().atLine(15)
-      .next().atLine(21);
+      .next().atLine(16)
+      .next().atLine(17)
+      .next().atLine(23)
+      .next().atLine(27);
   }
 }

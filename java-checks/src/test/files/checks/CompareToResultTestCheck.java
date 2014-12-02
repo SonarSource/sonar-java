@@ -1,5 +1,7 @@
 class MyComparable implements Comparable<MyComparable> {
   
+  int compareToField = compareTo(new MyComparable());
+  
   public int compareTo(MyComparable other) {
     return 0;
   }
@@ -17,9 +19,33 @@ class MyComparable implements Comparable<MyComparable> {
     if (compareTo(other) == hashCode()) {}
     if (compareTo(other) == - hashCode()) {}
     if (compareTo(other, other) == 1) {}
-    if (compareTo("", "", "") == 1) {}
-    if (compareTo(notComparable) == 1) {} // False positive...
+    if (1 == compareTo("", "", "")) {}
+    if (1 == compareTo(notComparable)) {} // False positive...
     if (0 == compareTo(other)) {}
+    
+    int c1 = compareTo(other);
+    if (c1 == 1) {} // Noncompliant
+    
+    int c2 = compareTo(other);
+    c2 = compareTo(other, other);
+    if (c2 == 1) {}
+
+    int c3 = compareTo(other);
+    (c3++)++;
+    if (c3 == 1) {}
+    
+    int c4;
+    if (c4 == 1) {}
+    
+    int c5 = 1;
+    if (c5 == 1) {}
+    
+    int c6 = compareTo(other, other);
+    if (c6 == 1) {}
+    
+    if (compareTo(other) + 1 == 1) {}
+    if (compareToField == 1) {}    
+    if (unknownVar == 1) {}
   }
   
   public int compareTo(NotComparable o2) {
