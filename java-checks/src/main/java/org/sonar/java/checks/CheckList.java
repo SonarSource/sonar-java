@@ -226,7 +226,8 @@ public final class CheckList {
       MainMethodThrowsExceptionCheck.class,
       ResultSetIsLastCheck.class,
       HasNextCallingNextCheck.class,
-      ThreadWaitCallCheck.class
+      ThreadWaitCallCheck.class,
+      WaitOnConditionCheck.class
     );
   }
 

@@ -20,6 +20,7 @@
 package org.sonar.java.checks.methods;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -28,10 +29,12 @@ import java.util.List;
 
 public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
 
-  private MethodInvocationMatcher methodInvocationMatcher;
-
+  protected List<MethodInvocationMatcher> methodInvocationMatchers;
+  protected AbstractMethodDetection() {
+    //Default constructor
+  }
   protected AbstractMethodDetection(MethodInvocationMatcher methodInvocationMatcher) {
-    this.methodInvocationMatcher = methodInvocationMatcher;
+    this.methodInvocationMatchers = Lists.newArrayList(methodInvocationMatcher);
   }
 
   @Override
@@ -41,9 +44,13 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
-    if (hasSemantic() && methodInvocationMatcher.matches(mit, getSemanticModel())) {
-      onMethodFound(mit);
+    if (hasSemantic()) {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      for (MethodInvocationMatcher invocationMatcher : methodInvocationMatchers) {
+        if (invocationMatcher.matches(mit, getSemanticModel())) {
+          onMethodFound(mit);
+        }
+      }
     }
   }
 
