@@ -44,8 +44,10 @@ public class Convert {
   }
 
   public static String enclosingClassName(String shortName) {
-    int lastDollar = shortName.lastIndexOf('$');
-    return lastDollar < 0 ? "" : shortName.substring(0, lastDollar);
+    //SONARJAVA-649 : Bug in enclosing class computation for scala objects
+    String normalizedShortName = StringUtils.removeEnd(StringUtils.removeEnd(shortName, "$class"), "$");
+    int lastDollar = normalizedShortName.lastIndexOf('$');
+    return lastDollar < 0 ? "" : normalizedShortName.substring(0, lastDollar);
   }
 
   public static String innerClassName(String shortName) {
