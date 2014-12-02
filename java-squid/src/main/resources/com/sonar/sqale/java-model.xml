@@ -2516,6 +2516,19 @@
           <txt>mn</txt>
         </prop>
       </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S1844</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>20</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
     </chc>
     <chc>
       <key>UNIT_TESTS</key>
