@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,8 +47,9 @@ public class AbstractMethodDetectionTest {
 
       public List<Integer> lines = Lists.newArrayList();
 
-      protected Visitor() {
-        super(MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("int"));
+      @Override
+      protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+        return ImmutableList.of(MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("int"));
       }
 
       @Override

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -28,18 +29,20 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.List;
+
 @Rule(
     key = "S2089",
     priority = Priority.CRITICAL,
     tags = {"cwe", "owasp-top10", "security"})
 public class HttpRefererCheck extends AbstractMethodDetection {
 
-  public HttpRefererCheck() {
-    super(MethodInvocationMatcher.create()
-            .typeDefinition("javax.servlet.http.HttpServletRequest")
-            .name("getHeader")
-            .addParameter("java.lang.String")
-    );
+  @Override
+  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodInvocationMatcher.create()
+        .typeDefinition("javax.servlet.http.HttpServletRequest")
+        .name("getHeader")
+        .addParameter("java.lang.String"));
   }
 
   @Override

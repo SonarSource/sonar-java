@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -26,13 +27,17 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
+import java.util.List;
+
 @Rule(key = "S2232",
     priority = Priority.CRITICAL,
     tags = {"performance", "pitfall"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class ResultSetIsLastCheck extends AbstractMethodDetection {
-  public ResultSetIsLastCheck() {
-    super(MethodInvocationMatcher.create().typeDefinition("java.sql.ResultSet").name("isLast"));
+
+  @Override
+  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodInvocationMatcher.create().typeDefinition("java.sql.ResultSet").name("isLast"));
   }
 
   @Override

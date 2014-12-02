@@ -36,9 +36,10 @@ tags = {"bug", "pitfall"})
 @BelongsToProfile( title = "Sonar way", priority = Priority.BLOCKER)
 public class WaitOnConditionCheck extends AbstractMethodDetection {
 
-  public WaitOnConditionCheck() {
+  @Override
+  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
     TypeCriteria conditionSubType = TypeCriteria.subtypeOf("java.util.concurrent.locks.Condition");
-    this.methodInvocationMatchers = ImmutableList.<MethodInvocationMatcher>builder()
+    return ImmutableList.<MethodInvocationMatcher>builder()
         .add(MethodInvocationMatcher.create().callSite(conditionSubType).name("wait"))
         .add(MethodInvocationMatcher.create().callSite(conditionSubType).name("wait").addParameter("long"))
         .add(MethodInvocationMatcher.create().callSite(conditionSubType).name("wait").addParameter("long").addParameter("int"))

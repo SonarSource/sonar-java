@@ -23,41 +23,31 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
-@Rule( key = "S2236",
+@Rule(key = "S2236",
     priority = Priority.CRITICAL,
-   tags = {"bug", "multithreading"})
-@BelongsToProfile( title = "Sonar way", priority = Priority.CRITICAL)
-public class ThreadWaitCallCheck extends SubscriptionBaseVisitor {
+    tags = {"bug", "multithreading"})
+@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+public class ThreadWaitCallCheck extends AbstractMethodDetection {
 
-  private List<MethodInvocationMatcher> forbiddenCalls = ImmutableList.<MethodInvocationMatcher>builder()
-      .add(MethodInvocationMatcher.create().callSite(TypeCriteria.subtypeOf("java.lang.Thread")).name("wait"))
-      .add(MethodInvocationMatcher.create().callSite(TypeCriteria.subtypeOf("java.lang.Thread")).name("wait").addParameter("long"))
-      .add(MethodInvocationMatcher.create().callSite(TypeCriteria.subtypeOf("java.lang.Thread")).name("wait").addParameter("long").addParameter("int"))
-      .add(MethodInvocationMatcher.create().callSite(TypeCriteria.subtypeOf("java.lang.Thread")).name("notify"))
-      .add(MethodInvocationMatcher.create().callSite(TypeCriteria.subtypeOf("java.lang.Thread")).name("notifyAll")).build();
-
-
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
+  protected void onMethodFound(MethodInvocationTree mit) {
+    addIssue(mit, "Refactor the synchronisation mechanism to not use a Thread instance as a monitor");
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      for (MethodInvocationMatcher forbiddenCall : forbiddenCalls) {
-        if (forbiddenCall.matches(mit, getSemanticModel())) {
-          addIssue(tree, "Refactor the synchronisation mechanism to not use a Thread instance as a monitor");
-        }
-      }
-    }
+  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+    TypeCriteria subtypeOfThread = TypeCriteria.subtypeOf("java.lang.Thread");
+    return ImmutableList.<MethodInvocationMatcher>builder()
+        .add(MethodInvocationMatcher.create().callSite(subtypeOfThread).name("wait"))
+        .add(MethodInvocationMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long"))
+        .add(MethodInvocationMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long").addParameter("int"))
+        .add(MethodInvocationMatcher.create().callSite(subtypeOfThread).name("notify"))
+        .add(MethodInvocationMatcher.create().callSite(subtypeOfThread).name("notifyAll")).build();
   }
 }
