@@ -227,7 +227,8 @@ public final class CheckList {
       ResultSetIsLastCheck.class,
       HasNextCallingNextCheck.class,
       ThreadWaitCallCheck.class,
-      WaitOnConditionCheck.class
+      WaitOnConditionCheck.class,
+      DisallowedMethodCheck.class
     );
   }
 
