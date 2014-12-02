@@ -143,6 +143,10 @@ public class SemanticModel {
     return result;
   }
 
+  public Symbol getEnclosingClass(Tree tree) {
+    return getEnv(tree).enclosingClass;
+  }
+
   public void associateSymbol(Tree tree, Symbol symbol) {
     Preconditions.checkNotNull(symbol);
     symbolsTree.put(tree, symbol);

@@ -21,6 +21,8 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -33,8 +35,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class HttpRefererCheck extends AbstractMethodDetection {
 
   public HttpRefererCheck() {
-    super(MethodDefinition.create()
-            .type("javax.servlet.http.HttpServletRequest")
+    super(MethodInvocationMatcher.create()
+            .typeDefinition("javax.servlet.http.HttpServletRequest")
             .name("getHeader")
             .addParameter("java.lang.String")
     );

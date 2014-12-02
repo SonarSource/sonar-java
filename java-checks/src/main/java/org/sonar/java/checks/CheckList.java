@@ -225,7 +225,8 @@ public final class CheckList {
       PseudoRandomCheck.class,
       MainMethodThrowsExceptionCheck.class,
       ResultSetIsLastCheck.class,
-      HasNextCallingNextCheck.class
+      HasNextCallingNextCheck.class,
+      ThreadWaitCallCheck.class
     );
   }
 

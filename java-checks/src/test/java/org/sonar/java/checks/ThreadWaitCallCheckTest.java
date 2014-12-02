@@ -19,48 +19,29 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
-import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-public class AbstractMethodDetectionTest {
+public class ThreadWaitCallCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-    class Visitor extends AbstractMethodDetection {
-
-      public List<Integer> lines = Lists.newArrayList();
-
-      protected Visitor() {
-        super(MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("int"));
-      }
-
-      @Override
-      protected void onMethodFound(MethodInvocationTree tree) {
-        lines.add(((JavaTree) tree).getLine());
-      }
-
-    }
-    Visitor visitor = new Visitor();
-    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
-
-    assertThat(visitor.lines).hasSize(1);
-    assertThat(visitor.lines).containsExactly(10);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThreadWaitCallCheck.java"), new VisitorsBridge(new ThreadWaitCallCheck()));
+    checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(13).withMessage("Refactor the synchronisation mechanism to not use a Thread instance as a monitor")
+        .next().atLine(14).withMessage("Refactor the synchronisation mechanism to not use a Thread instance as a monitor")
+        .next().atLine(15).withMessage("Refactor the synchronisation mechanism to not use a Thread instance as a monitor")
+        .next().atLine(16).withMessage("Refactor the synchronisation mechanism to not use a Thread instance as a monitor")
+        .next().atLine(17).withMessage("Refactor the synchronisation mechanism to not use a Thread instance as a monitor")
+    .noMore();
   }
-
 }

@@ -17,26 +17,38 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.methods;
 
-import org.sonar.check.BelongsToProfile;
-import org.sonar.check.Priority;
-import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import com.google.common.collect.ImmutableList;
+import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
-@Rule(key = "S2232",
-    priority = Priority.CRITICAL,
-    tags = {"performance", "pitfall"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class ResultSetIsLastCheck extends AbstractMethodDetection {
-  public ResultSetIsLastCheck() {
-    super(MethodInvocationMatcher.create().typeDefinition("java.sql.ResultSet").name("isLast"));
+import java.util.List;
+
+public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
+
+  private MethodInvocationMatcher methodInvocationMatcher;
+
+  protected AbstractMethodDetection(MethodInvocationMatcher methodInvocationMatcher) {
+    this.methodInvocationMatcher = methodInvocationMatcher;
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
-    addIssue(mit, "Remove this call to \"isLast()\".");
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
   }
+
+  @Override
+  public void visitNode(Tree tree) {
+    MethodInvocationTree mit = (MethodInvocationTree) tree;
+    if (hasSemantic() && methodInvocationMatcher.matches(mit, getSemanticModel())) {
+      onMethodFound(mit);
+    }
+  }
+
+  protected void onMethodFound(MethodInvocationTree mit) {
+    //Do nothing by default
+  }
+
 }

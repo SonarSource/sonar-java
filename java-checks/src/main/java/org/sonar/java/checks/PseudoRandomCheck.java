@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -35,7 +36,7 @@ import java.util.List;
 )
 public class PseudoRandomCheck extends SubscriptionBaseVisitor {
 
-  private AbstractMethodDetection.MethodDefinition methodDefinition = AbstractMethodDetection.MethodDefinition.create().type("java.lang.Math").name("random");
+  private MethodInvocationMatcher methodInvocationMatcher = MethodInvocationMatcher.create().typeDefinition("java.lang.Math").name("random");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -50,7 +51,7 @@ public class PseudoRandomCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isMathRandom(Tree tree) {
-    return tree.is(Tree.Kind.METHOD_INVOCATION) && hasSemantic() && methodDefinition.findMethod((MethodInvocationTree) tree, getSemanticModel());
+    return tree.is(Tree.Kind.METHOD_INVOCATION) && hasSemantic() && methodInvocationMatcher.matches((MethodInvocationTree) tree, getSemanticModel());
   }
 
   private boolean isJavaUtilRandom(Tree tree) {
