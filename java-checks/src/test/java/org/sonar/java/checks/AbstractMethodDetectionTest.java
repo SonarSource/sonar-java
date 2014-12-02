@@ -49,7 +49,10 @@ public class AbstractMethodDetectionTest {
 
       @Override
       protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-        return ImmutableList.of(MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("int"));
+        return ImmutableList.of(
+            MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("int"),
+            MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("java.lang.String[]")
+        );
       }
 
       @Override
@@ -61,8 +64,8 @@ public class AbstractMethodDetectionTest {
     Visitor visitor = new Visitor();
     JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
-    assertThat(visitor.lines).hasSize(1);
-    assertThat(visitor.lines).containsExactly(10);
+    assertThat(visitor.lines).hasSize(2);
+    assertThat(visitor.lines).containsExactly(13, 15);
   }
 
 }

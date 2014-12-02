@@ -76,6 +76,7 @@ public class TypeTest {
     Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
     Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
     Symbol.TypeSymbol typeSymbol2 = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", symbols.rootPackage);
+    Type.ArrayType arrayType = new Type.ArrayType(typeSymbol.type, symbols.arrayClass);
     Type.ClassType classType = (Type.ClassType) typeSymbol.type;
     classType.interfaces = Lists.newArrayList();
     assertThat(symbols.byteType.is("byte")).isTrue();
@@ -83,6 +84,10 @@ public class TypeTest {
     assertThat(classType.is("org.foo.bar.MyType")).isTrue();
     assertThat(typeSymbol2.type.is("MyType")).isTrue();
     assertThat(classType.is("org.foo.bar.SomeClass")).isFalse();
+    assertThat(arrayType.is("org.foo.bar.MyType[]")).isTrue();
+    assertThat(symbols.nullType.is("org.foo.bar.SomeClass")).isTrue();
+    assertThat(symbols.unknownType.is("org.foo.bar.SomeClass")).isFalse();
+
 
   }
 }

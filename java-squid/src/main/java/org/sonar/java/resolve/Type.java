@@ -76,9 +76,10 @@ public class Type {
     } else if(tag<CLASS) {
       //primitive type
       return fullyQualifiedName.equals(symbol.name);
+    }else if(isTagged(ARRAY)) {
+      return fullyQualifiedName.endsWith("[]") && ((ArrayType)this).elementType.is(fullyQualifiedName.substring(0, fullyQualifiedName.length()-2));
     }
-    //TODO arrays and null
-    return false;
+    return isTagged(BOT) || !isTagged(UNKNOWN);
   }
 
   public boolean isParametrized() {
