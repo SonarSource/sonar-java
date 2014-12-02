@@ -64,3 +64,13 @@ abstract class A {
 abstract class B extends A { //Compliant, partial implementation.
   void foo() {};
 }
+interface I {
+  void foo();
+  void bar();
+}
+abstract class C implements I { //compliant, partial implementation
+  int i = 0;
+
+  @Override
+  public void foo() {}
+}

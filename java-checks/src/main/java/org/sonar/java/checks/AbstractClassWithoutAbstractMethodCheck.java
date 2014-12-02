@@ -61,13 +61,17 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
           //emtpy abstract class or only abstract method
           context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to an interface");
         }
-        if (symbols.size() > 1 && abstractMethod == 0 && tree.superClass()==null) {
+        if (symbols.size() > 1 && abstractMethod == 0 && !isPartialImplementation(tree)) {
           //Not empty abstract class with no abstract method
           context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to a concrete class with a private constructor");
         }
       }
     }
     super.visitClass(tree);
+  }
+
+  private boolean isPartialImplementation(ClassTree tree) {
+    return tree.superClass() != null || !tree.superInterfaces().isEmpty();
   }
 
   private int countAbstractMethods(Collection<Symbol> symbols) {
