@@ -1,0 +1,15 @@
+A <code>for</code> loop with a stop condition that can never be reached will run infinitely. While there are occassions when an infinite loop is intended, the convention is to construct such loops as <code>while</code> loops. More typically, an infinite <code>for</code> loop is a bug.
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+for (int i = 0; i &lt; 10; i--) { // Noncompliant; i will always be &lt;10
+  //...
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+for (int i = 0; i &lt; 10; i++) {
+  //...
+}
+</pre>

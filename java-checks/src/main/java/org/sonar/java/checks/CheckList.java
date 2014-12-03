@@ -228,7 +228,8 @@ public final class CheckList {
       HasNextCallingNextCheck.class,
       ThreadWaitCallCheck.class,
       WaitOnConditionCheck.class,
-      DisallowedMethodCheck.class
+      DisallowedMethodCheck.class,
+      ForLoopIncrementSignCheck.class
     );
   }
 
