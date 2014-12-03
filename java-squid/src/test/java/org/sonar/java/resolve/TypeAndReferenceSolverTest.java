@@ -53,6 +53,7 @@ public class TypeAndReferenceSolverTest {
 
   private Symbol variableSymbol;
   private Symbol methodSymbol;
+  private Symbol argMethodSymbol;
 
   /**
    * Simulates creation of symbols and types.
@@ -79,8 +80,14 @@ public class TypeAndReferenceSolverTest {
 
     // int method()
     methodSymbol = new Symbol.MethodSymbol(0, "method", classSymbol);
-    ((Symbol.MethodSymbol)methodSymbol).setMethodType(new Type.MethodType(ImmutableList.<Type>of(), symbols.intType, ImmutableList.<Type>of(), /* TODO defining class? */null));
+    ((Symbol.MethodSymbol)methodSymbol).setMethodType(new Type.MethodType(ImmutableList.<Type>of(), symbols.intType, ImmutableList.<Type>of(), classSymbol));
     classSymbol.members.enter(methodSymbol);
+
+    // int method()
+    argMethodSymbol = new Symbol.MethodSymbol(0, "argMethod", classSymbol);
+    ((Symbol.MethodSymbol)argMethodSymbol).setMethodType(new Type.MethodType(ImmutableList.of(symbols.intType), symbols.intType, ImmutableList.<Type>of(), classSymbol));
+    classSymbol.members.enter(argMethodSymbol);
+
 
     classSymbol.members.enter(new Symbol.VariableSymbol(0, "this", classType, classSymbol));
     classSymbol.members.enter(new Symbol.VariableSymbol(0, "super", classType.supertype, classSymbol));
@@ -131,7 +138,7 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOf("super(arguments)")).isSameAs(symbols.unknownType);
 
     // method call
-    assertThat(typeOf("super.method(arguments)")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("super.method(1)")).isSameAs(symbols.unknownType);
 
     // field access
     assertThat(typeOfExpression("super.field")).isSameAs(classType.supertype);
@@ -171,7 +178,7 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOfExpression("id[][].class")).isSameAs(symbols.classType);
 
     // qualified_identifier(arguments)
-    assertThat(typeOf("method(arguments)")).isSameAs(symbols.intType);
+    assertThat(typeOf("argMethod(1)")).isSameAs(symbols.intType);
     assertThat(typeOf("var2.method()")).isSameAs(symbols.intType);
     assertThat(typeOf("MyClass.var2.method()")).isSameAs(symbols.intType);
 
@@ -229,7 +236,8 @@ public class TypeAndReferenceSolverTest {
   @Test
   public void selector() {
     // method call
-    assertThat(typeOf("this.method(arguments)").isTagged(Type.INT)).isTrue();
+    assertThat(typeOf("this.method()").isTagged(Type.INT)).isTrue();
+    assertThat(typeOf("this.argMethod(12)").isTagged(Type.INT)).isTrue();
     assertThat(typeOf("var[42].clone()")).isSameAs(symbols.objectType);
 
     // field access

@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -160,6 +161,9 @@ public class SecondPass implements Symbol.Completer {
           param.complete();
           argTypes.add(param.getType());
         }
+      }
+      if(((VariableTreeImpl)variableTree).isVararg()) {
+        symbol.flags |= Flags.VARARGS;
       }
     }
     Type.MethodType methodType = new Type.MethodType(argTypes, returnType, thrownTypes.build(), (Symbol.TypeSymbol) symbol.owner);

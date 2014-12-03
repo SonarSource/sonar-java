@@ -155,4 +155,12 @@ public class BytecodeCompleterTest {
     assertThat(innerClassRef.isPackageVisibility()).isFalse();
     assertThat(innerClassRef.isDeprecated());
   }
+
+  @Test
+  public void complete_flags_for_varargs_methods() throws Exception {
+    Symbol.TypeSymbol classSymbol = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ProtectedInnerClassChild");
+    Symbol.MethodSymbol foo = (Symbol.MethodSymbol) classSymbol.members().lookup("foo").get(0);
+    assertThat((foo.flags & Flags.VARARGS) != 0);
+  }
+
 }

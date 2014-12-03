@@ -37,6 +37,10 @@ public class Flags {
   public static final int SYNCHRONIZED = 1 << 5;
   public static final int VOLATILE = 1 << 6;
   public static final int TRANSIENT = 1 << 7;
+  /**
+   * Same value as for TRANSIENT as transient for method has no sense as well as vararg for a field.
+   */
+  public static final int VARARGS = 1 << 7;
   public static final int NATIVE = 1 << 8;
 
   /**

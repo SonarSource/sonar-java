@@ -25,6 +25,7 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -109,7 +110,12 @@ public class MethodTreeImplTest {
     assertThat(getUniqueMethod("class A { public static void main(String args){} }").isMainMethod()).isFalse();
     assertThat(getUniqueMethod("class A { public static int main(String[] args){} }").isMainMethod()).isFalse();
     assertThat(getUniqueMethod("class A { public static void main(String[] args, String[] second){} }").isMainMethod()).isFalse();
+  }
 
+  @Test
+  public void varargs_flag() {
+    assertThat((getUniqueMethod("class A { public static void main(String[] args){} }").getSymbol().flags() & Flags.VARARGS) != 0).isFalse();
+    assertThat((getUniqueMethod("class A { public static void main(String... args){} }").getSymbol().flags() & Flags.VARARGS) != 0).isTrue();
   }
 
   private MethodTreeImpl getUniqueMethod(String code) {

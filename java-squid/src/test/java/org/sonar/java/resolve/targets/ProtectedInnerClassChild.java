@@ -21,7 +21,7 @@ package org.sonar.java.resolve.targets;
 
 public class ProtectedInnerClassChild extends ProtectedInnerClass{
 
-   private InnerClass foo(){
+   private InnerClass foo(String... s){
      return null;
    }
 }

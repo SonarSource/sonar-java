@@ -49,6 +49,11 @@ public class Resolve {
     this.bytecodeCompleter = bytecodeCompleter;
   }
 
+  private static Symbol.TypeSymbol superclassSymbol(Symbol.TypeSymbol c) {
+    Type supertype = c.getSuperclass();
+    return supertype == null ? null : supertype.symbol;
+  }
+
   public Symbol.TypeSymbol registerClass(Symbol.TypeSymbol classSymbol) {
     return bytecodeCompleter.registerClass(classSymbol);
   }
@@ -59,69 +64,6 @@ public class Resolve {
 
   public Scope createStaticStarImportScope(Symbol owner) {
     return new Scope.StaticStarImportScope(owner, bytecodeCompleter);
-  }
-
-  static class Env {
-    /**
-     * The next enclosing environment.
-     */
-    Env next;
-
-    /**
-     * The environment enclosing the current class.
-     */
-    Env outer;
-
-    Symbol.PackageSymbol packge;
-
-    Symbol.TypeSymbol enclosingClass;
-
-    Scope scope;
-    Scope namedImports;
-    Scope starImports;
-    Scope staticStarImports;
-
-    Env outer() {
-      return outer;
-    }
-
-    Symbol.TypeSymbol enclosingClass() {
-      return enclosingClass;
-    }
-
-    public Symbol.PackageSymbol packge() {
-      return packge;
-    }
-
-    Scope namedImports() {
-      return namedImports;
-    }
-
-    Scope starImports() {
-      return starImports;
-    }
-
-    public Scope staticStarImports() {
-      return staticStarImports;
-    }
-
-    Scope scope() {
-      return scope;
-    }
-
-    public Env dup() {
-      Env env = new Env();
-      env.next = this;
-      env.outer = this.outer;
-      env.packge = this.packge;
-      env.enclosingClass = this.enclosingClass;
-      env.scope = this.scope;
-      env.namedImports = this.namedImports;
-      env.starImports = this.starImports;
-      env.staticStarImports = this.staticStarImports;
-      return env;
-    }
-
   }
 
   /**
@@ -191,7 +133,7 @@ public class Resolve {
   /**
    * @param kind subset of {@link org.sonar.java.resolve.Symbol#VAR}, {@link org.sonar.java.resolve.Symbol#MTH}
    */
-  private Symbol findInStaticImport(Env env,String name, int kind) {
+  private Symbol findInStaticImport(Env env, String name, int kind) {
     Symbol bestSoFar = symbolNotFound;
     //imports
     //Ok because clash of name between type and var/method result in compile error: JLS8 7.5.3
@@ -294,6 +236,7 @@ public class Resolve {
   public Symbol findIdent(Env env, String name, int kind) {
     return findIdent(env, name, kind, null);
   }
+
   public Symbol findIdent(Env env, String name, int kind, @Nullable Symbol site) {
     Symbol bestSoFar = symbolNotFound;
     Symbol symbol;
@@ -317,7 +260,7 @@ public class Resolve {
     }
     if ((kind & Symbol.PCK) != 0) {
       Symbol packageSite = site;
-      if(site == null) {
+      if (site == null) {
         packageSite = symbols.defaultPackage;
       }
       symbol = findIdentInPackage(packageSite, name, Symbol.PCK);
@@ -406,32 +349,6 @@ public class Resolve {
   }
 
   public Symbol findMethod(Env env, Symbol.TypeSymbol site, String name, List<Type> argTypes) {
-    Symbol bestSoFar = findMethodInType(env, site, name, argTypes);
-
-    // best guess: method with unique name
-    // TODO remove, when search will be improved
-    if (bestSoFar.kind < Symbol.ERRONEOUS) {
-      return bestSoFar;
-    }
-    for (Symbol symbol : site.enclosingClass().members().lookup(name)) {
-      if ((symbol.kind == Symbol.MTH) && isAccessible(env, site, symbol)) {
-        if (bestSoFar.kind < Symbol.ERRONEOUS) {
-          return new AmbiguityErrorSymbol();
-        }
-        bestSoFar = symbol;
-      }
-    }
-    Symbol sym = findInStaticImport(env, name, Symbol.MTH);
-    if (sym.kind < Symbol.ERRONEOUS) {
-      // symbol exists
-      return sym;
-    } else if (sym.kind < bestSoFar.kind) {
-      bestSoFar = sym;
-    }
-    return bestSoFar;
-  }
-
-  private Symbol findMethodInType(Env env, Symbol.TypeSymbol site, String name, List<Type> argTypes) {
     Symbol bestSoFar = symbolNotFound;
     for (Symbol symbol : site.members().lookup(name)) {
       if (symbol.kind == Symbol.MTH) {
@@ -440,11 +357,11 @@ public class Resolve {
     }
     //look in supertypes for more specialized method (overloading).
     if (site.getSuperclass() != null) {
-      Symbol method = findMethodInType(env, site.getSuperclass().symbol, name, argTypes);
+      Symbol method = findMethod(env, site.getSuperclass().symbol, name, argTypes);
       bestSoFar = selectBest(env, site, argTypes, method, bestSoFar);
     }
     for (Type interfaceType : site.getInterfaces()) {
-      Symbol method = findMethodInType(env, interfaceType.symbol, name, argTypes);
+      Symbol method = findMethod(env, interfaceType.symbol, name, argTypes);
       bestSoFar = selectBest(env, site, argTypes, method, bestSoFar);
     }
     return bestSoFar;
@@ -455,7 +372,7 @@ public class Resolve {
    * @param bestSoFar previously found best match
    */
   private Symbol selectBest(Env env, Symbol.TypeSymbol site, List<Type> argTypes, Symbol symbol, Symbol bestSoFar) {
-    if(symbol.kind >= Symbol.ERRONEOUS) {
+    if (symbol.kind >= Symbol.ERRONEOUS) {
       return bestSoFar;
     }
     if (!isInheritedIn(symbol, site)) {
@@ -473,7 +390,7 @@ public class Resolve {
       return new AccessErrorSymbol(symbol);
     }
     Symbol mostSpecific = selectMostSpecific(symbol, bestSoFar);
-    if(mostSpecific.isKind(Symbol.AMBIGUOUS)) {
+    if (mostSpecific.isKind(Symbol.AMBIGUOUS)) {
       //same signature, we keep the first symbol found (overrides the other one).
       return bestSoFar;
     }
@@ -657,6 +574,69 @@ public class Resolve {
     return true;
   }
 
+  static class Env {
+    /**
+     * The next enclosing environment.
+     */
+    Env next;
+
+    /**
+     * The environment enclosing the current class.
+     */
+    Env outer;
+
+    Symbol.PackageSymbol packge;
+
+    Symbol.TypeSymbol enclosingClass;
+
+    Scope scope;
+    Scope namedImports;
+    Scope starImports;
+    Scope staticStarImports;
+
+    Env outer() {
+      return outer;
+    }
+
+    Symbol.TypeSymbol enclosingClass() {
+      return enclosingClass;
+    }
+
+    public Symbol.PackageSymbol packge() {
+      return packge;
+    }
+
+    Scope namedImports() {
+      return namedImports;
+    }
+
+    Scope starImports() {
+      return starImports;
+    }
+
+    public Scope staticStarImports() {
+      return staticStarImports;
+    }
+
+    Scope scope() {
+      return scope;
+    }
+
+    public Env dup() {
+      Env env = new Env();
+      env.next = this;
+      env.outer = this.outer;
+      env.packge = this.packge;
+      env.enclosingClass = this.enclosingClass;
+      env.scope = this.scope;
+      env.namedImports = this.namedImports;
+      env.starImports = this.starImports;
+      env.staticStarImports = this.staticStarImports;
+      return env;
+    }
+
+  }
+
   public static class SymbolNotFound extends Symbol {
     public SymbolNotFound() {
       super(Symbol.ABSENT, 0, null, null);
@@ -679,11 +659,6 @@ public class Resolve {
       super(Symbol.ERRONEOUS, 0, null, null);
       this.symbol = symbol;
     }
-  }
-
-  private static Symbol.TypeSymbol superclassSymbol(Symbol.TypeSymbol c) {
-    Type supertype = c.getSuperclass();
-    return supertype == null ? null : supertype.symbol;
   }
 
 }
