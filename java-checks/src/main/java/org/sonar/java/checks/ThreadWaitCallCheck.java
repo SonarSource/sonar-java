@@ -36,6 +36,7 @@ import java.util.List;
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class ThreadWaitCallCheck extends AbstractMethodDetection {
 
+  @Override
   protected void onMethodFound(MethodInvocationTree mit) {
     addIssue(mit, "Refactor the synchronisation mechanism to not use a Thread instance as a monitor");
   }

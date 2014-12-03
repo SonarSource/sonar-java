@@ -20,7 +20,6 @@
 package org.sonar.java.checks.methods;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
