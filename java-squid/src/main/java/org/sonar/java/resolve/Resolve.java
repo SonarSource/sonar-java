@@ -382,7 +382,8 @@ public class Resolve {
     if (symbol.type == null) {
       return bestSoFar;
     }
-    if (!isArgumentsAcceptable(argTypes, ((Type.MethodType) symbol.type).argTypes)) {
+    boolean isVarArgs = ((Symbol.MethodSymbol) symbol).isVarArgs();
+    if (!isArgumentsAcceptable(argTypes, ((Type.MethodType) symbol.type).argTypes, isVarArgs)) {
       return bestSoFar;
     }
     // TODO ambiguity, errors, ...
@@ -401,12 +402,29 @@ public class Resolve {
    * @param argTypes types of arguments
    * @param formals  types of formal parameters of method
    */
-  private boolean isArgumentsAcceptable(List<Type> argTypes, List<Type> formals) {
-    // TODO varargs
-    if (argTypes.size() != formals.size()) {
+  private boolean isArgumentsAcceptable(List<Type> argTypes, List<Type> formals, boolean isVarArgs) {
+    int argsSize = argTypes.size();
+    int formalsSize = formals.size();
+    if (formalsSize > argsSize) {
       return false;
     }
-    for (int i = 0; i < argTypes.size(); i++) {
+    int nbArgToCheck = argsSize - formalsSize;
+    if (isVarArgs) {
+      //Check at least last parameter for varags compatibility
+      nbArgToCheck += 1;
+    } else if (nbArgToCheck != 0) {
+      //Not a vararg, we should have same number of arguments
+      return false;
+    }
+    for (int i = 1; i <= nbArgToCheck; i++) {
+      Type.ArrayType lastFormal = (Type.ArrayType) formals.get(formalsSize - 1);
+      Type argType = argTypes.get(argsSize - i);
+      //Check type of element of array or if we invoke with an array that it is a compatible array type
+      if (!types.isSubtype(argType, lastFormal.elementType) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
+        return false;
+      }
+    }
+    for (int i = 0; i < argsSize - nbArgToCheck; i++) {
       if (!types.isSubtype(argTypes.get(i), formals.get(i))) {
         return false;
       }
@@ -441,7 +459,9 @@ public class Resolve {
    * @return true, if signature of m1 is more specific than signature of m2
    */
   private boolean isSignatureMoreSpecific(Symbol m1, Symbol m2) {
-    return isArgumentsAcceptable(((Type.MethodType) m1.type).argTypes, ((Type.MethodType) m2.type).argTypes);
+    //TODO handle specific signature with varargs
+    // ((MethodSymbol) m2).isVarArgs()
+    return isArgumentsAcceptable(((Type.MethodType) m1.type).argTypes, ((Type.MethodType) m2.type).argTypes, false);
   }
 
   /**

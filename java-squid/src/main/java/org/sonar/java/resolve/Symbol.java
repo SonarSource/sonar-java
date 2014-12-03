@@ -336,6 +336,10 @@ public class Symbol {
       //we assume code is compiling so no need to check return type at this point.
       return true;
     }
+
+    public boolean isVarArgs() {
+      return isFlag(Flags.VARARGS);
+    }
   }
 
   public boolean isStatic() {
@@ -366,7 +370,7 @@ public class Symbol {
     return isFlag(Flags.DEPRECATED);
   }
 
-  private boolean isFlag(int flag) {
+  protected boolean isFlag(int flag) {
     complete();
     return (flags & flag) != 0;
   }

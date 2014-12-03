@@ -96,4 +96,13 @@ class NumericalPromotion{
   }
 }
 
+class VariableArity {
+  void varargs(int a, String... s){}
+  void bar() {
+    varargs(1, "");
+    varargs(1, "", "");
+    varargs(1, new String[] {""});
+  }
+}
+
 
