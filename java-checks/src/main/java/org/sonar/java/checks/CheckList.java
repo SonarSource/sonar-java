@@ -233,7 +233,8 @@ public final class CheckList {
       ForLoopFalseConditionCheck.class,
       DeprecatedHashAlgorithmCheck.class,
       NullCipherCheck.class,
-      GetRequestedSessionIdCheck.class
+      GetRequestedSessionIdCheck.class,
+      ConcurrentLinkedQueueSizeCheck.class
     );
   }
 
