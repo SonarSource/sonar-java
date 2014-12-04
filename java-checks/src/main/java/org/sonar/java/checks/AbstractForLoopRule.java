@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -110,11 +111,12 @@ public abstract class AbstractForLoopRule extends SubscriptionBaseVisitor {
 
     private final Integer value;
 
-    public ForLoopInitializer(IdentifierTree identifier, Integer value) {
+    public ForLoopInitializer(IdentifierTree identifier, @Nullable Integer value) {
       super(identifier);
       this.value = value;
     }
 
+    @CheckForNull
     public Integer value() {
       return value;
     }
@@ -156,12 +158,17 @@ public abstract class AbstractForLoopRule extends SubscriptionBaseVisitor {
 
     private final Integer value;
 
-    public ForLoopIncrement(IdentifierTree identifier, Integer value) {
+    public ForLoopIncrement(IdentifierTree identifier, @Nullable Integer value) {
       super(identifier);
       this.value = value;
     }
 
-    public Integer value() {
+    public boolean hasValue() {
+      return value != null;
+    }
+
+    public int value() {
+      Preconditions.checkState(value != null, "This ForLoopIncrement has no value");
       return value;
     }
 
@@ -203,16 +210,14 @@ public abstract class AbstractForLoopRule extends SubscriptionBaseVisitor {
     private static ForLoopIncrement assignmentIncrement(AssignmentExpressionTree assignmentExpression) {
       ExpressionTree expression = assignmentExpression.expression();
       ExpressionTree variable = assignmentExpression.variable();
-      if (variable.is(Tree.Kind.IDENTIFIER)) {
-        if (expression.is(Tree.Kind.PLUS, Tree.Kind.MINUS)) {
-          BinaryExpressionTree binaryExp = (BinaryExpressionTree) expression;
-          Integer increment = intLiteralValue(binaryExp.rightOperand());
-          if (increment != null && isSameIdentifier((IdentifierTree) variable, binaryExp.leftOperand())) {
-            increment = expression.is(Tree.Kind.MINUS) ? minus(increment) : increment;
-            return increment(variable, increment);
-          }
-          return new ForLoopIncrement((IdentifierTree) variable, null);
+      if (variable.is(Tree.Kind.IDENTIFIER) && expression.is(Tree.Kind.PLUS, Tree.Kind.MINUS)) {
+        BinaryExpressionTree binaryExp = (BinaryExpressionTree) expression;
+        Integer increment = intLiteralValue(binaryExp.rightOperand());
+        if (increment != null && isSameIdentifier((IdentifierTree) variable, binaryExp.leftOperand())) {
+          increment = expression.is(Tree.Kind.MINUS) ? minus(increment) : increment;
+          return increment(variable, increment);
         }
+        return new ForLoopIncrement((IdentifierTree) variable, null);
       }
       return null;
     }

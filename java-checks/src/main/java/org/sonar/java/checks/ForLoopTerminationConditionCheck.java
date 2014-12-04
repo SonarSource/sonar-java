@@ -62,7 +62,7 @@ public class ForLoopTerminationConditionCheck extends AbstractForLoopRule {
       ForLoopIncrement loopIncrement = ForLoopIncrement.findInUpdates(forStatement);
       if (loopIncrement == null || !loopIncrement.hasSameIdentifier(loopIdentifier)) {
         addIssue(forStatement);
-      } else if (loopIncrement.value() != null) {
+      } else if (loopIncrement.hasValue()) {
         int requiredIncrement = positiveIncrement ? 1 : -1;
         if (loopIncrement.value() != requiredIncrement || forBodyUpdatesLoopIdentifier(forStatement, loopIdentifier)) {
           addIssue(forStatement);
@@ -81,7 +81,7 @@ public class ForLoopTerminationConditionCheck extends AbstractForLoopRule {
     return visitor.foundAssignment;
   }
 
-  private class LoopVariableAssignmentVisitor extends BaseTreeVisitor {
+  private static class LoopVariableAssignmentVisitor extends BaseTreeVisitor {
 
     private final IdentifierTree loopIdentifier;
     private boolean foundAssignment = false;

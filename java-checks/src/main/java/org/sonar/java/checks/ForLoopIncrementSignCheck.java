@@ -38,7 +38,7 @@ public class ForLoopIncrementSignCheck extends AbstractForLoopRule {
   public void visitForStatement(ForStatementTree forStatement) {
     ExpressionTree condition = forStatement.condition();
     ForLoopIncrement loopIncrement = ForLoopIncrement.findInUpdates(forStatement);
-    if (condition == null || loopIncrement == null || loopIncrement.value() == null) {
+    if (condition == null || loopIncrement == null || !loopIncrement.hasValue()) {
       return;
     }
     checkIncrementSign(condition, loopIncrement);
