@@ -1,0 +1,25 @@
+By contract, a servlet container creates one instance of each servlet and then a dedicated thread is attached to each new incoming HTTP request to process this request. So all threads are sharing the servlet instances and by extension instance fields.  To prevent any misunderstanding and unexpected behavior at runtime, all servlet fields should then be either <code>static</code> and/or <code>final</code>, or simply removed.
+
+With Struts 1.X, the same constraint exists on <code>org.apache.struts.action.Action</code>.
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class MyServlet extends HttpServlet {
+  private String userName;  //As this field is shared by all users, it's obvious that this piece of information should be managed differently
+  ...
+}
+</pre>
+
+or 
+
+<pre>
+public class MyAction extends Action {
+  private String userName;  //Same reason
+  ...
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+	<li><a href="https://www.securecoding.cert.org/confluence/display/java/VNA06-J.+Do+not+use+non-static+member+fields+in+a+servlet">CERT VNA06-J</a> - Do not use non-static member fields in a servlet</li>
+</ul>

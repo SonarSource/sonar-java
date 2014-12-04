@@ -234,7 +234,8 @@ public final class CheckList {
       DeprecatedHashAlgorithmCheck.class,
       NullCipherCheck.class,
       GetRequestedSessionIdCheck.class,
-      ConcurrentLinkedQueueSizeCheck.class
+      ConcurrentLinkedQueueSizeCheck.class,
+      ServletInstanceFieldCheck.class
     );
   }
 
