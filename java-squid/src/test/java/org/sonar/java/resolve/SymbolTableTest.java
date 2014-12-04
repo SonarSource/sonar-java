@@ -381,6 +381,8 @@ public class SymbolTableTest {
     assertThat(result.reference(102, 5)).isSameAs(result.symbol("varargs", 100));
     assertThat(result.reference(103, 5)).isSameAs(result.symbol("varargs", 100));
     assertThat(result.reference(104, 5)).isSameAs(result.symbol("varargs", 100));
+    assertThat(result.reference(105, 5)).isSameAs(result.symbol("varargs", 100));
+    assertThat(result.reference(106, 5)).isSameAs(result.symbol("varargs", 111));
   }
   void foo(String... s){}
   @Test

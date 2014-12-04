@@ -102,7 +102,13 @@ class VariableArity {
     varargs(1, "");
     varargs(1, "", "");
     varargs(1, new String[] {""});
+    varargs(1);
+    varargs();
   }
+
+
+
+  void varargs(String... s);
 }
 
 

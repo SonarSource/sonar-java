@@ -405,13 +405,18 @@ public class Resolve {
   private boolean isArgumentsAcceptable(List<Type> argTypes, List<Type> formals, boolean isVarArgs) {
     int argsSize = argTypes.size();
     int formalsSize = formals.size();
-    if (formalsSize > argsSize) {
+    //varargs method can have one param more than call.
+    if (formalsSize > argsSize && !isVarArgs) {
       return false;
     }
     int nbArgToCheck = argsSize - formalsSize;
     if (isVarArgs) {
       //Check at least last parameter for varags compatibility
       nbArgToCheck += 1;
+      if (nbArgToCheck < 0) {
+        //arity is not correct, it can only differ negatively by one for varargs.
+        return false;
+      }
     } else if (nbArgToCheck != 0) {
       //Not a vararg, we should have same number of arguments
       return false;
