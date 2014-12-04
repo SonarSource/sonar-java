@@ -28,6 +28,8 @@ import java.util.List;
 
 public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
 
+  private List<MethodInvocationMatcher> matchers;
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
@@ -37,7 +39,7 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
-      for (MethodInvocationMatcher invocationMatcher : getMethodInvocationMatchers()) {
+      for (MethodInvocationMatcher invocationMatcher : matchers()) {
         if (invocationMatcher.matches(mit, getSemanticModel())) {
           onMethodFound(mit);
         }
@@ -51,4 +53,10 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
     //Do nothing by default
   }
 
+  private List<MethodInvocationMatcher> matchers() {
+    if (matchers == null) {
+      matchers = getMethodInvocationMatchers();
+    }
+    return matchers;
+  }
 }
