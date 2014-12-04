@@ -1,0 +1,29 @@
+<p>According to the Oracle Java API, this <code>HttpServletRequest.getRequestedSessionId()</code> method:</p>
+<blockquote>
+Returns the session ID specified by the client. This may not be the same as the ID of the current valid session for this request. If the client did not specify a session ID, this method returns null.
+</blockquote>
+
+<p>This session ID is either transmitted with help of a cookie or of an URL parameter and so by definition nothing prevents the end-user from manually updated the value of this session ID in an HTTP request.</p>
+
+<p>Here is an example of a updated HTTP header:</p>
+<pre>
+GET /pageSomeWhere HTTP/1.1
+Host: webSite.com
+User-Agent: Mozilla/5.0
+Cookie: JSESSIONID=Hacked_Session_Value'''">
+</pre>
+
+<p>Due to this ability for the end-user to manually change this value, the session ID should only be used by the servlet containers to see if its value matches an existing session ID. If it does not, the user should be considered an unauthenticated user and that's it. Moreover, this session ID should never be logged anywhere to prevent any hijacking of active sessions.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+if(isActiveSession(request.getRequestedSessionId()) ){
+...
+}
+</pre>
+
+<h2>See</h2>
+    <ul>
+      <li><a href="https://www.owasp.org/index.php/Top_10_2013-A2-Broken_Authentication_and_Session_Management">OWASP Top Ten 2013 Category A2 - Broken Authentication and Session Management</a></li>
+    </ul>
