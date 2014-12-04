@@ -43,29 +43,47 @@ public class AbstractMethodDetectionTest {
 
   @Test
   public void detected() {
-    class Visitor extends AbstractMethodDetection {
 
-      public List<Integer> lines = Lists.newArrayList();
-
-      @Override
-      protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-        return ImmutableList.of(
-            MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("int"),
-            MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("java.lang.String[]")
-        );
-      }
-
-      @Override
-      protected void onMethodFound(MethodInvocationTree tree) {
-        lines.add(((JavaTree) tree).getLine());
-      }
-
-    }
-    Visitor visitor = new Visitor();
+    Visitor visitor = new Visitor(ImmutableList.of(
+      MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("int"),
+      MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("java.lang.String[]")
+      ));
     JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).hasSize(2);
     assertThat(visitor.lines).containsExactly(13, 15);
+  }
+
+  @Test
+  public void withNoParameterConstraint() throws Exception {
+    Visitor visitor = new Visitor(ImmutableList.of(
+      MethodInvocationMatcher.create().typeDefinition("A").name("method").withNoParameterConstraint()
+      ));
+    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
+
+    assertThat(visitor.lines).containsExactly(13, 14, 15);
+
+  }
+
+  class Visitor extends AbstractMethodDetection {
+
+    public List<Integer> lines = Lists.newArrayList();
+    private List<MethodInvocationMatcher> methodInvocationMatchers;
+
+    public Visitor(List<MethodInvocationMatcher> methodInvocationMatchers) {
+      this.methodInvocationMatchers = methodInvocationMatchers;
+    }
+
+    @Override
+    protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+      return methodInvocationMatchers;
+    }
+
+    @Override
+    protected void onMethodFound(MethodInvocationTree tree) {
+      lines.add(((JavaTree) tree).getLine());
+    }
+
   }
 
 }

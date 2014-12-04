@@ -70,7 +70,14 @@ public class MethodInvocationMatcher {
   }
 
   public MethodInvocationMatcher addParameter(String fullyQualifiedTypeParameterName) {
+    Preconditions.checkState(parameterTypes != null);
     parameterTypes.add(fullyQualifiedTypeParameterName);
+    return this;
+  }
+
+  public MethodInvocationMatcher withNoParameterConstraint() {
+    Preconditions.checkState(parameterTypes == null || parameterTypes.isEmpty());
+    parameterTypes = null;
     return this;
   }
 
@@ -111,6 +118,9 @@ public class MethodInvocationMatcher {
   }
 
   private boolean parametersAcceptable(Symbol.MethodSymbol methodSymbol) {
+    if (parameterTypes == null) {
+      return true;
+    }
     List<Type> parametersTypes = methodSymbol.getParametersTypes();
     List<String> arguments = parameterTypes;
     if (parametersTypes.size() == arguments.size()) {

@@ -230,7 +230,8 @@ public final class CheckList {
       WaitOnConditionCheck.class,
       DisallowedMethodCheck.class,
       ForLoopIncrementSignCheck.class,
-      ForLoopFalseConditionCheck.class
+      ForLoopFalseConditionCheck.class,
+      DeprecatedHashAlgorithmCheck.class
     );
   }
 
