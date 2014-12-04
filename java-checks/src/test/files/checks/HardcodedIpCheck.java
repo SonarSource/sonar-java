@@ -7,4 +7,5 @@ class A {
   String notAnIp2 = "1234.0.0.0"; // Compliant
   String notAnIp3 = "1234.0.0.0.0.1234"; // Compliant
   String notAnIp4 = ".0.0.0.0"; // Compliant
+  String notAnIp5 = "0.256.0.0"; // Compliant
 }
