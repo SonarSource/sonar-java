@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Set;
+
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
@@ -27,11 +29,16 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import com.google.common.collect.ImmutableSet;
 
 @Rule(
   key = UnusedPrivateFieldCheck.RULE_KEY,
@@ -41,6 +48,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class UnusedPrivateFieldCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1068";
+  static final Set<String> LOMBOK_CLASS_ANNOTATIONS = ImmutableSet.of("lombok.Getter", "lombok.Setter", "lombok.Value", "lombok.Data", "lombok.AllArgsConstructor");
+  static final Set<String> LOMBOK_FIELD_ANNOTATIONS = ImmutableSet.of("lombok.Getter", "lombok.Setter", "lombok.NonNull");
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
@@ -58,6 +67,9 @@ public class UnusedPrivateFieldCheck extends BaseTreeVisitor implements JavaFile
   public void visitClass(ClassTree tree) {
     super.visitClass(tree);
 
+    if (lombokException(tree)) {
+      return;
+    }
     for (Tree member : tree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         checkIfUnused((VariableTree) member);
@@ -70,10 +82,29 @@ public class UnusedPrivateFieldCheck extends BaseTreeVisitor implements JavaFile
       SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
       Symbol symbol = semanticModel.getSymbol(tree);
 
-      if (symbol != null && semanticModel.getUsages(symbol).isEmpty()) {
+      if (symbol != null && semanticModel.getUsages(symbol).isEmpty() && !lombokException(tree)) {
         context.addIssue(tree, ruleKey, "Remove this unused \"" + tree.simpleName() + "\" private field.");
       }
     }
   }
 
+  private boolean lombokException(ClassTree tree) {
+    return lombokGetterApplies(tree.modifiers(), LOMBOK_CLASS_ANNOTATIONS);
+  }
+
+  private boolean lombokException(VariableTree tree) {
+    return lombokGetterApplies(tree.modifiers(), LOMBOK_FIELD_ANNOTATIONS);
+  }
+
+  private boolean lombokGetterApplies(ModifiersTree tree, Set<String> annotations) {
+    for (AnnotationTree member : tree.annotations()) {
+      if(member.annotationType().is(Tree.Kind.IDENTIFIER)){
+        String name = ((IdentifierTree)member.annotationType()).name();
+        if (annotations.contains(name)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }

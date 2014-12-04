@@ -35,7 +35,9 @@ public class UnusedPrivateFieldCheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UnusedPrivateFieldCheck.java"), new VisitorsBridge(new UnusedPrivateFieldCheck()));
+    File f = new File("java-checks/src/test/files/checks/UnusedPrivateFieldCheck.java");
+    System.out.println(f.getAbsolutePath());
+    SourceFile file = JavaAstScanner.scanSingleFile(f, new VisitorsBridge(new UnusedPrivateFieldCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(3).withMessage("Remove this unused \"unusedField\" private field.")
       .next().atLine(6).withMessage("Remove this unused \"foo\" private field.");

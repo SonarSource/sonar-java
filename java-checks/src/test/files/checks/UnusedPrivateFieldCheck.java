@@ -41,3 +41,38 @@ interface FooInterface {
   int FOO = 0; // Compliant
 
 }
+
+class Lombok1 {
+  @lombok.Getter
+  private int FOO = 0; // Compliant
+}
+
+@lombok.Getter
+class Lombok2 {
+  private int FOO = 0; // Compliant
+}
+
+@lombok.Data
+class Lombok3 {
+  private int FOO = 0; // Compliant
+}
+
+@lombok.Value
+class Lombok4 {
+  private int FOO = 0; // Compliant
+}
+
+@lombok.Setter
+class Lombok5 {
+  private int FOO = 0; // Compliant (no escape analysis)
+}
+
+class Lombok6 {
+  @lombok.NonNull
+  private int FOO = 0; // Compliant (no escape analysis)
+}
+
+@lombok.AllArgsConstructor
+class Lombok7 {
+  private int FOO = 0; // Compliant (no escape analysis)
+}
