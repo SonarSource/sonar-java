@@ -44,12 +44,17 @@ public class Convert {
   }
 
   public static String enclosingClassName(String shortName) {
-    int lastDollar = shortName.lastIndexOf('$');
-    return lastDollar < 0 ? "" : shortName.substring(0, lastDollar);
+    String normalizedShortName = normalizeShortName(shortName);
+    int lastDollar = normalizedShortName.lastIndexOf('$');
+    return lastDollar < 0 ? "" : normalizedShortName.substring(0, lastDollar);
   }
 
   public static String innerClassName(String shortName) {
-    return shortName.substring(shortName.lastIndexOf('$') +1);
+    return shortName.substring(normalizeShortName(shortName).lastIndexOf('$') +1);
+  }
+
+  private static String normalizeShortName(String shortName) {
+    return StringUtils.removeEnd(StringUtils.removeEnd(shortName, "$class"), "$");
   }
 
   public static String fullName(String packagePart, String className) {

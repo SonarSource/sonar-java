@@ -51,6 +51,13 @@ public class BytecodeCompleterTest {
   }
 
   @Test
+  public void class_names_ending_with_$() throws Exception {
+    Symbol.TypeSymbol classSymbol = bytecodeCompleter.getClassSymbol("org/sonar/java/resolve/targets/OuterClassEndingWith$$InnerClassEndingWith$");
+    assertThat(classSymbol.getName()).isEqualTo("InnerClassEndingWith$");
+    assertThat(classSymbol.owner().getName()).isEqualTo("OuterClassEndingWith$");
+  }
+
+  @Test
   public void annotations() throws Exception {
     bytecodeCompleter.getClassSymbol(Annotations.class.getName().replace('.', '/')).complete();
   }
