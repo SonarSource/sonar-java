@@ -1,0 +1,12 @@
+By contract, The <code>NullCipher</code> class is a class that provides an "identity cipher" -- one that does not tranform the plaintext. As a consequence, the ciphertext is identical to the plaintext. So this class should mainly be used for testing purpose.
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+NullCipher nc = new NullCipher();
+</pre>
+
+<h2>See</h2>
+<ul>
+	<li><a href="http://cwe.mitre.org/data/definitions/327.html">CWE-327</a>: Use of a Broken or Risky Cryptographic Algorithm</li>
+	<li><a href="https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure">OWASP Top Ten 2013 Category A6 - Sensitive Data Exposure</a></li>
+</ul>

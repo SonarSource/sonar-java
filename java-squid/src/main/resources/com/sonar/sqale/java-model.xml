@@ -1254,6 +1254,19 @@
       <name>Security features</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S2258</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>15</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S2070</rule-key>
         <prop>
           <key>remediationFunction</key>

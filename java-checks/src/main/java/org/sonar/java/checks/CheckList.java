@@ -231,7 +231,8 @@ public final class CheckList {
       DisallowedMethodCheck.class,
       ForLoopIncrementSignCheck.class,
       ForLoopFalseConditionCheck.class,
-      DeprecatedHashAlgorithmCheck.class
+      DeprecatedHashAlgorithmCheck.class,
+      NullCipherCheck.class
     );
   }
 
