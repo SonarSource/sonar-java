@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
@@ -81,6 +82,11 @@ public class TestFileVisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
 
     @Override
     public void addIssue(int line, RuleKey ruleKey, String message) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addIssue(Tree tree, CheckMessage checkMessage) {
       throw new UnsupportedOperationException();
     }
 

@@ -25,6 +25,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.api.CheckMessage;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -40,6 +41,8 @@ public interface JavaFileScannerContext {
   void addIssueOnFile(RuleKey ruleKey, String message);
 
   void addIssue(int line, RuleKey ruleKey, String message);
+
+  void addIssue(Tree tree, CheckMessage checkMessage);
 
   @Nullable
   Object getSemanticModel();

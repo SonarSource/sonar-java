@@ -28,6 +28,7 @@ import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.squidbridge.api.CheckMessage;
 
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
-    addIssue(mit, "Remove this forbidden call");
+    context.addIssue(mit, new CheckMessage(this, "Remove this forbidden call"));
   }
 
   public void setClassName(String className) {
