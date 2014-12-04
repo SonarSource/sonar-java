@@ -38,7 +38,7 @@ public class NullCipherCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NullCipherCheck.java"),
       new VisitorsBridge(new NullCipherCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(7).withMessage("Remove use of \"NullCipher\" class")
+      .next().atLine(7).withMessage("Remove this use of the \"NullCipher\" class.")
       .next().atLine(8);
   }
 

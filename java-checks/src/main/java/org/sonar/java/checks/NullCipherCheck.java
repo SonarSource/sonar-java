@@ -57,7 +57,7 @@ public class NullCipherCheck extends SubscriptionBaseVisitor {
       if (reference != null) {
         Type type = reference.getType();
         if (type != null && type.is("javax.crypto.NullCipher")) {
-          addIssue(newClass, "Remove use of \"NullCipher\" class");
+          addIssue(newClass, "Remove this use of the \"NullCipher\" class.");
         }
       }
     }
