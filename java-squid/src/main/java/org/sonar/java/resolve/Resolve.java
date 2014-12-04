@@ -405,10 +405,6 @@ public class Resolve {
   private boolean isArgumentsAcceptable(List<Type> argTypes, List<Type> formals, boolean isVarArgs) {
     int argsSize = argTypes.size();
     int formalsSize = formals.size();
-    //varargs method can have one param more than call.
-    if (formalsSize > argsSize && !isVarArgs) {
-      return false;
-    }
     int nbArgToCheck = argsSize - formalsSize;
     if (isVarArgs) {
       //Check at least last parameter for varags compatibility
