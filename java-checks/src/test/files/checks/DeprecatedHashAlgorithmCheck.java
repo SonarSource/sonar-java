@@ -26,6 +26,9 @@ class A {
     md = MessageDigest.getInstance(algorithm);
     md = DigestUtils.getDigest(algorithm);
     md5Hex("");
+    com.google.common.hash.Hashing.md5();
+    com.google.common.hash.Hashing.sha1();
+    com.google.common.hash.Hashing.sha256();
   }
   
 }

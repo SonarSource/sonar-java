@@ -1,6 +1,6 @@
-The MD5 algorithm and its successor, SHA-1, are no longer considered secure, because it is too easy to create hash collisions with them. That is, it takes too little computational effort to come up with a different input that produces the same MD5 or SHA-1 hash, and using the new, same-hash value gives an attacker the same access as if he had the originally-hashed value. 
+<p>The MD5 algorithm and its successor, SHA-1, are no longer considered secure, because it is too easy to create hash collisions with them. That is, it takes too little computational effort to come up with a different input that produces the same MD5 or SHA-1 hash, and using the new, same-hash value gives an attacker the same access as if he had the originally-hashed value.</p>
 
-This rule tracks usage of the <code>java.security.MessageDigest</code> and <code>org.apache.commons.codec.digest.DigestUtils</code> classes to instantiate MD5 or SHA-1 algorithms. 
+<p>This rule tracks usage of the <code>java.security.MessageDigest</code>, and <code>org.apache.commons.codec.digest.DigestUtils</code> classes to instantiate MD5 or SHA-1 algorithms, and of Guava's <code>com.google.common.hash.Hashing</code> <code>sha1</code> and <code>md5</code> methods. </p>
 
 <h2>Noncompliant Code Example</h2>
 <pre>

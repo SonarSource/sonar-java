@@ -74,6 +74,11 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
         .name(methodName)
         .withNoParameterConstraint());
     }
+    for (String methodName : ImmutableList.of("md5", "sha1")) {
+      builder.add(MethodInvocationMatcher.create()
+        .typeDefinition("com.google.common.hash.Hashing")
+        .name(methodName));
+    }
     return builder.build();
   }
 

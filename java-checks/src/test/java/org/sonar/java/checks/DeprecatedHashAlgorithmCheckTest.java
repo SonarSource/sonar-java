@@ -52,7 +52,9 @@ public class DeprecatedHashAlgorithmCheckTest {
       .next().atLine(21).withMessage("Use a stronger encryption algorithm than SHA-1.")
       .next().atLine(22).withMessage("Use a stronger encryption algorithm than SHA-1.")
       .next().atLine(23).withMessage("Use a stronger encryption algorithm than SHA-1.")
-      .next().atLine(28).withMessage("Use a stronger encryption algorithm than MD5.");
+      .next().atLine(28).withMessage("Use a stronger encryption algorithm than MD5.")
+      .next().atLine(29).withMessage("Use a stronger encryption algorithm than MD5.")
+      .next().atLine(30).withMessage("Use a stronger encryption algorithm than SHA-1.");
   }
 
 }
