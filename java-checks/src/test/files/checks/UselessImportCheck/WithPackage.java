@@ -34,6 +34,7 @@ import javax.annotation.Nullable; //Compliant
 import javax.annotation.ParametersAreNonnullByDefault; // Compliant
 
 import java.lang.annotation.*;      // Compliant
+import java.util.ArrayList;
 
 class Foo2 extends Foo {
   Bar a = new Baz<String>();
@@ -57,7 +58,7 @@ class Foo2 extends Foo {
     tottttt a;
 
     System.out.println(something.t);
-
+    foo(ArrayList::new);
     return new a.b.c.NonCompliant();
   }
   void foo(@Nullable int x){}
