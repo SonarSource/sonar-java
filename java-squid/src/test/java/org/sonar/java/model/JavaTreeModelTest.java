@@ -60,6 +60,7 @@ import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -104,10 +105,10 @@ public class JavaTreeModelTest {
   @Test
   public void integration_test() {
     Iterable<File> files = Iterables.concat(
-      FileUtils.listFiles(new File("src/main/java/"), new String[] {"java"}, true),
-      FileUtils.listFiles(new File("src/test/java/"), new String[] {"java"}, true),
-      FileUtils.listFiles(new File("src/test/files/"), new String[] {"java"}, true)
-      );
+        FileUtils.listFiles(new File("src/main/java/"), new String[]{"java"}, true),
+        FileUtils.listFiles(new File("src/test/java/"), new String[]{"java"}, true),
+        FileUtils.listFiles(new File("src/test/files/"), new String[]{"java"}, true)
+    );
     BaseTreeVisitor visitor = new BaseTreeVisitor();
     for (File file : files) {
       Tree tree = (CompilationUnitTree) p.parse(file);
@@ -219,7 +220,7 @@ public class JavaTreeModelTest {
   @Test
   public void type_arguments() {
     List<Tree> typeArguments = (TypeArgumentListTreeImpl) p.parse("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }")
-      .getFirstDescendant(JavaLexer.TYPE_ARGUMENTS);
+        .getFirstDescendant(JavaLexer.TYPE_ARGUMENTS);
     assertThat(typeArguments).hasSize(4);
 
     WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
@@ -820,7 +821,7 @@ public class JavaTreeModelTest {
   @Test
   public void switch_statement() {
     SwitchStatementTree tree = (SwitchStatementTree) p.parse("class T { void m() { switch (e) { case 1: case 2: ; default: ; } } }").getFirstDescendant(
-      Kind.SWITCH_STATEMENT);
+        Kind.SWITCH_STATEMENT);
     assertThat(tree.is(Tree.Kind.SWITCH_STATEMENT)).isTrue();
     assertThat(tree.switchKeyword().text()).isEqualTo("switch");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
@@ -1058,7 +1059,7 @@ public class JavaTreeModelTest {
     assertThat(tree.finallyBlock()).isNotNull();
 
     tree = (TryStatementTree) p.parse("class T { void m() { try (Resource r1 = open(); Resource r2 = open()) { } catch (Exception e) { } finally { } } }")
-      .getFirstDescendant(Kind.TRY_STATEMENT);
+        .getFirstDescendant(Kind.TRY_STATEMENT);
     assertThat(tree.is(Tree.Kind.TRY_STATEMENT)).isTrue();
     assertThat(tree.block()).isNotNull();
     assertThat(tree.catches()).hasSize(1);
@@ -1608,20 +1609,39 @@ public class JavaTreeModelTest {
     assertThat(tree.expression()).isNotNull();
   }
 
-  // TODO Poor test
   @Test
   public void method_reference_expression_should_not_break_AST() throws Exception {
-    ExpressionTree expressionTree = (ExpressionTree) p.parse(
-      "class T { public void meth(){IntStream.range(1,12).map(new MethodReferences()::square).forEach(System.out::println);}}").getFirstDescendant(
-      Kind.METHOD_INVOCATION);
-    assertThat(expressionTree).isNotNull();
+    List<AstNode> methodReferences = p.parse(
+        "class T { public void meth(){IntStream.range(1,12).map(new MethodReferences()::<String>square).map(super::myMethod).map(int[]::new).forEach(System.out::println);}}")
+        .getDescendants(JavaLexer.METHOD_REFERENCE);
+    assertThat(methodReferences).hasSize(4);
+    MethodReferenceTree mrt = (MethodReferenceTree) methodReferences.get(0);
+    assertThat(mrt.expression().is(Kind.NEW_CLASS)).isTrue();
+    assertThat(mrt.doubleColon()).isNotNull();
+    assertThat(mrt.typeArguments()).isNotNull();
+    assertThat(mrt.method().name()).isEqualTo("square");
+
+    mrt = (MethodReferenceTree) methodReferences.get(1);
+    assertThat(mrt.expression().is(Kind.IDENTIFIER)).isTrue();
+    assertThat(((IdentifierTree) mrt.expression()).name()).isEqualTo("super");
+    assertThat(mrt.doubleColon()).isNotNull();
+
+    mrt = (MethodReferenceTree) methodReferences.get(2);
+    assertThat(mrt.expression().is(Kind.ARRAY_TYPE)).isTrue();
+    assertThat(mrt.doubleColon()).isNotNull();
+    assertThat(mrt.method().name()).isEqualTo("new");
+
+    mrt = (MethodReferenceTree) methodReferences.get(3);
+    assertThat(mrt.expression().is(Kind.MEMBER_SELECT)).isTrue();
+    assertThat(mrt.doubleColon()).isNotNull();
+
   }
 
   // TODO Poor test
   @Test
   public void lambda_expressions_should_not_break_AST() {
     ExpressionTree expressionTree = (ExpressionTree) p.parse("class T { public void meth(){IntStream.range(1,12).map(x->x*x).map((int a)-> {return a*a;});}}").getFirstDescendant(
-      Kind.METHOD_INVOCATION);
+        Kind.METHOD_INVOCATION);
     assertThat(expressionTree).isNotNull();
   }
 

@@ -58,6 +58,7 @@ import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.expression.MethodReferenceTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
@@ -86,10 +87,12 @@ import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.java.parser.sslr.Optional;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collections;
@@ -1602,32 +1605,29 @@ public class TreeFactory {
       children);
   }
 
-  public ExpressionTree completeMethodReference(NotImplementedTreeImpl partial, Optional<AstNode> typeArguments, AstNode newOrIdentifierToken) {
-    // TODO SONARJAVA-613
+  public ExpressionTree completeMethodReference(MethodReferenceTreeImpl partial, Optional<TypeArgumentListTreeImpl> typeArguments, AstNode newOrIdentifierToken) {
+    TypeArguments typeArgs = null;
     if (typeArguments.isPresent()) {
-      partial.addChild(typeArguments.get());
+      typeArgs = typeArguments.get();
+      partial.addChild((AstNode) typeArgs);
     }
+    IdentifierTree identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(newOrIdentifierToken));
     partial.addChild(newOrIdentifierToken);
+    partial.complete(typeArgs, identifier);
     return partial;
   }
 
-  public NotImplementedTreeImpl newSuperMethodReference(AstNode superToken, AstNode doubleColonToken) {
-    // TODO SONARJAVA-613
-    return new NotImplementedTreeImpl(superToken, doubleColonToken);
+  public MethodReferenceTreeImpl newSuperMethodReference(AstNode superToken, AstNode doubleColonToken) {
+    IdentifierTree superIdentifier = new IdentifierTreeImpl(InternalSyntaxToken.create(superToken));
+    return new MethodReferenceTreeImpl(superIdentifier, InternalSyntaxToken.create(doubleColonToken), superToken, doubleColonToken);
   }
 
-  public NotImplementedTreeImpl newTypeMethodReference(Tree type, AstNode doubleColonToken) {
-    // TODO SONARJAVA-613
-    return new NotImplementedTreeImpl((AstNode) type, doubleColonToken);
+  public MethodReferenceTreeImpl newTypeMethodReference(Tree type, AstNode doubleColonToken) {
+    return new MethodReferenceTreeImpl(type, InternalSyntaxToken.create(doubleColonToken), (AstNode) type, doubleColonToken);
   }
 
-  public NotImplementedTreeImpl newPrimaryMethodReference(ExpressionTree expression, AstNode doubleColonToken) {
-    // TODO SONARJAVA-613
-    List<AstNode> children = Lists.newArrayList();
-    children.add((AstNode) expression);
-    children.add(doubleColonToken);
-
-    return new NotImplementedTreeImpl(children.toArray(new AstNode[children.size()]));
+  public MethodReferenceTreeImpl newPrimaryMethodReference(ExpressionTree expression, AstNode doubleColonToken) {
+    return new MethodReferenceTreeImpl(expression, InternalSyntaxToken.create(doubleColonToken), (AstNode) expression, doubleColonToken);
   }
 
   public ExpressionTree lambdaExpression(LambdaParameterListTreeImpl parameters, AstNode arrowToken, Tree body) {

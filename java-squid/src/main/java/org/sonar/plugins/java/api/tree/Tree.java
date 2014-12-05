@@ -616,7 +616,11 @@ public interface Tree {
     /**
      * {@link TypeArguments}
      */
-    TYPE_ARGUMENTS(TypeArguments.class);
+    TYPE_ARGUMENTS(TypeArguments.class),
+    /**
+     * {@link MethodReferenceTree}
+     */
+    METHOD_REFERENCE(MethodReferenceTree.class);
 
     final Class<? extends Tree> associatedInterface;
 

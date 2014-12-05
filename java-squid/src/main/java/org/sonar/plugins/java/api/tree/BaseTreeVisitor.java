@@ -357,4 +357,11 @@ public class BaseTreeVisitor implements TreeVisitor {
     // nop
   }
 
+  @Override
+  public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
+    scan(methodReferenceTree.expression());
+    scan(methodReferenceTree.typeArguments());
+    scan(methodReferenceTree.method());
+  }
+
 }

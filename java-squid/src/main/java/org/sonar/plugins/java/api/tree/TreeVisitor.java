@@ -130,4 +130,5 @@ public interface TreeVisitor {
 
   void visitOther(Tree tree);
 
+  void visitMethodReference(MethodReferenceTree methodReferenceTree);
 }

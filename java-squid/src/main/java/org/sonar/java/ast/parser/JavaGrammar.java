@@ -1068,7 +1068,7 @@ public class JavaGrammar {
             f.newPrimaryMethodReference(
               f.applySelectors2(PRIMARY(), b.zeroOrMore(SELECTOR())),
               b.invokeRule(JavaPunctuator.DBLECOLON))),
-          b.optional(b.invokeRule(JavaLexer.TYPE_ARGUMENTS)),
+          b.optional(TYPE_ARGUMENTS()),
           b.firstOf(
             b.invokeRule(JavaKeyword.NEW),
             b.invokeRule(JavaTokenType.IDENTIFIER))));

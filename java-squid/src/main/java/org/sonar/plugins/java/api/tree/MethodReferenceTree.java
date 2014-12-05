@@ -19,15 +19,25 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+import com.google.common.annotations.Beta;
 
-import static org.fest.assertions.Assertions.assertThat;
+import javax.annotation.Nullable;
 
-public class TreeTest {
+/**
+ * Method reference.
+ *
+ * @since Java 1.8
+ */
+@Beta
+public interface MethodReferenceTree extends ExpressionTree {
 
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(106);
-  }
+  Tree expression();
+
+  SyntaxToken doubleColon();
+
+  @Nullable
+  TypeArguments typeArguments();
+
+  IdentifierTree method();
 
 }
