@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -41,7 +40,6 @@ import java.util.regex.Pattern;
   key = "TrailingCommentCheck",
   priority = Priority.MINOR,
   tags={"convention"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class TrailingCommentCheck extends SubscriptionBaseVisitor {
 
   private static final String DEFAULT_LEGAL_COMMENT_PATTERN = "^\\s*+[^\\s]++$";

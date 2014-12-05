@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -40,7 +39,6 @@ import java.util.List;
 @Rule(
     key = MagicNumberCheck.RULE_KEY,
     priority = Priority.MINOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S109";

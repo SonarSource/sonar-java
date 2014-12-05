@@ -23,10 +23,9 @@ import com.google.common.collect.ImmutableSet;
 import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.util.Set;
@@ -35,7 +34,6 @@ import java.util.Set;
   key = "RightCurlyBraceSameLineAsNextBlockCheck",
   priority = Priority.MAJOR,
   tags={"convention"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class RightCurlyBraceSameLineAsNextBlockCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private static final Set<String> NEXT_BLOCKS = ImmutableSet.of(

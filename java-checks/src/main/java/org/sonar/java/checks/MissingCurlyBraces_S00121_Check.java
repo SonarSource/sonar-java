@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
@@ -38,7 +37,6 @@ import java.util.List;
     key = "S00121",
     priority = Priority.MAJOR,
     tags = {"convention"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class MissingCurlyBraces_S00121_Check extends SubscriptionBaseVisitor {
 
   @Override

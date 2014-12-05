@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaPunctuator;
@@ -33,7 +32,6 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   key = "LeftCurlyBraceEndLineCheck",
   priority = Priority.MAJOR,
   tags = {"convention"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class LeftCurlyBraceEndLineCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override
