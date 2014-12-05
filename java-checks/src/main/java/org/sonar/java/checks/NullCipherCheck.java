@@ -22,20 +22,16 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.List;
 
 @Rule(
-  key = "S2258",
-  priority = Priority.BLOCKER,
-  tags = {"cwe", "owasp-top10", "security"})
+    key = "S2258",
+    priority = Priority.BLOCKER,
+    tags = {"cwe", "owasp-top10", "security"})
 public class NullCipherCheck extends SubscriptionBaseVisitor {
 
   @Override
@@ -45,21 +41,8 @@ public class NullCipherCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    NewClassTree newClass = (NewClassTree) tree;
-    IdentifierTree identifier = null;
-    if (newClass.identifier().is(Tree.Kind.IDENTIFIER)) {
-      identifier = (IdentifierTree) newClass.identifier();
-    } else if (newClass.identifier().is(Tree.Kind.MEMBER_SELECT)) {
-      identifier = ((MemberSelectExpressionTree) newClass.identifier()).identifier();
-    }
-    if (identifier != null && hasSemantic()) {
-      Symbol reference = getSemanticModel().getReference(identifier);
-      if (reference != null) {
-        Type type = reference.getType();
-        if (type != null && type.is("javax.crypto.NullCipher")) {
-          addIssue(newClass, "Remove this use of the \"NullCipher\" class.");
-        }
-      }
+    if (((AbstractTypedTree) tree).getSymbolType().is("javax.crypto.NullCipher")) {
+      addIssue(tree, "Remove this use of the \"NullCipher\" class.");
     }
   }
 
