@@ -41,3 +41,17 @@ interface FooInterface {
   int FOO = 0; // Compliant
 
 }
+
+class TestSonar {
+  private static Transformer TRANSFORMER = new Transformer();
+
+  public void test() {
+    Optional.ofNullable("10").map(TRANSFORMER::transform).ifPresent(System.out::print);
+  }
+
+  private static class Transformer {
+    Long transform(String number) {
+      return Long.valueOf(number);
+    }
+  }
+}
