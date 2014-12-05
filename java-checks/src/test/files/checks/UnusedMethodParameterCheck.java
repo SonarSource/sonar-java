@@ -88,4 +88,9 @@ class OpenForExtension {
   private baz(int arg) { //Noncompliant
     //no-op
   }
+
+  public Supplier<String> parameterNotUsed(final Object o) {
+    return o::toString;
+  }
+
 }
