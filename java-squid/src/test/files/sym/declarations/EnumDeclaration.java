@@ -32,4 +32,11 @@ class EnumDeclaration {
     System.out.println(Declaration.SECOND_CONSTANT.method());
   }
 
+  private enum ConstructorEnum {
+    ID(1);
+    ConstructorEnum(int i){
+
+    }
+  }
+
 }

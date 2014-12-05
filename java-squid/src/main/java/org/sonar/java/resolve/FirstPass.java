@@ -270,6 +270,10 @@ public class FirstPass extends BaseTreeVisitor {
   private void visitMethodDeclaration(MethodTreeImpl tree) {
     String name = tree.returnType() == null ? "<init>" : tree.simpleName().name();
     Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeFlags(tree.modifiers()), name, env.scope.owner);
+    if((env.scope.owner.flags & Flags.ENUM) !=0 && tree.returnType()==null ) {
+      //enum constructors are private.
+      symbol.flags |= Flags.PRIVATE;
+    }
     symbol.isParametrized = !tree.typeParameters().isEmpty();
     enterSymbol(tree, symbol);
     symbol.parameters = new Scope(symbol);

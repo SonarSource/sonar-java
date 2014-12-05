@@ -189,6 +189,10 @@ public class SymbolTableTest {
     Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) result.symbol("method", 21);
     assertThat(methodSymbol.owner()).isSameAs(enumSymbol);
     assertThat(methodSymbol.flags()).isEqualTo(Flags.ABSTRACT);
+    Symbol.TypeSymbol enumConstructorSymbol = (Symbol.TypeSymbol) result.symbol("ConstructorEnum");
+    assertThat(enumConstructorSymbol).isNotNull();
+    methodSymbol = (Symbol.MethodSymbol) enumConstructorSymbol.members().lookup("<init>").get(0);
+    assertThat(methodSymbol.isPrivate()).isTrue();
   }
 
   @Test
