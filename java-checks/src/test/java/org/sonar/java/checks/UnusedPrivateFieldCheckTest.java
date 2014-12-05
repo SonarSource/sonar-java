@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
@@ -35,10 +35,22 @@ public class UnusedPrivateFieldCheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UnusedPrivateFieldCheck.java"), new VisitorsBridge(new UnusedPrivateFieldCheck()));
+    SourceFile file = scanFile("UnusedPrivateFieldCheck.java");
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(3).withMessage("Remove this unused \"unusedField\" private field.")
-      .next().atLine(6).withMessage("Remove this unused \"foo\" private field.");
+      .next().atLine(6).withMessage("Remove this unused \"foo\" private field.")
+      .next().atLine(15).withMessage("Remove this unused \"unreadField\" private field.")
+      .next().atLine(20).withMessage("Remove this unused \"innerClassUnreadField\" private field.");
+  }
+
+  @Test
+  public void testNative() {
+    SourceFile file = scanFile("UnusedPrivateFieldCheckWithNative.java");
+    checkMessagesVerifier.verify(file.getCheckMessages()).noMore();
+  }
+
+  private SourceFile scanFile(String fileName) {
+    return JavaAstScanner.scanSingleFile(new File("src/test/files/checks/" + fileName), new VisitorsBridge(new UnusedPrivateFieldCheck()));
   }
 
 }

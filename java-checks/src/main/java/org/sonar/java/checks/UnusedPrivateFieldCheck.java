@@ -19,61 +19,107 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.List;
+
 @Rule(
-  key = UnusedPrivateFieldCheck.RULE_KEY,
+  key = "S1068",
   priority = Priority.MAJOR,
   tags={"unused"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class UnusedPrivateFieldCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
 
-  public static final String RULE_KEY = "S1068";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
-  private JavaFileScannerContext context;
+  private List<ClassTree> classes = Lists.newArrayList();
+  private boolean hasNativeMethod = false;
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-
-    if (context.getSemanticModel() != null) {
-      scan(context.getTree());
-    }
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.COMPILATION_UNIT, Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    super.visitClass(tree);
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      MethodTree method = (MethodTree) tree;
+      if (method.modifiers().modifiers().contains(Modifier.NATIVE)) {
+        hasNativeMethod = true;
+      }
+    } else if (tree.is(Tree.Kind.CLASS)) {
+      classes.add((ClassTree) tree);
+    } else {
+      if (hasSemantic() && !hasNativeMethod) {
+        AssignmentFinder assignmentFinder = new AssignmentFinder();
+        tree.accept(assignmentFinder);
+        for (ClassTree classTree : classes) {
+          checkClassFields(classTree, assignmentFinder);
+        }
+      }
+      classes.clear();
+      hasNativeMethod = false;
+    }
+  }
 
-    for (Tree member : tree.members()) {
+  private void checkClassFields(ClassTree classTree, AssignmentFinder assignmentFinder) {
+    for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
-        checkIfUnused((VariableTree) member);
+        checkIfUnused((VariableTree) member, assignmentFinder);
       }
     }
   }
 
-  public void checkIfUnused(VariableTree tree) {
+  public void checkIfUnused(VariableTree tree, AssignmentFinder assignmentFinder) {
     if (tree.modifiers().modifiers().contains(Modifier.PRIVATE) && !"serialVersionUID".equals(tree.simpleName().name())) {
-      SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
+      SemanticModel semanticModel = getSemanticModel();
       Symbol symbol = semanticModel.getSymbol(tree);
-
-      if (symbol != null && semanticModel.getUsages(symbol).isEmpty()) {
-        context.addIssue(tree, ruleKey, "Remove this unused \"" + tree.simpleName() + "\" private field.");
+      if (symbol != null && semanticModel.getUsages(symbol).size() == assignmentFinder.assignments.get(symbol).size()) {
+        addIssue(tree, "Remove this unused \"" + tree.simpleName() + "\" private field.");
       }
     }
   }
 
+  private class AssignmentFinder extends BaseTreeVisitor {
+
+    private ListMultimap<Symbol, IdentifierTree> assignments = ArrayListMultimap.create();
+
+    @Override
+    public void visitAssignmentExpression(AssignmentExpressionTree assignmentExpression) {
+      addAssignment(assignmentExpression.variable());
+      super.visitAssignmentExpression(assignmentExpression);
+    }
+
+    private void addAssignment(ExpressionTree variable) {
+      if (variable.is(Tree.Kind.IDENTIFIER)) {
+        addAssignment((IdentifierTree) variable);
+      } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+        addAssignment(((MemberSelectExpressionTree) variable).identifier());
+      }
+    }
+
+    private void addAssignment(IdentifierTree identifier) {
+      Symbol reference = getSemanticModel().getReference(identifier);
+      if (reference != null) {
+        assignments.put(reference, identifier);
+      }
+    }
+  }
 }

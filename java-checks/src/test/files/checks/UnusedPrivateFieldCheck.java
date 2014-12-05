@@ -10,8 +10,25 @@ class FooClass {
   public int foo; // Compliant
 
   private static final long serialVersionUID = 4858622370623524688L; // Compliant
+  
+  private int usedPrivateField;
+  private int unreadField;
+  private int usedOnlyInAccessWithPostIncrement;
 
+  private static class InnerClass {
+    private int innerClassUsedField;
+    private int innerClassUnreadField;
+  }
+  
   public void f(int unusedParameter) {
+    InnerClass innerClass = new InnerClass();
+    unreadField = -usedPrivateField + usedOnlyInAccessWithPostIncrement++;
+    this.unreadField = new InnerClass().innerClassUsedField;
+    innerClass.innerClassUnreadField = 1;
+    unreadField += 1;
+    
+    unknownVar = 3;
+    
     int unusedLocalVariable;
 
     int usedLocalVariable = 42 + usedField;
