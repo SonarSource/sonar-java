@@ -236,9 +236,4 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     }
 
   }
-
-  @Override
-  public void visitExpressionStatement(ExpressionStatementTree tree) {
-    super.visitExpressionStatement(tree);
-  }
 }

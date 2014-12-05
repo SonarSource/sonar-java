@@ -23,19 +23,15 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
-import java.util.List;
 
 public class MethodReferenceTreeImpl extends AbstractTypedTree implements MethodReferenceTree {
 

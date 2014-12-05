@@ -32,7 +32,6 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.ArrayTypeTreeImpl;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.JavaTree.ImportTreeImpl;
-import org.sonar.java.model.JavaTree.NotImplementedTreeImpl;
 import org.sonar.java.model.JavaTree.ParameterizedTypeTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.JavaTree.UnionTypeTreeImpl;
