@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
@@ -41,8 +42,9 @@ public class JavaSquidSensorTest {
 
   @Before
   public void setUp() {
-    sensor = new JavaSquidSensor(mock(RulesProfile.class), new JavaClasspath(mock(Project.class), new Settings(), new DefaultFileSystem()), mock(SonarComponents.class), fileSystem,
-        mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class));
+    sensor = new JavaSquidSensor(mock(RulesProfile.class), new JavaClasspath(mock(Project.class),
+        new Settings(), new DefaultFileSystem()), mock(SonarComponents.class), fileSystem,
+        mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class), mock(CheckFactory.class));
   }
 
   @Test

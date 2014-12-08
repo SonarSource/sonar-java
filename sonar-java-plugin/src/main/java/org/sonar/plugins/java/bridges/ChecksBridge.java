@@ -20,7 +20,7 @@
 package org.sonar.plugins.java.bridges;
 
 import com.google.common.collect.Sets;
-import org.sonar.api.checks.CheckFactory;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
@@ -33,6 +33,7 @@ import org.sonar.api.rules.ActiveRule;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.PackageInfoCheck;
 import org.sonar.squidbridge.api.CheckMessage;
+import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 
 import java.io.File;
@@ -40,13 +41,13 @@ import java.util.Set;
 
 public class ChecksBridge {
 
-  private final CheckFactory checkFactory;
+  private final Checks<CodeVisitor> checks;
   private final ResourcePerspectives resourcePerspectives;
   private final RulesProfile rulesProfile;
   private Set<Directory> dirsWithoutPackageInfo;
 
-  public ChecksBridge(CheckFactory checkFactory, ResourcePerspectives resourcePerspectives, RulesProfile rulesProfile) {
-    this.checkFactory = checkFactory;
+  public ChecksBridge(Checks<CodeVisitor> checks, ResourcePerspectives resourcePerspectives, RulesProfile rulesProfile) {
+    this.checks = checks;
     this.resourcePerspectives = resourcePerspectives;
     this.rulesProfile = rulesProfile;
   }
@@ -62,12 +63,7 @@ public class ChecksBridge {
           // VisitorsBridge uses RuleKey
           ruleKey = (RuleKey) check;
         } else {
-          ActiveRule rule = checkFactory.getActiveRule(checkMessage.getCheck());
-          if (rule == null) {
-            // rule not active
-            continue;
-          }
-          ruleKey = rule.getRule().ruleKey();
+          ruleKey = checks.ruleKey((CodeVisitor) checkMessage.getCheck());
         }
         Issue issue = issuable.newIssueBuilder()
             .ruleKey(ruleKey)
@@ -98,7 +94,7 @@ public class ChecksBridge {
     dirsWithoutPackageInfo = Sets.newHashSet();
     ActiveRule activeRule = rulesProfile.getActiveRule(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY);
     if (activeRule != null) {
-      Set<File> dirs = ((PackageInfoCheck) checkFactory.getCheck(activeRule)).getDirectoriesWithoutPackageFile();
+      Set<File> dirs = ((PackageInfoCheck) checks.of(activeRule.getRule().ruleKey())).getDirectoriesWithoutPackageFile();
       for (File dir : dirs) {
         dirsWithoutPackageInfo.add(Directory.fromIOFile(dir, project));
       }

@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.component.ResourcePerspectives;
@@ -35,6 +36,7 @@ import org.sonar.java.JavaSquid;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.bridges.ChecksBridge;
 import org.sonar.plugins.java.bridges.DesignBridge;
+import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 
 public class Bridges {
@@ -49,7 +51,7 @@ public class Bridges {
     this.settings = settings;
   }
 
-  public void save(SensorContext context, Project project, CheckFactory checkFactory, ResourceMapping resourceMapping,
+  public void save(SensorContext context, Project project, Checks<CodeVisitor> checks, ResourceMapping resourceMapping,
                    ResourcePerspectives resourcePerspectives, NoSonarFilter noSonarFilter, RulesProfile rulesProfile) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     //Design
@@ -58,7 +60,7 @@ public class Bridges {
       designBridge.saveDesign(project);
     }
     //Report Issues
-    ChecksBridge checksBridge = new ChecksBridge(checkFactory, resourcePerspectives, rulesProfile);
+    ChecksBridge checksBridge = new ChecksBridge(checks, resourcePerspectives, rulesProfile);
     reportIssues(resourceMapping, noSonarFilter, checksBridge, project);
   }
 

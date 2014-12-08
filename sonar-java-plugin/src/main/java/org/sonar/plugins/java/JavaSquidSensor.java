@@ -27,7 +27,8 @@ import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.checks.AnnotationCheckFactory;
+import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
@@ -58,11 +59,12 @@ public class JavaSquidSensor implements Sensor {
   private final FileSystem fs;
   private final DefaultJavaResourceLocator javaResourceLocator;
   private final Settings settings;
+  private final CheckFactory checkFactory;
   private final RulesProfile profile;
   private final NoSonarFilter noSonarFilter;
 
   public JavaSquidSensor(RulesProfile profile, JavaClasspath javaClasspath, SonarComponents sonarComponents, FileSystem fs,
-                         DefaultJavaResourceLocator javaResourceLocator, Settings settings, org.sonar.api.checks.NoSonarFilter noSonarFilter) {
+                         DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter, CheckFactory checkFactory) {
     this.profile = profile;
     this.noSonarFilter = noSonarFilter;
     this.javaClasspath = javaClasspath;
@@ -70,6 +72,7 @@ public class JavaSquidSensor implements Sensor {
     this.fs = fs;
     this.javaResourceLocator = javaResourceLocator;
     this.settings = settings;
+    this.checkFactory = checkFactory;
   }
 
   @Override
@@ -79,13 +82,13 @@ public class JavaSquidSensor implements Sensor {
 
   @Override
   public void analyse(Project project, SensorContext context) {
-    AnnotationCheckFactory annotationCheckFactory = AnnotationCheckFactory.create(profile, CheckList.REPOSITORY_KEY, CheckList.getChecks());
-    Collection<CodeVisitor> checks = annotationCheckFactory.getChecks();
+    Checks<CodeVisitor> checks = checkFactory.<CodeVisitor>create(CheckList.REPOSITORY_KEY).addAnnotatedChecks(CheckList.getChecks());
+    Collection<CodeVisitor> checkList = checks.all();
     JavaConfiguration configuration = createConfiguration();
     Measurer measurer = new Measurer(project, context, configuration.isAnalysePropertyAccessors());
-    JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, checks.toArray(new CodeVisitor[checks.size()]));
+    JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, checkList.toArray(new CodeVisitor[checkList.size()]));
     squid.scan(getSourceFiles(project), getTestFiles(project), getBytecodeFiles());
-    new Bridges(squid, settings).save(context, project, annotationCheckFactory, javaResourceLocator.getResourceMapping(),
+    new Bridges(squid, settings).save(context, project, checks, javaResourceLocator.getResourceMapping(),
         sonarComponents.getResourcePerspectives(), noSonarFilter, profile);
   }
 
