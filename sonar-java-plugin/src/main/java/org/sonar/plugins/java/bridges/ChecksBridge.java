@@ -65,11 +65,13 @@ public class ChecksBridge {
         } else {
           ruleKey = checks.ruleKey((CodeVisitor) checkMessage.getCheck());
         }
-        Issue issue = issuable.newIssueBuilder()
-            .ruleKey(ruleKey)
-            .line(checkMessage.getLine())
-            .message(checkMessage.formatDefaultMessage()).build();
-        issuable.addIssue(issue);
+        if (ruleKey != null) {
+          Issue issue = issuable.newIssueBuilder()
+              .ruleKey(ruleKey)
+              .line(checkMessage.getLine())
+              .message(checkMessage.formatDefaultMessage()).build();
+          issuable.addIssue(issue);
+        }
       }
       // Remove from memory:
       messages.clear();
@@ -94,9 +96,12 @@ public class ChecksBridge {
     dirsWithoutPackageInfo = Sets.newHashSet();
     ActiveRule activeRule = rulesProfile.getActiveRule(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY);
     if (activeRule != null) {
-      Set<File> dirs = ((PackageInfoCheck) checks.of(activeRule.getRule().ruleKey())).getDirectoriesWithoutPackageFile();
-      for (File dir : dirs) {
-        dirsWithoutPackageInfo.add(Directory.fromIOFile(dir, project));
+      CodeVisitor check = checks.of(activeRule.getRule().ruleKey());
+      if (check != null) {
+        Set<File> dirs = ((PackageInfoCheck) check).getDirectoriesWithoutPackageFile();
+        for (File dir : dirs) {
+          dirsWithoutPackageInfo.add(Directory.fromIOFile(dir, project));
+        }
       }
     }
   }

@@ -88,16 +88,16 @@ public class JavaSquidSensor implements Sensor {
     JavaConfiguration configuration = createConfiguration();
     Measurer measurer = new Measurer(project, context, configuration.isAnalysePropertyAccessors());
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, checkList.toArray(new CodeVisitor[checkList.size()]));
-    squid.scan(getSourceFiles(project), getTestFiles(project), getBytecodeFiles());
+    squid.scan(getSourceFiles(), getTestFiles(), getBytecodeFiles());
     new Bridges(squid, settings).save(context, project, checks, javaResourceLocator.getResourceMapping(),
         sonarComponents.getResourcePerspectives(), noSonarFilter, profile);
   }
 
-  private Iterable<File> getSourceFiles(Project project) {
+  private Iterable<File> getSourceFiles() {
     return toFile(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.MAIN))));
   }
 
-  private Iterable<File> getTestFiles(Project project) {
+  private Iterable<File> getTestFiles() {
     return toFile(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.TEST))));
   }
 
