@@ -22,7 +22,8 @@ package org.sonar.plugins.surefire.data;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @since 2.8

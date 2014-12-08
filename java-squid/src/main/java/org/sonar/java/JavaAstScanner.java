@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.sonar.sslr.impl.Parser;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
@@ -61,52 +60,12 @@ public final class JavaAstScanner {
     }
     org.sonar.java.ast.AstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitors);
 
-    scanner.scan(Collections.singleton(createInputFile(file)));
+    scanner.scan(Collections.singleton(file));
     Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));
     if (sources.size() != 1) {
       throw new IllegalStateException("Only one SourceFile was expected whereas " + sources.size() + " has been returned.");
     }
     return (SourceFile) sources.iterator().next();
-  }
-
-  private static InputFile createInputFile(final File file) {
-    return new InputFile() {
-
-      @Override
-      public String relativePath() {
-        return null;
-      }
-
-      @Override
-      public String absolutePath() {
-        return null;
-      }
-
-      @Override
-      public File file() {
-        return file;
-      }
-
-      @Override
-      public String language() {
-        return null;
-      }
-
-      @Override
-      public Type type() {
-        return null;
-      }
-
-      @Override
-      public Status status() {
-        return null;
-      }
-
-      @Override
-      public int lines() {
-        return 0;
-      }
-    };
   }
 
   public static AstScanner create(JavaConfiguration conf, SquidAstVisitor<LexerlessGrammar>... visitors) {

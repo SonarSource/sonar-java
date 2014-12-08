@@ -32,7 +32,6 @@ import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.Set;
 

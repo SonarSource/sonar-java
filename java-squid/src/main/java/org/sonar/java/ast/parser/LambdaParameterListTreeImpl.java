@@ -24,7 +24,6 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 public class LambdaParameterListTreeImpl extends ListTreeImpl<VariableTreeImpl> {

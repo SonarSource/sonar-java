@@ -20,7 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
-import org.sonar.squidbridge.recognizer.*;
+import org.sonar.squidbridge.recognizer.CamelCaseDetector;
+import org.sonar.squidbridge.recognizer.ContainsDetector;
+import org.sonar.squidbridge.recognizer.Detector;
+import org.sonar.squidbridge.recognizer.EndWithDetector;
+import org.sonar.squidbridge.recognizer.KeywordsDetector;
+import org.sonar.squidbridge.recognizer.LanguageFootprint;
 
 import java.util.Set;
 

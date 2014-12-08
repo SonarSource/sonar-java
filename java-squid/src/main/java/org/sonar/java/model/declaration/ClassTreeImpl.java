@@ -40,7 +40,6 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Iterator;
 import java.util.List;
 

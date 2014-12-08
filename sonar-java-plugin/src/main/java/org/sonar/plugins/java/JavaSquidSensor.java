@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.java;
 
+import com.google.common.collect.Lists;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
@@ -92,12 +93,20 @@ public class JavaSquidSensor implements Sensor {
         sonarComponents.getResourcePerspectives(), noSonarFilter, profile);
   }
 
-  private Iterable<InputFile> getSourceFiles(Project project) {
-    return fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.MAIN)));
+  private Iterable<File> getSourceFiles(Project project) {
+    return toFile(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.MAIN))));
   }
 
-  private Iterable<InputFile> getTestFiles(Project project) {
-    return fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.TEST)));
+  private Iterable<File> getTestFiles(Project project) {
+    return toFile(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.TEST))));
+  }
+
+  private Iterable<File> toFile(Iterable<InputFile> inputFiles) {
+    List<File> files = Lists.newArrayList();
+    for (InputFile inputFile : inputFiles) {
+      files.add(inputFile.file());
+    }
+    return files;
   }
 
   private List<File> getBytecodeFiles() {

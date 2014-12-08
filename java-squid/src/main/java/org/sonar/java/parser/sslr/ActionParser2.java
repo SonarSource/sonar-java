@@ -48,7 +48,6 @@ import org.sonar.sslr.parser.ParseRunner;
 import org.sonar.sslr.parser.ParsingResult;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

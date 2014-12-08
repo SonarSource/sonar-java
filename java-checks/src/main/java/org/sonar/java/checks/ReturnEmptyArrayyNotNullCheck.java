@@ -34,7 +34,6 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.util.Deque;
 import java.util.List;
 import java.util.Set;

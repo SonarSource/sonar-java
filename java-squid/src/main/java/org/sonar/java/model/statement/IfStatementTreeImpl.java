@@ -32,7 +32,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-
 import java.util.Iterator;
 
 public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {

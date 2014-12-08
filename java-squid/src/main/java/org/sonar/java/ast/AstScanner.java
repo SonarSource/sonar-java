@@ -28,7 +28,6 @@ import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.ast.AstWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.ProgressReport;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
@@ -68,7 +67,7 @@ public class AstScanner {
     this.index = astScanner.index;
   }
 
-  public void scan(Iterable<InputFile> files) {
+  public void scan(Iterable<File> files) {
     SourceProject project = new SourceProject("Java Project");
     index.index(project);
     project.setSourceCodeIndexer(index);
@@ -81,7 +80,7 @@ public class AstScanner {
    * Used to do scan of test files.
    * @param files
    */
-  public void simpleScan(Iterable<InputFile> files) {
+  public void simpleScan(Iterable<File> files) {
     SourceProject project = (SourceProject) index.search("Java Project");
     VisitorContext context = new VisitorContext(project);
     context.setCommentAnalyser(commentAnalyser);
@@ -96,8 +95,7 @@ public class AstScanner {
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
     progressReport.start(size + " source files to be analyzed");
     int count = 0;
-    for (InputFile inputFile : files) {
-      File file = inputFile.file();
+    for (File file : files) {
 
       progressReport.message(count + "/" + size + " files analyzed, current is " + file.getAbsolutePath());
       count++;

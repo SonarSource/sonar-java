@@ -19,14 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.bytecode.asm.AsmResource;
-
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmEdge;
 import org.sonar.java.bytecode.asm.AsmMethod;
+import org.sonar.java.bytecode.asm.AsmResource;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;

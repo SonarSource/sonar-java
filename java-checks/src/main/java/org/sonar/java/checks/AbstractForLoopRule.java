@@ -37,7 +37,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 public abstract class AbstractForLoopRule extends SubscriptionBaseVisitor {

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.java.DefaultJavaResourceLocator;
@@ -45,13 +44,12 @@ public class BytecodeFixture {
 
   public static SourceFile scan(String target, CodeVisitor visitor) {
     final File baseDir = new File("src/test/java/");
-    InputFile sourceFile = mock(InputFile.class);
-    when(sourceFile.file()).thenReturn(new File(baseDir, "org/sonar/java/checks/targets/" + target + ".java"));
+    File file = new File(baseDir, "org/sonar/java/checks/targets/" + target + ".java");
 
     File bytecodeFile = new File("target/test-classes/");
 
-    if (!sourceFile.file().isFile()) {
-      throw new IllegalArgumentException("File '" + sourceFile + "' not found.");
+    if (!file.isFile()) {
+      throw new IllegalArgumentException("File '" + file.getName() + "' not found.");
     }
     Project project = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
@@ -59,7 +57,7 @@ public class BytecodeFixture {
     when(pfs.getBasedir()).thenReturn(baseDir);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null);
     JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), javaResourceLocator, visitor);
-    javaSquid.scan(Collections.singleton(sourceFile), Collections.<InputFile>emptyList(), Collections.singleton(bytecodeFile));
+    javaSquid.scan(Collections.singleton(file), Collections.<File>emptyList(), Collections.singleton(bytecodeFile));
 
     Collection<SourceCode> sources = javaSquid.getIndex().search(new QueryByType(SourceFile.class));
     if (sources.size() != 1) {

@@ -29,7 +29,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -40,10 +39,8 @@ import org.sonar.sslr.parser.ParserAdapter;
 
 import java.io.File;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class AstScannerTest {
 
@@ -57,7 +54,7 @@ public class AstScannerTest {
     AstScanner scanner = new AstScanner(new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, FakeGrammar.builder().build()));
     scanner.withSquidAstVisitor(listener);
 
-    scanner.scan(ImmutableList.of(mockInputFile(new File("src/test/resources/AstScannerParseError.txt"))));
+    scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
     verify(listener).processRecognitionException(Mockito.any(RecognitionException.class));
   }
 
@@ -88,7 +85,7 @@ public class AstScannerTest {
       }
 
     });
-    scanner.scan(ImmutableList.of(mockInputFile(new File("src/test/resources/AstScannerParseError.txt"))));
+    scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
   }
 
   @Test
@@ -118,7 +115,7 @@ public class AstScannerTest {
       }
 
     });
-    scanner.scan(ImmutableList.of(mockInputFile(new File("src/test/resources/AstScannerNoParseError.txt"))));
+    scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerNoParseError.txt")));
   }
 
   private static class FakeAuditListener extends SquidAstVisitor<LexerlessGrammar> implements AstScannerExceptionHandler {
@@ -145,12 +142,6 @@ public class AstScannerTest {
       return b;
     }
 
-  }
-
-  private static InputFile mockInputFile(File file) {
-    InputFile inputFile = mock(InputFile.class);
-    when(inputFile.file()).thenReturn(file);
-    return inputFile;
   }
 
 }

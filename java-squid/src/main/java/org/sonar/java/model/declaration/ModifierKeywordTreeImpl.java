@@ -21,8 +21,8 @@ package org.sonar.java.model.declaration;
 
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 
 public class ModifierKeywordTreeImpl extends InternalSyntaxToken implements ModifierKeywordTree {
 

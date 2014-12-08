@@ -20,12 +20,11 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
@@ -33,7 +32,6 @@ import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -141,7 +139,7 @@ public class MeasurerTest {
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setAnalyzePropertyAccessors(analyseAccessors);
     squid = new JavaSquid(conf, null, measurer, null, new CodeVisitor[0]);
-    squid.scan(mockInputFile(new File(baseDir, filename)), Collections.<InputFile>emptyList(), Collections.<File>emptyList());
+    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList(), Collections.<File>emptyList());
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     ArgumentCaptor<org.sonar.api.resources.File> sonarFilescaptor = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
     //-1 for metrics in case we don't analyse Accessors.
@@ -156,9 +154,4 @@ public class MeasurerTest {
     assertThat(checkedMetrics).isEqualTo(1);
   }
 
-  private static List<InputFile> mockInputFile(File file) {
-    InputFile inputFile = mock(InputFile.class);
-    when(inputFile.file()).thenReturn(file);
-    return ImmutableList.of(inputFile);
-  }
 }

@@ -23,7 +23,6 @@ import com.google.common.annotations.Beta;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 /**

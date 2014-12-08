@@ -44,7 +44,6 @@ import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Arrays;

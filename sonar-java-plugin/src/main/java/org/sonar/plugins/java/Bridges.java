@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.rule.Checks;
-import org.sonar.api.checks.CheckFactory;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;

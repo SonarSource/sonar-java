@@ -34,7 +34,6 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Iterator;
 import java.util.List;
 

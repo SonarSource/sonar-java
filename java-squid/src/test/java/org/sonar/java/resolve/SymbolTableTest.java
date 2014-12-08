@@ -23,7 +23,6 @@ import com.google.common.collect.Iterables;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.sonar.java.ast.parser.PrinterVisitor;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -270,7 +269,7 @@ public class SymbolTableTest {
         result.symbol("FirstExceptionType"),
         result.symbol("SecondExceptionType"));
 
-    assertThat(result.reference(21,35)).isEqualTo(methodSymbol);
+    assertThat(result.reference(21, 35)).isEqualTo(methodSymbol);
   }
 
   @Test

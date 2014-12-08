@@ -24,7 +24,6 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Token;
 
 import javax.annotation.Nullable;
-
 import java.lang.reflect.Field;
 
 public class AstNodeReflector {

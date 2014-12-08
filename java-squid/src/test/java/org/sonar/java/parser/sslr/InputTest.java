@@ -19,8 +19,6 @@
  */
 package org.sonar.java.parser.sslr;
 
-import org.sonar.java.parser.sslr.Input;
-
 import org.junit.Test;
 
 import java.io.File;

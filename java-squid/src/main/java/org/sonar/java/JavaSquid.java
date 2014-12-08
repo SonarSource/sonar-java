@@ -25,7 +25,6 @@ import com.google.common.collect.Iterables;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.design.Dependency;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.TimeProfiler;
@@ -112,19 +111,19 @@ public class JavaSquid implements SourceCodeSearchEngine {
     astScannerForTests.accept(new TestFileVisitorsBridge(javaResourceLocator));
   }
 
-  public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Collection<File> bytecodeFilesOrDirectories) {
+  public void scan(Iterable<File> sourceFiles, Iterable<File> testFiles, Collection<File> bytecodeFilesOrDirectories) {
     scanSources(sourceFiles);
     scanBytecode(bytecodeFilesOrDirectories);
     scanTests(testFiles);
   }
 
-  private void scanSources(Iterable<InputFile> sourceFiles) {
+  private void scanSources(Iterable<File> sourceFiles) {
     TimeProfiler profiler = new TimeProfiler(getClass()).start("Java Main Files AST scan");
     astScanner.scan(sourceFiles);
     profiler.stop();
   }
 
-  private void scanTests(Iterable<InputFile> testFiles) {
+  private void scanTests(Iterable<File> testFiles) {
     TimeProfiler profiler = new TimeProfiler(getClass()).start("Java Test Files AST scan");
     astScannerForTests.simpleScan(testFiles);
     profiler.stop();
