@@ -25,18 +25,16 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -52,10 +50,10 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
   public static final String RULE_KEY = "S1149";
   private static final RuleKey RULE_KEY_FOR_REPOSITORY = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String>builder()
-    .put("Vector", "\"ArrayList\" or \"LinkedList\"")
-    .put("Hashtable", "\"HashMap\"")
-    .put("StringBuffer", "\"StringBuilder\"")
-    .put("Stack", "\"Deque\"")
+    .put("java.util.Vector", "\"ArrayList\" or \"LinkedList\"")
+    .put("java.util.Hashtable", "\"HashMap\"")
+    .put("java.lang.StringBuffer", "\"StringBuilder\"")
+    .put("java.util.Stack", "\"Deque\"")
     .build();
 
   @Override
@@ -67,15 +65,12 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
   @Override
   public void visitVariable(VariableTree tree) {
     super.visitVariable(tree);
-    String declaredType = getTypeName(tree.type());
 
-    if (REPLACEMENTS.containsKey(declaredType)) {
-      reportIssue(tree.type(), declaredType);
-    } else {
+    boolean hasIssueOnDeclaredType = reportIssueIfDeprecatedType(tree.type());
+    if (!hasIssueOnDeclaredType) {
       ExpressionTree init = tree.initializer();
       if (init != null && init.is(Tree.Kind.NEW_CLASS)) {
-        String initType = getTypeName(((NewClassTree) tree.initializer()).identifier());
-        reportIssueIfDeprecatedType(tree.initializer(), initType);
+        reportIssueIfDeprecatedType(tree.initializer());
       }
     }
   }
@@ -89,9 +84,9 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
     scan(tree.block());
     if (!isOverriding(tree)) {
       for (VariableTree param : tree.parameters()) {
-        reportIssueIfDeprecatedType(param, getTypeName(param.type()));
+        reportIssueIfDeprecatedType(param.type());
       }
-      reportIssueIfDeprecatedType(tree, getTypeName(tree.returnType()));
+      reportIssueIfDeprecatedType(tree.returnType());
     }
 
   }
@@ -100,33 +95,30 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
   public void visitClass(ClassTree tree) {
     super.visitClass(tree);
     for (Tree parent : tree.superInterfaces()) {
-      reportIssueIfDeprecatedType(parent, getTypeName(parent));
+      reportIssueIfDeprecatedType(parent);
     }
 
   }
 
-  private void reportIssueIfDeprecatedType(Tree tree, String type) {
-    if (REPLACEMENTS.containsKey(type)) {
-      reportIssue(tree, type);
+  private boolean reportIssueIfDeprecatedType(Tree tree) {
+    if (tree == null) {
+      return false;
     }
+    Type symbolType = ((AbstractTypedTree) tree).getSymbolType();
+    if (symbolType != null) {
+      for (String forbiddenTypeName : REPLACEMENTS.keySet()) {
+        if (symbolType.is(forbiddenTypeName)) {
+          reportIssue(tree, forbiddenTypeName);
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private void reportIssue(Tree tree, String type) {
-    context.addIssue(tree, RULE_KEY_FOR_REPOSITORY, "Replace the synchronized class \"" + type + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type) + ".");
-  }
-
-  private String getTypeName(Tree typeTree) {
-    if (typeTree != null) {
-
-      if (typeTree.is(Tree.Kind.IDENTIFIER)) {
-        return ((IdentifierTree) typeTree).name();
-      } else if (typeTree.is(Tree.Kind.MEMBER_SELECT)) {
-        return ((MemberSelectExpressionTree) typeTree).identifier().name();
-      } else if (typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-        return getTypeName(((ParameterizedTypeTree) typeTree).type());
-      }
-    }
-    return "";
+    String simpleTypeName = type.substring(type.lastIndexOf('.') + 1);
+    context.addIssue(tree, RULE_KEY_FOR_REPOSITORY, "Replace the synchronized class \"" + simpleTypeName + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type) + ".");
   }
 
   private boolean isOverriding(MethodTree tree) {

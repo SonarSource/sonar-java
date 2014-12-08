@@ -19,13 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 import java.io.File;
 
@@ -54,7 +52,8 @@ public class SynchronizedClassUsageCheckTest {
         .next().atLine(35)
         .next().atLine(43)
         .next().atLine(49)
-        .next().atLine(51);
+        .next().atLine(51)
+        .noMore();
   }
 
 }

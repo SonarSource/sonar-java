@@ -11,7 +11,7 @@ class A {
   ArrayList a = new ArrayList(); // Compliant
   Vector<Integer> a;             // Non-Compliant
   StringBuffer a = new StringBuffer(); // Non-Compliant
-  Stack a = new Stack();         // Non-Compliant
+  java.util.Stack a = new java.util.Stack();         // Non-Compliant
 
   private void f() {
     System.out.println(Vector.class); // OK
@@ -22,7 +22,7 @@ class A {
 
   public Vector a; // Non-Compliant
 
-  public Stack f() { // Non-Compliant
+  public java.util.Stack f() { // Non-Compliant
   }
 
   public void f(Vector a) { // Non-Compliant
@@ -52,5 +52,12 @@ enum AEnum {
   }
 
   @Override a(Vector a) { // Compliant
+  }
+}
+
+class B {
+  class Stack {}
+  B() {}
+  void foo(Stack stack) { // Compliant
   }
 }
