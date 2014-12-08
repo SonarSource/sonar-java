@@ -40,7 +40,7 @@ public class UnusedPrivateFieldCheckTest {
       .next().atLine(3).withMessage("Remove this unused \"unusedField\" private field.")
       .next().atLine(6).withMessage("Remove this unused \"foo\" private field.")
       .next().atLine(15).withMessage("Remove this unused \"unreadField\" private field.")
-      .next().atLine(20).withMessage("Remove this unused \"innerClassUnreadField\" private field.");
+      .next().atLine(21).withMessage("Remove this unused \"innerClassUnreadField\" private field.");
   }
 
   @Test

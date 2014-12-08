@@ -12,12 +12,13 @@ class FooClass {
   private static final long serialVersionUID = 4858622370623524688L; // Compliant
   
   private int usedPrivateField;
-  private int unreadField;
+  private int unreadField; // Noncompliant
   private int usedOnlyInAccessWithPostIncrement;
+  private int usedOnlyInAssignmentExpression;
 
   private static class InnerClass {
     private int innerClassUsedField;
-    private int innerClassUnreadField;
+    private int innerClassUnreadField; // Noncompliant
   }
   
   public void f(int unusedParameter) {
@@ -26,6 +27,7 @@ class FooClass {
     this.unreadField = new InnerClass().innerClassUsedField;
     innerClass.innerClassUnreadField = 1;
     unreadField += 1;
+    unreadField = (usedOnlyInAssignmentExpression += 1);
     
     unknownVar = 3;
     
