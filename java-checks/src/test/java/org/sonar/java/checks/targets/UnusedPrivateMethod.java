@@ -71,6 +71,13 @@ public class UnusedPrivateMethod {
 
   private class A {
     private A(){}
+    private <T> T foo(T t) {
+      return null;
+    }
+
+    public void bar() {
+      foo("");
+    }
   }
 
 }
