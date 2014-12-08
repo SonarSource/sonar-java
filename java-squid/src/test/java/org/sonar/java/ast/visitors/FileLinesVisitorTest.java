@@ -23,11 +23,9 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
-import org.sonar.api.measures.FileLinesContextFactory;
-import org.sonar.api.resources.InputFile;
-import org.sonar.api.resources.InputFileUtils;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.SonarComponents;
@@ -49,9 +47,7 @@ public class FileLinesVisitorTest {
     when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
 
     AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new FileLinesVisitor(sonarComponents, Charsets.UTF_8));
-    File baseDir = new File("src/test/files/metrics");
-    List<InputFile> inputFiles = InputFileUtils.create(baseDir, ImmutableList.of(new File("src/test/files/metrics/LinesOfCode.java")));
-    scanner.scan(inputFiles);
+    scanner.scan(mockInputFile(new File("src/test/files/metrics/LinesOfCode.java")));
 
     verify(context).setIntValue(CoreMetrics.NCLOC_DATA_KEY, 1, 0);
     verify(context).setIntValue(CoreMetrics.NCLOC_DATA_KEY, 2, 0);
@@ -70,9 +66,7 @@ public class FileLinesVisitorTest {
     when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
 
     AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new FileLinesVisitor(sonarComponents, Charsets.UTF_8));
-    File baseDir = new File("src/test/files/metrics");
-    List<InputFile> inputFiles = InputFileUtils.create(baseDir, ImmutableList.of(new File("src/test/files/metrics/Comments.java")));
-    scanner.scan(inputFiles);
+    scanner.scan(mockInputFile(new File("src/test/files/metrics/Comments.java")));
 
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 1, 1);
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 2, 1);
@@ -94,6 +88,12 @@ public class FileLinesVisitorTest {
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 18, 0);
 
     verify(context).save();
+  }
+
+  private static List<InputFile> mockInputFile(File file) {
+    InputFile inputFile = mock(InputFile.class);
+    when(inputFile.file()).thenReturn(file);
+    return ImmutableList.of(inputFile);
   }
 
 }

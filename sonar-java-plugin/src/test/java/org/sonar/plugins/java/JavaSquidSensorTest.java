@@ -19,46 +19,39 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.scan.filesystem.FileQuery;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.SonarComponents;
 
-import java.io.File;
-
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class JavaSquidSensorTest {
 
-  private final ModuleFileSystem moduleFileSystem = mock(ModuleFileSystem.class);
+  private final DefaultFileSystem fileSystem = new DefaultFileSystem();
   private JavaSquidSensor sensor;
 
   @Before
   public void setUp() {
-    sensor = new JavaSquidSensor(mock(RulesProfile.class), new JavaClasspath(mock(Project.class), new Settings(), new DefaultFileSystem()), mock(SonarComponents.class), moduleFileSystem,
+    sensor = new JavaSquidSensor(mock(RulesProfile.class), new JavaClasspath(mock(Project.class), new Settings(), new DefaultFileSystem()), mock(SonarComponents.class), fileSystem,
         mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class));
   }
 
   @Test
   public void should_execute_on_java_project() {
     Project project = mock(Project.class);
-
-    when(moduleFileSystem.files(any(FileQuery.class))).thenReturn(ImmutableList.<File>of());
+    fileSystem.add(new DefaultInputFile("fake.php").setLanguage("php"));
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
 
-    when(moduleFileSystem.files(any(FileQuery.class))).thenReturn(ImmutableList.<File>of(new File("Fake.java")));
+    fileSystem.add(new DefaultInputFile("fake.java").setLanguage("java"));
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
   }
 

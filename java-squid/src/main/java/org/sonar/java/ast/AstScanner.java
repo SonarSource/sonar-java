@@ -19,6 +19,7 @@
  */
 package org.sonar.java.ast;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Grammar;
@@ -27,7 +28,7 @@ import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.ast.AstWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.resources.InputFile;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.ProgressReport;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
@@ -41,7 +42,6 @@ import org.sonar.squidbridge.indexer.SquidIndex;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -68,7 +68,7 @@ public class AstScanner {
     this.index = astScanner.index;
   }
 
-  public void scan(Collection<InputFile> files) {
+  public void scan(Iterable<InputFile> files) {
     SourceProject project = new SourceProject("Java Project");
     index.index(project);
     project.setSourceCodeIndexer(index);
@@ -79,8 +79,9 @@ public class AstScanner {
 
   /**
    * Used to do scan of test files.
+   * @param files
    */
-  public void simpleScan(Collection<InputFile> files) {
+  public void simpleScan(Iterable<InputFile> files) {
     SourceProject project = (SourceProject) index.search("Java Project");
     VisitorContext context = new VisitorContext(project);
     context.setCommentAnalyser(commentAnalyser);
@@ -91,14 +92,14 @@ public class AstScanner {
     }
 
     AstWalker astWalker = new AstWalker(visitors);
-
+    int size = Iterables.size(files);
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(files.size() + " source files to be analyzed");
+    progressReport.start(size + " source files to be analyzed");
     int count = 0;
     for (InputFile inputFile : files) {
-      File file = inputFile.getFile();
+      File file = inputFile.file();
 
-      progressReport.message(count + "/" + files.size() + " files analyzed, current is " + file.getAbsolutePath());
+      progressReport.message(count + "/" + size + " files analyzed, current is " + file.getAbsolutePath());
       count++;
 
       context.setFile(file);
@@ -115,7 +116,7 @@ public class AstScanner {
         throw new AnalysisException(getAnalyisExceptionMessage(file), e);
       }
     }
-    progressReport.stop(files.size() + "/" + files.size() + " source files analyzed");
+    progressReport.stop(size + "/" + size + " source files analyzed");
 
     for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
       visitor.destroy();

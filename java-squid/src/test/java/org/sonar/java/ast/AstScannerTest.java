@@ -22,7 +22,6 @@ package org.sonar.java.ast;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AuditListener;
 import com.sonar.sslr.api.RecognitionException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -30,7 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
-import org.sonar.api.resources.InputFile;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -150,7 +149,7 @@ public class AstScannerTest {
 
   private static InputFile mockInputFile(File file) {
     InputFile inputFile = mock(InputFile.class);
-    when(inputFile.getFile()).thenReturn(file);
+    when(inputFile.file()).thenReturn(file);
     return inputFile;
   }
 

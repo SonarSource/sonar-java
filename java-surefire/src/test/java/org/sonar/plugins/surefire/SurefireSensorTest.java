@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.surefire;
 
-import com.google.common.collect.Lists;
 import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +31,6 @@ import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.resources.InputFile;
-import org.sonar.api.resources.InputFileUtils;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Qualifiers;
@@ -93,10 +90,6 @@ public class SurefireSensorTest {
 
   @Test
   public void should_execute_if_filesystem_contains_java_files() {
-    ProjectFileSystem projectFileSystem = mock(ProjectFileSystem.class);
-    Project project = mock(Project.class);
-    when(project.getFileSystem()).thenReturn(projectFileSystem);
-    when(projectFileSystem.mainFiles("java")).thenReturn(Lists.<InputFile>newArrayList(InputFileUtils.create(new File(""), "")));
     surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs);
     Assertions.assertThat(surefireSensor.shouldExecuteOnProject(project)).isTrue();
   }

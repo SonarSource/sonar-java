@@ -19,8 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.resources.InputFile;
-import org.sonar.api.resources.InputFileUtils;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.java.DefaultJavaResourceLocator;
@@ -46,10 +45,12 @@ public class BytecodeFixture {
 
   public static SourceFile scan(String target, CodeVisitor visitor) {
     final File baseDir = new File("src/test/java/");
-    InputFile sourceFile = InputFileUtils.create(baseDir, new File(baseDir, "org/sonar/java/checks/targets/" + target + ".java"));
+    InputFile sourceFile = mock(InputFile.class);
+    when(sourceFile.file()).thenReturn(new File(baseDir, "org/sonar/java/checks/targets/" + target + ".java"));
+
     File bytecodeFile = new File("target/test-classes/");
 
-    if (!sourceFile.getFile().isFile()) {
+    if (!sourceFile.file().isFile()) {
       throw new IllegalArgumentException("File '" + sourceFile + "' not found.");
     }
     Project project = mock(Project.class);

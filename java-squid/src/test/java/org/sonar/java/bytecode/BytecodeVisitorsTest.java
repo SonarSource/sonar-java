@@ -19,13 +19,18 @@
  */
 package org.sonar.java.bytecode;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.design.Dependency;
 import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConfiguration;
@@ -36,6 +41,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -70,9 +76,14 @@ public class BytecodeVisitorsTest {
     when(pfs.getBasedir()).thenReturn(baseDir);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null);
     JavaSquid squid = new JavaSquid(conf, javaResourceLocator);
-    squid.scanDirectories(
-        Collections.singleton(new File("src/test/files/bytecode/src")),
-        Collections.singleton(new File("src/test/files/bytecode/bin")));
+    Collection<File> files = FileUtils.listFiles(baseDir, new String[]{"java"}, true);
+    List<InputFile> sourceFiles = Lists.newArrayList();
+    PathResolver pathResolver = new PathResolver();
+    for (File file : files) {
+      sourceFiles.add(new DefaultInputFile(pathResolver.relativePath(baseDir, file)).setFile(file));
+    }
+    File binDir = new File("src/test/files/bytecode/bin");
+    squid.scan(sourceFiles, Collections.<InputFile>emptyList(), Collections.singleton(binDir));
     graph = squid.getGraph();
     resourceMapping = javaResourceLocator.getResourceMapping();
     tag = findResource("tags/Tag.java");

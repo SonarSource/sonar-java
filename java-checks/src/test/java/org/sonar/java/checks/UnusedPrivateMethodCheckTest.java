@@ -20,8 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.api.resources.InputFile;
-import org.sonar.api.resources.InputFileUtils;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -38,6 +37,7 @@ import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class UnusedPrivateMethodCheckTest {
 
@@ -64,12 +64,9 @@ public class UnusedPrivateMethodCheckTest {
 
   public static SourceFile scan(CodeVisitor visitor) {
     File baseDir = new File("src/test/resources/");
-    InputFile sourceFile = InputFileUtils.create(baseDir, new File(baseDir, "Lambdas.java"));
+    InputFile sourceFile = mock(InputFile.class);
+    when(sourceFile.file()).thenReturn(new File(baseDir, "Lambdas.java"));
     File bytecodeFile = new File("target/test-classes/");
-
-    if (!sourceFile.getFile().isFile()) {
-      throw new IllegalArgumentException("File '" + sourceFile + "' not found.");
-    }
 
     JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), mock(JavaResourceLocator.class), visitor);
     javaSquid.scan(Collections.singleton(sourceFile), Collections.<InputFile>emptyList(), Collections.singleton(bytecodeFile));

@@ -20,19 +20,26 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
+import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -61,7 +68,13 @@ public class StrutsTest {
     when(sonarProject.getFileSystem()).thenReturn(pfs);
     Measurer measurer = new Measurer(sonarProject, context, true);
     JavaSquid squid = new JavaSquid(conf, null, measurer, mock(JavaResourceLocator.class), new CodeVisitor[0]);
-    squid.scanDirectories(Collections.singleton(srcDir), Collections.singleton(binDir));
+    Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
+    List<InputFile> sourceFiles = Lists.newArrayList();
+    PathResolver pathResolver = new PathResolver();
+    for (File file : files) {
+      sourceFiles.add(new DefaultInputFile(pathResolver.relativePath(srcDir, file)).setFile(file));
+    }
+    squid.scan(sourceFiles, Collections.<InputFile>emptyList(), Collections.singleton(binDir));
   }
 
   @Test
