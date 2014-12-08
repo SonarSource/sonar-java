@@ -33,10 +33,10 @@ class EnumDeclaration {
   }
 
   private enum ConstructorEnum {
-    ID(1);
-    ConstructorEnum(int i){
-
-    }
+    ID(1),
+    IDA("");
+    ConstructorEnum(int i){}
+    ConstructorEnum(String i){}
   }
 
 }

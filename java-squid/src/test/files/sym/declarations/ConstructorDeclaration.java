@@ -18,4 +18,5 @@ class ConstructorDeclaration {
   ConstructorDeclaration(ParameterType param) throws  FirstExceptionType, SecondExceptionType {
   }
 
+  ConstructorDeclaration cd = new ConstructorDeclaration(null);
 }

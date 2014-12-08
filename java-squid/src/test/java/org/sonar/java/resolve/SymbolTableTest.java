@@ -193,6 +193,9 @@ public class SymbolTableTest {
     assertThat(enumConstructorSymbol).isNotNull();
     methodSymbol = (Symbol.MethodSymbol) enumConstructorSymbol.members().lookup("<init>").get(0);
     assertThat(methodSymbol.isPrivate()).isTrue();
+
+    assertThat(result.reference(36,5)).isSameAs(result.symbol("<init>", 38));
+    assertThat(result.reference(37,5)).isSameAs(result.symbol("<init>", 39));
   }
 
   @Test
@@ -266,6 +269,8 @@ public class SymbolTableTest {
     assertThat(methodSymbol.getThrownTypes()).containsExactly(
         result.symbol("FirstExceptionType"),
         result.symbol("SecondExceptionType"));
+
+    assertThat(result.reference(21,35)).isEqualTo(methodSymbol);
   }
 
   @Test

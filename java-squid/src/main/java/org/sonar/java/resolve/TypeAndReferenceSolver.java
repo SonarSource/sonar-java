@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -144,7 +145,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     Tree methodSelect = tree.methodSelect();
     Resolve.Env methodEnv = semanticModel.getEnv(tree);
     scan(tree.arguments());
-    List<Type> argTypes = getParameterTypes(tree);
+    List<Type> argTypes = getParameterTypes(tree.arguments());
     Symbol symbol = resolveMethodSymbol(methodSelect, methodEnv, argTypes);
     ((MethodInvocationTreeImpl) tree).setSymbol(symbol);
     Type methodType = getTypeOfSymbol(symbol);
@@ -156,9 +157,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
   }
 
-  private List<Type> getParameterTypes(MethodInvocationTree tree) {
+  private List<Type> getParameterTypes(List<ExpressionTree> args) {
     ImmutableList.Builder<Type> builder = ImmutableList.builder();
-    for (ExpressionTree expressionTree : tree.arguments()) {
+    for (ExpressionTree expressionTree : args) {
       Type symbolType = ((AbstractTypedTree) expressionTree).getSymbolType();
       if (symbolType == null) {
         symbolType = symbols.unknownType;
@@ -199,6 +200,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   public Symbol resolveAs(Tree tree, int kind, Resolve.Env resolveEnv) {
+    return resolveAs(tree, kind, resolveEnv, true);
+  }
+  public Symbol resolveAs(Tree tree, int kind, Resolve.Env resolveEnv, boolean associateReference) {
     if (tree.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
       Symbol resolvedSymbol;
       IdentifierTree identifierTree;
@@ -216,7 +220,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         identifierTree = (IdentifierTree) tree;
         resolvedSymbol = resolve.findIdent(resolveEnv, identifierTree.name(), kind);
       }
-      associateReference(identifierTree, resolvedSymbol);
+      if(associateReference) {
+        associateReference(identifierTree, resolvedSymbol);
+      }
       registerType(tree, getTypeOfSymbol(resolvedSymbol));
       return resolvedSymbol;
     }
@@ -368,9 +374,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (tree.enclosingExpression() != null) {
       resolveAs(tree.enclosingExpression(), Symbol.VAR);
     }
-    resolveAs(tree.identifier(), Symbol.TYP);
+    Resolve.Env newClassEnv = semanticModel.getEnv(tree);
+    resolveAs(tree.identifier(), Symbol.TYP, newClassEnv, false);
     resolveAs(tree.typeArguments(), Symbol.TYP);
     resolveAs(tree.arguments(), Symbol.VAR);
+    resolveConstructorSymbol(tree.identifier(), newClassEnv, getParameterTypes(tree.arguments()));
     if (tree.classBody() != null) {
       //TODO create a new symbol and type for each anonymous class
       scan(tree.classBody());
@@ -379,6 +387,30 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       registerType(tree, getType(tree.identifier()));
     }
   }
+
+  private Symbol resolveConstructorSymbol(Tree constructorSelect, Resolve.Env methodEnv, List<Type> argTypes) {
+    Symbol symbol;
+    IdentifierTree identifier = getConstructorIdentifier(constructorSelect);
+    symbol = resolve.findMethod(methodEnv, ((AbstractTypedTree) identifier).getSymbolType().getSymbol(), "<init>", argTypes);
+    associateReference(identifier, symbol);
+    return symbol;
+  }
+
+  private IdentifierTree getConstructorIdentifier(Tree constructorSelect) {
+    IdentifierTree identifier;
+    if (constructorSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) constructorSelect;
+      identifier = mset.identifier();
+    } else if (constructorSelect.is(Tree.Kind.IDENTIFIER)) {
+      identifier = (IdentifierTree) constructorSelect;
+    } else if(constructorSelect.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      identifier = getConstructorIdentifier(((ParameterizedTypeTree) constructorSelect).type());
+    } else {
+      throw new IllegalStateException("Constructor select is not of the expected type " + constructorSelect);
+    }
+    return identifier;
+  }
+
 
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
@@ -452,10 +484,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     scan(tree.modifiers());
     NewClassTree newClassTree = (NewClassTree) tree.initializer();
     scan(newClassTree.enclosingExpression());
-    // skip identifier
+    // register identifier type
+    registerType(newClassTree.identifier(), ((VariableTreeImpl) tree).getSymbol().getType());
     scan(newClassTree.typeArguments());
     scan(newClassTree.arguments());
     scan(newClassTree.classBody());
+    resolveConstructorSymbol(tree.simpleName(), semanticModel.getEnv(tree), getParameterTypes(newClassTree.arguments()));
   }
 
   @Override

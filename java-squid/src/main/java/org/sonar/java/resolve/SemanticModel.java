@@ -183,4 +183,5 @@ public class SemanticModel {
   Collection<Symbol> getSymbolUsed() {
     return usagesTree.keySet();
   }
+
 }
