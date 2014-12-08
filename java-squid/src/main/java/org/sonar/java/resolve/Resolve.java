@@ -372,14 +372,8 @@ public class Resolve {
    * @param bestSoFar previously found best match
    */
   private Symbol selectBest(Env env, Symbol.TypeSymbol site, List<Type> argTypes, Symbol symbol, Symbol bestSoFar) {
-    if (symbol.kind >= Symbol.ERRONEOUS) {
-      return bestSoFar;
-    }
-    if (!isInheritedIn(symbol, site)) {
-      return bestSoFar;
-    }
     // TODO get rid of null check
-    if (symbol.type == null) {
+    if (symbol.kind >= Symbol.ERRONEOUS || !isInheritedIn(symbol, site) || symbol.type == null) {
       return bestSoFar;
     }
     boolean isVarArgs = ((Symbol.MethodSymbol) symbol).isVarArgs();
@@ -393,7 +387,7 @@ public class Resolve {
     Symbol mostSpecific = selectMostSpecific(symbol, bestSoFar);
     if (mostSpecific.isKind(Symbol.AMBIGUOUS)) {
       //same signature, we keep the first symbol found (overrides the other one).
-      return bestSoFar;
+      mostSpecific = bestSoFar;
     }
     return mostSpecific;
   }
