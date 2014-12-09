@@ -503,7 +503,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         IdentifierTree variable = (IdentifierTree) aet.variable();
         Symbol identInType = resolve.findMethod(semanticModel.getEnv(tree), getType(tree.annotationType()).symbol, variable.name(), ImmutableList.<Type>of());
         associateReference(variable, identInType);
-        registerType(variable, identInType.type);
+        Type type = identInType.type;
+        if(type == null) {
+          type = symbols.unknownType;
+        }
+        registerType(variable, type);
         resolveAs(aet.expression(), Symbol.VAR);
       }
     } else {
