@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
@@ -495,8 +496,20 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitAnnotation(AnnotationTree tree) {
     resolveAs(tree.annotationType(), Symbol.TYP);
-    for (ExpressionTree expressionTree : tree.arguments()) {
-      resolveAs(expressionTree, Symbol.VAR);
+    if(tree.arguments().size()>1 || (!tree.arguments().isEmpty() && tree.arguments().get(0).is(Tree.Kind.ASSIGNMENT))) {
+      //resolve by identifying correct identifier in assignment.
+      for (ExpressionTree expressionTree : tree.arguments()) {
+        AssignmentExpressionTree aet = (AssignmentExpressionTree) expressionTree;
+        IdentifierTree variable = (IdentifierTree) aet.variable();
+        Symbol identInType = resolve.findMethod(semanticModel.getEnv(tree), getType(tree.annotationType()).symbol, variable.name(), ImmutableList.<Type>of());
+        associateReference(variable, identInType);
+        registerType(variable, identInType.type);
+        resolveAs(aet.expression(), Symbol.VAR);
+      }
+    } else {
+      for (ExpressionTree expressionTree : tree.arguments()) {
+        resolveAs(expressionTree, Symbol.VAR);
+      }
     }
     registerType(tree, getType(tree.annotationType()));
   }

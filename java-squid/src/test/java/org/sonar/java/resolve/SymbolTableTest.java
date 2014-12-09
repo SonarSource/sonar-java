@@ -371,6 +371,9 @@ public class SymbolTableTest {
 
     assertThat(result.reference(3, 19)).isSameAs(result.symbol("ExpressionInAnnotation"));
     assertThat(result.reference(3, 42)).isSameAs(result.symbol("VALUE"));
+    assertThat(result.reference(18, 6)).isSameAs(result.symbol("foo", 11));
+    assertThat(result.reference(19, 6)).isSameAs(result.symbol("foo", 14));
+    assertThat(result.reference(19, 14)).isSameAs(result.symbol("bar", 15));
   }
 
   @Test
