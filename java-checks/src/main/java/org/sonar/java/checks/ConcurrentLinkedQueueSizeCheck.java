@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -32,6 +33,7 @@ import java.util.List;
     key = "S2250",
     priority = Priority.CRITICAL,
     tags = {"performance"})
+@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class ConcurrentLinkedQueueSizeCheck extends AbstractMethodDetection {
 
   @Override
