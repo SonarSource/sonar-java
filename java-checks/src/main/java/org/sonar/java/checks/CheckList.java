@@ -235,7 +235,8 @@ public final class CheckList {
       NullCipherCheck.class,
       GetRequestedSessionIdCheck.class,
       ConcurrentLinkedQueueSizeCheck.class,
-      ServletInstanceFieldCheck.class
+      ServletInstanceFieldCheck.class,
+      BigDecimalDoubleConstructorCheck.class
     );
   }
 
