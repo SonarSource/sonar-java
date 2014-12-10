@@ -28,8 +28,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.List;
 
 @Rule(key = "S2096",
-    priority = Priority.CRITICAL,
-    tags = {"bug"}
+    priority = Priority.MAJOR
 )
 public class MainMethodThrowsExceptionCheck extends SubscriptionBaseVisitor {
 

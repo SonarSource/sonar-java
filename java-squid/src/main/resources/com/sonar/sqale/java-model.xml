@@ -2004,6 +2004,19 @@
       <name>Exception handling</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S2096</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>15</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S1163</rule-key>
         <prop>
           <key>remediationFunction</key>
@@ -2137,19 +2150,6 @@
         <prop>
           <key>remediationFactor</key>
           <val>10</val>
-          <txt>mn</txt>
-        </prop>
-      </chc>
-      <chc>
-        <rule-repo>squid</rule-repo>
-        <rule-key>S2096</rule-key>
-        <prop>
-          <key>remediationFunction</key>
-          <txt>CONSTANT_ISSUE</txt>
-        </prop>
-        <prop>
-          <key>remediationFactor</key>
-          <val>15</val>
           <txt>mn</txt>
         </prop>
       </chc>
