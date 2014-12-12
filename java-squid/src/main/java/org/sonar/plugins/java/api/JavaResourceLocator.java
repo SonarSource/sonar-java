@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
+import com.google.common.collect.Multimap;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
@@ -27,6 +28,7 @@ import org.sonar.java.bytecode.visitor.ResourceMapping;
 import javax.annotation.CheckForNull;
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
 
 @Beta
 public interface JavaResourceLocator extends BatchExtension, JavaFileScanner {
@@ -48,4 +50,6 @@ public interface JavaResourceLocator extends BatchExtension, JavaFileScanner {
   Integer getMethodStartLine(String fullyQualifiedMethodName);
 
   ResourceMapping getResourceMapping();
+
+  Map<String, Multimap<String, Integer>> getIgnoredLinesForRules();
 }

@@ -20,7 +20,10 @@
 package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -37,6 +40,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
@@ -57,6 +61,8 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
   @VisibleForTesting
   Set<Integer> ignoredLines = Sets.newHashSet();
+  @VisibleForTesting
+  Multimap<String, Integer> ignoredLinesForRules = HashMultimap.create();
 
   private File currentFile;
   private Deque<String> currentClassKey = new LinkedList<String>();
@@ -95,7 +101,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     parent.push(tree);
     anonymousInnerClassCounter.push(0);
     resourcesCache.put(key, currentFile);
-    isSuppressWarning(tree);
+    handleSuppressWarning(tree);
     super.visitClass(tree);
     currentClassKey.pop();
     parent.pop();
@@ -123,38 +129,44 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     parent.push(tree);
     String methodKey = currentClassKey.peek() + "#" + MethodSignaturePrinter.print(MethodSignatureScanner.scan(tree));
     methodStartLines.put(methodKey, ((JavaTree) tree.simpleName()).getLine());
-    isSuppressWarning(tree);
+    handleSuppressWarning(tree);
     super.visitMethod(tree);
     parent.pop();
   }
 
-  private void isSuppressWarning(ClassTree tree) {
+  private void handleSuppressWarning(ClassTree tree) {
     int endLine = ((InternalSyntaxToken) tree.closeBraceToken()).getLine();
-    isSuppressWarning(tree.modifiers().annotations(), endLine);
+    handleSuppressWarning(tree.modifiers().annotations(), endLine);
   }
 
-  private void isSuppressWarning(MethodTree tree) {
+  private void handleSuppressWarning(MethodTree tree) {
     int endLine = ((JavaTree) tree.simpleName()).getLine();
     //if we have no block, then we assume method is on one line on the method name line.
     if (tree.block() != null) {
       endLine = ((InternalSyntaxToken) tree.block().closeBraceToken()).getLine();
     }
-    isSuppressWarning(tree.modifiers().annotations(), endLine);
+    handleSuppressWarning(tree.modifiers().annotations(), endLine);
   }
 
-  private void isSuppressWarning(List<AnnotationTree> annotationTrees, int endLine) {
-    boolean hasSuppressAllWarnings = false;
+  private void handleSuppressWarning(List<AnnotationTree> annotationTrees, int endLine) {
     int startLine = 0;
+    List<String> ignoredKey = Lists.newArrayList();
     for (AnnotationTree annotationTree : annotationTrees) {
       if (isSuppressAllWarnings(annotationTree)) {
         startLine = ((JavaTree) annotationTree).getLine();
-        hasSuppressAllWarnings = true;
+        ignoredKey.addAll(getSuppressWarningArgs(annotationTree));
+        break;
       }
     }
 
-    if (hasSuppressAllWarnings) {
+    for (String key : ignoredKey) {
+      boolean isAll = "all".equals(key);
       for (int i = startLine; i <= endLine; i++) {
-        ignoredLines.add(i);
+        if (isAll) {
+          ignoredLines.add(i);
+        } else {
+          ignoredLinesForRules.put(key, i);
+        }
       }
     }
   }
@@ -169,17 +181,34 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
       suppressWarningsType = "SuppressWarnings".equals(mset.identifier().name()) &&
           mset.expression().is(Tree.Kind.MEMBER_SELECT) && "lang".equals(((MemberSelectExpressionTree) mset.expression()).identifier().name());
     }
-    if (suppressWarningsType) {
-      for (ExpressionTree expression : annotationTree.arguments()) {
-        if (expression.is(Tree.Kind.STRING_LITERAL) && "\"all\"".equals(((LiteralTree) expression).value())) {
-          return true;
-        }
+    return suppressWarningsType;
+  }
+
+  private List<String> getSuppressWarningArgs(AnnotationTree annotationTree) {
+    return getValueFromExpression(annotationTree.arguments().get(0));
+  }
+
+  private List<String> getValueFromExpression(ExpressionTree expression) {
+    List<String> args = Lists.newArrayList();
+    if (expression.is(Tree.Kind.STRING_LITERAL)) {
+      args.add(trimQuotes(((LiteralTree) expression).value()));
+    } else if (expression.is(Tree.Kind.NEW_ARRAY)) {
+      for (ExpressionTree initializer : ((NewArrayTree) expression).initializers()) {
+        args.addAll(getValueFromExpression(initializer));
       }
     }
-    return false;
+    return args;
+  }
+
+  private String trimQuotes(String value) {
+    return value.substring(1, value.length() - 1);
   }
 
   public Set<Integer> ignoredLines() {
     return ignoredLines;
+  }
+
+  public Multimap<String, Integer> ignoredLinesForRules() {
+    return ignoredLinesForRules;
   }
 }

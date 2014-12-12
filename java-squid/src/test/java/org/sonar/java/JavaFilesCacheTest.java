@@ -53,13 +53,13 @@ public class JavaFilesCacheTest {
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest#method_start_lines_mapping()V");
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A#method()V");
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest#resource_file_mapping()V");
-
     assertThat(javaFilesCache.ignoredLines).hasSize(13);
     assertThat(javaFilesCache.ignoredLines).contains(67);
     assertThat(javaFilesCache.ignoredLines).contains(68);
     assertThat(javaFilesCache.ignoredLines).contains(71);
     assertThat(javaFilesCache.ignoredLines).contains(81);
-
+    assertThat(javaFilesCache.ignoredLinesForRules.get("foo")).hasSize(5).contains(75,76,77,78,79);
+    assertThat(javaFilesCache.ignoredLinesForRules.get("bar")).hasSize(5).contains(75,76,77,78,79);
   }
 
   static class A {
@@ -72,7 +72,7 @@ public class JavaFilesCacheTest {
       class B{
         Object obj = new I() {
 
-          @SuppressWarnings("foo")
+          @SuppressWarnings({"foo", "bar"})
           @Override
           public void foo() {
 

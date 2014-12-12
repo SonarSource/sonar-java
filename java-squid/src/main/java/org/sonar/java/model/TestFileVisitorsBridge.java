@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import com.google.common.collect.Multimap;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -119,6 +120,7 @@ public class TestFileVisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
     public void addNoSonarLines(Set<Integer> lines) {
       // NOOP for tests.
     }
+
   }
 
 }

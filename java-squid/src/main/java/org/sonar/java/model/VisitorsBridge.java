@@ -56,9 +56,8 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
   private static final Logger LOG = LoggerFactory.getLogger(VisitorsBridge.class);
 
   private final List<JavaFileScanner> scanners;
-
-  private SemanticModel semanticModel;
   private final SonarComponents sonarComponents;
+  private SemanticModel semanticModel;
   private List<File> projectClasspath;
   private boolean analyseAccessors;
 
@@ -133,7 +132,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     String[] path = getContext().peekSourceCode().getName().split(Pattern.quote(File.separator));
     boolean isJavaLang = path.length > 3 && "java".equals(path[path.length - 3]) && "lang".equals(path[path.length - 2]);
     boolean isJavaLangAnnotation = path.length > 4 && "Annotation.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 4])
-      && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);
+        && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);
     boolean isSerializable = path.length > 3 && "Serializable.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 3]) && "io".equals(path[path.length - 2]);
     return !(isJavaLang || isJavaLangAnnotation || isSerializable);
   }

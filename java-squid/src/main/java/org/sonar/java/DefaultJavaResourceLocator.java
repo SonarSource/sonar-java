@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.Project;
@@ -47,6 +48,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   private final Map<String, String> sourceFileByClass;
   private final Map<String, Integer> methodStartLines;
   private final ResourceMapping resourceMapping;
+  private Map<String, Multimap<String, Integer>> ignoredLinesForRules;
 
   public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath) {
     this.project = project;
@@ -55,6 +57,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
     sourceFileByClass = Maps.newHashMap();
     methodStartLines = Maps.newHashMap();
     resourceMapping = new ResourceMapping();
+    ignoredLinesForRules = Maps.newHashMap();
   }
 
   @Override
@@ -110,6 +113,11 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   }
 
   @Override
+  public Map<String, Multimap<String, Integer>> getIgnoredLinesForRules() {
+    return ignoredLinesForRules;
+  }
+
+  @Override
   public void scanFile(JavaFileScannerContext context) {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     javaFilesCache.scanFile(context);
@@ -125,6 +133,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
       }
     }
     context.addNoSonarLines(javaFilesCache.ignoredLines());
+    ignoredLinesForRules.put(context.getFileKey(), javaFilesCache.ignoredLinesForRules());
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
   }
 
