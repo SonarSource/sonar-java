@@ -237,7 +237,8 @@ public final class CheckList {
       ConcurrentLinkedQueueSizeCheck.class,
       ServletInstanceFieldCheck.class,
       BigDecimalDoubleConstructorCheck.class,
-      ReflectionOnNonRuntimeAnnotationCheck.class
+      ReflectionOnNonRuntimeAnnotationCheck.class,
+      WaitInSynchronizeCheck.class
     );
   }
 
