@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
@@ -64,6 +65,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -108,9 +110,40 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitClass(ClassTree tree) {
     //skip superclass and interfaces : visited in second pass.
     scan(tree.modifiers());
+    completeMetadata(((ClassTreeImpl) tree).getSymbol(), tree.modifiers().annotations());
     scan(tree.typeParameters());
     scan(tree.members());
   }
+
+  //FIXME also support method symbol and field symbols
+  private void completeMetadata(Symbol.TypeSymbol symbol, List<AnnotationTree> annotations) {
+    for (AnnotationTree tree : annotations) {
+      AnnotationInstance annotationInstance = new AnnotationInstance(symbol);
+      symbol.metadata().addAnnotation(annotationInstance);
+      if (tree.arguments().size() > 1 || (!tree.arguments().isEmpty() && tree.arguments().get(0).is(Tree.Kind.ASSIGNMENT))) {
+        for (ExpressionTree expressionTree : tree.arguments()) {
+          AssignmentExpressionTree aet = (AssignmentExpressionTree) expressionTree;
+          //TODO: Store more precise value than the expression (real value in case of literal, symbol for enums, array of values, solve constants?)
+          annotationInstance.addValue(new AnnotationValue(((IdentifierTree) aet.variable()).name(), aet.expression()));
+        }
+      } else {
+        //Constant
+        for (ExpressionTree expressionTree : tree.arguments()) {
+          Collection<Symbol> scopeSymbols = ((AbstractTypedTree) tree.annotationType()).getSymbolType().getSymbol().members().scopeSymbols();
+          String name = "";
+          for (Symbol scopeSymbol : scopeSymbols) {
+            if(scopeSymbol.isKind(Symbol.MTH)) {
+              name = symbol.getName();
+              break;
+            }
+          }
+          annotationInstance.addValue(new AnnotationValue(name, expressionTree));
+        }
+      }
+    }
+  }
+
+
 
   @Override
   public void visitImport(ImportTree tree) {
@@ -209,6 +242,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       if (tree.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
         if (JavaKeyword.CLASS.getValue().equals(mse.identifier().name())) {
+          resolveAs(mse.expression(), Symbol.TYP, resolveEnv);
           // member select ending with .class
           registerType(tree, symbols.classType);
           return null;

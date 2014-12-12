@@ -19,6 +19,11 @@
  */
 package org.sonar.java.resolve.targets;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 @Annotation
 public class Annotations {
 
@@ -29,4 +34,29 @@ public class Annotations {
   public void method() {
   }
 
+}
+
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
+@Retention(RetentionPolicy.SOURCE)
+@interface SourceAnnotation {
+}
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
+@Retention(RetentionPolicy.CLASS)
+@interface ClassAnnotation {
+}
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@interface RuntimeAnnotation1 {
+  String value();
+}
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@interface RuntimeAnnotation2 {
+  String[] foo();
+  MyEnum bar();
+  ClassAnnotation annot();
+}
+
+enum MyEnum {
+  ONE,TWO,THREE;
 }

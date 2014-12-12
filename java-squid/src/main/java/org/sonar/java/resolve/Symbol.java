@@ -40,6 +40,7 @@ public class Symbol {
   public static final int ABSENT = ERRONEOUS + 2;
 
   final int kind;
+  final SymbolMetadata symbolMetadata;
 
   int flags;
 
@@ -58,6 +59,7 @@ public class Symbol {
     this.flags = flags;
     this.name = name;
     this.owner = owner;
+    this.symbolMetadata = new SymbolMetadata();
   }
 
   /**
@@ -76,6 +78,10 @@ public class Symbol {
 
   public String getName() {
     return name;
+  }
+
+  public SymbolMetadata metadata() {
+    return symbolMetadata;
   }
 
   interface Completer {
@@ -176,6 +182,14 @@ public class Symbol {
     public Scope members() {
       complete();
       return members;
+    }
+
+    public String getFullyQualifiedName() {
+      String ownerName = "";
+      if(!owner.name.isEmpty()) {
+        ownerName = owner.name + ".";
+      }
+      return ownerName + name;
     }
 
     /**

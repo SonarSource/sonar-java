@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
+import org.fest.assertions.Fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.resolve.targets.Annotations;
@@ -29,9 +30,11 @@ import org.sonar.java.resolve.targets.InnerClassBeforeOuter;
 import org.sonar.java.resolve.targets.NamedClassWithinMethod;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Fail.fail;
 
 public class BytecodeCompleterTest {
 
@@ -170,4 +173,38 @@ public class BytecodeCompleterTest {
     assertThat((foo.flags & Flags.VARARGS) != 0);
   }
 
+  @Test
+  public void annotationOnSymbols() throws Exception {
+    Symbol.TypeSymbol classSymbol = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.AnnotationSymbolMethod");
+    assertThat(classSymbol.isPublic()).isTrue();
+    SymbolMetadata metadata = classSymbol.metadata();
+    assertThat(metadata.annotations()).hasSize(3);
+    assertThat(metadata.getValuesFor("org.sonar.java.resolve.targets.Dummy")).isNull();
+    assertThat(metadata.getValuesFor("org.sonar.java.resolve.targets.ClassAnnotation")).isEmpty();
+    assertThat(metadata.getValuesFor("org.sonar.java.resolve.targets.RuntimeAnnotation1")).hasSize(1);
+    assertThat(metadata.getValuesFor("org.sonar.java.resolve.targets.RuntimeAnnotation1").iterator().next().value()).isEqualTo("plopfoo");
+
+    assertThat(metadata.getValuesFor("org.sonar.java.resolve.targets.RuntimeAnnotation2")).hasSize(2);
+    Iterator<AnnotationValue> iterator = metadata.getValuesFor("org.sonar.java.resolve.targets.RuntimeAnnotation2").iterator();
+    Object value = iterator.next().value();
+    assertValue(value);
+    value = iterator.next().value();
+    assertValue(value);
+
+  }
+
+  private void assertValue(Object value) {
+    if(value instanceof Symbol.VariableSymbol) {
+      Symbol.VariableSymbol var = (Symbol.VariableSymbol) value;
+      assertThat(var.getName()).isEqualTo("ONE");
+      assertThat(var.type.is("org.sonar.java.resolve.targets.MyEnum")).isTrue();
+      return;
+    } else if (value instanceof Object[]){
+      Object[] array = (Object[]) value;
+      assertThat(array).hasSize(4);
+      assertThat(array).contains("one", "two", "three", "four");
+      return;
+    }
+    fail("value is not array nor variableSymbol");
+  }
 }

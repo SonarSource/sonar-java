@@ -68,11 +68,7 @@ public class Type {
 
   public boolean is(String fullyQualifiedName) {
     if(isTagged(CLASS)) {
-      String ownerName = "";
-      if(!symbol.owner.name.isEmpty()) {
-        ownerName = symbol.owner.name + ".";
-      }
-      return fullyQualifiedName.equals(ownerName+symbol.name);
+      return fullyQualifiedName.equals(symbol.getFullyQualifiedName());
     } else if(tag<CLASS) {
       //primitive type
       return fullyQualifiedName.equals(symbol.name);

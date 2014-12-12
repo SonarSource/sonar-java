@@ -61,6 +61,7 @@ public class SymbolTableTest {
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Baz").type);
 
     assertThat(result.reference(25,21)).isSameAs(result.symbol("method"));
+    assertThat(classDeclaration.metadata().annotations()).hasSize(1);
   }
 
   @Test
