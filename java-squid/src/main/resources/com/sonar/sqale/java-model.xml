@@ -2129,6 +2129,19 @@
       <name>Instruction</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S2109</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>15</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S2111</rule-key>
         <prop>
           <key>remediationFunction</key>
@@ -2594,6 +2607,19 @@
     <chc>
       <key>SYNCHRONIZATION_RELIABILITY</key>
       <name>Synchronization</name>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S2273</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>20</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
       <chc>
         <rule-repo>squid</rule-repo>
         <rule-key>S2226</rule-key>
