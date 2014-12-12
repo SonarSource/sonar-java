@@ -236,7 +236,8 @@ public final class CheckList {
       GetRequestedSessionIdCheck.class,
       ConcurrentLinkedQueueSizeCheck.class,
       ServletInstanceFieldCheck.class,
-      BigDecimalDoubleConstructorCheck.class
+      BigDecimalDoubleConstructorCheck.class,
+      ReflectionOnNonRuntimeAnnotationCheck.class
     );
   }
 

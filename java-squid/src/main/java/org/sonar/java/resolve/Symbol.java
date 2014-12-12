@@ -81,6 +81,7 @@ public class Symbol {
   }
 
   public SymbolMetadata metadata() {
+    complete();
     return symbolMetadata;
   }
 

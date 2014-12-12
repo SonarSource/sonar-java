@@ -1,0 +1,17 @@
+<p>The writer of an annotation can set one of three retention policies for it:</p>
+<ul>
+  <li><code>RetentionPolicy.SOURCE</code> - these annotations are dropped during compilation, E.G. <code>@Override</code>, <code>@SuppressWarnings</code>.</li>
+  <li><code>RetentionPolicy.CLASS</code> - these annotations are present in a compiled class but not loaded into the JVM at runtime. This is the default.</li>
+  <li><code>RetentionPolicy.RUNTIME</code> - these annotations are present in the class file and loaded into the JVM.</li>
+</ul>
+<p>Only annotations that have been given a <code>RUNTIME</code> retention policy will be available to reflection. Testing for annotations with any other retention policy is simply
+  an error, since the test will always return false.</p>
+
+<p>This rule checks that reflection is not used to detect annotations that do not have <code>RUNTIME</code> retention.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+Method m = String.class.getMethod("getBytes", new Class[] {int.class,
+int.class, byte[].class, int.class});
+if (m.isAnnotationPresent(Override.class)) {  // Noncompliant; test will always return false, even when @Override is present in the code
+</pre>
