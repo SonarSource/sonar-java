@@ -11,7 +11,7 @@
 
   <name>SonarQube Java :: JaCoCo</name>
   <description><![CDATA[Get code coverage with <a href="http://www.jacoco.org/jacoco/">JaCoCo</a>.]]></description>
-  <url>http://docs.sonarqube.org/x/eAEW</url>
+  <url>http://redirect.sonarsource.com/plugins/jacoco.html</url>
   <inceptionYear>2010</inceptionYear>
   <organization>
     <name>SonarSource</name>
