@@ -62,7 +62,7 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
       super.visitNode(tree);
     } else if(tree.is(Tree.Kind.FOR_STATEMENT)) {
       ForStatementTree fst = (ForStatementTree) tree;
-      inWhileLoop.push(fst.initializer().isEmpty() && fst.update().isEmpty() && fst.initializer().isEmpty());
+      inWhileLoop.push(fst.initializer().isEmpty() && fst.condition()==null && fst.update().isEmpty());
     } else {
       inWhileLoop.push(true);
     }

@@ -57,7 +57,7 @@ public class RSAUsesOAEPCheck extends AbstractMethodDetection {
   }
 
   private boolean isRSA(String algorithmName) {
-    return algorithmName.equals("RSA");
+    return "RSA".equals(algorithmName);
   }
 
   private boolean isOAEPadding(String padding) {
