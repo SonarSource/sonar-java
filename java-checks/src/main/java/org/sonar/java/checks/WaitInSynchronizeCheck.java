@@ -20,65 +20,27 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Deque;
 import java.util.List;
 
 @Rule(key = "S2273",
     priority = Priority.CRITICAL,
     tags = {"bug", "multi-threading"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class WaitInSynchronizeCheck extends AbstractMethodDetection {
-
-  private Deque<Boolean> withinSynchronizedBlock = Lists.newLinkedList();
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    withinSynchronizedBlock.push(false);
-    super.scanFile(context);
-    withinSynchronizedBlock.clear();
-  }
-
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.SYNCHRONIZED_STATEMENT, Tree.Kind.METHOD);
-  }
-
-  @Override
-  public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      super.visitNode(tree);
-    } else if (tree.is(Tree.Kind.METHOD)) {
-      withinSynchronizedBlock.push(((MethodTree) tree).modifiers().modifiers().contains(Modifier.SYNCHRONIZED));
-    } else {
-      withinSynchronizedBlock.push(true);
-    }
-  }
-
-  @Override
-  public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD, Tree.Kind.SYNCHRONIZED_STATEMENT)) {
-      withinSynchronizedBlock.pop();
-    }
-  }
+public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
 
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
-    if (!withinSynchronizedBlock.peek()) {
+    if (!isInSyncBlock()) {
       String methodName;
       String lockName;
       if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
