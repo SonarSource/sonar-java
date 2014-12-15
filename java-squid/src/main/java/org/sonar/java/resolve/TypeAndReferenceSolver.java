@@ -128,21 +128,24 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         }
       } else {
         //Constant
-        for (ExpressionTree expressionTree : tree.arguments()) {
-          Collection<Symbol> scopeSymbols = ((AbstractTypedTree) tree.annotationType()).getSymbolType().getSymbol().members().scopeSymbols();
-          String name = "";
-          for (Symbol scopeSymbol : scopeSymbols) {
-            if(scopeSymbol.isKind(Symbol.MTH)) {
-              name = symbol.getName();
-              break;
-            }
-          }
-          annotationInstance.addValue(new AnnotationValue(name, expressionTree));
-        }
+        addConstantValue(symbol, tree, annotationInstance);
       }
     }
   }
 
+  private void addConstantValue(Symbol.TypeSymbol symbol, AnnotationTree tree, AnnotationInstance annotationInstance) {
+    Collection<Symbol> scopeSymbols = ((AbstractTypedTree) tree.annotationType()).getSymbolType().getSymbol().members().scopeSymbols();
+    for (ExpressionTree expressionTree : tree.arguments()) {
+      String name = "";
+      for (Symbol scopeSymbol : scopeSymbols) {
+        if(scopeSymbol.isKind(Symbol.MTH)) {
+          name = scopeSymbol.getName();
+          break;
+        }
+      }
+      annotationInstance.addValue(new AnnotationValue(name, expressionTree));
+    }
+  }
 
 
   @Override

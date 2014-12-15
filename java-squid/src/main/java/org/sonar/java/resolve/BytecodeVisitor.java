@@ -179,7 +179,8 @@ public class BytecodeVisitor extends ClassVisitor {
     Preconditions.checkNotNull(desc);
     if (!BytecodeCompleter.isSynthetic(flags)) {
       //Flags from asm lib are defined in Opcodes class and map to flags defined in Flags class
-      final Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(bytecodeCompleter.filterBytecodeFlags(flags), name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
+      final Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(bytecodeCompleter.filterBytecodeFlags(flags),
+          name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
       classSymbol.members.enter(symbol);
       if(signature != null) {
         new SignatureReader(signature).accept(new SignatureVisitor(Opcodes.ASM5) {

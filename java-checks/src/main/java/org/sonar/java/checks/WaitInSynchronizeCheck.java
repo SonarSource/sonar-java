@@ -26,7 +26,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -61,10 +60,10 @@ public class WaitInSynchronizeCheck extends AbstractMethodDetection {
 
   @Override
   public void visitNode(Tree tree) {
-    if(tree.is(Tree.Kind.METHOD_INVOCATION)) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       super.visitNode(tree);
-    } else if(tree.is(Tree.Kind.METHOD)) {
-      withinSynchronizedBlock.push(((MethodTree)tree).modifiers().modifiers().contains(Modifier.SYNCHRONIZED));
+    } else if (tree.is(Tree.Kind.METHOD)) {
+      withinSynchronizedBlock.push(((MethodTree) tree).modifiers().modifiers().contains(Modifier.SYNCHRONIZED));
     } else {
       withinSynchronizedBlock.push(true);
     }
@@ -72,25 +71,25 @@ public class WaitInSynchronizeCheck extends AbstractMethodDetection {
 
   @Override
   public void leaveNode(Tree tree) {
-    if(tree.is(Tree.Kind.METHOD, Tree.Kind.SYNCHRONIZED_STATEMENT)) {
+    if (tree.is(Tree.Kind.METHOD, Tree.Kind.SYNCHRONIZED_STATEMENT)) {
       withinSynchronizedBlock.pop();
     }
   }
 
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
-    if(!withinSynchronizedBlock.peek()) {
+    if (!withinSynchronizedBlock.peek()) {
       String methodName;
       String lockName;
-      if(mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
         methodName = mse.identifier().name();
         lockName = ((AbstractTypedTree) mse.expression()).getSymbolType().getSymbol().getName();
       } else {
-        methodName = ((IdentifierTree)mit.methodSelect()).name();
+        methodName = ((IdentifierTree) mit.methodSelect()).name();
         lockName = "this";
       }
-      addIssue(mit, "Make this call to \"" + methodName + "()\" only inside a synchronized block to be sure to hold the monitor on \""+lockName+"\" object.");
+      addIssue(mit, "Make this call to \"" + methodName + "()\" only inside a synchronized block to be sure to hold the monitor on \"" + lockName + "\" object.");
     }
   }
 
