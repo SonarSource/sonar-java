@@ -239,7 +239,8 @@ public final class CheckList {
       BigDecimalDoubleConstructorCheck.class,
       ReflectionOnNonRuntimeAnnotationCheck.class,
       WaitInSynchronizeCheck.class,
-      ThreadSleepCheck.class
+      ThreadSleepCheck.class,
+      WaitInWhileLoopCheck.class
     );
   }
 
