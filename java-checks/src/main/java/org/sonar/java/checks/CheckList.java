@@ -238,7 +238,8 @@ public final class CheckList {
       ServletInstanceFieldCheck.class,
       BigDecimalDoubleConstructorCheck.class,
       ReflectionOnNonRuntimeAnnotationCheck.class,
-      WaitInSynchronizeCheck.class
+      WaitInSynchronizeCheck.class,
+      ThreadSleepCheck.class
     );
   }
 
