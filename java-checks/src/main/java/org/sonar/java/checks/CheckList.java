@@ -240,7 +240,8 @@ public final class CheckList {
       ReflectionOnNonRuntimeAnnotationCheck.class,
       WaitInSynchronizeCheck.class,
       ThreadSleepCheck.class,
-      WaitInWhileLoopCheck.class
+      WaitInWhileLoopCheck.class,
+      IteratorNextExceptionCheck.class
     );
   }
 
