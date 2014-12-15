@@ -41,7 +41,7 @@ import java.util.List;
 
 @Rule(key = "S2273",
     priority = Priority.CRITICAL,
-    tags = {"bug", "multithreading"})
+    tags = {"bug", "multi-threading"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class WaitInSynchronizeCheck extends AbstractMethodDetection {
 

@@ -32,7 +32,7 @@ import java.util.List;
 
 @Rule(key = "S2236",
     priority = Priority.CRITICAL,
-    tags = {"bug", "multithreading"})
+    tags = {"bug", "multi-threading"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class ThreadWaitCallCheck extends AbstractMethodDetection {
 
