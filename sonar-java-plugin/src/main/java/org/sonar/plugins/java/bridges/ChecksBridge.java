@@ -49,7 +49,8 @@ public class ChecksBridge {
   private final Map<String, Multimap<String, Integer>> ignoredLinesForRulesByFile;
   private Set<Directory> dirsWithoutPackageInfo;
 
-  public ChecksBridge(Checks<CodeVisitor> checks, ResourcePerspectives resourcePerspectives, RulesProfile rulesProfile, Map<String, Multimap<String, Integer>> ignoredLinesForRulesByFile) {
+  public ChecksBridge(Checks<CodeVisitor> checks, ResourcePerspectives resourcePerspectives,
+                      RulesProfile rulesProfile, Map<String, Multimap<String, Integer>> ignoredLinesForRulesByFile) {
     this.checks = checks;
     this.resourcePerspectives = resourcePerspectives;
     this.rulesProfile = rulesProfile;
