@@ -242,7 +242,8 @@ public final class CheckList {
       ThreadSleepCheck.class,
       WaitInWhileLoopCheck.class,
       IteratorNextExceptionCheck.class,
-      AvoidDESCheck.class
+      AvoidDESCheck.class,
+      RSAUsesOAEPCheck.class
     );
   }
 

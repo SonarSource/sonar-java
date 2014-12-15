@@ -1,0 +1,17 @@
+<p>Without OAEP in RSA encryption, it takes less work for an attacker to decrypt the data or infer patterns from the ciphertext.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+Cipher rsa = javax.crypto.Cipher.getInstance("RSA/NONE/NoPadding");
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+Cipher rsa = javax.crypto.Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding");
+</pre>
+<h2>See</h2>
+<ul>
+  <li><a href="http://cwe.mitre.org/data/definitions/780.html">MITRE CWE-780</a> - Use of RSA Algorithm without OAEP</li>
+  <li><a href="http://cwe.mitre.org/data/definitions/327.html">MITRE CWE-327</a> - Use of a Broken or Risky Cryptographic Algorithm</li>
+  <li><a href="https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure">OWASP Top Ten 2013 Category A6</a> - Sensitive Data Exposure</li>
+</ul>
