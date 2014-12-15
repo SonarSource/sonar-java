@@ -26,17 +26,13 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.BitSet;
 import java.util.Deque;
 import java.util.List;
 
@@ -66,7 +62,7 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
       super.visitNode(tree);
     } else if(tree.is(Tree.Kind.FOR_STATEMENT)) {
       ForStatementTree fst = (ForStatementTree) tree;
-      inWhileLoop.push(fst.initializer().isEmpty() && fst.update().isEmpty() && fst.update().isEmpty());
+      inWhileLoop.push(fst.initializer().isEmpty() && fst.update().isEmpty() && fst.initializer().isEmpty());
     } else {
       inWhileLoop.push(true);
     }
