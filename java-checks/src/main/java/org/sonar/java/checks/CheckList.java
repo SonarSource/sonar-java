@@ -247,7 +247,8 @@ public final class CheckList {
       ConstructorCallingOverridableCheck.class,
       EqualsOnAtomicClassCheck.class,
       LDAPInjectionCheck.class,
-      NonShortCircuitLogicCheck.class
+      NonShortCircuitLogicCheck.class,
+      OSCommandInjectionCheck.class
     );
   }
 
