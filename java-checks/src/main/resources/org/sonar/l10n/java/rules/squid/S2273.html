@@ -3,10 +3,10 @@
 <h2>Noncompliant Code Example</h2>
 <pre>
 private void removeElement() {
-while (!suitableCondition()){
-obj.wait();
-}
-... // Perform removal
+  while (!suitableCondition()){
+    obj.wait();
+  }
+  ... // Perform removal
 }
 </pre>
 
@@ -14,22 +14,22 @@ or
 
 <pre>
 private void removeElement() {
-while (!suitableCondition()){
-wait();
-}
-... // Perform removal
+  while (!suitableCondition()){
+    wait();
+  }
+  ... // Perform removal
 }
 </pre>
 
 <h2>Compliant Solution</h2>
 <pre>
 private void removeElement() {
-synchronized(obj) {
-while (!suitableCondition()){
-obj.wait();
-}
-... // Perform removal
-}
+  synchronized(obj) {
+    while (!suitableCondition()){
+      obj.wait();
+    }
+    ... // Perform removal
+  }
 }
 </pre>
 
@@ -37,9 +37,9 @@ or
 
 <pre>
 private synchronized void removeElement() {
-while (!suitableCondition()){
-wait();
-}
-... // Perform removal
+  while (!suitableCondition()){
+    wait();
+  }
+  ... // Perform removal
 }
 </pre>
