@@ -245,7 +245,8 @@ public final class CheckList {
       AvoidDESCheck.class,
       RSAUsesOAEPCheck.class,
       ConstructorCallingOverridableCheck.class,
-      EqualsOnAtomicClassCheck.class
+      EqualsOnAtomicClassCheck.class,
+      LDAPInjectionCheck.class
     );
   }
 
