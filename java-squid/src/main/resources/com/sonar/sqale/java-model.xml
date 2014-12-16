@@ -1224,6 +1224,19 @@
       <name>Input validation and representation</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S2076</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>30</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S2077</rule-key>
         <prop>
           <key>remediationFunction</key>
@@ -1232,6 +1245,19 @@
         <prop>
           <key>offset</key>
           <val>20</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
+        <rule-key>S2078</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>30</val>
           <txt>mn</txt>
         </prop>
       </chc>
