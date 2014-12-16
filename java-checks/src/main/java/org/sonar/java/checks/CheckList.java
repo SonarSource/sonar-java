@@ -244,7 +244,8 @@ public final class CheckList {
       IteratorNextExceptionCheck.class,
       AvoidDESCheck.class,
       RSAUsesOAEPCheck.class,
-      ConstructorCallingOverridableCheck.class
+      ConstructorCallingOverridableCheck.class,
+      EqualsOnAtomicClassCheck.class
     );
   }
 
