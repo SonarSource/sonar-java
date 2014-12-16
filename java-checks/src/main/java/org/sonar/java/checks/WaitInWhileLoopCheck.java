@@ -38,7 +38,7 @@ import java.util.List;
 
 @Rule(key = "S2274",
     priority = Priority.CRITICAL,
-    tags = {"bug", "multi-threading"})
+    tags = {"bug", "cert", "multi-threading"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class WaitInWhileLoopCheck extends AbstractMethodDetection {
 
