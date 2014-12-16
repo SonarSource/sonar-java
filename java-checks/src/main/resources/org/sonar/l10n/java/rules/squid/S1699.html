@@ -1,0 +1,71 @@
+Calling a class' method from its constructor seems like an efficient way to utilize specialized behavior in the method without duplicating the method code into the constructor. However, calling an overridable method from a constructor could  lead to an uninstantiable subclass:
+<ul>
+<li>The subclass constructor starts by calling <code>super()</code>.</li>
+<li>The parent class constructor does not invoke the parent class's method; it calls the child class' override.</li>
+<li>Since the subclass doesn't fully exist yet, the method isn't available to be called.</li>
+<li><code>NullPointerException</code> is the likely result.</li>
+</ul>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class SupClz {
+
+  private String foo;
+
+  public SupClz (String foo) {
+    setFoo(foo);  // Noncompliant - will try to invoke any child class' implementation, which won't fully exist yet.
+  }
+
+  public void setFoo (String foo) {  // not final; can be overridden
+    this.foo = foo;
+  }
+}
+
+public class SubClz extends SubClz {
+
+  private String fiz;
+
+  public SubClz(String fiz) {
+    super(fiz);  
+    setFiz(fiz);  //Noncompliant - will try to invoke any child class' implmentation, which won't fully exist yet.
+  }
+
+  public setFoo(String foo) {
+    // ...
+  }
+
+  public setFiz(String fiz) {  // not final; can be overridden
+    this.fiz = fiz;
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class SupClz {
+
+  private String foo;
+
+  public SupClz (String foo) {
+    setFoo(foo);  // the method is final, so this is safe
+  }
+
+  public final void setFoo (String foo) {
+    this.foo = foo;
+  }
+}
+
+public class SubClz extends SubClz {
+
+  private String fiz;
+
+  public SubClz(String fiz) {
+    super(fiz); 
+    this.fiz = fiz; // invocation of non-final method removed
+  }
+
+  public setFiz(String fiz) {
+    this.fiz = fiz;
+  }
+}
+</pre>

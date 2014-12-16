@@ -243,7 +243,8 @@ public final class CheckList {
       WaitInWhileLoopCheck.class,
       IteratorNextExceptionCheck.class,
       AvoidDESCheck.class,
-      RSAUsesOAEPCheck.class
+      RSAUsesOAEPCheck.class,
+      ConstructorCallingOverridableCheck.class
     );
   }
 
