@@ -19,15 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -38,21 +35,15 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.List;
 
 @Rule(
     key = "S2077",
     priority = Priority.CRITICAL,
     tags = {"cwe", "owasp-top10", "security", "sql"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class SQLInjectionCheck extends SubscriptionBaseVisitor {
+public class SQLInjectionCheck extends AbstractInjectionChecker {
 
   private String parameterName;
-
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
-  }
 
   @Override
   public void visitNode(Tree tree) {
@@ -71,11 +62,11 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
       }
     }
   }
-
-  private boolean isDynamicString(MethodInvocationTree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {
+  @Override
+  protected boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {
     return isDynamicString(methodTree, arg, currentlyChecking, false);
   }
-  private boolean isDynamicString(MethodInvocationTree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
+  private boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
     if (arg.is(Tree.Kind.IDENTIFIER)) {
       return isIdentifierDynamicString(methodTree, (IdentifierTree) arg, currentlyChecking, firstLevel);
     } else if (arg.is(Tree.Kind.PLUS)) {
@@ -88,7 +79,7 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
     return !arg.is(Tree.Kind.STRING_LITERAL);
   }
 
-  private boolean isIdentifierDynamicString(MethodInvocationTree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
+  private boolean isIdentifierDynamicString(Tree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
     Symbol symbol = getSemanticModel().getReference(arg);
     if(symbol.equals(currentlyChecking) || isConstant(symbol)) {
       return false;
@@ -145,7 +136,7 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
   private boolean isInvokedOnType(String type, ExpressionTree expressionTree) {
     Type selectorType = ((AbstractTypedTree) expressionTree).getSymbolType();
     if (selectorType.isTagged(Type.CLASS)) {
-      Symbol.TypeSymbol symbol = ((Type.ClassType) selectorType).getSymbol();
+      Symbol.TypeSymbol symbol = selectorType.getSymbol();
       String selector = symbol.owner().getName() + "." + symbol.getName();
       return type.equals(selector) || checkInterfaces(type, symbol);
     }
@@ -154,48 +145,12 @@ public class SQLInjectionCheck extends SubscriptionBaseVisitor {
 
   private boolean checkInterfaces(String type, Symbol.TypeSymbol symbol) {
     for (Type interfaceType : symbol.getInterfaces()) {
-      Symbol.TypeSymbol interfaceSymbol = ((Type.ClassType) interfaceType).getSymbol();
+      Symbol.TypeSymbol interfaceSymbol = interfaceType.getSymbol();
       if (type.equals(interfaceSymbol.owner().getName() + "." + interfaceSymbol.getName()) || checkInterfaces(type, interfaceSymbol)) {
         return true;
       }
     }
     return false;
-  }
-
-  private class LocalVariableDynamicStringVisitor extends BaseTreeVisitor {
-
-    private final Collection<IdentifierTree> usages;
-    private final MethodInvocationTree methodInvocationTree;
-    private final Symbol currentlyChecking;
-    private boolean stopInspection;
-    boolean dynamicString;
-
-    public LocalVariableDynamicStringVisitor(Symbol currentlyChecking, Collection<IdentifierTree> usages, MethodInvocationTree methodInvocationTree) {
-      this.currentlyChecking = currentlyChecking;
-      stopInspection = false;
-      this.usages = usages;
-      this.methodInvocationTree = methodInvocationTree;
-      dynamicString = false;
-    }
-
-
-    @Override
-    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if(!stopInspection && tree.variable().is(Tree.Kind.IDENTIFIER) && usages.contains(tree.variable())) {
-        dynamicString |= isDynamicString(methodInvocationTree, tree.expression(), currentlyChecking);
-      }
-      super.visitAssignmentExpression(tree);
-    }
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree tree) {
-      if(tree.equals(methodInvocationTree)) {
-        //stop inspection, all concerned usages have been visited.
-        stopInspection = true;
-      } else {
-        super.visitMethodInvocation(tree);
-      }
-    }
   }
 
 }

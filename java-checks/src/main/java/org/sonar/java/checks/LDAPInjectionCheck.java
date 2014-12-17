@@ -19,14 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -37,13 +34,12 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.List;
 
 @Rule(
     key = "S2078",
     priority = Priority.CRITICAL,
     tags = {"cwe", "owasp-top10", "security"})
-public class LDAPInjectionCheck extends SubscriptionBaseVisitor {
+public class LDAPInjectionCheck extends AbstractInjectionChecker {
 
   private static final MethodInvocationMatcher LDAP_SEARCH_MATCHER = MethodInvocationMatcher.create()
       .typeDefinition("javax.naming.directory.DirContext")
@@ -52,11 +48,6 @@ public class LDAPInjectionCheck extends SubscriptionBaseVisitor {
   private static final MethodInvocationMatcher SEARCH_CONTROLS_MATCHER = MethodInvocationMatcher.create()
       .typeDefinition("javax.naming.directory.SearchControls")
       .name("setReturningAttributes").addParameter("java.lang.String[]");
-
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
-  }
 
   @Override
   public void visitNode(Tree tree) {
@@ -96,8 +87,8 @@ public class LDAPInjectionCheck extends SubscriptionBaseVisitor {
     }
     return true;
   }
-
-  private boolean isDynamicString(MethodInvocationTree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {
+  @Override
+  protected boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {
     if (arg.is(Tree.Kind.IDENTIFIER)) {
       return isIdentifierDynamicString(methodTree, (IdentifierTree) arg, currentlyChecking);
     } else if (arg.is(Tree.Kind.PLUS)) {
@@ -110,7 +101,7 @@ public class LDAPInjectionCheck extends SubscriptionBaseVisitor {
     return !arg.is(Tree.Kind.STRING_LITERAL);
   }
 
-  private boolean isIdentifierDynamicString(MethodInvocationTree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking) {
+  private boolean isIdentifierDynamicString(Tree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking) {
     Symbol symbol = getSemanticModel().getReference(arg);
     if (symbol.equals(currentlyChecking) || isConstant(symbol)) {
       return false;
@@ -147,42 +138,6 @@ public class LDAPInjectionCheck extends SubscriptionBaseVisitor {
 
   private boolean isSearchControlCall(MethodInvocationTree methodTree) {
     return hasSemantic() && SEARCH_CONTROLS_MATCHER.matches(methodTree, getSemanticModel());
-  }
-
-  private class LocalVariableDynamicStringVisitor extends BaseTreeVisitor {
-
-    private final Collection<IdentifierTree> usages;
-    private final MethodInvocationTree methodInvocationTree;
-    private final Symbol currentlyChecking;
-    boolean dynamicString;
-    private boolean stopInspection;
-
-    public LocalVariableDynamicStringVisitor(Symbol currentlyChecking, Collection<IdentifierTree> usages, MethodInvocationTree methodInvocationTree) {
-      this.currentlyChecking = currentlyChecking;
-      stopInspection = false;
-      this.usages = usages;
-      this.methodInvocationTree = methodInvocationTree;
-      dynamicString = false;
-    }
-
-
-    @Override
-    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (!stopInspection && tree.variable().is(Tree.Kind.IDENTIFIER) && usages.contains(tree.variable())) {
-        dynamicString |= isDynamicString(methodInvocationTree, tree.expression(), currentlyChecking);
-      }
-      super.visitAssignmentExpression(tree);
-    }
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (tree.equals(methodInvocationTree)) {
-        //stop inspection, all concerned usages have been visited.
-        stopInspection = true;
-      } else {
-        super.visitMethodInvocation(tree);
-      }
-    }
   }
 
 }

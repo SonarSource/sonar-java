@@ -25,8 +25,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -44,7 +42,7 @@ import java.util.List;
     key = "S2076",
     priority = Priority.CRITICAL,
     tags = {"cwe", "owasp-top10", "sans-top25", "security"})
-public class OSCommandInjectionCheck extends SubscriptionBaseVisitor {
+public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
   private static final MethodInvocationMatcher RUNTIME_EXEC_MATCHER = MethodInvocationMatcher.create()
       .typeDefinition("java.lang.Runtime")
@@ -88,7 +86,8 @@ public class OSCommandInjectionCheck extends SubscriptionBaseVisitor {
     return !argIsString || isDynamicString(mit, arg, null);
   }
 
-  private boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {
+  @Override
+  protected boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {
     if (arg.is(Tree.Kind.IDENTIFIER)) {
       return isIdentifierDynamicString(methodTree, (IdentifierTree) arg, currentlyChecking);
     } else if (arg.is(Tree.Kind.PLUS)) {
@@ -119,7 +118,7 @@ public class OSCommandInjectionCheck extends SubscriptionBaseVisitor {
       }
       //check usages by revisiting the enclosing tree.
       Collection<IdentifierTree> usages = getSemanticModel().getUsages(symbol);
-      LocalVariableDynamicStringVisitor visitor = new LocalVariableDynamicStringVisitor(symbol, usages, methodTree);
+      AbstractInjectionChecker.LocalVariableDynamicStringVisitor visitor = new AbstractInjectionChecker.LocalVariableDynamicStringVisitor(symbol, usages, methodTree);
       argEnclosingDeclarationTree.accept(visitor);
       return visitor.dynamicString;
     }
@@ -132,50 +131,5 @@ public class OSCommandInjectionCheck extends SubscriptionBaseVisitor {
     return symbol.isStatic() && symbol.isFinal();
   }
 
-  private class LocalVariableDynamicStringVisitor extends BaseTreeVisitor {
-
-    private final Collection<IdentifierTree> usages;
-    private final Tree methodInvocationTree;
-    private final Symbol currentlyChecking;
-    boolean dynamicString;
-    private boolean stopInspection;
-
-    public LocalVariableDynamicStringVisitor(Symbol currentlyChecking, Collection<IdentifierTree> usages, Tree methodInvocationTree) {
-      this.currentlyChecking = currentlyChecking;
-      stopInspection = false;
-      this.usages = usages;
-      this.methodInvocationTree = methodInvocationTree;
-      dynamicString = false;
-    }
-
-
-    @Override
-    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (!stopInspection && tree.variable().is(Tree.Kind.IDENTIFIER) && usages.contains(tree.variable())) {
-        dynamicString |= isDynamicString(methodInvocationTree, tree.expression(), currentlyChecking);
-      }
-      super.visitAssignmentExpression(tree);
-    }
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (tree.equals(methodInvocationTree)) {
-        //stop inspection, all concerned usages have been visited.
-        stopInspection = true;
-      } else {
-        super.visitMethodInvocation(tree);
-      }
-    }
-
-    @Override
-    public void visitNewClass(NewClassTree tree) {
-      if (tree.equals(methodInvocationTree)) {
-        //stop inspection, all concerned usages have been visited.
-        stopInspection = true;
-      } else {
-        super.visitNewClass(tree);
-      }
-    }
-  }
 
 }
