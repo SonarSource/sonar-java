@@ -27,6 +27,7 @@ import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -48,6 +49,8 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
   private static final MethodInvocationMatcher SEARCH_CONTROLS_MATCHER = MethodInvocationMatcher.create()
       .typeDefinition("javax.naming.directory.SearchControls")
       .name("setReturningAttributes").addParameter("java.lang.String[]");
+
+  private String parameterName;
 
   @Override
   public void visitNode(Tree tree) {
@@ -71,7 +74,7 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
   }
 
   private void createIssue(Tree tree) {
-    addIssue(tree, "Make sure that all elements used to build this LDAP request are properly sanitized.");
+    addIssue(tree, "Make sure that \"" + parameterName + "\" is sanitized before use in this LDAP request.");
   }
 
 
@@ -85,8 +88,14 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
       }
       return false;
     }
+    if (arg.is(Tree.Kind.IDENTIFIER)) {
+      parameterName = ((IdentifierTree) arg).name();
+    } else if (arg.is(Tree.Kind.MEMBER_SELECT)) {
+      parameterName = ((MemberSelectExpressionTree) arg).identifier().name();
+    }
     return true;
   }
+
   @Override
   protected boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {
     if (arg.is(Tree.Kind.IDENTIFIER)) {
@@ -124,6 +133,7 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
       return visitor.dynamicString;
     }
     //arg is not a local variable nor a constant, so it is a parameter or a field.
+    parameterName = arg.name();
     return symbol.owner().isKind(Symbol.MTH);
   }
 
