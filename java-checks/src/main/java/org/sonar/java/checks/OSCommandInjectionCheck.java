@@ -28,6 +28,7 @@ import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -48,6 +49,8 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
       .typeDefinition("java.lang.Runtime")
       .name("exec").withNoParameterConstraint();
 
+  private String parameterName;
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
@@ -64,7 +67,7 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
         arg = ((NewClassTree) tree).arguments().get(0);
       }
       if (isDynamicArray(arg, tree)) {
-        addIssue(arg, "Make sure that all elements used in this OS command are properly sanitized.");
+        addIssue(arg, "Make sure \""+parameterName+"\" is properly sanitized before use in this OS command.");
       }
     }
   }
@@ -81,6 +84,11 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
         }
       }
       return false;
+    }
+    if (arg.is(Tree.Kind.IDENTIFIER)) {
+      parameterName = ((IdentifierTree) arg).name();
+    } else if (arg.is(Tree.Kind.MEMBER_SELECT)) {
+      parameterName = ((MemberSelectExpressionTree) arg).identifier().name();
     }
     boolean argIsString = ((AbstractTypedTree) arg).getSymbolType().is("java.lang.String");
     return !argIsString || isDynamicString(mit, arg, null);
@@ -123,6 +131,7 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
       return visitor.dynamicString;
     }
     //arg is not a local variable nor a constant, so it is a parameter or a field.
+    parameterName = arg.name();
     return symbol.owner().isKind(Symbol.MTH);
   }
 

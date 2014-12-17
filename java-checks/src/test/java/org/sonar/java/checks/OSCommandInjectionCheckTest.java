@@ -37,12 +37,12 @@ public class OSCommandInjectionCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/OSCommandInjectionCheck.java"), new VisitorsBridge(new OSCommandInjectionCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("Make sure that all elements used in this OS command are properly sanitized.")
-        .next().atLine(6).withMessage("Make sure that all elements used in this OS command are properly sanitized.")
-        .next().atLine(7).withMessage("Make sure that all elements used in this OS command are properly sanitized.")
-        .next().atLine(12).withMessage("Make sure that all elements used in this OS command are properly sanitized.")
-        .next().atLine(13).withMessage("Make sure that all elements used in this OS command are properly sanitized.")
-        .next().atLine(15).withMessage("Make sure that all elements used in this OS command are properly sanitized.")
+        .next().atLine(5).withMessage("Make sure \"input\" is properly sanitized before use in this OS command.")
+        .next().atLine(6).withMessage("Make sure \"cmds\" is properly sanitized before use in this OS command.")
+        .next().atLine(7).withMessage("Make sure \"input\" is properly sanitized before use in this OS command.")
+        .next().atLine(12).withMessage("Make sure \"command\" is properly sanitized before use in this OS command.")
+        .next().atLine(13).withMessage("Make sure \"command\" is properly sanitized before use in this OS command.")
+        .next().atLine(15).withMessage("Make sure \"command\" is properly sanitized before use in this OS command.")
     ;
   }
 }
