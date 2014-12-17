@@ -40,8 +40,8 @@ public class UnusedLocalVariableCheckTest {
       .next().atLine(6).withMessage("Remove this unused \"unusedLocalVariable\" local variable.")
       .next().atLine(15).withMessage("Remove this unused \"foo\" local variable.")
       .next().atLine(18)
-    // .next().atLine(21)
-    ;
+      .next().atLine(21)
+      .next().atLine(31);
   }
 
 }

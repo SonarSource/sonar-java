@@ -30,6 +30,14 @@ class Foo {
     
     int notReadLocalVariable = 0;
     notReadLocalVariable = 1;
+    notReadLocalVariable += 1;
+    notReadLocalVariable++;
+    
+    int readLocalVariable;
+    notReadLocalVariable = readLocalVariable++;
+    
+    unknown++;
+    this.unknown++;
   }
 
 }
