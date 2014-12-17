@@ -248,7 +248,8 @@ public final class CheckList {
       EqualsOnAtomicClassCheck.class,
       LDAPInjectionCheck.class,
       NonShortCircuitLogicCheck.class,
-      OSCommandInjectionCheck.class
+      OSCommandInjectionCheck.class,
+      ArrayHashCodeAndToStringCheck.class
     );
   }
 
