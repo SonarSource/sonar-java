@@ -250,7 +250,8 @@ public final class CheckList {
       NonShortCircuitLogicCheck.class,
       OSCommandInjectionCheck.class,
       ArrayHashCodeAndToStringCheck.class,
-      DefaultEncodingUsageCheck.class
+      DefaultEncodingUsageCheck.class,
+      CloneableImplementingCloneCheck.class
     );
   }
 
