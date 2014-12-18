@@ -19,6 +19,8 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 
 import java.util.Arrays;
@@ -58,6 +60,8 @@ public class Symbols {
   final Type booleanType;
   final Type nullType;
   final Type voidType;
+
+  final BiMap<Type, Type> boxedTypes;
 
   // predefined types
 
@@ -133,6 +137,17 @@ public class Symbols {
     serializableType = bytecodeCompleter.loadClass("java.io.Serializable").type;
     annotationType = bytecodeCompleter.loadClass("java.lang.annotation.Annotation").type;
     enumType = bytecodeCompleter.loadClass("java.lang.Enum").type;
+
+    //Associate boxed types
+    boxedTypes = HashBiMap.create();
+    boxedTypes.put(byteType, bytecodeCompleter.loadClass("java.lang.Byte").type);
+    boxedTypes.put(charType, bytecodeCompleter.loadClass("java.lang.Character").type);
+    boxedTypes.put(shortType, bytecodeCompleter.loadClass("java.lang.Short").type);
+    boxedTypes.put(intType, bytecodeCompleter.loadClass("java.lang.Integer").type);
+    boxedTypes.put(longType, bytecodeCompleter.loadClass("java.lang.Long").type);
+    boxedTypes.put(floatType, bytecodeCompleter.loadClass("java.lang.Float").type);
+    boxedTypes.put(doubleType, bytecodeCompleter.loadClass("java.lang.Double").type);
+    boxedTypes.put(booleanType, bytecodeCompleter.loadClass("java.lang.Boolean").type);
 
     // TODO comment me
     arrayClass = new Symbol.TypeSymbol(Flags.PUBLIC, "Array", noSymbol);

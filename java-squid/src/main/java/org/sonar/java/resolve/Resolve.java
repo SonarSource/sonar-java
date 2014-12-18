@@ -415,16 +415,32 @@ public class Resolve {
       Type.ArrayType lastFormal = (Type.ArrayType) formals.get(formalsSize - 1);
       Type argType = argTypes.get(argsSize - i);
       //Check type of element of array or if we invoke with an array that it is a compatible array type
-      if (!types.isSubtype(argType, lastFormal.elementType) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
+      if (!isAcceptableType(argType, lastFormal.elementType) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
         return false;
       }
     }
     for (int i = 0; i < argsSize - nbArgToCheck; i++) {
-      if (!types.isSubtype(argTypes.get(i), formals.get(i))) {
+      if (!isAcceptableType(argTypes.get(i), formals.get(i))) {
         return false;
       }
     }
     return true;
+  }
+
+  private boolean isAcceptableType(Type arg, Type formal) {
+    return types.isSubtype(arg, formal) || isAcceptableByAutoboxing(arg, formal);
+  }
+
+  private boolean isAcceptableByAutoboxing(Type expressionType, Type formalType) {
+    if (expressionType.isPrimitive()) {
+      return types.isSubtype(symbols.boxedTypes.get(expressionType), formalType);
+    } else {
+      Type unboxedType = symbols.boxedTypes.inverse().get(expressionType);
+      if (unboxedType != null) {
+        return types.isSubtype(unboxedType, formalType);
+      }
+    }
+    return false;
   }
 
   /**

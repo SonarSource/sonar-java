@@ -83,6 +83,10 @@ public class Type {
     return symbol.isParametrized;
   }
 
+  public boolean isPrimitive() {
+    return tag <= BOOLEAN;
+  }
+
   public static class ClassType extends Type {
 
     /**

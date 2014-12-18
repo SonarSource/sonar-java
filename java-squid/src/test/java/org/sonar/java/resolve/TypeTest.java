@@ -86,7 +86,20 @@ public class TypeTest {
     assertThat(arrayType.is("org.foo.bar.MyType[]")).isTrue();
     assertThat(symbols.nullType.is("org.foo.bar.SomeClass")).isTrue();
     assertThat(symbols.unknownType.is("org.foo.bar.SomeClass")).isFalse();
+  }
 
-
+  @Test
+  public void isPrimitive() {
+    assertThat(new Type(Type.BYTE, null).isPrimitive()).isTrue();
+    assertThat(new Type(Type.CHAR, null).isPrimitive()).isTrue();
+    assertThat(new Type(Type.SHORT, null).isPrimitive()).isTrue();
+    assertThat(new Type(Type.INT, null).isPrimitive()).isTrue();
+    assertThat(new Type(Type.LONG, null).isPrimitive()).isTrue();
+    assertThat(new Type(Type.FLOAT, null).isPrimitive()).isTrue();
+    assertThat(new Type(Type.DOUBLE, null).isPrimitive()).isTrue();
+    assertThat(new Type(Type.BOOLEAN, null).isPrimitive()).isTrue();
+    assertThat(new Type(Type.VOID, null).isPrimitive()).isFalse();
+    assertThat(new Type(Type.ARRAY, null).isPrimitive()).isFalse();
+    assertThat(new Type(Type.CLASS, null).isPrimitive()).isFalse();
   }
 }

@@ -111,4 +111,22 @@ class VariableArity {
   void varargs(String... s);
 }
 
+class Autoboxing {
+  void fun1(Integer i){}
+  void fun2(Object i){}
+  void fun3(int i){}
+  void fun4(Boolean b){}
+  void fun5(char c, Object... o){}
+  void bar(){
+    fun1(1);
+    fun2(1);
+    fun3(new Integer(2));
+    fun4(true);
+    fun5('c', 1, 2l, 3.0f);
+  }
+
+
+
+}
+
 

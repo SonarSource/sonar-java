@@ -395,11 +395,15 @@ public class SymbolTableTest {
     assertThat(result.reference(104, 5)).isSameAs(result.symbol("varargs", 100));
     assertThat(result.reference(105, 5)).isSameAs(result.symbol("varargs", 100));
     assertThat(result.reference(106, 5)).isSameAs(result.symbol("varargs", 111));
+    assertThat(result.reference(121, 5)).isSameAs(result.symbol("fun1", 115));
+    assertThat(result.reference(122, 5)).isSameAs(result.symbol("fun2", 116));
+    assertThat(result.reference(123, 5)).isSameAs(result.symbol("fun3", 117));
+    assertThat(result.reference(124, 5)).isSameAs(result.symbol("fun4", 118));
+    assertThat(result.reference(125, 5)).isSameAs(result.symbol("fun5", 119));
   }
-  void foo(String... s){}
+
   @Test
   public void FieldTypes() {
-    foo("", "");
     Result result = Result.createFor("FieldTypes");
     assertThat(result.symbol("fieldBoolean").type.symbol.name).isEqualTo("Boolean");
     assertThat(result.symbol("fieldBoolean").type.symbol.owner().name).isEqualTo("java.lang");
