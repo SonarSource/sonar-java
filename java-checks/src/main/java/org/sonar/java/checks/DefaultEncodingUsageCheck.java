@@ -21,25 +21,74 @@ package org.sonar.java.checks;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
+import java.util.Set;
 
 @Rule(
   key = "S1943",
   priority = Priority.MAJOR,
   tags = {"bug"})
 public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
+
+  private static final String[] FORBIDDEN_TYPES = {"java.io.FileReader", "java.io.FileWriter"};
+
+  private Set<Tree> excluded = Sets.newHashSet();
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
+    excluded.clear();
+  }
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.VARIABLE);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (!excluded.contains(tree)) {
+      super.visitNode(tree);
+      if (tree.is(Tree.Kind.VARIABLE)) {
+        VariableTree variableTree = (VariableTree) tree;
+        boolean foundIssue = checkForbiddenTypes(tree, (AbstractTypedTree) variableTree.type());
+        if (foundIssue) {
+          excluded.add(variableTree.initializer());
+        }
+      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+        checkForbiddenTypes(tree, (MethodInvocationTreeImpl) tree);
+      }
+    }
+  }
+
+  private boolean checkForbiddenTypes(Tree tree, AbstractTypedTree typedTree) {
+    boolean foundIssue = false;
+    Type symbolType = typedTree.getSymbolType();
+    for (String forbiddenType : FORBIDDEN_TYPES) {
+      if (symbolType.is(forbiddenType)) {
+        addIssue(tree, "Remove this use of \"" + forbiddenType + "\"");
+        foundIssue = true;
+      }
+    }
+    return foundIssue;
+  }
 
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {

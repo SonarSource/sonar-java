@@ -40,10 +40,24 @@ class A {
     new Formatter(outputStream);
     new Scanner(file);
     new java.util.Scanner(new java.io.FileInputStream(""));
+    FileReader reader = null;
+    FileReader reader = new FileReader(""); // we should not raise 2 issues
+    java.io.Reader reader2 = fileReader();
+    FileWriter writer = null;
+    java.io.Writer writer2 = fileWriter();
 
     // Compliant
     new String("");
     "".length();
     new java.io.ByteArrayOutputStream().toString("UTF-8");
+    UnknownClass unknown;
+  }
+  
+  FileReader fileReader() {
+    return null;
+  }
+  
+  FileWriter fileWriter() {
+    return null;
   }
 }

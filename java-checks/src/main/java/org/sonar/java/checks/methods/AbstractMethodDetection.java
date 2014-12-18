@@ -51,7 +51,7 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
       if (invocationMatcher.matches(mit, getSemanticModel())) {
         onMethodFound(mit);
       }
-    } else {
+    } else if (tree.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) tree;
       if (invocationMatcher.matches(newClassTree, getSemanticModel())) {
         onConstructorFound(newClassTree);

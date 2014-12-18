@@ -43,7 +43,7 @@ public class DefaultEncodingUsageCheckTest {
       .next().atLine(16).withMessage("Remove this use of constructor \"String(byte[],int,int)\"")
       .next().atLine(17).withMessage("Remove this use of \"getBytes\"")
       .next().atLine(18).withMessage("Remove this use of \"getBytes\"");
-    for (int i = 19; i <= 42; i++) {
+    for (int i = 19; i <= 47; i++) {
         verifier.next().atLine(i);
       }
   }
