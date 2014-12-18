@@ -22,12 +22,14 @@ package org.sonar.java.checks.methods;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -81,16 +83,25 @@ public class MethodInvocationMatcher {
     return this;
   }
 
+  public boolean matches(NewClassTree newClassTree, SemanticModel semanticModel) {
+    NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) newClassTree;
+    return matches(newClassTreeImpl.getConstructorIdentifier(), null, semanticModel);
+  }
+
   public boolean matches(MethodInvocationTree mit, SemanticModel semanticModel) {
     IdentifierTree id = getIdentifier(mit);
     if (id != null) {
-      Symbol symbol = semanticModel.getReference(id);
-      if (symbol != null && symbol.isKind(Symbol.MTH)) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-        Type callSiteType = getCallSiteType(mit, semanticModel);
-        if (isSearchedMethod(methodSymbol, callSiteType)) {
-          return true;
-        }
+      return matches(id, getCallSiteType(mit, semanticModel), semanticModel);
+    }
+    return false;
+  }
+
+  private boolean matches(IdentifierTree id, Type callSiteType, SemanticModel semanticModel) {
+    Symbol symbol = semanticModel.getReference(id);
+    if (symbol != null && symbol.isKind(Symbol.MTH)) {
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+      if (isSearchedMethod(methodSymbol, callSiteType)) {
+        return true;
       }
     }
     return false;
@@ -112,7 +123,7 @@ public class MethodInvocationMatcher {
       result &= typeDefinition.matches(symbol.owner().getType());
     }
     if (callSite != null) {
-      result &= callSite.matches(callSiteType);
+      result &= callSiteType != null && callSite.matches(callSiteType);
     }
     return result;
   }

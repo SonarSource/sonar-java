@@ -28,6 +28,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -65,6 +66,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -415,7 +417,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     resolveAs(tree.identifier(), Symbol.TYP, newClassEnv, false);
     resolveAs(tree.typeArguments(), Symbol.TYP);
     resolveAs(tree.arguments(), Symbol.VAR);
-    resolveConstructorSymbol(tree.identifier(), newClassEnv, getParameterTypes(tree.arguments()));
+    NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) tree;
+    resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassEnv, getParameterTypes(tree.arguments()));
     if (tree.classBody() != null) {
       //TODO create a new symbol and type for each anonymous class
       scan(tree.classBody());
@@ -425,29 +428,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
   }
 
-  private Symbol resolveConstructorSymbol(Tree constructorSelect, Resolve.Env methodEnv, List<Type> argTypes) {
-    Symbol symbol;
-    IdentifierTree identifier = getConstructorIdentifier(constructorSelect);
-    symbol = resolve.findMethod(methodEnv, ((AbstractTypedTree) identifier).getSymbolType().getSymbol(), "<init>", argTypes);
+  private Symbol resolveConstructorSymbol(IdentifierTree identifier, Resolve.Env methodEnv, List<Type> argTypes) {
+    Symbol symbol = resolve.findMethod(methodEnv, ((AbstractTypedTree) identifier).getSymbolType().getSymbol(), "<init>", argTypes);
     associateReference(identifier, symbol);
     return symbol;
   }
-
-  private IdentifierTree getConstructorIdentifier(Tree constructorSelect) {
-    IdentifierTree identifier;
-    if (constructorSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) constructorSelect;
-      identifier = mset.identifier();
-    } else if (constructorSelect.is(Tree.Kind.IDENTIFIER)) {
-      identifier = (IdentifierTree) constructorSelect;
-    } else if(constructorSelect.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      identifier = getConstructorIdentifier(((ParameterizedTypeTree) constructorSelect).type());
-    } else {
-      throw new IllegalStateException("Constructor select is not of the expected type " + constructorSelect);
-    }
-    return identifier;
-  }
-
 
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {

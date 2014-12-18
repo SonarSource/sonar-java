@@ -249,7 +249,8 @@ public final class CheckList {
       LDAPInjectionCheck.class,
       NonShortCircuitLogicCheck.class,
       OSCommandInjectionCheck.class,
-      ArrayHashCodeAndToStringCheck.class
+      ArrayHashCodeAndToStringCheck.class,
+      DefaultEncodingUsageCheck.class
     );
   }
 

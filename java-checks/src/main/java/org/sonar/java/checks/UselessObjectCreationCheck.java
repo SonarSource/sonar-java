@@ -23,12 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -51,21 +48,10 @@ public class UselessObjectCreationCheck extends SubscriptionBaseVisitor {
     ExpressionStatementTree expressionStatement = (ExpressionStatementTree) tree;
     ExpressionTree expression = expressionStatement.expression();
     if (expression.is(Tree.Kind.NEW_CLASS)) {
-      String className = getClassName(((NewClassTree) expression).identifier());
+      NewClassTreeImpl newClassTree = (NewClassTreeImpl) expression;
+      String className = newClassTree.getConstructorIdentifier().name();
       addIssue(tree, "Either remove this useless object instantiation of class \"" + className + "\" or use it");
     }
-  }
-
-  private String getClassName(Tree identifier) {
-    String name = "";
-    if (identifier.is(Tree.Kind.IDENTIFIER)) {
-      name = ((IdentifierTree) identifier).name();
-    } else if (identifier.is(Tree.Kind.MEMBER_SELECT)) {
-      name = ((MemberSelectExpressionTree) identifier).identifier().name();
-    } else if (identifier.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      name = getClassName(((ParameterizedTypeTree) identifier).type());
-    }
-    return name;
   }
 
 }
