@@ -251,7 +251,8 @@ public final class CheckList {
       OSCommandInjectionCheck.class,
       ArrayHashCodeAndToStringCheck.class,
       DefaultEncodingUsageCheck.class,
-      CloneableImplementingCloneCheck.class
+      CloneableImplementingCloneCheck.class,
+      PrintfCheck.class
     );
   }
 
