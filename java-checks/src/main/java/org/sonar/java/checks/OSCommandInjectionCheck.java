@@ -62,13 +62,18 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.METHOD_INVOCATION) && RUNTIME_EXEC_MATCHER.matches((MethodInvocationTree) tree, getSemanticModel())) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
-        arg = mit.arguments().get(0);
+        checkForIssue(tree, mit.arguments().get(0));
       } else if (tree.is(Tree.Kind.NEW_CLASS) && ((AbstractTypedTree) tree).getSymbolType().is("java.lang.ProcessBuilder")) {
-        arg = ((NewClassTree) tree).arguments().get(0);
+        for (ExpressionTree expressionTree : ((NewClassTree) tree).arguments()) {
+          checkForIssue(tree, expressionTree);
+        }
       }
-      if (isDynamicArray(arg, tree)) {
-        addIssue(arg, "Make sure \""+parameterName+"\" is properly sanitized before use in this OS command.");
-      }
+    }
+  }
+
+  private void checkForIssue(Tree tree, ExpressionTree arg) {
+    if (isDynamicArray(arg, tree)) {
+      addIssue(arg, "Make sure \""+parameterName+"\" is properly sanitized before use in this OS command.");
     }
   }
 
