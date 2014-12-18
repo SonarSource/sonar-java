@@ -38,7 +38,8 @@ import java.util.List;
 
 @Rule(
   key = "S1699",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = "bug")
 public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor {
 
   @Override
@@ -82,7 +83,7 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
       if (isInvocationOnSelf) {
         Symbol symbol = getSemanticModel().getReference(methodIdentifier);
         if (symbol != null && isOverridableMethod(symbol) && isMethodDefinedOnConstructedType(symbol)) {
-          addIssue(tree, "Make \"" + methodIdentifier.name() + "\" a \"final\" method or remove this call to it.");
+          addIssue(tree, "Remove this call from a constructor to the overridable \"" + methodIdentifier.name() + "\" method.");
         }
       }
       super.visitMethodInvocation(tree);

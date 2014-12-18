@@ -38,7 +38,7 @@ public class ConstructorCallingOverridableCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ConstructorCallingOverridableCheck.java"),
       new VisitorsBridge(new ConstructorCallingOverridableCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(23).withMessage("Make \"nonFinalPublicMethod\" a \"final\" method or remove this call to it.")
+      .next().atLine(23).withMessage("Remove this call from a constructor to the overridable \"nonFinalPublicMethod\" method.")
       .next().atLine(24)
       .next().atLine(44);
   }
