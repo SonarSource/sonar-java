@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -37,7 +36,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.List;
+
+import static org.sonar.java.model.LiteralUtils.intLiteralValue;
 
 public abstract class AbstractForLoopRule extends SubscriptionBaseVisitor {
 
@@ -53,28 +55,6 @@ public abstract class AbstractForLoopRule extends SubscriptionBaseVisitor {
   }
 
   public abstract void visitForStatement(ForStatementTree forStatement);
-
-  @CheckForNull
-  public static Integer intLiteralValue(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.INT_LITERAL)) {
-      return intLiteralValue((LiteralTree) expression);
-    }
-    if (expression.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
-      UnaryExpressionTree unaryExp = (UnaryExpressionTree) expression;
-      Integer subExpressionIntValue = intLiteralValue(unaryExp.expression());
-      return expression.is(Tree.Kind.UNARY_MINUS) ? minus(subExpressionIntValue) : subExpressionIntValue;
-    }
-    return null;
-  }
-
-  @CheckForNull
-  private static Integer intLiteralValue(LiteralTree literal) {
-    String literalValue = literal.value();
-    if (literalValue.startsWith("0x") || literalValue.startsWith("0b")) {
-      return null;
-    }
-    return Integer.valueOf(literalValue);
-  }
 
   @CheckForNull
   private static Integer minus(@Nullable Integer nullableInteger) {

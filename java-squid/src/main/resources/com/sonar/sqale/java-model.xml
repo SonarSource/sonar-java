@@ -1987,6 +1987,20 @@
       <name>Data</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S2197</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>5</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S2204</rule-key>
         <prop>
           <key>remediationFunction</key>

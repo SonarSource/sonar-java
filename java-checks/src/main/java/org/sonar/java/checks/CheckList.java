@@ -252,7 +252,8 @@ public final class CheckList {
       ArrayHashCodeAndToStringCheck.class,
       DefaultEncodingUsageCheck.class,
       CloneableImplementingCloneCheck.class,
-      PrintfCheck.class
+      PrintfCheck.class,
+      ModulusEqualityCheck.class
     );
   }
 

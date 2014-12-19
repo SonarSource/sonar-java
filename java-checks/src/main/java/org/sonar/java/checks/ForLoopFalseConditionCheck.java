@@ -23,6 +23,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
@@ -96,7 +97,7 @@ public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
   }
 
   private Integer eval(ExpressionTree expression, Iterable<ForLoopInitializer> initializers) {
-    Integer intLiteralValue = intLiteralValue(expression);
+    Integer intLiteralValue = LiteralUtils.intLiteralValue(expression);
     if (intLiteralValue == null) {
       for (ForLoopInitializer initializer : initializers) {
         if (initializer.hasSameIdentifier(expression)) {
