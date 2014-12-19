@@ -84,16 +84,9 @@ public class Type {
       if (is(fullyQualifiedName)) {
         return true;
       }
-      ClassType classType = (ClassType) this;
-      if (classType.supertype != null && classType.supertype.isSubtypeOf(fullyQualifiedName)) {
-        return true;
-      }
-      //FIXME null for java.lang.Object
-      if (classType.interfaces != null) {
-        for (Type anInterface : classType.interfaces) {
-          if (anInterface.isSubtypeOf(fullyQualifiedName)) {
-            return true;
-          }
+      for (ClassType classType : symbol.superTypes()) {
+        if (classType.is(fullyQualifiedName)) {
+          return true;
         }
       }
     }

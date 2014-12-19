@@ -144,7 +144,7 @@ public class PrintfCheck extends AbstractMethodDetection {
   }
 
   private void checkTimeConversion(MethodInvocationTree mit, String param, Type argType) {
-    if ((param.startsWith("t") || param.startsWith("T"))) {
+    if (param.startsWith("t") || param.startsWith("T")) {
       String timeConversion = param.substring(1);
       if (timeConversion.isEmpty()) {
         addIssue(mit, "Time conversion requires a second character.");
