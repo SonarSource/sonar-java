@@ -47,7 +47,25 @@ import java.util.Set;
   tags = {"bug"})
 public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
 
-  private static final String[] FORBIDDEN_TYPES = {"java.io.FileReader", "java.io.FileWriter"};
+  private static final String INT = "int";
+  private static final String BOOLEAN = "boolean";
+  private static final String BYTE_ARRAY = "byte[]";
+  private static final String JAVA_IO_FILE = "java.io.File";
+  private static final String JAVA_IO_FILEWRITER = "java.io.FileWriter";
+  private static final String JAVA_IO_FILEREADER = "java.io.FileReader";
+  private static final String JAVA_IO_PRINTWRITER = "java.io.PrintWriter";
+  private static final String JAVA_IO_PRINTSTREAM = "java.io.PrintStream";
+  private static final String JAVA_IO_INPUTSTREAM = "java.io.InputStream";
+  private static final String JAVA_IO_OUTPUTSTREAM = "java.io.OutputStream";
+  private static final String JAVA_IO_BYTEARRAYOUTPUTSTREAM = "java.io.ByteArrayOutputStream";
+  private static final String JAVA_IO_OUTPUTSTREAMWRITER = "java.io.OutputStreamWriter";
+  private static final String JAVA_IO_INPUTSTREAMREADER = "java.io.InputStreamReader";
+  private static final String JAVA_NIO_FILE_PATH = "java.nio.file.Path";
+  private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final String JAVA_UTIL_SCANNER = "java.util.Scanner";
+  private static final String JAVA_UTIL_FORMATTER = "java.util.Formatter";
+
+  private static final String[] FORBIDDEN_TYPES = {JAVA_IO_FILEREADER, JAVA_IO_FILEWRITER};
 
   private Set<Tree> excluded = Sets.newHashSet();
 
@@ -93,29 +111,29 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-      method("java.lang.String", "getBytes"),
-      method("java.lang.String", "getBytes", "int", "int", "byte[]", "int"),
-      constructor("java.lang.String", "byte[]"),
-      constructor("java.lang.String", "byte[]", "int", "int"),
-      method("java.io.ByteArrayOutputStream", "toString"),
-      constructor("java.io.FileReader").withNoParameterConstraint(),
-      constructor("java.io.FileWriter").withNoParameterConstraint(),
-      constructor("java.io.InputStreamReader", "java.io.InputStream"),
-      constructor("java.io.OutputStreamWriter", "java.io.OutputStream"),
-      constructor("java.io.PrintStream", "java.io.File"),
-      constructor("java.io.PrintStream", "java.io.OutputStream"),
-      constructor("java.io.PrintStream", "java.io.OutputStream", "boolean"),
-      constructor("java.io.PrintStream", "java.lang.String"),
-      constructor("java.io.PrintWriter", "java.io.File"),
-      constructor("java.io.PrintWriter", "java.io.OutputStream"),
-      constructor("java.io.PrintWriter", "java.io.OutputStream", "boolean"),
-      constructor("java.io.PrintWriter", "java.lang.String"),
-      constructor("java.util.Formatter", "java.lang.String"),
-      constructor("java.util.Formatter", "java.io.File"),
-      constructor("java.util.Formatter", "java.io.OutputStream"),
-      constructor("java.util.Scanner", "java.io.File"),
-      constructor("java.util.Scanner", "java.nio.file.Path"),
-      constructor("java.util.Scanner", "java.io.InputStream"));
+      method(JAVA_LANG_STRING, "getBytes"),
+      method(JAVA_LANG_STRING, "getBytes", INT, INT, BYTE_ARRAY, INT),
+      constructor(JAVA_LANG_STRING, BYTE_ARRAY),
+      constructor(JAVA_LANG_STRING, BYTE_ARRAY, INT, INT),
+      method(JAVA_IO_BYTEARRAYOUTPUTSTREAM, "toString"),
+      constructor(JAVA_IO_FILEREADER).withNoParameterConstraint(),
+      constructor(JAVA_IO_FILEWRITER).withNoParameterConstraint(),
+      constructor(JAVA_IO_INPUTSTREAMREADER, JAVA_IO_INPUTSTREAM),
+      constructor(JAVA_IO_OUTPUTSTREAMWRITER, JAVA_IO_OUTPUTSTREAM),
+      constructor(JAVA_IO_PRINTSTREAM, JAVA_IO_FILE),
+      constructor(JAVA_IO_PRINTSTREAM, JAVA_IO_OUTPUTSTREAM),
+      constructor(JAVA_IO_PRINTSTREAM, JAVA_IO_OUTPUTSTREAM, BOOLEAN),
+      constructor(JAVA_IO_PRINTSTREAM, JAVA_LANG_STRING),
+      constructor(JAVA_IO_PRINTWRITER, JAVA_IO_FILE),
+      constructor(JAVA_IO_PRINTWRITER, JAVA_IO_OUTPUTSTREAM),
+      constructor(JAVA_IO_PRINTWRITER, JAVA_IO_OUTPUTSTREAM, BOOLEAN),
+      constructor(JAVA_IO_PRINTWRITER, JAVA_LANG_STRING),
+      constructor(JAVA_UTIL_FORMATTER, JAVA_LANG_STRING),
+      constructor(JAVA_UTIL_FORMATTER, JAVA_IO_FILE),
+      constructor(JAVA_UTIL_FORMATTER, JAVA_IO_OUTPUTSTREAM),
+      constructor(JAVA_UTIL_SCANNER, JAVA_IO_FILE),
+      constructor(JAVA_UTIL_SCANNER, JAVA_NIO_FILE_PATH),
+      constructor(JAVA_UTIL_SCANNER, JAVA_IO_INPUTSTREAM));
   }
 
   private MethodInvocationMatcher method(String type, String methodName, String... argTypes) {

@@ -147,17 +147,17 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   }
 
   private IdentifierTree getConstructorIdentifier(Tree constructorSelect) {
-    IdentifierTree identifier;
+    IdentifierTree constructorIdentifier;
     if (constructorSelect.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) constructorSelect;
-      identifier = mset.identifier();
+      constructorIdentifier = mset.identifier();
     } else if (constructorSelect.is(Tree.Kind.IDENTIFIER)) {
-      identifier = (IdentifierTree) constructorSelect;
+      constructorIdentifier = (IdentifierTree) constructorSelect;
     } else if (constructorSelect.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      identifier = getConstructorIdentifier(((ParameterizedTypeTree) constructorSelect).type());
+      constructorIdentifier = getConstructorIdentifier(((ParameterizedTypeTree) constructorSelect).type());
     } else {
       throw new IllegalStateException("Constructor select is not of the expected type " + constructorSelect);
     }
-    return identifier;
+    return constructorIdentifier;
   }
 }
