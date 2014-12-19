@@ -253,7 +253,8 @@ public final class CheckList {
       DefaultEncodingUsageCheck.class,
       CloneableImplementingCloneCheck.class,
       PrintfCheck.class,
-      ModulusEqualityCheck.class
+      ModulusEqualityCheck.class,
+      RunFinalizersCheck.class
     );
   }
 
