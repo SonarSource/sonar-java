@@ -30,7 +30,7 @@ import java.util.List;
 @Rule(
     key = "S1065",
     priority = Priority.MAJOR,
-    tags = {"misra-c", "unused"})
+    tags = {"misra", "unused"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class UnusedLabelCheck extends SubscriptionBaseVisitor {
 

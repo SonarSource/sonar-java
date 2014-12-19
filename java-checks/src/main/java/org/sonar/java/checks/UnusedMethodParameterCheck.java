@@ -44,7 +44,7 @@ import java.util.List;
 @Rule(
     key = UnusedMethodParameterCheck.RULE_KEY,
     priority = Priority.MAJOR,
-    tags = {"unused"})
+    tags = {"unused", "misra"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaFileScanner {
 

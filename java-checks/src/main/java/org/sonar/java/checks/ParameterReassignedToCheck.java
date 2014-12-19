@@ -44,7 +44,7 @@ import java.util.Set;
 @Rule(
   key = ParameterReassignedToCheck.RULE_KEY,
   priority = Priority.MAJOR,
-  tags={"pitfall"})
+  tags={"pitfall", "misra"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaFileScanner {
 

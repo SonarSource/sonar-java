@@ -33,7 +33,8 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 @Rule(
   key = IncrementDecrementInSubExpressionCheck.RULE_KEY,
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"cert", "misra"})
 public class IncrementDecrementInSubExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S881";

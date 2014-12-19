@@ -36,7 +36,7 @@ import java.util.List;
 @Rule(
     key = "S1244",
     priority = Priority.CRITICAL,
-    tags = {"bug"})
+    tags = {"bug", "misra"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class FloatEqualityCheck extends SubscriptionBaseVisitor {
 
