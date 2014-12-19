@@ -102,7 +102,8 @@ public class ArchitectureCheck extends BytecodeVisitor {
       } else {
         int sourceLineNumber = getSourceLineNumber(edge);
         // we log only first occurrence with non-zero line number if exists
-        if (internalNames.get(internalNameTargetClass).getLine() == 0 && sourceLineNumber != 0) {
+        Integer line = internalNames.get(internalNameTargetClass).getLine();
+        if ((line == null || line == 0) && sourceLineNumber != 0) {
           logMessage(asmClass.getInternalName(), internalNameTargetClass, sourceLineNumber);
         }
       }
@@ -121,7 +122,9 @@ public class ArchitectureCheck extends BytecodeVisitor {
 
   private void logMessage(String fromClass, String toClass, int sourceLineNumber) {
     CheckMessage message = new CheckMessage(this, fromClass + " must not use " + toClass);
-    message.setLine(sourceLineNumber);
+    if(sourceLineNumber != 0) {
+      message.setLine(sourceLineNumber);
+    }
     internalNames.put(toClass, message);
   }
 
