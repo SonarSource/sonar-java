@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -102,9 +103,13 @@ public class PrintfCheck extends AbstractMethodDetection {
   }
 
   private void cleanupLineSeparator(List<String> params) {
-    //Cleanup %n values
-    while(params.contains("n")) {
-      params.remove("n");
+    //Cleanup %n and %% values
+    Iterator<String> iter = params.iterator();
+    while (iter.hasNext()) {
+      String param = iter.next();
+      if("n".equals(param) || "%".equals(param)) {
+        iter.remove();
+      }
     }
   }
 
