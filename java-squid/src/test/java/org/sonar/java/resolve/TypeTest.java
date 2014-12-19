@@ -102,4 +102,20 @@ public class TypeTest {
     assertThat(new Type(Type.ARRAY, null).isPrimitive()).isFalse();
     assertThat(new Type(Type.CLASS, null).isPrimitive()).isFalse();
   }
+
+  @Test
+  public void isSubtypeOf() throws Exception {
+    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
+    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    Type.ClassType classType = (Type.ClassType) typeSymbol.type;
+    classType.supertype = symbols.objectType;
+    classType.interfaces = Lists.newArrayList(symbols.cloneableType);
+    assertThat(classType.isSubtypeOf("java.lang.Object")).isTrue();
+    assertThat(classType.isSubtypeOf("org.foo.bar.MyType")).isTrue();
+    assertThat(classType.isSubtypeOf("java.lang.CharSequence")).isFalse();
+    assertThat(classType.isSubtypeOf("java.lang.Cloneable")).isTrue();
+    assertThat(new Type(Type.BYTE, null).isSubtypeOf("java.lang.Object")).isFalse();
+
+
+  }
 }

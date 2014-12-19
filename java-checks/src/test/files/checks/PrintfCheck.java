@@ -1,14 +1,14 @@
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Formatter;
+import java.util.GregorianCalendar;
 import java.util.Locale;
-
 class A {
   void foo(){
     Object myObject;
     String.format("The value of my integer is %d", "Hello World");  // Noncompliant; an 'int' is expected rather than a String
     String.format("First {0} and then {1}", "foo", "bar");  //Noncompliant. Looks like there is a confusion with the use of {{java.text.MessageFormat}}, parameters "foo" and "bar" will be simply ignored here
-    String.format("Duke's Birthday year is %tX", myObject);  //Noncompliant; X is not a supported time conversion character
+    String.format("Duke's Birthday year is %tX", 12l);  //Noncompliant; X is not a supported time conversion character
     String.format("Display %3$d and then %d", 1, 2, 3);   //Noncompliant; the second argument '2' is unused
     String.format("Too many arguments %d and %d", 1, 2, 3);  //Noncompliant; the third argument '3' is unused
     String.format("Not enough arguments %d and %d", 1);  //Noncompliant; the second argument is missing
@@ -33,6 +33,11 @@ class A {
     pr.format("%d", new java.math.BigInteger("12"));
     String.format("Too many arguments %d and %d and %d", 1, 2, 3, 4);  //Noncompliant
     String.format("normal %d%% ", 1);  //Compliant
+    String.format("Duke's Birthday year is %t", 12l);  //Noncompliant; t argument is empty
+    String.format("Duke's Birthday year is %tH", loc);  //Noncompliant; loc is not a supported object
+    String.format("%08d%n", 1);
+    GregorianCalendar gc;
+    String.format("Duke's Birthday year is %tH", gc);
 
   }
 }

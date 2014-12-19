@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -84,11 +85,7 @@ public class PrintfCheck extends AbstractMethodDetection {
       String formatString = trimQuotes(((LiteralTree) formatStringTree).value());
       checkLineFeed(formatString, mit);
 
-      List<String> params = getParameters(formatString);
-      if (firstArgumentIsLT(params)) {
-        addIssue(mit, "The argument index '<' refers to the previous format specifier but there isn't one.");
-        return;
-      }
+      List<String> params = getParameters(formatString, mit);
       if (usesMessageFormat(formatString, params)) {
         addIssue(mit, "Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here");
         return;
@@ -107,13 +104,13 @@ public class PrintfCheck extends AbstractMethodDetection {
     Iterator<String> iter = params.iterator();
     while (iter.hasNext()) {
       String param = iter.next();
-      if("n".equals(param) || "%".equals(param)) {
+      if ("n".equals(param) || "%".equals(param)) {
         iter.remove();
       }
     }
   }
 
-  private void checkLineFeed( String formatString, MethodInvocationTree mit) {
+  private void checkLineFeed(String formatString, MethodInvocationTree mit) {
     if (formatString.contains("\\n")) {
       addIssue(mit, "%n should be used in place of \\n to produce the platform-specific line separator.");
     }
@@ -140,12 +137,26 @@ public class PrintfCheck extends AbstractMethodDetection {
       if (param.startsWith("b") && !(argType.is("boolean") || argType.is("java.lang.Boolean"))) {
         addIssue(mit, "Directly inject the boolean value.");
       }
-      if((param.startsWith("t") || param.startsWith("T")) && !TIME_CONVERSIONS.contains(param.substring(1))) {
-        addIssue(mit, param.substring(1)+" is not a supported time conversion character");
-      }
+      checkTimeConversion(mit, param, argType);
 
     }
     reportUnusedArgs(mit, args, unusedArgs);
+  }
+
+  private void checkTimeConversion(MethodInvocationTree mit, String param, Type argType) {
+    if ((param.startsWith("t") || param.startsWith("T"))) {
+      String timeConversion = param.substring(1);
+      if (timeConversion.isEmpty()) {
+        addIssue(mit, "Time conversion requires a second character.");
+        return;
+      }
+      if (!TIME_CONVERSIONS.contains(timeConversion)) {
+        addIssue(mit, timeConversion + " is not a supported time conversion character");
+      }
+      if (!(argType.isNumerical() || argType.is("java.lang.Long") || argType.isSubtypeOf("java.util.Date") || argType.isSubtypeOf("java.util.Calendar"))) {
+        addIssue(mit, "Time argument is expected (long, Long, Date or Calendar).");
+      }
+    }
   }
 
   private boolean isNumerical(Type argType) {
@@ -174,24 +185,33 @@ public class PrintfCheck extends AbstractMethodDetection {
       } else if (i == 2) {
         stringArgIndex = "3rd";
       } else if (i >= 3) {
-        stringArgIndex = (i+1) + "th";
+        stringArgIndex = (i + 1) + "th";
       }
       addIssue(mit, stringArgIndex + " argument is not used.");
     }
   }
 
-  private List<String> getParameters(String formatString) {
+  private List<String> getParameters(String formatString, MethodInvocationTree mit) {
     List<String> params = Lists.newArrayList();
     Matcher matcher = PRINTF_PARAM_PATTERN.matcher(formatString);
     while (matcher.find()) {
-      //remove starting %
-      params.add(matcher.group().substring(1));
+      if (firstArgumentIsLT(params, matcher.group(2))) {
+        addIssue(mit, "The argument index '<' refers to the previous format specifier but there isn't one.");
+        continue;
+      }
+      StringBuilder param = new StringBuilder();
+      for (int groupIndex : new int[]{1, 5, 6}) {
+        if (matcher.group(groupIndex) != null) {
+          param.append(matcher.group(groupIndex));
+        }
+      }
+      params.add(param.toString());
     }
     return params;
   }
 
-  private boolean firstArgumentIsLT(List<String> params) {
-    return !params.isEmpty() && params.get(0).startsWith("<");
+  private boolean firstArgumentIsLT(List<String> params, @Nullable String group) {
+    return params.isEmpty() && group != null && group.startsWith("<");
   }
 
   private String trimQuotes(String value) {

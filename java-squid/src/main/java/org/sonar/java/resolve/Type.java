@@ -62,20 +62,42 @@ public class Type {
     //JLS8 4.2
     return tag <= DOUBLE;
   }
+
   public Symbol.TypeSymbol getSymbol() {
     return symbol;
   }
 
   public boolean is(String fullyQualifiedName) {
-    if(isTagged(CLASS)) {
+    if (isTagged(CLASS)) {
       return fullyQualifiedName.equals(symbol.getFullyQualifiedName());
-    } else if(tag<CLASS) {
+    } else if (tag < CLASS) {
       //primitive type
       return fullyQualifiedName.equals(symbol.name);
-    }else if(isTagged(ARRAY)) {
-      return fullyQualifiedName.endsWith("[]") && ((ArrayType)this).elementType.is(fullyQualifiedName.substring(0, fullyQualifiedName.length()-2));
+    } else if (isTagged(ARRAY)) {
+      return fullyQualifiedName.endsWith("[]") && ((ArrayType) this).elementType.is(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2));
     }
     return isTagged(BOT) || !isTagged(UNKNOWN);
+  }
+
+  public boolean isSubtypeOf(String fullyQualifiedName) {
+    if (isTagged(CLASS)) {
+      if (is(fullyQualifiedName)) {
+        return true;
+      }
+      ClassType classType = (ClassType) this;
+      if (classType.supertype != null && classType.supertype.isSubtypeOf(fullyQualifiedName)) {
+        return true;
+      }
+      //FIXME null for java.lang.Object
+      if (classType.interfaces != null) {
+        for (Type anInterface : classType.interfaces) {
+          if (anInterface.isSubtypeOf(fullyQualifiedName)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   public boolean isParametrized() {
@@ -85,6 +107,11 @@ public class Type {
 
   public boolean isPrimitive() {
     return tag <= BOOLEAN;
+  }
+
+  @Override
+  public String toString() {
+    return symbol == null ? "" : symbol.toString();
   }
 
   public static class ClassType extends Type {
@@ -168,12 +195,7 @@ public class Type {
 
     @Override
     public String toString() {
-      return resultType==null ? "constructor" : "returns " + resultType.toString();
+      return resultType == null ? "constructor" : "returns " + resultType.toString();
     }
-  }
-
-  @Override
-  public String toString() {
-    return symbol == null ? "" : symbol.toString();
   }
 }
