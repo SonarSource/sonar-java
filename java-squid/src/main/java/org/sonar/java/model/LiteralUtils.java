@@ -60,4 +60,9 @@ public class LiteralUtils {
     return nullableInteger == null ? null : -nullableInteger;
   }
 
+
+  public static String trimQuotes(String value) {
+    return value.substring(1, value.length() - 1);
+  }
+
 }

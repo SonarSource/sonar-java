@@ -38,6 +38,7 @@ public class RSAUsesOAEPCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RSAUsesOAEPCheck.java"), new VisitorsBridge(new RSAUsesOAEPCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(6).withMessage("Use an RSA algorithm with an OAEP (Optimal Asymmetric Encryption Padding).")
+        .next().atLine(12).withMessage("Use an RSA algorithm with an OAEP (Optimal Asymmetric Encryption Padding).")
     ;
   }
 }

@@ -23,11 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -37,34 +34,23 @@ import java.util.List;
     priority = Priority.CRITICAL,
     tags = {"cwe", "owasp-top10", "security"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class RSAUsesOAEPCheck extends AbstractMethodDetection {
+public class RSAUsesOAEPCheck extends SubscriptionBaseVisitor {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodInvocationMatcher.create().typeDefinition("javax.crypto.Cipher").name("getInstance").withNoParameterConstraint());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.STRING_LITERAL);
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
-    ExpressionTree firstArg = mit.arguments().get(0);
-    if (firstArg.is(Tree.Kind.STRING_LITERAL)) {
-      String tranformation = trimQuotes(((LiteralTree) firstArg).value());
-      String[] transformationElements = tranformation.split("/");
-      if (transformationElements.length > 2 && isRSA(transformationElements[0]) && !isOAEPadding(transformationElements[2])) {
-        addIssue(mit, "Use an RSA algorithm with an OAEP (Optimal Asymmetric Encryption Padding).");
-      }
+  public void visitNode(Tree tree) {
+    LiteralTree lt = (LiteralTree) tree;
+    if (isRSA(LiteralUtils.trimQuotes(lt.value()))) {
+      addIssue(lt, "Use an RSA algorithm with an OAEP (Optimal Asymmetric Encryption Padding).");
     }
   }
 
   private boolean isRSA(String algorithmName) {
-    return "RSA".equals(algorithmName);
+    return algorithmName.startsWith("RSA/NONE");
   }
 
-  private boolean isOAEPadding(String padding) {
-    return padding.startsWith("OAEP");
-  }
-
-  private String trimQuotes(String value) {
-    return value.substring(1, value.length() - 1);
-  }
 }
