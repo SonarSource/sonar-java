@@ -38,6 +38,8 @@ class Foo {
     
     unknown++;
     this.unknown++;
+    java.util.Stream<Object> s;
+    s.map(v -> "");
   }
 
 }
