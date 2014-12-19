@@ -254,7 +254,8 @@ public final class CheckList {
       CloneableImplementingCloneCheck.class,
       PrintfCheck.class,
       ModulusEqualityCheck.class,
-      RunFinalizersCheck.class
+      RunFinalizersCheck.class,
+      LongBitsToDoubleOnIntCheck.class
     );
   }
 
