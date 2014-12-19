@@ -58,7 +58,6 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
   @Override
   public void visitNode(Tree tree) {
-    ExpressionTree arg = null;
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.METHOD_INVOCATION) && RUNTIME_EXEC_MATCHER.matches((MethodInvocationTree) tree, getSemanticModel())) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;

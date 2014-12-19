@@ -31,6 +31,7 @@ class A {
     pr.format("%TH", 1l);
     pr.format("%d", new Long(12));
     pr.format("%d", new java.math.BigInteger("12"));
+    String.format("Too many arguments %d and %d and %d", 1, 2, 3, 4);  //Noncompliant
 
   }
 }

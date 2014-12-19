@@ -46,21 +46,22 @@ import java.util.regex.Pattern;
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class PrintfCheck extends AbstractMethodDetection {
 
-  private static final Pattern pattern = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
+  private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
   private static final Set<String> TIME_CONVERSIONS = Sets.newHashSet(
       "H", "I", "k", "l", "M", "S", "L", "N", "p", "z", "Z", "s", "Q",
       "B", "b", "h", "A", "a", "C", "Y", "y", "j", "m", "d", "e",
       "R", "T", "r", "D", "F", "c"
   );
+  private static final String FORMAT_METHOD_NAME = "format";
 
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-        MethodInvocationMatcher.create().typeDefinition("java.lang.String").name("format").withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.util.Formatter").name("format").withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.io.PrintStream").name("format").withNoParameterConstraint(),
+        MethodInvocationMatcher.create().typeDefinition("java.lang.String").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+        MethodInvocationMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+        MethodInvocationMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
         MethodInvocationMatcher.create().typeDefinition("java.io.PrintStream").name("printf").withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.io.PrintWriter").name("format").withNoParameterConstraint(),
+        MethodInvocationMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
         MethodInvocationMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withNoParameterConstraint()
     );
   }
@@ -80,58 +81,66 @@ public class PrintfCheck extends AbstractMethodDetection {
     }
     if (formatStringTree.is(Tree.Kind.STRING_LITERAL)) {
       String formatString = trimQuotes(((LiteralTree) formatStringTree).value());
+      checkLineFeed(formatString, mit);
+
       List<String> params = getParameters(formatString);
-
-      if (formatString.contains("\\n")) {
-        addIssue(mit, "%n should be used in place of \\n to produce the platform-specific line separator.");
-      }
-
       if (firstArgumentIsLT(params)) {
         addIssue(mit, "The argument index '<' refers to the previous format specifier but there isn't one.");
         return;
       }
-
       if (usesMessageFormat(formatString, params)) {
         addIssue(mit, "Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here");
         return;
       }
-
-      //Cleanup %n values
-      while(params.contains("n")) {
-        params.remove("n");
-      }
+      cleanupLineSeparator(params);
       if (params.size() > args.size()) {
         addIssue(mit, "Not enough arguments.");
         return;
       }
-
-      int index = 0;
-      List<ExpressionTree> unusedArgs = Lists.newArrayList(args);
-      for (String rawParam : params) {
-        String param = rawParam;
-        int argIndex = index;
-        if (param.contains("$")) {
-          argIndex = Integer.valueOf(param.substring(0, param.indexOf("$"))) - 1;
-          param = param.substring(param.indexOf("$") + 1);
-        } else {
-          index++;
-        }
-        ExpressionTree argExpressionTree = args.get(argIndex);
-        unusedArgs.remove(argExpressionTree);
-        Type argType = ((AbstractTypedTree) argExpressionTree).getSymbolType();
-        if (param.startsWith("d") && !isNumerical(argType)) {
-          addIssue(mit, "An 'int' is expected rather than a " + argType + ".");
-        }
-        if (param.startsWith("b") && !(argType.is("boolean") || argType.is("java.lang.Boolean"))) {
-          addIssue(mit, "Directly inject the boolean value.");
-        }
-        if((param.startsWith("t") || param.startsWith("T")) && !TIME_CONVERSIONS.contains(param.substring(1))) {
-          addIssue(mit, param.substring(1)+" is not a supported time conversion character");
-        }
-
-      }
-      reportUnusedArgs(mit, args, unusedArgs);
+      verifyParameters(mit, args, params);
     }
+  }
+
+  private void cleanupLineSeparator(List<String> params) {
+    //Cleanup %n values
+    while(params.contains("n")) {
+      params.remove("n");
+    }
+  }
+
+  private void checkLineFeed( String formatString, MethodInvocationTree mit) {
+    if (formatString.contains("\\n")) {
+      addIssue(mit, "%n should be used in place of \\n to produce the platform-specific line separator.");
+    }
+  }
+
+  private void verifyParameters(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {
+    int index = 0;
+    List<ExpressionTree> unusedArgs = Lists.newArrayList(args);
+    for (String rawParam : params) {
+      String param = rawParam;
+      int argIndex = index;
+      if (param.contains("$")) {
+        argIndex = Integer.valueOf(param.substring(0, param.indexOf("$"))) - 1;
+        param = param.substring(param.indexOf("$") + 1);
+      } else {
+        index++;
+      }
+      ExpressionTree argExpressionTree = args.get(argIndex);
+      unusedArgs.remove(argExpressionTree);
+      Type argType = ((AbstractTypedTree) argExpressionTree).getSymbolType();
+      if (param.startsWith("d") && !isNumerical(argType)) {
+        addIssue(mit, "An 'int' is expected rather than a " + argType + ".");
+      }
+      if (param.startsWith("b") && !(argType.is("boolean") || argType.is("java.lang.Boolean"))) {
+        addIssue(mit, "Directly inject the boolean value.");
+      }
+      if((param.startsWith("t") || param.startsWith("T")) && !TIME_CONVERSIONS.contains(param.substring(1))) {
+        addIssue(mit, param.substring(1)+" is not a supported time conversion character");
+      }
+
+    }
+    reportUnusedArgs(mit, args, unusedArgs);
   }
 
   private boolean isNumerical(Type argType) {
@@ -160,7 +169,7 @@ public class PrintfCheck extends AbstractMethodDetection {
       } else if (i == 2) {
         stringArgIndex = "3rd";
       } else if (i >= 3) {
-        stringArgIndex = i + "th";
+        stringArgIndex = (i+1) + "th";
       }
       addIssue(mit, stringArgIndex + " argument is not used.");
     }
@@ -168,7 +177,7 @@ public class PrintfCheck extends AbstractMethodDetection {
 
   private List<String> getParameters(String formatString) {
     List<String> params = Lists.newArrayList();
-    Matcher matcher = pattern.matcher(formatString);
+    Matcher matcher = PRINTF_PARAM_PATTERN.matcher(formatString);
     while (matcher.find()) {
       //remove starting %
       params.add(matcher.group().substring(1));

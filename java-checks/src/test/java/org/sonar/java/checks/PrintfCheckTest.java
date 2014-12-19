@@ -51,6 +51,7 @@ public class PrintfCheckTest {
         .next().atLine(26).withMessage("An 'int' is expected rather than a String.")
         .next().atLine(27).withMessage("An 'int' is expected rather than a String.")
         .next().atLine(28).withMessage("An 'int' is expected rather than a String.")
+        .next().atLine(34).withMessage("4th argument is not used.")
     ;
   }
 }
