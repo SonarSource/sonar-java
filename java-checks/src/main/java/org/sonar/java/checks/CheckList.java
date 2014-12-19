@@ -255,7 +255,8 @@ public final class CheckList {
       PrintfCheck.class,
       ModulusEqualityCheck.class,
       RunFinalizersCheck.class,
-      LongBitsToDoubleOnIntCheck.class
+      LongBitsToDoubleOnIntCheck.class,
+      SynchronizationOnStringOrBoxedCheck.class
     );
   }
 
