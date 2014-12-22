@@ -41,7 +41,8 @@ public class ModulusEqualityCheckTest {
       .next().atLine(4).withMessage("The results of this modulus operation may not be positive.")
       .next().atLine(5).withMessage("The results of this modulus operation may not be negative.")
       .next().atLine(6).withMessage("The results of this modulus operation may not be positive.")
-      .next().atLine(7);
+      .next().atLine(7)
+      .next().atLine(8);
   }
 
 }

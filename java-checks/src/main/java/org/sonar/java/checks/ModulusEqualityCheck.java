@@ -31,6 +31,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -88,6 +90,12 @@ public class ModulusEqualityCheck extends SubscriptionBaseVisitor {
       IdentifierTree identifier = (IdentifierTree) expressionTree;
       Symbol symbol = getSemanticModel().getReference(identifier);
       return methodParams.contains(symbol);
+    } else if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expressionTree;
+      return isMethodParameter(memberSelectExpressionTree.expression());
+    } else if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) expressionTree;
+      return isMethodParameter(methodInvocationTree.methodSelect());
     }
     return false;
   }
