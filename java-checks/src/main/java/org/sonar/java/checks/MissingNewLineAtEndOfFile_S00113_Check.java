@@ -23,18 +23,21 @@ import com.google.common.io.Closeables;
 import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S00113", priority = Priority.MINOR, tags = {"convention"})
-public class MissingNewLineAtEndOfFile_S00113_Check extends SubscriptionBaseVisitor {
+public class MissingNewLineAtEndOfFile_S00113_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
+  private Charset charset;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -71,7 +74,12 @@ public class MissingNewLineAtEndOfFile_S00113_Check extends SubscriptionBaseVisi
     if (randomAccessFile.read(chars) < 1) {
       return false;
     }
-    String ch = new String(chars);
+    String ch = new String(chars, charset);
     return "\n".equals(ch) || "\r".equals(ch);
+  }
+
+  @Override
+  public void setCharset(Charset charset) {
+    this.charset = charset;
   }
 }
