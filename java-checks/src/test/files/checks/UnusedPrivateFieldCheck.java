@@ -61,6 +61,23 @@ interface FooInterface {
 
 }
 
+class SpecialAnnotations {
+  
+  @lombok.Getter
+  private int foo; // Compliant
+
+  @javax.enterprise.inject.Produces
+  private int bar; // Compliant
+  
+}
+
+@lombok.Getter
+class ClassLevelAnnotations {
+  
+  private int foo; // Compliant
+
+}
+
 class TestSonar {
   private static Transformer TRANSFORMER = new Transformer();
 

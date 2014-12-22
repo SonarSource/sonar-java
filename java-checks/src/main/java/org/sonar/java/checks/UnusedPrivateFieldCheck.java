@@ -26,8 +26,11 @@ import com.google.common.collect.Lists;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -36,6 +39,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -48,6 +52,8 @@ import java.util.List;
   tags={"unused"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
+
+  private static final String LOMBOK_GETTER = "lombok.Getter";
 
   private static final Tree.Kind[] ASSIGNMENT_KINDS = {
     Tree.Kind.ASSIGNMENT,
@@ -105,9 +111,11 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkClassFields(ClassTree classTree) {
-    for (Tree member : classTree.members()) {
-      if (member.is(Tree.Kind.VARIABLE)) {
-        checkIfUnused((VariableTree) member);
+    if (!hasAnnotation(classTree.modifiers(), LOMBOK_GETTER)) {
+      for (Tree member : classTree.members()) {
+        if (member.is(Tree.Kind.VARIABLE)) {
+          checkIfUnused((VariableTree) member);
+        }
       }
     }
   }
@@ -116,10 +124,25 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
     if (tree.modifiers().modifiers().contains(Modifier.PRIVATE) && !"serialVersionUID".equals(tree.simpleName().name())) {
       SemanticModel semanticModel = getSemanticModel();
       Symbol symbol = semanticModel.getSymbol(tree);
-      if (symbol != null && semanticModel.getUsages(symbol).size() == assignments.get(symbol).size()) {
+      if (symbol != null && semanticModel.getUsages(symbol).size() == assignments.get(symbol).size() && !hasExcludedAnnotation(tree)) {
         addIssue(tree, "Remove this unused \"" + tree.simpleName() + "\" private field.");
       }
     }
+  }
+
+  private boolean hasExcludedAnnotation(VariableTree tree) {
+    ModifiersTree modifiers = tree.modifiers();
+    return hasAnnotation(modifiers, LOMBOK_GETTER) || hasAnnotation(modifiers, "javax.enterprise.inject.Produces");
+  }
+
+  private boolean hasAnnotation(ModifiersTree modifiers, String annotationName) {
+    for (AnnotationTree annotation : modifiers.annotations()) {
+      Type annotationType = ((AbstractTypedTree) annotation).getSymbolType();
+      if (annotationType.is(annotationName)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void addAssignment(ExpressionTree variable) {

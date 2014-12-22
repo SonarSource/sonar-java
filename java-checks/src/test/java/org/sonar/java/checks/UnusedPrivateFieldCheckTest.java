@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
@@ -50,7 +51,9 @@ public class UnusedPrivateFieldCheckTest {
   }
 
   private SourceFile scanFile(String fileName) {
-    return JavaAstScanner.scanSingleFile(new File("src/test/files/checks/" + fileName), new VisitorsBridge(new UnusedPrivateFieldCheck()));
+    return JavaAstScanner.scanSingleFile(
+      new File("src/test/files/checks/" + fileName),
+      new VisitorsBridge(new UnusedPrivateFieldCheck(), ImmutableList.of(new File("target/test-classes"))));
   }
 
 }
