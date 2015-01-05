@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -45,8 +46,12 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
   }
 
   protected boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {
+    return isDynamicString(methodTree, arg, currentlyChecking, false);
+  }
+
+  protected boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
     if (arg.is(Tree.Kind.IDENTIFIER)) {
-      return isIdentifierDynamicString(methodTree, (IdentifierTree) arg, currentlyChecking);
+      return isIdentifierDynamicString(methodTree, (IdentifierTree) arg, currentlyChecking, firstLevel);
     } else if (arg.is(Tree.Kind.PLUS)) {
       BinaryExpressionTree binaryArg = (BinaryExpressionTree) arg;
       return isDynamicString(methodTree, binaryArg.rightOperand(), currentlyChecking) || isDynamicString(methodTree, binaryArg.leftOperand(), currentlyChecking);
@@ -57,7 +62,7 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
     return !arg.is(Tree.Kind.STRING_LITERAL);
   }
 
-  private boolean isIdentifierDynamicString(Tree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking) {
+  protected boolean isIdentifierDynamicString(Tree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
     Symbol symbol = getSemanticModel().getReference(arg);
     if (symbol.equals(currentlyChecking) || isConstant(symbol)) {
       return false;
@@ -81,10 +86,10 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
     }
     //arg is not a local variable nor a constant, so it is a parameter or a field.
     parameterName = arg.name();
-    return symbol.owner().isKind(Symbol.MTH);
+    return symbol.owner().isKind(Symbol.MTH) && !firstLevel;
   }
 
-  private boolean isConstant(Symbol symbol) {
+  public boolean isConstant(Symbol symbol) {
     return symbol.isStatic() && symbol.isFinal();
   }
 
@@ -134,5 +139,12 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
     }
   }
 
+  protected void setParameterNameFromArgument(ExpressionTree arg) {
+    if (arg.is(Tree.Kind.IDENTIFIER)) {
+      parameterName = ((IdentifierTree) arg).name();
+    } else if (arg.is(Tree.Kind.MEMBER_SELECT)) {
+      parameterName = ((MemberSelectExpressionTree) arg).identifier().name();
+    }
+  }
 
 }

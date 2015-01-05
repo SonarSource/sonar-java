@@ -24,8 +24,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -80,11 +78,7 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
       }
       return false;
     }
-    if (arg.is(Tree.Kind.IDENTIFIER)) {
-      parameterName = ((IdentifierTree) arg).name();
-    } else if (arg.is(Tree.Kind.MEMBER_SELECT)) {
-      parameterName = ((MemberSelectExpressionTree) arg).identifier().name();
-    }
+    setParameterNameFromArgument(arg);
     return true;
   }
 
