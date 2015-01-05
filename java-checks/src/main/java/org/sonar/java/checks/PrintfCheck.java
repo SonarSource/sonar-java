@@ -148,16 +148,22 @@ public class PrintfCheck extends AbstractMethodDetection {
       String timeConversion = param.substring(1);
       if (timeConversion.isEmpty()) {
         addIssue(mit, "Time conversion requires a second character.");
+        checkTimeTypeArgument(mit, argType);
         return;
       }
       if (!TIME_CONVERSIONS.contains(timeConversion)) {
         addIssue(mit, timeConversion + " is not a supported time conversion character");
       }
-      if (!(argType.isNumerical() || argType.is("java.lang.Long") || argType.isSubtypeOf("java.util.Date") || argType.isSubtypeOf("java.util.Calendar"))) {
-        addIssue(mit, "Time argument is expected (long, Long, Date or Calendar).");
-      }
+      checkTimeTypeArgument(mit, argType);
     }
   }
+
+  private void checkTimeTypeArgument(MethodInvocationTree mit, Type argType) {
+    if (!(argType.isNumerical() || argType.is("java.lang.Long") || argType.isSubtypeOf("java.util.Date") || argType.isSubtypeOf("java.util.Calendar"))) {
+      addIssue(mit, "Time argument is expected (long, Long, Date or Calendar).");
+    }
+  }
+
 
   private boolean isNumerical(Type argType) {
     return argType.isNumerical()

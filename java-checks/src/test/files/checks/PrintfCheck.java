@@ -38,6 +38,7 @@ class A {
     String.format("%08d%n", 1);
     GregorianCalendar gc;
     String.format("Duke's Birthday year is %tH", gc);
+    String.format("Duke's Birthday year is %t", loc);  //Noncompliant; t argument is empty AND loc is not compatible
 
   }
 }

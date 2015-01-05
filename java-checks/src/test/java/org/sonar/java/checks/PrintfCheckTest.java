@@ -54,6 +54,8 @@ public class PrintfCheckTest {
         .next().atLine(34).withMessage("4th argument is not used.")
         .next().atLine(36).withMessage("Time conversion requires a second character.")
         .next().atLine(37).withMessage("Time argument is expected (long, Long, Date or Calendar).")
+        .next().atLine(41)
+        .next().atLine(41)
     ;
   }
 }
