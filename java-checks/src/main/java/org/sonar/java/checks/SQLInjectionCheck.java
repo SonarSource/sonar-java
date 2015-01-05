@@ -43,8 +43,6 @@ import java.util.Collection;
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class SQLInjectionCheck extends AbstractInjectionChecker {
 
-  private String parameterName;
-
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree methodTree = (MethodInvocationTree) tree;

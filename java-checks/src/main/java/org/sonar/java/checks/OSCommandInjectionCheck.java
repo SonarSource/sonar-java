@@ -24,8 +24,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -33,10 +31,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 
 @Rule(
@@ -48,8 +44,6 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
   private static final MethodInvocationMatcher RUNTIME_EXEC_MATCHER = MethodInvocationMatcher.create()
       .typeDefinition("java.lang.Runtime")
       .name("exec").withNoParameterConstraint();
-
-  private String parameterName;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -97,52 +91,5 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
     boolean argIsString = ((AbstractTypedTree) arg).getSymbolType().is("java.lang.String");
     return !argIsString || isDynamicString(mit, arg, null);
   }
-
-  @Override
-  protected boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {
-    if (arg.is(Tree.Kind.IDENTIFIER)) {
-      return isIdentifierDynamicString(methodTree, (IdentifierTree) arg, currentlyChecking);
-    } else if (arg.is(Tree.Kind.PLUS)) {
-      BinaryExpressionTree binaryArg = (BinaryExpressionTree) arg;
-      return isDynamicString(methodTree, binaryArg.rightOperand(), currentlyChecking) || isDynamicString(methodTree, binaryArg.leftOperand(), currentlyChecking);
-
-    } else if (arg.is(Tree.Kind.METHOD_INVOCATION)) {
-      return false;
-    }
-    return !arg.is(Tree.Kind.STRING_LITERAL);
-  }
-
-  private boolean isIdentifierDynamicString(Tree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking) {
-    Symbol symbol = getSemanticModel().getReference(arg);
-    if (symbol.equals(currentlyChecking) || isConstant(symbol)) {
-      return false;
-    }
-
-    Tree enclosingBlockTree = getSemanticModel().getTree(getSemanticModel().getEnv(methodTree));
-    Tree argEnclosingDeclarationTree = getSemanticModel().getTree(getSemanticModel().getEnv(symbol));
-    if (enclosingBlockTree.equals(argEnclosingDeclarationTree)) {
-      //symbol is a local variable, check it is not a dynamic string.
-
-      //Check declaration
-      VariableTree declaration = (VariableTree) getSemanticModel().getTree(symbol);
-      if (declaration.initializer() != null && isDynamicString(methodTree, declaration.initializer(), currentlyChecking)) {
-        return true;
-      }
-      //check usages by revisiting the enclosing tree.
-      Collection<IdentifierTree> usages = getSemanticModel().getUsages(symbol);
-      AbstractInjectionChecker.LocalVariableDynamicStringVisitor visitor = new AbstractInjectionChecker.LocalVariableDynamicStringVisitor(symbol, usages, methodTree);
-      argEnclosingDeclarationTree.accept(visitor);
-      return visitor.dynamicString;
-    }
-    //arg is not a local variable nor a constant, so it is a parameter or a field.
-    parameterName = arg.name();
-    return symbol.owner().isKind(Symbol.MTH);
-  }
-
-
-  private boolean isConstant(Symbol symbol) {
-    return symbol.isStatic() && symbol.isFinal();
-  }
-
 
 }
