@@ -256,7 +256,8 @@ public final class CheckList {
       ModulusEqualityCheck.class,
       RunFinalizersCheck.class,
       LongBitsToDoubleOnIntCheck.class,
-      SynchronizationOnStringOrBoxedCheck.class
+      SynchronizationOnStringOrBoxedCheck.class,
+      SerializableSuperConstructorCheck.class
     );
   }
 
