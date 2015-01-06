@@ -38,9 +38,8 @@ public class SerializableSuperConstructorCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SerializableSuperConstructorCheck.java"),
       new VisitorsBridge(new SerializableSuperConstructorCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(29).withMessage(
-        "Add a no-arg constructor to \"NonSerializableWithNonVoidConstructor\" or implement \"writeObject()\" and \"readObject()\".")
-      .next().atLine(49);
+      .next().atLine(31).withMessage(
+        "Add a no-arg constructor to \"NonSerializableWithoutAccessibleNoArgConstructor\".");
   }
 
 }

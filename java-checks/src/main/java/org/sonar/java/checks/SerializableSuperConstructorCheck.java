@@ -50,12 +50,10 @@ public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       ClassTreeImpl classTree = (ClassTreeImpl) tree;
       TypeSymbol classSymbol = classTree.getSymbol();
-      Type type = classSymbol.getType();
-      if (isSerializable(type) && !isSerializable(classSymbol.getSuperclass())) {
+      if (isSerializable(classSymbol.getType()) && !isSerializable(classSymbol.getSuperclass())) {
         Type superclass = classSymbol.getSuperclass();
-        if (!hasNoArgConstructor(superclass) && !hasReadObjectMethod(type)) {
-          String superclassName = superclass.toString();
-          addIssue(tree, "Add a no-arg constructor to \"" + superclassName + "\" or implement \"writeObject()\" and \"readObject()\".");
+        if (!hasNonPrivateNoArgConstructor(superclass)) {
+          addIssue(tree, "Add a no-arg constructor to \"" + superclass + "\".");
         }
       }
     }
@@ -65,47 +63,17 @@ public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
     return type.isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean hasNoArgConstructor(Type type) {
+  private boolean hasNonPrivateNoArgConstructor(Type type) {
     List<Symbol> constructors = type.getSymbol().members().lookup("<init>");
-    if (constructors.isEmpty()) {
-      return true;
-    }
     for (Symbol member : constructors) {
       if (member.isKind(Symbol.MTH)) {
         MethodSymbol method = (MethodSymbol) member;
-        if (method.getParametersTypes().isEmpty()) {
+        if (method.getParametersTypes().isEmpty() && !method.isPrivate()) {
           return true;
         }
       }
     }
-    return false;
-  }
-
-  private boolean hasReadObjectMethod(Type type) {
-    List<Symbol> members = type.getSymbol().members().lookup("readObject");
-    for (Symbol member : members) {
-      if (member.isKind(Symbol.MTH) && isReadObjectMethod((MethodSymbol) member)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean isReadObjectMethod(MethodSymbol method) {
-    List<Type> parametersTypes = method.getParametersTypes();
-    if (parametersTypes.size() != 1 || !parametersTypes.get(0).is("java.io.ObjectInputStream")) {
-      return false;
-    }
-    boolean throwsClassNotFound = false;
-    boolean throwsIOException = false;
-    for (TypeSymbol thrownTypeSymbol : method.getThrownTypes()) {
-      if (thrownTypeSymbol.getType().is("java.io.IOException")) {
-        throwsIOException = true;
-      } else if (thrownTypeSymbol.getType().is("java.lang.ClassNotFoundException")) {
-        throwsClassNotFound = true;
-      }
-    }
-    return throwsClassNotFound && throwsIOException;
+    return constructors.isEmpty();
   }
 
 }
