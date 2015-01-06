@@ -84,10 +84,8 @@ public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
   private boolean hasReadObjectMethod(Type type) {
     List<Symbol> members = type.getSymbol().members().lookup("readObject");
     for (Symbol member : members) {
-      if (member.isKind(Symbol.MTH)) {
-        if (isReadObjectMethod((MethodSymbol) member)) {
-          return true;
-        }
+      if (member.isKind(Symbol.MTH) && isReadObjectMethod((MethodSymbol) member)) {
+        return true;
       }
     }
     return false;
