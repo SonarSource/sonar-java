@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class SonarSymbolTableVisitor extends BaseTreeVisitor {
@@ -64,6 +65,9 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   public void visitClass(ClassTree tree) {
     if (tree.simpleName() != null) {
       createSymbol(tree, tree.simpleName());
+    }
+    for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
+      createSymbol(typeParameterTree, typeParameterTree.identifier());
     }
     super.visitClass(tree);
   }

@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collection;
@@ -90,7 +91,6 @@ public class SecondPass implements Symbol.Completer {
     } else {
       if (tree.is(Tree.Kind.ENUM)) {
         // JLS8 8.9: The direct superclass of an enum type E is Enum<E>.
-        // TODO(Godin): generics
         type.supertype = symbols.enumType;
       } else if (tree.is(Tree.Kind.CLASS)) {
         // JLS8 8.1.4: the direct superclass of the class type C<F1,...,Fn> is
@@ -99,6 +99,18 @@ public class SecondPass implements Symbol.Completer {
         type.supertype = symbols.objectType;
       }
       // JLS8 9.1.3: While every class is an extension of class Object, there is no single interface of which all interfaces are extensions.
+    }
+    // TODO(Godin): generics
+    for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
+      List<Type> bounds = Lists.newArrayList();
+      if(typeParameterTree.bounds().isEmpty()) {
+        bounds.add(symbols.objectType);
+      } else {
+        for (Tree boundTree : typeParameterTree.bounds()) {
+          bounds.add(resolveType(env, boundTree));
+        }
+      }
+      ((Type.TypeVariableType) semanticModel.getSymbol(typeParameterTree).type).bounds = bounds;
     }
 
     ImmutableList.Builder<Type> interfaces = ImmutableList.builder();

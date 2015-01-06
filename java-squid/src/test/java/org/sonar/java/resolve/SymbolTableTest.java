@@ -24,6 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.List;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 public class SymbolTableTest {
@@ -32,11 +34,41 @@ public class SymbolTableTest {
   public ExpectedException expectedEx = ExpectedException.none();
 
   @Test
+  public void Generics() {
+    Result result = Result.createFor("Generics");
+    Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("A");
+    Symbol symbolA1 = result.symbol("a1");
+    assertThat(symbolA1.type.symbol).isSameAs(typeSymbol);
+    Symbol symbolA2 = result.symbol("a1");
+    assertThat(symbolA2.type.symbol).isSameAs(typeSymbol);
+    assertThat(symbolA2.type).isSameAs(symbolA1.type);
+    Symbol symbolA3 = result.symbol("a1");
+    assertThat(symbolA3.type.symbol).isSameAs(typeSymbol);
+    assertThat(result.reference(12, 5)).isSameAs(result.symbol("foo", 8));
+    assertThat(result.reference(13, 5)).isSameAs(result.symbol("foo", 9));
+
+    //Check erasure
+    Type.TypeVariableType STypeVariableType = (Type.TypeVariableType) typeSymbol.members().lookup("S").get(0).type;
+    assertThat(STypeVariableType.erasure().getSymbol().getName()).isEqualTo("CharSequence");
+    Type arrayErasure = typeSymbol.members().lookup("arrayErasure").get(0).type;
+    assertThat(arrayErasure.isTagged(Type.ARRAY));
+    assertThat(arrayErasure.erasure().isTagged(Type.ARRAY));
+    assertThat(((Type.ArrayType)arrayErasure.erasure()).elementType().symbol.getName()).isEqualTo("CharSequence");
+
+  }
+
+  @Test
   public void ClassDeclaration() {
     Result result = Result.createFor("declarations/ClassDeclaration");
     Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration");
     Symbol classDeclaration = result.symbol("ClassDeclaration");
     assertThat(classDeclaration.isParametrized).isTrue();
+    List<Symbol> parameters = classDeclaration.type.symbol.members.lookup("T");
+    assertThat(parameters).hasSize(1);
+    assertThat(parameters.get(0).getName()).isEqualTo("T");
+    parameters = classDeclaration.type.symbol.members.lookup("S");
+    assertThat(parameters).hasSize(1);
+    assertThat(parameters.get(0).getName()).isEqualTo("S");
     assertThat(typeSymbol.owner()).isSameAs(classDeclaration);
     assertThat(typeSymbol.flags()).isEqualTo(Flags.PRIVATE);
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass").type);
@@ -400,6 +432,8 @@ public class SymbolTableTest {
     assertThat(result.reference(123, 5)).isSameAs(result.symbol("fun3", 117));
     assertThat(result.reference(124, 5)).isSameAs(result.symbol("fun4", 118));
     assertThat(result.reference(125, 5)).isSameAs(result.symbol("fun5", 119));
+    assertThat(result.reference(132, 5)).isSameAs(result.symbol("fun", 131));
+    assertThat(result.reference(134, 5)).isSameAs(result.symbol("fun", 131));
   }
 
   @Test

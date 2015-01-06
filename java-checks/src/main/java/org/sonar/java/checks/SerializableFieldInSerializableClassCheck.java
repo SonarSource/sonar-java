@@ -104,12 +104,16 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     if(type.isTagged(Type.ARRAY)) {
       return implementsSerializable(((Type.ArrayType) type).elementType());
     }
-    Type.ClassType classType = (Type.ClassType) type;
-    String interfaceName = classType.getSymbol().owner().getName() + "." + classType.getSymbol().getName();
-    if ("java.io.Serializable".equals(interfaceName)) {
-      return true;
+    if(type.isTagged(Type.CLASS)) {
+      Type.ClassType classType = (Type.ClassType) type;
+      String interfaceName = classType.getSymbol().owner().getName() + "." + classType.getSymbol().getName();
+      if ("java.io.Serializable".equals(interfaceName)) {
+        return true;
+      }
+     return hasSupertypeSerializable((Type.ClassType) type);
     }
-    return hasSupertypeSerializable((Type.ClassType) type);
+    //TODO if type is TypeVar
+    return false;
   }
 
   private boolean hasSupertypeSerializable(Type.ClassType type) {

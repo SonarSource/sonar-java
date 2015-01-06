@@ -24,7 +24,8 @@ public class MethodSymbolsParentTypes {
   public static interface SuperInterface {
     int methodOverriden(int i);
   }
-  public static interface Interface extends SuperInterface {
+  public static interface Interface<T> extends SuperInterface {
+    void foo(T t);
   }
 
   public static class A {

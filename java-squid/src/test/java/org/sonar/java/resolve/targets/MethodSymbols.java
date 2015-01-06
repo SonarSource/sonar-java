@@ -23,10 +23,13 @@ import org.sonar.java.resolve.targets.subpackage.MethodSymbolsParentTypes;
 
 public class MethodSymbols {
 
-  class A1 implements MethodSymbolsParentTypes.Interface {
+  class A1<T> implements MethodSymbolsParentTypes.Interface<T> {
     void foo(){};
     public int methodOverriden(int i) { //Overriden
       return 0;
+    }
+
+    public void foo(T t) {
     }
   }
   class A2 extends MethodSymbolsParentTypes.A implements MethodSymbolsParentTypes.SuperInterface{
@@ -63,4 +66,22 @@ public class MethodSymbols {
     void method(){}
   }
 
+  class A5<T extends CharSequence> implements MethodSymbolsParentTypes.Interface<T> {
+
+    @Override
+    public void foo(T t) {
+    }
+
+    @Override
+    public int methodOverriden(int i) {
+      return 0;
+    }
+  }
+  interface B1<T> {
+    void foo(T t);
+  }
+  class B2<T extends CharSequence> implements B1<T> {
+    @Override
+    public void foo(T t) {}
+  }
 }

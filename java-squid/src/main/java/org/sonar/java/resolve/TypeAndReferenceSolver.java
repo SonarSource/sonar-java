@@ -60,6 +60,7 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -254,15 +255,17 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         }
         identifierTree = mse.identifier();
         resolvedSymbol = getSymbolOfMemberSelectExpression(mse, kind, resolveEnv);
-        registerType(identifierTree, getTypeOfSymbol(resolvedSymbol));
+        Type resolvedType = getTypeOfSymbol(resolvedSymbol, getType(mse.expression()));
+        registerType(identifierTree, resolvedType);
+        registerType(tree, resolvedType);
       } else {
         identifierTree = (IdentifierTree) tree;
         resolvedSymbol = resolve.findIdent(resolveEnv, identifierTree.name(), kind);
+        registerType(tree, getTypeOfSymbol(resolvedSymbol));
       }
       if(associateReference) {
         associateReference(identifierTree, resolvedSymbol);
       }
-      registerType(tree, getTypeOfSymbol(resolvedSymbol));
       return resolvedSymbol;
     }
     tree.accept(this);
@@ -306,6 +309,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   @Override
+  public void visitTypeParameter(TypeParameterTree typeParameter) {
+    //Type parameters have been handled in first and second pass.
+  }
+
+  @Override
   public void visitTypeArguments(TypeArgumentListTreeImpl trees) {
     resolveAs((List<? extends Tree>) trees, Symbol.TYP);
   }
@@ -321,8 +329,16 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitParameterizedType(ParameterizedTypeTree tree) {
     resolveAs(tree.type(), Symbol.TYP);
     resolveAs(tree.typeArguments(), Symbol.TYP);
-    //FIXME(benzonico) approximation of generic type to its raw type
-    registerType(tree, getType(tree.type()));
+    Type type = getType(tree.type());
+    //Type substitution for parametrized type.
+    Map<Type.TypeVariableType, Type> typeSubstitution = Maps.newHashMap();
+    if(tree.typeArguments().size() <= type.getSymbol().typeParameters.size()) {
+      //FIXME: read type parameters from bytecode.
+      for (int i = 0; i < tree.typeArguments().size(); i++) {
+        typeSubstitution.put(type.getSymbol().typeParameters.get(i), getType(tree.typeArguments().get(i)));
+      }
+    }
+    registerType(tree, Type.InstantiatedParametrizedType.getInstantiatedType(type.getSymbol(), typeSubstitution));
   }
 
   @Override
@@ -558,6 +574,16 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     registerType(tree, symbols.unknownType);
   }
 
+  private Type getTypeOfSymbol(Symbol symbol, Type callSite) {
+    Type result = getTypeOfSymbol(symbol);
+    if(callSite instanceof Type.InstantiatedParametrizedType) {
+      Type substitution = ((Type.InstantiatedParametrizedType) callSite).typeSubstitution.get(result);
+      if(substitution != null) {
+        result = substitution;
+      }
+    }
+    return result;
+  }
   private Type getTypeOfSymbol(Symbol symbol) {
     if (symbol.kind < Symbol.ERRONEOUS) {
       return symbol.type;

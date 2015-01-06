@@ -20,7 +20,9 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -165,9 +167,16 @@ public class Symbol {
 
     Scope members;
 
+    List<Type.TypeVariableType> typeParameters;
+
     public TypeSymbol(int flags, String name, Symbol owner) {
       super(TYP, flags, name, owner);
       this.type = new Type.ClassType(this);
+      this.typeParameters = Lists.newArrayList();
+    }
+
+    public void addTypeParameter(Type.TypeVariableType typeVariableType) {
+      typeParameters.add(typeVariableType);
     }
 
     public Type getSuperclass() {
@@ -341,10 +350,11 @@ public class Symbol {
       for (int i = 0; i < getParametersTypes().size(); i++) {
         Type paramOverrider = getParametersTypes().get(i);
         if (paramOverrider.isTagged(Type.UNKNOWN)) {
-          //FIXME : complete symbol table should not have unknown types.
+          //FIXME : complete symbol table should not have unknown types and generics should be handled properly for this.
           return null;
         }
-        if (!paramOverrider.equals(overridee.getParametersTypes().get(i))) {
+        //FIXME : generics type should have same erasure see JLS8 8.4.2
+        if (!paramOverrider.erasure().equals(overridee.getParametersTypes().get(i).erasure()  )) {
           return false;
         }
       }
@@ -354,6 +364,29 @@ public class Symbol {
 
     public boolean isVarArgs() {
       return isFlag(Flags.VARARGS);
+    }
+  }
+
+  /**
+   * Represents type variable of a parametrized type ie: T in class Foo<T>{}
+   */
+  public static class TypeVarSymbol extends TypeSymbol {
+    public TypeVarSymbol(String name, TypeSymbol owner) {
+      super(0, name, owner);
+      this.type = new Type.TypeVariableType(this);
+      this.members = new Scope(this);
+    }
+
+    @Override
+    public Type getSuperclass() {
+      //FIXME : should return upper bound or Object if no bound defined.
+      return null;
+    }
+
+    @Override
+    public List<Type> getInterfaces() {
+      //FIXME : should return upperbound
+      return ImmutableList.of();
     }
   }
 
@@ -394,5 +427,6 @@ public class Symbol {
     complete();
     return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
   }
+
 
 }

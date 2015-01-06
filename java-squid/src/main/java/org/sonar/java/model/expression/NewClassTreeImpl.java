@@ -35,7 +35,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,37 +57,13 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     }
   }
 
-  public NewClassTreeImpl(@Nullable ExpressionTree enclosingExpression, ExpressionTree identifier, List<ExpressionTree> arguments, @Nullable ClassTree classBody,
-    AstNode... children) {
-    super(Kind.NEW_CLASS);
-    this.enclosingExpression = enclosingExpression;
-    this.identifier = Preconditions.checkNotNull(identifier);
-    this.arguments = Preconditions.checkNotNull(arguments);
-    this.classBody = classBody;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
-  }
-
-  public NewClassTreeImpl(AstNode astNode, @Nullable ExpressionTree enclosingExpression, ExpressionTree identifier, List<ExpressionTree> arguments,
-    @Nullable ClassTree classBody) {
-    super(astNode);
-    this.enclosingExpression = enclosingExpression;
-    this.identifier = Preconditions.checkNotNull(identifier);
-    this.arguments = Preconditions.checkNotNull(arguments);
-    this.classBody = classBody;
-  }
-
   public NewClassTreeImpl completeWithIdentifier(ExpressionTree identifier) {
     this.identifier = identifier;
-
     return this;
   }
 
   public NewClassTreeImpl completeWithEnclosingExpression(ExpressionTree enclosingExpression) {
     this.enclosingExpression = enclosingExpression;
-
     return this;
   }
 

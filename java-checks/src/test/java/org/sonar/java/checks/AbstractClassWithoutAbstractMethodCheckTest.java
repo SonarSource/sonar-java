@@ -41,6 +41,7 @@ public class AbstractClassWithoutAbstractMethodCheckTest {
       .next().atLine(8).withMessage("Convert this \"AbstractColor\" class to a concrete class with a private constructor")
       .next().atLine(56).withMessage("Convert this \"Empty\" class to an interface")
       .next().atLine(59).withMessage("Convert this \"A\" class to an interface")
+      .next().atLine(78).withMessage("Convert this \"Parametrized\" class to an interface")
     ;
   }
 

@@ -74,3 +74,7 @@ abstract class C implements I { //compliant, partial implementation
   @Override
   public void foo() {}
 }
+
+public abstract class Parametrized<T> {
+  abstract void foo();
+}

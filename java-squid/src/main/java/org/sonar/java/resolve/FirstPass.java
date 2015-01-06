@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collections;
@@ -217,6 +218,7 @@ public class FirstPass extends BaseTreeVisitor {
     }
     Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
     symbol.isParametrized = !tree.typeParameters().isEmpty();
+
     ((ClassTreeImpl) tree).setSymbol(symbol);
     //Only register classes that can be accessible, so classes owned by a method are not registered.
     //TODO : register also based on flags ?
@@ -238,7 +240,12 @@ public class FirstPass extends BaseTreeVisitor {
     classEnv.enclosingClass = symbol;
     classEnv.scope = symbol.members;
     env = classEnv;
-
+    //Define type parameters:
+    for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
+      Symbol.TypeVarSymbol typeVarSymbol = new Symbol.TypeVarSymbol(typeParameterTree.identifier().name(), symbol);
+      symbol.addTypeParameter((Type.TypeVariableType) typeVarSymbol.type);
+      enterSymbol(typeParameterTree, typeVarSymbol);
+    }
     semanticModel.associateEnv(tree, env);
     super.visitClass(tree);
     restoreEnvironment(tree);

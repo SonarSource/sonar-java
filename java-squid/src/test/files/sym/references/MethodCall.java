@@ -124,8 +124,15 @@ class Autoboxing {
     fun4(true);
     fun5('c', 1, 2l, 3.0f);
   }
+}
 
+class GenericErasure<T extends CharSequence> {
 
+  void fun(T charseq) {
+    fun("");
+    T var;
+    fun(var);
+  }
 
 }
 

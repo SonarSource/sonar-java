@@ -4,7 +4,7 @@ package declarations;
  * JLS7 8.1. Class Declarations
  */
 @SuppressWarnings("all")
-class ClassDeclaration<T> {
+class ClassDeclaration<T, S> {
 
   private class Declaration extends @TypeAnnotation Superclass implements FirstInterface, SecondInterface {
   }
