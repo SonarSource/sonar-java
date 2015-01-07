@@ -1,0 +1,35 @@
+Nothing in a non-serializable class will be written out to file, and attempting to serialize such a class will result in an exception being thrown. Only a class that <code>implements Serializable</code> or one that extends such a class can successfully be serialized (or de-serialized).
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Vegetable {  // neither implements Serializable nor extends a class that does
+  //...
+}
+
+public class Menu {
+  public void meal() throws IOException {
+    Vegetable veg;
+    //...
+    FileOutputStream fout = new FileOutputStream(veg.getName());
+    ObjectOutputStream oos = new ObjectOutputStream(fout);
+    oos.writeObject(veg);  // Noncompliant. Nothing will be written
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Vegetable implements Serializable {  // can now be serialized
+  //...
+}
+
+public class Menu {
+  public void meal() throws IOException {
+    Vegetable veg;
+    //...
+    FileOutputStream fout = new FileOutputStream(veg.getName());
+    ObjectOutputStream oos = new ObjectOutputStream(fout);
+    oos.writeObject(veg);
+  }
+}
+</pre>
