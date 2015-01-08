@@ -19,21 +19,27 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.check.BelongsToProfile;
-import org.sonar.check.Priority;
-import org.sonar.check.Rule;
-import org.sonar.java.resolve.Type;
+import org.junit.Rule;
+import org.junit.Test;
+import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
-@Rule(
-  key = "S2066",
-  priority = Priority.CRITICAL,
-  tags = {"bug"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class InnerClassOfNonSerializableCheck extends AbstractSerializableInnerClassRule {
+import java.io.File;
 
-  @Override
-  protected boolean isMatchingOuterClass(Type outerClass) {
-    return !isSerializable(outerClass);
+public class InnerClassOfSerializableCheckTest {
+
+  @Rule
+  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
+
+  @Test
+  public void test() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/InnerClassOfSerializableCheck.java"),
+      new VisitorsBridge(new InnerClassOfSerializableCheck()));
+    checkMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(16).withMessage("Make this inner class static")
+      .next().atLine(21).withMessage("Make \"nonStaticMethod\" static");
   }
 
 }

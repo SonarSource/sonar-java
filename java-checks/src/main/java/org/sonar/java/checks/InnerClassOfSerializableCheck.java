@@ -19,21 +19,19 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.Type;
 
 @Rule(
-  key = "S2066",
-  priority = Priority.CRITICAL,
-  tags = {"bug"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
-public class InnerClassOfNonSerializableCheck extends AbstractSerializableInnerClassRule {
+  key = "S2059",
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
+public class InnerClassOfSerializableCheck extends AbstractSerializableInnerClassRule {
 
   @Override
   protected boolean isMatchingOuterClass(Type outerClass) {
-    return !isSerializable(outerClass);
+    return isSerializable(outerClass);
   }
 
 }

@@ -259,6 +259,7 @@ public final class CheckList {
       SynchronizationOnStringOrBoxedCheck.class,
       SerializableSuperConstructorCheck.class,
       NonSerializableWriteCheck.class,
+      InnerClassOfSerializableCheck.class,
       InnerClassOfNonSerializableCheck.class
     );
   }
