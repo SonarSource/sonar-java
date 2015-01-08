@@ -258,7 +258,8 @@ public final class CheckList {
       LongBitsToDoubleOnIntCheck.class,
       SynchronizationOnStringOrBoxedCheck.class,
       SerializableSuperConstructorCheck.class,
-      NonSerializableWriteCheck.class
+      NonSerializableWriteCheck.class,
+      InnerClassOfNonSerializableCheck.class
     );
   }
 
