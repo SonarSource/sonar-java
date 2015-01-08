@@ -260,7 +260,8 @@ public final class CheckList {
       SerializableSuperConstructorCheck.class,
       NonSerializableWriteCheck.class,
       InnerClassOfSerializableCheck.class,
-      InnerClassOfNonSerializableCheck.class
+      InnerClassOfNonSerializableCheck.class,
+      SerialVersionUidCheck.class
     );
   }
 
