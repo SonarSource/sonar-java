@@ -99,6 +99,19 @@
       <name>Readability</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S2065</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>2</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S1774</rule-key>
         <prop>
           <key>remediationFunction</key>
