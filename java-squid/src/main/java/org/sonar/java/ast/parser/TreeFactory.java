@@ -92,6 +92,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeArguments;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collections;
@@ -300,7 +301,7 @@ public class TreeFactory {
     InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(openBracketTokenAstNode);
     InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(closeBracketTokenAstNode);
 
-    ImmutableList.Builder<TypeParameterTreeImpl> typeParameters = ImmutableList.builder();
+    ImmutableList.Builder<TypeParameterTree> typeParameters = ImmutableList.builder();
     List<AstNode> children = Lists.newArrayList();
 
     typeParameters.add(typeParameter);

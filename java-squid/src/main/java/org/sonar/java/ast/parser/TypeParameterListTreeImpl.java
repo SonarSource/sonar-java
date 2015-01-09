@@ -22,17 +22,24 @@ package org.sonar.java.ast.parser;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeParameters;
 
+import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.List;
 
-public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTreeImpl> {
+public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> implements TypeParameters {
 
+  @Nullable
   private final InternalSyntaxToken openBracketToken;
+  @Nullable
   private final InternalSyntaxToken closeBracketToken;
 
-  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTreeImpl> typeParameters, List<AstNode> children, InternalSyntaxToken closeBracketToken) {
+  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTree> typeParameters, List<AstNode> children, InternalSyntaxToken closeBracketToken) {
     super(JavaLexer.TYPE_PARAMETERS, typeParameters, ImmutableList.<AstNode>of());
 
     this.openBracketToken = openBracketToken;
@@ -45,12 +52,42 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTreeImp
     addChild(closeBracketToken);
   }
 
+  public TypeParameterListTreeImpl(){
+    super(JavaLexer.TYPE_PARAMETERS, ImmutableList.<TypeParameterTree>of(), ImmutableList.<AstNode>of());
+    this.openBracketToken = null;
+    this.closeBracketToken = null;
+  }
+
+  @Nullable
+  @Override
   public SyntaxToken openBracketToken() {
     return openBracketToken;
   }
 
+  @Nullable
+  @Override
   public SyntaxToken closeBracketToken() {
     return closeBracketToken;
+  }
+
+  @Override
+  public void accept(TreeVisitor visitor) {
+    visitor.visitTypeParameters(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return ImmutableList.<Tree>builder().addAll(this).build().iterator();
+  }
+
+  @Override
+  public boolean isLeaf() {
+    return false;
+  }
+
+  @Override
+  public Kind getKind() {
+    return Kind.TYPE_PARAMETERS;
   }
 
 }

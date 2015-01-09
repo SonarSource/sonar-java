@@ -128,6 +128,8 @@ public interface TreeVisitor {
 
   void visitTypeArguments(TypeArgumentListTreeImpl trees);
 
+  void visitTypeParameters(TypeParameters trees);
+
   void visitOther(Tree tree);
 
   void visitMethodReference(MethodReferenceTree methodReferenceTree);

@@ -82,6 +82,21 @@ public class SecondPass implements Symbol.Completer {
     }
 
     ClassTree tree = (ClassTree) semanticModel.getTree(symbol);
+    //Type parameters : complete bounds
+    if(tree.typeParameters() != null) {
+      for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
+        List<Type> bounds = Lists.newArrayList();
+        if(typeParameterTree.bounds().isEmpty()) {
+          bounds.add(symbols.objectType);
+        } else {
+          for (Tree boundTree : typeParameterTree.bounds()) {
+            bounds.add(resolveType(env, boundTree));
+          }
+        }
+        ((Type.TypeParameterType) semanticModel.getSymbol(typeParameterTree).type).bounds = bounds;
+      }
+    }
+    //Superclass
     Tree superClassTree = tree.superClass();
     if (superClassTree != null) {
       type.supertype = resolveType(env, superClassTree);
@@ -100,19 +115,8 @@ public class SecondPass implements Symbol.Completer {
       }
       // JLS8 9.1.3: While every class is an extension of class Object, there is no single interface of which all interfaces are extensions.
     }
-    // TODO(Godin): generics
-    for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-      List<Type> bounds = Lists.newArrayList();
-      if(typeParameterTree.bounds().isEmpty()) {
-        bounds.add(symbols.objectType);
-      } else {
-        for (Tree boundTree : typeParameterTree.bounds()) {
-          bounds.add(resolveType(env, boundTree));
-        }
-      }
-      ((Type.TypeVariableType) semanticModel.getSymbol(typeParameterTree).type).bounds = bounds;
-    }
 
+    //Interfaces
     ImmutableList.Builder<Type> interfaces = ImmutableList.builder();
     for (Tree interfaceTree : tree.superInterfaces()) {
       Type interfaceType = resolveType(env, interfaceTree);
@@ -202,7 +206,8 @@ public class SecondPass implements Symbol.Completer {
     typeAndReferenceSolver.env = env;
     typeAndReferenceSolver.resolveAs(tree, Symbol.TYP, env);
     typeAndReferenceSolver.env = null;
-    return ((AbstractTypedTree) tree).getSymbolType();
+    Type symbolType = ((AbstractTypedTree) tree).getSymbolType();
+    return symbolType;
   }
 
   private boolean checkTypeOfTree(Tree tree) {

@@ -223,11 +223,11 @@ public class Type {
     }
   }
 
-  public static class TypeVariableType extends Type {
+  public static class TypeParameterType extends Type {
 
     public List<Type> bounds;
 
-    public TypeVariableType(Symbol.TypeVarSymbol symbol) {
+    public TypeParameterType(Symbol.TypeVarSymbol symbol) {
       super(TYPEVAR, symbol);
     }
 
@@ -242,14 +242,14 @@ public class Type {
 
   public static class InstantiatedParametrizedType extends ClassType {
 
-    private static Map<Symbol, Map<Map<TypeVariableType, Type>, InstantiatedParametrizedType>> typeCache = Maps.newHashMap();
+    private static Map<Symbol, Map<Map<TypeParameterType, Type>, InstantiatedParametrizedType>> typeCache = Maps.newHashMap();
 
-    final Map<TypeVariableType, Type> typeSubstitution;
+    final Map<TypeParameterType, Type> typeSubstitution;
     final Type rawType;
 
-    public static InstantiatedParametrizedType getInstantiatedType(Symbol.TypeSymbol symbol, Map<TypeVariableType, Type> typeSubstitution) {
+    public static InstantiatedParametrizedType getInstantiatedType(Symbol.TypeSymbol symbol, Map<TypeParameterType, Type> typeSubstitution) {
       if(typeCache.get(symbol) == null) {
-        Map<Map<TypeVariableType, Type>, InstantiatedParametrizedType> map = Maps.newHashMap();
+        Map<Map<TypeParameterType, Type>, InstantiatedParametrizedType> map = Maps.newHashMap();
         typeCache.put(symbol, map);
       }
       if(typeCache.get(symbol).get(typeSubstitution) == null) {
@@ -258,7 +258,7 @@ public class Type {
       return typeCache.get(symbol).get(typeSubstitution);
     }
 
-    private InstantiatedParametrizedType(Symbol.TypeSymbol symbol, Map<TypeVariableType, Type> typeSubstitution) {
+    private InstantiatedParametrizedType(Symbol.TypeSymbol symbol, Map<TypeParameterType, Type> typeSubstitution) {
       super(symbol);
       this.rawType = symbol.getType();
       this.typeSubstitution = typeSubstitution;

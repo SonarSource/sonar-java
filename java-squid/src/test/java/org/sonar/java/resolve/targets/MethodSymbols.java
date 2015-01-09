@@ -81,7 +81,6 @@ public class MethodSymbols {
     void foo(T t);
   }
   class B2<T extends CharSequence> implements B1<T> {
-    @Override
     public void foo(T t) {}
   }
 }

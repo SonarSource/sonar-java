@@ -34,7 +34,8 @@ public class PrinterVisitorTest {
     CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A { void foo(){}}");
     String expectedOutput = "CompilationUnitTree 1 : [\n" +
         "  ClassTree 1\n" +
-        "    ModifiersTree : [\n" +
+        "    ModifiersTree\n" +
+        "    TypeParameters : [\n"+
         "    MethodTree 1\n" +
         "      ModifiersTree\n" +
         "      PrimitiveTypeTree 1 null\n" +

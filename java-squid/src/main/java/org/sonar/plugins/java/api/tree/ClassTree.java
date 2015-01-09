@@ -61,7 +61,7 @@ public interface ClassTree extends StatementTree {
   @Nullable
   IdentifierTree simpleName();
 
-  List<TypeParameterTree> typeParameters();
+  TypeParameters typeParameters();
 
   ModifiersTree modifiers();
 

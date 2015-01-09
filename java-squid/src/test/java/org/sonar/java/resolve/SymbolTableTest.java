@@ -48,8 +48,8 @@ public class SymbolTableTest {
     assertThat(result.reference(13, 5)).isSameAs(result.symbol("foo", 9));
 
     //Check erasure
-    Type.TypeVariableType STypeVariableType = (Type.TypeVariableType) typeSymbol.members().lookup("S").get(0).type;
-    assertThat(STypeVariableType.erasure().getSymbol().getName()).isEqualTo("CharSequence");
+    Type.TypeParameterType STypeParameterType = (Type.TypeParameterType) typeSymbol.typeParameters.lookup("S").get(0).type;
+    assertThat(STypeParameterType.erasure().getSymbol().getName()).isEqualTo("CharSequence");
     Type arrayErasure = typeSymbol.members().lookup("arrayErasure").get(0).type;
     assertThat(arrayErasure.isTagged(Type.ARRAY));
     assertThat(arrayErasure.erasure().isTagged(Type.ARRAY));
@@ -63,10 +63,10 @@ public class SymbolTableTest {
     Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration");
     Symbol classDeclaration = result.symbol("ClassDeclaration");
     assertThat(classDeclaration.isParametrized).isTrue();
-    List<Symbol> parameters = classDeclaration.type.symbol.members.lookup("T");
+    List<Symbol> parameters = classDeclaration.type.symbol.typeParameters.lookup("T");
     assertThat(parameters).hasSize(1);
     assertThat(parameters.get(0).getName()).isEqualTo("T");
-    parameters = classDeclaration.type.symbol.members.lookup("S");
+    parameters = classDeclaration.type.symbol.typeParameters.lookup("S");
     assertThat(parameters).hasSize(1);
     assertThat(parameters.get(0).getName()).isEqualTo("S");
     assertThat(typeSymbol.owner()).isSameAs(classDeclaration);

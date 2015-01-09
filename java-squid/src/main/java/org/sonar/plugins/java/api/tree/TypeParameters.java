@@ -19,15 +19,13 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+import javax.annotation.Nullable;
 
-import static org.fest.assertions.Assertions.assertThat;
+public interface TypeParameters extends ListTree<TypeParameterTree> {
 
-public class TreeTest {
+  @Nullable
+  public SyntaxToken openBracketToken();
 
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(107);
-  }
-
+  @Nullable
+  public SyntaxToken closeBracketToken();
 }

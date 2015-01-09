@@ -352,6 +352,11 @@ public class BaseTreeVisitor implements TreeVisitor {
   }
 
   @Override
+  public void visitTypeParameters(TypeParameters trees) {
+    scan((List<TypeParameterTree>)trees);
+  }
+
+  @Override
   public void visitOther(Tree tree) {
     // nop
   }

@@ -166,17 +166,17 @@ public class Symbol {
   public static class TypeSymbol extends Symbol {
 
     Scope members;
-
-    List<Type.TypeVariableType> typeParameters;
+    Scope typeParameters;
+    List<Type.TypeParameterType> typeParameterTypes;
 
     public TypeSymbol(int flags, String name, Symbol owner) {
       super(TYP, flags, name, owner);
       this.type = new Type.ClassType(this);
-      this.typeParameters = Lists.newArrayList();
+      this.typeParameterTypes = Lists.newArrayList();
     }
 
-    public void addTypeParameter(Type.TypeVariableType typeVariableType) {
-      typeParameters.add(typeVariableType);
+    public void addTypeParameter(Type.TypeParameterType typeParameterType) {
+      typeParameterTypes.add(typeParameterType);
     }
 
     public Type getSuperclass() {
@@ -321,7 +321,7 @@ public class Symbol {
       List<Symbol> symbols = classType.getSymbol().members().lookup(name);
       for (Symbol overrideSymbol : symbols) {
         if (overrideSymbol.isKind(Symbol.MTH) && canOverride((Symbol.MethodSymbol) overrideSymbol)) {
-          Boolean isOverriding = isOverriding((Symbol.MethodSymbol) overrideSymbol);
+          Boolean isOverriding = isOverriding((Symbol.MethodSymbol) overrideSymbol, classType);
           if (isOverriding == null) {
             result = null;
           } else if (BooleanUtils.isTrue(isOverriding)) {
@@ -342,7 +342,7 @@ public class Symbol {
       return !overridee.isPrivate();
     }
 
-    private Boolean isOverriding(Symbol.MethodSymbol overridee) {
+    private Boolean isOverriding(Symbol.MethodSymbol overridee, Type.ClassType classType) {
       //same number and type of formal parameters
       if (getParametersTypes().size() != overridee.getParametersTypes().size()) {
         return false;
@@ -353,8 +353,16 @@ public class Symbol {
           //FIXME : complete symbol table should not have unknown types and generics should be handled properly for this.
           return null;
         }
-        //FIXME : generics type should have same erasure see JLS8 8.4.2
-        if (!paramOverrider.erasure().equals(overridee.getParametersTypes().get(i).erasure()  )) {
+        //Generics type should have same erasure see JLS8 8.4.2
+
+        Type overrideeType = overridee.getParametersTypes().get(i);
+        if(classType instanceof Type.InstantiatedParametrizedType) {
+          overrideeType = ((Type.InstantiatedParametrizedType) classType).typeSubstitution.get(overrideeType);
+          if(overrideeType == null) {
+            overrideeType = overridee.getParametersTypes().get(i);
+          }
+        }
+        if (!paramOverrider.erasure().equals(overrideeType.erasure())) {
           return false;
         }
       }
@@ -373,7 +381,7 @@ public class Symbol {
   public static class TypeVarSymbol extends TypeSymbol {
     public TypeVarSymbol(String name, TypeSymbol owner) {
       super(0, name, owner);
-      this.type = new Type.TypeVariableType(this);
+      this.type = new Type.TypeParameterType(this);
       this.members = new Scope(this);
     }
 

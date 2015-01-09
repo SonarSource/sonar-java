@@ -65,7 +65,6 @@ public class ThrowsSeveralCheckedExceptionCheckTest {
       .next().atLine(134)
       .next().atLine(140)
       .next().atLine(147)
-      .next().atLine(150)
       .next().atLine(153)
       .next().atLine(157)
       .next().atLine(162)

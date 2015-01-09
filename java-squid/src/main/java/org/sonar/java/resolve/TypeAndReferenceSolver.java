@@ -67,7 +67,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -302,6 +301,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     return symbols.unknownSymbol;
   }
 
+  private void resolveAs(List<? extends Tree> trees, int kind, Resolve.Env env) {
+    for (Tree tree : trees) {
+      resolveAs(tree, kind, env);
+    }
+  }
   private void resolveAs(List<? extends Tree> trees, int kind) {
     for (Tree tree : trees) {
       resolveAs(tree, kind);
@@ -329,13 +333,14 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitParameterizedType(ParameterizedTypeTree tree) {
     resolveAs(tree.type(), Symbol.TYP);
     resolveAs(tree.typeArguments(), Symbol.TYP);
+
     Type type = getType(tree.type());
     //Type substitution for parametrized type.
-    Map<Type.TypeVariableType, Type> typeSubstitution = Maps.newHashMap();
-    if(tree.typeArguments().size() <= type.getSymbol().typeParameters.size()) {
+    Map<Type.TypeParameterType, Type> typeSubstitution = Maps.newHashMap();
+    if(tree.typeArguments().size() <= type.getSymbol().typeParameterTypes.size()) {
       //FIXME: read type parameters from bytecode.
       for (int i = 0; i < tree.typeArguments().size(); i++) {
-        typeSubstitution.put(type.getSymbol().typeParameters.get(i), getType(tree.typeArguments().get(i)));
+        typeSubstitution.put(type.getSymbol().typeParameterTypes.get(i), getType(tree.typeArguments().get(i)));
       }
     }
     registerType(tree, Type.InstantiatedParametrizedType.getInstantiatedType(type.getSymbol(), typeSubstitution));

@@ -57,7 +57,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
         Collection<Symbol> symbols = typeSymbol.members().scopeSymbols();
         int abstractMethod = countAbstractMethods(symbols);
         //only count "this" in symbols and not "super" because abstract classes extending cannot be converted to interface
-        if (symbols.size() == 1 || abstractMethod == symbols.size() - 1 - tree.typeParameters().size()) {
+        if (symbols.size() == 1 || abstractMethod == symbols.size() - 1) {
           //emtpy abstract class or only abstract method
           context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to an interface");
         }

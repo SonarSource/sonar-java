@@ -620,7 +620,11 @@ public interface Tree {
     /**
      * {@link MethodReferenceTree}
      */
-    METHOD_REFERENCE(MethodReferenceTree.class);
+    METHOD_REFERENCE(MethodReferenceTree.class),
+    /**
+     * {@link TypeParameters}
+     */
+    TYPE_PARAMETERS(TypeParameters.class);
 
     final Class<? extends Tree> associatedInterface;
 

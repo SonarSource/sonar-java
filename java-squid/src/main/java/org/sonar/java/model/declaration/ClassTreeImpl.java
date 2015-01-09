@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
-import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeParameters;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -48,7 +48,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private final Kind kind;
   private ModifiersTree modifiers;
   private IdentifierTree simpleName;
-  private List<TypeParameterTree> typeParameters;
+  private TypeParameters typeParameters;
   @Nullable
   private Tree superClass;
   private List<Tree> superInterfaces;
@@ -64,8 +64,8 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     this.kind = kind;
     this.members = members;
     this.modifiers = ModifiersTreeImpl.EMPTY;
-    this.typeParameters = ImmutableList.<TypeParameterTree>of();
-    this.superInterfaces = ImmutableList.<Tree>of();
+    this.typeParameters = new TypeParameterListTreeImpl();
+    this.superInterfaces = ImmutableList.of();
 
     for (AstNode child : children) {
       addChild(child);
@@ -76,9 +76,9 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     super(Kind.ANNOTATION_TYPE);
     this.kind = Preconditions.checkNotNull(Kind.ANNOTATION_TYPE);
     this.modifiers = modifiers;
-    this.typeParameters = ImmutableList.<TypeParameterTree>of();
+    this.typeParameters = new TypeParameterListTreeImpl();
     this.superClass = null;
-    this.superInterfaces = ImmutableList.<Tree>of();
+    this.superInterfaces = ImmutableList.of();
     this.members = Preconditions.checkNotNull(members);
 
     for (AstNode child : children) {
@@ -88,7 +88,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   public ClassTreeImpl(
     AstNode astNode, Kind kind,
-    ModifiersTree modifiers, @Nullable IdentifierTree simpleName, List<TypeParameterTree> typeParameters, @Nullable Tree superClass, List<Tree> superInterfaces, List<Tree> members) {
+    ModifiersTree modifiers, @Nullable IdentifierTree simpleName, TypeParameters typeParameters, @Nullable Tree superClass, List<Tree> superInterfaces, List<Tree> members) {
     super(astNode);
     this.kind = Preconditions.checkNotNull(kind);
     this.modifiers = Preconditions.checkNotNull(modifiers);
@@ -101,7 +101,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   // TODO remove:
   public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, List<Tree> members) {
-    this(astNode, kind, modifiers, null, ImmutableList.<TypeParameterTree>of(), null, ImmutableList.<Tree>of(), members);
+    this(astNode, kind, modifiers, null, null, null, ImmutableList.<Tree>of(), members);
   }
 
   public ClassTreeImpl completeModifiers(ModifiersTreeImpl modifiers) {
@@ -115,7 +115,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   public ClassTreeImpl completeTypeParameters(TypeParameterListTreeImpl typeParameters) {
-    this.typeParameters = (List) typeParameters;
+    this.typeParameters = typeParameters;
     return this;
   }
 
@@ -150,7 +150,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   @Override
-  public List<TypeParameterTree> typeParameters() {
+  public TypeParameters typeParameters() {
     return typeParameters;
   }
 
@@ -221,12 +221,16 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
+    Iterator<TypeParameters> typeParamIterator = Iterators.emptyIterator();
+    if(typeParameters != null) {
+      typeParamIterator = Iterators.singletonIterator(typeParameters);
+    }
     return Iterators.concat(
       Iterators.forArray(
         modifiers,
         simpleName
         ),
-      typeParameters.iterator(),
+      typeParamIterator,
       Iterators.singletonIterator(superClass),
       superInterfaces.iterator(),
       members.iterator()
