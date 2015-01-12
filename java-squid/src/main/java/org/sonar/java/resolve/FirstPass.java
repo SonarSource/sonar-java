@@ -249,7 +249,7 @@ public class FirstPass extends BaseTreeVisitor {
     env = classEnv;
     semanticModel.associateEnv(tree, env);
     scan(tree.modifiers());
-//    scan(tree.typeParameters());
+    //skip type parameters
     scan(tree.superClass());
     scan(tree.superInterfaces());
     scan(tree.members());

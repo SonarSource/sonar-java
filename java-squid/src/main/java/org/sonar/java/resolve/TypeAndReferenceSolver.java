@@ -301,11 +301,6 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     return symbols.unknownSymbol;
   }
 
-  private void resolveAs(List<? extends Tree> trees, int kind, Resolve.Env env) {
-    for (Tree tree : trees) {
-      resolveAs(tree, kind, env);
-    }
-  }
   private void resolveAs(List<? extends Tree> trees, int kind) {
     for (Tree tree : trees) {
       resolveAs(tree, kind);

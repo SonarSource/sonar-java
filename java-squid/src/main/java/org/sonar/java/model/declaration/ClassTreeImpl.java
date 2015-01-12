@@ -99,11 +99,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     this.members = Preconditions.checkNotNull(members);
   }
 
-  // TODO remove:
-  public ClassTreeImpl(AstNode astNode, Kind kind, ModifiersTree modifiers, List<Tree> members) {
-    this(astNode, kind, modifiers, null, null, null, ImmutableList.<Tree>of(), members);
-  }
-
   public ClassTreeImpl completeModifiers(ModifiersTreeImpl modifiers) {
     this.modifiers = modifiers;
     return this;

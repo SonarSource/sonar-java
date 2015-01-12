@@ -224,7 +224,7 @@ public class Type {
 
   public static class TypeVariableType extends Type {
 
-    public List<Type> bounds;
+    List<Type> bounds;
 
     public TypeVariableType(Symbol.TypeVariableSymbol symbol) {
       super(TYPEVAR, symbol);

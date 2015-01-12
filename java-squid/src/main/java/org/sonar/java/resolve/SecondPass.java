@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collection;
@@ -82,20 +83,8 @@ public class SecondPass implements Symbol.Completer {
     }
 
     ClassTree tree = (ClassTree) semanticModel.getTree(symbol);
-    //Type parameters : complete bounds
-    if(tree.typeParameters() != null) {
-      for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-        List<Type> bounds = Lists.newArrayList();
-        if(typeParameterTree.bounds().isEmpty()) {
-          bounds.add(symbols.objectType);
-        } else {
-          for (Tree boundTree : typeParameterTree.bounds()) {
-            bounds.add(resolveType(env, boundTree));
-          }
-        }
-        ((Type.TypeVariableType) semanticModel.getSymbol(typeParameterTree).type).bounds = bounds;
-      }
-    }
+    completeTypeParameters(tree.typeParameters(), env);
+
     //Superclass
     Tree superClassTree = tree.superClass();
     if (superClassTree != null) {
@@ -132,6 +121,20 @@ public class SecondPass implements Symbol.Completer {
     }
 
     type.interfaces = interfaces.build();
+  }
+
+  private void completeTypeParameters(TypeParameters typeParameters, Resolve.Env env) {
+    for (TypeParameterTree typeParameterTree : typeParameters) {
+      List<Type> bounds = Lists.newArrayList();
+      if(typeParameterTree.bounds().isEmpty()) {
+        bounds.add(symbols.objectType);
+      } else {
+        for (Tree boundTree : typeParameterTree.bounds()) {
+          bounds.add(resolveType(env, boundTree));
+        }
+      }
+      ((Type.TypeVariableType) semanticModel.getSymbol(typeParameterTree).type).bounds = bounds;
+    }
   }
 
   private void checkHierarchyCycles(Type baseType) {
@@ -206,8 +209,7 @@ public class SecondPass implements Symbol.Completer {
     typeAndReferenceSolver.env = env;
     typeAndReferenceSolver.resolveAs(tree, Symbol.TYP, env);
     typeAndReferenceSolver.env = null;
-    Type symbolType = ((AbstractTypedTree) tree).getSymbolType();
-    return symbolType;
+    return ((AbstractTypedTree) tree).getSymbolType();
   }
 
   private boolean checkTypeOfTree(Tree tree) {
