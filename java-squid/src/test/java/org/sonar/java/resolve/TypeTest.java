@@ -107,7 +107,11 @@ public class TypeTest {
   public void isSubtypeOf() throws Exception {
     Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
     Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    Symbol.TypeVariableSymbol typeVariableSymbol = new Symbol.TypeVariableSymbol("T", typeSymbol);
     Type.ClassType classType = (Type.ClassType) typeSymbol.type;
+    Type.TypeVariableType typeVariableType = (Type.TypeVariableType) typeVariableSymbol.type;
+    typeVariableType.bounds = Lists.newArrayList(symbols.objectType);
+
     classType.supertype = symbols.objectType;
     classType.interfaces = Lists.newArrayList(symbols.cloneableType);
     assertThat(classType.isSubtypeOf("java.lang.Object")).isTrue();
@@ -115,6 +119,10 @@ public class TypeTest {
     assertThat(classType.isSubtypeOf("java.lang.CharSequence")).isFalse();
     assertThat(classType.isSubtypeOf("java.lang.Cloneable")).isTrue();
     assertThat(new Type(Type.BYTE, null).isSubtypeOf("java.lang.Object")).isFalse();
+
+    assertThat(typeVariableType.isSubtypeOf("java.lang.Object")).isTrue();
+    assertThat(typeVariableType.is("java.lang.Object")).isFalse();
+    assertThat(typeVariableType.isSubtypeOf("java.lang.CharSequence")).isFalse();
 
 
   }

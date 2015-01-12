@@ -95,16 +95,15 @@ public class Type {
         }
       }
     }
+    if(isTagged(TYPEVAR)) {
+      return erasure().isSubtypeOf(fullyQualifiedName);
+    }
     return false;
   }
 
   public boolean isParametrized() {
     symbol.complete();
     return symbol.isParametrized;
-  }
-
-  public Type rawType() {
-    return this;
   }
 
   /**
@@ -262,11 +261,6 @@ public class Type {
       super(symbol);
       this.rawType = symbol.getType();
       this.typeSubstitution = typeSubstitution;
-    }
-
-    @Override
-    public Type rawType() {
-      return rawType;
     }
 
     @Override
