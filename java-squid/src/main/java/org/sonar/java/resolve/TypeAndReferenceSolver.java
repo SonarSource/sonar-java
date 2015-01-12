@@ -452,13 +452,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
-    Type type;
+    Resolve.Env primitiveEnv = env;
     if (env == null) {
-      type = resolve.findIdent(semanticModel.getEnv(tree), tree.keyword().text(), Symbol.TYP).type;
-    } else {
-      type = resolve.findIdent(env, tree.keyword().text(), Symbol.TYP).type;
+      primitiveEnv = semanticModel.getEnv(tree);
     }
-    registerType(tree, type);
+    registerType(tree, resolve.findIdent(primitiveEnv, tree.keyword().text(), Symbol.TYP).type);
   }
 
   @Override
