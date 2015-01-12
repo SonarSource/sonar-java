@@ -14,4 +14,13 @@ class A<T, S extends CharSequence> {
   }
 
   S[] arrayErasure;
+
+  class B<U> extends A<C<String>, String> {
+    void fun() {
+      field1 = null;
+    }
+  }
+
+  class C<V> {}
+
 }

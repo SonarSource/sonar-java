@@ -259,8 +259,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         registerType(tree, resolvedType);
       } else {
         identifierTree = (IdentifierTree) tree;
-        resolvedSymbol = resolve.findIdent(resolveEnv, identifierTree.name(), kind);
-        registerType(tree, getTypeOfSymbol(resolvedSymbol));
+        Resolve.Resolution resolution = resolve.findIdent(resolveEnv, identifierTree.name(), kind);
+        resolvedSymbol = resolution.symbol();
+        registerType(tree, resolution.type());
       }
       if(associateReference) {
         associateReference(identifierTree, resolvedSymbol);
@@ -456,7 +457,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (env == null) {
       primitiveEnv = semanticModel.getEnv(tree);
     }
-    registerType(tree, resolve.findIdent(primitiveEnv, tree.keyword().text(), Symbol.TYP).type);
+    registerType(tree, resolve.findIdent(primitiveEnv, tree.keyword().text(), Symbol.TYP).type());
   }
 
   @Override

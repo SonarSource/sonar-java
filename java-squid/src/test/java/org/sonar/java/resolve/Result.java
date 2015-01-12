@@ -33,6 +33,13 @@ import java.io.File;
 
 class Result {
 
+  private static final Parser parser = JavaParser.createParser(Charsets.UTF_8);
+  private final SemanticModel semanticModel;
+
+  private Result(SemanticModel semanticModel) {
+    this.semanticModel = semanticModel;
+  }
+
   public static Result createFor(String name) {
     return createForJavaFile("src/test/files/sym/" + name);
   }
@@ -41,14 +48,6 @@ class Result {
     File file = new File(filePath + ".java");
     AstNode astNode = parser.parse(file);
     return new Result(SemanticModel.createFor((CompilationUnitTree) astNode, Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
-  }
-
-  private static final Parser parser = JavaParser.createParser(Charsets.UTF_8);
-
-  private final SemanticModel semanticModel;
-
-  private Result(SemanticModel semanticModel) {
-    this.semanticModel = semanticModel;
   }
 
   public Symbol symbol(String name) {
@@ -84,17 +83,31 @@ class Result {
   }
 
   public Symbol reference(int line, int column) {
+    return (Symbol) referenceTree(line, column, true);
+  }
+
+  public IdentifierTree referenceTree(int line, int column) {
+    return (IdentifierTree) referenceTree(line, column, false);
+  }
+
+  private Object referenceTree(int line, int column, boolean searchSymbol) {
     // In SSLR column starts at 0, but here we want consistency with IDE, so we start from 1:
     column -= 1;
     for (Symbol symbol : semanticModel.getSymbolUsed()) {
       for (IdentifierTree usage : semanticModel.getUsages(symbol)) {
         Token token = ((JavaTree) usage.identifierToken()).getAstNode().getToken();
         if (token.getLine() == line && token.getColumn() == column) {
-          return symbol;
+          if(searchSymbol) {
+            return symbol;
+          } else {
+            return usage;
+          }
         }
       }
     }
-    throw new IllegalArgumentException("Reference not found");
+    throw new IllegalArgumentException("Reference Tree not found");
   }
+
+
 
 }

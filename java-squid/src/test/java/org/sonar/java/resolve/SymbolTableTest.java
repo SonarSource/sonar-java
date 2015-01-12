@@ -23,6 +23,8 @@ import com.google.common.collect.Iterables;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import java.util.List;
 
@@ -55,6 +57,13 @@ public class SymbolTableTest {
     assertThat(arrayErasure.erasure().isTagged(Type.ARRAY));
     assertThat(((Type.ArrayType)arrayErasure.erasure()).elementType().symbol.getName()).isEqualTo("CharSequence");
 
+    IdentifierTree tree = result.referenceTree(20, 7);
+    Type symbolType = ((AbstractTypedTree) tree).getSymbolType();
+    assertThat(symbolType).isInstanceOf(Type.ParametrizedTypeType.class);
+    Type.ParametrizedTypeType ptt = (Type.ParametrizedTypeType) symbolType;
+    assertThat(ptt.symbol.getName()).isEqualTo("C");
+    assertThat(ptt.typeSubstitution).hasSize(1);
+    assertThat(ptt.typeSubstitution.get(ptt.typeSubstitution.keySet().iterator().next()).symbol.getName()).isEqualTo("String");
   }
 
   @Test

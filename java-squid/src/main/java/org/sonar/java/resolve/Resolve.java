@@ -65,29 +65,44 @@ public class Resolve {
     return new Scope.StaticStarImportScope(owner, bytecodeCompleter);
   }
 
+  private Type resolveTypeSubstitution(Type type, Type definition) {
+    if(definition instanceof Type.ParametrizedTypeType) {
+      Type substitution = ((Type.ParametrizedTypeType) definition).typeSubstitution.get(type);
+      if(substitution != null) {
+        return substitution;
+      }
+    }
+    return type;
+  }
+
   /**
    * Finds field with given name.
    */
-  private Symbol findField(Env env, Symbol.TypeSymbol site, String name, Symbol.TypeSymbol c) {
-    Symbol bestSoFar = symbolNotFound;
+  private Resolution findField(Env env, Symbol.TypeSymbol site, String name, Symbol.TypeSymbol c) {
+    Resolution bestSoFar = unresolved();
+    Resolution resolution = new Resolution();
     for (Symbol symbol : c.members().lookup(name)) {
       if (symbol.kind == Symbol.VAR) {
-        return isAccessible(env, site, symbol)
-            ? symbol
-            : new AccessErrorSymbol(symbol);
+        if(isAccessible(env, site, symbol)) {
+          resolution.symbol = symbol;
+          resolution.type = resolveTypeSubstitution(symbol.type, c.type);
+          return resolution;
+        } else {
+          return Resolution.resolution(new AccessErrorSymbol(symbol));
+        }
       }
     }
-    Symbol symbol;
     if (c.getSuperclass() != null) {
-      symbol = findField(env, site, name, c.getSuperclass().symbol);
-      if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+      resolution = findField(env, site, name, c.getSuperclass().symbol);
+      if (resolution.symbol.kind < bestSoFar.symbol.kind) {
+        resolution.type = resolveTypeSubstitution(resolution.symbol.type, c.getSuperclass());
+        bestSoFar = resolution;
       }
     }
     for (Type interfaceType : c.getInterfaces()) {
-      symbol = findField(env, site, name, interfaceType.symbol);
-      if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+      resolution = findField(env, site, name, interfaceType.symbol);
+      if (resolution.symbol.kind < bestSoFar.symbol.kind) {
+        bestSoFar = resolution;
       }
     }
     return bestSoFar;
@@ -96,35 +111,35 @@ public class Resolve {
   /**
    * Finds variable or field with given name.
    */
-  private Symbol findVar(Env env, String name) {
-    Symbol bestSoFar = symbolNotFound;
+  private Resolution findVar(Env env, String name) {
+    Resolution bestSoFar = unresolved();
 
     Env env1 = env;
     while (env1.outer() != null) {
-      Symbol sym = null;
+      Resolution sym = new Resolution();
       for (Symbol symbol : env1.scope().lookup(name)) {
         if (symbol.kind == Symbol.VAR) {
-          sym = symbol;
+          sym.symbol = symbol;
         }
       }
-      if (sym == null) {
+      if (sym.symbol == null) {
         sym = findField(env1, env1.enclosingClass(), name, env1.enclosingClass());
       }
-      if (sym.kind < Symbol.ERRONEOUS) {
+      if (sym.symbol.kind < Symbol.ERRONEOUS) {
         // symbol exists
         return sym;
-      } else if (sym.kind < bestSoFar.kind) {
+      } else if (sym.symbol.kind < bestSoFar.symbol.kind) {
         bestSoFar = sym;
       }
       env1 = env1.outer();
     }
 
-    Symbol sym = findInStaticImport(env, name, Symbol.VAR);
-    if (sym.kind < Symbol.ERRONEOUS) {
+    Symbol symbol = findInStaticImport(env, name, Symbol.VAR);
+    if (symbol.kind < Symbol.ERRONEOUS) {
       // symbol exists
-      return sym;
-    } else if (sym.kind < bestSoFar.kind) {
-      bestSoFar = sym;
+      return Resolution.resolution(symbol);
+    } else if (symbol.kind < bestSoFar.symbol.kind) {
+      bestSoFar = Resolution.resolution(symbol);
     }
     return bestSoFar;
   }
@@ -149,7 +164,7 @@ public class Resolve {
     return bestSoFar;
   }
 
-  public Symbol findMemberType(Env env, Symbol.TypeSymbol site, String name, Symbol.TypeSymbol c) {
+  private Symbol findMemberType(Env env, Symbol.TypeSymbol site, String name, Symbol.TypeSymbol c) {
     Symbol bestSoFar = symbolNotFound;
     for (Symbol symbol : c.members().lookup(name)) {
       if (symbol.kind == Symbol.TYP) {
@@ -232,34 +247,35 @@ public class Resolve {
   /**
    * @param kind subset of {@link org.sonar.java.resolve.Symbol#VAR}, {@link org.sonar.java.resolve.Symbol#TYP}, {@link org.sonar.java.resolve.Symbol#PCK}
    */
-  public Symbol findIdent(Env env, String name, int kind) {
-    Symbol bestSoFar = symbolNotFound;
-    Symbol symbol;
+  public Resolution findIdent(Env env, String name, int kind) {
+    Resolution bestSoFar = unresolved();
     if ((kind & Symbol.VAR) != 0) {
-      symbol = findVar(env, name);
-      if (symbol.kind < Symbol.ERRONEOUS) {
+      Resolution res = findVar(env, name);
+      if (res.symbol.kind < Symbol.ERRONEOUS) {
         // symbol exists
-        return symbol;
-      } else if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+        return res;
+      } else if (res.symbol.kind < bestSoFar.symbol.kind) {
+        bestSoFar = res;
       }
     }
     if ((kind & Symbol.TYP) != 0) {
-      symbol = findType(env, name);
-      if (symbol.kind < Symbol.ERRONEOUS) {
+      Resolution res = new Resolution();
+      res.symbol = findType(env, name);
+      if (res.symbol.kind < Symbol.ERRONEOUS) {
         // symbol exists
-        return symbol;
-      } else if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+        return res;
+      } else if (res.symbol.kind < bestSoFar.symbol.kind) {
+        bestSoFar = res;
       }
     }
     if ((kind & Symbol.PCK) != 0) {
-      symbol = findIdentInPackage(symbols.defaultPackage, name, Symbol.PCK);
-      if (symbol.kind < Symbol.ERRONEOUS) {
+      Resolution res = new Resolution();
+      res.symbol = findIdentInPackage(symbols.defaultPackage, name, Symbol.PCK);
+      if (res.symbol.kind < Symbol.ERRONEOUS) {
         // symbol exists
-        return symbol;
-      } else if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+        return res;
+      } else if (res.symbol.kind < bestSoFar.symbol.kind) {
+        bestSoFar = res;
       }
     }
     return bestSoFar;
@@ -285,7 +301,6 @@ public class Resolve {
     return bestSoFar;
   }
 
-
   /**
    * @param kind subset of {@link Symbol#VAR}, {@link Symbol#TYP}
    */
@@ -293,7 +308,7 @@ public class Resolve {
     Symbol bestSoFar = symbolNotFound;
     Symbol symbol;
     if ((kind & Symbol.VAR) != 0) {
-      symbol = findField(env, site, name, site);
+      symbol = findField(env, site, name, site).symbol;
       if (symbol.kind < Symbol.ERRONEOUS) {
         // symbol exists
         return symbol;
@@ -594,6 +609,45 @@ public class Resolve {
   private boolean isProtectedAccessible(Symbol symbol, Symbol.TypeSymbol c, Symbol.TypeSymbol site) {
     // TODO see Javac
     return true;
+  }
+
+  /**
+   * Resolution holds the symbol resolved and its type in this context.
+   * This is required to handle type substitution for generics.
+   */
+  static class Resolution {
+
+    private Symbol symbol;
+    private Type type;
+
+    private Resolution(Symbol symbol) {
+      this.symbol = symbol;
+
+    }
+
+    Resolution() {
+    }
+
+    static Resolution resolution(Symbol symbol) {
+      return new Resolution(symbol);
+    }
+
+    Symbol symbol() {
+      return symbol;
+    }
+
+    public Type type() {
+      if (type == null) {
+        return symbol.type;
+      }
+      return type;
+    }
+
+  }
+  public Resolution unresolved() {
+    Resolution resolution = new Resolution(symbolNotFound);
+    resolution.type = symbols.unknownType;
+    return resolution;
   }
 
   static class Env {
