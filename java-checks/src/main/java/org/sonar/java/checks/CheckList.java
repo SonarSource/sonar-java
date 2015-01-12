@@ -263,7 +263,8 @@ public final class CheckList {
       InnerClassOfNonSerializableCheck.class,
       SerialVersionUidCheck.class,
       SerializableComparatorCheck.class,
-      TransientFieldInNonSerializableCheck.class
+      TransientFieldInNonSerializableCheck.class,
+      CustomSerializationMethodCheck.class
     );
   }
 
