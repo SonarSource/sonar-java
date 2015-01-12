@@ -103,7 +103,8 @@ public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
   private boolean isAcceptableType(Type argType) {
     return argType.isSubtypeOf("java.io.Serializable")
       || argType.is("java.lang.Object")
-      || argType.isPrimitive();
+      || argType.isPrimitive()
+      || !argType.isTagged(Type.CLASS);
   }
 
 }
