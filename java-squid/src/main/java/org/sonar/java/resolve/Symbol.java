@@ -167,16 +167,16 @@ public class Symbol {
 
     Scope members;
     Scope typeParameters;
-    List<Type.TypeParameterType> typeParameterTypes;
+    List<Type.TypeVariableType> typeVariableTypes;
 
     public TypeSymbol(int flags, String name, Symbol owner) {
       super(TYP, flags, name, owner);
       this.type = new Type.ClassType(this);
-      this.typeParameterTypes = Lists.newArrayList();
+      this.typeVariableTypes = Lists.newArrayList();
     }
 
-    public void addTypeParameter(Type.TypeParameterType typeParameterType) {
-      typeParameterTypes.add(typeParameterType);
+    public void addTypeParameter(Type.TypeVariableType typeVariableType) {
+      typeVariableTypes.add(typeVariableType);
     }
 
     public Type getSuperclass() {
@@ -356,8 +356,8 @@ public class Symbol {
         //Generics type should have same erasure see JLS8 8.4.2
 
         Type overrideeType = overridee.getParametersTypes().get(i);
-        if(classType instanceof Type.InstantiatedParametrizedType) {
-          overrideeType = ((Type.InstantiatedParametrizedType) classType).typeSubstitution.get(overrideeType);
+        if(classType instanceof Type.ParametrizedTypeType) {
+          overrideeType = ((Type.ParametrizedTypeType) classType).typeSubstitution.get(overrideeType);
           if(overrideeType == null) {
             overrideeType = overridee.getParametersTypes().get(i);
           }
@@ -378,10 +378,10 @@ public class Symbol {
   /**
    * Represents type variable of a parametrized type ie: T in class Foo<T>{}
    */
-  public static class TypeVarSymbol extends TypeSymbol {
-    public TypeVarSymbol(String name, TypeSymbol owner) {
+  public static class TypeVariableSymbol extends TypeSymbol {
+    public TypeVariableSymbol(String name, TypeSymbol owner) {
       super(0, name, owner);
-      this.type = new Type.TypeParameterType(this);
+      this.type = new Type.TypeVariableType(this);
       this.members = new Scope(this);
     }
 

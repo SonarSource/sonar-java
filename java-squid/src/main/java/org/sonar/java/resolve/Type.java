@@ -223,11 +223,11 @@ public class Type {
     }
   }
 
-  public static class TypeParameterType extends Type {
+  public static class TypeVariableType extends Type {
 
     public List<Type> bounds;
 
-    public TypeParameterType(Symbol.TypeVarSymbol symbol) {
+    public TypeVariableType(Symbol.TypeVariableSymbol symbol) {
       super(TYPEVAR, symbol);
     }
 
@@ -240,25 +240,25 @@ public class Type {
     }
   }
 
-  public static class InstantiatedParametrizedType extends ClassType {
+  public static class ParametrizedTypeType extends ClassType {
 
-    private static Map<Symbol, Map<Map<TypeParameterType, Type>, InstantiatedParametrizedType>> typeCache = Maps.newHashMap();
+    private static Map<Symbol, Map<Map<TypeVariableType, Type>, ParametrizedTypeType>> typeCache = Maps.newHashMap();
 
-    final Map<TypeParameterType, Type> typeSubstitution;
+    final Map<TypeVariableType, Type> typeSubstitution;
     final Type rawType;
 
-    public static InstantiatedParametrizedType getInstantiatedType(Symbol.TypeSymbol symbol, Map<TypeParameterType, Type> typeSubstitution) {
+    public static ParametrizedTypeType getParametrizedTypeType(Symbol.TypeSymbol symbol, Map<TypeVariableType, Type> typeSubstitution) {
       if(typeCache.get(symbol) == null) {
-        Map<Map<TypeParameterType, Type>, InstantiatedParametrizedType> map = Maps.newHashMap();
+        Map<Map<TypeVariableType, Type>, ParametrizedTypeType> map = Maps.newHashMap();
         typeCache.put(symbol, map);
       }
       if(typeCache.get(symbol).get(typeSubstitution) == null) {
-        typeCache.get(symbol).put(typeSubstitution, new InstantiatedParametrizedType(symbol, typeSubstitution));
+        typeCache.get(symbol).put(typeSubstitution, new ParametrizedTypeType(symbol, typeSubstitution));
       }
       return typeCache.get(symbol).get(typeSubstitution);
     }
 
-    private InstantiatedParametrizedType(Symbol.TypeSymbol symbol, Map<TypeParameterType, Type> typeSubstitution) {
+    private ParametrizedTypeType(Symbol.TypeSymbol symbol, Map<TypeVariableType, Type> typeSubstitution) {
       super(symbol);
       this.rawType = symbol.getType();
       this.typeSubstitution = typeSubstitution;

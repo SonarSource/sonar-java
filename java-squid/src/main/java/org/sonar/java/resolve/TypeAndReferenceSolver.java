@@ -336,14 +336,14 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
     Type type = getType(tree.type());
     //Type substitution for parametrized type.
-    Map<Type.TypeParameterType, Type> typeSubstitution = Maps.newHashMap();
-    if(tree.typeArguments().size() <= type.getSymbol().typeParameterTypes.size()) {
+    Map<Type.TypeVariableType, Type> typeSubstitution = Maps.newHashMap();
+    if(tree.typeArguments().size() <= type.getSymbol().typeVariableTypes.size()) {
       //FIXME: read type parameters from bytecode.
       for (int i = 0; i < tree.typeArguments().size(); i++) {
-        typeSubstitution.put(type.getSymbol().typeParameterTypes.get(i), getType(tree.typeArguments().get(i)));
+        typeSubstitution.put(type.getSymbol().typeVariableTypes.get(i), getType(tree.typeArguments().get(i)));
       }
     }
-    registerType(tree, Type.InstantiatedParametrizedType.getInstantiatedType(type.getSymbol(), typeSubstitution));
+    registerType(tree, Type.ParametrizedTypeType.getParametrizedTypeType(type.getSymbol(), typeSubstitution));
   }
 
   @Override
@@ -581,8 +581,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   private Type getTypeOfSymbol(Symbol symbol, Type callSite) {
     Type result = getTypeOfSymbol(symbol);
-    if(callSite instanceof Type.InstantiatedParametrizedType) {
-      Type substitution = ((Type.InstantiatedParametrizedType) callSite).typeSubstitution.get(result);
+    if(callSite instanceof Type.ParametrizedTypeType) {
+      Type substitution = ((Type.ParametrizedTypeType) callSite).typeSubstitution.get(result);
       if(substitution != null) {
         result = substitution;
       }

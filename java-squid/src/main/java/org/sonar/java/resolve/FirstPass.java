@@ -237,9 +237,9 @@ public class FirstPass extends BaseTreeVisitor {
     // Save current environment to be able to complete class later
     semanticModel.saveEnv(symbol, env);
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-      Symbol.TypeVarSymbol typeVarSymbol = new Symbol.TypeVarSymbol(typeParameterTree.identifier().name(), symbol);
-      symbol.addTypeParameter((Type.TypeParameterType) typeVarSymbol.type);
-      enterSymbol(typeParameterTree, typeVarSymbol);
+      Symbol.TypeVariableSymbol typeVariableSymbol = new Symbol.TypeVariableSymbol(typeParameterTree.identifier().name(), symbol);
+      symbol.addTypeParameter((Type.TypeVariableType) typeVariableSymbol.type);
+      enterSymbol(typeParameterTree, typeVariableSymbol);
     }
     symbol.typeParameters = env.scope;
     Resolve.Env classEnv = env.dup();

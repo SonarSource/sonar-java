@@ -48,8 +48,8 @@ public class SymbolTableTest {
     assertThat(result.reference(13, 5)).isSameAs(result.symbol("foo", 9));
 
     //Check erasure
-    Type.TypeParameterType STypeParameterType = (Type.TypeParameterType) typeSymbol.typeParameters.lookup("S").get(0).type;
-    assertThat(STypeParameterType.erasure().getSymbol().getName()).isEqualTo("CharSequence");
+    Type.TypeVariableType STypeVariableType = (Type.TypeVariableType) typeSymbol.typeParameters.lookup("S").get(0).type;
+    assertThat(STypeVariableType.erasure().getSymbol().getName()).isEqualTo("CharSequence");
     Type arrayErasure = typeSymbol.members().lookup("arrayErasure").get(0).type;
     assertThat(arrayErasure.isTagged(Type.ARRAY));
     assertThat(arrayErasure.erasure().isTagged(Type.ARRAY));
