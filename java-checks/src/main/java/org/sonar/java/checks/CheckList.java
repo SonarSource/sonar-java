@@ -267,7 +267,8 @@ public final class CheckList {
       CustomSerializationMethodCheck.class,
       InterfaceOrSuperclassShadowingCheck.class,
       RedundantModifierCheck.class,
-      MathOnFloatCheck.class
+      MathOnFloatCheck.class,
+      StringToPrimitiveConversionCheck.class
     );
   }
 
