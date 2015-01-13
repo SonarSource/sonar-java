@@ -1,0 +1,19 @@
+<p>The methods declared in an <code>interface</code> are <code>public</code> and <code>abstract</code> by default. Any variables are automatically <code>public static final</code>. There is no need to explicitly declare them so.</p>
+
+<p>Since annotations are implicitly interfaces, the same holds true for them as well.</p>
+
+<p>Similarly, the <code>final</code> modifier is redundant on any method of a <code>final</code> class.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public interface Vehicle {
+
+  public void go(int speed, Direction direction);  // Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public interface Vehicle {
+
+  void go(int speed, Direction direction);
+</pre>

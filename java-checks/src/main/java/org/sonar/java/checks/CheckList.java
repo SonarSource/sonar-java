@@ -265,7 +265,8 @@ public final class CheckList {
       SerializableComparatorCheck.class,
       TransientFieldInNonSerializableCheck.class,
       CustomSerializationMethodCheck.class,
-      InterfaceOrSuperclassShadowingCheck.class
+      InterfaceOrSuperclassShadowingCheck.class,
+      RedundantModifierCheck.class
     );
   }
 
