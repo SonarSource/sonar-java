@@ -21,6 +21,8 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassVisitor;
@@ -33,13 +35,13 @@ import org.objectweb.asm.signature.SignatureVisitor;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 public class BytecodeVisitor extends ClassVisitor {
 
-  private BytecodeCompleter bytecodeCompleter;
   private final Symbols symbols;
   private final Symbol.TypeSymbol classSymbol;
-
+  private BytecodeCompleter bytecodeCompleter;
   /**
    * Name of current class in a format as it appears in bytecode, i.e. "org/example/MyClass$InnerClass".
    */
@@ -65,15 +67,20 @@ public class BytecodeVisitor extends ClassVisitor {
     Preconditions.checkState(name.endsWith(classSymbol.name), "Name : '" + name + "' should ends with " + classSymbol.name);
     Preconditions.checkState(!BytecodeCompleter.isSynthetic(flags), name + " is synthetic");
     className = name;
-    if(signature != null) {
-      new SignatureReader(signature).accept(new SignatureVisitor(Opcodes.ASM5) {
+    if (signature != null) {
+      SignatureReader signatureReader = new SignatureReader(signature);
+      ReadGenericSignature readGenericSignature = new ReadGenericSignature();
+      signatureReader.accept(readGenericSignature);
+      ((Type.ClassType) classSymbol.type).interfaces = readGenericSignature.interfaces();
+    } else {
+      if (superName == null) {
+        Preconditions.checkState("java/lang/Object".equals(className), "superName must be null only for java/lang/Object, but not for " + className);
+        // TODO(Godin): what about interfaces and annotations
+      } else {
+        ((Type.ClassType) classSymbol.type).supertype = getClassSymbol(superName).type;
+      }
+      ((Type.ClassType) classSymbol.type).interfaces = getCompletedClassSymbolsType(interfaces);
 
-        @Override
-        public void visitFormalTypeParameter(String name) {
-          //TODO improve generics
-          classSymbol.isParametrized = true;
-        }
-      });
     }
     //if class has already access flags set (inner class) then do not reset those.
     //The important access flags are the one defined in the outer class.
@@ -83,13 +90,7 @@ public class BytecodeVisitor extends ClassVisitor {
       classSymbol.flags |= bytecodeCompleter.filterBytecodeFlags(flags);
     }
     classSymbol.members = new Scope(classSymbol);
-    if (superName == null) {
-      Preconditions.checkState("java/lang/Object".equals(className), "superName must be null only for java/lang/Object, but not for " + className);
-      // TODO(Godin): what about interfaces and annotations
-    } else {
-      ((Type.ClassType) classSymbol.type).supertype = getClassSymbol(superName).type;
-    }
-    ((Type.ClassType) classSymbol.type).interfaces = getCompletedClassSymbolsType(interfaces);
+
   }
 
   @Override
@@ -182,7 +183,7 @@ public class BytecodeVisitor extends ClassVisitor {
       final Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(bytecodeCompleter.filterBytecodeFlags(flags),
           name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
       classSymbol.members.enter(symbol);
-      if(signature != null) {
+      if (signature != null) {
         new SignatureReader(signature).accept(new SignatureVisitor(Opcodes.ASM5) {
 
           @Override
@@ -212,7 +213,7 @@ public class BytecodeVisitor extends ClassVisitor {
       );
       final Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(bytecodeCompleter.filterBytecodeFlags(flags), name, type, classSymbol);
       classSymbol.members.enter(methodSymbol);
-      if(signature != null) {
+      if (signature != null) {
         new SignatureReader(signature).accept(new SignatureVisitor(Opcodes.ASM5) {
 
           @Override
@@ -306,6 +307,124 @@ public class BytecodeVisitor extends ClassVisitor {
       types.add(getClassSymbol(bytecodeName).type);
     }
     return types.build();
+  }
+
+  private class ReadGenericSignature extends SignatureVisitor {
+
+    Symbol.TypeVariableSymbol typeVariableSymbol;
+    List<Type> bounds;
+    ImmutableList.Builder<Type> interfaces;
+
+    public ReadGenericSignature() {
+      super(Opcodes.ASM5);
+      interfaces = ImmutableList.builder();
+    }
+
+    @Override
+    public void visitFormalTypeParameter(String name) {
+      typeVariableSymbol = new Symbol.TypeVariableSymbol(name, classSymbol);
+      classSymbol.typeParameters.enter(typeVariableSymbol);
+      classSymbol.addTypeParameter((Type.TypeVariableType) typeVariableSymbol.type);
+      bounds = Lists.newArrayList();
+      ((Type.TypeVariableType) typeVariableSymbol.type).bounds = bounds;
+      classSymbol.isParametrized = true;
+    }
+
+    @Override
+    public SignatureVisitor visitSuperclass() {
+      return new ReadType() {
+        @Override
+        public void visitEnd() {
+          super.visitEnd();
+          ((Type.ClassType) classSymbol.type).supertype = readType;
+        }
+      };
+    }
+
+    @Override
+    public SignatureVisitor visitInterface() {
+      return new ReadType() {
+        @Override
+        public void visitEnd() {
+          super.visitEnd();
+          interfaces.add(readType);
+        }
+      };
+    }
+
+    @Override
+    public void visitClassType(String name) {
+      if (bounds != null) {
+        bounds.add(getClassSymbol(name).type);
+      }
+    }
+
+    @Override
+    public void visitEnd() {
+      if (typeVariableSymbol != null) {
+        if (bounds.isEmpty()) {
+          bounds.add(symbols.objectType);
+        }
+        typeVariableSymbol = null;
+        bounds = null;
+      }
+    }
+
+    public List<Type> interfaces() {
+      return interfaces.build();
+    }
+  }
+
+  private class ReadType extends SignatureVisitor {
+    Type readType;
+    List<Type> typeArguments = Lists.newArrayList();
+
+    public ReadType() {
+      super(Opcodes.ASM5);
+    }
+
+    @Override
+    public void visitClassType(String name) {
+      readType = getClassSymbol(name).type;
+    }
+
+    @Override
+    public SignatureVisitor visitTypeArgument(char wildcard) {
+      //TODO wildcard
+      return new ReadType() {
+        @Override
+        public void visitEnd() {
+          super.visitEnd();
+          ReadType.this.typeArguments.add(this.readType);
+        }
+      };
+    }
+
+    @Override
+    public void visitTypeVariable(String name) {
+      List<Symbol> lookup = classSymbol.typeParameters().lookup(name);
+      Preconditions.checkState(lookup.size() == 1, "More than one type parameter with the same name");
+      readType = lookup.get(0).type;
+      visitEnd();
+    }
+
+    @Override
+    public void visitEnd() {
+      if (!typeArguments.isEmpty()) {
+        Symbol.TypeSymbol readSymbol = readType.symbol;
+        readSymbol.complete();
+         //Mismatch between type variable and type arguments means we are lacking some pieces of bytecode to resolve substitution properly.
+        if(typeArguments.size() == readSymbol.typeVariableTypes.size()) {
+          Map<Type.TypeVariableType, Type> substitution = Maps.newHashMap();
+          int i = 0;
+          for (Type typeArgument : typeArguments) {
+            substitution.put(readSymbol.typeVariableTypes.get(i), typeArgument);
+            i++;
+          }
+          readType = Type.ParametrizedTypeType.getParametrizedTypeType(readSymbol, substitution);
+        }
+      }
+    }
   }
 
 }

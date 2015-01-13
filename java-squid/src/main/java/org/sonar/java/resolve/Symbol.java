@@ -194,6 +194,11 @@ public class Symbol {
       return members;
     }
 
+    public Scope typeParameters() {
+      complete();
+      return typeParameters;
+    }
+
     public String getFullyQualifiedName() {
       String ownerName = "";
       if(!owner.name.isEmpty()) {

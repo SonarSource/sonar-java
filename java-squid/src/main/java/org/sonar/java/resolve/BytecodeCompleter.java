@@ -149,6 +149,7 @@ public class BytecodeCompleter implements Symbol.Completer {
         symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), shortName, enterPackage(packageName));
       }
       symbol.members = new Scope(symbol);
+      symbol.typeParameters = new Scope(symbol);
 
       // (Godin): IOException will happen without this condition in case of missing class:
       if (getClassLoader().getResource(Convert.bytecodeName(flatName) + ".class") != null) {

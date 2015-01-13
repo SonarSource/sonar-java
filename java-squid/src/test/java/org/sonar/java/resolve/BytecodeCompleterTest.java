@@ -20,7 +20,6 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
-import org.fest.assertions.Fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.resolve.targets.Annotations;
@@ -38,9 +37,9 @@ import static org.fest.assertions.Fail.fail;
 
 public class BytecodeCompleterTest {
 
-  private BytecodeCompleter bytecodeCompleter;
   //used to load classes in same package
   public BytecodeCompleterPackageVisibility bytecodeCompleterPackageVisibility = new BytecodeCompleterPackageVisibility();
+  private BytecodeCompleter bytecodeCompleter;
 
   private void accessPackageVisibility() {
     bytecodeCompleterPackageVisibility.add(1, 2);
@@ -187,24 +186,49 @@ public class BytecodeCompleterTest {
     assertThat(metadata.getValuesFor("org.sonar.java.resolve.targets.RuntimeAnnotation2")).hasSize(2);
     Iterator<AnnotationValue> iterator = metadata.getValuesFor("org.sonar.java.resolve.targets.RuntimeAnnotation2").iterator();
     Object value = iterator.next().value();
-    assertValue(value);
+    assertAnnotationValue(value);
     value = iterator.next().value();
-    assertValue(value);
+    assertAnnotationValue(value);
 
   }
 
-  private void assertValue(Object value) {
-    if(value instanceof Symbol.VariableSymbol) {
+  private void assertAnnotationValue(Object value) {
+    if (value instanceof Symbol.VariableSymbol) {
       Symbol.VariableSymbol var = (Symbol.VariableSymbol) value;
       assertThat(var.getName()).isEqualTo("ONE");
       assertThat(var.type.is("org.sonar.java.resolve.targets.MyEnum")).isTrue();
       return;
-    } else if (value instanceof Object[]){
+    } else if (value instanceof Object[]) {
       Object[] array = (Object[]) value;
       assertThat(array).hasSize(4);
       assertThat(array).contains("one", "two", "three", "four");
       return;
     }
     fail("value is not array nor variableSymbol");
+  }
+
+
+  @Test
+  public void type_parameters_should_be_read_from_bytecode() {
+    Symbol.TypeSymbol typeParametersSymbol = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.TypeParameters");
+    typeParametersSymbol.complete();
+    assertThat(typeParametersSymbol.typeParameters).isNotNull();
+    assertThat(typeParametersSymbol.typeParameters.scopeSymbols()).hasSize(2);
+    assertThat(typeParametersSymbol.typeVariableTypes).hasSize(2);
+
+    assertThat(typeParametersSymbol.typeVariableTypes.get(0).erasure().getSymbol().getName()).isEqualTo("Object");
+    assertThat(typeParametersSymbol.typeVariableTypes.get(1).erasure().getSymbol().getName()).isEqualTo("CharSequence");
+
+    assertThat(typeParametersSymbol.getSuperclass()).isInstanceOf(Type.ParametrizedTypeType.class);
+    assertThat(((Type.ParametrizedTypeType) typeParametersSymbol.getSuperclass()).typeSubstitution.keySet()).hasSize(1);
+    Type.TypeVariableType keyTypeVariable = ((Type.ParametrizedTypeType) typeParametersSymbol.getSuperclass()).typeSubstitution.keySet().iterator().next();
+    assertThat(keyTypeVariable.symbol.getName()).isEqualTo("S");
+    Type actual = ((Type.ParametrizedTypeType) typeParametersSymbol.getSuperclass()).typeSubstitution.get(keyTypeVariable);
+    assertThat(actual).isInstanceOf(Type.ParametrizedTypeType.class);
+    assertThat(((Type.ParametrizedTypeType) actual).typeSubstitution.keySet()).hasSize(1);
+
+    assertThat(typeParametersSymbol.getInterfaces()).hasSize(2);
+    assertThat(typeParametersSymbol.getInterfaces().get(0)).isInstanceOf(Type.ParametrizedTypeType.class);
+
   }
 }
