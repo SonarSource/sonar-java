@@ -266,7 +266,8 @@ public final class CheckList {
       TransientFieldInNonSerializableCheck.class,
       CustomSerializationMethodCheck.class,
       InterfaceOrSuperclassShadowingCheck.class,
-      RedundantModifierCheck.class
+      RedundantModifierCheck.class,
+      MathOnFloatCheck.class
     );
   }
 
