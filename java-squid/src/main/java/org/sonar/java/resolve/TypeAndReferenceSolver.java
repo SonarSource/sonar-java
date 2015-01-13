@@ -574,6 +574,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   private Type getTypeOfSymbol(Symbol symbol, Type callSite) {
+    //FIXME get rid of this method. All substitutions should happen in Resolve class
     Type result = getTypeOfSymbol(symbol);
     if(callSite instanceof Type.ParametrizedTypeType) {
       Type substitution = ((Type.ParametrizedTypeType) callSite).typeSubstitution.get(result);
