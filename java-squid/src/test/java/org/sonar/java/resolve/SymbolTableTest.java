@@ -102,7 +102,11 @@ public class SymbolTableTest {
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Baz").type);
 
     assertThat(result.reference(25,21)).isSameAs(result.symbol("method"));
-    assertThat(classDeclaration.metadata().annotations()).hasSize(1);
+
+    SymbolMetadata metadata = classDeclaration.metadata();
+    assertThat(metadata.annotations()).hasSize(1);
+    assertThat(metadata.getValuesFor("java.lang.Override")).isNull();
+    assertThat(metadata.getValuesFor("java.lang.SuppressWarnings")).hasSize(1);
   }
 
   @Test

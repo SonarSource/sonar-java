@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
@@ -67,6 +68,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +124,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   //FIXME also support method symbol and field symbols
   private void completeMetadata(Symbol.TypeSymbol symbol, List<AnnotationTree> annotations) {
     for (AnnotationTree tree : annotations) {
-      AnnotationInstance annotationInstance = new AnnotationInstance(symbol);
+      AnnotationTreeImpl treeImpl = (AnnotationTreeImpl) tree;
+      AnnotationInstance annotationInstance = new AnnotationInstance(treeImpl.getSymbolType().getSymbol());
       symbol.metadata().addAnnotation(annotationInstance);
       if (tree.arguments().size() > 1 || (!tree.arguments().isEmpty() && tree.arguments().get(0).is(Tree.Kind.ASSIGNMENT))) {
         for (ExpressionTree expressionTree : tree.arguments()) {
