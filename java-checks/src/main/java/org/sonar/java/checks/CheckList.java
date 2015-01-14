@@ -269,7 +269,8 @@ public final class CheckList {
       RedundantModifierCheck.class,
       MathOnFloatCheck.class,
       StringToPrimitiveConversionCheck.class,
-      ClassNamedLikeExceptionCheck.class
+      ClassNamedLikeExceptionCheck.class,
+      ProtectedMemberInFinalClassCheck.class
     );
   }
 

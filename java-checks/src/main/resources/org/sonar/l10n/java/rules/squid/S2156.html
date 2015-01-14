@@ -1,0 +1,21 @@
+The difference between <code>private</code> and <code>protected</code> visibility is that child classes can see and use <code>protected</code> members, but they cannot see <code>private</code> ones. Since a <code>final</code> class will have no children, marking the members of a <code>final</code> class <code>protected</code> is confusingly pointless.
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public final class MyFinalClass {
+
+  protected String name = "Fred";  // Noncompliant
+  protected void setName(String name) {  // Noncompliant
+    // ...
+  }
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public final class MyFinalClass {
+
+  private String name = "Fred";
+  public void setName(String name) {
+    // ...
+  }
+</pre>
