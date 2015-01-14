@@ -97,7 +97,9 @@ public class BytecodeCompleter implements Symbol.Completer {
       Closeables.closeQuietly(inputStream);
     }
     if (classReader != null) {
-      classReader.accept(new BytecodeVisitor(this, symbols, (Symbol.TypeSymbol) symbol, parametrizedTypeCache), ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+      classReader.accept(
+          new BytecodeVisitor(this, symbols, (Symbol.TypeSymbol) symbol, parametrizedTypeCache),
+          ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
     }
   }
 

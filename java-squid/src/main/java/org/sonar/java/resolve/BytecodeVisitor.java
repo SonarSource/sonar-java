@@ -338,7 +338,7 @@ public class BytecodeVisitor extends ClassVisitor {
         @Override
         public void visitEnd() {
           super.visitEnd();
-          ((Type.ClassType) classSymbol.type).supertype = readType;
+          ((Type.ClassType) classSymbol.type).supertype = typeRead;
         }
       };
     }
@@ -349,7 +349,7 @@ public class BytecodeVisitor extends ClassVisitor {
         @Override
         public void visitEnd() {
           super.visitEnd();
-          interfaces.add(readType);
+          interfaces.add(typeRead);
         }
       };
     }
@@ -378,7 +378,7 @@ public class BytecodeVisitor extends ClassVisitor {
   }
 
   private class ReadType extends SignatureVisitor {
-    Type readType;
+    Type typeRead;
     List<Type> typeArguments = Lists.newArrayList();
 
     public ReadType() {
@@ -387,7 +387,7 @@ public class BytecodeVisitor extends ClassVisitor {
 
     @Override
     public void visitClassType(String name) {
-      readType = getClassSymbol(name).type;
+      typeRead = getClassSymbol(name).type;
     }
 
     @Override
@@ -397,7 +397,7 @@ public class BytecodeVisitor extends ClassVisitor {
         @Override
         public void visitEnd() {
           super.visitEnd();
-          ReadType.this.typeArguments.add(this.readType);
+          ReadType.this.typeArguments.add(this.typeRead);
         }
       };
     }
@@ -406,14 +406,14 @@ public class BytecodeVisitor extends ClassVisitor {
     public void visitTypeVariable(String name) {
       List<Symbol> lookup = classSymbol.typeParameters().lookup(name);
       Preconditions.checkState(lookup.size() == 1, "More than one type parameter with the same name");
-      readType = lookup.get(0).type;
+      typeRead = lookup.get(0).type;
       visitEnd();
     }
 
     @Override
     public void visitEnd() {
       if (!typeArguments.isEmpty()) {
-        Symbol.TypeSymbol readSymbol = readType.symbol;
+        Symbol.TypeSymbol readSymbol = typeRead.symbol;
         readSymbol.complete();
          //Mismatch between type variable and type arguments means we are lacking some pieces of bytecode to resolve substitution properly.
         if(typeArguments.size() == readSymbol.typeVariableTypes.size()) {
@@ -423,7 +423,7 @@ public class BytecodeVisitor extends ClassVisitor {
             substitution.put(readSymbol.typeVariableTypes.get(i), typeArgument);
             i++;
           }
-          readType = parametrizedTypeCache.getParametrizedTypeType(readSymbol, substitution);
+          typeRead = parametrizedTypeCache.getParametrizedTypeType(readSymbol, substitution);
         }
       }
     }

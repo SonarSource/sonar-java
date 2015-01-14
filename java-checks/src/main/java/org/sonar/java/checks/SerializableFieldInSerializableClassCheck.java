@@ -72,8 +72,8 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
         MethodTree methodTree = (MethodTree) member;
         //FIXME detect methods based on type of arg and throws, not arity.
         if (methodTree.modifiers().modifiers().contains(Modifier.PRIVATE) && methodTree.parameters().size() == 1) {
-          hasWriteObject |= "writeObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size()==1;
-          hasReadObject |= "readObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size()==2;
+          hasWriteObject |= "writeObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 1;
+          hasReadObject |= "readObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 2;
         }
       }
     }
@@ -89,7 +89,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
       return true;
     } else if (tree.is(Tree.Kind.CLASS)) {
       Symbol.TypeSymbol symbol = ((ClassTreeImpl) tree).getSymbol();
-      if(symbol==null) {
+      if (symbol == null) {
         return false;
       }
       return implementsSerializable(symbol.getType());
@@ -101,16 +101,16 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     if (type == null || type.isTagged(Type.UNKNOWN)) {
       return false;
     }
-    if(type.isTagged(Type.ARRAY)) {
+    if (type.isTagged(Type.ARRAY)) {
       return implementsSerializable(((Type.ArrayType) type).elementType());
     }
-    if(type.isTagged(Type.CLASS)) {
+    if (type.isTagged(Type.CLASS)) {
       Type.ClassType classType = (Type.ClassType) type;
       String interfaceName = classType.getSymbol().owner().getName() + "." + classType.getSymbol().getName();
       if ("java.io.Serializable".equals(interfaceName)) {
         return true;
       }
-     return hasSupertypeSerializable((Type.ClassType) type);
+      return hasSupertypeSerializable((Type.ClassType) type);
     }
     //TODO if type is TypeVar
     return false;
@@ -119,7 +119,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
   private boolean hasSupertypeSerializable(Type.ClassType type) {
     Symbol.TypeSymbol symbol = type.getSymbol();
     for (Type interfaceType : symbol.getInterfaces()) {
-      if(implementsSerializable(interfaceType)) {
+      if (implementsSerializable(interfaceType)) {
         return true;
       }
     }
