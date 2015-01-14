@@ -47,7 +47,7 @@ public class BytecodeCompleterTest {
 
   @Before
   public void setUp() throws Exception {
-    bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")), new ParametrizedTypeCache());
     new Symbols(bytecodeCompleter);
 
   }

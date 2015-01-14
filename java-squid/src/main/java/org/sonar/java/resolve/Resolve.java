@@ -454,7 +454,7 @@ public class Resolve {
    */
   private Symbol selectMostSpecific(Symbol m1, Symbol m2) {
     // FIXME get rig of null check
-    if (m2.type == null) {
+    if (m2.type == null || !m2.isKind(Symbol.MTH)) {
       return m1;
     }
 

@@ -28,7 +28,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class SymbolsTest {
 
-  private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList()));
+  private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache()));
 
   @Test
   public void root_package() {

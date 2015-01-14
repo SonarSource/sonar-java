@@ -49,6 +49,7 @@ public class BytecodeCompleter implements Symbol.Completer {
 
   private Symbols symbols;
   private final List<File> projectClasspath;
+  private final ParametrizedTypeCache parametrizedTypeCache;
 
   /**
    * Indexed by flat name.
@@ -58,8 +59,9 @@ public class BytecodeCompleter implements Symbol.Completer {
 
   private ClassLoader classLoader;
 
-  public BytecodeCompleter(List<File> projectClasspath) {
+  public BytecodeCompleter(List<File> projectClasspath, ParametrizedTypeCache parametrizedTypeCache) {
     this.projectClasspath = projectClasspath;
+    this.parametrizedTypeCache = parametrizedTypeCache;
   }
 
   public void init(Symbols symbols) {
@@ -95,7 +97,7 @@ public class BytecodeCompleter implements Symbol.Completer {
       Closeables.closeQuietly(inputStream);
     }
     if (classReader != null) {
-      classReader.accept(new BytecodeVisitor(this, symbols, (Symbol.TypeSymbol) symbol), ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+      classReader.accept(new BytecodeVisitor(this, symbols, (Symbol.TypeSymbol) symbol, parametrizedTypeCache), ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
     }
   }
 

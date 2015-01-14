@@ -43,7 +43,8 @@ import static org.mockito.Mockito.when;
 
 public class TypeAndReferenceSolverTest {
 
-  private final BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+  private final ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
+  private final BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")), parametrizedTypeCache);
   private final Symbols symbols = new Symbols(bytecodeCompleter);
 
   private Resolve.Env env;
@@ -395,7 +396,7 @@ public class TypeAndReferenceSolverTest {
   private Type typeOf(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
     when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
-    TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter));
+    TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter), parametrizedTypeCache);
 
     String p = "class Test { void wrapperMethod() { " + input + "; } }";
     AstNode node = JavaParser.createParser(Charsets.UTF_8).parse(p);
@@ -409,7 +410,7 @@ public class TypeAndReferenceSolverTest {
   private Type typeOfExpression(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
     when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
-    TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter));
+    TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter), parametrizedTypeCache);
 
     String p = "class Test { void wrapperMethod() { Object o = " + input + "; } }";
     AstNode node = JavaParser.createParser(Charsets.UTF_8).parse(p);

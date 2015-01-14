@@ -30,7 +30,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class TypesTest {
 
-  private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList()));
+  private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache()));
   private Types types = new Types();
 
   @Test

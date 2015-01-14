@@ -54,14 +54,15 @@ public class SemanticModel {
   private BytecodeCompleter bytecodeCompleter;
 
   public static SemanticModel createFor(CompilationUnitTree tree, List<File> projectClasspath) {
-    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(projectClasspath);
+    ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(projectClasspath, parametrizedTypeCache);
     Symbols symbols = new Symbols(bytecodeCompleter);
     SemanticModel semanticModel = new SemanticModel();
     semanticModel.bytecodeCompleter = bytecodeCompleter;
     semanticModel.createParentLink((JavaTree) tree);
     try {
       Resolve resolve = new Resolve(symbols, bytecodeCompleter);
-      TypeAndReferenceSolver typeAndReferenceSolver = new TypeAndReferenceSolver(semanticModel, symbols, resolve);
+      TypeAndReferenceSolver typeAndReferenceSolver = new TypeAndReferenceSolver(semanticModel, symbols, resolve, parametrizedTypeCache);
       new FirstPass(semanticModel, symbols, resolve, typeAndReferenceSolver).visitCompilationUnit(tree);
       typeAndReferenceSolver.visitCompilationUnit(tree);
       new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
@@ -77,7 +78,7 @@ public class SemanticModel {
 
 
   public static void handleMissingTypes(Tree tree) {
-    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(ImmutableList.<File>of());
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(ImmutableList.<File>of(), new ParametrizedTypeCache());
     Symbols symbols = new Symbols(bytecodeCompleter);
     handleMissingTypes(symbols, tree);
   }

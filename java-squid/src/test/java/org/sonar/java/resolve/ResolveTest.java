@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 public class ResolveTest {
 
-  private BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+  private BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")), new ParametrizedTypeCache());
   private Resolve resolve = new Resolve(new Symbols(bytecodeCompleter), bytecodeCompleter);
 
   private Resolve.Env env = mock(Resolve.Env.class);

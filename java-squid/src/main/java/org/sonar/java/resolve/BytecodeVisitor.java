@@ -41,17 +41,19 @@ public class BytecodeVisitor extends ClassVisitor {
 
   private final Symbols symbols;
   private final Symbol.TypeSymbol classSymbol;
+  private final ParametrizedTypeCache parametrizedTypeCache;
   private BytecodeCompleter bytecodeCompleter;
   /**
    * Name of current class in a format as it appears in bytecode, i.e. "org/example/MyClass$InnerClass".
    */
   private String className;
 
-  BytecodeVisitor(BytecodeCompleter bytecodeCompleter, Symbols symbols, Symbol.TypeSymbol classSymbol) {
+  BytecodeVisitor(BytecodeCompleter bytecodeCompleter, Symbols symbols, Symbol.TypeSymbol classSymbol, ParametrizedTypeCache parametrizedTypeCache) {
     super(Opcodes.ASM5);
     this.bytecodeCompleter = bytecodeCompleter;
     this.symbols = symbols;
     this.classSymbol = classSymbol;
+    this.parametrizedTypeCache = parametrizedTypeCache;
   }
 
   private Symbol.TypeSymbol getClassSymbol(String bytecodeName) {
@@ -421,7 +423,7 @@ public class BytecodeVisitor extends ClassVisitor {
             substitution.put(readSymbol.typeVariableTypes.get(i), typeArgument);
             i++;
           }
-          readType = Type.ParametrizedTypeType.getParametrizedTypeType(readSymbol, substitution);
+          readType = parametrizedTypeCache.getParametrizedTypeType(readSymbol, substitution);
         }
       }
     }

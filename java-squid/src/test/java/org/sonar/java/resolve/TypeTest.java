@@ -29,7 +29,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class TypeTest {
 
-  private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList()));
+  private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache()));
 
   @Test
   public void test_order_of_tags() {
@@ -66,7 +66,7 @@ public class TypeTest {
   @Test
   public void to_string_on_type() throws Exception {
     assertThat(new Type(Type.VOID, null).toString()).isEmpty();
-    String methodToString  = new Type.MethodType(ImmutableList.<Type>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList())).intType, ImmutableList.<Type>of(), null).toString();
+    String methodToString  = new Type.MethodType(ImmutableList.<Type>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType, ImmutableList.<Type>of(), null).toString();
     assertThat(methodToString).isEqualTo("returns int");
   }
 

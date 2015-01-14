@@ -81,14 +81,16 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   private final SemanticModel semanticModel;
   private final Symbols symbols;
   private final Resolve resolve;
+  private final ParametrizedTypeCache parametrizedTypeCache;
 
   private final Map<Tree, Type> types = Maps.newHashMap();
   Resolve.Env env;
 
-  public TypeAndReferenceSolver(SemanticModel semanticModel, Symbols symbols, Resolve resolve) {
+  public TypeAndReferenceSolver(SemanticModel semanticModel, Symbols symbols, Resolve resolve, ParametrizedTypeCache parametrizedTypeCache) {
     this.semanticModel = semanticModel;
     this.symbols = symbols;
     this.resolve = resolve;
+    this.parametrizedTypeCache = parametrizedTypeCache;
     typesOfLiterals.put(Tree.Kind.BOOLEAN_LITERAL, symbols.booleanType);
     typesOfLiterals.put(Tree.Kind.NULL_LITERAL, symbols.nullType);
     typesOfLiterals.put(Tree.Kind.CHAR_LITERAL, symbols.charType);
@@ -339,7 +341,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         typeSubstitution.put(type.getSymbol().typeVariableTypes.get(i), getType(tree.typeArguments().get(i)));
       }
     }
-    registerType(tree, Type.ParametrizedTypeType.getParametrizedTypeType(type.getSymbol(), typeSubstitution));
+    registerType(tree, parametrizedTypeCache.getParametrizedTypeType(type.getSymbol(), typeSubstitution));
   }
 
   @Override

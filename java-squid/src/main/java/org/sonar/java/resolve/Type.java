@@ -19,7 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Maps;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -241,23 +240,10 @@ public class Type {
 
   public static class ParametrizedTypeType extends ClassType {
 
-    private static Map<Symbol, Map<Map<TypeVariableType, Type>, ParametrizedTypeType>> typeCache = Maps.newHashMap();
-
     final Map<TypeVariableType, Type> typeSubstitution;
     final Type rawType;
 
-    public static ParametrizedTypeType getParametrizedTypeType(Symbol.TypeSymbol symbol, Map<TypeVariableType, Type> typeSubstitution) {
-      if(typeCache.get(symbol) == null) {
-        Map<Map<TypeVariableType, Type>, ParametrizedTypeType> map = Maps.newHashMap();
-        typeCache.put(symbol, map);
-      }
-      if(typeCache.get(symbol).get(typeSubstitution) == null) {
-        typeCache.get(symbol).put(typeSubstitution, new ParametrizedTypeType(symbol, typeSubstitution));
-      }
-      return typeCache.get(symbol).get(typeSubstitution);
-    }
-
-    private ParametrizedTypeType(Symbol.TypeSymbol symbol, Map<TypeVariableType, Type> typeSubstitution) {
+    ParametrizedTypeType(Symbol.TypeSymbol symbol, Map<TypeVariableType, Type> typeSubstitution) {
       super(symbol);
       this.rawType = symbol.getType();
       this.typeSubstitution = typeSubstitution;
