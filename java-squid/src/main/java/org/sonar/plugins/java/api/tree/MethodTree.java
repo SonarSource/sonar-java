@@ -48,7 +48,7 @@ public interface MethodTree extends Tree {
 
   ModifiersTree modifiers();
 
-  List<TypeParameterTree> typeParameters();
+  TypeParameters typeParameters();
 
   /**
    * @return null in case of constructor

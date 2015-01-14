@@ -275,12 +275,6 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    visitMethodDeclaration((MethodTreeImpl) tree);
-    super.visitMethod(tree);
-    restoreEnvironment(tree);
-  }
-
-  private void visitMethodDeclaration(MethodTreeImpl tree) {
     String name = tree.returnType() == null ? "<init>" : tree.simpleName().name();
     Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeFlags(tree.modifiers()), name, env.scope.owner);
     if((env.scope.owner.flags & Flags.ENUM) !=0 && tree.returnType()==null ) {
@@ -293,15 +287,31 @@ public class FirstPass extends BaseTreeVisitor {
     symbol.completer = completer;
     uncompleted.add(symbol);
 
-    tree.setSymbol(symbol);
-
+    ((MethodTreeImpl) tree).setSymbol(symbol);
+    createNewEnvironment(tree.typeParameters());
+    for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
+      Symbol.TypeVariableSymbol typeVariableSymbol = new Symbol.TypeVariableSymbol(typeParameterTree.identifier().name(), symbol);
+      symbol.addTypeParameter((Type.TypeVariableType) typeVariableSymbol.type);
+      enterSymbol(typeParameterTree, typeVariableSymbol);
+    }
     // Save current environment to be able to complete method later
     semanticModel.saveEnv(symbol, env);
 
+    symbol.typeParameters = env.scope;
     // Create new environment - this is required, because new scope is created
     Resolve.Env methodEnv = env.dup();
     methodEnv.scope = symbol.parameters;
+    methodEnv.outer = env;
     env = methodEnv;
+    scan(tree.modifiers());
+    //skip type parameters.
+    scan(tree.returnType());
+    scan(tree.parameters());
+    scan(tree.defaultValue());
+    scan(tree.throwsClauses());
+    scan(tree.block());
+    restoreEnvironment(tree);
+    restoreEnvironment(tree);
   }
 
   @Override

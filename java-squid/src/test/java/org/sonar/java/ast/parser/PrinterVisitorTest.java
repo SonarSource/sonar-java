@@ -38,6 +38,7 @@ public class PrinterVisitorTest {
         "    TypeParameters : [\n"+
         "    MethodTree 1\n" +
         "      ModifiersTree\n" +
+        "      TypeParameters\n"+
         "      PrimitiveTypeTree 1 null\n" +
         "      BlockTree 1\n" +
         "    ]\n" +

@@ -41,7 +41,7 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
-import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
@@ -51,7 +51,7 @@ import java.util.List;
 public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   private ModifiersTree modifiers;
-  private List<TypeParameterTree> typeParameters;
+  private TypeParameters typeParameters;
   @Nullable
   private Tree returnType;
   private IdentifierTree simpleName;
@@ -66,7 +66,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   public MethodTreeImpl(FormalParametersListTreeImpl parameters, @Nullable SyntaxToken defaultToken, @Nullable ExpressionTree defaultValue) {
     super(Kind.METHOD);
-    this.typeParameters = ImmutableList.of();
+    this.typeParameters = new TypeParameterListTreeImpl();
     this.parameters = parameters;
     this.block = null;
     this.throwsClauses = ImmutableList.of();
@@ -91,7 +91,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
     super(returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD);
 
-    this.typeParameters = ImmutableList.of();
+    this.typeParameters = new TypeParameterListTreeImpl();
     this.modifiers = null;
     this.returnType = returnType;
     this.simpleName = Preconditions.checkNotNull(simpleName);
@@ -100,22 +100,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
     this.defaultToken = null;
     this.defaultValue = null;
-  }
-
-  public MethodTreeImpl(AstNode astNode, ModifiersTree modifiers, List<TypeParameterTree> typeParameters, @Nullable Tree returnType, IdentifierTree simpleName,
-                        FormalParametersListTreeImpl parameters,
-                        @Nullable BlockTree block,
-                        List<ExpressionTree> throwsClauses, @Nullable ExpressionTree defaultValue) {
-    super(astNode);
-    this.modifiers = Preconditions.checkNotNull(modifiers);
-    this.typeParameters = Preconditions.checkNotNull(typeParameters);
-    this.returnType = returnType;
-    this.simpleName = Preconditions.checkNotNull(simpleName);
-    this.parameters = Preconditions.checkNotNull(parameters);
-    this.block = block;
-    this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
-    this.defaultToken = null;
-    this.defaultValue = defaultValue;
   }
 
   public MethodTreeImpl complete(Tree returnType, IdentifierTree simpleName) {
@@ -129,7 +113,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   public MethodTreeImpl completeWithTypeParameters(TypeParameterListTreeImpl typeParameters) {
-    this.typeParameters = Preconditions.checkNotNull((List) typeParameters);
+    this.typeParameters = typeParameters;
     return this;
   }
 
@@ -153,7 +137,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   @Override
-  public List<TypeParameterTree> typeParameters() {
+  public TypeParameters typeParameters() {
     return typeParameters;
   }
 

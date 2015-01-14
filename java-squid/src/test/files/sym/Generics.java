@@ -23,4 +23,12 @@ class A<T, S extends CharSequence> {
 
   class C<V> {}
 
+
+
+  S method1(S param) {
+    return param;
+  }
+  <P> P method2(P plop) {
+  }
+
 }

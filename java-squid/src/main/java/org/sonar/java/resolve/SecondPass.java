@@ -151,14 +151,14 @@ public class SecondPass implements Symbol.Completer {
   private void complete(Symbol.MethodSymbol symbol) {
     MethodTree methodTree = (MethodTree) semanticModel.getTree(symbol);
     Resolve.Env env = semanticModel.getEnv(symbol);
-
+    completeTypeParameters(methodTree.typeParameters(), env);
     ImmutableList.Builder<Symbol.TypeSymbol> thrown = ImmutableList.builder();
     ImmutableList.Builder<Type> thrownTypes = ImmutableList.builder();
     for (ExpressionTree throwClause : methodTree.throwsClauses()) {
       Type thrownType = resolveType(env, throwClause);
       if (thrownType != null) {
         thrownTypes.add(thrownType);
-        thrown.add(((Type.ClassType) thrownType).symbol);
+        thrown.add(thrownType.symbol);
       }
     }
     symbol.thrown = thrown.build();
@@ -168,7 +168,7 @@ public class SecondPass implements Symbol.Completer {
     if (!"<init>".equals(symbol.name)) {
       returnType = resolveType(env, methodTree.returnType());
       if (returnType != null) {
-        symbol.type = returnType.symbol;
+        symbol.returnType = returnType.symbol;
       }
     }
     List<Type> argTypes = Lists.newArrayList();

@@ -266,22 +266,27 @@ public class Symbol {
    */
   public static class MethodSymbol extends Symbol {
 
-    TypeSymbol type;
+    TypeSymbol returnType;
     Scope parameters;
+    Scope typeParameters;
     List<TypeSymbol> thrown;
+    List<Type.TypeVariableType> typeVariableTypes;
+
 
     public MethodSymbol(int flags, String name, Type type, Symbol owner) {
       super(MTH, flags, name, owner);
       super.type = type;
-      this.type = ((Type.MethodType)type).resultType.symbol;
+      this.returnType = ((Type.MethodType)type).resultType.symbol;
+      this.typeVariableTypes = Lists.newArrayList();
     }
 
     public MethodSymbol(int flags, String name, Symbol owner) {
       super(MTH, flags, name, owner);
+      this.typeVariableTypes = Lists.newArrayList();
     }
 
     public TypeSymbol getReturnType() {
-      return type;
+      return returnType;
     }
 
     public List<TypeSymbol> getThrownTypes() {
@@ -293,10 +298,14 @@ public class Symbol {
       return ((Type.MethodType) super.type).argTypes;
     }
 
+    public Scope typeParameters() {
+      return typeParameters;
+    }
+
     public void setMethodType(Type.MethodType methodType) {
       super.type = methodType;
       if(methodType.resultType != null) {
-        this.type = methodType.resultType.symbol;
+        this.returnType = methodType.resultType.symbol;
       }
     }
 
@@ -378,13 +387,18 @@ public class Symbol {
     public boolean isVarArgs() {
       return isFlag(Flags.VARARGS);
     }
+
+    public void addTypeParameter(Type.TypeVariableType typeVariableType) {
+      typeVariableTypes.add(typeVariableType);
+    }
+
   }
 
   /**
    * Represents type variable of a parametrized type ie: T in class Foo<T>{}
    */
   public static class TypeVariableSymbol extends TypeSymbol {
-    public TypeVariableSymbol(String name, TypeSymbol owner) {
+    public TypeVariableSymbol(String name, Symbol owner) {
       super(0, name, owner);
       this.type = new Type.TypeVariableType(this);
       this.members = new Scope(this);

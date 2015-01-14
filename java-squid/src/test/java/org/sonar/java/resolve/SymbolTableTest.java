@@ -64,6 +64,14 @@ public class SymbolTableTest {
     assertThat(ptt.symbol.getName()).isEqualTo("C");
     assertThat(ptt.typeSubstitution).hasSize(1);
     assertThat(ptt.typeSubstitution.get(ptt.typeSubstitution.keySet().iterator().next()).symbol.getName()).isEqualTo("String");
+
+    Symbol.MethodSymbol method1 = (Symbol.MethodSymbol) typeSymbol.members().lookup("method1").get(0);
+    assertThat(((Type.MethodType)method1.type).resultType).isSameAs(STypeVariableType);
+
+    Symbol.MethodSymbol method2 = (Symbol.MethodSymbol) typeSymbol.members().lookup("method2").get(0);
+    Type.TypeVariableType PTypeVariableType = (Type.TypeVariableType) method2.typeParameters().lookup("P").get(0).type;
+    assertThat(method2.getReturnType().type).isSameAs(PTypeVariableType);
+    assertThat(method2.getParametersTypes().get(0)).isSameAs(PTypeVariableType);
   }
 
   @Test
