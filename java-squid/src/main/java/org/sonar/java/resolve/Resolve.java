@@ -88,7 +88,7 @@ public class Resolve {
           resolution.type = resolveTypeSubstitution(symbol.type, c.type);
           return resolution;
         } else {
-          return Resolution.resolution(new AccessErrorSymbol(symbol));
+          return Resolution.resolution(new AccessErrorSymbol(symbol, symbols.unknownType));
         }
       }
     }
@@ -170,7 +170,7 @@ public class Resolve {
       if (symbol.kind == Symbol.TYP) {
         return isAccessible(env, site, symbol)
             ? symbol
-            : new AccessErrorSymbol(symbol);
+            : new AccessErrorSymbol(symbol, symbols.unknownType);
       }
     }
     if (c.getSuperclass() != null) {
@@ -388,7 +388,7 @@ public class Resolve {
     }
     // TODO ambiguity, errors, ...
     if (!isAccessible(env, site, symbol)) {
-      return new AccessErrorSymbol(symbol);
+      return new AccessErrorSymbol(symbol, symbols.unknownType);
     }
     Symbol mostSpecific = selectMostSpecific(symbol, bestSoFar);
     if (mostSpecific.isKind(Symbol.AMBIGUOUS)) {
@@ -622,7 +622,6 @@ public class Resolve {
 
     private Resolution(Symbol symbol) {
       this.symbol = symbol;
-
     }
 
     Resolution() {
@@ -642,9 +641,9 @@ public class Resolve {
       }
       return type;
     }
-
   }
-  public Resolution unresolved() {
+
+  private Resolution unresolved() {
     Resolution resolution = new Resolution(symbolNotFound);
     resolution.type = symbols.unknownType;
     return resolution;
@@ -731,9 +730,10 @@ public class Resolve {
      */
     Symbol symbol;
 
-    public AccessErrorSymbol(Symbol symbol) {
+    public AccessErrorSymbol(Symbol symbol, Type type) {
       super(Symbol.ERRONEOUS, 0, null, null);
       this.symbol = symbol;
+      this.type = type;
     }
   }
 

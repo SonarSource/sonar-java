@@ -1,10 +1,10 @@
 @SuppressWarnings("all")
 class Accessibility {
+  private Object foo;
 
   private class Example1 {
     class Member {
     }
-
     class Superclass {
       class Member {
       }
@@ -31,4 +31,10 @@ class Accessibility {
     }
   }
 
+}
+
+class Plop extends Accessibility {
+      void fun() {
+        foo.getClass();
+      }
 }
