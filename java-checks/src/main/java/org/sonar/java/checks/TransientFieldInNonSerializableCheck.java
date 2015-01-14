@@ -37,7 +37,7 @@ import java.util.List;
 @Rule(
   key = "S2065",
   priority = Priority.MINOR,
-  tags={"unused"})
+  tags = {"unused", "serialization"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
 public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisitor {
 

@@ -36,7 +36,7 @@ import java.util.List;
 @Rule(
   key = "S2055",
   priority = Priority.CRITICAL,
-  tags = {"bug"})
+  tags = {"bug", "serialization"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
 

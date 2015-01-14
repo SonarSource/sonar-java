@@ -27,7 +27,7 @@ import org.sonar.java.resolve.Type;
 @Rule(
   key = "S2066",
   priority = Priority.CRITICAL,
-  tags = {"bug"})
+  tags = {"bug", "serialization"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class InnerClassOfNonSerializableCheck extends AbstractSerializableInnerClassRule {
 

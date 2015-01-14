@@ -41,7 +41,7 @@ import java.util.List;
 @Rule(
   key = "S2118",
   priority = Priority.CRITICAL,
-  tags = {"pitfall"})
+  tags = {"pitfall", "serialization"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
 

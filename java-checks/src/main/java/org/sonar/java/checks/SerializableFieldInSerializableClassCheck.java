@@ -34,12 +34,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
-    key = "S1948",
-    priority = Priority.MAJOR,
-    tags = {"bug", "cwe"})
+  key = "S1948",
+  priority = Priority.MAJOR,
+  tags = {"bug", "cwe", "serialization"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseVisitor {
 

@@ -33,7 +33,7 @@ import java.util.List;
 @Rule(
   key = "S2063",
   priority = Priority.MAJOR,
-  tags = {"pitfall"})
+  tags = {"pitfall", "serialization"})
 public class SerializableComparatorCheck extends SubscriptionBaseVisitor {
 
   @Override

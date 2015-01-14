@@ -26,7 +26,7 @@ import org.sonar.java.resolve.Type;
 @Rule(
   key = "S2059",
   priority = Priority.MAJOR,
-  tags = {"pitfall"})
+  tags = {"pitfall", "serialization"})
 public class InnerClassOfSerializableCheck extends AbstractSerializableInnerClassRule {
 
   @Override
