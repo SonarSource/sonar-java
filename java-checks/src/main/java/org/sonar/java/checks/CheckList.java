@@ -268,7 +268,8 @@ public final class CheckList {
       InterfaceOrSuperclassShadowingCheck.class,
       RedundantModifierCheck.class,
       MathOnFloatCheck.class,
-      StringToPrimitiveConversionCheck.class
+      StringToPrimitiveConversionCheck.class,
+      ClassNamedLikeExceptionCheck.class
     );
   }
 

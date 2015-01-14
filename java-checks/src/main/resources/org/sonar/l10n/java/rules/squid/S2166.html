@@ -1,0 +1,29 @@
+Clear, communicative naming is important in code. It helps maintainers and API users understand the intentions for and uses of a unit of code. Using "exception" in the name of a class that does not extend <code>Exception</code> or one of its subclasses is a clear violation of the expectation that a class' name will indicate what it is and/or does.
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class FruitException {  // Noncompliant; this has nothing to do with Exception
+  private Fruit expected;
+  private String unusualCharacteristics;
+  private boolean appropriateForCommercialExploitation;
+  // ...
+}
+
+public class CarException {  // Noncompliant; the extends clause was forgotten?
+  public CarException(String message, Throwable cause) {
+  // ...
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class FruitSport {
+  private Fruit expected;
+  private String unusualCharacteristics;
+  private boolean appropriateForCommercialExploitation;
+  // ...
+}
+
+public class CarException extends Exception {
+  public CarException(String message, Throwable cause) {
+  // ...
+</pre>
