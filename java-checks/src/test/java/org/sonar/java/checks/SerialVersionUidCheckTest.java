@@ -42,7 +42,10 @@ public class SerialVersionUidCheckTest {
       .next().atLine(8).withMessage("Add a \"static final long serialVersionUID\" field to this class.")
       .next().atLine(10).withMessage("Make this \"serialVersionUID\" field \"static\".")
       .next().atLine(13).withMessage("Make this \"serialVersionUID\" field \"final\".")
-      .next().atLine(16).withMessage("Make this \"serialVersionUID\" field \"long\".");
+      .next().atLine(16).withMessage("Make this \"serialVersionUID\" field \"long\".")
+      .next().atLine(30)
+      .next().atLine(37)
+      .next().atLine(40);
   }
 
 }

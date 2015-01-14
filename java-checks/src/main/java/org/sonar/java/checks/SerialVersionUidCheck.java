@@ -20,14 +20,17 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.resolve.AnnotationValue;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Symbol.VariableSymbol;
 import org.sonar.java.resolve.Type;
+import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -36,8 +39,7 @@ import java.util.List;
 @Rule(
   key = "S2057",
   priority = Priority.MAJOR,
-  tags = {"pitfall"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  tags = {"pitfall", "serialization"})
 public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
 
   @Override
@@ -54,10 +56,12 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
 
   private void visitClassTree(ClassTreeImpl classTree) {
     TypeSymbol symbol = classTree.getSymbol();
-    if (isSerializable(symbol.getType()) && !symbol.isAbstract()) {
+    if (isSerializable(symbol.getType())) {
       VariableSymbol serialVersionUidSymbol = findSerialVersionUid(symbol);
       if (serialVersionUidSymbol == null) {
-        addIssue(classTree, "Add a \"static final long serialVersionUID\" field to this class.");
+        if (!isExclusion(symbol)) {
+          addIssue(classTree, "Add a \"static final long serialVersionUID\" field to this class.");
+        }
       } else if (!serialVersionUidSymbol.isStatic()) {
         addModifierIssue(serialVersionUidSymbol, "static");
       } else if (!serialVersionUidSymbol.isFinal()) {
@@ -84,5 +88,47 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
 
   private boolean isSerializable(Type type) {
     return type.isSubtypeOf("java.io.Serializable");
+  }
+
+  private boolean isExclusion(TypeSymbol symbol) {
+    return symbol.isAbstract()
+      || symbol.getType().isSubtypeOf("java.lang.Exception")
+      || isGuiClass(symbol)
+      || hasSuppressWarningAnnotation(symbol);
+  }
+
+  private boolean isGuiClass(TypeSymbol symbol) {
+    for (ClassType superType : symbol.superTypes()) {
+      TypeSymbol superTypeSymbol = superType.getSymbol();
+      if (hasGuiPackage(superTypeSymbol)) {
+        return true;
+      }
+    }
+    return hasGuiPackage(symbol) || (!symbol.equals(symbol.outermostClass()) && isGuiClass(symbol.outermostClass()));
+  }
+
+  private boolean hasGuiPackage(TypeSymbol superTypeSymbol) {
+    String fullyQualifiedName = superTypeSymbol.getFullyQualifiedName();
+    return fullyQualifiedName.startsWith("javax.swing.") || fullyQualifiedName.startsWith("java.awt.");
+  }
+
+  private boolean hasSuppressWarningAnnotation(TypeSymbol symbol) {
+    List<AnnotationValue> annotations = symbol.metadata().getValuesFor("java.lang.SuppressWarnings");
+    if (annotations != null) {
+      for (AnnotationValue annotationValue : annotations) {
+        if ("serial".equals(stringLiteralValue(annotationValue.value()))) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private String stringLiteralValue(Object object) {
+    if (object instanceof LiteralTree) {
+      LiteralTree literal = (LiteralTree) object;
+      return LiteralUtils.trimQuotes(literal.value());
+    }
+    return null;
   }
 }

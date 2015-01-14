@@ -20,3 +20,21 @@ class H implements Serializable {
   private static final long serialVersionUID = 1L;
 }
 abstract class I implements Serializable {}
+class MyException extends RuntimeException {}
+class MyJPanel extends javax.swing.JPanel {}
+class MyAwtButton extends java.awt.Button {
+  class InnerClass implements Serializable {}
+}
+
+class Outer {
+  class Inner implements Serializable {} // Noncompliant
+}
+
+@SuppressWarnings("serial")
+class J implements Serializable {}
+
+@SuppressWarnings("deprecation")
+class K implements Serializable {} // Noncompliant
+
+@SuppressWarnings(UNKNOWN)
+class L implements Serializable {} // Noncompliant
