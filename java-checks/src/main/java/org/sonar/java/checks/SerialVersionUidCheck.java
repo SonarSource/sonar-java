@@ -92,7 +92,7 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
 
   private boolean isExclusion(TypeSymbol symbol) {
     return symbol.isAbstract()
-      || symbol.getType().isSubtypeOf("java.lang.Exception")
+      || symbol.getType().isSubtypeOf("java.lang.Throwable")
       || isGuiClass(symbol)
       || hasSuppressWarningAnnotation(symbol);
   }
