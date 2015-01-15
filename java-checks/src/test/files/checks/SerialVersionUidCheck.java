@@ -13,7 +13,7 @@ class F implements Serializable {
   private static long serialVersionUID = 1L; // Noncompliant
 }
 class G implements Serializable {
-  private static final int serialVersionUID = 1; // Noncompliant
+  private static int serialVersionUID = 1; // Noncompliant
 }
 class H implements Serializable {
   void serialVersionUID() {}

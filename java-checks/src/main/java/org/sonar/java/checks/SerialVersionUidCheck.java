@@ -19,7 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
@@ -62,19 +64,27 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
         if (!isExclusion(symbol)) {
           addIssue(classTree, "Add a \"static final long serialVersionUID\" field to this class.");
         }
-      } else if (!serialVersionUidSymbol.isStatic()) {
-        addModifierIssue(serialVersionUidSymbol, "static");
-      } else if (!serialVersionUidSymbol.isFinal()) {
-        addModifierIssue(serialVersionUidSymbol, "final");
-      } else if (!serialVersionUidSymbol.getType().is("long")) {
-        addModifierIssue(serialVersionUidSymbol, "long");
+      } else {
+        checkModifiers(serialVersionUidSymbol);
       }
     }
   }
 
-  private void addModifierIssue(VariableSymbol serialVersionUidSymbol, String modifier) {
-    Tree tree = getSemanticModel().getTree(serialVersionUidSymbol);
-    addIssue(tree, "Make this \"serialVersionUID\" field \"" + modifier + "\".");
+  private void checkModifiers(VariableSymbol serialVersionUidSymbol) {
+    List<String> missingModifiers = Lists.newArrayList();
+    if (!serialVersionUidSymbol.isStatic()) {
+      missingModifiers.add("static");
+    }
+    if (!serialVersionUidSymbol.isFinal()) {
+      missingModifiers.add("final");
+    }
+    if (!serialVersionUidSymbol.getType().is("long")) {
+      missingModifiers.add("long");
+    }
+    if (!missingModifiers.isEmpty()) {
+      Tree tree = getSemanticModel().getTree(serialVersionUidSymbol);
+      addIssue(tree, "Make this \"serialVersionUID\" field \"" + Joiner.on(' ').join(missingModifiers) + "\".");
+    }
   }
 
   private VariableSymbol findSerialVersionUid(TypeSymbol symbol) {
