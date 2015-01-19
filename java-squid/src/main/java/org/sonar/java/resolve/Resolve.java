@@ -355,20 +355,27 @@ public class Resolve {
   }
 
   public Symbol findMethod(Env env, Symbol.TypeSymbol site, String name, List<Type> argTypes) {
+    return findMethod(env, site, name, argTypes, false);
+  }
+
+  public Symbol findMethod(Env env, Symbol.TypeSymbol site, String name, List<Type> argTypes, boolean autoboxing) {
     Symbol bestSoFar = symbolNotFound;
     for (Symbol symbol : site.members().lookup(name)) {
       if (symbol.kind == Symbol.MTH) {
-        bestSoFar = selectBest(env, site, argTypes, symbol, bestSoFar);
+        bestSoFar = selectBest(env, site, argTypes, symbol, bestSoFar, autoboxing);
       }
     }
     //look in supertypes for more specialized method (overloading).
     if (site.getSuperclass() != null) {
       Symbol method = findMethod(env, site.getSuperclass().symbol, name, argTypes);
-      bestSoFar = selectBest(env, site, argTypes, method, bestSoFar);
+      bestSoFar = selectBest(env, site, argTypes, method, bestSoFar, autoboxing);
     }
     for (Type interfaceType : site.getInterfaces()) {
       Symbol method = findMethod(env, interfaceType.symbol, name, argTypes);
-      bestSoFar = selectBest(env, site, argTypes, method, bestSoFar);
+      bestSoFar = selectBest(env, site, argTypes, method, bestSoFar, autoboxing);
+    }
+    if(bestSoFar.kind >= Symbol.ERRONEOUS && !autoboxing) {
+      bestSoFar = findMethod(env, site, name, argTypes, true);
     }
     return bestSoFar;
   }
@@ -377,13 +384,13 @@ public class Resolve {
    * @param symbol    candidate
    * @param bestSoFar previously found best match
    */
-  private Symbol selectBest(Env env, Symbol.TypeSymbol site, List<Type> argTypes, Symbol symbol, Symbol bestSoFar) {
+  private Symbol selectBest(Env env, Symbol.TypeSymbol site, List<Type> argTypes, Symbol symbol, Symbol bestSoFar, boolean autoboxing) {
     // TODO get rid of null check
     if (symbol.kind >= Symbol.ERRONEOUS || !isInheritedIn(symbol, site) || symbol.type == null) {
       return bestSoFar;
     }
     boolean isVarArgs = ((Symbol.MethodSymbol) symbol).isVarArgs();
-    if (!isArgumentsAcceptable(argTypes, ((Type.MethodType) symbol.type).argTypes, isVarArgs)) {
+    if (!isArgumentsAcceptable(argTypes, ((Type.MethodType) symbol.type).argTypes, isVarArgs, autoboxing)) {
       return bestSoFar;
     }
     // TODO ambiguity, errors, ...
@@ -402,7 +409,7 @@ public class Resolve {
    * @param argTypes types of arguments
    * @param formals  types of formal parameters of method
    */
-  private boolean isArgumentsAcceptable(List<Type> argTypes, List<Type> formals, boolean isVarArgs) {
+  private boolean isArgumentsAcceptable(List<Type> argTypes, List<Type> formals, boolean isVarArgs, boolean autoboxing) {
     int argsSize = argTypes.size();
     int formalsSize = formals.size();
     int nbArgToCheck = argsSize - formalsSize;
@@ -421,20 +428,20 @@ public class Resolve {
       Type.ArrayType lastFormal = (Type.ArrayType) formals.get(formalsSize - 1);
       Type argType = argTypes.get(argsSize - i);
       //Check type of element of array or if we invoke with an array that it is a compatible array type
-      if (!isAcceptableType(argType, lastFormal.elementType) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
+      if (!isAcceptableType(argType, lastFormal.elementType, autoboxing) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
         return false;
       }
     }
     for (int i = 0; i < argsSize - nbArgToCheck; i++) {
-      if (!isAcceptableType(argTypes.get(i), formals.get(i))) {
+      if (!isAcceptableType(argTypes.get(i), formals.get(i), autoboxing)) {
         return false;
       }
     }
     return true;
   }
 
-  private boolean isAcceptableType(Type arg, Type formal) {
-    return types.isSubtype(arg.erasure(), formal.erasure()) || isAcceptableByAutoboxing(arg, formal);
+  private boolean isAcceptableType(Type arg, Type formal, boolean autoboxing) {
+    return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal));
   }
 
   private boolean isAcceptableByAutoboxing(Type expressionType, Type formalType) {
@@ -460,27 +467,6 @@ public class Resolve {
     boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2);
     boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1);
     if (m1SignatureMoreSpecific && m2SignatureMoreSpecific) {
-      //Prefer method with no boxing
-      List<Type> m1Types = ((Type.MethodType) m1.type).argTypes;
-      List<Type> m2Types = ((Type.MethodType) m2.type).argTypes;
-      int i = 0;
-      int autoboxM1 = 0;
-      int autoboxM2 = 0;
-      for (Type argType : argTypes) {
-        if(isAcceptableByAutoboxing(argType, m1Types.get(i))) {
-          autoboxM1++;
-        }
-        if(isAcceptableByAutoboxing(argType, m2Types.get(i))) {
-          autoboxM2++;
-        }
-        i++;
-      }
-      if(autoboxM1 > autoboxM2) {
-        return m2;
-      }
-      if(autoboxM1 < autoboxM2) {
-        return m1;
-      }
       return new AmbiguityErrorSymbol();
     } else if (m1SignatureMoreSpecific) {
       return m1;
@@ -497,7 +483,7 @@ public class Resolve {
   private boolean isSignatureMoreSpecific(Symbol m1, Symbol m2) {
     //TODO handle specific signature with varargs
     // ((MethodSymbol) m2).isVarArgs()
-    return isArgumentsAcceptable(((Type.MethodType) m1.type).argTypes, ((Type.MethodType) m2.type).argTypes, false);
+    return isArgumentsAcceptable(((Type.MethodType) m1.type).argTypes, ((Type.MethodType) m2.type).argTypes, false, false);
   }
 
   /**

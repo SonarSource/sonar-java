@@ -149,4 +149,11 @@ class OverloadingAutoboxing {
     process2(int1);
     process2(integer1);
   }
+
+  abstract void process3(int i);
+  abstract void process3(Object o);
+  void overloading3(int int1, Integer integer1) {
+    process3(int1);
+    process3(integer1);
+  }
 }
