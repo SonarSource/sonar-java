@@ -136,4 +136,17 @@ class GenericErasure<T extends CharSequence> {
 
 }
 
-
+class OverloadingAutoboxing {
+  abstract void process(int i);
+  abstract void process(Integer i);
+  void overloading(int int1, Integer integer1) {
+    process(int1);
+    process(integer1);
+  }
+  abstract void process2(Integer i);
+  abstract void process2(int i);
+  void overloading2(int int1, Integer integer1) {
+    process2(int1);
+    process2(integer1);
+  }
+}

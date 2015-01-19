@@ -390,7 +390,7 @@ public class Resolve {
     if (!isAccessible(env, site, symbol)) {
       return new AccessErrorSymbol(symbol, symbols.unknownType);
     }
-    Symbol mostSpecific = selectMostSpecific(symbol, bestSoFar);
+    Symbol mostSpecific = selectMostSpecific(symbol, bestSoFar, argTypes);
     if (mostSpecific.isKind(Symbol.AMBIGUOUS)) {
       //same signature, we keep the first symbol found (overrides the other one).
       mostSpecific = bestSoFar;
@@ -452,16 +452,35 @@ public class Resolve {
   /**
    * JLS7 15.12.2.5. Choosing the Most Specific Method
    */
-  private Symbol selectMostSpecific(Symbol m1, Symbol m2) {
+  private Symbol selectMostSpecific(Symbol m1, Symbol m2, List<Type> argTypes) {
     // FIXME get rig of null check
     if (m2.type == null || !m2.isKind(Symbol.MTH)) {
       return m1;
     }
-
     boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2);
     boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1);
     if (m1SignatureMoreSpecific && m2SignatureMoreSpecific) {
-      // TODO handle this case
+      //Prefer method with no boxing
+      List<Type> m1Types = ((Type.MethodType) m1.type).argTypes;
+      List<Type> m2Types = ((Type.MethodType) m2.type).argTypes;
+      int i = 0;
+      int autoboxM1 = 0;
+      int autoboxM2 = 0;
+      for (Type argType : argTypes) {
+        if(isAcceptableByAutoboxing(argType, m1Types.get(i))) {
+          autoboxM1++;
+        }
+        if(isAcceptableByAutoboxing(argType, m2Types.get(i))) {
+          autoboxM2++;
+        }
+        i++;
+      }
+      if(autoboxM1 > autoboxM2) {
+        return m2;
+      }
+      if(autoboxM1 < autoboxM2) {
+        return m1;
+      }
       return new AmbiguityErrorSymbol();
     } else if (m1SignatureMoreSpecific) {
       return m1;
