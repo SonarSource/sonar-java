@@ -272,7 +272,8 @@ public final class CheckList {
       ClassNamedLikeExceptionCheck.class,
       ProtectedMemberInFinalClassCheck.class,
       SuppressWarningsCheck.class,
-      ImmediateReverseBoxingCheck.class
-    );
+      ImmediateReverseBoxingCheck.class,
+      CustomCryptographicAlgorithmCheck.class
+      );
   }
 }
