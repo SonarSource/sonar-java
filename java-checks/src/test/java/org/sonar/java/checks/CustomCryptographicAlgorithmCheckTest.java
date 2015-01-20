@@ -35,11 +35,11 @@ public class CustomCryptographicAlgorithmCheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CryptographicAlgorithmsCheck.java"),
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CustomCryptographicAlgorithmCheck.java"),
       new VisitorsBridge(new CustomCryptographicAlgorithmCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Use a standard algorithm instead of creating a custom one.")
-      .next().atLine(30)
+      .next().atLine(7).withMessage("Use a standard algorithm instead of creating a custom one.")
+      .next().atLine(31)
       .noMore();
   }
 

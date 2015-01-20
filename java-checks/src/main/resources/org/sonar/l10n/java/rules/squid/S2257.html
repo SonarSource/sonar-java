@@ -1,0 +1,18 @@
+<p>The use of a non-standard algorithm is dangerous because a determined attacker may be able to break the algorithm and compromise whatever data has been protected. Standard algorithms like SHA-256, SHA-384, SHA-512, ... should be used instead.
+This rule tracks creation of java.security.MessageDigest subclasses.</p>
+
+<h2>Noncompliant code example</h2>
+
+<pre>
+MyCryptographicAlgorithm extends MessageDigest {
+  ...
+}
+</pre>
+
+<h2>See</h2>
+
+<ul>
+  <li><a href="http://cwe.mitre.org/data/definitions/327.html">CWE-327</a> - Use of a Broken or Risky Cryptographic Algorithm</li>
+  <li><a href="https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure">OWASP Top Ten 2013 Category A6 - Sensitive Data Exposure</a></li>
+  <li><a href="http://www.sans.org/top25-software-errors/">SANS TOP 25</a></li>
+</ul>
