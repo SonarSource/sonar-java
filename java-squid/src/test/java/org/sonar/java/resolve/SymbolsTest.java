@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
+import org.fest.assertions.Fail;
 import org.junit.Test;
 
 import java.io.File;
@@ -102,4 +103,23 @@ public class SymbolsTest {
     assertThat(arrayClassType.interfaces).containsOnly(symbols.cloneableType, symbols.serializableType);
   }
 
+  @Test
+  public void primitive_type_from_descriptor() {
+    assertThat(symbols.getPrimitiveFromDescriptor('S')).isSameAs(symbols.shortType);
+    assertThat(symbols.getPrimitiveFromDescriptor('I')).isSameAs(symbols.intType);
+    assertThat(symbols.getPrimitiveFromDescriptor('C')).isSameAs(symbols.charType);
+    assertThat(symbols.getPrimitiveFromDescriptor('Z')).isSameAs(symbols.booleanType);
+    assertThat(symbols.getPrimitiveFromDescriptor('B')).isSameAs(symbols.byteType);
+    assertThat(symbols.getPrimitiveFromDescriptor('J')).isSameAs(symbols.longType);
+    assertThat(symbols.getPrimitiveFromDescriptor('F')).isSameAs(symbols.floatType);
+    assertThat(symbols.getPrimitiveFromDescriptor('D')).isSameAs(symbols.doubleType);
+    assertThat(symbols.getPrimitiveFromDescriptor('V')).isSameAs(symbols.voidType);
+    try {
+      symbols.getPrimitiveFromDescriptor('P');
+      Fail.failure("should have thrown an exception");
+    }catch (IllegalStateException ise) {
+      assertThat(ise.getMessage().contains("'P'"));
+    }
+
+  }
 }
