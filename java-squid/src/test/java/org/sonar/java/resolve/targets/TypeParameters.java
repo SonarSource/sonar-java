@@ -19,10 +19,16 @@
  */
 package org.sonar.java.resolve.targets;
 
+import java.util.List;
+
 public class TypeParameters<T, S extends CharSequence> extends ParametrizedExtend<ParametrizedExtend<T>> implements ParametrizedInterface1<S>, ParametrizedInterface2<S> {
 
   public T field;
   public T fun(T t) {
+    return null;
+  }
+
+  public <W extends Exception> List<W> foo(W[] w, int a, long b) throws W {
     return null;
   }
 }

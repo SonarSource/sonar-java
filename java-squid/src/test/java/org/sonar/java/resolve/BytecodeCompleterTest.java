@@ -216,7 +216,8 @@ public class BytecodeCompleterTest {
     assertThat(typeParametersSymbol.typeParameters.scopeSymbols()).hasSize(2);
     assertThat(typeParametersSymbol.typeVariableTypes).hasSize(2);
 
-    assertThat(typeParametersSymbol.typeVariableTypes.get(0).erasure().getSymbol().getName()).isEqualTo("Object");
+    Type.TypeVariableType TtypeVariableType = typeParametersSymbol.typeVariableTypes.get(0);
+    assertThat(TtypeVariableType.erasure().getSymbol().getName()).isEqualTo("Object");
     assertThat(typeParametersSymbol.typeVariableTypes.get(1).erasure().getSymbol().getName()).isEqualTo("CharSequence");
 
     assertThat(typeParametersSymbol.getSuperclass()).isInstanceOf(Type.ParametrizedTypeType.class);
@@ -229,6 +230,24 @@ public class BytecodeCompleterTest {
 
     assertThat(typeParametersSymbol.getInterfaces()).hasSize(2);
     assertThat(typeParametersSymbol.getInterfaces().get(0)).isInstanceOf(Type.ParametrizedTypeType.class);
+
+    Symbol.MethodSymbol funMethod = (Symbol.MethodSymbol) typeParametersSymbol.members().lookup("fun").get(0);
+    assertThat(funMethod.getReturnType().type).isSameAs(TtypeVariableType);
+    assertThat(funMethod.getParametersTypes().get(0)).isSameAs(TtypeVariableType);
+
+    Symbol.MethodSymbol fooMethod = (Symbol.MethodSymbol) typeParametersSymbol.members().lookup("foo").get(0);
+    Type.TypeVariableType WtypeVariableType = fooMethod.typeVariableTypes.get(0);
+    assertThat(fooMethod.getParametersTypes().get(0).isTagged(Type.ARRAY)).isTrue();
+    assertThat(((Type.ArrayType)fooMethod.getParametersTypes().get(0)).elementType()).isSameAs(WtypeVariableType);
+    Type resultType = ((Type.MethodType) fooMethod.type).resultType;
+    assertThat(resultType).isInstanceOf(Type.ParametrizedTypeType.class);
+    Type.ParametrizedTypeType actualResultType = (Type.ParametrizedTypeType) resultType;
+    assertThat(actualResultType.typeSubstitution.keySet()).hasSize(1);
+    assertThat(actualResultType.typeSubstitution.values().iterator().next()).isSameAs(WtypeVariableType);
+
+    //primitive types
+    assertThat(fooMethod.getParametersTypes().get(1).isTagged(Type.INT)).isTrue();
+    assertThat(fooMethod.getParametersTypes().get(2).isTagged(Type.LONG)).isTrue();
 
   }
 }

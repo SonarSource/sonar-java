@@ -216,14 +216,7 @@ public class BytecodeVisitor extends ClassVisitor {
       final Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(bytecodeCompleter.filterBytecodeFlags(flags), name, type, classSymbol);
       classSymbol.members.enter(methodSymbol);
       if (signature != null) {
-        new SignatureReader(signature).accept(new SignatureVisitor(Opcodes.ASM5) {
-
-          @Override
-          public void visitFormalTypeParameter(String name) {
-            //TODO improve generics
-            methodSymbol.isParametrized = true;
-          }
-        });
+        new SignatureReader(signature).accept(new ReadMethodSignature(methodSymbol));
       }
     }
     // (Godin): can return MethodVisitor to read annotations
@@ -377,12 +370,115 @@ public class BytecodeVisitor extends ClassVisitor {
     }
   }
 
+  private class ReadMethodSignature extends SignatureVisitor {
+
+    private final Symbol.MethodSymbol methodSymbol;
+
+    Symbol.TypeVariableSymbol typeVariableSymbol;
+    List<Type> bounds;
+
+    public ReadMethodSignature(Symbol.MethodSymbol methodSymbol) {
+      super(Opcodes.ASM5);
+      this.methodSymbol = methodSymbol;
+      ((Type.MethodType) methodSymbol.type).argTypes = Lists.newArrayList();
+      ((Type.MethodType) methodSymbol.type).thrown = Lists.newArrayList();
+      methodSymbol.typeParameters = new Scope(methodSymbol);
+    }
+
+    @Override
+    public void visitFormalTypeParameter(String name) {
+      typeVariableSymbol = new Symbol.TypeVariableSymbol(name, methodSymbol);
+      methodSymbol.typeParameters.enter(typeVariableSymbol);
+      methodSymbol.addTypeParameter((Type.TypeVariableType) typeVariableSymbol.type);
+      bounds = Lists.newArrayList();
+      ((Type.TypeVariableType) typeVariableSymbol.type).bounds = bounds;
+      methodSymbol.isParametrized = true;
+    }
+
+    @Override
+    public SignatureVisitor visitClassBound() {
+      return new ReadType(methodSymbol) {
+        @Override
+        public void visitEnd() {
+          super.visitEnd();
+          bounds.add(typeRead);
+        }
+      };
+    }
+
+    @Override
+    public SignatureVisitor visitInterfaceBound() {
+      return new ReadType(methodSymbol) {
+        @Override
+        public void visitEnd() {
+          super.visitEnd();
+          bounds.add(typeRead);
+        }
+      };
+    }
+
+    @Override
+    public SignatureVisitor visitParameterType() {
+      return new ReadType(methodSymbol) {
+        @Override
+        public void visitEnd() {
+          super.visitEnd();
+          ((Type.MethodType)methodSymbol.type).argTypes.add(typeRead);
+        }
+      };
+    }
+
+    @Override
+    public SignatureVisitor visitReturnType() {
+      return new ReadType(methodSymbol) {
+        @Override
+        public void visitEnd() {
+          super.visitEnd();
+          ((Type.MethodType)methodSymbol.type).resultType = typeRead;
+          methodSymbol.returnType = typeRead.symbol;
+        }
+      };
+    }
+
+    @Override
+    public SignatureVisitor visitExceptionType() {
+      return new ReadType(methodSymbol) {
+        @Override
+        public void visitEnd() {
+          super.visitEnd();
+          ((Type.MethodType)methodSymbol.type).thrown.add(typeRead);
+
+        }
+      };
+    }
+
+    @Override
+    public void visitEnd() {
+      if (typeVariableSymbol != null) {
+        if (bounds.isEmpty()) {
+          bounds.add(symbols.objectType);
+        }
+        typeVariableSymbol = null;
+        bounds = null;
+      }
+    }
+
+  }
+
   private class ReadType extends SignatureVisitor {
+    @Nullable
+    private final Symbol.MethodSymbol methodSymbol;
     Type typeRead;
     List<Type> typeArguments = Lists.newArrayList();
 
     public ReadType() {
       super(Opcodes.ASM5);
+      this.methodSymbol = null;
+    }
+
+    public ReadType(@Nullable Symbol.MethodSymbol methodSymbol) {
+      super(Opcodes.ASM5);
+      this.methodSymbol = methodSymbol;
     }
 
     @Override
@@ -393,7 +489,7 @@ public class BytecodeVisitor extends ClassVisitor {
     @Override
     public SignatureVisitor visitTypeArgument(char wildcard) {
       //TODO wildcard
-      return new ReadType() {
+      return new ReadType(methodSymbol) {
         @Override
         public void visitEnd() {
           super.visitEnd();
@@ -403,8 +499,33 @@ public class BytecodeVisitor extends ClassVisitor {
     }
 
     @Override
+    public SignatureVisitor visitArrayType() {
+      return new ReadType(methodSymbol) {
+        @Override
+        public void visitEnd() {
+          super.visitEnd();
+          ReadType.this.typeRead = new Type.ArrayType(typeRead, symbols.arrayClass);
+          ReadType.this.visitEnd();
+        }
+      };
+    }
+
+    @Override
+    public void visitBaseType(char descriptor) {
+      typeRead = symbols.getPrimitiveFromDescriptor(descriptor);
+      visitEnd();
+    }
+
+    @Override
     public void visitTypeVariable(String name) {
-      List<Symbol> lookup = classSymbol.typeParameters().lookup(name);
+      List<Symbol> lookup = Lists.newArrayList();
+      if(methodSymbol != null) {
+        lookup = methodSymbol.typeParameters().lookup(name);
+      }
+      if(lookup.isEmpty()) {
+        lookup = classSymbol.typeParameters().lookup(name);
+      }
+      Preconditions.checkState(lookup.size() != 0, "Could not resolve type parameter: "+name+" in class "+classSymbol.getName());
       Preconditions.checkState(lookup.size() == 1, "More than one type parameter with the same name");
       typeRead = lookup.get(0).type;
       visitEnd();
