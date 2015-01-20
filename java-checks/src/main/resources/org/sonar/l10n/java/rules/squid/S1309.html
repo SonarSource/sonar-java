@@ -1,0 +1,18 @@
+<p>This rule allows you to track the usage of the <code>@SuppressWarnings</code> mechanism.</p>
+
+<h2>Noncompliant code example</h2>
+
+<p>In case "listOfWarnings=unused" :</p>
+
+<pre>
+@SuppressWarnings("unused")
+</pre>
+
+<h2>Compliant code example</h2>
+
+<p>In case "listOfWarnings=all" :</p>
+
+<pre>
+@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
+</pre>

@@ -270,8 +270,8 @@ public final class CheckList {
       MathOnFloatCheck.class,
       StringToPrimitiveConversionCheck.class,
       ClassNamedLikeExceptionCheck.class,
-      ProtectedMemberInFinalClassCheck.class
-    );
+      ProtectedMemberInFinalClassCheck.class,
+      SuppressWarningsCheck.class
+      );
   }
-
 }
