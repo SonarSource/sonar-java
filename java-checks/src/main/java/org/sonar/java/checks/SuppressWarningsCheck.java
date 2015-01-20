@@ -59,7 +59,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     AnnotationTree annotationTree = (AnnotationTree) tree;
-    List<String> ruleWarnings = getRuleWarnings();
+    List<String> ruleWarnings = getForbiddenWarnings();
 
     if (isJavaLangSuppressWarnings(annotationTree)) {
       if (ruleWarnings.isEmpty()) {
@@ -85,7 +85,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
     return ((AbstractTypedTree) tree).getSymbolType().is("java.lang.SuppressWarnings");
   }
 
-  private List<String> getRuleWarnings() {
+  private List<String> getForbiddenWarnings() {
     if (forbiddenWarnings != null) {
       return forbiddenWarnings;
     }
@@ -104,19 +104,19 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
   private List<String> getSuppressedWarnings(ExpressionTree argument) {
     List<String> result = Lists.newArrayList();
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
-      result.add(getCleanedLitteralValue((LiteralTree) argument));
+      result.add(getCleanedLiteralValue((LiteralTree) argument));
     } else if (argument.is(Tree.Kind.NEW_ARRAY)) {
       NewArrayTree array = (NewArrayTree) argument;
       for (ExpressionTree expressionTree : array.initializers()) {
         if (expressionTree.is(Kind.STRING_LITERAL)) {
-          result.add(getCleanedLitteralValue((LiteralTree) expressionTree));
+          result.add(getCleanedLiteralValue((LiteralTree) expressionTree));
         }
       }
     }
     return result;
   }
 
-  private String getCleanedLitteralValue(LiteralTree tree) {
+  private String getCleanedLiteralValue(LiteralTree tree) {
     return LiteralUtils.trimQuotes(tree.value());
   }
 }

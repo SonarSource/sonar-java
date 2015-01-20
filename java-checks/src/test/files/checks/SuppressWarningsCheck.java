@@ -4,7 +4,7 @@ class A {
   private final String BOXING = "boxing";
   
   @SuppressWarnings("all")
-  private  void f() {
+  private void f() {
   }
   
   @SuppressWarnings({"unchecked", "cast"})
