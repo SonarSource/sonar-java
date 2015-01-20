@@ -31,11 +31,7 @@ public class SuppressWarningsCheckTest {
 
   @Test
   public void empty_list_of_warnings_then_any_suppressWarnings_is_an_issue() throws Exception {
-    SuppressWarningsCheck check = new SuppressWarningsCheck();
-    check.warningsCommaSeparated = "";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SuppressWarningsCheck.java"), new
-      VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
+    CheckMessagesVerifier.verify(getTestFile("").getCheckMessages())
       .next().atLine(1).withMessage("Suppressing the warnings is not allowed")
       .next().atLine(6)
       .next().atLine(10)
@@ -47,11 +43,7 @@ public class SuppressWarningsCheckTest {
 
   @Test
   public void list_of_warnings_with_syntax_error_then_any_suppressWarnings_is_an_issue() throws Exception {
-    SuppressWarningsCheck check = new SuppressWarningsCheck();
-    check.warningsCommaSeparated = "   ,   , ,,";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SuppressWarningsCheck.java"), new
-      VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
+    CheckMessagesVerifier.verify(getTestFile("   ,   , ,,").getCheckMessages())
       .next().atLine(1).withMessage("Suppressing the warnings is not allowed")
       .next().atLine(6)
       .next().atLine(10)
@@ -63,10 +55,7 @@ public class SuppressWarningsCheckTest {
 
   @Test
   public void only_one_warning_is_not_allowed() throws Exception {
-    SuppressWarningsCheck check = new SuppressWarningsCheck();
-    check.warningsCommaSeparated = "all";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SuppressWarningsCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
+    CheckMessagesVerifier.verify(getTestFile("all").getCheckMessages())
       .next().atLine(6).withMessage("Suppressing the 'all' warning is not allowed")
       .next().atLine(18).withMessage("Suppressing the 'all' warning is not allowed")
       .noMore();
@@ -74,20 +63,14 @@ public class SuppressWarningsCheckTest {
 
   @Test
   public void warning_based_on_constants_are_ignored() throws Exception {
-    SuppressWarningsCheck check = new SuppressWarningsCheck();
-    check.warningsCommaSeparated = "boxing";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SuppressWarningsCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
+    CheckMessagesVerifier.verify(getTestFile("boxing").getCheckMessages())
       .next().atLine(22).withMessage("Suppressing the 'boxing' warning is not allowed")
       .noMore();
   }
 
   @Test
   public void two_warnings_from_different_lines_are_not_allowed() throws Exception {
-    SuppressWarningsCheck check = new SuppressWarningsCheck();
-    check.warningsCommaSeparated = "unused, cast";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SuppressWarningsCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
+    CheckMessagesVerifier.verify(getTestFile("unused, cast").getCheckMessages())
       .next().atLine(1).withMessage("Suppressing the 'unused' warning is not allowed")
       .next().atLine(10).withMessage("Suppressing the 'cast' warning is not allowed")
       .noMore();
@@ -95,11 +78,14 @@ public class SuppressWarningsCheckTest {
 
   @Test
   public void two_warnings_from_same_line_are_not_allowed() throws Exception {
-    SuppressWarningsCheck check = new SuppressWarningsCheck();
-    check.warningsCommaSeparated = "unchecked, cast";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SuppressWarningsCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
+    CheckMessagesVerifier.verify(getTestFile("unchecked, cast").getCheckMessages())
       .next().atLine(10).withMessage("Suppressing the 'unchecked', 'cast' warnings is not allowed")
       .noMore();
+  }
+
+  private SourceFile getTestFile(String listOfWarnings) {
+    SuppressWarningsCheck check = new SuppressWarningsCheck();
+    check.warningsCommaSeparated = listOfWarnings;
+    return JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SuppressWarningsCheck.java"), new VisitorsBridge(check));
   }
 }

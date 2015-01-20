@@ -49,7 +49,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
     defaultValue = "")
   public String warningsCommaSeparated = "";
 
-  private List<String> warnings;
+  private List<String> forbiddenWarnings;
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -58,16 +58,16 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    AnnotationTree at = (AnnotationTree) tree;
+    AnnotationTree annotationTree = (AnnotationTree) tree;
     List<String> ruleWarnings = getRuleWarnings();
 
-    if (isSuppressWarningsNode(at)) {
+    if (isJavaLangSuppressWarnings(annotationTree)) {
       if (ruleWarnings.isEmpty()) {
-        addIssue(at, "Suppressing the warnings is not allowed");
+        addIssue(annotationTree, "Suppressing the warnings is not allowed");
       } else {
-        List<String> annotationWarnings = getAnnotationArguments(at.arguments().get(0));
+        List<String> suppressedWarnings = getSuppressedWarnings(annotationTree.arguments().get(0));
         List<String> issues = Lists.newArrayList();
-        for (String currentWarning : annotationWarnings) {
+        for (String currentWarning : suppressedWarnings) {
           if (ruleWarnings.contains(currentWarning)) {
             issues.add(new StringBuilder().append("'").append(currentWarning).append("'").toString());
           }
@@ -75,48 +75,48 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
         if (!issues.isEmpty()) {
           StringBuilder sb = new StringBuilder("Suppressing the ").append(Joiner.on(", ").join(issues))
             .append(" warning").append(issues.size() > 1 ? "s" : "").append(" is not allowed");
-          addIssue(at, sb.toString());
+          addIssue(annotationTree, sb.toString());
         }
       }
     }
   }
 
-  private boolean isSuppressWarningsNode(AnnotationTree tree) {
+  private boolean isJavaLangSuppressWarnings(AnnotationTree tree) {
     return ((AbstractTypedTree) tree).getSymbolType().is("java.lang.SuppressWarnings");
   }
 
   private List<String> getRuleWarnings() {
-    if (warnings != null) {
-      return warnings;
+    if (forbiddenWarnings != null) {
+      return forbiddenWarnings;
     }
 
-    warnings = Lists.newArrayList();
+    forbiddenWarnings = Lists.newArrayList();
     Iterable<String> listOfWarnings = Splitter.on(",").trimResults().split(warningsCommaSeparated);
     for (String warning : listOfWarnings) {
       if (StringUtils.isNotBlank(warning)) {
-        warnings.add(warning);
+        forbiddenWarnings.add(warning);
       }
     }
 
-    return warnings;
+    return forbiddenWarnings;
   }
 
-  private List<String> getAnnotationArguments(ExpressionTree argument) {
+  private List<String> getSuppressedWarnings(ExpressionTree argument) {
     List<String> result = Lists.newArrayList();
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
-      result.add(getValue(argument));
+      result.add(getCleanedLitteralValue((LiteralTree) argument));
     } else if (argument.is(Tree.Kind.NEW_ARRAY)) {
       NewArrayTree array = (NewArrayTree) argument;
       for (ExpressionTree expressionTree : array.initializers()) {
         if (expressionTree.is(Kind.STRING_LITERAL)) {
-          result.add(getValue(expressionTree));
+          result.add(getCleanedLitteralValue((LiteralTree) expressionTree));
         }
       }
     }
     return result;
   }
 
-  private String getValue(ExpressionTree stringLiteral) {
-    return LiteralUtils.trimQuotes(((LiteralTree) stringLiteral).value());
+  private String getCleanedLitteralValue(LiteralTree tree) {
+    return LiteralUtils.trimQuotes(tree.value());
   }
 }
