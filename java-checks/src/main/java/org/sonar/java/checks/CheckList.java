@@ -271,7 +271,8 @@ public final class CheckList {
       StringToPrimitiveConversionCheck.class,
       ClassNamedLikeExceptionCheck.class,
       ProtectedMemberInFinalClassCheck.class,
-      SuppressWarningsCheck.class
-      );
+      SuppressWarningsCheck.class,
+      ImmediateReverseBoxingCheck.class
+    );
   }
 }
