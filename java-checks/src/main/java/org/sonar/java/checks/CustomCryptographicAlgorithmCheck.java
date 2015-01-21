@@ -44,10 +44,8 @@ public class CustomCryptographicAlgorithmCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      if (isJavaSecurityMessageDigestSubClass((ClassTreeImpl) tree)) {
-        addIssue(tree, "Use a standard algorithm instead of creating a custom one.");
-      }
+    if (hasSemantic() && isJavaSecurityMessageDigestSubClass((ClassTreeImpl) tree)) {
+      addIssue(tree, "Use a standard algorithm instead of creating a custom one.");
     }
   }
 
