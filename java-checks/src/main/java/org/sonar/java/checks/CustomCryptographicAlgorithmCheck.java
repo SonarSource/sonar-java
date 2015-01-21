@@ -54,6 +54,6 @@ public class CustomCryptographicAlgorithmCheck extends SubscriptionBaseVisitor {
   private boolean isJavaSecurityMessageDigestSubClass(ClassTree tree) {
     ClassTreeImpl classTreeImpl = (ClassTreeImpl) tree;
     TypeSymbol classSymbol = classTreeImpl.getSymbol();
-    return classSymbol.getSuperclass().is("java.security.MessageDigest");
+    return classSymbol.getSuperclass() != null && classSymbol.getSuperclass().is("java.security.MessageDigest");
   }
 }
