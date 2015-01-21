@@ -273,7 +273,8 @@ public final class CheckList {
       ProtectedMemberInFinalClassCheck.class,
       SuppressWarningsCheck.class,
       ImmediateReverseBoxingCheck.class,
-      CustomCryptographicAlgorithmCheck.class
+      CustomCryptographicAlgorithmCheck.class,
+      UnusedTypeParameterCheck.class
       );
   }
 }
