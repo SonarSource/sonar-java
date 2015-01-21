@@ -24,7 +24,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -36,6 +35,8 @@ import java.util.List;
   tags = {"cwe", "owasp-top10", "sans-top25", "security"})
 public class CustomCryptographicAlgorithmCheck extends SubscriptionBaseVisitor {
 
+  private static final String MESSAGE_DIGEST_QUALIFIED_NAME = "java.security.MessageDigest";
+
   @Override
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.CLASS);
@@ -44,22 +45,16 @@ public class CustomCryptographicAlgorithmCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      ClassTree classTree = (ClassTree) tree;
-      if (isJavaSecurityMessageDigestSubClass(classTree)) {
-        addIssue(classTree, "Use a standard algorithm instead of creating a custom one.");
+      if (isJavaSecurityMessageDigestSubClass((ClassTreeImpl) tree)) {
+        addIssue(tree, "Use a standard algorithm instead of creating a custom one.");
       }
     }
   }
 
-  private boolean isJavaSecurityMessageDigestSubClass(ClassTree tree) {
-    String qualifiedName = "java.security.MessageDigest";
-    ClassTreeImpl classTreeImpl = (ClassTreeImpl) tree;
-    TypeSymbol classSymbol = classTreeImpl.getSymbol();
-    /*
-     * Corner cases:
-     * - getSymbol is nullable
-     * - A type is a subtype of itself
-     */
-    return classSymbol != null && !classSymbol.getType().is(qualifiedName) && classSymbol.getType().isSubtypeOf(qualifiedName);
+  private boolean isJavaSecurityMessageDigestSubClass(ClassTreeImpl tree) {
+    TypeSymbol classSymbol = tree.getSymbol();
+    // Corner case: A type is a subtype of itself
+    return classSymbol != null && !classSymbol.getType().is(MESSAGE_DIGEST_QUALIFIED_NAME) &&
+      classSymbol.getType().isSubtypeOf(MESSAGE_DIGEST_QUALIFIED_NAME);
   }
 }

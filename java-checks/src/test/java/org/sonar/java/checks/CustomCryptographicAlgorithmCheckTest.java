@@ -39,8 +39,8 @@ public class CustomCryptographicAlgorithmCheckTest {
       new VisitorsBridge(new CustomCryptographicAlgorithmCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(7).withMessage("Use a standard algorithm instead of creating a custom one.")
-      .next().atLine(31)
-      .next().atLine(58)
+      .next().atLine(13)
+      .next().atLine(19)
       .noMore();
   }
 
