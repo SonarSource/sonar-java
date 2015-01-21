@@ -70,6 +70,11 @@ class C{
   class MyClass<T> {
     void foo() {
       if(myMethod(this) == MyEnum.Value) {}
+      java.util.List<MyEnum> myEnumList;
+      java.util.List list;
+      if(myEnumList.get(0) == MyEnum.Value) {}
+      if(list.get(0) == MyEnum.Value) {}
+
     }
 
     T myMethod(MyClass<T> instance){}

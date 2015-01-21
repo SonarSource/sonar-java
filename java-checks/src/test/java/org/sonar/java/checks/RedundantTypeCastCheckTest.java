@@ -36,10 +36,14 @@ public class RedundantTypeCastCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RedundantTypeCastCheck.java"), new VisitorsBridge(new RedundantTypeCastCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
+        .next().atLine(9).withMessage("Remove this unnecessary cast to \"List\".")
+        .next().atLine(10).withMessage("Remove this unnecessary cast to \"List\".")
+        .next().atLine(11).withMessage("Remove this unnecessary cast to \"List\".")
         .next().atLine(13).withMessage("Remove this unnecessary cast to \"String\".")
         .next().atLine(14).withMessage("Remove this unnecessary cast to \"A\".")
         .next().atLine(15).withMessage("Remove this unnecessary cast to \"A[][]\".")
         .next().atLine(24).withMessage("Remove this unnecessary cast to \"int\".")
+        .next().atLine(38).withMessage("Remove this unnecessary cast to \"Object\".")
     ;
   }
 }

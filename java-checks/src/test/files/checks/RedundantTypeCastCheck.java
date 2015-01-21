@@ -6,9 +6,9 @@ class Outer {
   }
   List<String> foo() {
     Object obj;
-    Object o1 = (List<String>) foo(); //NonCompliant - false negative because of generics
-    Object o2 = (List<? extends String>) foo(); //NonCompliant - false negative because of generics
-    Object o3 = (List<? super String>) foo(); //NonCompliant - false negative because of generics
+    Object o1 = (List<String>) foo(); //NonCompliant
+    Object o2 = (List<? extends String>) foo(); //NonCompliant
+    Object o3 = (List<? super String>) foo(); //NonCompliant
     String s1 = (String) obj; //Compliant
     String s2 = (String) s1; //NonCompliant
     A a = (A) new B();
@@ -34,6 +34,9 @@ class Outer {
 
   class C {
     C(A a) {}
-    C(B a) {}
+    C(B a) {
+      Object o = (Object) fun().newInstance();
+    }
+    Class fun() { return null;}
   }
 }
