@@ -1,0 +1,12 @@
+<p>There is no good reason to have a mutable object as the <code>public static</code> member of an <code>interface</code>. Such variables should be moved into classes and their visibility lowered.</p>
+<p>This rule checks that interfaces do not have <code>public static</code> array, <code>Collection</code>, or <code>Date</code> members</p>
+
+<h2>Noncompliant code example</h2>
+
+<pre>
+public interface MyInterface {
+
+  public static String[] strings; // Noncompliant
+
+}
+</pre>
