@@ -101,7 +101,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   }
 
   private boolean isObject(Type operandType) {
-    return operandType.isTagged(Type.CLASS) && !operandType.getSymbol().isEnum();
+    return operandType.erasure().isTagged(Type.CLASS) && !operandType.getSymbol().isEnum();
   }
 
   private boolean isNullComparison(Type leftOpType, Type rightOpType) {

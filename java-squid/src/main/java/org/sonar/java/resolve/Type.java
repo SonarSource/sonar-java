@@ -66,6 +66,7 @@ public class Type {
   }
 
   public Symbol.TypeSymbol getSymbol() {
+    symbol.complete();
     return symbol;
   }
 
