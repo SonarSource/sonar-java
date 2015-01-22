@@ -32,7 +32,7 @@ public class SuppressWarningsCheckTest {
   @Test
   public void empty_list_of_warnings_then_any_suppressWarnings_is_an_issue() throws Exception {
     CheckMessagesVerifier.verify(getSourceFile("").getCheckMessages())
-      .next().atLine(1).withMessage("Suppressing the warnings is not allowed")
+      .next().atLine(1).withMessage("Suppressing warnings is not allowed")
       .next().atLine(6)
       .next().atLine(10)
       .next().atLine(14)
@@ -44,7 +44,7 @@ public class SuppressWarningsCheckTest {
   @Test
   public void list_of_warnings_with_syntax_error_then_any_suppressWarnings_is_an_issue() throws Exception {
     CheckMessagesVerifier.verify(getSourceFile("   ,   , ,,").getCheckMessages())
-      .next().atLine(1).withMessage("Suppressing the warnings is not allowed")
+      .next().atLine(1).withMessage("Suppressing warnings is not allowed")
       .next().atLine(6)
       .next().atLine(10)
       .next().atLine(14)

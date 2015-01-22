@@ -63,7 +63,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
 
     if (isJavaLangSuppressWarnings(annotationTree)) {
       if (ruleWarnings.isEmpty()) {
-        addIssue(annotationTree, "Suppressing the warnings is not allowed");
+        addIssue(annotationTree, "Suppressing warnings is not allowed");
       } else {
         List<String> suppressedWarnings = getSuppressedWarnings(annotationTree.arguments().get(0));
         List<String> issues = Lists.newArrayList();
