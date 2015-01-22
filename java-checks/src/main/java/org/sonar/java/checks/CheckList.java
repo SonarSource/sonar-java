@@ -275,7 +275,8 @@ public final class CheckList {
       ImmediateReverseBoxingCheck.class,
       CustomCryptographicAlgorithmCheck.class,
       UnusedTypeParameterCheck.class,
-      InterfaceStaticMutableMemberCheck.class
+      InterfaceStaticMutableMemberCheck.class,
+      ShiftOnIntOrLongCheck.class
       );
   }
 }

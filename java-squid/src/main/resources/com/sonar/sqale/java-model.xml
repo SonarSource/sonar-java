@@ -740,6 +740,19 @@
       <name>Understandability</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S2183</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>remediationFactor</key>
+          <val>5</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S2326</rule-key>
         <prop>
           <key>remediationFunction</key>
