@@ -2143,6 +2143,19 @@
       <name>Data</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S2167</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>5</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S2164</rule-key>
         <prop>
           <key>remediationFunction</key>
