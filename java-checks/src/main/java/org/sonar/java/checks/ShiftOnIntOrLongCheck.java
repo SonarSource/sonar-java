@@ -45,11 +45,6 @@ import java.util.List;
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
-  private static final String USELESS_SHIFT_MESSAGE = "Remove this useless shift (multiple of {0})";
-  private static final String INTEGER_NO_ID_MESSAGE = "Either use a \"long\" or correct this shift to {0}";
-  private static final String INTEGER_ID_MESSAGE = "Either make \"{1}\" a \"long\" or correct this shift to {0}";
-  private static final String LONG_MESSAGE = "Correct this shift to {0}";
-
   @Override
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(Kind.LEFT_SHIFT, Kind.LEFT_SHIFT_ASSIGNMENT, Kind.RIGHT_SHIFT, Kind.RIGHT_SHIFT_ASSIGNMENT);
@@ -72,7 +67,6 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
     String identifier = getIdentifierName(target);
     Type expectedType = ((AbstractTypedTree) target).getSymbolType();
-    boolean expectLong = expectedType.is("long") || expectedType.is("java.lang.Long");
     boolean expectInt = expectedType.is("int") || expectedType.is("java.lang.Integer");
     boolean shiftIsMinus = shift.is(Kind.UNARY_MINUS);
 
@@ -80,34 +74,34 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
       shift = ((UnaryExpressionTree) shift).expression();
     }
 
-    if ((expectInt || expectLong) && isShiftValueEvaluable(shift)) {
+    if (shift.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
       String value = ((LiteralTree) shift).value();
       long numberBits = (shiftIsMinus ? -1 : 1) * Long.parseLong(value);
-      long reducedNumberBits = numberBits % (expectLong ? 64 : 32);
+      long reducedNumberBits = numberBits % (expectInt ? 32 : 64);
       insertIssue(tree, numberBits, reducedNumberBits, expectInt, identifier);
     }
   }
 
   private void insertIssue(Tree tree, long numberBits, long reducedNumberBits, boolean expectInt, String identifier) {
     if (reducedNumberBits == 0L) {
-      addIssue(tree, MessageFormat.format(USELESS_SHIFT_MESSAGE, expectInt ? 32 : 64));
+      addIssue(tree, MessageFormat.format("Remove this useless shift (multiple of {0})", expectInt ? 32 : 64));
     } else if (tooManyBits(numberBits, expectInt)) {
       if (expectInt) {
-        String message = MessageFormat.format(identifier == null ? INTEGER_NO_ID_MESSAGE : INTEGER_ID_MESSAGE, reducedNumberBits, identifier);
+        String message = MessageFormat.format(
+          identifier == null ?
+            "Either use a \"long\" or correct this shift to {0}" :
+            "Either make \"{1}\" a \"long\" or correct this shift to {0}",
+          reducedNumberBits, identifier);
         addIssue(tree, message);
       } else {
-        addIssue(tree, MessageFormat.format(LONG_MESSAGE, reducedNumberBits));
+        addIssue(tree, MessageFormat.format("Correct this shift to {0}", reducedNumberBits));
       }
     }
   }
 
-  private boolean tooManyBits(long numberBits, boolean isInt) {
+  private boolean tooManyBits(long numberBits, boolean expectInt) {
     long value = Math.abs(numberBits);
-    return (isInt && value >= 32) || (!isInt && value >= 64);
-  }
-
-  private boolean isShiftValueEvaluable(ExpressionTree tree) {
-    return tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL);
+    return (expectInt && value >= 32) || (!expectInt && value >= 64);
   }
 
   private String getIdentifierName(ExpressionTree tree) {

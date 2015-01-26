@@ -26,21 +26,19 @@ import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 import java.io.File;
+import java.text.MessageFormat;
 
 public class ShiftOnIntOrLongCheckTest {
 
   private static final String REMOVE_SHIFT_32 = "Remove this useless shift (multiple of 32)";
   private static final String REMOVE_SHIFT_64 = "Remove this useless shift (multiple of 64)";
-  private static final String INT_IDENTIFIER_VALUE = "Either make \"%s\" a \"long\" or correct this shift to %s";
-  private static final String INT_VALUE = "Either use a \"long\" or correct this shift to %s";
-  private static final String LONG_VALUE = "Correct this shift to %s";
 
   private String getMessage(String identifier, String value) {
-    return String.format(INT_IDENTIFIER_VALUE, identifier, value);
+    return MessageFormat.format("Either make \"{0}\" a \"long\" or correct this shift to {1}", identifier, value);
   }
 
   private String getMessage(boolean isInt, String value) {
-    return isInt ? String.format(INT_VALUE, value) : String.format(LONG_VALUE, value);
+    return isInt ? MessageFormat.format("Either use a \"long\" or correct this shift to {0}", value) : MessageFormat.format("Correct this shift to {0}", value);
   }
 
   @Test

@@ -51,7 +51,7 @@ class Shifts {
     c = e[0] << 99; //Noncompliant
     return c;
   }
-  
+
   public int shiftOtherCases(int a, int b) {
     int c;
     int[] d = new int[]{1};
@@ -68,15 +68,11 @@ class Shifts {
     c = e[0] >> 51; // Noncompliant
     return c;
   }
-  
-  public short shift(short a) {
-    return a << 8; // Compliant
-  }
-  
+
   public int returnInt() {
     return 0;
   }
-  
+
   public long returnLong() {
     return 0L;
   }
