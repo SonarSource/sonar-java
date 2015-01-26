@@ -274,7 +274,8 @@ public final class CheckList {
       SuppressWarningsCheck.class,
       ImmediateReverseBoxingCheck.class,
       CustomCryptographicAlgorithmCheck.class,
-      UnusedTypeParameterCheck.class
+      UnusedTypeParameterCheck.class,
+      InterfaceStaticMutableMemberCheck.class
       );
   }
 }
