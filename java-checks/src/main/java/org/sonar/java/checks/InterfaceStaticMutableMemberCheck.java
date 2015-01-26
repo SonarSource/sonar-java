@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 @Rule(
@@ -40,9 +41,7 @@ import java.util.List;
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
 
-  private static final String MESSAGE = "Move \"%s\" to a class and lower its visibility";
-  private static final String COLLECTION_QUALIFIED_NAME = "java.util.Collection";
-  private static final String DATE_QUALIFIED_NAME = "java.util.Date";
+  private static final String MESSAGE = "Move \"{0}\" to a class and lower its visibility";
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -55,7 +54,7 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
       if (member.is(Kind.VARIABLE)) {
         VariableTreeImpl variableTree = (VariableTreeImpl) member;
         if (isStaticMember(variableTree) && isMutableMember(variableTree)) {
-          addIssue(variableTree, String.format(MESSAGE, variableTree.simpleName().name()));
+          addIssue(variableTree, MessageFormat.format(MESSAGE, variableTree.simpleName().name()));
         }
       }
     }
@@ -74,6 +73,6 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isDateOrCollection(Type variableSymbolType) {
-    return variableSymbolType.is(DATE_QUALIFIED_NAME) || variableSymbolType.isSubtypeOf(COLLECTION_QUALIFIED_NAME);
+    return variableSymbolType.is("java.util.Date") || variableSymbolType.isSubtypeOf("java.util.Collection");
   }
 }
