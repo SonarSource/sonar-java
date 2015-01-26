@@ -41,8 +41,6 @@ import java.util.List;
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
 
-  private static final String MESSAGE = "Move \"{0}\" to a class and lower its visibility";
-
   @Override
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(Kind.INTERFACE);
@@ -54,7 +52,7 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
       if (member.is(Kind.VARIABLE)) {
         VariableTreeImpl variableTree = (VariableTreeImpl) member;
         if (isStaticMember(variableTree) && isMutableMember(variableTree)) {
-          addIssue(variableTree, MessageFormat.format(MESSAGE, variableTree.simpleName().name()));
+          addIssue(variableTree, MessageFormat.format("Move \"{0}\" to a class and lower its visibility", variableTree.simpleName().name()));
         }
       }
     }
