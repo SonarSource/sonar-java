@@ -277,7 +277,8 @@ public final class CheckList {
       UnusedTypeParameterCheck.class,
       InterfaceStaticMutableMemberCheck.class,
       ShiftOnIntOrLongCheck.class,
-      CompareToReturnValueCheck.class
+      CompareToReturnValueCheck.class,
+      FinalizeFieldsSetCheck.class
       );
   }
 }
