@@ -24,11 +24,12 @@ import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
+import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
@@ -39,9 +40,9 @@ import java.util.List;
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
 
-  private static final String MESSAGE = "Move \"xxx\" to a class and lower its visibility";
+  private static final String MESSAGE = "Move \"%s\" to a class and lower its visibility";
   private static final String COLLECTION_QUALIFIED_NAME = "java.util.Collection";
-  private static final String DATE_QUALIFIER_NAME = "java.util.Date";
+  private static final String DATE_QUALIFIED_NAME = "java.util.Date";
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -53,16 +54,26 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
     for (Tree member : ((ClassTree) tree).members()) {
       if (member.is(Kind.VARIABLE)) {
         VariableTreeImpl variableTree = (VariableTreeImpl) member;
-        if (variableTree.modifiers().modifiers().contains(Modifier.STATIC)) {
-          Tree variableType = variableTree.type();
-          VariableSymbol symbol = variableTree.getSymbol();
-          if (variableType.is(Kind.ARRAY_TYPE) ||
-            (variableType.is(Kind.PARAMETERIZED_TYPE) && symbol.getType().isSubtypeOf(COLLECTION_QUALIFIED_NAME)) ||
-            (variableType.is(Kind.IDENTIFIER) && (symbol.getType().is(DATE_QUALIFIER_NAME) || symbol.getType().isSubtypeOf(COLLECTION_QUALIFIED_NAME)))) {
-            addIssue(variableTree, MESSAGE.replace("xxx", variableTree.simpleName().name()));
-          }
+        if (isStaticMember(variableTree) && isMutableMember(variableTree)) {
+          addIssue(variableTree, String.format(MESSAGE, variableTree.simpleName().name()));
         }
       }
     }
+  }
+
+  private boolean isStaticMember(VariableTree variableTree) {
+    return variableTree.modifiers().modifiers().contains(Modifier.STATIC);
+  }
+
+  private boolean isMutableMember(VariableTreeImpl variableTree) {
+    return isArray(variableTree.type()) || isDateOrCollection(variableTree.getSymbol().getType());
+  }
+
+  private boolean isArray(Tree TypeTree) {
+    return TypeTree.is(Kind.ARRAY_TYPE);
+  }
+
+  private boolean isDateOrCollection(Type variableSymbolType) {
+    return variableSymbolType.is(DATE_QUALIFIED_NAME) || variableSymbolType.isSubtypeOf(COLLECTION_QUALIFIED_NAME);
   }
 }
