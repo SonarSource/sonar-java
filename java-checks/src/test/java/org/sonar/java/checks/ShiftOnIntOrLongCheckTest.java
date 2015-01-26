@@ -31,16 +31,16 @@ public class ShiftOnIntOrLongCheckTest {
 
   private static final String REMOVE_SHIFT_32 = "Remove this useless shift (multiple of 32)";
   private static final String REMOVE_SHIFT_64 = "Remove this useless shift (multiple of 64)";
-  private static final String INT_IDENTIFIER_VALUE = "Either make \"xxx\" a \"long\" or correct this shift to nnn";
-  private static final String INT_VALUE = "Either use a \"long\" or correct this shift to nnn";
-  private static final String LONG_VALUE = "Correct this shift to nnn";
+  private static final String INT_IDENTIFIER_VALUE = "Either make \"%s\" a \"long\" or correct this shift to %s";
+  private static final String INT_VALUE = "Either use a \"long\" or correct this shift to %s";
+  private static final String LONG_VALUE = "Correct this shift to %s";
 
   private String getMessage(String identifier, String value) {
-    return INT_IDENTIFIER_VALUE.replace("xxx", identifier).replace("nnn", value);
+    return String.format(INT_IDENTIFIER_VALUE, identifier, value);
   }
 
   private String getMessage(boolean isInt, String value) {
-    return isInt ? INT_VALUE.replace("nnn", value) : LONG_VALUE.replace("nnn", value);
+    return isInt ? String.format(INT_VALUE, value) : String.format(LONG_VALUE, value);
   }
 
   @Test

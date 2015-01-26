@@ -23,20 +23,19 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
-import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.model.expression.LiteralTreeImpl;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.model.expression.ParenthesizedTreeImpl;
+import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 @Rule(
@@ -45,6 +44,11 @@ import java.util.List;
   tags = {"bug"})
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
+
+  private static final String USELESS_SHIFT_MESSAGE = "Remove this useless shift (multiple of {0})";
+  private static final String INTEGER_NO_ID_MESSAGE = "Either use a \"long\" or correct this shift to {0}";
+  private static final String INTEGER_ID_MESSAGE = "Either make \"{1}\" a \"long\" or correct this shift to {0}";
+  private static final String LONG_MESSAGE = "Correct this shift to {0}";
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -61,23 +65,24 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
       target = binaryExpressionTree.leftOperand();
       shift = binaryExpressionTree.rightOperand();
     } else {
-      AssignmentExpressionTreeImpl assignmentExpressionTree = (AssignmentExpressionTreeImpl) tree;
+      AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) tree;
       target = assignmentExpressionTree.variable();
       shift = assignmentExpressionTree.expression();
     }
 
     String identifier = getIdentifierName(target);
-    boolean expectLong = treeTypeIsLong(target);
-    boolean expectInt = treeTypeIsInt(target);
+    Type expectedType = ((AbstractTypedTree) target).getSymbolType();
+    boolean expectLong = expectedType.is("long") || expectedType.is("java.lang.Long");
+    boolean expectInt = expectedType.is("int") || expectedType.is("java.lang.Integer");
     boolean shiftIsMinus = shift.is(Kind.UNARY_MINUS);
 
     if (shift.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
       shift = ((UnaryExpressionTree) shift).expression();
     }
 
-    if (isShiftEvaluable(shift, expectInt || expectLong)) {
-      String value = ((LiteralTreeImpl) shift).value();
-      long numberBits = (shiftIsMinus ? -1 : 1) * (expectInt ? Integer.parseInt(value) : Long.parseLong(value));
+    if ((expectInt || expectLong) && isShiftValueEvaluable(shift)) {
+      String value = ((LiteralTree) shift).value();
+      long numberBits = (shiftIsMinus ? -1 : 1) * Long.parseLong(value);
       long reducedNumberBits = numberBits % (expectLong ? 64 : 32);
       insertIssue(tree, numberBits, reducedNumberBits, expectInt, identifier);
     }
@@ -85,13 +90,13 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
   private void insertIssue(Tree tree, long numberBits, long reducedNumberBits, boolean expectInt, String identifier) {
     if (reducedNumberBits == 0L) {
-      addIssue(tree, new StringBuilder("Remove this useless shift (multiple of ").append(expectInt ? "32" : "64").append(")").toString());
+      addIssue(tree, MessageFormat.format(USELESS_SHIFT_MESSAGE, expectInt ? 32 : 64));
     } else if (tooManyBits(numberBits, expectInt)) {
       if (expectInt) {
-        String identifierMarker = identifier == null ? "use" : new StringBuilder("make \"").append(identifier).append("\"").toString();
-        addIssue(tree, new StringBuilder("Either ").append(identifierMarker).append(" a \"long\" or correct this shift to ").append(reducedNumberBits).toString());
+        String message = MessageFormat.format(identifier == null ? INTEGER_NO_ID_MESSAGE : INTEGER_ID_MESSAGE, reducedNumberBits, identifier);
+        addIssue(tree, message);
       } else {
-        addIssue(tree, new StringBuilder("Correct this shift to ").append(reducedNumberBits).toString());
+        addIssue(tree, MessageFormat.format(LONG_MESSAGE, reducedNumberBits));
       }
     }
   }
@@ -101,23 +106,8 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
     return (isInt && value >= 32) || (!isInt && value >= 64);
   }
 
-  private boolean treeTypeIsInt(ExpressionTree tree) {
-    return treeTypeIs(tree, "int") || treeTypeIs(tree, "java.lang.Integer");
-  }
-
-  private boolean treeTypeIsLong(ExpressionTree tree) {
-    return treeTypeIs(tree, "long") || treeTypeIs(tree, "java.lang.Long");
-  }
-
-  private boolean treeTypeIs(ExpressionTree tree, String fullyQualifiedName) {
-    return (tree.is(Kind.IDENTIFIER) && ((IdentifierTreeImpl) tree).getSymbolType().is(fullyQualifiedName)) ||
-      (tree.is(Kind.ARRAY_ACCESS_EXPRESSION) && ((ArrayAccessExpressionTreeImpl) tree).getSymbolType().is(fullyQualifiedName)) ||
-      (tree.is(Kind.PARENTHESIZED_EXPRESSION) && ((ParenthesizedTreeImpl) tree).getSymbolType().is(fullyQualifiedName)) ||
-      (tree.is(Kind.METHOD_INVOCATION) && ((MethodInvocationTreeImpl) tree).getSymbolType().is(fullyQualifiedName));
-  }
-
-  private boolean isShiftEvaluable(ExpressionTree tree, boolean intOrLong) {
-    return intOrLong && tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL);
+  private boolean isShiftValueEvaluable(ExpressionTree tree) {
+    return tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL);
   }
 
   private String getIdentifierName(ExpressionTree tree) {
