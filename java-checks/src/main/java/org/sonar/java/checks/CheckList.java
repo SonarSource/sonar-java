@@ -276,7 +276,8 @@ public final class CheckList {
       CustomCryptographicAlgorithmCheck.class,
       UnusedTypeParameterCheck.class,
       InterfaceStaticMutableMemberCheck.class,
-      ShiftOnIntOrLongCheck.class
+      ShiftOnIntOrLongCheck.class,
+      FinalizeFieldsSetCheck.class
       );
   }
 }

@@ -1608,6 +1608,19 @@
       <name>Processor use</name>
       <chc>
         <rule-repo>squid</rule-repo>
+        <rule-key>S2165</rule-key>
+        <prop>
+          <key>remediationFunction</key>
+          <txt>CONSTANT_ISSUE</txt>
+        </prop>
+        <prop>
+          <key>offset</key>
+          <val>5</val>
+          <txt>mn</txt>
+        </prop>
+      </chc>
+      <chc>
+        <rule-repo>squid</rule-repo>
         <rule-key>S2250</rule-key>
         <prop>
           <key>remediationFunction</key>
