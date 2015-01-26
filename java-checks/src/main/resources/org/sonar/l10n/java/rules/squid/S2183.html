@@ -1,0 +1,17 @@
+<p>Since an <code>int</code> is a 32-bit variable, shifting by more than (-)31 is confusing at best and an error at worst. Shifting an <code>int</code> by 32 is the same as shifting it by 0, and shifting it by 33 is the same as shifting it by 1.</p>
+
+<p>Similarly, shifting a <code>long</code> by (-)64 is the same as shifting it by 0, and shifting it by 65 is the same as shifting it by 1.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public int shift(int a) {
+  return a << 48;
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public int shift(int a) {
+  return a << 16;
+}
+</pre>
