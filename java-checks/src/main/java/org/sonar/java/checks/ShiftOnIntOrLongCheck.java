@@ -76,7 +76,7 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
     if (shift.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
       String value = ((LiteralTree) shift).value();
-      long numberBits = sign * Long.parseLong(value);
+      long numberBits = sign * Integer.decode(value);
       long reducedNumberBits = numberBits % (expectInt ? 32 : 64);
       String message = getMessage(numberBits, reducedNumberBits, expectInt, identifier);
       if (message != null) {

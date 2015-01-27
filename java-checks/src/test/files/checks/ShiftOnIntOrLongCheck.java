@@ -49,6 +49,8 @@ class Shifts {
     c = returnLong() << 97; // Noncompliant
     c = d[0] >> 98; // Noncompliant 
     c = e[0] << 99; //Noncompliant
+    c = a >> 0x0009; // Compliant
+    c = a << 0x0000; // Noncompliant
     return c;
   }
 
@@ -66,6 +68,8 @@ class Shifts {
     c = returnInt() >> 49; // Noncompliant
     c = d[0] << 50; // Noncompliant
     c = e[0] >> 51; // Noncompliant
+    c = a << 0x0009; // Compliant
+    c = a >> 0x0000; // Noncompliant
     return c;
   }
 

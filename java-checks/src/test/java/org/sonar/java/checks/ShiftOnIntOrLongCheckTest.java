@@ -54,6 +54,7 @@ public class ShiftOnIntOrLongCheckTest {
       .next().atLine(15).withMessage(getMessage("a", "1"))
       .next().atLine(16).withMessage(getMessage("a", "-1"))
       .next().atLine(17).withMessage(getMessage("b", "16"))
+
       .next().atLine(24).withMessage(REMOVE_SHIFT_64)
       .next().atLine(25).withMessage(REMOVE_SHIFT_64)
       .next().atLine(26).withMessage(getMessage(false, "1"))
@@ -63,16 +64,20 @@ public class ShiftOnIntOrLongCheckTest {
       .next().atLine(33).withMessage(getMessage(false, "1"))
       .next().atLine(34).withMessage(getMessage(false, "-1"))
       .next().atLine(35).withMessage(getMessage(false, "32"))
+
       .next().atLine(47).withMessage(REMOVE_SHIFT_64)
       .next().atLine(48).withMessage(getMessage(false, "32"))
       .next().atLine(49).withMessage(getMessage(false, "33"))
       .next().atLine(50).withMessage(getMessage(false, "34"))
       .next().atLine(51).withMessage(getMessage(false, "35"))
-      .next().atLine(64).withMessage(REMOVE_SHIFT_32)
-      .next().atLine(65).withMessage(getMessage(true, "16"))
-      .next().atLine(66).withMessage(getMessage(true, "17"))
-      .next().atLine(67).withMessage(getMessage("d", "18"))
-      .next().atLine(68).withMessage(getMessage("e", "19"))
+      .next().atLine(53).withMessage(REMOVE_SHIFT_64)
+
+      .next().atLine(66).withMessage(REMOVE_SHIFT_32)
+      .next().atLine(67).withMessage(getMessage(true, "16"))
+      .next().atLine(68).withMessage(getMessage(true, "17"))
+      .next().atLine(69).withMessage(getMessage("d", "18"))
+      .next().atLine(70).withMessage(getMessage("e", "19"))
+      .next().atLine(72).withMessage(REMOVE_SHIFT_32)
       .noMore();
   }
 }
