@@ -20,17 +20,23 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.sonar.sslr.api.AstNode;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
@@ -41,43 +47,64 @@ import java.util.List;
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
 public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
 
-  private boolean insideCompareTo = false;
-
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.RETURN_STATEMENT, Kind.METHOD);
+    return ImmutableList.of(Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Kind.METHOD)) {
-      insideCompareTo = isCompareToDeclaration((MethodTree) tree);
-    } else if (insideCompareTo && returnIntegerMinValue((ReturnStatementTree) tree)) {
-      addIssue(tree, "Simply return -1");
-    }
-  }
-
-  @Override
-  public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD)) {
-      insideCompareTo = false;
+    MethodTree methodTree = (MethodTree) tree;
+    if (isCompareToDeclaration(methodTree)) {
+      methodTree.accept(new ReturnStatementVisitor(methodTree));
     }
   }
 
   private boolean isCompareToDeclaration(MethodTree tree) {
-    Tree returnType = tree.returnType();
-    return "compareTo".equals(tree.simpleName().name()) &&
-      returnType.is(Kind.PRIMITIVE_TYPE) &&
-      "int".equals(((PrimitiveTypeTree) returnType).keyword().text());
+    return isMethodName(tree, "compareTo") && hasOneNonPrimitiveParameter(tree) && returnsInt(tree);
   }
 
-  private boolean returnIntegerMinValue(ReturnStatementTree tree) {
-    ExpressionTree expressionTree = tree.expression();
-    if (expressionTree.is(Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expressionTree;
-      return ((IdentifierTreeImpl) memberSelectExpressionTree.expression()).getSymbolType().is("java.lang.Integer") &&
-        "MIN_VALUE".equals(memberSelectExpressionTree.identifier().name());
+  private boolean isMethodName(MethodTree methodTree, String name) {
+    return name.equals(methodTree.simpleName().name());
+  }
+
+  private boolean hasOneNonPrimitiveParameter(MethodTree methodTree) {
+    List<VariableTree> parameters = methodTree.parameters();
+    return parameters.size() == 1 && !((VariableTreeImpl) parameters.get(0)).getSymbol().getType().isPrimitive();
+  }
+
+  private boolean returnsInt(MethodTree methodTree) {
+    return ((MethodTreeImpl) methodTree).getSymbol().getReturnType().getType().isTagged(Type.INT);
+  }
+
+  private class ReturnStatementVisitor extends BaseTreeVisitor {
+
+    private final AstNode callingMethod;
+
+    public ReturnStatementVisitor(MethodTree callingMethod) {
+      this.callingMethod = ((MethodTreeImpl) callingMethod).getAstNode();
     }
-    return false;
+
+    @Override
+    public void visitReturnStatement(ReturnStatementTree tree) {
+      if (isWithinCallingMethodBody(tree) && returnsIntegerMinValue(tree.expression())) {
+        addIssue(tree, "Simply return -1");
+      }
+      super.visitReturnStatement(tree);
+    }
+
+    private boolean returnsIntegerMinValue(ExpressionTree expressionTree) {
+      if (expressionTree.is(Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expressionTree;
+        boolean isInteger = ((IdentifierTreeImpl) memberSelect.expression()).getSymbolType().is("java.lang.Integer");
+        boolean isMinValue = "MIN_VALUE".equals(memberSelect.identifier().name());
+        return isInteger && isMinValue;
+      }
+      return false;
+    }
+
+    private boolean isWithinCallingMethodBody(ReturnStatementTree tree) {
+      return callingMethod.equals(((ReturnStatementTreeImpl) tree).getFirstAncestor(callingMethod.getType()));
+    }
   }
 }

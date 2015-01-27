@@ -39,6 +39,9 @@ public class CompareToReturnValueCheckTest {
       new VisitorsBridge(new CompareToReturnValueCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(4).withMessage("Simply return -1")
+      .next().atLine(44)
+      .next().atLine(48)
+      .next().atLine(52)
       .noMore();
   }
 
