@@ -68,7 +68,7 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
     String identifier = getIdentifierName(target);
     Type expectedType = ((AbstractTypedTree) target).getSymbolType();
     boolean expectInt = expectedType.is("int") || expectedType.is("java.lang.Integer");
-    boolean shiftIsMinus = shift.is(Kind.UNARY_MINUS);
+    int sign = shift.is(Kind.UNARY_MINUS) ? -1 : 1;
 
     if (shift.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
       shift = ((UnaryExpressionTree) shift).expression();
@@ -76,27 +76,30 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
     if (shift.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
       String value = ((LiteralTree) shift).value();
-      long numberBits = (shiftIsMinus ? -1 : 1) * Long.parseLong(value);
+      long numberBits = sign * Long.parseLong(value);
       long reducedNumberBits = numberBits % (expectInt ? 32 : 64);
-      insertIssue(tree, numberBits, reducedNumberBits, expectInt, identifier);
+      String message = getMessage(numberBits, reducedNumberBits, expectInt, identifier);
+      if (message != null) {
+        addIssue(tree, message);
+      }
     }
   }
 
-  private void insertIssue(Tree tree, long numberBits, long reducedNumberBits, boolean expectInt, String identifier) {
+  private String getMessage(long numberBits, long reducedNumberBits, boolean expectInt, String identifier) {
     if (reducedNumberBits == 0L) {
-      addIssue(tree, MessageFormat.format("Remove this useless shift (multiple of {0})", expectInt ? 32 : 64));
+      return MessageFormat.format("Remove this useless shift (multiple of {0})", expectInt ? 32 : 64);
     } else if (tooManyBits(numberBits, expectInt)) {
       if (expectInt) {
-        String message = MessageFormat.format(
+        return MessageFormat.format(
           identifier == null ?
             "Either use a \"long\" or correct this shift to {0}" :
             "Either make \"{1}\" a \"long\" or correct this shift to {0}",
           reducedNumberBits, identifier);
-        addIssue(tree, message);
       } else {
-        addIssue(tree, MessageFormat.format("Correct this shift to {0}", reducedNumberBits));
+        return MessageFormat.format("Correct this shift to {0}", reducedNumberBits);
       }
     }
+    return null;
   }
 
   private boolean tooManyBits(long numberBits, boolean expectInt) {
