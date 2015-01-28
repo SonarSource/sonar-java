@@ -72,6 +72,12 @@ public class SymbolTableTest {
     Type.TypeVariableType PTypeVariableType = (Type.TypeVariableType) method2.typeParameters().lookup("P").get(0).type;
     assertThat(method2.getReturnType().type).isSameAs(PTypeVariableType);
     assertThat(method2.getParametersTypes().get(0)).isSameAs(PTypeVariableType);
+
+    //Type parameter defined in outer class
+    Symbol.TypeSymbol classCSymbol = (Symbol.TypeSymbol) typeSymbol.members().lookup("C").get(0);
+    Symbol innerClassField = classCSymbol.members().lookup("innerClassField").get(0);
+    assertThat(innerClassField.type).isSameAs(STypeVariableType);
+
   }
 
   @Test

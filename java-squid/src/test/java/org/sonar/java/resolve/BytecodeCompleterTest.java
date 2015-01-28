@@ -250,4 +250,14 @@ public class BytecodeCompleterTest {
     assertThat(fooMethod.getParametersTypes().get(2).isTagged(Type.LONG)).isTrue();
 
   }
+
+  @Test
+  public void type_parameters_in_inner_class() {
+    Symbol.TypeSymbol innerClass = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ParametrizedExtend$InnerClass");
+    innerClass.complete();
+    Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) innerClass.members().lookup("innerMethod").get(0);
+    assertThat(symbol.getReturnType().type).isInstanceOf(Type.TypeVariableType.class);
+    assertThat(symbol.getReturnType().getName()).isEqualTo("S");
+
+  }
 }

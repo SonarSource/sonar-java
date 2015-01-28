@@ -519,13 +519,20 @@ public class BytecodeVisitor extends ClassVisitor {
     @Override
     public void visitTypeVariable(String name) {
       List<Symbol> lookup = Lists.newArrayList();
+      Symbol currentSymbol = classSymbol;
       if(methodSymbol != null) {
-        lookup = methodSymbol.typeParameters().lookup(name);
+        currentSymbol = methodSymbol;
       }
-      if(lookup.isEmpty()) {
-        lookup = classSymbol.typeParameters().lookup(name);
+      while ((currentSymbol.isKind(Symbol.TYP) || currentSymbol.isKind(Symbol.MTH)) && lookup.isEmpty()) {
+        if(currentSymbol.isKind(Symbol.MTH)) {
+          lookup = ((Symbol.MethodSymbol)currentSymbol).typeParameters().lookup(name);
+        } else if (currentSymbol.isKind(Symbol.TYP)) {
+          lookup = ((Symbol.TypeSymbol)currentSymbol).typeParameters().lookup(name);
+        }
+        currentSymbol = currentSymbol.owner();
       }
-      Preconditions.checkState(lookup.size() != 0, "Could not resolve type parameter: "+name+" in class "+classSymbol.getName());
+
+      Preconditions.checkState(!lookup.isEmpty(), "Could not resolve type parameter: "+name+" in class "+classSymbol.getName());
       Preconditions.checkState(lookup.size() == 1, "More than one type parameter with the same name");
       typeRead = lookup.get(0).type;
       visitEnd();
