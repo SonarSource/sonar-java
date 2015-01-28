@@ -66,8 +66,8 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
     return isArray(variableTree.type()) || isDateOrCollection(variableTree.getSymbol().getType());
   }
 
-  private boolean isArray(Tree TypeTree) {
-    return TypeTree.is(Kind.ARRAY_TYPE);
+  private boolean isArray(Tree typeTree) {
+    return typeTree.is(Kind.ARRAY_TYPE);
   }
 
   private boolean isDateOrCollection(Type variableSymbolType) {
