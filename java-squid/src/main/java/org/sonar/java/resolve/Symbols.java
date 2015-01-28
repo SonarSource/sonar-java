@@ -220,4 +220,28 @@ public class Symbols {
     predefClass.members.enter(symbol);
   }
 
+  public Type getPrimitiveFromDescriptor(char descriptor) {
+    switch (descriptor) {
+      case 'S':
+        return shortType;
+      case 'I':
+        return intType;
+      case 'C':
+        return charType;
+      case 'Z':
+        return booleanType;
+      case 'B':
+        return byteType;
+      case 'J':
+        return longType;
+      case 'F':
+        return floatType;
+      case 'D':
+        return doubleType;
+      case 'V':
+        return voidType;
+      default:
+        throw new IllegalStateException("Descriptor '"+descriptor+"' cannot be mapped to a primitive type");
+    }
+  }
 }

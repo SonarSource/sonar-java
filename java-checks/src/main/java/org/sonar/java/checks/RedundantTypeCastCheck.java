@@ -93,7 +93,11 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isRedundantCast(Type cast, Type expressionType, Types types) {
-    return !cast.isNumerical() && !cast.isParametrized() && types.isSubtype(expressionType, cast);
+    Type erasedExpressionType = expressionType;
+    if(erasedExpressionType.isTagged(Type.TYPEVAR)) {
+      erasedExpressionType = erasedExpressionType.erasure();
+    }
+    return !cast.isNumerical() && types.isSubtype(erasedExpressionType, cast);
   }
 
   private boolean isRedundantNumericalCast(Type cast, Type expressionType) {

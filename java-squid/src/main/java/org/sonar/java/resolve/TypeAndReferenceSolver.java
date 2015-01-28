@@ -189,15 +189,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     Resolve.Env methodEnv = semanticModel.getEnv(tree);
     scan(tree.arguments());
     List<Type> argTypes = getParameterTypes(tree.arguments());
-    Symbol symbol = resolveMethodSymbol(methodSelect, methodEnv, argTypes);
+    Resolve.Resolution resolution = resolveMethodSymbol(methodSelect, methodEnv, argTypes);
+    Symbol symbol = resolution.symbol();
     ((MethodInvocationTreeImpl) tree).setSymbol(symbol);
-    Type methodType = getTypeOfSymbol(symbol);
-    //Register return type for method invocation.
-    if (methodType == null || symbol.kind >= Symbol.ERRONEOUS) {
-      registerType(tree, symbols.unknownType);
-    } else {
-      registerType(tree, ((Type.MethodType) methodType).resultType);
-    }
+    registerType(tree, resolution.type());
   }
 
   private List<Type> getParameterTypes(List<ExpressionTree> args) {
@@ -212,23 +207,23 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     return builder.build();
   }
 
-  private Symbol resolveMethodSymbol(Tree methodSelect, Resolve.Env methodEnv, List<Type> argTypes) {
-    Symbol symbol;
+  private Resolve.Resolution resolveMethodSymbol(Tree methodSelect, Resolve.Env methodEnv, List<Type> argTypes) {
+    Resolve.Resolution resolution;
     IdentifierTree identifier;
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
       resolveAs(mset.expression(), Symbol.TYP | Symbol.VAR);
       Type type = getType(mset.expression());
       identifier = mset.identifier();
-      symbol = resolve.findMethod(methodEnv, type.symbol, identifier.name(), argTypes);
+      resolution = resolve.findMethod(methodEnv, type, identifier.name(), argTypes);
     } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
       identifier = (IdentifierTree) methodSelect;
-      symbol = resolve.findMethod(methodEnv, identifier.name(), argTypes);
+      resolution = resolve.findMethod(methodEnv, identifier.name(), argTypes);
     } else {
       throw new IllegalStateException("Method select in method invocation is not of the expected type " + methodSelect);
     }
-    associateReference(identifier, symbol);
-    return symbol;
+    associateReference(identifier, resolution.symbol());
+    return resolution;
   }
 
   private void resolveAs(@Nullable Tree tree, int kind) {
@@ -421,7 +416,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       registerType(tree, symbols.unknownType);
       return;
     }
-    Symbol symbol = resolve.findMethod(semanticModel.getEnv(tree), symbols.predefClass, tree.operatorToken().text(), ImmutableList.of(left, right));
+    Symbol symbol = resolve.findMethod(semanticModel.getEnv(tree), symbols.predefClass.type, tree.operatorToken().text(), ImmutableList.of(left, right)).symbol();
     if (symbol.kind != Symbol.MTH) {
       // not found
       registerType(tree, symbols.unknownType);
@@ -451,7 +446,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   private Symbol resolveConstructorSymbol(IdentifierTree identifier, Resolve.Env methodEnv, List<Type> argTypes) {
-    Symbol symbol = resolve.findMethod(methodEnv, ((AbstractTypedTree) identifier).getSymbolType().getSymbol(), "<init>", argTypes);
+    Symbol symbol = resolve.findMethod(methodEnv, ((AbstractTypedTree) identifier).getSymbolType(), "<init>", argTypes).symbol();
     associateReference(identifier, symbol);
     return symbol;
   }
@@ -542,7 +537,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       for (ExpressionTree expressionTree : tree.arguments()) {
         AssignmentExpressionTree aet = (AssignmentExpressionTree) expressionTree;
         IdentifierTree variable = (IdentifierTree) aet.variable();
-        Symbol identInType = resolve.findMethod(semanticModel.getEnv(tree), getType(tree.annotationType()).symbol, variable.name(), ImmutableList.<Type>of());
+        Symbol identInType = resolve.findMethod(semanticModel.getEnv(tree), getType(tree.annotationType()), variable.name(), ImmutableList.<Type>of()).symbol();
         associateReference(variable, identInType);
         Type type = identInType.type;
         if(type == null) {

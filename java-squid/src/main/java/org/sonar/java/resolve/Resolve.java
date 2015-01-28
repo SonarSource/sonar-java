@@ -331,50 +331,62 @@ public class Resolve {
   /**
    * Finds method matching given name and types of arguments.
    */
-  public Symbol findMethod(Env env, String name, List<Type> argTypes) {
-    Symbol bestSoFar = symbolNotFound;
+  public Resolution findMethod(Env env, String name, List<Type> argTypes) {
+    Resolution bestSoFar = unresolved();
     Env env1 = env;
     while (env1.outer() != null) {
-      Symbol sym = findMethod(env1, env1.enclosingClass(), name, argTypes);
-      if (sym.kind < Symbol.ERRONEOUS) {
+      Resolution res = findMethod(env1, env1.enclosingClass().getType(), name, argTypes);
+      if (res.symbol.kind < Symbol.ERRONEOUS) {
         // symbol exists
-        return sym;
-      } else if (sym.kind < bestSoFar.kind) {
-        bestSoFar = sym;
+        return res;
+      } else if (res.symbol.kind < bestSoFar.symbol.kind) {
+        bestSoFar = res;
       }
       env1 = env1.outer;
     }
     Symbol sym = findInStaticImport(env, name, Symbol.MTH);
     if (sym.kind < Symbol.ERRONEOUS) {
       // symbol exists
-      return sym;
-    } else if (sym.kind < bestSoFar.kind) {
-      bestSoFar = sym;
+      return Resolution.resolution(sym);
+    } else if (sym.kind < bestSoFar.symbol.kind) {
+      bestSoFar = Resolution.resolution(sym);
     }
     return bestSoFar;
   }
 
-  public Symbol findMethod(Env env, Symbol.TypeSymbol site, String name, List<Type> argTypes) {
+  public Resolution findMethod(Env env, Type site, String name, List<Type> argTypes) {
     return findMethod(env, site, name, argTypes, false);
   }
 
-  public Symbol findMethod(Env env, Symbol.TypeSymbol site, String name, List<Type> argTypes, boolean autoboxing) {
-    Symbol bestSoFar = symbolNotFound;
-    for (Symbol symbol : site.members().lookup(name)) {
+  private Resolution findMethod(Env env, Type site, String name, List<Type> argTypes, boolean autoboxing) {
+    Resolution bestSoFar = unresolved();
+    for (Symbol symbol : site.getSymbol().members().lookup(name)) {
       if (symbol.kind == Symbol.MTH) {
-        bestSoFar = selectBest(env, site, argTypes, symbol, bestSoFar, autoboxing);
+        Symbol best = selectBest(env, site.getSymbol(), argTypes, symbol, bestSoFar.symbol, autoboxing);
+        if(best == symbol) {
+          bestSoFar = Resolution.resolution(best);
+          if(best.isKind(Symbol.MTH)) {
+            bestSoFar.type = resolveTypeSubstitution(((Type.MethodType) best.type).resultType, site);
+          }
+        }
       }
     }
     //look in supertypes for more specialized method (overloading).
-    if (site.getSuperclass() != null) {
-      Symbol method = findMethod(env, site.getSuperclass().symbol, name, argTypes);
-      bestSoFar = selectBest(env, site, argTypes, method, bestSoFar, autoboxing);
+    if (site.getSymbol().getSuperclass() != null) {
+      Resolution method = findMethod(env, site.getSymbol().getSuperclass(), name, argTypes);
+      Symbol best = selectBest(env, site.getSymbol(), argTypes, method.symbol, bestSoFar.symbol, autoboxing);
+      if(best == method.symbol) {
+        bestSoFar = method;
+      }
     }
-    for (Type interfaceType : site.getInterfaces()) {
-      Symbol method = findMethod(env, interfaceType.symbol, name, argTypes);
-      bestSoFar = selectBest(env, site, argTypes, method, bestSoFar, autoboxing);
+    for (Type interfaceType : site.getSymbol().getInterfaces()) {
+      Resolution method = findMethod(env, interfaceType, name, argTypes);
+      Symbol best = selectBest(env, site.getSymbol(), argTypes, method.symbol, bestSoFar.symbol, autoboxing);
+      if(best == method.symbol) {
+        bestSoFar = method;
+      }
     }
-    if(bestSoFar.kind >= Symbol.ERRONEOUS && !autoboxing) {
+    if(bestSoFar.symbol.kind >= Symbol.ERRONEOUS && !autoboxing) {
       bestSoFar = findMethod(env, site, name, argTypes, true);
     }
     return bestSoFar;
@@ -642,6 +654,9 @@ public class Resolve {
 
     public Type type() {
       if (type == null) {
+        if(symbol.isKind(Symbol.MTH)) {
+          return ((Type.MethodType)symbol.type).resultType;
+        }
         return symbol.type;
       }
       return type;
