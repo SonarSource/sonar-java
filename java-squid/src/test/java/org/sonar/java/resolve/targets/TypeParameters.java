@@ -35,7 +35,25 @@ public class TypeParameters<T, S extends CharSequence> extends ParametrizedExten
 
 class ParametrizedExtend<S> {
   S parentField;
+  class InnerClass {
+     S innerMethod(){
+       return null;
+     }
+  }
 }
 
 interface ParametrizedInterface1<U> {}
 interface ParametrizedInterface2<V> {}
+
+class A {
+  <T> void foo() {
+    class B{
+      void bar() {
+        class C {
+          T qix(){ return null;}
+        }
+      }
+    }
+
+  }
+}

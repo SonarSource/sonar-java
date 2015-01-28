@@ -334,7 +334,6 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     //Type substitution for parametrized type.
     Map<Type.TypeVariableType, Type> typeSubstitution = Maps.newHashMap();
     if(tree.typeArguments().size() <= type.getSymbol().typeVariableTypes.size()) {
-      //FIXME: read type parameters from bytecode.
       for (int i = 0; i < tree.typeArguments().size(); i++) {
         typeSubstitution.put(type.getSymbol().typeVariableTypes.get(i), getType(tree.typeArguments().get(i)));
       }

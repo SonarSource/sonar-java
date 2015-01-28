@@ -21,7 +21,9 @@ class A<T, S extends CharSequence> {
     }
   }
 
-  class C<V> {}
+  class C<V> {
+    S innerClassField;
+  }
 
 
 
