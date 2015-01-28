@@ -249,6 +249,10 @@ public class BytecodeCompleterTest {
     assertThat(fooMethod.getParametersTypes().get(1).isTagged(Type.INT)).isTrue();
     assertThat(fooMethod.getParametersTypes().get(2).isTagged(Type.LONG)).isTrue();
 
+    //read field.
+    Symbol.VariableSymbol field = (Symbol.VariableSymbol) typeParametersSymbol.members().lookup("field").get(0);
+    assertThat(field.type).isInstanceOf(Type.TypeVariableType.class);
+    assertThat(field.type).isSameAs(TtypeVariableType);
   }
 
   @Test
@@ -258,6 +262,7 @@ public class BytecodeCompleterTest {
     Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) innerClass.members().lookup("innerMethod").get(0);
     assertThat(symbol.getReturnType().type).isInstanceOf(Type.TypeVariableType.class);
     assertThat(symbol.getReturnType().getName()).isEqualTo("S");
-
   }
+
+
 }

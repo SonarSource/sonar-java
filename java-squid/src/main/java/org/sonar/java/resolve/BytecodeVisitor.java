@@ -186,14 +186,10 @@ public class BytecodeVisitor extends ClassVisitor {
           name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
       classSymbol.members.enter(symbol);
       if (signature != null) {
-        new SignatureReader(signature).accept(new SignatureVisitor(Opcodes.ASM5) {
-
-          @Override
-          public void visitFormalTypeParameter(String name) {
-            //TODO improve generics
-            symbol.isParametrized = true;
-          }
-        });
+        ReadType typeReader = new ReadType();
+        new SignatureReader(signature).accept(typeReader);
+        symbol.type = typeReader.typeRead;
+        symbol.isParametrized = symbol.type instanceof Type.TypeVariableType;
       }
     }
     // (Godin): can return FieldVisitor to read annotations

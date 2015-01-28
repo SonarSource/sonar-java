@@ -44,16 +44,3 @@ class ParametrizedExtend<S> {
 
 interface ParametrizedInterface1<U> {}
 interface ParametrizedInterface2<V> {}
-
-class A {
-  <T> void foo() {
-    class B{
-      void bar() {
-        class C {
-          T qix(){ return null;}
-        }
-      }
-    }
-
-  }
-}
