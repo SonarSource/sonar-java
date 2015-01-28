@@ -6,7 +6,7 @@ class BadConstantName {
   public static final int bad_constant = 0;
   public static int static_field;
   public final int final_field = 0;
-
+  public static final Object object = 0; //Compliant: not a constant.
   enum Enum {
     GOOD_CONSTANT,
     bad_constant;
@@ -25,5 +25,8 @@ class BadConstantName {
 
     long serialVersionUID = 42L;
   }
+
+  public static final String my_string = 0; //Non-Compliant: string is an immutable object
+  public static final String MY_STRING = 0; //Non-Compliant: string is an immutable object
 
 }
