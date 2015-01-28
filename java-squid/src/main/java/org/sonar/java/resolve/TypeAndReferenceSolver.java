@@ -188,11 +188,21 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     Tree methodSelect = tree.methodSelect();
     Resolve.Env methodEnv = semanticModel.getEnv(tree);
     scan(tree.arguments());
+    scan(tree.typeArguments());
     List<Type> argTypes = getParameterTypes(tree.arguments());
     Resolve.Resolution resolution = resolveMethodSymbol(methodSelect, methodEnv, argTypes);
     Symbol symbol = resolution.symbol();
     ((MethodInvocationTreeImpl) tree).setSymbol(symbol);
-    registerType(tree, resolution.type());
+    Type resolvedType = resolution.type();
+    //resolve type parameter (type arguments may be null in case of inference)
+    if(tree.typeArguments() != null && symbol.isKind(Symbol.MTH)) {
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+      int typeArgIndex = methodSymbol.typeVariableTypes.indexOf(resolvedType);
+      if(typeArgIndex >= 0) {
+        resolvedType = ((AbstractTypedTree) tree.typeArguments().get(typeArgIndex)).getSymbolType();
+      }
+    }
+    registerType(tree, resolvedType);
   }
 
   private List<Type> getParameterTypes(List<ExpressionTree> args) {

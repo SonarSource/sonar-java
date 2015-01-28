@@ -25,6 +25,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
@@ -78,6 +80,14 @@ public class SymbolTableTest {
     Symbol innerClassField = classCSymbol.members().lookup("innerClassField").get(0);
     assertThat(innerClassField.type).isSameAs(STypeVariableType);
 
+  }
+
+  @Test
+  public void parameterized_method_type() throws Exception {
+    Result result = Result.createFor("Generics");
+    MethodTree method3 = (MethodTree) result.getTree(result.symbol("method3"));
+    VariableTree variable = (VariableTree) method3.block().body().get(0);
+    assertThat(((AbstractTypedTree)variable.initializer()).getSymbolType().getSymbol().getName()).isEqualTo("String");
   }
 
   @Test

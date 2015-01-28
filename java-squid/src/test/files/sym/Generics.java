@@ -33,4 +33,8 @@ class A<T, S extends CharSequence> {
   <P> P method2(P plop) {
   }
 
+  <P> P method3() {
+    Object myObject = <String>method3();
+  }
+
 }

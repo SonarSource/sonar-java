@@ -28,6 +28,7 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 
@@ -109,5 +110,7 @@ class Result {
   }
 
 
-
+  public Tree getTree(Symbol symbol) {
+    return semanticModel.getTree(symbol);
+  }
 }
