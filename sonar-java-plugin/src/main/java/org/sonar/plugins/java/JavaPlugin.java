@@ -29,6 +29,7 @@ import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefireExtensions;
 
@@ -84,7 +85,8 @@ public class JavaPlugin extends SonarPlugin {
         JavaSonarWayProfile.class,
         SonarComponents.class,
         DefaultJavaResourceLocator.class,
-        JavaSquidSensor.class);
+        JavaSquidSensor.class,
+        SuppressWarningsFilter.class);
     return builder.build();
   }
 

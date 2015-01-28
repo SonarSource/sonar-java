@@ -20,15 +20,17 @@
 package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.batch.SensorContext;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
+import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -43,21 +45,26 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
 
   private final Project project;
   private final JavaClasspath javaClasspath;
+  private final SuppressWarningsFilter suppressWarningsFilter;
   @VisibleForTesting
   Map<String, Resource> resourcesByClass;
   private final Map<String, String> sourceFileByClass;
   private final Map<String, Integer> methodStartLines;
   private final ResourceMapping resourceMapping;
-  private Map<String, Multimap<String, Integer>> ignoredLinesForRules;
+  private SensorContext sensorContext;
 
-  public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath) {
+  public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath, SuppressWarningsFilter suppressWarningsFilter) {
     this.project = project;
     this.javaClasspath = javaClasspath;
+    this.suppressWarningsFilter = suppressWarningsFilter;
     resourcesByClass = Maps.newHashMap();
     sourceFileByClass = Maps.newHashMap();
     methodStartLines = Maps.newHashMap();
     resourceMapping = new ResourceMapping();
-    ignoredLinesForRules = Maps.newHashMap();
+  }
+
+  public void setSensorContext(SensorContext sensorContext) {
+    this.sensorContext = sensorContext;
   }
 
   @Override
@@ -113,12 +120,8 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   }
 
   @Override
-  public Map<String, Multimap<String, Integer>> getIgnoredLinesForRules() {
-    return ignoredLinesForRules;
-  }
-
-  @Override
   public void scanFile(JavaFileScannerContext context) {
+    Preconditions.checkNotNull(sensorContext);
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     javaFilesCache.scanFile(context);
     org.sonar.api.resources.File currentResource = org.sonar.api.resources.File.fromIOFile(context.getFile(), project);
@@ -132,9 +135,9 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
         sourceFileByClass.put(classIOFileEntry.getKey(), context.getFileKey());
       }
     }
-    context.addNoSonarLines(javaFilesCache.ignoredLines());
-    ignoredLinesForRules.put(context.getFileKey(), javaFilesCache.ignoredLinesForRules());
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
+    if (javaFilesCache.hasSuppressWarningLines()) {
+      suppressWarningsFilter.addComponent(sensorContext.getResource(currentResource).getEffectiveKey(), javaFilesCache.getSuppressWarningLines());
+    }
   }
-
 }

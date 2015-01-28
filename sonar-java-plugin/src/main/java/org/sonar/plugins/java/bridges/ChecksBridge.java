@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.bridges;
 
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.component.ResourcePerspectives;
@@ -38,7 +37,6 @@ import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 
 import java.io.File;
-import java.util.Map;
 import java.util.Set;
 
 public class ChecksBridge {
@@ -46,15 +44,12 @@ public class ChecksBridge {
   private final Checks<CodeVisitor> checks;
   private final ResourcePerspectives resourcePerspectives;
   private final RulesProfile rulesProfile;
-  private final Map<String, Multimap<String, Integer>> ignoredLinesForRulesByFile;
   private Set<Directory> dirsWithoutPackageInfo;
 
-  public ChecksBridge(Checks<CodeVisitor> checks, ResourcePerspectives resourcePerspectives,
-                      RulesProfile rulesProfile, Map<String, Multimap<String, Integer>> ignoredLinesForRulesByFile) {
+  public ChecksBridge(Checks<CodeVisitor> checks, ResourcePerspectives resourcePerspectives, RulesProfile rulesProfile) {
     this.checks = checks;
     this.resourcePerspectives = resourcePerspectives;
     this.rulesProfile = rulesProfile;
-    this.ignoredLinesForRulesByFile = ignoredLinesForRulesByFile;
   }
 
   public void reportIssues(SourceFile squidFile, Resource sonarFile) {
@@ -70,8 +65,7 @@ public class ChecksBridge {
         } else {
           ruleKey = checks.ruleKey((CodeVisitor) checkMessage.getCheck());
         }
-        Multimap<String, Integer> ignoreLinesForRules = ignoredLinesForRulesByFile.get(squidFile.getKey());
-        if (ruleKey != null && ignoreLinesForRules != null && !ignoreLinesForRules.get(ruleKey.toString()).contains(checkMessage.getLine())) {
+        if (ruleKey != null) {
           Issue issue = issuable.newIssueBuilder()
               .ruleKey(ruleKey)
               .line(checkMessage.getLine())
