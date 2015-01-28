@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
+import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -43,6 +44,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
 
   private final Project project;
   private final JavaClasspath javaClasspath;
+  private final SuppressWarningsFilter suppressWarningsFilter;
   @VisibleForTesting
   Map<String, Resource> resourcesByClass;
   private final Map<String, String> sourceFileByClass;
@@ -50,9 +52,10 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   private final ResourceMapping resourceMapping;
   private Map<String, Multimap<String, Integer>> ignoredLinesForRules;
 
-  public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath) {
+  public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath, SuppressWarningsFilter suppressWarningsFilter) {
     this.project = project;
     this.javaClasspath = javaClasspath;
+    this.suppressWarningsFilter = suppressWarningsFilter;
     resourcesByClass = Maps.newHashMap();
     sourceFileByClass = Maps.newHashMap();
     methodStartLines = Maps.newHashMap();
@@ -135,6 +138,10 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
     context.addNoSonarLines(javaFilesCache.ignoredLines());
     ignoredLinesForRules.put(context.getFileKey(), javaFilesCache.ignoredLinesForRules());
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
+    if (!javaFilesCache.getSuppressWarningLines().isEmpty()) {
+      String componentKey = project.name() + ":" + currentResource.getKey();
+      suppressWarningsFilter.addComponent(componentKey, javaFilesCache.getSuppressWarningLines());
+    }
   }
 
 }

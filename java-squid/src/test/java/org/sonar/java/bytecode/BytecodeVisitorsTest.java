@@ -32,6 +32,7 @@ import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
+import org.sonar.java.filters.SuppressWarningsFilter;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -66,12 +67,13 @@ public class BytecodeVisitorsTest {
     JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
     Project project = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
+    SuppressWarningsFilter swf = mock(SuppressWarningsFilter.class);
     File baseDir = new File("src/test/files/bytecode/src");
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null);
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, swf);
     JavaSquid squid = new JavaSquid(conf, javaResourceLocator);
-    Collection<File> files = FileUtils.listFiles(baseDir, new String[]{"java"}, true);
+    Collection<File> files = FileUtils.listFiles(baseDir, new String[] {"java"}, true);
     File binDir = new File("src/test/files/bytecode/bin");
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
     graph = squid.getGraph();
@@ -171,7 +173,6 @@ public class BytecodeVisitorsTest {
   public void testFileDependencies() {
     assertThat(graph.getEdge(sourceFile, tagException).getUsage()).isEqualTo("USES");
   }
-
 
   private static Resource findResource(String resource) {
     Set<Resource> directories = resourceMapping.directories();

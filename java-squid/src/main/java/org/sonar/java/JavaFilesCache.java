@@ -52,7 +52,6 @@ import java.util.Set;
 
 public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
-
   @VisibleForTesting
   Map<String, File> resourcesCache = Maps.newHashMap();
 
@@ -63,6 +62,8 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   Set<Integer> ignoredLines = Sets.newHashSet();
   @VisibleForTesting
   Multimap<String, Integer> ignoredLinesForRules = HashMultimap.create();
+  @VisibleForTesting
+  Multimap<Integer, String> suppressWarningLines = HashMultimap.create();
 
   private File currentFile;
   private Deque<String> currentClassKey = new LinkedList<String>();
@@ -78,6 +79,10 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     return methodStartLines;
   }
 
+  public Multimap<Integer, String> getSuppressWarningLines() {
+    return suppressWarningLines;
+  }
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
     JavaTree.CompilationUnitTreeImpl tree = (JavaTree.CompilationUnitTreeImpl) context.getTree();
@@ -87,6 +92,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     parent.clear();
     anonymousInnerClassCounter.clear();
     ignoredLines.clear();
+    suppressWarningLines.clear();
     scan(tree);
   }
 
@@ -114,7 +120,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
       key = currentPackage + "/" + className;
     }
     if ("".equals(className) || (parent.peek() != null && parent.peek().is(Tree.Kind.METHOD))) {
-      //inner class declared within method
+      // inner class declared within method
       int count = anonymousInnerClassCounter.pop() + 1;
       key = currentClassKey.peek() + "$" + count + className;
       anonymousInnerClassCounter.push(count);
@@ -141,7 +147,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
   private void handleSuppressWarning(MethodTree tree) {
     int endLine = ((JavaTree) tree.simpleName()).getLine();
-    //if we have no block, then we assume method is on one line on the method name line.
+    // if we have no block, then we assume method is on one line on the method name line.
     if (tree.block() != null) {
       endLine = ((InternalSyntaxToken) tree.block().closeBraceToken()).getLine();
     }
@@ -150,28 +156,20 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
   private void handleSuppressWarning(List<AnnotationTree> annotationTrees, int endLine) {
     int startLine = 0;
-    List<String> ignoredKey = Lists.newArrayList();
+    List<String> warnings = Lists.newArrayList();
     for (AnnotationTree annotationTree : annotationTrees) {
-      if (isSuppressAllWarnings(annotationTree)) {
+      if (isSuppressWarningsAnnotation(annotationTree)) {
         startLine = ((JavaTree) annotationTree).getLine();
-        ignoredKey.addAll(getSuppressWarningArgs(annotationTree));
+        warnings.addAll(getSuppressWarningArgs(annotationTree));
         break;
       }
     }
-
-    for (String key : ignoredKey) {
-      boolean isAll = "all".equals(key);
-      for (int i = startLine; i <= endLine; i++) {
-        if (isAll) {
-          ignoredLines.add(i);
-        } else {
-          ignoredLinesForRules.put(key, i);
-        }
-      }
+    for (int i = startLine; i <= endLine; i++) {
+      suppressWarningLines.putAll(i, warnings);
     }
   }
 
-  private boolean isSuppressAllWarnings(AnnotationTree annotationTree) {
+  private boolean isSuppressWarningsAnnotation(AnnotationTree annotationTree) {
     boolean suppressWarningsType = false;
     Tree type = annotationTree.annotationType();
     if (type.is(Tree.Kind.IDENTIFIER)) {
@@ -179,7 +177,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     } else if (type.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) type;
       suppressWarningsType = "SuppressWarnings".equals(mset.identifier().name()) &&
-          mset.expression().is(Tree.Kind.MEMBER_SELECT) && "lang".equals(((MemberSelectExpressionTree) mset.expression()).identifier().name());
+        mset.expression().is(Tree.Kind.MEMBER_SELECT) && "lang".equals(((MemberSelectExpressionTree) mset.expression()).identifier().name());
     }
     return suppressWarningsType;
   }

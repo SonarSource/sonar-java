@@ -29,6 +29,7 @@ import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefireExtensions;
 
@@ -49,42 +50,44 @@ public class JavaPlugin extends SonarPlugin {
     builder.addAll(JaCoCoExtensions.getExtensions());
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
-        JavaClasspath.class,
-        JavaCommonRulesEngine.class,
-        JavaCommonRulesDecorator.class,
-        Java.class,
-        CommonRulesSonarWayProfile.class,
-        PropertyDefinition.builder(Java.FILE_SUFFIXES_KEY)
-            .defaultValue(Java.DEFAULT_FILE_SUFFIXES)
-            .name("File suffixes")
-            .description("Comma-separated list of suffixes for files to analyze. To not filter, leave the list empty.")
-            .subCategory("General")
-            .onQualifiers(Qualifiers.PROJECT)
-            .build(),
-        PropertyDefinition.builder(JavaPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY)
-            .defaultValue(JavaPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE + "")
-            .category(JAVA_CATEGORY)
-            .subCategory(GENERAL_SUBCATEGORY)
-            .name("Separate Accessors")
-            .description("Flag whether SonarQube should separate accessors (getters/setters) from methods. " +
-                "In that case, accessors are not counted in metrics such as complexity or API documentation.")
-            .type(PropertyType.BOOLEAN)
-            .onQualifiers(Qualifiers.PROJECT)
-            .build(),
-        PropertyDefinition.builder(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)
-            .defaultValue(CoreProperties.DESIGN_SKIP_DESIGN_DEFAULT_VALUE + "")
-            .category(JAVA_CATEGORY)
-            .subCategory(GENERAL_SUBCATEGORY)
-            .name("Skip design analysis")
-            .type(PropertyType.BOOLEAN)
-            .hidden()
-            .build(),
+      JavaClasspath.class,
+      JavaCommonRulesEngine.class,
+      JavaCommonRulesDecorator.class,
+      Java.class,
+      CommonRulesSonarWayProfile.class,
+      PropertyDefinition.builder(Java.FILE_SUFFIXES_KEY)
+        .defaultValue(Java.DEFAULT_FILE_SUFFIXES)
+        .name("File suffixes")
+        .description("Comma-separated list of suffixes for files to analyze. To not filter, leave the list empty.")
+        .subCategory("General")
+        .onQualifiers(Qualifiers.PROJECT)
+        .build(),
+      PropertyDefinition.builder(JavaPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY)
+        .defaultValue(JavaPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE + "")
+        .category(JAVA_CATEGORY)
+        .subCategory(GENERAL_SUBCATEGORY)
+        .name("Separate Accessors")
+        .description("Flag whether SonarQube should separate accessors (getters/setters) from methods. " +
+          "In that case, accessors are not counted in metrics such as complexity or API documentation.")
+        .type(PropertyType.BOOLEAN)
+        .onQualifiers(Qualifiers.PROJECT)
+        .build(),
+      PropertyDefinition.builder(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)
+        .defaultValue(CoreProperties.DESIGN_SKIP_DESIGN_DEFAULT_VALUE + "")
+        .category(JAVA_CATEGORY)
+        .subCategory(GENERAL_SUBCATEGORY)
+        .name("Skip design analysis")
+        .type(PropertyType.BOOLEAN)
+        .hidden()
+        .build(),
 
-        JavaRuleRepository.class,
-        JavaSonarWayProfile.class,
-        SonarComponents.class,
-        DefaultJavaResourceLocator.class,
-        JavaSquidSensor.class);
+      JavaRuleRepository.class,
+      JavaSonarWayProfile.class,
+      SonarComponents.class,
+      DefaultJavaResourceLocator.class,
+      JavaSquidSensor.class,
+      SuppressWarningsFilter.class
+      );
     return builder.build();
   }
 

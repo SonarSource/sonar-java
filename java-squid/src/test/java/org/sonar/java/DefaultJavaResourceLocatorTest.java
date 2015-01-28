@@ -24,6 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.java.model.VisitorsBridge;
 
 import java.io.File;
@@ -34,7 +35,6 @@ import static org.mockito.Mockito.when;
 
 public class DefaultJavaResourceLocatorTest {
 
-
   private static DefaultJavaResourceLocator javaResourceLocator;
 
   @BeforeClass
@@ -43,12 +43,13 @@ public class DefaultJavaResourceLocatorTest {
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
 
     JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    SuppressWarningsFilter suppressWarningsFilter = mock(SuppressWarningsFilter.class);
     when(javaClasspath.getBinaryDirs()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
     when(javaClasspath.getElements()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
     File baseDir = new File("src/test/java");
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
-    DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(project, javaClasspath);
+    DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(project, javaClasspath, suppressWarningsFilter);
     JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java"), new VisitorsBridge(jrl));
     javaResourceLocator = jrl;
   }
@@ -90,7 +91,7 @@ public class DefaultJavaResourceLocatorTest {
     assertThat(javaResourceLocator.classFilesToAnalyze()).hasSize(5);
   }
 
-  static class A { //NOSONAR
+  static class A { // NOSONAR
 
     interface I {
       void foo();
