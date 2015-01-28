@@ -40,8 +40,8 @@ public class HardCodedCredentialsCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(7).withMessage("Remove this hard-coded password.")
       .next().atLine(10)
-      .next().atLine(12)
-      .next().atLine(14);
+      .next().atLine(14)
+      .next().atLine(18);
   }
 
 }

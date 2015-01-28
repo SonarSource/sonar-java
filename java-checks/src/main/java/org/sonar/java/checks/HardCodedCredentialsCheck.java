@@ -71,9 +71,13 @@ public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isStringLiteral(ExpressionTree initializer) {
-    return initializer != null && initializer.is(Tree.Kind.STRING_LITERAL);
+    return initializer != null && initializer.is(Tree.Kind.STRING_LITERAL) && !isEmptyStringLiteral((LiteralTree) initializer);
   }
 
+  private boolean isEmptyStringLiteral(LiteralTree initializer){
+	  return "\"\"".equals(initializer.value());
+  }
+  
   private boolean isPasswordVariableName(IdentifierTree identifierTree) {
     return PASSWORD_VARIABLE_PATTERN.matcher(identifierTree.name()).find();
   }
