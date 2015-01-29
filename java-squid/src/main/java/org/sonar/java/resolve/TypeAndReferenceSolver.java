@@ -579,10 +579,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   private Type getTypeOfSymbol(Symbol symbol, Type callSite) {
-    //FIXME get rid of this method. All substitutions should happen in Resolve class
-    Type result = getTypeOfSymbol(symbol);
-    return resolve.resolveTypeSubstitution(result, callSite);
+    return resolve.resolveTypeSubstitution(getTypeOfSymbol(symbol), callSite);
   }
+  
   private Type getTypeOfSymbol(Symbol symbol) {
     if (symbol.kind < Symbol.ERRONEOUS) {
       return symbol.type;

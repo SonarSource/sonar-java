@@ -388,15 +388,7 @@ public class Resolve {
           if(best.isKind(Symbol.MTH)) {
             bestSoFar.type = resolveTypeSubstitution(((Type.MethodType) best.type).resultType, site);
             Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) best;
-            if(!typeParams.isEmpty() && methodSymbol.typeVariableTypes.size()==typeParams.size()) {
-              Map<Type.TypeVariableType, Type> substitution = Maps.newHashMap();
-              int i = 0;
-              for (Type.TypeVariableType typeVariableType : methodSymbol.typeVariableTypes) {
-                substitution.put(typeVariableType, typeParams.get(i));
-                i++;
-              }
-              bestSoFar.type = substituteTypeParameter(bestSoFar.type, substitution);
-            }
+            bestSoFar.type = handleTypeArguments(typeParams, bestSoFar.type, methodSymbol);
           }
         }
       }
@@ -420,6 +412,19 @@ public class Resolve {
       bestSoFar = findMethod(env, site, name, argTypes, typeParams, true);
     }
     return bestSoFar;
+  }
+
+  private Type handleTypeArguments(List<Type> typeParams, Type type, Symbol.MethodSymbol methodSymbol) {
+    if(!typeParams.isEmpty() && methodSymbol.typeVariableTypes.size()==typeParams.size()) {
+      Map<Type.TypeVariableType, Type> substitution = Maps.newHashMap();
+      int i = 0;
+      for (Type.TypeVariableType typeVariableType : methodSymbol.typeVariableTypes) {
+        substitution.put(typeVariableType, typeParams.get(i));
+        i++;
+      }
+      return substituteTypeParameter(type, substitution);
+    }
+    return type;
   }
 
   /**
