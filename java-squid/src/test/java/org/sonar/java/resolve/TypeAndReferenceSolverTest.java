@@ -396,7 +396,7 @@ public class TypeAndReferenceSolverTest {
   private Type typeOf(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
     when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
-    TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter), parametrizedTypeCache);
+    TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache), parametrizedTypeCache);
 
     String p = "class Test { void wrapperMethod() { " + input + "; } }";
     AstNode node = JavaParser.createParser(Charsets.UTF_8).parse(p);
@@ -410,7 +410,7 @@ public class TypeAndReferenceSolverTest {
   private Type typeOfExpression(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
     when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
-    TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter), parametrizedTypeCache);
+    TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache), parametrizedTypeCache);
 
     String p = "class Test { void wrapperMethod() { Object o = " + input + "; } }";
     AstNode node = JavaParser.createParser(Charsets.UTF_8).parse(p);

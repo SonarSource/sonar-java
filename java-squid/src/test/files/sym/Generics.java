@@ -37,4 +37,27 @@ class A<T, S extends CharSequence> {
     Object myObject = <String>method3();
   }
 
+  <Q> C<Q> method4() {
+    Object myObject = <String>method4();
+  }
+
+  class D<V> {
+    V field;
+  }
+
+  D<D<T>> ddt;
+  void ddt_method() {
+    Object obj = a1.ddt.field.field;
+  }
+
+  class E {
+    void method_of_e(){}
+  }
+
+  void e_method() {
+    A.<E>methodStatic().method_of_e();
+  }
+  static <T> T methodStatic(){};
+
 }
+

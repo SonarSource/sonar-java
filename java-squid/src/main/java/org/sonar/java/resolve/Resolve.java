@@ -20,8 +20,11 @@
 package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Routines for name resolution.
@@ -40,12 +43,14 @@ public class Resolve {
   private final SymbolNotFound symbolNotFound = new SymbolNotFound();
 
   private final BytecodeCompleter bytecodeCompleter;
+  private final ParametrizedTypeCache parametrizedTypeCache;
   private final Types types = new Types();
   private final Symbols symbols;
 
-  public Resolve(Symbols symbols, BytecodeCompleter bytecodeCompleter) {
+  public Resolve(Symbols symbols, BytecodeCompleter bytecodeCompleter, ParametrizedTypeCache parametrizedTypeCache) {
     this.symbols = symbols;
     this.bytecodeCompleter = bytecodeCompleter;
+    this.parametrizedTypeCache = parametrizedTypeCache;
   }
 
   private static Symbol.TypeSymbol superclassSymbol(Symbol.TypeSymbol c) {
@@ -65,12 +70,24 @@ public class Resolve {
     return new Scope.StaticStarImportScope(owner, bytecodeCompleter);
   }
 
-  private Type resolveTypeSubstitution(Type type, Type definition) {
+  public Type resolveTypeSubstitution(Type type, Type definition) {
     if(definition instanceof Type.ParametrizedTypeType) {
-      Type substitution = ((Type.ParametrizedTypeType) definition).typeSubstitution.get(type);
-      if(substitution != null) {
-        return substitution;
+      return substituteTypeParameter(type, ((Type.ParametrizedTypeType) definition).typeSubstitution);
+    }
+    return type;
+  }
+
+  private Type substituteTypeParameter(Type type, Map<Type.TypeVariableType, Type> substitution) {
+    if(substitution.get(type) != null) {
+      return substitution.get(type);
+    }
+    if(type instanceof Type.ParametrizedTypeType) {
+      Type.ParametrizedTypeType ptt = (Type.ParametrizedTypeType) type;
+      Map<Type.TypeVariableType, Type> newSubstitution = Maps.newHashMap();
+      for (Map.Entry<Type.TypeVariableType, Type> entry : ptt.typeSubstitution.entrySet()) {
+        newSubstitution.put(entry.getKey(), substituteTypeParameter(entry.getValue(), substitution));
       }
+      return parametrizedTypeCache.getParametrizedTypeType(ptt.rawType.getSymbol(), newSubstitution);
     }
     return type;
   }
@@ -331,11 +348,11 @@ public class Resolve {
   /**
    * Finds method matching given name and types of arguments.
    */
-  public Resolution findMethod(Env env, String name, List<Type> argTypes) {
+  public Resolution findMethod(Env env, String name, List<Type> argTypes, List<Type> typeParamTypes) {
     Resolution bestSoFar = unresolved();
     Env env1 = env;
     while (env1.outer() != null) {
-      Resolution res = findMethod(env1, env1.enclosingClass().getType(), name, argTypes);
+      Resolution res = findMethod(env1, env1.enclosingClass().getType(), name, argTypes, typeParamTypes);
       if (res.symbol.kind < Symbol.ERRONEOUS) {
         // symbol exists
         return res;
@@ -355,10 +372,13 @@ public class Resolve {
   }
 
   public Resolution findMethod(Env env, Type site, String name, List<Type> argTypes) {
-    return findMethod(env, site, name, argTypes, false);
+    return findMethod(env, site, name, argTypes, ImmutableList.<Type>of(), false);
+  }
+  public Resolution findMethod(Env env, Type site, String name, List<Type> argTypes, List<Type> typeParams) {
+    return findMethod(env, site, name, argTypes, typeParams, false);
   }
 
-  private Resolution findMethod(Env env, Type site, String name, List<Type> argTypes, boolean autoboxing) {
+  private Resolution findMethod(Env env, Type site, String name, List<Type> argTypes, List<Type> typeParams, boolean autoboxing) {
     Resolution bestSoFar = unresolved();
     for (Symbol symbol : site.getSymbol().members().lookup(name)) {
       if (symbol.kind == Symbol.MTH) {
@@ -367,27 +387,37 @@ public class Resolve {
           bestSoFar = Resolution.resolution(best);
           if(best.isKind(Symbol.MTH)) {
             bestSoFar.type = resolveTypeSubstitution(((Type.MethodType) best.type).resultType, site);
+            Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) best;
+            if(!typeParams.isEmpty() && methodSymbol.typeVariableTypes.size()==typeParams.size()) {
+              Map<Type.TypeVariableType, Type> substitution = Maps.newHashMap();
+              int i = 0;
+              for (Type.TypeVariableType typeVariableType : methodSymbol.typeVariableTypes) {
+                substitution.put(typeVariableType, typeParams.get(i));
+                i++;
+              }
+              bestSoFar.type = substituteTypeParameter(bestSoFar.type, substitution);
+            }
           }
         }
       }
     }
     //look in supertypes for more specialized method (overloading).
     if (site.getSymbol().getSuperclass() != null) {
-      Resolution method = findMethod(env, site.getSymbol().getSuperclass(), name, argTypes);
+      Resolution method = findMethod(env, site.getSymbol().getSuperclass(), name, argTypes, typeParams);
       Symbol best = selectBest(env, site.getSymbol(), argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;
       }
     }
     for (Type interfaceType : site.getSymbol().getInterfaces()) {
-      Resolution method = findMethod(env, interfaceType, name, argTypes);
+      Resolution method = findMethod(env, interfaceType, name, argTypes, typeParams);
       Symbol best = selectBest(env, site.getSymbol(), argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;
       }
     }
     if(bestSoFar.symbol.kind >= Symbol.ERRONEOUS && !autoboxing) {
-      bestSoFar = findMethod(env, site, name, argTypes, true);
+      bestSoFar = findMethod(env, site, name, argTypes, typeParams, true);
     }
     return bestSoFar;
   }
@@ -628,6 +658,12 @@ public class Resolve {
     return true;
   }
 
+  private Resolution unresolved() {
+    Resolution resolution = new Resolution(symbolNotFound);
+    resolution.type = symbols.unknownType;
+    return resolution;
+  }
+
   /**
    * Resolution holds the symbol resolved and its type in this context.
    * This is required to handle type substitution for generics.
@@ -661,12 +697,6 @@ public class Resolve {
       }
       return type;
     }
-  }
-
-  private Resolution unresolved() {
-    Resolution resolution = new Resolution(symbolNotFound);
-    resolution.type = symbols.unknownType;
-    return resolution;
   }
 
   static class Env {

@@ -88,6 +88,24 @@ public class SymbolTableTest {
     MethodTree method3 = (MethodTree) result.getTree(result.symbol("method3"));
     VariableTree variable = (VariableTree) method3.block().body().get(0);
     assertThat(((AbstractTypedTree)variable.initializer()).getSymbolType().getSymbol().getName()).isEqualTo("String");
+
+    MethodTree method4 = (MethodTree) result.getTree(result.symbol("method4"));
+    variable = (VariableTree) method4.block().body().get(0);
+    Type symbolType = ((AbstractTypedTree) variable.initializer()).getSymbolType();
+    assertThat(symbolType).isInstanceOf(Type.ParametrizedTypeType.class);
+    Type.ParametrizedTypeType ptt = (Type.ParametrizedTypeType) symbolType;
+    assertThat(ptt.typeSubstitution.values().iterator().next().getSymbol().getName()).isEqualTo("String");
+
+    assertThat(result.reference(58, 25)).isSameAs(result.symbol("method_of_e"));
+  }
+
+  @Test
+  public void recursive_type_substitution() {
+    Result result = Result.createFor("Generics");
+    MethodTree ddt_method = (MethodTree) result.getTree(result.symbol("ddt_method"));
+    VariableTree variable = (VariableTree) ddt_method.block().body().get(0);
+    Type symbolType = ((AbstractTypedTree) variable.initializer()).getSymbolType();
+    assertThat(symbolType.getSymbol().getName()).isEqualTo("String");
   }
 
   @Test

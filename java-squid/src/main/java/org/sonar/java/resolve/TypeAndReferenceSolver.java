@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
@@ -68,7 +69,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -190,24 +190,19 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     scan(tree.arguments());
     scan(tree.typeArguments());
     List<Type> argTypes = getParameterTypes(tree.arguments());
-    Resolve.Resolution resolution = resolveMethodSymbol(methodSelect, methodEnv, argTypes);
+    List<Type> typeParamTypes = Lists.newArrayList();
+    if(tree.typeArguments() != null ) {
+      typeParamTypes = getParameterTypes(tree.typeArguments());
+    }
+    Resolve.Resolution resolution = resolveMethodSymbol(methodSelect, methodEnv, argTypes, typeParamTypes);
     Symbol symbol = resolution.symbol();
     ((MethodInvocationTreeImpl) tree).setSymbol(symbol);
-    Type resolvedType = resolution.type();
-    //resolve type parameter (type arguments may be null in case of inference)
-    if(tree.typeArguments() != null && symbol.isKind(Symbol.MTH)) {
-      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-      int typeArgIndex = methodSymbol.typeVariableTypes.indexOf(resolvedType);
-      if(typeArgIndex >= 0) {
-        resolvedType = ((AbstractTypedTree) tree.typeArguments().get(typeArgIndex)).getSymbolType();
-      }
-    }
-    registerType(tree, resolvedType);
+    registerType(tree, resolution.type());
   }
 
-  private List<Type> getParameterTypes(List<ExpressionTree> args) {
+  private List<Type> getParameterTypes(List<? extends Tree> args) {
     ImmutableList.Builder<Type> builder = ImmutableList.builder();
-    for (ExpressionTree expressionTree : args) {
+    for (Tree expressionTree : args) {
       Type symbolType = ((AbstractTypedTree) expressionTree).getSymbolType();
       if (symbolType == null) {
         symbolType = symbols.unknownType;
@@ -217,7 +212,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     return builder.build();
   }
 
-  private Resolve.Resolution resolveMethodSymbol(Tree methodSelect, Resolve.Env methodEnv, List<Type> argTypes) {
+  private Resolve.Resolution resolveMethodSymbol(Tree methodSelect, Resolve.Env methodEnv, List<Type> argTypes, List<Type> typeParamTypes) {
     Resolve.Resolution resolution;
     IdentifierTree identifier;
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
@@ -225,10 +220,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       resolveAs(mset.expression(), Symbol.TYP | Symbol.VAR);
       Type type = getType(mset.expression());
       identifier = mset.identifier();
-      resolution = resolve.findMethod(methodEnv, type, identifier.name(), argTypes);
+      resolution = resolve.findMethod(methodEnv, type, identifier.name(), argTypes, typeParamTypes);
     } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
       identifier = (IdentifierTree) methodSelect;
-      resolution = resolve.findMethod(methodEnv, identifier.name(), argTypes);
+      resolution = resolve.findMethod(methodEnv, identifier.name(), argTypes, typeParamTypes);
     } else {
       throw new IllegalStateException("Method select in method invocation is not of the expected type " + methodSelect);
     }
@@ -262,6 +257,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           registerType(tree, symbols.classType);
           return null;
         }
+
         identifierTree = mse.identifier();
         resolvedSymbol = getSymbolOfMemberSelectExpression(mse, kind, resolveEnv);
         Type resolvedType = getTypeOfSymbol(resolvedSymbol, getType(mse.expression()));
@@ -301,7 +297,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
     Symbol site = resolveAs(mse.expression(), expressionKind, resolveEnv);
     if (site.kind == Symbol.VAR) {
-      return resolve.findIdentInType(resolveEnv, site.type.symbol, mse.identifier().name(), Symbol.VAR);
+      return resolve.findIdentInType(resolveEnv, getType(mse.expression()).symbol, mse.identifier().name(), Symbol.VAR);
     }
     if (site.kind == Symbol.TYP) {
       return resolve.findIdentInType(resolveEnv, (Symbol.TypeSymbol) site, mse.identifier().name(), kind);
@@ -585,13 +581,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   private Type getTypeOfSymbol(Symbol symbol, Type callSite) {
     //FIXME get rid of this method. All substitutions should happen in Resolve class
     Type result = getTypeOfSymbol(symbol);
-    if(callSite instanceof Type.ParametrizedTypeType) {
-      Type substitution = ((Type.ParametrizedTypeType) callSite).typeSubstitution.get(result);
-      if(substitution != null) {
-        result = substitution;
-      }
-    }
-    return result;
+    return resolve.resolveTypeSubstitution(result, callSite);
   }
   private Type getTypeOfSymbol(Symbol symbol) {
     if (symbol.kind < Symbol.ERRONEOUS) {

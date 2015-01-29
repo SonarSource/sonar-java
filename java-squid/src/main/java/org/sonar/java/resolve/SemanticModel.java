@@ -61,7 +61,7 @@ public class SemanticModel {
     semanticModel.bytecodeCompleter = bytecodeCompleter;
     semanticModel.createParentLink((JavaTree) tree);
     try {
-      Resolve resolve = new Resolve(symbols, bytecodeCompleter);
+      Resolve resolve = new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache);
       TypeAndReferenceSolver typeAndReferenceSolver = new TypeAndReferenceSolver(semanticModel, symbols, resolve, parametrizedTypeCache);
       new FirstPass(semanticModel, symbols, resolve, typeAndReferenceSolver).visitCompilationUnit(tree);
       typeAndReferenceSolver.visitCompilationUnit(tree);
