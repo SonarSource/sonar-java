@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.model.VisitorsBridge;
 
@@ -53,23 +54,24 @@ public class JavaFilesCacheTest {
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest#method_start_lines_mapping()V");
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A#method()V");
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest#resource_file_mapping()V");
-    assertThat(javaFilesCache.ignoredLines).hasSize(13);
-    assertThat(javaFilesCache.ignoredLines).contains(67);
-    assertThat(javaFilesCache.ignoredLines).contains(68);
-    assertThat(javaFilesCache.ignoredLines).contains(71);
-    assertThat(javaFilesCache.ignoredLines).contains(81);
-    assertThat(javaFilesCache.ignoredLinesForRules.get("foo")).hasSize(5).contains(75,76,77,78,79);
-    assertThat(javaFilesCache.ignoredLinesForRules.get("bar")).hasSize(5).contains(75,76,77,78,79);
+    assertThat(javaFilesCache.suppressWarningLines.keySet()).hasSize(13);
+    for (Integer line : Lists.newArrayList(68, 69, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83)) {
+      assertThat(javaFilesCache.suppressWarningLines.get(line)).contains("all");
+    }
+    for (Integer line : Lists.newArrayList(77, 78, 79, 80, 81)) {
+      assertThat(javaFilesCache.suppressWarningLines.get(line)).contains("foo", "bar");
+    }
   }
 
   static class A {
-    interface I{
+    interface I {
       @SuppressWarnings("all")
       void foo();
     }
+
     private void method() {
       @SuppressWarnings("all")
-      class B{
+      class B {
         Object obj = new I() {
 
           @SuppressWarnings({"foo", "bar"})
@@ -81,6 +83,7 @@ public class JavaFilesCacheTest {
       }
     }
   }
-  @interface plop{}
+  @interface plop {
+  }
 
 }

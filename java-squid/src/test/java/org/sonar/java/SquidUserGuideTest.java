@@ -20,9 +20,7 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
@@ -107,11 +105,6 @@ public class SquidUserGuideTest {
       @Override
       public ResourceMapping getResourceMapping() {
         return null;
-      }
-
-      @Override
-      public Map<String, Multimap<String, Integer>> getIgnoredLinesForRules() {
-        return Maps.newHashMap();
       }
 
       @Override

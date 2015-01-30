@@ -22,6 +22,10 @@ package org.sonar.java.bytecode;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.sonar.api.batch.SensorContext;
 import org.sonar.api.design.Dependency;
 import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.Project;
@@ -32,6 +36,7 @@ import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
+import org.sonar.java.filters.SuppressWarningsFilter;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -69,9 +74,19 @@ public class BytecodeVisitorsTest {
     File baseDir = new File("src/test/files/bytecode/src");
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null);
+    SensorContext sensorContext = mock(SensorContext.class);
+    when(sensorContext.getResource(Matchers.any(org.sonar.api.resources.File.class))).thenAnswer(new Answer<org.sonar.api.resources.File>() {
+      @Override
+      public org.sonar.api.resources.File answer(InvocationOnMock invocation) throws Throwable {
+        org.sonar.api.resources.File response = (org.sonar.api.resources.File) invocation.getArguments()[0];
+        response.setEffectiveKey("");
+        return response;
+      }
+    });
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, new SuppressWarningsFilter());
+    javaResourceLocator.setSensorContext(sensorContext);
     JavaSquid squid = new JavaSquid(conf, javaResourceLocator);
-    Collection<File> files = FileUtils.listFiles(baseDir, new String[]{"java"}, true);
+    Collection<File> files = FileUtils.listFiles(baseDir, new String[] {"java"}, true);
     File binDir = new File("src/test/files/bytecode/bin");
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
     graph = squid.getGraph();
@@ -171,7 +186,6 @@ public class BytecodeVisitorsTest {
   public void testFileDependencies() {
     assertThat(graph.getEdge(sourceFile, tagException).getUsage()).isEqualTo("USES");
   }
-
 
   private static Resource findResource(String resource) {
     Set<Resource> directories = resourceMapping.directories();
