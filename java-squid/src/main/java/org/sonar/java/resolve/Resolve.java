@@ -385,11 +385,9 @@ public class Resolve {
         Symbol best = selectBest(env, site.getSymbol(), argTypes, symbol, bestSoFar.symbol, autoboxing);
         if(best == symbol) {
           bestSoFar = Resolution.resolution(best);
-          if(best.isKind(Symbol.MTH)) {
-            bestSoFar.type = resolveTypeSubstitution(((Type.MethodType) best.type).resultType, site);
-            Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) best;
-            bestSoFar.type = handleTypeArguments(typeParams, bestSoFar.type, methodSymbol);
-          }
+          bestSoFar.type = resolveTypeSubstitution(((Type.MethodType) best.type).resultType, site);
+          Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) best;
+          bestSoFar.type = handleTypeArguments(typeParams, bestSoFar.type, methodSymbol);
         }
       }
     }
