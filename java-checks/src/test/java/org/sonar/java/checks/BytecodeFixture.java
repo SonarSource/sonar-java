@@ -54,10 +54,9 @@ public class BytecodeFixture {
     }
     Project project = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
-    SuppressWarningsFilter filter = mock(SuppressWarningsFilter.class);
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, filter);
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, new SuppressWarningsFilter());
     JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), javaResourceLocator, visitor);
     javaSquid.scan(Collections.singleton(file), Collections.<File>emptyList(), Collections.singleton(bytecodeFile));
 

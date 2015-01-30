@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.CoreProperties;
@@ -39,8 +38,6 @@ import org.sonar.plugins.java.bridges.DesignBridge;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 
-import java.util.Map;
-
 public class Bridges {
 
   private static final Logger LOG = LoggerFactory.getLogger(Bridges.class);
@@ -54,7 +51,7 @@ public class Bridges {
   }
 
   public void save(SensorContext context, Project project, Checks<CodeVisitor> checks, ResourceMapping resourceMapping,
-                   ResourcePerspectives resourcePerspectives, NoSonarFilter noSonarFilter, RulesProfile rulesProfile, Map<String, Multimap<String, Integer>> ignoredLinesForRules) {
+    ResourcePerspectives resourcePerspectives, NoSonarFilter noSonarFilter, RulesProfile rulesProfile) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     //Design
     if (!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
@@ -62,7 +59,7 @@ public class Bridges {
       designBridge.saveDesign(project);
     }
     //Report Issues
-    ChecksBridge checksBridge = new ChecksBridge(checks, resourcePerspectives, rulesProfile, ignoredLinesForRules);
+    ChecksBridge checksBridge = new ChecksBridge(checks, resourcePerspectives, rulesProfile);
     reportIssues(resourceMapping, noSonarFilter, checksBridge, project);
   }
 

@@ -67,11 +67,10 @@ public class BytecodeVisitorsTest {
     JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
     Project project = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
-    SuppressWarningsFilter swf = mock(SuppressWarningsFilter.class);
     File baseDir = new File("src/test/files/bytecode/src");
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, swf);
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, new SuppressWarningsFilter());
     JavaSquid squid = new JavaSquid(conf, javaResourceLocator);
     Collection<File> files = FileUtils.listFiles(baseDir, new String[] {"java"}, true);
     File binDir = new File("src/test/files/bytecode/bin");

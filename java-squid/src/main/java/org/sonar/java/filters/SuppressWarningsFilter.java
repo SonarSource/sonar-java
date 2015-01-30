@@ -21,6 +21,7 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.batch.IssueFilter;
 import org.sonar.api.issue.batch.IssueFilterChain;
@@ -48,28 +49,37 @@ public class SuppressWarningsFilter implements IssueFilter {
 
   @Override
   public boolean accept(Issue issue, IssueFilterChain chain) {
-    Integer line = issue.line();
-    RuleKey ruleKey = issue.ruleKey();
-    if (line != null) {
-      Multimap<Integer, String> suppressWarningsLines = suppressWarningsLinesByResource.get(issue.componentKey());
-      if (suppressWarningsLines != null && suppressWarningsLines.containsKey(line)) {
-        Collection<String> lineWarnings = suppressWarningsLines.get(line);
-        for (String warning : lineWarnings) {
-          if ((warningIsTheRuleName(warning, ruleKey) || "all".equals(warning)) && !"S1309".equals(ruleKey.rule())) {
-            return false;
-          }
-        }
+    for (String warning : getWarningsByLine(issue)) {
+      if (issueShouldNotBeReported(warning, issue)) {
+        return false;
       }
     }
     return chain.accept(issue);
   }
 
-  private boolean warningIsTheRuleName(String warning, RuleKey ruleKey) {
-    String[] parts = warning.split(":");
-    if (parts.length != 2) {
-      return false;
-    } else {
-      return parts[0].equals(ruleKey.repository()) && parts[1].equals(ruleKey.rule());
+  private Collection<String> getWarningsByLine(Issue issue) {
+    Integer line = issue.line();
+    String componentKey = issue.componentKey();
+    if (line != null && suppressWarningsLinesByResource.containsKey(componentKey)) {
+      return suppressWarningsLinesByResource.get(componentKey).get(line);
     }
+    return Sets.newTreeSet();
+  }
+
+  private boolean issueShouldNotBeReported(String warning, Issue issue) {
+    RuleKey ruleKey = issue.ruleKey();
+    return (warningIsRuleKey(warning, ruleKey) || "all".equals(warning)) && !isSuppressWarningRule(ruleKey);
+  }
+
+  private boolean warningIsRuleKey(String warning, RuleKey ruleKey) {
+    try {
+      return ruleKey.equals(RuleKey.parse(warning));
+    } catch (IllegalArgumentException e) {
+      return false;
+    }
+  }
+
+  private boolean isSuppressWarningRule(RuleKey ruleKey) {
+    return "S1309".equals(ruleKey.rule());
   }
 }

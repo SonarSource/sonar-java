@@ -24,7 +24,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -48,7 +47,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -58,10 +56,6 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   @VisibleForTesting
   Map<String, Integer> methodStartLines = Maps.newHashMap();
 
-  @VisibleForTesting
-  Set<Integer> ignoredLines = Sets.newHashSet();
-  @VisibleForTesting
-  Multimap<String, Integer> ignoredLinesForRules = HashMultimap.create();
   @VisibleForTesting
   Multimap<Integer, String> suppressWarningLines = HashMultimap.create();
 
@@ -83,6 +77,10 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     return suppressWarningLines;
   }
 
+  public boolean hasSuppressWarningLines() {
+    return !suppressWarningLines.isEmpty();
+  }
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
     JavaTree.CompilationUnitTreeImpl tree = (JavaTree.CompilationUnitTreeImpl) context.getTree();
@@ -91,7 +89,6 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     currentClassKey.clear();
     parent.clear();
     anonymousInnerClassCounter.clear();
-    ignoredLines.clear();
     suppressWarningLines.clear();
     scan(tree);
   }
@@ -200,13 +197,5 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
   private String trimQuotes(String value) {
     return value.substring(1, value.length() - 1);
-  }
-
-  public Set<Integer> ignoredLines() {
-    return ignoredLines;
-  }
-
-  public Multimap<String, Integer> ignoredLinesForRules() {
-    return ignoredLinesForRules;
   }
 }

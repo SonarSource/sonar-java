@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
@@ -109,21 +108,16 @@ public class SquidUserGuideTest {
       }
 
       @Override
-      public Map<String, Multimap<String, Integer>> getIgnoredLinesForRules() {
-        return Maps.newHashMap();
-      }
-
-      @Override
       public void scanFile(JavaFileScannerContext context) {
         JavaFilesCache javaFilesCache = new JavaFilesCache();
         javaFilesCache.scanFile(context);
-        for (String key : javaFilesCache.resourcesCache.keySet()) {
+        for (String key : javaFilesCache.resourcesCache.keySet()){
           sourceFileCache.put(key, context.getFileKey());
         }
       }
     };
     squid = new JavaSquid(conf, null, measurer, javaResourceLocator, new CodeVisitor[0]);
-    Collection<File> files = FileUtils.listFiles(srcDir, new String[] {"java"}, true);
+    Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 
@@ -134,8 +128,8 @@ public class SquidUserGuideTest {
     verify(context, atLeastOnce()).saveMeasure(files.capture(), captor.capture());
     Map<String, Double> metrics = new HashMap<String, Double>();
     for (Measure measure : captor.getAllValues()) {
-      if (measure.getValue() != null) {
-        if (metrics.get(measure.getMetricKey()) == null) {
+      if(measure.getValue() != null ){
+        if(metrics.get(measure.getMetricKey())==null) {
           metrics.put(measure.getMetricKey(), measure.getValue());
         } else {
           metrics.put(measure.getMetricKey(), metrics.get(measure.getMetricKey()) + measure.getValue());
@@ -163,9 +157,9 @@ public class SquidUserGuideTest {
     SourceCode collectionsPackage = squid.search("org/apache/commons/collections");
     SourceCode bufferPackage = squid.search("org/apache/commons/collections/buffer");
     SourceCode bidimapPackage = squid.search("org/apache/commons/collections/bidimap");
-    // assertThat(squid.getDependency(bidimapPackage, collectionsPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
-    // assertThat(squid.getDependency(collectionsPackage, bufferPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
-    // assertThat(squid.getDependency(collectionsPackage, bufferPackage).getRootEdges().size()).isEqualTo(7);
+//    assertThat(squid.getDependency(bidimapPackage, collectionsPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+//    assertThat(squid.getDependency(collectionsPackage, bufferPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+//    assertThat(squid.getDependency(collectionsPackage, bufferPackage).getRootEdges().size()).isEqualTo(7);
   }
 
 }
