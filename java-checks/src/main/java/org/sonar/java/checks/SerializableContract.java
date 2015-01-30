@@ -41,7 +41,7 @@ public final class SerializableContract {
   private SerializableContract() {
   }
 
-  protected static boolean methodMatch(AsmMethod method) {
+  static boolean methodMatch(AsmMethod method) {
     return SERIALIZABLE_CONTRACT_METHODS.contains(method.getName());
   }
 
