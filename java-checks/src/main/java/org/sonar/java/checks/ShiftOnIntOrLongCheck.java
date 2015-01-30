@@ -56,6 +56,9 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
     if (tree.is(Kind.LEFT_SHIFT, Kind.RIGHT_SHIFT)) {
       BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
+      if (isZeroMaskShift(binaryExpressionTree)) {
+        return;
+      }
       identifier = getIdentifierName(binaryExpressionTree.leftOperand());
       shift = binaryExpressionTree.rightOperand();
     } else {
@@ -71,13 +74,33 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
     if (shift.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
       int base = getBase(tree);
-      long numberBits = sign * Long.decode(((LiteralTree) shift).value());
+      long numberBits = sign * trimLongSuffix(((LiteralTree) shift).value());
       long reducedNumberBits = numberBits % base;
       String message = getMessage(numberBits, reducedNumberBits, base, identifier);
       if (message != null) {
         addIssue(tree, message);
       }
     }
+  }
+
+  private boolean isZeroMaskShift(BinaryExpressionTree binaryExpressionTree) {
+    return isLiteralValue(binaryExpressionTree.leftOperand(), 1) && isLiteralValue(binaryExpressionTree.rightOperand(), 0);
+  }
+
+  private boolean isLiteralValue(ExpressionTree tree, long value) {
+    if (tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
+      return trimLongSuffix(((LiteralTree) tree).value()) == value;
+    }
+    return false;
+  }
+
+  private long trimLongSuffix(String longString) {
+    int lastCharPosition = longString.length() - 1;
+    char lastChar = longString.charAt(lastCharPosition);
+    if (lastChar == 'L' || lastChar == 'l') {
+      longString = longString.substring(0, lastCharPosition);
+    }
+    return Long.decode(longString);
   }
 
   private String getMessage(long numberBits, long reducedNumberBits, int base, String identifier) {

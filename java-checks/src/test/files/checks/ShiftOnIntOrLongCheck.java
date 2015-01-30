@@ -72,6 +72,13 @@ class Shifts {
     c = a >> 0x0000; // Noncompliant
     return c;
   }
+  
+  public void cornerCase() {
+    int a;
+    a = 1 << 0; // Compliant
+    a = 1 << 1; // Compliant
+    a = 1 << 1L;
+  }
 
   public int returnInt() {
     return 0;
