@@ -106,7 +106,7 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
   private String getMessage(long numberBits, long reducedNumberBits, int base, String identifier) {
     if (reducedNumberBits == 0L) {
-      return MessageFormat.format("Remove this useless shift (multiple of {0})", base);
+      return "Remove this useless shift";
     } else if (tooManyBits(numberBits, base)) {
       if (base == 32) {
         return MessageFormat.format(
