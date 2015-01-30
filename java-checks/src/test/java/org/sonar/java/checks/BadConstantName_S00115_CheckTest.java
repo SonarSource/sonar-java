@@ -40,6 +40,7 @@ public class BadConstantName_S00115_CheckTest {
         .next().atLine(19)
         .next().atLine(24)
         .next().atLine(29)
+        .next().atLine(31)
         .noMore();
   }
 

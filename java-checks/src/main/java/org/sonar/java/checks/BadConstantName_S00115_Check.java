@@ -85,7 +85,7 @@ public class BadConstantName_S00115_Check extends BaseTreeVisitor implements Jav
   }
 
   private boolean isConstantType(Type symbolType) {
-    return symbolType.isPrimitive() || symbolType.is("java.lang.String");
+    return symbolType.isPrimitive() || symbolType.is("java.lang.String") || symbolType.isPrimitiveWrapper();
   }
 
   private void checkName(VariableTree variableTree) {

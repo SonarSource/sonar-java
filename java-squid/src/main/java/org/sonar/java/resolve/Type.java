@@ -117,6 +117,20 @@ public class Type {
     return tag <= BOOLEAN;
   }
 
+  public boolean isPrimitiveWrapper() {
+    if(!isTagged(CLASS)) {
+      return false;
+    }
+    return is("java.lang.Byte") ||
+        is("java.lang.Character") ||
+        is("java.lang.Short") ||
+        is("java.lang.Integer") ||
+        is("java.lang.Long") ||
+        is("java.lang.Float") ||
+        is("java.lang.Double") ||
+        is("java.lang.Boolean");
+  }
+
   @Override
   public String toString() {
     return symbol == null ? "" : symbol.toString();

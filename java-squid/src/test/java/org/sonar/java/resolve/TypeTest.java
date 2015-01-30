@@ -123,7 +123,14 @@ public class TypeTest {
     assertThat(typeVariableType.isSubtypeOf("java.lang.Object")).isTrue();
     assertThat(typeVariableType.is("java.lang.Object")).isFalse();
     assertThat(typeVariableType.isSubtypeOf("java.lang.CharSequence")).isFalse();
+  }
 
-
+  @Test
+  public void is_primitive_wrapper() {
+    for (Type wrapper : symbols.boxedTypes.values()) {
+      assertThat(wrapper.isPrimitiveWrapper()).isTrue();
+    }
+    assertThat(symbols.objectType.isPrimitiveWrapper()).isFalse();
+    assertThat(symbols.intType.isPrimitiveWrapper()).isFalse();
   }
 }
