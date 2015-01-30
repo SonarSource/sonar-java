@@ -27,6 +27,6 @@ class BadConstantName {
   }
 
   public static final String my_string = 0; //Non-Compliant: string is an immutable object
-  public static final String MY_STRING = 0; //Non-Compliant: string is an immutable object
+  public static final String MY_STRING = 0; 
 
 }
