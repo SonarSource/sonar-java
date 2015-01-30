@@ -74,7 +74,7 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
     if (shift.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
       int base = getBase(tree);
-      long numberBits = sign * trimLongSuffix(((LiteralTree) shift).value());
+      long numberBits = sign * Long.decode(trimLongSuffix(((LiteralTree) shift).value()));
       long reducedNumberBits = numberBits % base;
       String message = getMessage(numberBits, reducedNumberBits, base, identifier);
       if (message != null) {
@@ -89,18 +89,19 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
   private boolean isLiteralValue(ExpressionTree tree, long value) {
     if (tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      return trimLongSuffix(((LiteralTree) tree).value()) == value;
+      return Long.decode(trimLongSuffix(((LiteralTree) tree).value())) == value;
     }
     return false;
   }
 
-  private long trimLongSuffix(String longString) {
+  private String trimLongSuffix(String longString) {
     int lastCharPosition = longString.length() - 1;
     char lastChar = longString.charAt(lastCharPosition);
+    String value = longString;
     if (lastChar == 'L' || lastChar == 'l') {
-      longString = longString.substring(0, lastCharPosition);
+      value = longString.substring(0, lastCharPosition);
     }
-    return Long.decode(longString);
+    return value;
   }
 
   private String getMessage(long numberBits, long reducedNumberBits, int base, String identifier) {

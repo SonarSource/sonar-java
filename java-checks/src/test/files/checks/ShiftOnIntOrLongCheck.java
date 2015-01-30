@@ -77,7 +77,8 @@ class Shifts {
     int a;
     a = 1 << 0; // Compliant
     a = 1 << 1; // Compliant
-    a = 1 << 1L;
+    a = 1 << 1L; // Compliant
+    a = 1 << 1l; // Compliant
   }
 
   public int returnInt() {
