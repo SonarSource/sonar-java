@@ -34,7 +34,7 @@ import java.util.List;
 
 @Rule(
   key = "S2333",
-  priority = Priority.MAJOR,
+  priority = Priority.MINOR,
   tags = {"clumsy"})
 public class RedundantModifierCheck extends SubscriptionBaseVisitor {
 
