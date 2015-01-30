@@ -19,55 +19,62 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.BooleanUtils;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
+import java.util.List;
+
 @Rule(
-    key = WildcardReturnParameterTypeCheck.RULE_KEY,
+    key = "S1452",
     priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
-public class WildcardReturnParameterTypeCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-
-  public static final String RULE_KEY = "S1452";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-  private JavaFileScannerContext context;
-  private boolean checkingReturnType;
+public class WildcardReturnParameterTypeCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    checkingReturnType = false;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitMethod(MethodTree tree) {
-    if (!isOverriding(tree)) {
-      checkingReturnType = true;
-      scan(tree.returnType());
-      checkingReturnType = false;
+  public void visitNode(Tree tree) {
+    MethodTree methodTree = (MethodTree) tree;
+    if (!isOverriding(methodTree)) {
+      methodTree.returnType().accept(new CheckWildcard());
     }
-    super.visitMethod(tree);
   }
 
   private boolean isOverriding(MethodTree tree) {
     return BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
   }
 
-  @Override
-  public void visitWildcard(WildcardTree tree) {
-    if (checkingReturnType) {
-      context.addIssue(tree, ruleKey, "Remove usage of generic wildcard type.");
+  private class CheckWildcard extends BaseTreeVisitor {
+
+    private boolean classType = false;
+
+    @Override
+    public void visitParameterizedType(ParameterizedTypeTree tree) {
+      classType = ((AbstractTypedTree)tree.type()).getSymbolType().is("java.lang.Class");
+      super.visitParameterizedType(tree);
+      classType = false;
+    }
+
+    @Override
+    public void visitWildcard(WildcardTree tree) {
+      if(!classType) {
+        addIssue(tree, "Remove usage of generic wildcard type.");
+      }
     }
   }
+
+
 }

@@ -37,6 +37,7 @@ public class WildcardReturnParameterTypeCheckTest {
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(8)
       .next().atLine(16)
+      .next().atLine(26)
       .noMore();
   }
 }

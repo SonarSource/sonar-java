@@ -18,8 +18,11 @@ class Animal {
   }
 
   class InnerDog extends Animal {
-    public List<? extends Animal> getAnimals() { //OK method is overriden
+    public List<? extends Animal> getAnimals() { // OK method is overriden
       return super.getAnimals();
-    }
+   }
+
+   public List<Class<?>> foo() {} // OK Class is ignored
+   public List<? extends Class<String>> bar() {} // NOK wildcard is not in Class
   }
 }
