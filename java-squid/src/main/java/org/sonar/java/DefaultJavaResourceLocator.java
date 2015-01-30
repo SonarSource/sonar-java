@@ -136,8 +136,9 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
       }
     }
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
-    if (javaFilesCache.hasSuppressWarningLines()) {
-      suppressWarningsFilter.addComponent(sensorContext.getResource(currentResource).getEffectiveKey(), javaFilesCache.getSuppressWarningLines());
+    org.sonar.api.resources.File indexedResource = sensorContext.getResource(currentResource);
+    if (indexedResource != null && javaFilesCache.hasSuppressWarningLines()) {
+      suppressWarningsFilter.addComponent(indexedResource.getEffectiveKey(), javaFilesCache.getSuppressWarningLines());
     }
   }
 }
