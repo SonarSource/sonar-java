@@ -66,10 +66,8 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
     if (tree.simpleName() != null) {
       createSymbol(tree, tree.simpleName());
     }
-    if(tree.typeParameters() != null) {
-      for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-        createSymbol(typeParameterTree, typeParameterTree.identifier());
-      }
+    for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
+      createSymbol(typeParameterTree, typeParameterTree.identifier());
     }
     super.visitClass(tree);
   }

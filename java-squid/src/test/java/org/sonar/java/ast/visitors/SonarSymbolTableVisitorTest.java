@@ -67,6 +67,7 @@ public class SonarSymbolTableVisitorTest {
     verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(6, 11)));
     // Example class declaration
     verify(symboltableBuilder).newSymbol(offset(4, 7), offset(4, 14));
+    verify(symboltableBuilder).newSymbol(offset(4, 15), offset(4, 16));
     // list field
     verify(symboltableBuilder).newSymbol(offset(5, 16), offset(5, 20));
     verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(7, 10)));
@@ -77,6 +78,11 @@ public class SonarSymbolTableVisitorTest {
     verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(7, 17)));
     // method
     verify(symboltableBuilder).newSymbol(offset(9, 7), offset(9, 13));
+    //label
+    verify(symboltableBuilder).newSymbol(offset(10, 5), offset(10, 10));
+    //Enum
+    verify(symboltableBuilder).newSymbol(offset(13, 8), offset(13, 14));
+    verify(symboltableBuilder).newSymbol(offset(14, 5), offset(14, 12));
     verify(symboltableBuilder).build();
     verifyNoMoreInteractions(symboltableBuilder);
   }
