@@ -20,16 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -56,7 +55,7 @@ public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (isCompareToDeclaration(methodTree)) {
-      methodTree.accept(new ReturnStatementVisitor(methodTree));
+      methodTree.accept(new ReturnStatementVisitor());
     }
   }
 
@@ -79,18 +78,11 @@ public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
 
   private class ReturnStatementVisitor extends BaseTreeVisitor {
 
-    private final AstNode callingMethod;
-
-    public ReturnStatementVisitor(MethodTree callingMethod) {
-      this.callingMethod = ((MethodTreeImpl) callingMethod).getAstNode();
-    }
-
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
-      if (isWithinCallingMethodBody(tree) && returnsIntegerMinValue(tree.expression())) {
+      if (returnsIntegerMinValue(tree.expression())) {
         addIssue(tree, "Simply return -1");
       }
-      super.visitReturnStatement(tree);
     }
 
     private boolean returnsIntegerMinValue(ExpressionTree expressionTree) {
@@ -103,8 +95,9 @@ public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
       return false;
     }
 
-    private boolean isWithinCallingMethodBody(ReturnStatementTree tree) {
-      return callingMethod.equals(((ReturnStatementTreeImpl) tree).getFirstAncestor(callingMethod.getType()));
+    @Override
+    public void visitClass(ClassTree tree) {
+      // Do not visit inner classes as methods of inner class will be visited by main visitor
     }
   }
 }

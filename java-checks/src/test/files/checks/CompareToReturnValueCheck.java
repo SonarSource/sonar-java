@@ -73,3 +73,4 @@ class G implements Comparable<G> {
     return Short.MAX_VALUE; // Compliant
   }
 }
+
