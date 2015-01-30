@@ -115,7 +115,7 @@ public class SurefireStaxHandler implements XmlStreamHandler {
     // hardcoded to Locale.ENGLISH see http://jira.codehaus.org/browse/SONAR-602
     try {
       Double time = ParsingUtils.parseNumber(testCaseCursor.getAttrValue("time"), Locale.ENGLISH);
-      return !Double.isNaN(time) ? new Double(ParsingUtils.scaleValue(time * 1000, 3)).longValue() : 0L;
+      return !Double.isNaN(time) ? (long) ParsingUtils.scaleValue(time * 1000, 3) : 0L;
     } catch (ParseException e) {
       throw new XMLStreamException(e);
     }
