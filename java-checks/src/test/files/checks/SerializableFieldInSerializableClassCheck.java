@@ -23,3 +23,7 @@ interface MyCustomInterface extends Serializable {}
 class Person3 implements MyCustomInterface {
   Address address; //Non compliant
 }
+class Person4<T extends Serializable, S extends Address> implements MyCustomInterface {
+  T t; //Compliant
+  S s; //NonCompliant
+}

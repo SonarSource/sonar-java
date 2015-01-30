@@ -113,7 +113,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
       }
       return hasSupertypeSerializable((Type.ClassType) type);
     }
-    //TODO if type is TypeVar
+    //TODO handle typeVar subtyping.
     return false;
   }
 
