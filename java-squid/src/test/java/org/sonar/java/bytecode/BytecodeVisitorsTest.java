@@ -22,6 +22,10 @@ package org.sonar.java.bytecode;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.sonar.api.batch.SensorContext;
 import org.sonar.api.design.Dependency;
 import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.Project;
@@ -70,7 +74,17 @@ public class BytecodeVisitorsTest {
     File baseDir = new File("src/test/files/bytecode/src");
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
+    SensorContext sensorContext = mock(SensorContext.class);
+    when(sensorContext.getResource(Matchers.any(org.sonar.api.resources.File.class))).thenAnswer(new Answer<org.sonar.api.resources.File>() {
+      @Override
+      public org.sonar.api.resources.File answer(InvocationOnMock invocation) throws Throwable {
+        org.sonar.api.resources.File response = (org.sonar.api.resources.File) invocation.getArguments()[0];
+        response.setEffectiveKey("");
+        return response;
+      }
+    });
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, new SuppressWarningsFilter());
+    javaResourceLocator.setSensorContext(sensorContext);
     JavaSquid squid = new JavaSquid(conf, javaResourceLocator);
     Collection<File> files = FileUtils.listFiles(baseDir, new String[] {"java"}, true);
     File binDir = new File("src/test/files/bytecode/bin");

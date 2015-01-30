@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
@@ -50,7 +51,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   private final Map<String, String> sourceFileByClass;
   private final Map<String, Integer> methodStartLines;
   private final ResourceMapping resourceMapping;
-  SensorContext sensorContext;
+  private SensorContext sensorContext;
 
   public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath, SuppressWarningsFilter suppressWarningsFilter) {
     this.project = project;
@@ -120,6 +121,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    Preconditions.checkNotNull(sensorContext);
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     javaFilesCache.scanFile(context);
     org.sonar.api.resources.File currentResource = org.sonar.api.resources.File.fromIOFile(context.getFile(), project);
@@ -134,7 +136,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
       }
     }
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
-    if (sensorContext != null && javaFilesCache.hasSuppressWarningLines()) {
+    if (javaFilesCache.hasSuppressWarningLines()) {
       suppressWarningsFilter.addComponent(sensorContext.getResource(currentResource).getEffectiveKey(), javaFilesCache.getSuppressWarningLines());
     }
   }

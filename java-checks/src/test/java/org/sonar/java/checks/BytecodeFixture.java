@@ -19,6 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import org.mockito.Matchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.sonar.api.batch.SensorContext;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.java.DefaultJavaResourceLocator;
@@ -52,11 +56,21 @@ public class BytecodeFixture {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file.getName() + "' not found.");
     }
+    SensorContext sensorContext = mock(SensorContext.class);
+    when(sensorContext.getResource(Matchers.any(org.sonar.api.resources.File.class))).thenAnswer(new Answer<org.sonar.api.resources.File>() {
+      @Override
+      public org.sonar.api.resources.File answer(InvocationOnMock invocation) throws Throwable {
+        org.sonar.api.resources.File response = (org.sonar.api.resources.File) invocation.getArguments()[0];
+        response.setEffectiveKey("");
+        return response;
+      }
+    });
     Project project = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     when(project.getFileSystem()).thenReturn(pfs);
     when(pfs.getBasedir()).thenReturn(baseDir);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, new SuppressWarningsFilter());
+    javaResourceLocator.setSensorContext(sensorContext);
     JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), javaResourceLocator, visitor);
     javaSquid.scan(Collections.singleton(file), Collections.<File>emptyList(), Collections.singleton(bytecodeFile));
 
@@ -66,5 +80,4 @@ public class BytecodeFixture {
     }
     return (SourceFile) sources.iterator().next();
   }
-
 }
