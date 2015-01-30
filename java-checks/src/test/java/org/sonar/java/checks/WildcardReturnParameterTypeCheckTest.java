@@ -35,8 +35,8 @@ public class WildcardReturnParameterTypeCheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/WildcardReturnParameterTypeCheck.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3)
-      .next().atLine(11)
+      .next().atLine(8)
+      .next().atLine(16)
       .noMore();
   }
 }

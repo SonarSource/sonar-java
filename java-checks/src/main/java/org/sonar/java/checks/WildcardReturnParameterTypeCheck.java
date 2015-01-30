@@ -19,10 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -30,8 +32,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 @Rule(
-  key = WildcardReturnParameterTypeCheck.RULE_KEY,
-  priority = Priority.MAJOR)
+    key = WildcardReturnParameterTypeCheck.RULE_KEY,
+    priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class WildcardReturnParameterTypeCheck extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -39,26 +41,32 @@ public class WildcardReturnParameterTypeCheck extends BaseTreeVisitor implements
   public static final String RULE_KEY = "S1452";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private JavaFileScannerContext context;
-  private boolean inReturnStatement;
+  private boolean checkingReturnType;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    inReturnStatement = false;
+    checkingReturnType = false;
     scan(context.getTree());
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
-    inReturnStatement = true;
-    scan(tree.returnType());
-    inReturnStatement = false;
+    if (!isOverriding(tree)) {
+      checkingReturnType = true;
+      scan(tree.returnType());
+      checkingReturnType = false;
+    }
     super.visitMethod(tree);
+  }
+
+  private boolean isOverriding(MethodTree tree) {
+    return BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
   }
 
   @Override
   public void visitWildcard(WildcardTree tree) {
-    if (inReturnStatement) {
+    if (checkingReturnType) {
       context.addIssue(tree, ruleKey, "Remove usage of generic wildcard type.");
     }
   }
