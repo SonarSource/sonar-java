@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
@@ -32,7 +33,8 @@ public class InterfaceStaticMutableMemberCheckTest {
   @Test
   public void test() {
     InterfaceStaticMutableMemberCheck check = new InterfaceStaticMutableMemberCheck();
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/InterfaceStaticMutableMemberCheck.java"), new VisitorsBridge(check));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/InterfaceStaticMutableMemberCheck.java"),
+        new VisitorsBridge(check, Lists.newArrayList(new File("target/test-classes"))));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(6).withMessage("Move \"MY_ARRAY\" to a class and lower its visibility")
       .next().atLine(7).withMessage("Move \"MY_COLLECTION\" to a class and lower its visibility")

@@ -71,6 +71,7 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isDateOrCollection(Type variableSymbolType) {
-    return variableSymbolType.is("java.util.Date") || variableSymbolType.isSubtypeOf("java.util.Collection");
+    return variableSymbolType.is("java.util.Date") ||
+        (variableSymbolType.isSubtypeOf("java.util.Collection") && !variableSymbolType.isSubtypeOf("com.google.common.collect.ImmutableCollection"));
   }
 }

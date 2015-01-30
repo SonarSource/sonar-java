@@ -23,6 +23,7 @@ interface A {
   public C myField = null; // Compliant
 
   public void doSomething(); // not a field
+  public static MyImmutableCollection<String> immutableList; //Compliant : immutable collection
 }
 
 class B<T> {
@@ -30,3 +31,5 @@ class B<T> {
 
 class C {
 }
+
+class MyImmutableCollection extends com.google.common.collect.ImmutableCollection {}
