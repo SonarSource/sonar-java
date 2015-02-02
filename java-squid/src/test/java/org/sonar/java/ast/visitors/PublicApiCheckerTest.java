@@ -47,24 +47,24 @@ public class PublicApiCheckerTest {
   @Before
   public void setUp() {
     Parser p = JavaParser.createParser(Charsets.UTF_8);
-    publicApiChecker = PublicApiChecker.newPublicApiCheckerAccessorsHandledAsMethods();
+    publicApiChecker = PublicApiChecker.newInstanceWithAccessorsHandledAsMethods();
     cut = (CompilationUnitTree) p.parse(new File("src/test/files/ast/PublicApi.java"));
   }
 
   @Test
   public void isPublicApiAccessorsHandledAsMethods() {
-    SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker);
+    SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker, false);
     visitor.scanTree(cut);
   }
 
   @Test
   public void isPublicApiAccessorsSeparatedFromMethods() {
-    publicApiChecker = PublicApiChecker.newPublicApiCheckerAccessorsSeparatedFromMethods();
-    SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker);
+    publicApiChecker = PublicApiChecker.newInstanceWithAccessorsSeparatedFromMethods();
+    SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker, true);
     visitor.scanTree(cut);
   }
 
-  private SubscriptionVisitor getPublicApiVisitor(final PublicApiChecker publicApiChecker) {
+  private SubscriptionVisitor getPublicApiVisitor(final PublicApiChecker publicApiChecker, final boolean separateAccessorsFromMethods) {
     return new SubscriptionVisitor() {
 
       private final Deque<ClassTree> classTrees = Lists.newLinkedList();
@@ -89,7 +89,7 @@ public class PublicApiCheckerTest {
           MethodTree methodTree = (MethodTree) tree;
           methodTrees.push(methodTree);
           String name = methodTree.simpleName().name();
-          if (publicApiChecker.separatesAccessorsFromMethods()) {
+          if (separateAccessorsFromMethods) {
             assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public"));
           } else {
             // getters and setters are included in the public API only if checker does not ignore accessors

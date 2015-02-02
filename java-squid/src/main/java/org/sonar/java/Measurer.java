@@ -90,9 +90,9 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     complexityInMethods = 0;
     accessors = 0;
     classes = 0;
-    PublicApiChecker publicApiChecker = PublicApiChecker.newPublicApiCheckerAccessorsHandledAsMethods();
+    PublicApiChecker publicApiChecker = PublicApiChecker.newInstanceWithAccessorsHandledAsMethods();
     if (separateAccessorsFromMethods) {
-      publicApiChecker = PublicApiChecker.newPublicApiCheckerAccessorsSeparatedFromMethods();
+      publicApiChecker = PublicApiChecker.newInstanceWithAccessorsSeparatedFromMethods();
     }
     publicApiChecker.scan(context.getTree());
     methodComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, LIMITS_COMPLEXITY_METHODS);

@@ -79,11 +79,11 @@ public class PublicApiChecker extends BaseTreeVisitor {
   private boolean separateAccessorsFromMethods;
   private final AccessorVisitor accessorVisitor;
 
-  public static PublicApiChecker newPublicApiCheckerAccessorsHandledAsMethods() {
+  public static PublicApiChecker newInstanceWithAccessorsHandledAsMethods() {
     return new PublicApiChecker(false);
   }
 
-  public static PublicApiChecker newPublicApiCheckerAccessorsSeparatedFromMethods() {
+  public static PublicApiChecker newInstanceWithAccessorsSeparatedFromMethods() {
     return new PublicApiChecker(true);
   }
 
@@ -298,9 +298,4 @@ public class PublicApiChecker extends BaseTreeVisitor {
     }
     return ParsingUtils.scaleValue(documentedPublicApi / publicApi * 100, 2);
   }
-
-  public boolean separatesAccessorsFromMethods() {
-    return separateAccessorsFromMethods;
-  }
-
 }
