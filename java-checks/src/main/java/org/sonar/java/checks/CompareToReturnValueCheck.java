@@ -60,10 +60,10 @@ public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isCompareToDeclaration(MethodTree tree) {
-    return isCalledCompareTo(tree) && hasOneNonPrimitiveParameter(tree) && returnsInt(tree);
+    return isNamedCompareTo(tree) && hasOneNonPrimitiveParameter(tree) && returnsInt(tree);
   }
 
-  private boolean isCalledCompareTo(MethodTree tree) {
+  private boolean isNamedCompareTo(MethodTree tree) {
     return "compareTo".equals(tree.simpleName().name());
   }
 
