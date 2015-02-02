@@ -36,7 +36,9 @@ import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
+import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 import org.sonar.api.utils.SonarException;
@@ -59,6 +61,7 @@ public class JavaClasspath implements BatchExtension {
   private List<File> binaries;
   private List<File> elements;
   private boolean validateLibraries;
+  private boolean hasJavaSources;
 
   public JavaClasspath(Project project, Settings settings, FileSystem fileSystem) {
     this(project, settings, fileSystem, null);
@@ -66,6 +69,9 @@ public class JavaClasspath implements BatchExtension {
 
   public JavaClasspath(Project project, Settings settings, FileSystem fileSystem, @Nullable MavenProject pom) {
     validateLibraries = project.getModules().isEmpty();
+    FilePredicates predicates = fileSystem.predicates();
+    //FIXME: call to filesystem before sensor should be removed.
+    hasJavaSources = fileSystem.hasFiles(predicates.and(predicates.hasLanguage("java"), predicates.hasType(InputFile.Type.MAIN)));
     binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
     List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
     boolean useDeprecatedProperties = binaries.isEmpty() && libraries.isEmpty();
@@ -114,7 +120,7 @@ public class JavaClasspath implements BatchExtension {
       for (String pathPattern : fileNames) {
         boolean isLibraryProperty = property.endsWith("libraries");
         List<File> libraryFilesForPattern = getFilesForPattern(baseDir, pathPattern, isLibraryProperty);
-        if (validateLibraries && libraryFilesForPattern.isEmpty()) {
+        if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaSources) {
           LOG.error("Invalid value for " + property);
           String message = "No files nor directories matching '" + pathPattern + "'";
           throw new IllegalStateException(message);
