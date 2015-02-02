@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.resolve.AnnotationInstance;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -55,11 +57,21 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
   public void visitAnnotation(AnnotationTree annotationTree) {
     if (isArrayInitialized(annotationTree)) {
       NewArrayTree arrayTree = (NewArrayTree) annotationTree.arguments().get(0);
-      if (isAllSameAnnotation(arrayTree.initializers())) {
+      if (isAllSameAnnotation(arrayTree.initializers()) && isAnnotationRepeatable(arrayTree.initializers().get(0))) {
         context.addIssue(annotationTree, ruleKey, "Remove the '" + getAnnotationName(annotationTree) + "' wrapper from this annotation group");
       }
     }
     super.visitAnnotation(annotationTree);
+  }
+
+  private boolean isAnnotationRepeatable(ExpressionTree expressionTree) {
+    List<AnnotationInstance> annotations = ((AbstractTypedTree) expressionTree).getSymbolType().getSymbol().metadata().annotations();
+    for (AnnotationInstance annotation : annotations) {
+      if(annotation.isTyped("java.lang.annotation.Repeatable")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private boolean isAllSameAnnotation(List<ExpressionTree> initializers) {

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
@@ -33,10 +34,10 @@ public class RepeatAnnotationCheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RepeatAnnotationCheck.java"), new VisitorsBridge(check));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RepeatAnnotationCheck.java"),
+        new VisitorsBridge(check, Lists.newArrayList(new File("target/test-classes"))));
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(2).withMessage("Remove the 'SomeAnnotations' wrapper from this annotation group")
-      .next().atLine(16).withMessage("Remove the 'some.pck.SomeAnnotations' wrapper from this annotation group")
       .noMore();
   }
 
