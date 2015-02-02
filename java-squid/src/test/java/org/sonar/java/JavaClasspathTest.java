@@ -24,7 +24,9 @@ import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 
@@ -46,6 +48,10 @@ public class JavaClasspathTest {
   public void setUp() throws Exception {
     fs = new DefaultFileSystem();
     fs.setBaseDir(new File("src/test/files/classpath/"));
+    DefaultInputFile inputFile = new DefaultInputFile("foo.java");
+    inputFile.setLanguage("java");
+    inputFile.setType(InputFile.Type.MAIN);
+    fs.add(inputFile);
     settings = new Settings();
     project = mock(Project.class);
   }
@@ -119,7 +125,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements().get(0)).exists();
     assertThat(javaClasspath.getElements().get(1)).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar","world.jar");
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar");
   }
 
   @Test
@@ -167,7 +173,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(2);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar","world.jar");
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar");
   }
 
   @Test
@@ -220,6 +226,19 @@ public class JavaClasspathTest {
 
     when(project.getModules()).thenReturn(Lists.<Project>newArrayList());
     checkIllegalStateException("No files nor directories matching 'non-existing.jar'");
+  }
+
+  @Test
+  public void sonar_binaries_should_not_check_for_existence_of_files_when_no_sources() throws Exception {
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "toto/**/hello.jar");
+    fs = new DefaultFileSystem();
+    fs.setBaseDir(new File("src/test/files/classpath/"));
+    DefaultInputFile inputFile = new DefaultInputFile("plop.java");
+    inputFile.setType(InputFile.Type.TEST);
+    inputFile.setLanguage("java");
+    fs.add(inputFile);
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).isEmpty();
   }
 
   @Test
