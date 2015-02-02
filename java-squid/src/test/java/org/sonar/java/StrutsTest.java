@@ -65,9 +65,7 @@ public class StrutsTest {
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 
-  @Test
-  public void measures_on_project_accessors_separated_from_methods() throws Exception {
-    initAndScan(true);
+  private Map<String, Double> getMetrics() {
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());
     Map<String, Double> metrics = new HashMap<String, Double>();
@@ -80,14 +78,27 @@ public class StrutsTest {
         }
       }
     }
+    return metrics;
+  }
+
+  private void verifyCommonMetrics(Map<String, Double> metrics) {
     assertThat(metrics.get("classes").intValue()).isEqualTo(146);
-    //56 methods in anonymous classes: not part of metric but part of number of methods in project.
-    assertThat(metrics.get("functions").intValue()).isEqualTo(1437 - 56);
     assertThat(metrics.get("lines").intValue()).isEqualTo(32878);
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(14007);
     assertThat(metrics.get("statements").intValue()).isEqualTo(6403);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(3957 - 145 /* SONAR-3793 */ - 1 /* SONAR-3794 */);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);
+  }
+
+  @Test
+  public void measures_on_project_accessors_separated_from_methods() throws Exception {
+    initAndScan(true);
+    Map<String, Double> metrics = getMetrics();
+
+    verifyCommonMetrics(metrics);
+
+    //56 methods in anonymous classes: not part of metric but part of number of methods in project.
+    assertThat(metrics.get("functions").intValue()).isEqualTo(1437 - 56);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(3957 - 145 /* SONAR-3793 */- 1 /* SONAR-3794 */);
     // 48: SONARJAVA-861 analyseAccessors property of the measurer is set to true. Getters and setters not counted as public api.
     assertThat(metrics.get("public_api").intValue()).isEqualTo(1340 - 48);
   }
@@ -95,25 +106,12 @@ public class StrutsTest {
   @Test
   public void measures_on_project_accessors_handled_as_methods() throws Exception {
     initAndScan(false);
-    ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
-    verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());
-    Map<String, Double> metrics = new HashMap<String, Double>();
-    for (Measure measure : captor.getAllValues()) {
-      if (measure.getValue() != null) {
-        if (metrics.get(measure.getMetricKey()) == null) {
-          metrics.put(measure.getMetricKey(), measure.getValue());
-        } else {
-          metrics.put(measure.getMetricKey(), metrics.get(measure.getMetricKey()) + measure.getValue());
-        }
-      }
-    }
-    assertThat(metrics.get("classes").intValue()).isEqualTo(146);
+    Map<String, Double> metrics = getMetrics();
+
+    verifyCommonMetrics(metrics);
+
     assertThat(metrics.get("functions").intValue()).isEqualTo(1429);
-    assertThat(metrics.get("lines").intValue()).isEqualTo(32878);
-    assertThat(metrics.get("ncloc").intValue()).isEqualTo(14007);
-    assertThat(metrics.get("statements").intValue()).isEqualTo(6403);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(3859);
-    assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);
     assertThat(metrics.get("public_api").intValue()).isEqualTo(1340);
   }
 

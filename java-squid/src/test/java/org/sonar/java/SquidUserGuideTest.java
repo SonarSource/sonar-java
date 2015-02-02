@@ -119,9 +119,7 @@ public class SquidUserGuideTest {
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 
-  @Test
-  public void measures_on_project_accessors_separated_from_methods() throws Exception {
-    initAndScan(true);
+  private Map<String, Double> getMetrics() {
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     ArgumentCaptor<org.sonar.api.resources.File> files = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
     verify(context, atLeastOnce()).saveMeasure(files.capture(), captor.capture());
@@ -135,16 +133,15 @@ public class SquidUserGuideTest {
         }
       }
     }
+    return metrics;
+  }
 
+  private void verifyCommonMetrics(Map<String, Double> metrics) {
     assertThat(metrics.get("classes").intValue()).isEqualTo(412);
-    assertThat(metrics.get("functions").intValue()).isEqualTo(3693);
     assertThat(metrics.get("lines").intValue()).isEqualTo(64125);
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(26323);
     assertThat(metrics.get("statements").intValue()).isEqualTo(12047);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17908);
-    // 69: SONARJAVA-861 analyseAccessors property of the measurer is set to true. Getters and setters ignored.
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 69);
     double density = 1.0;
     if (metrics.get("public_api").intValue() != 0) {
       density = (metrics.get("public_api") - metrics.get("public_undocumented_api")) / metrics.get("public_api");
@@ -153,35 +150,28 @@ public class SquidUserGuideTest {
   }
 
   @Test
+  public void measures_on_project_accessors_separated_from_methods() throws Exception {
+    initAndScan(true);
+    Map<String, Double> metrics = getMetrics();
+
+    verifyCommonMetrics(metrics);
+
+    assertThat(metrics.get("functions").intValue()).isEqualTo(3693);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);
+    // 69: SONARJAVA-861 analyseAccessors property of the measurer is set to true. Getters and setters ignored.
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 69);
+  }
+
+  @Test
   public void measures_on_project_accessors_handled_as_methods() throws Exception {
     initAndScan(false);
-    ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
-    ArgumentCaptor<org.sonar.api.resources.File> files = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
-    verify(context, atLeastOnce()).saveMeasure(files.capture(), captor.capture());
-    Map<String, Double> metrics = new HashMap<String, Double>();
-    for (Measure measure : captor.getAllValues()) {
-      if (measure.getValue() != null) {
-        if (metrics.get(measure.getMetricKey()) == null) {
-          metrics.put(measure.getMetricKey(), measure.getValue());
-        } else {
-          metrics.put(measure.getMetricKey(), metrics.get(measure.getMetricKey()) + measure.getValue());
-        }
-      }
-    }
+    Map<String, Double> metrics = getMetrics();
 
-    assertThat(metrics.get("classes").intValue()).isEqualTo(412);
+    verifyCommonMetrics(metrics);
+
     assertThat(metrics.get("functions").intValue()).isEqualTo(3762);
-    assertThat(metrics.get("lines").intValue()).isEqualTo(64125);
-    assertThat(metrics.get("ncloc").intValue()).isEqualTo(26323);
-    assertThat(metrics.get("statements").intValue()).isEqualTo(12047);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(8462);
-    assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17908);
     assertThat(metrics.get("public_api").intValue()).isEqualTo(3221);
-    double density = 1.0;
-    if (metrics.get("public_api").intValue() != 0) {
-      density = (metrics.get("public_api") - metrics.get("public_undocumented_api")) / metrics.get("public_api");
-    }
-    assertThat(density).isEqualTo(0.64, Delta.delta(0.01));
   }
 
   @Test
