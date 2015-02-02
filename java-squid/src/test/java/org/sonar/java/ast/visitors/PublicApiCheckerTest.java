@@ -47,19 +47,19 @@ public class PublicApiCheckerTest {
   @Before
   public void setUp() {
     Parser p = JavaParser.createParser(Charsets.UTF_8);
-    publicApiChecker = PublicApiChecker.newDefaultPublicApiChecker();
+    publicApiChecker = PublicApiChecker.newPublicApiCheckerAccessorsHandledAsMethods();
     cut = (CompilationUnitTree) p.parse(new File("src/test/files/ast/PublicApi.java"));
   }
 
   @Test
-  public void isPublicApiDefaultBehavior() {
+  public void isPublicApiAccessorsHandledAsMethods() {
     SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker);
     visitor.scanTree(cut);
   }
 
   @Test
-  public void isPublicApiSeparatedAccessors() {
-    publicApiChecker = PublicApiChecker.newPublicApiCheckerWithoutAccessorAnalysis();
+  public void isPublicApiAccessorsSeparatedFromMethods() {
+    publicApiChecker = PublicApiChecker.newPublicApiCheckerAccessorsSeparatedFromMethods();
     SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker);
     visitor.scanTree(cut);
   }
@@ -89,7 +89,7 @@ public class PublicApiCheckerTest {
           MethodTree methodTree = (MethodTree) tree;
           methodTrees.push(methodTree);
           String name = methodTree.simpleName().name();
-          if (publicApiChecker.ignoresAccessors()) {
+          if (publicApiChecker.separatesAccessorsFromMethods()) {
             assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public"));
           } else {
             // getters and setters are included in the public API only if checker does not ignore accessors

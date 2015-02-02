@@ -53,19 +53,19 @@ public class SquidUserGuideTest {
   private static JavaSquid squid;
   private static SensorContext context;
 
-  private void initAndScan(boolean ignoreAccessors) {
+  private void initAndScan(boolean separateAccessorsFromMethods) {
     File prjDir = new File("target/test-projects/commons-collections-3.2.1");
     File srcDir = new File(prjDir, "src");
     File binDir = new File(prjDir, "bin");
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    conf.setAnalyzePropertyAccessors(ignoreAccessors);
+    conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
     context = mock(SensorContext.class);
     Project sonarProject = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     when(pfs.getBasedir()).thenReturn(prjDir);
     when(sonarProject.getFileSystem()).thenReturn(pfs);
-    Measurer measurer = new Measurer(sonarProject, context, ignoreAccessors);
+    Measurer measurer = new Measurer(sonarProject, context, separateAccessorsFromMethods);
     JavaResourceLocator javaResourceLocator = new JavaResourceLocator() {
       public Map<String, String> sourceFileCache = Maps.newHashMap();
 
@@ -120,7 +120,7 @@ public class SquidUserGuideTest {
   }
 
   @Test
-  public void measures_on_project_ignored_accessors() throws Exception {
+  public void measures_on_project_accessors_separated_from_methods() throws Exception {
     initAndScan(true);
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     ArgumentCaptor<org.sonar.api.resources.File> files = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
@@ -153,7 +153,7 @@ public class SquidUserGuideTest {
   }
 
   @Test
-  public void measures_on_project_accessors_counted() throws Exception {
+  public void measures_on_project_accessors_handled_as_methods() throws Exception {
     initAndScan(false);
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     ArgumentCaptor<org.sonar.api.resources.File> files = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);

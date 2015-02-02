@@ -76,19 +76,19 @@ public class PublicApiChecker extends BaseTreeVisitor {
   private final Deque<Tree> currentParents = new LinkedList<Tree>();
   private double publicApi;
   private double documentedPublicApi;
-  private boolean ignoreAccessors;
+  private boolean separateAccessorsFromMethods;
   private final AccessorVisitor accessorVisitor;
 
-  public static PublicApiChecker newDefaultPublicApiChecker() {
+  public static PublicApiChecker newPublicApiCheckerAccessorsHandledAsMethods() {
     return new PublicApiChecker(false);
   }
 
-  public static PublicApiChecker newPublicApiCheckerWithoutAccessorAnalysis() {
+  public static PublicApiChecker newPublicApiCheckerAccessorsSeparatedFromMethods() {
     return new PublicApiChecker(true);
   }
 
-  private PublicApiChecker(boolean ignoreAccessors) {
-    this.ignoreAccessors = ignoreAccessors;
+  private PublicApiChecker(boolean separateAccessorsFromMethods) {
+    this.separateAccessorsFromMethods = separateAccessorsFromMethods;
     this.accessorVisitor = new AccessorVisitor();
   }
 
@@ -161,7 +161,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
 
   public boolean isPublicApi(ClassTree classTree, MethodTree methodTree) {
     Preconditions.checkNotNull(classTree);
-    if (ignoreAccessors && accessorVisitor.isAccessor(classTree, methodTree)) {
+    if (separateAccessorsFromMethods && accessorVisitor.isAccessor(classTree, methodTree)) {
       return false;
     } else if (isPublicInterface(classTree)) {
       return !hasOverrideAnnotation(methodTree);
@@ -299,8 +299,8 @@ public class PublicApiChecker extends BaseTreeVisitor {
     return ParsingUtils.scaleValue(documentedPublicApi / publicApi * 100, 2);
   }
 
-  public boolean ignoresAccessors() {
-    return ignoreAccessors;
+  public boolean separatesAccessorsFromMethods() {
+    return separateAccessorsFromMethods;
   }
 
 }

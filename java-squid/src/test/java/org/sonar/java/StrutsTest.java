@@ -47,26 +47,26 @@ public class StrutsTest {
 
   private static SensorContext context;
 
-  private void initAndScan(boolean ignoreAccessors) {
+  private void initAndScan(boolean separateAccessorsFromMethods) {
     File prjDir = new File("target/test-projects/struts-core-1.3.9");
     File srcDir = new File(prjDir, "src");
     File binDir = new File(prjDir, "bin");
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    conf.setAnalyzePropertyAccessors(ignoreAccessors);
+    conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
     context = mock(SensorContext.class);
     Project sonarProject = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     when(pfs.getBasedir()).thenReturn(prjDir);
     when(sonarProject.getFileSystem()).thenReturn(pfs);
-    Measurer measurer = new Measurer(sonarProject, context, ignoreAccessors);
+    Measurer measurer = new Measurer(sonarProject, context, separateAccessorsFromMethods);
     JavaSquid squid = new JavaSquid(conf, null, measurer, mock(JavaResourceLocator.class), new CodeVisitor[0]);
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 
   @Test
-  public void measures_on_project_ignore_accessors() throws Exception {
+  public void measures_on_project_accessors_separated_from_methods() throws Exception {
     initAndScan(true);
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());
@@ -88,12 +88,12 @@ public class StrutsTest {
     assertThat(metrics.get("statements").intValue()).isEqualTo(6403);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(3957 - 145 /* SONAR-3793 */ - 1 /* SONAR-3794 */);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);
-    // 48: SONARJAVA-861 analyseAccessors property of the measurer is set to true. Getters and setters ignored.
+    // 48: SONARJAVA-861 analyseAccessors property of the measurer is set to true. Getters and setters not counted as public api.
     assertThat(metrics.get("public_api").intValue()).isEqualTo(1340 - 48);
   }
 
   @Test
-  public void measures_on_project_accessors_counted_as_methods() throws Exception {
+  public void measures_on_project_accessors_handled_as_methods() throws Exception {
     initAndScan(false);
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());

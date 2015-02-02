@@ -87,7 +87,7 @@ public class JavaSquidSensor implements Sensor {
     Checks<CodeVisitor> checks = checkFactory.<CodeVisitor>create(CheckList.REPOSITORY_KEY).addAnnotatedChecks(CheckList.getChecks());
     Collection<CodeVisitor> checkList = checks.all();
     JavaConfiguration configuration = createConfiguration();
-    Measurer measurer = new Measurer(project, context, configuration.isAnalysePropertyAccessors());
+    Measurer measurer = new Measurer(project, context, configuration.separatesAccessorsFromMethods());
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, checkList.toArray(new CodeVisitor[checkList.size()]));
     squid.scan(getSourceFiles(), getTestFiles(), getBytecodeFiles());
     new Bridges(squid, settings).save(context, project, checks, javaResourceLocator.getResourceMapping(),
@@ -121,7 +121,7 @@ public class JavaSquidSensor implements Sensor {
     boolean analyzePropertyAccessors = settings.getBoolean(JavaPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY);
     Charset charset = fs.encoding();
     JavaConfiguration conf = new JavaConfiguration(charset);
-    conf.setAnalyzePropertyAccessors(analyzePropertyAccessors);
+    conf.setSeparateAccessorsFromMethods(analyzePropertyAccessors);
     return conf;
   }
 
