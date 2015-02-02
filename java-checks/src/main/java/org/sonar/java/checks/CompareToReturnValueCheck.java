@@ -60,11 +60,11 @@ public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isCompareToDeclaration(MethodTree tree) {
-    return isMethodName(tree, "compareTo") && hasOneNonPrimitiveParameter(tree) && returnsInt(tree);
+    return isCalledCompareTo(tree) && hasOneNonPrimitiveParameter(tree) && returnsInt(tree);
   }
 
-  private boolean isMethodName(MethodTree methodTree, String name) {
-    return name.equals(methodTree.simpleName().name());
+  private boolean isCalledCompareTo(MethodTree tree) {
+    return "compareTo".equals(tree.simpleName().name());
   }
 
   private boolean hasOneNonPrimitiveParameter(MethodTree methodTree) {
@@ -97,7 +97,7 @@ public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitClass(ClassTree tree) {
-      // Do not visit inner classes as methods of inner class will be visited by main visitor
+      // Do not visit inner classes as methods of inner classes will be visited by main visitor
     }
   }
 }
