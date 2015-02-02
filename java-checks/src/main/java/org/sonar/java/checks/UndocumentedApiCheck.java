@@ -80,7 +80,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     this.context = context;
     classTrees.clear();
     currentParents.clear();
-    publicApiChecker = new PublicApiChecker();
+    publicApiChecker = new PublicApiChecker(false);
     packageName = "";
     this.context = context;
     scan(context.getTree());

@@ -144,7 +144,8 @@ public class SquidUserGuideTest {
     assertThat(metrics.get("statements").intValue()).isEqualTo(12047);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17908);
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221);
+    // 69: SONARJAVA-861 analyseAccessors property of the measurer is set to true. Getters and setters ignored.
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 69);
     double density = 1.0;
     if (metrics.get("public_api").intValue() != 0) {
       density = (metrics.get("public_api") - metrics.get("public_undocumented_api")) / metrics.get("public_api");

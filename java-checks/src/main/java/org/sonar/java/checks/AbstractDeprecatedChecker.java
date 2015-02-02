@@ -37,7 +37,7 @@ public class AbstractDeprecatedChecker extends SubscriptionBaseVisitor {
   private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
   private static final Kind[] API_KINDS = PublicApiChecker.apiKinds();
 
-  private final PublicApiChecker publicApiChecker = new PublicApiChecker();
+  private final PublicApiChecker publicApiChecker = new PublicApiChecker(false);
 
   @Override
   public List<Kind> nodesToVisit() {

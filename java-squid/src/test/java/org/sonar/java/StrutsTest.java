@@ -89,7 +89,8 @@ public class StrutsTest {
     assertThat(metrics.get("statements").intValue()).isEqualTo(6403);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(3957 - 145 /* SONAR-3793 */ - 1 /* SONAR-3794 */);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(1340);
+    // 48: SONARJAVA-861 analyseAccessors property of the measurer is set to true. Getters and setters ignored.
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(1340 - 48);
   }
 
 

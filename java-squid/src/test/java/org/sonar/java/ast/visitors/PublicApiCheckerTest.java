@@ -43,17 +43,20 @@ public class PublicApiCheckerTest {
 
   private PublicApiChecker publicApiChecker;
   private CompilationUnitTree cut;
+  private boolean analyseAccessors;
 
   @Before
   public void setUp() {
     Parser p = JavaParser.createParser(Charsets.UTF_8);
-    publicApiChecker = new PublicApiChecker();
+    analyseAccessors = true;
+    publicApiChecker = new PublicApiChecker(analyseAccessors);
     cut = (CompilationUnitTree) p.parse(new File("src/test/files/ast/PublicApi.java"));
   }
 
   @Test
   public void isPublicApi() {
-    new SubscriptionVisitor() {
+    publicApiChecker = new PublicApiChecker(analyseAccessors);
+    SubscriptionVisitor visitor = new SubscriptionVisitor() {
 
       private final Deque<ClassTree> classTrees = Lists.newLinkedList();
       private final Deque<MethodTree> methodTrees = Lists.newLinkedList();
@@ -77,7 +80,12 @@ public class PublicApiCheckerTest {
           MethodTree methodTree = (MethodTree) tree;
           methodTrees.push(methodTree);
           String name = methodTree.simpleName().name();
-          assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public"));
+          if (analyseAccessors) {
+            assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public"));
+          } else {
+            // getters and setters are included in the public API only if the analyseAccessors property is set to false
+            assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public") || name.contains("GetSet"));
+          }
         } else if (tree.is(PublicApiChecker.classKinds())) {
           IdentifierTree className = ((ClassTree) tree).simpleName();
           if(className==null) {
@@ -99,7 +107,12 @@ public class PublicApiCheckerTest {
           methodTrees.pop();
         }
       }
-    }.scanTree(cut);
+    };
+
+    visitor.scanTree(cut);
+    analyseAccessors = false;
+    publicApiChecker = new PublicApiChecker(analyseAccessors);
+    visitor.scanTree(cut);
   }
 
   @Test
