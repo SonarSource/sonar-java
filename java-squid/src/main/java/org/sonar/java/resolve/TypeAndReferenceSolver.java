@@ -53,6 +53,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -571,6 +572,16 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (((AbstractTypedTree) tree).getSymbolType() == null) {
       resolveAs(tree, Symbol.VAR);
     }
+  }
+
+  @Override
+  public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
+    resolveAs(methodReferenceTree.expression(), Symbol.VAR | Symbol.TYP);
+    //TODO resolve which method it is refered to
+    registerType(methodReferenceTree.method(), symbols.unknownType);
+    registerType(methodReferenceTree, symbols.unknownType);
+    scan(methodReferenceTree.typeArguments());
+    scan(methodReferenceTree.method());
   }
 
   @Override
