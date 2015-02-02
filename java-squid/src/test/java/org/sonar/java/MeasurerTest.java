@@ -134,10 +134,10 @@ public class MeasurerTest {
   /**
    * Utility method to quickly get metric out of a file.
    */
-  private void checkMetric(boolean analyseAccessors, File baseDir, String filename, String metric, double expectedValue) {
-    Measurer measurer = new Measurer(sonarProject, context, analyseAccessors);
+  private void checkMetric(boolean ignoreAccessors, File baseDir, String filename, String metric, double expectedValue) {
+    Measurer measurer = new Measurer(sonarProject, context, ignoreAccessors);
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    conf.setAnalyzePropertyAccessors(analyseAccessors);
+    conf.setAnalyzePropertyAccessors(ignoreAccessors);
     squid = new JavaSquid(conf, null, measurer, null, new CodeVisitor[0]);
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList(), Collections.<File>emptyList());
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);

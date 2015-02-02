@@ -43,20 +43,29 @@ public class PublicApiCheckerTest {
 
   private PublicApiChecker publicApiChecker;
   private CompilationUnitTree cut;
-  private boolean analyseAccessors;
 
   @Before
   public void setUp() {
     Parser p = JavaParser.createParser(Charsets.UTF_8);
-    analyseAccessors = true;
-    publicApiChecker = new PublicApiChecker(analyseAccessors);
+    publicApiChecker = PublicApiChecker.newDefaultPublicApiChecker();
     cut = (CompilationUnitTree) p.parse(new File("src/test/files/ast/PublicApi.java"));
   }
 
   @Test
-  public void isPublicApi() {
-    publicApiChecker = new PublicApiChecker(analyseAccessors);
-    SubscriptionVisitor visitor = new SubscriptionVisitor() {
+  public void isPublicApiDefaultBehavior() {
+    SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker);
+    visitor.scanTree(cut);
+  }
+
+  @Test
+  public void isPublicApiSeparatedAccessors() {
+    publicApiChecker = PublicApiChecker.newPublicApiCheckerWithoutAccessorAnalysis();
+    SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker);
+    visitor.scanTree(cut);
+  }
+
+  private SubscriptionVisitor getPublicApiVisitor(final PublicApiChecker publicApiChecker) {
+    return new SubscriptionVisitor() {
 
       private final Deque<ClassTree> classTrees = Lists.newLinkedList();
       private final Deque<MethodTree> methodTrees = Lists.newLinkedList();
@@ -80,10 +89,10 @@ public class PublicApiCheckerTest {
           MethodTree methodTree = (MethodTree) tree;
           methodTrees.push(methodTree);
           String name = methodTree.simpleName().name();
-          if (analyseAccessors) {
+          if (publicApiChecker.ignoresAccessors()) {
             assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public"));
           } else {
-            // getters and setters are included in the public API only if the analyseAccessors property is set to false
+            // getters and setters are included in the public API only if checker does not ignore accessors
             assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public") || name.contains("GetSet"));
           }
         } else if (tree.is(PublicApiChecker.classKinds())) {
@@ -108,11 +117,6 @@ public class PublicApiCheckerTest {
         }
       }
     };
-
-    visitor.scanTree(cut);
-    analyseAccessors = false;
-    publicApiChecker = new PublicApiChecker(analyseAccessors);
-    visitor.scanTree(cut);
   }
 
   @Test

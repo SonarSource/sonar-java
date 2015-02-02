@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -75,11 +76,19 @@ public class PublicApiChecker extends BaseTreeVisitor {
   private final Deque<Tree> currentParents = new LinkedList<Tree>();
   private double publicApi;
   private double documentedPublicApi;
-  private boolean analyseAccessors;
+  private boolean ignoreAccessors;
   private final AccessorVisitor accessorVisitor;
 
-  public PublicApiChecker(boolean analyseAccessors) {
-    this.analyseAccessors = analyseAccessors;
+  public static PublicApiChecker newDefaultPublicApiChecker() {
+    return new PublicApiChecker(false);
+  }
+
+  public static PublicApiChecker newPublicApiCheckerWithoutAccessorAnalysis() {
+    return new PublicApiChecker(true);
+  }
+
+  private PublicApiChecker(boolean ignoreAccessors) {
+    this.ignoreAccessors = ignoreAccessors;
     this.accessorVisitor = new AccessorVisitor();
   }
 
@@ -152,7 +161,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
 
   public boolean isPublicApi(ClassTree classTree, MethodTree methodTree) {
     Preconditions.checkNotNull(classTree);
-    if (analyseAccessors && accessorVisitor.isAccessor(classTree, methodTree)) {
+    if (ignoreAccessors && accessorVisitor.isAccessor(classTree, methodTree)) {
       return false;
     } else if (isPublicInterface(classTree)) {
       return !hasOverrideAnnotation(methodTree);
@@ -289,4 +298,9 @@ public class PublicApiChecker extends BaseTreeVisitor {
     }
     return ParsingUtils.scaleValue(documentedPublicApi / publicApi * 100, 2);
   }
+
+  public boolean ignoresAccessors() {
+    return ignoreAccessors;
+  }
+
 }

@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.google.common.base.Charsets;
 import org.apache.commons.io.FileUtils;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.SensorContext;
@@ -48,27 +47,27 @@ public class StrutsTest {
 
   private static SensorContext context;
 
-  @BeforeClass
-  public static void init() {
+  private void initAndScan(boolean ignoreAccessors) {
     File prjDir = new File("target/test-projects/struts-core-1.3.9");
     File srcDir = new File(prjDir, "src");
     File binDir = new File(prjDir, "bin");
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    conf.setAnalyzePropertyAccessors(true);
+    conf.setAnalyzePropertyAccessors(ignoreAccessors);
     context = mock(SensorContext.class);
     Project sonarProject = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     when(pfs.getBasedir()).thenReturn(prjDir);
     when(sonarProject.getFileSystem()).thenReturn(pfs);
-    Measurer measurer = new Measurer(sonarProject, context, true);
+    Measurer measurer = new Measurer(sonarProject, context, ignoreAccessors);
     JavaSquid squid = new JavaSquid(conf, null, measurer, mock(JavaResourceLocator.class), new CodeVisitor[0]);
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 
   @Test
-  public void measures_on_project() throws Exception {
+  public void measures_on_project_ignore_accessors() throws Exception {
+    initAndScan(true);
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());
     Map<String, Double> metrics = new HashMap<String, Double>();
@@ -93,5 +92,29 @@ public class StrutsTest {
     assertThat(metrics.get("public_api").intValue()).isEqualTo(1340 - 48);
   }
 
+  @Test
+  public void measures_on_project_accessors_counted_as_methods() throws Exception {
+    initAndScan(false);
+    ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
+    verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());
+    Map<String, Double> metrics = new HashMap<String, Double>();
+    for (Measure measure : captor.getAllValues()) {
+      if (measure.getValue() != null) {
+        if (metrics.get(measure.getMetricKey()) == null) {
+          metrics.put(measure.getMetricKey(), measure.getValue());
+        } else {
+          metrics.put(measure.getMetricKey(), metrics.get(measure.getMetricKey()) + measure.getValue());
+        }
+      }
+    }
+    assertThat(metrics.get("classes").intValue()).isEqualTo(146);
+    assertThat(metrics.get("functions").intValue()).isEqualTo(1429);
+    assertThat(metrics.get("lines").intValue()).isEqualTo(32878);
+    assertThat(metrics.get("ncloc").intValue()).isEqualTo(14007);
+    assertThat(metrics.get("statements").intValue()).isEqualTo(6403);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(3859);
+    assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(1340);
+  }
 
 }
