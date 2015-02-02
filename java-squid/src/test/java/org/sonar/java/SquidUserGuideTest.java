@@ -136,7 +136,7 @@ public class SquidUserGuideTest {
     return metrics;
   }
 
-  private void verifyCommonMetrics(Map<String, Double> metrics) {
+  private void verifySameResults(Map<String, Double> metrics) {
     assertThat(metrics.get("classes").intValue()).isEqualTo(412);
     assertThat(metrics.get("lines").intValue()).isEqualTo(64125);
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(26323);
@@ -154,12 +154,12 @@ public class SquidUserGuideTest {
     initAndScan(true);
     Map<String, Double> metrics = getMetrics();
 
-    verifyCommonMetrics(metrics);
+    verifySameResults(metrics);
 
-    assertThat(metrics.get("functions").intValue()).isEqualTo(3693);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);
-    // 69: SONARJAVA-861 analyseAccessors property of the measurer is set to true. Getters and setters ignored.
+    // 69: SONARJAVA-861 separatedAccessorsFromMethods property of the measurer is set to true. Getters and setters ignored.
+    assertThat(metrics.get("functions").intValue()).isEqualTo(3762 - 69);
     assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 69);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(8462 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */+ 13 /* SONARJAVA-861 */);
   }
 
   @Test
@@ -167,11 +167,11 @@ public class SquidUserGuideTest {
     initAndScan(false);
     Map<String, Double> metrics = getMetrics();
 
-    verifyCommonMetrics(metrics);
+    verifySameResults(metrics);
 
     assertThat(metrics.get("functions").intValue()).isEqualTo(3762);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(8462);
     assertThat(metrics.get("public_api").intValue()).isEqualTo(3221);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(8462);
   }
 
   @Test
@@ -180,9 +180,9 @@ public class SquidUserGuideTest {
     SourceCode collectionsPackage = squid.search("org/apache/commons/collections");
     SourceCode bufferPackage = squid.search("org/apache/commons/collections/buffer");
     SourceCode bidimapPackage = squid.search("org/apache/commons/collections/bidimap");
-//    assertThat(squid.getDependency(bidimapPackage, collectionsPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
-//    assertThat(squid.getDependency(collectionsPackage, bufferPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
-//    assertThat(squid.getDependency(collectionsPackage, bufferPackage).getRootEdges().size()).isEqualTo(7);
+    // assertThat(squid.getDependency(bidimapPackage, collectionsPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    // assertThat(squid.getDependency(collectionsPackage, bufferPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    // assertThat(squid.getDependency(collectionsPackage, bufferPackage).getRootEdges().size()).isEqualTo(7);
   }
 
 }

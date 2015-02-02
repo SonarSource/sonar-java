@@ -81,7 +81,7 @@ public class StrutsTest {
     return metrics;
   }
 
-  private void verifyCommonMetrics(Map<String, Double> metrics) {
+  private void verifySameResults(Map<String, Double> metrics) {
     assertThat(metrics.get("classes").intValue()).isEqualTo(146);
     assertThat(metrics.get("lines").intValue()).isEqualTo(32878);
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(14007);
@@ -94,13 +94,13 @@ public class StrutsTest {
     initAndScan(true);
     Map<String, Double> metrics = getMetrics();
 
-    verifyCommonMetrics(metrics);
+    verifySameResults(metrics);
 
-    //56 methods in anonymous classes: not part of metric but part of number of methods in project.
-    assertThat(metrics.get("functions").intValue()).isEqualTo(1437 - 56);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(3957 - 145 /* SONAR-3793 */- 1 /* SONAR-3794 */);
-    // 48: SONARJAVA-861 analyseAccessors property of the measurer is set to true. Getters and setters not counted as public api.
+    // 48: SONARJAVA-861 separatedAccessorsFromMethods property of the measurer is set to true. Getters and setters ignored.
     assertThat(metrics.get("public_api").intValue()).isEqualTo(1340 - 48);
+    // 56 methods in anonymous classes: not part of metric but part of number of methods in project.
+    assertThat(metrics.get("functions").intValue()).isEqualTo(1429 - 56 + 8);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(3859 - 145 /* SONAR-3793 */- 1 /* SONAR-3794 */+ 98 /* SONARJAVA-861 */);
   }
 
   @Test
@@ -108,11 +108,11 @@ public class StrutsTest {
     initAndScan(false);
     Map<String, Double> metrics = getMetrics();
 
-    verifyCommonMetrics(metrics);
+    verifySameResults(metrics);
 
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(1340);
     assertThat(metrics.get("functions").intValue()).isEqualTo(1429);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(3859);
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(1340);
   }
 
 }
