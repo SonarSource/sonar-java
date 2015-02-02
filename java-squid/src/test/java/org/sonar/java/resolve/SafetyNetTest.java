@@ -39,7 +39,7 @@ public class SafetyNetTest {
     "src/test/java",
     "src/test/files",
     "target/test-projects/struts-core-1.3.9/src",
-    "target/test-projects/commons-collections-3.2.1/src"
+    "target/test-projects/commons-collections-3.2.1/src",
   };
 
   @Test
@@ -48,7 +48,6 @@ public class SafetyNetTest {
     for (String dir : dirs) {
       for (File file : FileUtils.listFiles(new File(dir), new String[] {"java"}, true)) {
         try {
-          if(file.getName().contains("Assertions.java"))
           SemanticModel.createFor((CompilationUnitTree) parser.parse(file), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
         } catch (Exception e) {
           throw new RuntimeException("Unable to process file " + file, e);

@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Fail.failure;
 
 public class SymbolTableTest {
 
@@ -547,5 +548,27 @@ public class SymbolTableTest {
     assertThat(sym.type.toString()).isEqualTo("!unknown!");
     assertThat(result.reference(8, 16)).isEqualTo(result.symbol("v", 8));
     assertThat(result.reference(9, 16)).isEqualTo(result.symbol("v", 9));
+  }
+
+  @Test
+  public void MethodReference() throws Exception {
+    Result result = Result.createFor("MethodReferences");
+    assertThatReferenceNotFound(result, 11, 27);
+    assertThatReferenceNotFound(result, 12, 30);
+    assertThatReferenceNotFound(result, 13, 24);
+    assertThatReferenceNotFound(result, 14, 17);
+    assertThat(result.reference(11, 21).owner).isSameAs(result.symbol("A"));
+    assertThat(result.reference(11, 21).getName()).isEqualTo("this");
+    assertThat(result.reference(12, 25).owner).isSameAs(result.symbol("A"));
+    assertThat(result.reference(13, 21)).isSameAs(result.symbol("A"));
+
+  }
+
+  public void assertThatReferenceNotFound(Result result, int line, int column){
+    try {
+      Symbol reference = result.reference(line, column);
+      failure("reference was found whereas it is not expected");
+    } catch (IllegalArgumentException iae) {
+    }
   }
 }
