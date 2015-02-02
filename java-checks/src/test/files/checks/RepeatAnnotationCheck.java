@@ -13,7 +13,7 @@ class A{
   void methodTwo() {}
 
   @SomeAnnotation({})
-  @some.pck.SomeAnnotations({ //Non-Compliant
+  @some.pck.SomeAnnotations({ //Compliant because some.pck.SomeAnnotation is not solved and might not be @Reapeatable
       @some.pck.SomeAnnotation("a"),
       @some.pck.SomeAnnotation("b"),
       @some.pck.SomeAnnotation("c"),
@@ -25,4 +25,10 @@ class A{
   })
   @SomeAnnotation({"a", "b", "c"})
   void methodThree(){}
+
+
+  @java.lang.annotation.Repeatable
+  @interface SomeAnnotation {
+
+  }
 }
