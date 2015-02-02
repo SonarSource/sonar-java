@@ -24,7 +24,7 @@ import java.nio.charset.Charset;
 public class JavaConfiguration {
 
   private final Charset charset;
-  private boolean analyzePropertyAccessors = true;
+  private boolean separateAccessorsFromMethods = true;
 
   public JavaConfiguration(Charset charset) {
     this.charset = charset;
@@ -34,12 +34,12 @@ public class JavaConfiguration {
     return charset;
   }
 
-  public boolean isAnalysePropertyAccessors() {
-    return analyzePropertyAccessors;
+  public boolean separatesAccessorsFromMethods() {
+    return separateAccessorsFromMethods;
   }
 
-  public void setAnalyzePropertyAccessors(boolean analyzePropertyAccessors) {
-    this.analyzePropertyAccessors = analyzePropertyAccessors;
+  public void setSeparateAccessorsFromMethods(boolean separateAccessorsFromMethods) {
+    this.separateAccessorsFromMethods = separateAccessorsFromMethods;
   }
 
 }

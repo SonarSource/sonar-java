@@ -55,7 +55,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
 
   private final SensorContext sensorContext;
   private final Project project;
-  private final boolean analyseAccessors;
+  private final boolean separateAccessorsFromMethods;
   private File sonarFile;
   private int methods;
   private int accessors;
@@ -67,10 +67,10 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private Charset charset;
   private double classes;
 
-  public Measurer(Project project, SensorContext context, boolean analyseAccessors) {
+  public Measurer(Project project, SensorContext context, boolean separateAccessorsFromMethods) {
     this.project = project;
     this.sensorContext = context;
-    this.analyseAccessors = analyseAccessors;
+    this.separateAccessorsFromMethods = separateAccessorsFromMethods;
     accessorVisitor = new AccessorVisitor();
   }
 
@@ -90,7 +90,10 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     complexityInMethods = 0;
     accessors = 0;
     classes = 0;
-    PublicApiChecker publicApiChecker = new PublicApiChecker();
+    PublicApiChecker publicApiChecker = PublicApiChecker.newInstanceWithAccessorsHandledAsMethods();
+    if (separateAccessorsFromMethods) {
+      publicApiChecker = PublicApiChecker.newInstanceWithAccessorsSeparatedFromMethods();
+    }
     publicApiChecker.scan(context.getTree());
     methodComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, LIMITS_COMPLEXITY_METHODS);
     super.scanFile(context);
@@ -137,7 +140,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && classTrees.peek().simpleName() != null) {
       //don't count methods in anonymous classes.
       MethodTree methodTree = (MethodTree) tree;
-      if (analyseAccessors && accessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
+      if (separateAccessorsFromMethods && accessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
         accessors++;
       } else {
         methods++;

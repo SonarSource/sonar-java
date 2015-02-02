@@ -139,3 +139,18 @@ class F {
     }
   };
 }
+
+class ClassWithGettersAndSetters {
+  private int myVarGetSet;
+
+  public void myMethodPublic() {
+  }
+
+  public int getMyVarGetSet() {
+    return myVarGetSet;
+  }
+
+  public void setMyVarGetSet(int myVarGetSet) {
+    this.myVarGetSet = myVarGetSet;
+  }
+}

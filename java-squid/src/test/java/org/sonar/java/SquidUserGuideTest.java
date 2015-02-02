@@ -23,7 +23,6 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Delta;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.SensorContext;
@@ -54,20 +53,19 @@ public class SquidUserGuideTest {
   private static JavaSquid squid;
   private static SensorContext context;
 
-  @BeforeClass
-  public static void init() {
+  private void initAndScan(boolean separateAccessorsFromMethods) {
     File prjDir = new File("target/test-projects/commons-collections-3.2.1");
     File srcDir = new File(prjDir, "src");
     File binDir = new File(prjDir, "bin");
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    conf.setAnalyzePropertyAccessors(true);
+    conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
     context = mock(SensorContext.class);
     Project sonarProject = mock(Project.class);
     ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     when(pfs.getBasedir()).thenReturn(prjDir);
     when(sonarProject.getFileSystem()).thenReturn(pfs);
-    Measurer measurer = new Measurer(sonarProject, context, true);
+    Measurer measurer = new Measurer(sonarProject, context, separateAccessorsFromMethods);
     JavaResourceLocator javaResourceLocator = new JavaResourceLocator() {
       public Map<String, String> sourceFileCache = Maps.newHashMap();
 
@@ -121,8 +119,7 @@ public class SquidUserGuideTest {
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 
-  @Test
-  public void measures_on_project() throws Exception {
+  private Map<String, Double> getMetrics() {
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     ArgumentCaptor<org.sonar.api.resources.File> files = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
     verify(context, atLeastOnce()).saveMeasure(files.capture(), captor.capture());
@@ -136,15 +133,15 @@ public class SquidUserGuideTest {
         }
       }
     }
+    return metrics;
+  }
 
+  private void verifySameResults(Map<String, Double> metrics) {
     assertThat(metrics.get("classes").intValue()).isEqualTo(412);
-    assertThat(metrics.get("functions").intValue()).isEqualTo(3693);
     assertThat(metrics.get("lines").intValue()).isEqualTo(64125);
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(26323);
     assertThat(metrics.get("statements").intValue()).isEqualTo(12047);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(8475 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17908);
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221);
     double density = 1.0;
     if (metrics.get("public_api").intValue() != 0) {
       density = (metrics.get("public_api") - metrics.get("public_undocumented_api")) / metrics.get("public_api");
@@ -153,13 +150,39 @@ public class SquidUserGuideTest {
   }
 
   @Test
+  public void measures_on_project_accessors_separated_from_methods() throws Exception {
+    initAndScan(true);
+    Map<String, Double> metrics = getMetrics();
+
+    verifySameResults(metrics);
+
+    // 69: SONARJAVA-861 separatedAccessorsFromMethods property of the measurer is set to true. Getters and setters ignored.
+    assertThat(metrics.get("functions").intValue()).isEqualTo(3762 - 69);
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 69);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(8462 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */+ 13 /* SONARJAVA-861 */);
+  }
+
+  @Test
+  public void measures_on_project_accessors_handled_as_methods() throws Exception {
+    initAndScan(false);
+    Map<String, Double> metrics = getMetrics();
+
+    verifySameResults(metrics);
+
+    assertThat(metrics.get("functions").intValue()).isEqualTo(3762);
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(8462);
+  }
+
+  @Test
   public void getDependenciesBetweenPackages() {
+    initAndScan(true);
     SourceCode collectionsPackage = squid.search("org/apache/commons/collections");
     SourceCode bufferPackage = squid.search("org/apache/commons/collections/buffer");
     SourceCode bidimapPackage = squid.search("org/apache/commons/collections/bidimap");
-//    assertThat(squid.getDependency(bidimapPackage, collectionsPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
-//    assertThat(squid.getDependency(collectionsPackage, bufferPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
-//    assertThat(squid.getDependency(collectionsPackage, bufferPackage).getRootEdges().size()).isEqualTo(7);
+    // assertThat(squid.getDependency(bidimapPackage, collectionsPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    // assertThat(squid.getDependency(collectionsPackage, bufferPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
+    // assertThat(squid.getDependency(collectionsPackage, bufferPackage).getRootEdges().size()).isEqualTo(7);
   }
 
 }
