@@ -84,7 +84,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
     }
     VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge, sonarComponents);
     visitorsBridge.setCharset(conf.getCharset());
-    visitorsBridge.setAnalyseAccessors(conf.isAnalysePropertyAccessors());
+    visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
     astScanner.accept(visitorsBridge);
 
     if (sonarComponents != null) {
