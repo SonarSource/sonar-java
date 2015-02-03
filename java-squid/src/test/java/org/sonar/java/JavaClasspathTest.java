@@ -258,6 +258,7 @@ public class JavaClasspathTest {
   private void checkIllegalStateException(String message) {
     try {
       javaClasspath = createJavaClasspath();
+      javaClasspath.getElements();
       fail("Exception should have been raised");
     }catch (IllegalStateException ise) {
       assertThat(ise.getMessage()).isEqualTo(message);

@@ -57,36 +57,53 @@ public class JavaClasspath implements BatchExtension {
 
   private static final char SEPARATOR = ',';
   private static final Logger LOG = LoggerFactory.getLogger(JavaClasspath.class);
+  private final Project project;
+  private final Settings settings;
+  private final FileSystem fs;
+  @Nullable
+  private final MavenProject pom;
 
   private List<File> binaries;
   private List<File> elements;
   private boolean validateLibraries;
   private boolean hasJavaSources;
+  private boolean initalized;
 
-  public JavaClasspath(Project project, Settings settings, FileSystem fileSystem) {
-    this(project, settings, fileSystem, null);
+  public JavaClasspath(Project project, Settings settings, FileSystem fs) {
+    this(project, settings, fs, null);
   }
 
-  public JavaClasspath(Project project, Settings settings, FileSystem fileSystem, @Nullable MavenProject pom) {
-    validateLibraries = project.getModules().isEmpty();
-    FilePredicates predicates = fileSystem.predicates();
-    //FIXME: call to filesystem before sensor should be removed.
-    hasJavaSources = fileSystem.hasFiles(predicates.and(predicates.hasLanguage("java"), predicates.hasType(InputFile.Type.MAIN)));
-    binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, settings, fileSystem.baseDir());
-    List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, settings, fileSystem.baseDir());
-    boolean useDeprecatedProperties = binaries.isEmpty() && libraries.isEmpty();
-    if (useDeprecatedProperties) {
-      binaries = getFilesFromProperty("sonar.binaries", settings, fileSystem.baseDir());
-      libraries = getFilesFromProperty("sonar.libraries", settings, fileSystem.baseDir());
-    }
-    if (pom != null && libraries.isEmpty()) {
-      //check mojo
-      elements = getLibrariesFromMaven(pom);
-    } else {
-      elements = Lists.newArrayList(binaries);
-      elements.addAll(libraries);
-      if (useDeprecatedProperties && !elements.isEmpty()) {
-        LOG.warn("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
+  public JavaClasspath(Project project, Settings settings, FileSystem fs, @Nullable MavenProject pom) {
+    this.project = project;
+    this.settings = settings;
+    this.fs = fs;
+    this.pom = pom;
+    initalized = false;
+  }
+
+  private void init() {
+    if (!initalized) {
+      initalized = true;
+      validateLibraries = project.getModules().isEmpty();
+      FilePredicates predicates = fs.predicates();
+      hasJavaSources = fs.hasFiles(predicates.and(predicates.hasLanguage("java"), predicates.hasType(InputFile.Type.MAIN)));
+      File baseDir = fs.baseDir();
+      binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, settings, baseDir);
+      List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, settings, baseDir);
+      boolean useDeprecatedProperties = binaries.isEmpty() && libraries.isEmpty();
+      if (useDeprecatedProperties) {
+        binaries = getFilesFromProperty("sonar.binaries", settings, baseDir);
+        libraries = getFilesFromProperty("sonar.libraries", settings, baseDir);
+      }
+      if (pom != null && libraries.isEmpty()) {
+        //check mojo
+        elements = getLibrariesFromMaven(pom);
+      } else {
+        elements = Lists.newArrayList(binaries);
+        elements.addAll(libraries);
+        if (useDeprecatedProperties && !elements.isEmpty()) {
+          LOG.warn("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
+        }
       }
     }
   }
@@ -130,6 +147,7 @@ public class JavaClasspath implements BatchExtension {
     }
     return result;
   }
+
 
   private List<File> getFilesForPattern(File baseDir, String pathPattern, boolean libraryProperty) {
     String dirPath = pathPattern;
@@ -200,10 +218,12 @@ public class JavaClasspath implements BatchExtension {
   }
 
   public List<File> getElements() {
+    init();
     return elements;
   }
 
   public List<File> getBinaryDirs() {
+    init();
     return binaries;
   }
 
