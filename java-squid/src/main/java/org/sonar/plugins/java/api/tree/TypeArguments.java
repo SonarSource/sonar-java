@@ -21,8 +21,8 @@ package org.sonar.plugins.java.api.tree;
 
 public interface TypeArguments extends ListTree<Tree> {
 
-  public SyntaxToken openBracketToken();
+  SyntaxToken openBracketToken();
 
-  public SyntaxToken closeBracketToken();
+  SyntaxToken closeBracketToken();
 
 }

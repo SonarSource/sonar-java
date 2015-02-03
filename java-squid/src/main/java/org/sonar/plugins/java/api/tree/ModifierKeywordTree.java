@@ -20,5 +20,5 @@
 package org.sonar.plugins.java.api.tree;
 
 public interface ModifierKeywordTree extends ModifierTree {
-  public Modifier modifier();
+  Modifier modifier();
 }

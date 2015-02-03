@@ -24,8 +24,8 @@ import javax.annotation.Nullable;
 public interface TypeParameters extends ListTree<TypeParameterTree> {
 
   @Nullable
-  public SyntaxToken openBracketToken();
+  SyntaxToken openBracketToken();
 
   @Nullable
-  public SyntaxToken closeBracketToken();
+  SyntaxToken closeBracketToken();
 }
