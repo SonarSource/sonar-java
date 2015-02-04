@@ -20,17 +20,22 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "StringEqualityComparisonCheck",
-  priority = Priority.CRITICAL,
-  status = "DEPRECATED",
-  tags = {"bug"})
+  name = "Strings should be compared using equals()",
+  tags = {"bug"},
+  priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("5min")
 public class StringEqualityComparisonCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override

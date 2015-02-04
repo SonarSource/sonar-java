@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -30,6 +31,8 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,9 +43,12 @@ import java.util.List;
 import java.util.Set;
 
 @Rule(
-    key = "S00103",
-    priority = Priority.MINOR,
-    tags = {"convention"})
+  key = "S00103",
+  name = "Lines of code should not be too long",
+  tags = {"convention"},
+  priority = Priority.MINOR)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("1min")
 public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
   private static final int DEFAULT_MAXIMUM_LINE_LENHGTH = 80;

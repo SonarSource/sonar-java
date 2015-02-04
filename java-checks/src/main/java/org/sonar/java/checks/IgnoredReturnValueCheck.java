@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
@@ -31,13 +32,18 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key = "S2201",
-    priority = Priority.CRITICAL,
-    tags = {"bug"})
+  key = "S2201",
+  name = "Return values should not be ignored when function calls don't have any side effects",
+  tags = {"bug"},
+  priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("15min")
 public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
 
   private static List<String> CHECKED_TYPES = ImmutableList.<String>builder()

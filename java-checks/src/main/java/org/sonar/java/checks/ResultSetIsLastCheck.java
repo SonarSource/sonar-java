@@ -20,19 +20,26 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(key = "S2232",
-    priority = Priority.CRITICAL,
-    tags = {"performance", "pitfall"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@Rule(
+  key = "S2232",
+  name = "\"ResultSet.isLast()\" should not be used",
+  tags = {"performance", "pitfall"},
+  priority = Priority.CRITICAL)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("10min")
 public class ResultSetIsLastCheck extends AbstractMethodDetection {
 
   @Override

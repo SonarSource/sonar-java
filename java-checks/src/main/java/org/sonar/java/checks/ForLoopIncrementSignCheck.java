@@ -19,20 +19,26 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = "S2251",
-  priority = Priority.BLOCKER,
-  tags = {"bug"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
-public class ForLoopIncrementSignCheck extends AbstractForLoopRule {
+  name = "A \"for\" loop update clause should move the counter in the right direction",
+  tags = {"bug"},
+  priority = Priority.BLOCKER)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("5min")
+public class  ForLoopIncrementSignCheck extends AbstractForLoopRule {
 
   @Override
   public void visitForStatement(ForStatementTree forStatement) {

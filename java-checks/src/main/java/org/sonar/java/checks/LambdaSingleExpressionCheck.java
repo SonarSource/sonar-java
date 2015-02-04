@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.annotations.Beta;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -31,15 +31,21 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key = LambdaSingleExpressionCheck.RULE_KEY,
-    priority = Priority.MAJOR,
-    tags = {"java8"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  key = LambdaSingleExpressionCheck.RULE_KEY,
+  name = "Lamdbas containing only one statement should not nest this statement in a block",
+  tags = {"java8"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
 @Beta
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("5min")
 public class LambdaSingleExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1602";

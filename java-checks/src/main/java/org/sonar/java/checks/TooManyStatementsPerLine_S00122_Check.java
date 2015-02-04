@@ -24,11 +24,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multiset;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -37,9 +40,12 @@ import java.util.Map;
 
 @Rule(
   key = "S00122",
-  priority = Priority.MAJOR,
-  tags = {"convention"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  name = "Statements should be on separate lines",
+  tags = {"convention"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("1min")
 public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessGrammar> {
 
   private static final AstNodeType[] STATEMENTS_KINDS = new ImmutableList.Builder<AstNodeType>()

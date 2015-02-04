@@ -23,6 +23,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -43,14 +44,21 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-@Rule(key = UndocumentedApiCheck.RULE_KEY, priority = Priority.MAJOR,
-  tags = {"convention"})
+@Rule(
+  key = UndocumentedApiCheck.RULE_KEY,
+  name = "Public types, methods and fields (API) should be documented with Javadoc",
+  tags = {"convention"},
+  priority = Priority.MAJOR)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("30min")
 public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();

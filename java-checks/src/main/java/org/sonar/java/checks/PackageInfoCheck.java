@@ -20,18 +20,24 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.io.File;
 import java.util.Set;
 
 @Rule(
-    key = PackageInfoCheck.RULE_KEY,
-    priority = Priority.MAJOR,
-    tags = {"convention"})
+  key = PackageInfoCheck.RULE_KEY,
+  name = "Packages should have a javadoc file 'package-info.java'",
+  tags = {"convention"},
+  priority = Priority.MAJOR)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("20min")
 public class PackageInfoCheck implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1228";

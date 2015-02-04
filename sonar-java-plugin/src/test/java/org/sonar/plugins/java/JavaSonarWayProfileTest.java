@@ -22,7 +22,6 @@ package org.sonar.plugins.java;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.sonar.api.profiles.AnnotationProfileParser;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleFinder;
@@ -40,7 +39,7 @@ public class JavaSonarWayProfileTest {
   public void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
 
-    JavaSonarWayProfile definition = new JavaSonarWayProfile(new AnnotationProfileParser(ruleFinder()));
+    JavaSonarWayProfile definition = new JavaSonarWayProfile(ruleFinder());
     RulesProfile profile = definition.createProfile(validation);
 
     assertThat(profile.getLanguage()).isEqualTo(Java.KEY);

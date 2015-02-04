@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
@@ -35,13 +36,18 @@ import org.sonar.java.resolve.Type.ClassType;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
   key = "S2057",
-  priority = Priority.MAJOR,
-  tags = {"pitfall", "serialization"})
+  name = "\"Serializable\" classes should have a version id",
+  tags = {"pitfall", "serialization"},
+  priority = Priority.MAJOR)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
+@SqaleConstantRemediation("5min")
 public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
 
   @Override

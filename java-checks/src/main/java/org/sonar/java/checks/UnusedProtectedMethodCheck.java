@@ -19,16 +19,24 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
-@Rule(key = UnusedProtectedMethodCheck.RULE_KEY, priority = Priority.MAJOR,
-  tags={"unused"})
+@Rule(
+  key = UnusedProtectedMethodCheck.RULE_KEY,
+  name = "Unused protected method",
+  tags = {"unused"},
+  priority = Priority.MAJOR)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("5min")
 public class UnusedProtectedMethodCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "UnusedProtectedMethod";

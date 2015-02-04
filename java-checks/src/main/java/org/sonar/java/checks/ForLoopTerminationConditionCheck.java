@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
@@ -32,12 +32,18 @@ import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = "S888",
-  priority = Priority.CRITICAL,
-  tags = {"bug", "cert", "cwe", "misra"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+  name = "Relational operators should be used in \"for\" loop termination conditions",
+  tags = {"bug", "cert", "cwe", "misra"},
+  priority = Priority.CRITICAL)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("2min")
 public class ForLoopTerminationConditionCheck extends AbstractForLoopRule {
 
   @Override

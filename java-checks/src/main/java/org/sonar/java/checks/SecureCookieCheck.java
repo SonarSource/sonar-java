@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
@@ -36,14 +36,20 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key = "S2092",
-    priority = Priority.CRITICAL,
-    tags = {"cwe", "owasp-top10", "security"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+  key = "S2092",
+  name = "Cookies should be \"secure\"",
+  tags = {"cwe", "owasp-top10", "security"},
+  priority = Priority.CRITICAL)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("5min")
 public class SecureCookieCheck extends SubscriptionBaseVisitor {
 
   private List<Symbol> unsecuredCookies = Lists.newArrayList();

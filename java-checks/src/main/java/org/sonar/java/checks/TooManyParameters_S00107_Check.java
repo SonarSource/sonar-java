@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -28,12 +28,18 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = TooManyParameters_S00107_Check.RULE_KEY,
-  priority = Priority.MAJOR,
-  tags={"brain-overload"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  name = "Methods should not have too many parameters",
+  tags = {"brain-overload"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
+@SqaleConstantRemediation("1h")
 public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S00107";

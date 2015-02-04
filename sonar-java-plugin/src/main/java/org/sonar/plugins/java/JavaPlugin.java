@@ -81,7 +81,7 @@ public class JavaPlugin extends SonarPlugin {
             .hidden()
             .build(),
 
-        JavaRuleRepository.class,
+        JavaRulesDefinition.class,
         JavaSonarWayProfile.class,
         SonarComponents.class,
         DefaultJavaResourceLocator.class,

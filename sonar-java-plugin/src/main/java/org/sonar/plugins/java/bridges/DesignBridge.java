@@ -151,7 +151,6 @@ public class DesignBridge {
         if (issuable != null) {
           issuable.addIssue(issuable.newIssueBuilder()
               .ruleKey(CycleBetweenPackagesCheck.RULE_KEY)
-              .effortToFix((double) subDependency.getWeight())
               .message("Remove the dependency on the source file \"" + toFile.getLongName() + "\" to break a package cycle.")
               .build());
         }

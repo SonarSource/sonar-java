@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
@@ -32,16 +32,21 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 @Rule(
   key = "S1948",
-  priority = Priority.MAJOR,
-  tags = {"bug", "cwe", "serialization"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  name = "Fields in a \"Serializable\" class should either be transient or serializable",
+  tags = {"bug", "cwe", "serialization"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseVisitor {
 
   @Override

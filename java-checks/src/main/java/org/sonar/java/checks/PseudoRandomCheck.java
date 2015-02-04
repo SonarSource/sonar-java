@@ -20,20 +20,25 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key = "S2245",
-    priority = Priority.CRITICAL,
-    tags = {"cert", "cwe", "sans-top25-2011", "security"}
-)
+  key = "S2245",
+  name = "Pseudorandom number generators (PRNGs) should not be used in secure context",
+  tags = {"cert", "cwe", "sans-top25-2011", "security"},
+  priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("10min")
 public class PseudoRandomCheck extends SubscriptionBaseVisitor {
 
   private MethodInvocationMatcher methodInvocationMatcher = MethodInvocationMatcher.create().typeDefinition("java.lang.Math").name("random");

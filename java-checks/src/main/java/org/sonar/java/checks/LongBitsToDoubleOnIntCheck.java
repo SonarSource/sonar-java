@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -28,13 +28,20 @@ import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(key = "S2127",
-    priority = Priority.BLOCKER,
-    tags = {"bug"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
+@Rule(
+  key = "S2127",
+  name = "\"Double.longBitsToDouble\" should not be used for \"int\"",
+  tags = {"bug"},
+  priority = Priority.BLOCKER)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("15min")
 public class LongBitsToDoubleOnIntCheck extends AbstractMethodDetection {
 
   @Override

@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
@@ -30,14 +30,22 @@ import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.java.signature.MethodSignatureScanner;
 import org.sonar.java.signature.Parameter;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
 import java.util.List;
 
-@Rule(key = UnusedPrivateMethodCheck.RULE_KEY, priority = Priority.MAJOR,
-    tags = {"unused"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@Rule(
+  key = UnusedPrivateMethodCheck.RULE_KEY,
+  name = "Unused private method",
+  tags = {"unused"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("5min")
 public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "UnusedPrivateMethod";

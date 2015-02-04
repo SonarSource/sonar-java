@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -30,6 +31,8 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -37,8 +40,11 @@ import java.text.ParseException;
 import java.util.List;
 
 @Rule(
-    key = MagicNumberCheck.RULE_KEY,
-    priority = Priority.MINOR)
+  key = MagicNumberCheck.RULE_KEY,
+  name = "Magic numbers should not be used",
+  priority = Priority.MINOR)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
+@SqaleConstantRemediation("5min")
 public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S109";
