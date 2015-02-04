@@ -19,32 +19,22 @@
  */
 package org.sonar.plugins.java;
 
-import org.sonar.api.resources.Java;
-import org.sonar.api.rules.AnnotationRuleParser;
-import org.sonar.api.rules.Rule;
-import org.sonar.api.rules.RuleRepository;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.java.checks.CheckList;
-
-import java.util.List;
+import org.sonar.squidbridge.annotations.AnnotationBasedRulesDefinition;
 
 /**
  * Replacement for org.sonar.plugins.squid.SquidRuleRepository
  */
-public class JavaRuleRepository extends RuleRepository {
-
-  private static final String REPOSITORY_NAME = "SonarQube";
-
-  private final AnnotationRuleParser annotationRuleParser;
-
-  public JavaRuleRepository(AnnotationRuleParser annotationRuleParser) {
-    super(CheckList.REPOSITORY_KEY, Java.KEY);
-    setName(REPOSITORY_NAME);
-    this.annotationRuleParser = annotationRuleParser;
-  }
+public class JavaRulesDefinition implements RulesDefinition {
 
   @Override
-  public List<Rule> createRules() {
-    return annotationRuleParser.parse(CheckList.REPOSITORY_KEY, CheckList.getChecks());
-  }
+  public void define(Context context) {
+    NewRepository repository = context
+        .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
+        .setName("SonarQube");
 
+    AnnotationBasedRulesDefinition.load(repository, Java.KEY, CheckList.getChecks());
+    repository.done();
+  }
 }
