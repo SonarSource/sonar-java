@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -30,15 +31,20 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Map;
 
 @Rule(
   key = "S2178",
-  priority = Priority.CRITICAL,
-  tags = {"bug"})
+  name = "Short-circuit logic should be used in boolean contexts",
+  tags = {"bug"},
+  priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation(value = "5min")
 public class NonShortCircuitLogicCheck extends SubscriptionBaseVisitor {
 
   private static final Map<String, String> REPLACEMENTS =

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.base.Splitter;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -29,15 +30,20 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Rule(
   key = HardcodedIpCheck.RULE_KEY,
-  priority = Priority.MAJOR,
-  tags={"security"})
+  name = "IP addresses should not be hardcoded",
+  tags = {"security"},
+  priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
+@SqaleConstantRemediation(value = "30min")
 public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1313";

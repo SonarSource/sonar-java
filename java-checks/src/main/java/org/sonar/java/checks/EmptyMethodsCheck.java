@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -34,11 +35,16 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = EmptyMethodsCheck.RULE_KEY,
+  name = "Methods should not be empty",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation(value = "5min")
 public class EmptyMethodsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1186";

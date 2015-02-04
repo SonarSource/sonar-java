@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -29,6 +30,8 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -36,9 +39,12 @@ import java.util.List;
 
 @Rule(
   key = "S1201",
-  priority = Priority.CRITICAL,
-  tags={"pitfall"})
+  name = "Methods named \"equals\" should override Object.equals(Object)",
+  tags = {"pitfall"},
+  priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation(value = "30min")
 public class MethodNamedEqualsCheck extends SubscriptionBaseVisitor {
 
   @Override

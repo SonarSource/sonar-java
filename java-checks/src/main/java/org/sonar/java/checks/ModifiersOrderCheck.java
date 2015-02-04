@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -31,15 +32,20 @@ import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Set;
 
 @Rule(
-    key = "ModifiersOrderCheck",
-    priority = Priority.MINOR,
-    tags = {"convention"})
+  key = "ModifiersOrderCheck",
+  name = "Modifiers should be declared in the correct order",
+  tags = {"convention"},
+  priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation(value = "10min")
 public class ModifiersOrderCheck extends SubscriptionBaseVisitor {
 
 

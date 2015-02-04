@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -31,12 +32,17 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-    key = ArrayEqualsCheck.RULE_KEY,
-    priority = Priority.CRITICAL,
-    tags = {"convention"})
+  key = ArrayEqualsCheck.RULE_KEY,
+  name = "The Array.equals(Object obj) method should never be used",
+  tags = {"convention"},
+  priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation(value = "5min")
 public class ArrayEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1294";

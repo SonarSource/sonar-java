@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -27,6 +28,8 @@ import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Arrays;
 import java.util.Deque;
@@ -34,9 +37,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
-    key = "UselessParenthesesCheck",
-    priority = Priority.MAJOR)
+  key = "UselessParenthesesCheck",
+  name = "Useless parentheses around expressions should be removed to prevent any misunderstanding",
+  priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation(value = "1min")
 public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
 
   private final Deque<Tree> parent = new LinkedList<Tree>();

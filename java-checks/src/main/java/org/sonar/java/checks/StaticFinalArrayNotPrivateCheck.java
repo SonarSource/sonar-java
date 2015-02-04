@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -27,14 +28,19 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
   key = "S1873",
-  priority = Priority.CRITICAL,
-  tags = {"security", "cwe"})
+  name = "\"static final\" arrays should be \"private\"",
+  tags = {"security", "cwe"},
+  priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
+@SqaleConstantRemediation("15min")
 public class StaticFinalArrayNotPrivateCheck extends SubscriptionBaseVisitor {
 
   @Override

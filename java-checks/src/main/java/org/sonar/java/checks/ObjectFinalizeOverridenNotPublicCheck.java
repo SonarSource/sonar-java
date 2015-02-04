@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -27,13 +28,18 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key = "S1174",
-    priority = Priority.MAJOR)
+  key = "S1174",
+  name = "Object.finalize() should remain protected (versus public) when overriding",
+  priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation(value = "10min")
 public class ObjectFinalizeOverridenNotPublicCheck extends SubscriptionBaseVisitor {
 
   @Override

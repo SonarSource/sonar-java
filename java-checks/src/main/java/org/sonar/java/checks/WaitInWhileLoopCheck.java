@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -32,14 +33,20 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
 import java.util.List;
 
-@Rule(key = "S2274",
-    priority = Priority.CRITICAL,
-    tags = {"bug", "cert", "multi-threading"})
+@Rule(
+  key = "S2274",
+  name = "\"Object.wait(...)\" and \"Condition.await(...)\" should always be called inside a \"while\" loop",
+  tags = {"bug", "cert", "multi-threading"},
+  priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
+@SqaleConstantRemediation(value = "20min")
 public class WaitInWhileLoopCheck extends AbstractMethodDetection {
 
   private Deque<Boolean> inWhileLoop = Lists.newLinkedList();

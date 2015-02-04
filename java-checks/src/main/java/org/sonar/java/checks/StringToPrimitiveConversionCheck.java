@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -38,14 +39,19 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
   key = "S2130",
-  priority = Priority.MAJOR,
-  tags = {"performance"})
+  name = "Parsing should be used to convert \"Strings\" to primitives",
+  tags = {"performance"},
+  priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
+@SqaleConstantRemediation(value = "5min")
 public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
 
   private final List<PrimitiveCheck> primitiveChecks = buildPrimitiveChecks();

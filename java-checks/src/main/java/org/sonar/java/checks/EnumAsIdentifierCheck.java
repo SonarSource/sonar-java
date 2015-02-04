@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -27,11 +28,16 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = EnumAsIdentifierCheck.RULE_KEY,
+  name = "\"enum\" should no longer be used as a name",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
+@SqaleConstantRemediation(value = "10min")
 public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1190";

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -29,14 +30,19 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Set;
 
 @Rule(
-    key = "S1158",
-    priority = Priority.MAJOR)
+  key = "S1158",
+  name = "Primitive wrappers should not be instantiated only to perform a to String conversion",
+  priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
+@SqaleConstantRemediation(value = "5min")
 public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
 
   private static final Set<String> PRIMITIVE_WRAPPERS = ImmutableSet.of(

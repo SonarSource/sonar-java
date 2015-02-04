@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -29,13 +30,18 @@ import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
   key = "S2333",
-  priority = Priority.MINOR,
-  tags = {"clumsy"})
+  name = "Redundant modifiers should not be used",
+  tags = {"clumsy"},
+  priority = Priority.MINOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation(value = "2min")
 public class RedundantModifierCheck extends SubscriptionBaseVisitor {
 
   @Override

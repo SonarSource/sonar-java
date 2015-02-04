@@ -20,16 +20,23 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(key = "S2096",
-    priority = Priority.MAJOR
+@Rule(
+  key = "S2096",
+  name = "\"main\" should not \"throw\" anything",
+  priority = Priority.MAJOR
 )
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
+@SqaleConstantRemediation(value = "15min")
 public class MainMethodThrowsExceptionCheck extends SubscriptionBaseVisitor {
 
   @Override

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -34,12 +35,17 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = AnonymousClassesTooBigCheck.RULE_KEY,
-  priority = Priority.MAJOR,
-  tags = {"brain-overload"})
+  name = "Lambdas and anonymous classes should not have too many lines",
+  tags = {"brain-overload"},
+  priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation(value = "20min")
 public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1188";

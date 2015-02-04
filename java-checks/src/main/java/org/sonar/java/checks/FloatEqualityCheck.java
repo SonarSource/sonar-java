@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -30,14 +31,19 @@ import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key = "S1244",
-    priority = Priority.CRITICAL,
-    tags = {"bug", "misra"})
+  key = "S1244",
+  name = "Floating point numbers should not be tested for equality",
+  tags = {"bug", "misra"},
+  priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation(value = "5min")
 public class FloatEqualityCheck extends SubscriptionBaseVisitor {
 
   @Override

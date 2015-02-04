@@ -22,20 +22,26 @@ package org.sonar.java.checks;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multiset;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
-    key = "S1142",
-    priority = Priority.MAJOR,
-    tags = {"brain-overload"})
+  key = "S1142",
+  name = "Methods should not contain too many return statements",
+  tags = {"brain-overload"},
+  priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
+@SqaleConstantRemediation(value = "20min")
 public class MethodWithExcessiveReturnsCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 3;

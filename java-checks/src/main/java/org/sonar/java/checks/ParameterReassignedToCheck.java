@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -38,14 +39,19 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Set;
 
 @Rule(
   key = ParameterReassignedToCheck.RULE_KEY,
-  priority = Priority.MAJOR,
-  tags={"pitfall", "misra"})
+  name = "Method parameters, caught exceptions and foreach variables should not be reassigned",
+  tags = {"pitfall", "misra"},
+  priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation(value = "5min")
 public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1226";

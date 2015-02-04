@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -32,14 +33,19 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Map;
 
 @Rule(
   key = "S2070",
-  priority = Priority.CRITICAL,
-  tags = {"cwe", "owasp-top10", "sans-top25", "security"})
+  name = "SHA-1 and MD5 hash algorithms should not be used",
+  tags = {"cwe", "owasp-top10", "sans-top25", "security"},
+  priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation(value = "30min")
 public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
   private static final String MD5 = "MD5";

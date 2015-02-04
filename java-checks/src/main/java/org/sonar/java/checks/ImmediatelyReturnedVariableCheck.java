@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -36,14 +37,19 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Map;
 
 @Rule(
   key = ImmediatelyReturnedVariableCheck.RULE_KEY,
+  name = "Variables should not be declared and then immediately returned or thrown",
   priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation(value = "2min")
 public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1488";

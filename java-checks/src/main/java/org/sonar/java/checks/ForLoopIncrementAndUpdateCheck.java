@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -34,15 +35,20 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collection;
 import java.util.List;
 
 @Rule(
-    key = "S1994",
-    priority = Priority.CRITICAL,
-    tags = {"bug"})
+  key = "S1994",
+  name = "\"for\" loop incrementers should modify the variable being tested in the loop's stop condition",
+  tags = {"bug"},
+  priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation(value = "20min")
 public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
 
   @Override

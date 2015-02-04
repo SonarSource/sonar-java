@@ -20,15 +20,22 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(key = "S1774",
-    priority = Priority.MAJOR,
-    tags = {"brain-overload"})
+@Rule(
+  key = "S1774",
+  name = "The ternary operator should not be used",
+  tags = {"brain-overload"},
+  priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation(value = "5min")
 public class TernaryOperatorCheck extends SubscriptionBaseVisitor {
 
   @Override

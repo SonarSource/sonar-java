@@ -20,16 +20,24 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 /**
  * Companion of {@link org.sonar.plugins.javang.bridges.DesignBridge} which actually does the job on finding cycles and creation of issues.
  *
  * @since 3.2
  */
-@Rule(key = CycleBetweenPackagesCheck.KEY, priority = Priority.MAJOR)
+@Rule(
+  key = CycleBetweenPackagesCheck.KEY,
+  name = "Avoid cycle between java packages",
+  priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
+@SqaleConstantRemediation(value = "1d")
 public class CycleBetweenPackagesCheck extends BytecodeVisitor {
 
 

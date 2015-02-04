@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -28,13 +29,18 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key = "S2278",
-    priority = Priority.CRITICAL,
-    tags = {"cwe", "owasp-top10", "security"})
+  key = "S2278",
+  name = "DES (Data Encryption Standard) and DESede (3DES) should not be used",
+  tags = {"cwe", "owasp-top10", "security"},
+  priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation(value = "20min")
 public class AvoidDESCheck extends AbstractMethodDetection {
 
   @Override

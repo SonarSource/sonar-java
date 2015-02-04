@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -30,14 +31,19 @@ import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
 
 @Rule(
   key = "S2252",
-  priority = Priority.CRITICAL,
-  tags = {"bug"})
+  name = "Loop conditions should be true at least once",
+  tags = {"bug"},
+  priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation(value = "10min")
 public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
 
   @Override

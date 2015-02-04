@@ -20,18 +20,24 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "EmptyStatementUsageCheck",
+  name = "Empty statements should be removed",
   priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation(value = "10min")
 public class EmptyStatementUsageCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -33,15 +34,20 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Set;
 
 @Rule(
-    key = "S1905",
-    priority = Priority.MINOR,
-    tags = {})
+  key = "S1905",
+  name = "Redundant casts should not be used",
+  tags = {},
+  priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation(value = "5min")
 public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
 
   private Set<Tree> excluded = Sets.newHashSet();

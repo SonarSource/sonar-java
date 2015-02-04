@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -28,12 +29,17 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = SwitchAtLeastThreeCasesCheck.RULE_KEY,
-  priority = Priority.MINOR,
-  tags = {"misra"})
+  name = "\"switch\" statements should have at least 3 cases",
+  tags = {"misra"},
+  priority = Priority.MINOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation(value = "10min")
 public class SwitchAtLeastThreeCasesCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1301";

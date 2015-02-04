@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.BooleanUtils;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -29,15 +30,20 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
 @Rule(
-    key = "S00100",
-    priority = Priority.MAJOR,
-    tags = {"convention"})
+  key = "S00100",
+  name = "Method names should comply with a naming convention",
+  tags = {"convention"},
+  priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation(value = "10min")
 public class BadMethodName_S00100_Check extends SubscriptionBaseVisitor {
 
   private static final String DEFAULT_FORMAT = "^[a-z][a-zA-Z0-9]*$";

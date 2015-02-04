@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -34,14 +35,19 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key = "S2109",
-    priority = Priority.BLOCKER,
-    tags = {"bug"})
+  key = "S2109",
+  name = "Reflection should not be used to check non-runtime annotations",
+  tags = {"bug"},
+  priority = Priority.BLOCKER)
 @BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation(value = "15min")
 public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetection {
 
   @Override

@@ -19,16 +19,22 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.Type;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = "S2066",
-  priority = Priority.CRITICAL,
-  tags = {"bug", "serialization"})
+  name = "\"Serializable\" inner classes of non-serializable classes should be \"static\"",
+  tags = {"bug", "serialization"},
+  priority = Priority.CRITICAL)
 @BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation(value = "15min")
 public class InnerClassOfNonSerializableCheck extends AbstractSerializableInnerClassRule {
 
   @Override
