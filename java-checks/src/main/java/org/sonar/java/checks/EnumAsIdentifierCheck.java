@@ -36,8 +36,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "\"enum\" should no longer be used as a name",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
+@SqaleConstantRemediation("10min")
 public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1190";

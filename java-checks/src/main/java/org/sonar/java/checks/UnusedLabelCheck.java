@@ -36,8 +36,8 @@ import java.util.List;
   tags = {"misra", "unused"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("10min")
 public class UnusedLabelCheck extends SubscriptionBaseVisitor {
 
   @Override

@@ -42,8 +42,8 @@ import java.util.List;
   tags = {"bug"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "15min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("15min")
 public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
 
   @Override

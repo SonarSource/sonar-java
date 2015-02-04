@@ -41,8 +41,8 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.LABELED_STATEMENT;
   name = "\"switch\" statements should not contain non-case labels",
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("10min")
 public class SwitchWithLabelsCheck extends SubscriptionBaseVisitor {
 
   @Override

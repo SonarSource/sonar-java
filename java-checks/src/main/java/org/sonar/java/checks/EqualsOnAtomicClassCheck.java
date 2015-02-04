@@ -39,8 +39,8 @@ import java.util.List;
   tags = {"bug"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("5min")
 public class EqualsOnAtomicClassCheck extends AbstractMethodDetection {
 
   @Override

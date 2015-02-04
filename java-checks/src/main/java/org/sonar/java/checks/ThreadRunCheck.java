@@ -39,8 +39,8 @@ import org.sonar.squidbridge.api.SourceFile;
   tags = {"multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class ThreadRunCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "S1217";

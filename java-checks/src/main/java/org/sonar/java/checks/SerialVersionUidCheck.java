@@ -46,8 +46,8 @@ import java.util.List;
   name = "\"Serializable\" classes should have a version id",
   tags = {"pitfall", "serialization"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
+@SqaleConstantRemediation("5min")
 public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
 
   @Override

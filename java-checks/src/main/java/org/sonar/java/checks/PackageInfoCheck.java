@@ -36,8 +36,8 @@ import java.util.Set;
   name = "Packages should have a javadoc file 'package-info.java'",
   tags = {"convention"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("20min")
 public class PackageInfoCheck implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1228";

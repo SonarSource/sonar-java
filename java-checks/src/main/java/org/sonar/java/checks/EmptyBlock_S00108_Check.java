@@ -38,8 +38,8 @@ import java.util.List;
   tags = {"bug"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class EmptyBlock_S00108_Check extends SubscriptionBaseVisitor {
 
 

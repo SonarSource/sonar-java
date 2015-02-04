@@ -38,8 +38,8 @@ import java.util.List;
   tags = {"performance"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
-@SqaleConstantRemediation(value = "15min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
+@SqaleConstantRemediation("15min")
 public class ConcurrentLinkedQueueSizeCheck extends AbstractMethodDetection {
 
   @Override

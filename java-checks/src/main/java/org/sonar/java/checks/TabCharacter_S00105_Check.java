@@ -43,8 +43,8 @@ import java.util.List;
   tags = {"convention"},
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "2min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("2min")
 public class TabCharacter_S00105_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
   private Charset charset;

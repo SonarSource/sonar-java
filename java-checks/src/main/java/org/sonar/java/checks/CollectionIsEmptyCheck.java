@@ -41,8 +41,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Collection.isEmpty() should be used to test for emptiness",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "2min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("2min")
 public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1155";

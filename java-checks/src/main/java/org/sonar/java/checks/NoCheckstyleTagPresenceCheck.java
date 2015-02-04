@@ -34,8 +34,8 @@ import java.util.List;
   key = "S1315",
   name = "CHECKSTYLE:OFF suppression comment filters should not be used",
   priority = Priority.MINOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("5min")
 public class NoCheckstyleTagPresenceCheck extends SubscriptionBaseVisitor {
 
   private static final String PATTERN = "CHECKSTYLE:OFF";

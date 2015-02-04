@@ -40,8 +40,8 @@ import java.util.List;
   name = "Redundant modifiers should not be used",
   tags = {"clumsy"},
   priority = Priority.MINOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "2min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("2min")
 public class RedundantModifierCheck extends SubscriptionBaseVisitor {
 
   @Override

@@ -48,8 +48,8 @@ import java.util.Map;
   name = "Synchronized classes Vector, Hashtable, Stack and StringBuffer should not be used",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
+@SqaleConstantRemediation("20min")
 public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;

@@ -35,8 +35,8 @@ import java.util.List;
   name = "\"main\" should not \"throw\" anything",
   priority = Priority.MAJOR
 )
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
-@SqaleConstantRemediation(value = "15min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
+@SqaleConstantRemediation("15min")
 public class MainMethodThrowsExceptionCheck extends SubscriptionBaseVisitor {
 
   @Override

@@ -38,8 +38,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Exceptions should not be thrown in finally blocks",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
+@SqaleConstantRemediation("20min")
 public class ThrowsFromFinallyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String KEY = "S1163";

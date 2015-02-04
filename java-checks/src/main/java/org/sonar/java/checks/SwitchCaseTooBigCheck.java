@@ -40,8 +40,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("10min")
 public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final int DEFAULT_MAX = 5;

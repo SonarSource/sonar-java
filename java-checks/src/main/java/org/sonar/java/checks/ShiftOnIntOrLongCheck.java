@@ -46,8 +46,8 @@ import java.util.List;
   tags = {"bug"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("5min")
 public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
   @Override

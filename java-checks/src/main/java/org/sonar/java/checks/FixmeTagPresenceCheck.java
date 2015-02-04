@@ -36,8 +36,8 @@ import java.util.List;
   name = "FIXME tags should be handled",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class FixmeTagPresenceCheck extends SubscriptionBaseVisitor {
 
   private static final String PATTERN = "FIXME";

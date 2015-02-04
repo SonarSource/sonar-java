@@ -43,8 +43,8 @@ import java.util.List;
   tags = {"unpredictable"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
 
   @Override

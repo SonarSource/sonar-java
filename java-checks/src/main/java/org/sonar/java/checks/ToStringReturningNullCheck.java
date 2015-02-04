@@ -39,8 +39,8 @@ import java.util.List;
   tags = {"bug"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("5min")
 public class ToStringReturningNullCheck extends SubscriptionBaseVisitor {
 
   private boolean insideToString = false;

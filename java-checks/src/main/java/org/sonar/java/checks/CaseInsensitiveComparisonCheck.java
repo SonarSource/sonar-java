@@ -39,8 +39,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Case insensitive string comparisons should be made without intermediate upper or lower casing",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("10min")
 public class CaseInsensitiveComparisonCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1157";

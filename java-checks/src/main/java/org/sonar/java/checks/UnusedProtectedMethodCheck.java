@@ -35,8 +35,8 @@ import org.sonar.squidbridge.api.SourceFile;
   name = "Unused protected method",
   tags = {"unused"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("5min")
 public class UnusedProtectedMethodCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "UnusedProtectedMethod";

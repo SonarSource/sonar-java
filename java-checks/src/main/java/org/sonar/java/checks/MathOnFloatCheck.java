@@ -37,8 +37,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Math should not be performed on floats",
   tags = {"bug"},
   priority = Priority.CRITICAL)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation(value = "15min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("15min")
 public class MathOnFloatCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S2164";

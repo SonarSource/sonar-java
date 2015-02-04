@@ -39,8 +39,8 @@ import java.util.List;
   tags = {"java8"},
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "2min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("2min")
 public class LambdaOptionalParenthesisCheck extends SubscriptionBaseVisitor {
 
   @Override

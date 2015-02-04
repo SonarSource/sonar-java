@@ -37,8 +37,8 @@ import java.util.List;
   name = "The Object.finalize() method should never be overriden",
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class ObjectFinalizeOverridenCheck extends SubscriptionBaseVisitor {
 
   @Override

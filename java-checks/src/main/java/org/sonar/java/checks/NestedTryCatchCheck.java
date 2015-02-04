@@ -36,8 +36,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Try-catch blocks should not be nested",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("20min")
 public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScanner {
 
 

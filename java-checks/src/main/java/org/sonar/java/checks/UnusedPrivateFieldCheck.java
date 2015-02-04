@@ -55,8 +55,8 @@ import java.util.List;
   tags = {"unused"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("5min")
 public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
 
   private static final String LOMBOK_GETTER = "lombok.Getter";

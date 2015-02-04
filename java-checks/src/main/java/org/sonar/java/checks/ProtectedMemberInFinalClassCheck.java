@@ -40,8 +40,8 @@ import java.util.List;
   name = "\"final\" classes should not have \"protected\" members",
   tags = {"confusing"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("5min")
 public class ProtectedMemberInFinalClassCheck extends SubscriptionBaseVisitor {
 
   @Override

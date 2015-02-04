@@ -36,8 +36,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = CycleBetweenPackagesCheck.KEY,
   name = "Avoid cycle between java packages",
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
-@SqaleConstantRemediation(value = "1d")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
+@SqaleConstantRemediation("1d")
 public class CycleBetweenPackagesCheck extends BytecodeVisitor {
 
 

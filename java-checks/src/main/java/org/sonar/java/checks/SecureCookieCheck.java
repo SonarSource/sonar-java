@@ -48,8 +48,8 @@ import java.util.List;
   tags = {"cwe", "owasp-top10", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("5min")
 public class SecureCookieCheck extends SubscriptionBaseVisitor {
 
   private List<Symbol> unsecuredCookies = Lists.newArrayList();

@@ -39,8 +39,8 @@ import java.util.List;
   tags = {"bug", "pitfall"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class WaitOnConditionCheck extends AbstractMethodDetection {
 
   @Override

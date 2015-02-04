@@ -36,8 +36,8 @@ import java.util.List;
   name = "\"javax.crypto.NullCipher\" should not be used for anything other than testing",
   tags = {"cwe", "owasp-top10", "security"},
   priority = Priority.BLOCKER)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation(value = "15min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("15min")
 public class NullCipherCheck extends SubscriptionBaseVisitor {
 
   @Override

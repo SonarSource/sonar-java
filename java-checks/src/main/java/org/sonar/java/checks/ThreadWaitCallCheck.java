@@ -39,8 +39,8 @@ import java.util.List;
   tags = {"bug", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class ThreadWaitCallCheck extends AbstractMethodDetection {
 
   @Override

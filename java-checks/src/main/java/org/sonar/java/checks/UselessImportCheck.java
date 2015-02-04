@@ -55,8 +55,8 @@ import java.util.Set;
   tags = {"unused"},
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("10min")
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "UselessImportCheck";

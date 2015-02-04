@@ -42,8 +42,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   tags = {"bug", "cert", "cwe", "misra"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation(value = "2min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("2min")
 public class ForLoopTerminationConditionCheck extends AbstractForLoopRule {
 
   @Override

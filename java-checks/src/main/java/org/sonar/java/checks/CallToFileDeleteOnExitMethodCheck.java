@@ -35,8 +35,8 @@ import org.sonar.squidbridge.api.SourceFile;
   key = CallToFileDeleteOnExitMethodCheck.RULE_KEY,
   name = "Do not use File#deleteOnExit()",
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
+@SqaleConstantRemediation("30min")
 public class  CallToFileDeleteOnExitMethodCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "CallToFileDeleteOnExitMethod";

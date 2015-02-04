@@ -41,8 +41,8 @@ import java.util.Set;
   name = "Primitive wrappers should not be instantiated only to perform a to String conversion",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
+@SqaleConstantRemediation("5min")
 public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
 
   private static final Set<String> PRIMITIVE_WRAPPERS = ImmutableSet.of(

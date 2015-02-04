@@ -41,8 +41,8 @@ import java.util.List;
   name = "Strings literals should be placed on the left side when checking for equality",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("10min")
 public class StringLiteralInsideEqualsCheck extends SubscriptionBaseVisitor {
 
   @Override

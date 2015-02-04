@@ -44,8 +44,8 @@ import java.util.Map;
   tags = {"convention"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "1min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("1min")
 public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessGrammar> {
 
   private static final AstNodeType[] STATEMENTS_KINDS = new ImmutableList.Builder<AstNodeType>()

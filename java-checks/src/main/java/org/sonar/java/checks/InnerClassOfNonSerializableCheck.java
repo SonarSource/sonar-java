@@ -33,8 +33,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   tags = {"bug", "serialization"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation(value = "15min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("15min")
 public class InnerClassOfNonSerializableCheck extends AbstractSerializableInnerClassRule {
 
   @Override

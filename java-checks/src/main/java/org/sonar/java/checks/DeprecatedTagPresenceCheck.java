@@ -32,8 +32,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Deprecated code should be removed eventually",
   priority = Priority.INFO)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "1h")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("1h")
 public class DeprecatedTagPresenceCheck extends AbstractDeprecatedChecker {
 
   @Override

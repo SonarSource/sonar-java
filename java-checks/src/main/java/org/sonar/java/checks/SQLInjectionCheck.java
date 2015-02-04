@@ -39,8 +39,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   tags = {"cwe", "owasp-top10", "security", "sql"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
+@SqaleConstantRemediation("20min")
 public class SQLInjectionCheck extends AbstractInjectionChecker {
 
   @Override

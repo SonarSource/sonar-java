@@ -44,8 +44,8 @@ import java.util.Set;
   tags = {"convention"},
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("10min")
 public class ModifiersOrderCheck extends SubscriptionBaseVisitor {
 
 

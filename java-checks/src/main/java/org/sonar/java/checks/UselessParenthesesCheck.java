@@ -41,8 +41,8 @@ import java.util.List;
   name = "Useless parentheses around expressions should be removed to prevent any misunderstanding",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "1min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("1min")
 public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
 
   private final Deque<Tree> parent = new LinkedList<Tree>();

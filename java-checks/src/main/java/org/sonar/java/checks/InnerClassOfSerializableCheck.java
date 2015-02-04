@@ -31,8 +31,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "\"Serializable\" inner classes of \"Serializable\" classes should be static",
   tags = {"pitfall", "serialization"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
-@SqaleConstantRemediation(value = "15min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
+@SqaleConstantRemediation("15min")
 public class InnerClassOfSerializableCheck extends AbstractSerializableInnerClassRule {
 
   @Override

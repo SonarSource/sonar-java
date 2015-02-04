@@ -43,8 +43,8 @@ import java.util.List;
   tags = {"cert"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "2min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("2min")
 public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVisitor {
 
   /**

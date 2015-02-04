@@ -43,8 +43,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   tags = {"error-handling"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
+@SqaleConstantRemediation("20min")
 public class CatchOfThrowableOrErrorCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String ERROR = "Error";

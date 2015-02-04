@@ -41,8 +41,8 @@ import java.util.List;
   tags = {"bug", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
 
   @Override

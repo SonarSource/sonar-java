@@ -43,8 +43,8 @@ import java.util.List;
   tags = {"bug", "cert", "multi-threading", "struts"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class ServletInstanceFieldCheck extends SubscriptionBaseVisitor {
 
   @Override

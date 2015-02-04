@@ -45,8 +45,8 @@ import java.util.List;
   name = "Source code should be correctly indented",
   tags = {"convention"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "1min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("1min")
 public class IndentationCheck extends SubscriptionBaseVisitor {
 
   private static final Kind[] BLOCK_TYPES = new Kind[]{

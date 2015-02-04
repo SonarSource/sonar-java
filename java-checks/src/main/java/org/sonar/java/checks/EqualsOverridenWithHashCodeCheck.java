@@ -43,8 +43,8 @@ import java.util.List;
   tags = {"bug"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class EqualsOverridenWithHashCodeCheck extends SubscriptionBaseVisitor {
 
   private static final String HASHCODE = "hashCode";

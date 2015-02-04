@@ -39,8 +39,8 @@ import java.util.List;
   name = "Enumeration should not be implemented",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "1h")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("1h")
 public class ImplementsEnumerationCheck extends SubscriptionBaseVisitor {
 
   @Override

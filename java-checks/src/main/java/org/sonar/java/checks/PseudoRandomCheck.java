@@ -37,8 +37,8 @@ import java.util.List;
   name = "Pseudorandom number generators (PRNGs) should not be used in secure context",
   tags = {"cert", "cwe", "sans-top25-2011", "security"},
   priority = Priority.CRITICAL)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("10min")
 public class PseudoRandomCheck extends SubscriptionBaseVisitor {
 
   private MethodInvocationMatcher methodInvocationMatcher = MethodInvocationMatcher.create().typeDefinition("java.lang.Math").name("random");

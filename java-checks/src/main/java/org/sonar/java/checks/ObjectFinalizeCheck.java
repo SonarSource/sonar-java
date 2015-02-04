@@ -41,8 +41,8 @@ import java.util.List;
   tags = {"pitfall"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class ObjectFinalizeCheck extends SubscriptionBaseVisitor {
 
   @Override

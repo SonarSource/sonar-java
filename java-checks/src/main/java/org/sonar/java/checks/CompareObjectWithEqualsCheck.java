@@ -42,8 +42,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Objects should be compared with \"equals()\"",
   tags = {"cwe"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation(value = "2min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("2min")
 public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1698";

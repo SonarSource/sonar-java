@@ -36,8 +36,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   name = "Empty statements should be removed",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("10min")
 public class EmptyStatementUsageCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override

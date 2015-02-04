@@ -38,8 +38,8 @@ import java.util.List;
   tags = {"convention"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("10min")
 public class LowerCaseLongSuffixCheck extends SubscriptionBaseVisitor{
 
   @Override

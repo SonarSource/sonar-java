@@ -41,8 +41,8 @@ import java.util.Set;
   name = "Two cases in the same \"switch\" should not have exactly the same implementation",
   tags = {"bug"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("10min")
 public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
 
   @Override

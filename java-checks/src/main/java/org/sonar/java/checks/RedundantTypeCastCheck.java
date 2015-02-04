@@ -46,8 +46,8 @@ import java.util.Set;
   tags = {},
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("5min")
 public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
 
   private Set<Tree> excluded = Sets.newHashSet();

@@ -46,8 +46,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   tags = {"brain-overload"},
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.LOGIC_CHANGEABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_CHANGEABILITY)
+@SqaleConstantRemediation("20min")
 public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String KEY = "S134";

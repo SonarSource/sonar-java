@@ -38,8 +38,8 @@ import java.util.List;
   name = "Object.finalize() should remain protected (versus public) when overriding",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("10min")
 public class ObjectFinalizeOverridenNotPublicCheck extends SubscriptionBaseVisitor {
 
   @Override

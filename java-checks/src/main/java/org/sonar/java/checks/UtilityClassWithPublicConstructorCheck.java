@@ -40,8 +40,8 @@ import java.util.List;
   name = "Utility classes should not have a public constructor",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("30min")
 public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisitor {
 
   @Override

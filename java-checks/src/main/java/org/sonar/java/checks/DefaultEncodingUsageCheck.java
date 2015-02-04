@@ -49,8 +49,8 @@ import java.util.Set;
   name = "Classes and methods that rely on the default system encoding should not be used",
   tags = {"bug"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "15min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("15min")
 public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
 
   private static final String INT = "int";

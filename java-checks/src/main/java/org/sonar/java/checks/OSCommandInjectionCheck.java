@@ -41,8 +41,8 @@ import java.util.List;
   name = "Values passed to OS commands should be sanitized",
   tags = {"cwe", "owasp-top10", "sans-top25", "security"},
   priority = Priority.CRITICAL)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
+@SqaleConstantRemediation("30min")
 public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
   private static final MethodInvocationMatcher RUNTIME_EXEC_MATCHER = MethodInvocationMatcher.create()

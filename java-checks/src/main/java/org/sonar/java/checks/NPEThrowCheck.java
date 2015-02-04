@@ -42,8 +42,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "\"NullPointerException\" should not be explicitly thrown",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("10min")
 public class NPEThrowCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1695";

@@ -40,8 +40,8 @@ import java.util.List;
   name = "super.clone() should be called when overriding Object.clone()",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class CloneMethodCallsSuperCloneCheck extends SubscriptionBaseVisitor {
 
   private boolean foundSuperClone;

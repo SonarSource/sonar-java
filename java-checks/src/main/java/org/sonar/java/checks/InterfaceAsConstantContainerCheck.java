@@ -36,8 +36,8 @@ import java.util.List;
   name = "Constants should not be defined in interfaces",
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
+@SqaleConstantRemediation("20min")
 public class InterfaceAsConstantContainerCheck extends SubscriptionBaseVisitor {
 
   @Override

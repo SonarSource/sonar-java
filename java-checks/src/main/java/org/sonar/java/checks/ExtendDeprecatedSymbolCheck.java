@@ -38,8 +38,8 @@ import java.util.List;
   name = "Deprecated classes and interfaces should not be extended/implemented",
   tags = {"cwe", "obsolete"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class ExtendDeprecatedSymbolCheck extends AbstractDeprecatedChecker {
 
   @Override

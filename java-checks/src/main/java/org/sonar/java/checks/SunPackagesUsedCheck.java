@@ -46,8 +46,8 @@ import java.util.Set;
   name = "Classes from \"com.sun.*\" and \"sun.*\" packages should not be used",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
-@SqaleConstantRemediation(value = "1h")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
+@SqaleConstantRemediation("1h")
 public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1191";

@@ -44,8 +44,8 @@ import java.util.regex.Pattern;
   name = "Comments should not be located at the end of lines of code",
   tags = {"convention"},
   priority = Priority.MINOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "1min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("1min")
 public class TrailingCommentCheck extends SubscriptionBaseVisitor {
 
   private static final String DEFAULT_LEGAL_COMMENT_PATTERN = "^\\s*+[^\\s]++$";

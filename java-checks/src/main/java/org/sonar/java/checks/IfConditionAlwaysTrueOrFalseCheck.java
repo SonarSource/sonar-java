@@ -36,8 +36,8 @@ import java.util.List;
   name = "If statement conditions should not always evaluate to \"true\" or to \"false\"",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("10min")
 public class IfConditionAlwaysTrueOrFalseCheck extends SubscriptionBaseVisitor {
 
   @Override

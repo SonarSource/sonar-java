@@ -48,8 +48,8 @@ import java.util.List;
   tags = {"pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class HiddenFieldCheck extends SubscriptionBaseVisitor {
 
   private final Deque<ImmutableMap<String, VariableTree>> fields = Lists.newLinkedList();

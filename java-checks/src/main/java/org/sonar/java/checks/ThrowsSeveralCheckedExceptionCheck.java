@@ -42,8 +42,8 @@ import java.util.List;
   tags = {"error-handling"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
+@SqaleConstantRemediation("20min")
 public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor {
 
   @Override

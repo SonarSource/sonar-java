@@ -46,8 +46,8 @@ import java.util.List;
   tags = {"bug"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "15min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("15min")
 public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetection {
 
   @Override

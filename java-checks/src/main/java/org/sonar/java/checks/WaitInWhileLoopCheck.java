@@ -45,8 +45,8 @@ import java.util.List;
   tags = {"bug", "cert", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class WaitInWhileLoopCheck extends AbstractMethodDetection {
 
   private Deque<Boolean> inWhileLoop = Lists.newLinkedList();

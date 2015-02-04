@@ -38,8 +38,8 @@ import java.util.List;
   name = "System.out and System.err should not be used as loggers",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ERRORS)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ERRORS)
+@SqaleConstantRemediation("10min")
 public class SystemOutOrErrUsageCheck extends SubscriptionBaseVisitor {
 
   @Override

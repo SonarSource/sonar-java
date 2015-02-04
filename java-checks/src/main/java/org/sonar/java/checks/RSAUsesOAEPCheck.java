@@ -38,8 +38,8 @@ import java.util.List;
   tags = {"cwe", "owasp-top10", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("20min")
 public class RSAUsesOAEPCheck extends SubscriptionBaseVisitor {
 
   @Override

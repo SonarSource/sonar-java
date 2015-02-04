@@ -38,8 +38,8 @@ import java.util.List;
   tags = {},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("5min")
 public class OverrideAnnotationCheck extends SubscriptionBaseVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {

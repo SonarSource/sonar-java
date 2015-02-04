@@ -48,8 +48,8 @@ import java.util.List;
   tags = {"bug"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("5min")
 public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SubscriptionBaseVisitor {
 
 

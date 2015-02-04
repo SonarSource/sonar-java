@@ -44,8 +44,8 @@ import java.util.regex.Pattern;
   tags = {"cwe", "owasp-top10", "sans-top25-2011", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("30min")
 public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
 
   private static final Pattern PASSWORD_LITERAL_PATTERN = Pattern.compile("password=..", Pattern.CASE_INSENSITIVE);

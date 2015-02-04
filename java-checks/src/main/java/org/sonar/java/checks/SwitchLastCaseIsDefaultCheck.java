@@ -40,8 +40,8 @@ import java.util.List;
   tags = {"cert", "cwe", "misra"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation(value = "1h")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("1h")
 public class SwitchLastCaseIsDefaultCheck extends SubscriptionBaseVisitor {
 
   @Override

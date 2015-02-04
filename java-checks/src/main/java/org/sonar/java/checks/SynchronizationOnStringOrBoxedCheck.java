@@ -40,8 +40,8 @@ import java.util.List;
   tags = {"bug", "cert"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation(value = "15min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
+@SqaleConstantRemediation("15min")
 public class SynchronizationOnStringOrBoxedCheck extends SubscriptionBaseVisitor {
 
   private static final List<String> FORBIDDEN_TYPES = ImmutableList.of(

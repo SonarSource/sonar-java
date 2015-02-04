@@ -51,8 +51,8 @@ import java.util.List;
   name = "@FunctionalInterface annotation should be used to flag Single Abstract Method interfaces",
   tags = {"java8"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "2min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("2min")
 public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1609";

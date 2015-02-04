@@ -38,8 +38,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   tags = {"convention"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "1min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("1min")
 public class RightCurlyBraceStartLineCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override

@@ -43,8 +43,8 @@ import java.util.Map;
   tags = {"bug"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("5min")
 public class NonShortCircuitLogicCheck extends SubscriptionBaseVisitor {
 
   private static final Map<String, String> REPLACEMENTS =

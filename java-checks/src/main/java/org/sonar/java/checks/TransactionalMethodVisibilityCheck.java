@@ -42,8 +42,8 @@ import java.util.List;
   tags = {"bug", "spring"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class TransactionalMethodVisibilityCheck extends SubscriptionBaseVisitor {
 
   @Override

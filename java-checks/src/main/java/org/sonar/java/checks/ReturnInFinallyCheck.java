@@ -42,8 +42,8 @@ import java.util.LinkedList;
   tags = {"bug"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileScanner{
 
   public static final String RULE_KEY = "S1143";

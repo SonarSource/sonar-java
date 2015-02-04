@@ -38,8 +38,8 @@ import java.util.List;
   tags = {"owasp-top10", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("10min")
 public class GetRequestedSessionIdCheck extends AbstractMethodDetection {
 
   @Override

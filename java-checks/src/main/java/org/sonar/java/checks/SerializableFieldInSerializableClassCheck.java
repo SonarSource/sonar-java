@@ -45,8 +45,8 @@ import java.util.List;
   tags = {"bug", "cwe", "serialization"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseVisitor {
 
   @Override

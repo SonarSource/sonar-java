@@ -42,8 +42,8 @@ import java.util.List;
   name = "Generic wildcard types should not be used in return parameters",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class WildcardReturnParameterTypeCheck extends SubscriptionBaseVisitor {
 
   @Override

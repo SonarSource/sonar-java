@@ -39,8 +39,8 @@ import java.util.List;
   name = "Literal boolean values should not be used in condition expressions",
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("10min")
 public class BooleanLiteralCheck extends SubscriptionBaseVisitor {
 
   @Override

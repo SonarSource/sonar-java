@@ -39,8 +39,8 @@ import java.util.List;
   tags = {"bug", "cwe"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("5min")
 public class InstanceOfAlwaysTrueCheck extends SubscriptionBaseVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {

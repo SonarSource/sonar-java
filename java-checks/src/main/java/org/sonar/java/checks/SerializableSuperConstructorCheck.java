@@ -42,8 +42,8 @@ import java.util.List;
   tags = {"bug", "serialization"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
 
   @Override

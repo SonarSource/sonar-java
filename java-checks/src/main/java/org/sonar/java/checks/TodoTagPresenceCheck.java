@@ -36,8 +36,8 @@ import java.util.List;
   name = "TODO tags should be handled",
   priority = Priority.INFO)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("20min")
 public class TodoTagPresenceCheck extends SubscriptionBaseVisitor {
 
   private static final String PATTERN = "TODO";

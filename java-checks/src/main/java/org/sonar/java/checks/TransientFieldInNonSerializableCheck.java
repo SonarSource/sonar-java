@@ -43,8 +43,8 @@ import java.util.List;
   tags = {"unused", "serialization"},
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "2min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("2min")
 public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisitor {
 
   @Override

@@ -35,8 +35,8 @@ import java.util.List;
   name = "Labels should not be used",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("30min")
 public class LabelsShouldNotBeUsedCheck extends SubscriptionBaseVisitor {
 
   @Override

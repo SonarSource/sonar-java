@@ -49,8 +49,8 @@ import java.util.List;
   tags = {"bug"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("5min")
 public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
 
   private static final MethodInvocationMatcher NEXT_INVOCATION_MATCHER =

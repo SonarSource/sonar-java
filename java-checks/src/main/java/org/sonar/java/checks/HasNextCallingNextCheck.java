@@ -47,8 +47,8 @@ import java.util.Set;
   tags = {"bug"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class HasNextCallingNextCheck extends SubscriptionBaseVisitor {
 
   private HasNextBodyVisitor hasNextBodyVisitor = new HasNextBodyVisitor();

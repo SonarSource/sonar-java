@@ -46,8 +46,8 @@ import java.util.Set;
   name = "Empty arrays and collections should be returned instead of null",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "1h")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("1h")
 public class ReturnEmptyArrayyNotNullCheck extends SubscriptionBaseVisitor {
 
   private static final Set<String> COLLECTION_TYPES = ImmutableSet.of(

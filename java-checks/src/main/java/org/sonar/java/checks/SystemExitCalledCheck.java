@@ -41,8 +41,8 @@ import java.util.List;
   name = "System.exit(...) and Runtime.getRuntime().exit(...) should not be called",
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("20min")
 public class SystemExitCalledCheck extends SubscriptionBaseVisitor {
 
   private String idName;

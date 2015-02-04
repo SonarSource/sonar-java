@@ -50,8 +50,8 @@ import java.util.List;
   tags = {"performance"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
+@SqaleConstantRemediation("5min")
 public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
 
   private final List<PrimitiveCheck> primitiveChecks = buildPrimitiveChecks();

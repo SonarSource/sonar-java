@@ -37,8 +37,8 @@ import java.util.List;
   name = "Only standard cryptographic algorithms should be used",
   tags = {"cwe", "owasp-top10", "sans-top25", "security"},
   priority = Priority.BLOCKER)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation(value = "1d")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("1d")
 public class CustomCryptographicAlgorithmCheck extends SubscriptionBaseVisitor {
 
   private static final String MESSAGE_DIGEST_QUALIFIED_NAME = "java.security.MessageDigest";

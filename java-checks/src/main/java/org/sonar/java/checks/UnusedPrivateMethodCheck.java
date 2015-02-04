@@ -44,8 +44,8 @@ import java.util.List;
   tags = {"unused"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("5min")
 public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "UnusedPrivateMethod";

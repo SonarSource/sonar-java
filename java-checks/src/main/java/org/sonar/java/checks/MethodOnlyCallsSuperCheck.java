@@ -48,8 +48,8 @@ import java.util.List;
   tags = {"brain-overload"},
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("10min")
 public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
 
   @Override

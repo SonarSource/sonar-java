@@ -41,8 +41,8 @@ import java.util.Set;
   tags = {"error-handling"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "1h")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("1h")
 public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "RedundantThrowsDeclarationCheck";

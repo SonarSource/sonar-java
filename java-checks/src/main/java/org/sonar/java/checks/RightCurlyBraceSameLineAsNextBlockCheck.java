@@ -38,8 +38,8 @@ import java.util.Set;
   name = "Right curly brace and next \"else\", \"catch\" and \"finally\" keywords should be located on the same line",
   tags = {"convention"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "1min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("1min")
 public class RightCurlyBraceSameLineAsNextBlockCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
 
   private static final Set<String> NEXT_BLOCKS = ImmutableSet.of(

@@ -43,8 +43,8 @@ import java.util.List;
   tags = {"unused"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "1h")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("1h")
 public class CommentedOutCodeLineCheck extends SubscriptionBaseVisitor {
 
   private static final double THRESHOLD = 0.9;

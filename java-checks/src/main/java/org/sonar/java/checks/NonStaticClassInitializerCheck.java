@@ -35,8 +35,8 @@ import java.util.List;
   name = "Non-static class initializers should not be used",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation(value = "20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("20min")
 public class NonStaticClassInitializerCheck extends SubscriptionBaseVisitor{
 
   @Override

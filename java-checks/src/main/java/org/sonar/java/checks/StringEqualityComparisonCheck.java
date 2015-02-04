@@ -34,8 +34,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   name = "Strings should be compared using equals()",
   tags = {"bug"},
   priority = Priority.CRITICAL)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("5min")
 public class StringEqualityComparisonCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override

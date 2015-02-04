@@ -37,8 +37,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   tags = {"convention"},
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("5min")
 public class ArrayDesignatorAfterTypeCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override

@@ -44,8 +44,8 @@ import java.util.Map;
   name = "SHA-1 and MD5 hash algorithms should not be used",
   tags = {"cwe", "owasp-top10", "sans-top25", "security"},
   priority = Priority.CRITICAL)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation(value = "30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("30min")
 public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
   private static final String MD5 = "MD5";

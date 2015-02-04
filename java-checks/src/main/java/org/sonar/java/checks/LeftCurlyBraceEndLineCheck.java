@@ -36,8 +36,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   name = "Left curly braces should be located at the end of lines of code",
   tags = {"convention"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "1min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("1min")
 public class LeftCurlyBraceEndLineCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override

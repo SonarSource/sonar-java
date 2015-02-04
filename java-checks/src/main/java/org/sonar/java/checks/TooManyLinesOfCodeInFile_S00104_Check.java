@@ -38,8 +38,8 @@ import java.util.List;
   name = "Files should not have too many lines",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "1h")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("1h")
 public class TooManyLinesOfCodeInFile_S00104_Check extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAXIMUM = 1000;

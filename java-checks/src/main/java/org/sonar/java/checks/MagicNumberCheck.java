@@ -43,8 +43,8 @@ import java.util.List;
   key = MagicNumberCheck.RULE_KEY,
   name = "Magic numbers should not be used",
   priority = Priority.MINOR)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
+@SqaleConstantRemediation("5min")
 public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S109";

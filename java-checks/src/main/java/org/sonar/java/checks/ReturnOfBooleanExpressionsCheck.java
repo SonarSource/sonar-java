@@ -41,8 +41,8 @@ import java.util.List;
   name = "Return of boolean expressions should not be wrapped into an if-then-else statement",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("10min")
 public class ReturnOfBooleanExpressionsCheck extends SubscriptionBaseVisitor {
 
 

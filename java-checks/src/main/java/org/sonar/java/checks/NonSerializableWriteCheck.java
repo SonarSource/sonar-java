@@ -47,8 +47,8 @@ import java.util.List;
   tags = {"pitfall", "serialization"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation(value = "15min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("15min")
 public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
 
   private static final MethodInvocationMatcher WRITE_OBJECT_MATCHER = MethodInvocationMatcher.create()

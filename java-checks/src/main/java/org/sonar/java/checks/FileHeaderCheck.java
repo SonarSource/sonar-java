@@ -43,8 +43,8 @@ import java.util.List;
   name = "Copyright and license headers should be defined in all source files",
   tags = {"convention"},
   priority = Priority.BLOCKER)
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation(value = "5min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("5min")
 public class FileHeaderCheck extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
   private static final String DEFAULT_HEADER_FORMAT = "";

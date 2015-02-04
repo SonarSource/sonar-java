@@ -43,8 +43,8 @@ import java.util.List;
   name = "Constants should be declared \"final static\" rather than merely \"final\"",
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
-@SqaleConstantRemediation(value = "10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
+@SqaleConstantRemediation("10min")
 public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
 
   private int nestedClassesLevel;
