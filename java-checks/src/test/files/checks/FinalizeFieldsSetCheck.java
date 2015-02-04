@@ -68,6 +68,7 @@ class D {
         new D().myInteger = null; // Compliant
         D d = new D();
         d.myInteger = null; // Compliant
+        unknownVariable = null; // Compliant
       }
     }
 
