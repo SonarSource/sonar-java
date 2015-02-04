@@ -20,20 +20,26 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key = "S2250",
-    priority = Priority.CRITICAL,
-    tags = {"performance"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+  key = "S2250",
+  name = "\"ConcurrentLinkedQueue.size()\" should not be used",
+  tags = {"performance"},
+  priority = Priority.CRITICAL)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
+@SqaleConstantRemediation("15min")
 public class ConcurrentLinkedQueueSizeCheck extends AbstractMethodDetection {
 
   @Override

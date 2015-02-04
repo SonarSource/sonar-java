@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -27,13 +28,18 @@ import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
   key = "S2063",
-  priority = Priority.MAJOR,
-  tags = {"pitfall", "serialization"})
+  name = "Comparators should be \"Serializable\"",
+  tags = {"pitfall", "serialization"},
+  priority = Priority.MAJOR)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("5min")
 public class SerializableComparatorCheck extends SubscriptionBaseVisitor {
 
   @Override

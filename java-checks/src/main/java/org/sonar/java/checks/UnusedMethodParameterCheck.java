@@ -23,7 +23,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -37,15 +37,21 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 
 @Rule(
-    key = UnusedMethodParameterCheck.RULE_KEY,
-    priority = Priority.MAJOR,
-    tags = {"unused", "misra"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  key = UnusedMethodParameterCheck.RULE_KEY,
+  name = "Unused method parameters should be removed",
+  tags = {"unused", "misra"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("5min")
 public class UnusedMethodParameterCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1172";

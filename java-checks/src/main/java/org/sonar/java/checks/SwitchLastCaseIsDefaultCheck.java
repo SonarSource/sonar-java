@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
@@ -28,14 +28,20 @@ import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key = "SwitchLastCaseIsDefaultCheck",
-    priority = Priority.MAJOR,
-    tags = {"cert", "cwe", "misra"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  key = "SwitchLastCaseIsDefaultCheck",
+  name = "Switch statements should end with a default case",
+  tags = {"cert", "cwe", "misra"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("1h")
 public class SwitchLastCaseIsDefaultCheck extends SubscriptionBaseVisitor {
 
   @Override

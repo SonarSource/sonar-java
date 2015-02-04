@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -34,12 +34,18 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = EqualsNotOverridenWithCompareToCheck.RULE_KEY,
-  priority = Priority.CRITICAL,
-  tags={"bug"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+  name = "\"equals(Object obj)\" should be overridden along with the \"compareTo(T obj)\" method",
+  tags = {"bug"},
+  priority = Priority.CRITICAL)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class EqualsNotOverridenWithCompareToCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1210";

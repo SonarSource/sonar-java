@@ -20,18 +20,24 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key = "S2258",
-    priority = Priority.BLOCKER,
-    tags = {"cwe", "owasp-top10", "security"})
+  key = "S2258",
+  name = "\"javax.crypto.NullCipher\" should not be used for anything other than testing",
+  tags = {"cwe", "owasp-top10", "security"},
+  priority = Priority.BLOCKER)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("15min")
 public class NullCipherCheck extends SubscriptionBaseVisitor {
 
   @Override

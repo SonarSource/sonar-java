@@ -20,21 +20,27 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-    key ="S1479",
-    priority = Priority.MAJOR,
-    tags = {"brain-overload"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  key = "S1479",
+  name = "\"switch\" statements should not have too many \"case\" clauses",
+  tags = {"brain-overload"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
+@SqaleConstantRemediation("30min")
 public class SwitchWithTooManyCasesCheck extends SubscriptionBaseVisitor {
 
 

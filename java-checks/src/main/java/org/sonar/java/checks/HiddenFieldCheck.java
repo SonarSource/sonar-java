@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
@@ -33,6 +33,9 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
 import java.util.Deque;
@@ -40,10 +43,13 @@ import java.util.Iterator;
 import java.util.List;
 
 @Rule(
-    key = "HiddenFieldCheck",
-    priority = Priority.MAJOR,
-    tags = {"pitfall"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  key = "HiddenFieldCheck",
+  name = "Local variables should not shadow class fields",
+  tags = {"pitfall"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class HiddenFieldCheck extends SubscriptionBaseVisitor {
 
   private final Deque<ImmutableMap<String, VariableTree>> fields = Lists.newLinkedList();

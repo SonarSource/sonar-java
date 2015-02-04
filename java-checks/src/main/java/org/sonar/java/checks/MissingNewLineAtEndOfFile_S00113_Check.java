@@ -20,12 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.io.Closeables;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +37,13 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
-@Rule(key = "S00113", priority = Priority.MINOR, tags = {"convention"})
+@Rule(
+  key = "S00113",
+  name = "Files should contain an empty new line at the end",
+  tags = {"convention"},
+  priority = Priority.MINOR)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.OS_RELATED_PORTABILITY)
+@SqaleConstantRemediation("5min")
 public class MissingNewLineAtEndOfFile_S00113_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
   private Charset charset;

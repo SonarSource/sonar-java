@@ -25,8 +25,13 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.squidbridge.annotations.NoSqale;
 
-@Rule(key = EmptyFileCheck.RULE_KEY, priority = Priority.MAJOR)
+@Rule(
+  key = EmptyFileCheck.RULE_KEY,
+  name = "Empty file",
+  priority = Priority.MAJOR)
+@NoSqale
 public final class EmptyFileCheck implements JavaFileScanner {
 
   public static final String RULE_KEY = "EmptyFile";

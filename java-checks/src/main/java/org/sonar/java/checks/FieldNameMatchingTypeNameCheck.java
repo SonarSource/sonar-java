@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -33,14 +33,20 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collection;
 
 @Rule(
-    key = FieldNameMatchingTypeNameCheck.RULE_KEY,
-    priority = Priority.MAJOR,
-    tags = {"brain-overload"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  key = FieldNameMatchingTypeNameCheck.RULE_KEY,
+  name = "A field should not duplicate the name of its containing class",
+  tags = {"brain-overload"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("10min")
 public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1700";

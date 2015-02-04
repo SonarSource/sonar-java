@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -30,11 +31,16 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = IncrementDecrementInSubExpressionCheck.RULE_KEY,
-  priority = Priority.MAJOR,
-  tags = {"cert", "misra"})
+  name = "Increment (++) and decrement (--) operators should not be mixed with other operators in an expression",
+  tags = {"cert", "misra"},
+  priority = Priority.MAJOR)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("5min")
 public class IncrementDecrementInSubExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S881";

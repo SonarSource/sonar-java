@@ -20,18 +20,26 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.text.MessageFormat;
 import java.util.List;
 
-@Rule(key = "ClassCyclomaticComplexity", priority = Priority.MAJOR,
-    tags = {"brain-overload"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@Rule(
+  key = "ClassCyclomaticComplexity",
+  name = "Avoid too complex class",
+  tags = {"brain-overload"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
+@SqaleConstantRemediation("10min")
 public class ClassComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 200;

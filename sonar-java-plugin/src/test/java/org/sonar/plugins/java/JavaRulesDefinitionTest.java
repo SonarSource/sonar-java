@@ -20,18 +20,27 @@
 package org.sonar.plugins.java;
 
 import org.junit.Test;
-import org.sonar.api.rules.AnnotationRuleParser;
-import org.sonar.api.rules.RuleRepository;
+import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.java.checks.CheckList;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class JavaRuleRepositoryTest {
+public class JavaRulesDefinitionTest {
 
   @Test
   public void test() {
-    RuleRepository ruleRepository = new JavaRuleRepository(new AnnotationRuleParser());
-    assertThat(ruleRepository.getKey()).isEqualTo("squid");
-    assertThat(ruleRepository.getName()).isEqualTo("SonarQube");
+    JavaRulesDefinition definition = new JavaRulesDefinition();
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    RulesDefinition.Repository repository = context.repository("squid");
+
+    assertThat(repository.name()).isEqualTo("SonarQube");
+    assertThat(repository.language()).isEqualTo("java");
+    assertThat(repository.rules()).hasSize(CheckList.getChecks().size());
+
+    RulesDefinition.Rule unusedLabelRule = repository.rule("S1065");
+    assertThat(unusedLabelRule).isNotNull();
+    assertThat(unusedLabelRule.name()).isEqualTo("Unused labels should be removed");
   }
 
 }

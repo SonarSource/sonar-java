@@ -20,16 +20,24 @@
 package org.sonar.java.checks;
 
 import org.apache.commons.lang.StringUtils;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmEdge;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
-@Rule(key = CallToDeprecatedMethodCheck.RULE_KEY, priority = Priority.MINOR)
+@Rule(
+  key = CallToDeprecatedMethodCheck.RULE_KEY,
+  name = "Avoid use of deprecated method",
+  priority = Priority.MINOR)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SOFTWARE_RELATED_PORTABILITY)
+@SqaleConstantRemediation("1h")
 public class CallToDeprecatedMethodCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "CallToDeprecatedMethod";

@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -32,11 +33,16 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-    key = CatchNPECheck.RULE_KEY,
-    priority = Priority.MAJOR,
-    tags = {"error-handling"})
+  key = CatchNPECheck.RULE_KEY,
+  name = "\"NullPointerException\" should not be caught",
+  tags = {"error-handling"},
+  priority = Priority.MAJOR)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
+@SqaleConstantRemediation("5min")
 public class CatchNPECheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1696";

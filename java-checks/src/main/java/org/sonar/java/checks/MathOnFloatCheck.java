@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
@@ -28,11 +29,16 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = MathOnFloatCheck.RULE_KEY,
-  priority = Priority.CRITICAL,
-  tags = {"bug"})
+  name = "Math should not be performed on floats",
+  tags = {"bug"},
+  priority = Priority.CRITICAL)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleConstantRemediation("15min")
 public class MathOnFloatCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S2164";

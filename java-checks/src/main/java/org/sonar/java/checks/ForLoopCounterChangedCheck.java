@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -34,14 +34,20 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Set;
 
 @Rule(
-    key = ForLoopCounterChangedCheck.RULE_KEY,
-    priority = Priority.MAJOR,
-    tags = {"bug"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+  key = ForLoopCounterChangedCheck.RULE_KEY,
+  name = "Loop counters should not be assigned to from within the loop body",
+  tags = {"bug"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "ForLoopCounterChangedCheck";

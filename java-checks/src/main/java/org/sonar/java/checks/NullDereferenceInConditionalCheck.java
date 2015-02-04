@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -32,12 +33,16 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-    key = NullDereferenceInConditionalCheck.RULE_KEY,
-    priority = Priority.BLOCKER,
-    tags = {"bug"}
-)
+  key = NullDereferenceInConditionalCheck.RULE_KEY,
+  name = "Short-circuit logic should be used to prevent null pointer dereferences in conditionals",
+  tags = {"bug"},
+  priority = Priority.BLOCKER)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.FAULT_TOLERANCE)
+@SqaleConstantRemediation("2min")
 public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1697";

@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.BooleanUtils;
-import org.sonar.check.BelongsToProfile;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -30,11 +30,20 @@ import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(key = "S1160", priority = Priority.MAJOR, tags = {"error-handling"})
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@Rule(
+  key = "S1160",
+  name = "Public methods should throw at most one checked exception",
+  tags = {"error-handling"},
+  priority = Priority.MAJOR)
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
+@SqaleConstantRemediation("20min")
 public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor {
 
   @Override
