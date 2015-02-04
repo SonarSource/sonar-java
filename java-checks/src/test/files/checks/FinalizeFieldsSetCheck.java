@@ -44,7 +44,7 @@ class C extends B {
 
     myArrayOfStrings[0] = null; // Compliant
     myArrayOfStrings = null; // Noncompliant
-    
+
     class MyInnerClass {
       private Object myObject;
       public void finalize() {

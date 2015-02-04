@@ -108,7 +108,7 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
     private String getFieldName(AssignmentExpressionTree tree) {
       ExpressionTree variable = tree.variable();
       if (variable.is(Kind.MEMBER_SELECT)) {
-        variable = ((MemberSelectExpressionTree) variable).expression();
+        variable = ((MemberSelectExpressionTree) variable).identifier();
       }
       return ((IdentifierTree) variable).name();
     }
