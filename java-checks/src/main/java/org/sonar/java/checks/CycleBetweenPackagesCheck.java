@@ -29,16 +29,16 @@ import org.sonar.java.bytecode.visitor.BytecodeVisitor;
  *
  * @since 3.2
  */
-@Rule(key = CycleBetweenPackagesCheck.RULE_KEY_STRING, priority = Priority.MAJOR)
+@Rule(key = CycleBetweenPackagesCheck.KEY, priority = Priority.MAJOR)
 public class CycleBetweenPackagesCheck extends BytecodeVisitor {
 
 
-  public static final String RULE_KEY_STRING = "CycleBetweenPackages";
-  public static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY_STRING);
+  public static final String KEY = "CycleBetweenPackages";
+  public static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
   @Override
   public String toString() {
-    return RULE_KEY_STRING + " rule";
+    return KEY + " rule";
   }
 
 }

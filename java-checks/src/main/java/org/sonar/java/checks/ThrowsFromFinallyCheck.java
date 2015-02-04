@@ -31,13 +31,13 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 @Rule(
-    key = ThrowsFromFinallyCheck.RULE,
+    key = ThrowsFromFinallyCheck.KEY,
     priority = Priority.MAJOR)
 @BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
 public class ThrowsFromFinallyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE = "S1163";
-  private static final RuleKey RULEKEY = RuleKey.of(CheckList.REPOSITORY_KEY, RULE);
+  public static final String KEY = "S1163";
+  private static final RuleKey RULEKEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
   private JavaFileScannerContext context;
 
   private int finallyLevel = 0;
