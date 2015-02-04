@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -35,6 +34,7 @@ import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -46,7 +46,7 @@ import java.util.Deque;
   name = "Loops should not contain more than a single \"break\" or \"continue\" statement",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@ActivatedByDefault
 @SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation(value = "30min")
 public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implements JavaFileScanner {

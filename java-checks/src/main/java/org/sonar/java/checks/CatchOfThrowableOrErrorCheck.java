@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -34,6 +33,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -42,7 +42,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Throwable and Error classes should not be caught",
   tags = {"error-handling"},
   priority = Priority.BLOCKER)
-@BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
+@ActivatedByDefault
 @SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation(value = "20min")
 public class CatchOfThrowableOrErrorCheck extends BaseTreeVisitor implements JavaFileScanner {

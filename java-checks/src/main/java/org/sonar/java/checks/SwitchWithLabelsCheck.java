@@ -21,13 +21,13 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -40,7 +40,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.LABELED_STATEMENT;
   key = "S1219",
   name = "\"switch\" statements should not contain non-case labels",
   priority = Priority.CRITICAL)
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@ActivatedByDefault
 @SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation(value = "10min")
 public class SwitchWithLabelsCheck extends SubscriptionBaseVisitor {

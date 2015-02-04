@@ -22,11 +22,11 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -37,7 +37,7 @@ import java.util.List;
   name = "\"@Override\" annotation should be used on any method overriding (since Java 5) or implementing (since Java 6) another one",
   tags = {},
   priority = Priority.MAJOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@ActivatedByDefault
 @SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation(value = "5min")
 public class OverrideAnnotationCheck extends SubscriptionBaseVisitor {

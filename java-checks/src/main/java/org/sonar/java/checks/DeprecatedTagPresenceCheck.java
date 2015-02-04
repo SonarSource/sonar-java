@@ -20,10 +20,10 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -31,7 +31,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S1133",
   name = "Deprecated code should be removed eventually",
   priority = Priority.INFO)
-@BelongsToProfile(title = "Sonar way", priority = Priority.INFO)
+@ActivatedByDefault
 @SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation(value = "1h")
 public class DeprecatedTagPresenceCheck extends AbstractDeprecatedChecker {

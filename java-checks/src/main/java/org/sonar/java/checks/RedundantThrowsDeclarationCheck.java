@@ -21,12 +21,12 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.api.CheckMessage;
@@ -40,7 +40,7 @@ import java.util.Set;
   name = "Throws declarations should not be redundant",
   tags = {"error-handling"},
   priority = Priority.MAJOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
+@ActivatedByDefault
 @SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation(value = "1h")
 public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {

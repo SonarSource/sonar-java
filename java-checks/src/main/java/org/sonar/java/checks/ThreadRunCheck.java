@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
@@ -28,6 +27,7 @@ import org.sonar.java.bytecode.asm.AsmEdge;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.asm.AsmResource;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.api.CheckMessage;
@@ -38,7 +38,7 @@ import org.sonar.squidbridge.api.SourceFile;
   name = "Thread.run() and Runnable.run() should not be called directly",
   tags = {"multi-threading"},
   priority = Priority.CRITICAL)
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@ActivatedByDefault
 @SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation(value = "20min")
 public class ThreadRunCheck extends BytecodeVisitor {

@@ -24,7 +24,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -34,6 +33,7 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -43,7 +43,7 @@ import java.util.Map;
   key = StringLiteralDuplicatedCheck.RULE_KEY,
   name = "String literals should not be duplicated",
   priority = Priority.MINOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MINOR)
+@ActivatedByDefault
 @SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation(value = "10min")
 public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements JavaFileScanner {

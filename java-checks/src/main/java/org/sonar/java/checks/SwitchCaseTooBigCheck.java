@@ -22,13 +22,13 @@ package org.sonar.java.checks;
 import com.google.common.collect.Iterables;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.checks.SquidCheck;
@@ -39,7 +39,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   name = "Switch cases should not have too many lines",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
-@BelongsToProfile(title = "Sonar way", priority = Priority.MAJOR)
+@ActivatedByDefault
 @SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation(value = "10min")
 public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> {

@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -30,6 +29,7 @@ import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -40,7 +40,7 @@ import java.util.List;
   name = "\"hashCode\" and \"toString\" should not be called on array instances",
   tags = {"bug"},
   priority = Priority.CRITICAL)
-@BelongsToProfile(title = "Sonar way", priority = Priority.CRITICAL)
+@ActivatedByDefault
 @SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation(value = "5min")
 public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {

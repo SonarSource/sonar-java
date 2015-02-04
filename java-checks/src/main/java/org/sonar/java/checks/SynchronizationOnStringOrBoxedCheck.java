@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
@@ -29,6 +28,7 @@ import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -39,7 +39,7 @@ import java.util.List;
   name = "Synchronisation should not be based on Strings or boxed primitives",
   tags = {"bug", "cert"},
   priority = Priority.BLOCKER)
-@BelongsToProfile(title = "Sonar way", priority = Priority.BLOCKER)
+@ActivatedByDefault
 @SqaleSubCharacteristic(value = RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation(value = "15min")
 public class SynchronizationOnStringOrBoxedCheck extends SubscriptionBaseVisitor {
