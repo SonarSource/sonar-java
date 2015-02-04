@@ -14,6 +14,10 @@ class A {
     myString = ""; // Compliant
     myInteger = 42; // Compliant
     myObject = new A(); // Compliant
+    
+    this.myString = null; // Noncompliant
+    this.myInteger = null; // Noncompliant
+    this.myObject = null; // Noncompliant
   }
 
   void finalize(Long value) {

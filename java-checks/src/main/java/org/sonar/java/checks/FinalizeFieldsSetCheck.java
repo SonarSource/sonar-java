@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -30,6 +31,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -65,7 +67,7 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isOverriding(MethodTree tree) {
-    return Boolean.TRUE.equals(((MethodTreeImpl) tree).isOverriding());
+    return BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
   }
 
   private boolean hasNoParameters(MethodTree tree) {
@@ -86,20 +88,27 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
     }
 
     private boolean isFieldAssignment(AssignmentExpressionTree tree) {
-      ExpressionTree variableTree = tree.variable();
-      if (variableTree.is(Kind.IDENTIFIER)) {
-        Symbol variableSymbol = getSemanticModel().getReference((IdentifierTree) variableTree);
+      ExpressionTree variable = tree.variable();
+      if (variable.is(Kind.MEMBER_SELECT)) {
+        variable = ((MemberSelectExpressionTree) variable).expression();
+      }
+      if (variable.is(Kind.IDENTIFIER)) {
+        Symbol variableSymbol = getSemanticModel().getReference((IdentifierTree) variable);
         return variableSymbol.owner().isKind(Symbol.TYP);
       }
       return false;
     }
 
-    private boolean isNullAssignment(AssignmentExpressionTree assignmentTree) {
-      return assignmentTree.expression().is(Kind.NULL_LITERAL);
+    private boolean isNullAssignment(AssignmentExpressionTree tree) {
+      return tree.expression().is(Kind.NULL_LITERAL);
     }
 
     private String getFieldName(AssignmentExpressionTree tree) {
-      return ((IdentifierTree) tree.variable()).name();
+      ExpressionTree variable = tree.variable();
+      if (variable.is(Kind.MEMBER_SELECT)) {
+        variable = ((MemberSelectExpressionTree) variable).expression();
+      }
+      return ((IdentifierTree) variable).name();
     }
   }
 }
