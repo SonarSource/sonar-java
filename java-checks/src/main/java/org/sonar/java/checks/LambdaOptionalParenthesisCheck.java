@@ -48,7 +48,9 @@ public class LambdaOptionalParenthesisCheck extends SubscriptionBaseVisitor {
     if(let.openParenToken() != null && let.parameters().size() == 1) {
       VariableTree param = let.parameters().get(0);
       String ident = param.simpleName().name();
-      addIssue(param, "Remove the parentheses around the \"" + ident + "\" parameter");
+      if(param.type().is(Tree.Kind.INFERED_TYPE)) {
+        addIssue(param, "Remove the parentheses around the \"" + ident + "\" parameter");
+      }
     }
   }
 }

@@ -38,7 +38,6 @@ public class LambdaOptionalParenthesisCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/LambdaOptionalParenthesisCheck.java"), new VisitorsBridge(new LambdaOptionalParenthesisCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(4).withMessage("Remove the parentheses around the \"a\" parameter")
-        .next().atLine(5).withMessage("Remove the parentheses around the \"x\" parameter")
     ;
   }
 }
