@@ -20,11 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -59,15 +57,11 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isFinalizeDeclaration(MethodTree tree) {
-    return hasSemantic() && isMethodNamedFinalize(tree) && isOverriding(tree) && hasNoParameters(tree);
+    return hasSemantic() && isMethodNamedFinalize(tree) && hasNoParameters(tree);
   }
 
   private boolean isMethodNamedFinalize(MethodTree tree) {
     return "finalize".equals(tree.simpleName().name());
-  }
-
-  private boolean isOverriding(MethodTree tree) {
-    return BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
   }
 
   private boolean hasNoParameters(MethodTree tree) {
@@ -90,13 +84,21 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
     private boolean isFieldAssignment(AssignmentExpressionTree tree) {
       ExpressionTree variable = tree.variable();
       if (variable.is(Kind.MEMBER_SELECT)) {
-        variable = ((MemberSelectExpressionTree) variable).expression();
+        MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) variable;
+        if (!isThis(memberSelectExpressionTree.expression())) {
+          return false;
+        }
+        variable = memberSelectExpressionTree.identifier();
       }
       if (variable.is(Kind.IDENTIFIER)) {
         Symbol variableSymbol = getSemanticModel().getReference((IdentifierTree) variable);
         return variableSymbol.owner().isKind(Symbol.TYP);
       }
       return false;
+    }
+
+    private boolean isThis(ExpressionTree tree) {
+      return tree.is(Kind.IDENTIFIER) && "this".equals(((IdentifierTree) tree).name());
     }
 
     private boolean isNullAssignment(AssignmentExpressionTree tree) {

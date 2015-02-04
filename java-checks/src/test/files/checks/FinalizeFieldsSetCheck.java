@@ -14,7 +14,7 @@ class A {
     myString = ""; // Compliant
     myInteger = 42; // Compliant
     myObject = new A(); // Compliant
-    
+
     this.myString = null; // Noncompliant
     this.myInteger = null; // Noncompliant
     this.myObject = null; // Noncompliant
@@ -65,6 +65,9 @@ class D {
     class MyInnerClass {
       public void finalize() {
         myInteger = null; // Noncompliant
+        new D().myInteger = null; // Compliant
+        D d = new D();
+        d.myInteger = null; // Compliant
       }
     }
 
