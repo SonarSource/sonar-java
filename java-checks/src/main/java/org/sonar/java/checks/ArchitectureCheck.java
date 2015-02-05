@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.utils.WildcardPattern;
-import org.sonar.check.Cardinality;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -31,6 +30,7 @@ import org.sonar.java.bytecode.asm.AsmEdge;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.squidbridge.annotations.NoSqale;
+import org.sonar.squidbridge.annotations.RuleTemplate;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
@@ -39,8 +39,8 @@ import java.util.Map;
 @Rule(
   key = ArchitectureCheck.RULE_KEY,
   name = "Architectural constraint",
-  cardinality = Cardinality.MULTIPLE,
   priority = Priority.MAJOR)
+@RuleTemplate
 @NoSqale
 public class ArchitectureCheck extends BytecodeVisitor {
 

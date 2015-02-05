@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.check.Cardinality;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -29,6 +28,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.NoSqale;
+import org.sonar.squidbridge.annotations.RuleTemplate;
 import org.sonar.squidbridge.api.CheckMessage;
 
 import java.util.List;
@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S2253",
   name = "Disallowed methods should not be used",
-  cardinality = Cardinality.MULTIPLE,
   priority = Priority.MAJOR)
+@RuleTemplate
 @NoSqale
 public class DisallowedMethodCheck extends AbstractMethodDetection {
 
