@@ -34,8 +34,8 @@ import java.util.List;
 @Rule(
   key = "S2446",
   name = "\"notifyAll\" should be used",
-  tags = {"java8"},
-  priority = Priority.MAJOR)
+  tags = {"bug", "multithreading"},
+  priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("2min")
 public class NotifyCheck extends AbstractMethodDetection {
