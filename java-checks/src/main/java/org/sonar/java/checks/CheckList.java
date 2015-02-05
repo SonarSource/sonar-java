@@ -278,7 +278,8 @@ public final class CheckList {
       InterfaceStaticMutableMemberCheck.class,
       ShiftOnIntOrLongCheck.class,
       CompareToReturnValueCheck.class,
-      FinalizeFieldsSetCheck.class
+      FinalizeFieldsSetCheck.class,
+      NotifyCheck.class
       );
   }
 }

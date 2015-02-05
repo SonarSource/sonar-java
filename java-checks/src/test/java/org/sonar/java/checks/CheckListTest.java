@@ -77,7 +77,6 @@ public class CheckListTest {
       assertThat(keys).as("Duplicate key " + rule.getKey()).excludes(rule.getKey());
       keys.add(rule.getKey());
 
-      resourceBundle.getString("rule." + CheckList.REPOSITORY_KEY + "." + rule.getKey() + ".name");
       assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + rule.getKey() + ".html"))
         .overridingErrorMessage("No description for " + rule.getKey())
         .isNotNull();

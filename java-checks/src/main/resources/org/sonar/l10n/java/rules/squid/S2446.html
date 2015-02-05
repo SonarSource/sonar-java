@@ -1,0 +1,29 @@
+<code>notify</code> and <code>notifyAll</code> both wake up sleeping threads, but <code>notify</code> only rouses one, while <code>notifyAll</code> rouses all of them. Since <code>notify</code> might not wake up the right thread, <code>notifyAll</code> should be used instead.
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+class MyThread extends Thread{
+
+  @Override
+  public void run(){
+    synchronized(this){
+      // ...
+      notify();  // Noncompliant
+    }
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+class MyThread extends Thread{
+
+  @Override
+  public void run(){
+    synchronized(this){
+      // ...
+      notifyAll();
+    }
+  }
+}
+</pre>
