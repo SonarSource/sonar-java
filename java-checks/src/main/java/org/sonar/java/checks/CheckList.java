@@ -279,7 +279,8 @@ public final class CheckList {
       ShiftOnIntOrLongCheck.class,
       CompareToReturnValueCheck.class,
       FinalizeFieldsSetCheck.class,
-      NotifyCheck.class
+      NotifyCheck.class,
+      ScheduledThreadPoolExecutorZeroCheck.class
       );
   }
 }
