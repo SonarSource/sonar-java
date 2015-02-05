@@ -31,8 +31,8 @@ public class JavaRulesDefinition implements RulesDefinition {
   @Override
   public void define(Context context) {
     NewRepository repository = context
-        .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
-        .setName("SonarQube");
+      .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
+      .setName("SonarQube");
 
     AnnotationBasedRulesDefinition.load(repository, Java.KEY, CheckList.getChecks());
     repository.done();
