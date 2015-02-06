@@ -280,7 +280,8 @@ public final class CheckList {
       CompareToReturnValueCheck.class,
       FinalizeFieldsSetCheck.class,
       NotifyCheck.class,
-      ScheduledThreadPoolExecutorZeroCheck.class
+      ScheduledThreadPoolExecutorZeroCheck.class,
+      CollectionInappropriateCallsCheck.class
       );
   }
 }

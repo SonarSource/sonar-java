@@ -1,0 +1,12 @@
+<p>A couple <code>Collection</code> methods can be called with arguments of an incorrect type, but doing so is pointless and likely the result of using the wrong argument.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+List<String> list = new ArrayList<String>();
+Integer integer = Integer.valueOf(1);
+
+if (list.contains(integer)) {  // Noncompliant. Always false.
+  list.remove(integer); // Noncompliant. list.add(iger) doesn't compile, so this will always return false
+}
+</pre>
