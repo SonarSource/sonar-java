@@ -87,9 +87,4 @@ public class DependenciesVisitor extends BytecodeVisitor {
     return javaResourceLocator.findResourceByClassName(asmClass.getInternalName());
   }
 
-  @Override
-  public String toString() {
-    return "deperecated dependencies metrics";
-  }
-
 }
