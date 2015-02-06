@@ -149,6 +149,11 @@ public class Symbols {
     boxedTypes.put(doubleType, bytecodeCompleter.loadClass("java.lang.Double").type);
     boxedTypes.put(booleanType, bytecodeCompleter.loadClass("java.lang.Boolean").type);
 
+    for (Type boxedType : boxedTypes.keySet()) {
+      boxedType.setPrimitiveWrapperType(boxedTypes.get(boxedType));
+      boxedTypes.get(boxedType).setPrimitiveType(boxedType);
+    }
+
     // TODO comment me
     arrayClass = new Symbol.TypeSymbol(Flags.PUBLIC, "Array", noSymbol);
     Type.ClassType arrayClassType = (Type.ClassType) arrayClass.type;

@@ -1,6 +1,11 @@
+import com.google.common.collect.Lists;
+
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +15,7 @@ class A {
     Set<A> myASet = new HashSet<A>();
     ArrayList<B> myBList = new ArrayList<B>();
     List<Set<Integer>> mySetList = new ArrayList<Set<Integer>>();
+    List<Number> myNumberList = new ArrayList<Number>();
 
     Integer myInteger = Integer.valueOf(1);
     String myString = "";
@@ -47,6 +53,10 @@ class A {
 
     if (myASet.contains(new C())) { // Compliant
       myASet.remove(new B()); // Compliant
+    }
+    
+    if (myNumberList.contains(myInteger)) { // Compliant
+      myNumberList.remove(myInteger); // Compliant
     }
   }
 
@@ -87,6 +97,10 @@ class C extends B {
 }
 
 class D {
+  List myList = Lists.newArrayList(1);
+  void myMethod() {
+    myList.contains(1);
+  }
 }
 
 class MyCollection<E> extends ArrayList<E> {
@@ -110,5 +124,27 @@ class MyCollection<E> extends ArrayList<E> {
     }
     return super.removeAll(c);
   }
+}
 
+class mySet<E> extends AbstractSet<E> {
+
+  LinkedList<E> elements;
+
+  @Override
+  public Iterator<E> iterator() {
+    return null;
+  }
+
+  @Override
+  public int size() {
+    return 0;
+  }
+
+  @Override
+  public boolean add(E e) {
+    if (!elements.contains(e)) {
+      return elements.add(e);
+    }
+    return false;
+  }
 }

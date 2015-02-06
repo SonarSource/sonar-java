@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -44,7 +43,6 @@ import javax.annotation.Nullable;
 
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Map;
 
 @Rule(
   key = "S2175",
@@ -55,8 +53,6 @@ import java.util.Map;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("15min")
 public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
-
-  private final Map<String, String> primitiveToPrimitiveWrapper = buildPrimitiveMapper();
 
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
@@ -77,9 +73,9 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   protected void onMethodFound(MethodInvocationTree tree) {
     Type argumentType = getType(tree.arguments().get(0));
     Type collectionType = getMethodOwner(tree);
-    Type collectionParameterType = getTypeParameter(collectionType);
+    Type collectionParameterType = getTypeParameter(collectionType); // can be null when using raw types
 
-    if (isKnown(collectionParameterType) && !isArgumentCompatible(argumentType, collectionParameterType)) {
+    if (collectionParameterType != null && !collectionParameterType.isTagged(Type.UNKNOWN) && !isArgumentCompatible(argumentType, collectionParameterType)) {
       addIssue(tree, MessageFormat.format("A \"{0}<{1}>\" cannot contain a \"{2}\"", collectionType, collectionParameterType, argumentType));
     }
   }
@@ -112,36 +108,16 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   }
 
   private boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
-    return (isSubtypeOf(argumentType, collectionParameterType) || isBoxingPossible(argumentType, collectionParameterType));
+    return isSubtypeOf(argumentType, collectionParameterType) || autoboxing(argumentType, collectionParameterType);
   }
 
   private boolean isSubtypeOf(Type argumentType, Type collectionParameterType) {
-    return argumentType.isSubtypeOf(collectionParameterType.getSymbol().getFullyQualifiedName());
+    return argumentType.isSubtypeOf(collectionParameterType.erasure().getSymbol().getFullyQualifiedName());
   }
 
-  private boolean isKnown(Type type) {
-    return type != null && !type.isTagged(Type.UNKNOWN);
-  }
-
-  private boolean isBoxingPossible(Type argumentType, Type collectionParameterType) {
-    return argumentType.isPrimitive() && collectionParameterType.isPrimitiveWrapper() && boxingMatch(argumentType, collectionParameterType);
-  }
-
-  private boolean boxingMatch(Type primitiveType, Type primitiveWrapperType) {
-    String primitiveWrapperFullyQualifiedName = primitiveToPrimitiveWrapper.get(primitiveType.getSymbol().getFullyQualifiedName());
-    return primitiveWrapperFullyQualifiedName.equals(primitiveWrapperType.getSymbol().getFullyQualifiedName());
-  }
-
-  private Map<String, String> buildPrimitiveMapper() {
-    Map<String, String> map = Maps.newHashMap();
-    map.put("int", "java.lang.Integer");
-    map.put("boolean", "java.lang.Boolean");
-    map.put("byte", "java.lang.Byte");
-    map.put("double", "java.lang.Double");
-    map.put("char", "java.lang.Character");
-    map.put("short", "java.lang.Short");
-    map.put("float", "java.lang.Float");
-    map.put("long", "java.lang.Long");
-    return map;
+  private boolean autoboxing(Type argumentType, Type collectionParameterType) {
+    return argumentType.isPrimitive()
+      && collectionParameterType.isPrimitiveWrapper()
+      && isSubtypeOf(argumentType.primitiveWrapperType(), collectionParameterType);
   }
 }

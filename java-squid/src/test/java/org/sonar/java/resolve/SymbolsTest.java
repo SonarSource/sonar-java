@@ -43,41 +43,57 @@ public class SymbolsTest {
     assertThat(symbols.byteType.symbol.name).isEqualTo("byte");
     assertThat(symbols.byteType.symbol.flags()).isEqualTo(Flags.PUBLIC);
     assertThat(symbols.byteType.symbol.owner()).isSameAs(symbols.rootPackage);
+    assertThat(symbols.byteType.primitiveType()).isNull();
+    assertThat(symbols.byteType.primitiveWrapperType()).isNotNull();
 
     assertThat(symbols.charType.tag).isEqualTo(Type.CHAR);
     assertThat(symbols.charType.symbol.name).isEqualTo("char");
     assertThat(symbols.charType.symbol.flags()).isEqualTo(Flags.PUBLIC);
     assertThat(symbols.charType.symbol.owner()).isSameAs(symbols.rootPackage);
+    assertThat(symbols.charType.primitiveType()).isNull();
+    assertThat(symbols.charType.primitiveWrapperType()).isNotNull();
 
     assertThat(symbols.shortType.tag).isEqualTo(Type.SHORT);
     assertThat(symbols.shortType.symbol.name).isEqualTo("short");
     assertThat(symbols.shortType.symbol.flags()).isEqualTo(Flags.PUBLIC);
     assertThat(symbols.shortType.symbol.owner()).isSameAs(symbols.rootPackage);
+    assertThat(symbols.shortType.primitiveType()).isNull();
+    assertThat(symbols.shortType.primitiveWrapperType()).isNotNull();
 
     assertThat(symbols.intType.tag).isEqualTo(Type.INT);
     assertThat(symbols.intType.symbol.name).isEqualTo("int");
     assertThat(symbols.intType.symbol.flags()).isEqualTo(Flags.PUBLIC);
     assertThat(symbols.intType.symbol.owner()).isSameAs(symbols.rootPackage);
+    assertThat(symbols.intType.primitiveType()).isNull();
+    assertThat(symbols.intType.primitiveWrapperType()).isNotNull();
 
     assertThat(symbols.longType.tag).isEqualTo(Type.LONG);
     assertThat(symbols.longType.symbol.name).isEqualTo("long");
     assertThat(symbols.longType.symbol.flags()).isEqualTo(Flags.PUBLIC);
     assertThat(symbols.longType.symbol.owner()).isSameAs(symbols.rootPackage);
+    assertThat(symbols.longType.primitiveType()).isNull();
+    assertThat(symbols.longType.primitiveWrapperType()).isNotNull();
 
     assertThat(symbols.floatType.tag).isEqualTo(Type.FLOAT);
     assertThat(symbols.floatType.symbol.name).isEqualTo("float");
     assertThat(symbols.floatType.symbol.flags()).isEqualTo(Flags.PUBLIC);
     assertThat(symbols.floatType.symbol.owner()).isSameAs(symbols.rootPackage);
+    assertThat(symbols.floatType.primitiveType()).isNull();
+    assertThat(symbols.floatType.primitiveWrapperType()).isNotNull();
 
     assertThat(symbols.doubleType.tag).isEqualTo(Type.DOUBLE);
     assertThat(symbols.doubleType.symbol.name).isEqualTo("double");
     assertThat(symbols.doubleType.symbol.flags()).isEqualTo(Flags.PUBLIC);
     assertThat(symbols.doubleType.symbol.owner()).isSameAs(symbols.rootPackage);
+    assertThat(symbols.doubleType.primitiveType()).isNull();
+    assertThat(symbols.doubleType.primitiveWrapperType()).isNotNull();
 
     assertThat(symbols.booleanType.tag).isEqualTo(Type.BOOLEAN);
     assertThat(symbols.booleanType.symbol.name).isEqualTo("boolean");
     assertThat(symbols.booleanType.symbol.flags()).isEqualTo(Flags.PUBLIC);
     assertThat(symbols.booleanType.symbol.owner()).isSameAs(symbols.rootPackage);
+    assertThat(symbols.booleanType.primitiveType()).isNull();
+    assertThat(symbols.booleanType.primitiveWrapperType()).isNotNull();
 
     assertThat(symbols.nullType.tag).isEqualTo(Type.BOT);
     assertThat(symbols.nullType.symbol.name).isEqualTo("<nulltype>");

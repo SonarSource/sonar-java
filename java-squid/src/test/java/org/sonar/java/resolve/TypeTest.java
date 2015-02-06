@@ -137,6 +137,20 @@ public class TypeTest {
   }
 
   @Test
+  public void mapping_wrapper_primitive() {
+    for (Type wrapper : symbols.boxedTypes.values()) {
+      assertThat(wrapper.primitiveType()).isNotNull();
+      assertThat(wrapper.primitiveWrapperType()).isNull();
+    }
+    for (Type primitive : symbols.boxedTypes.keySet()) {
+      assertThat(primitive.primitiveType()).isNull();
+      assertThat(primitive.primitiveWrapperType()).isNotNull();
+    }
+    assertThat(symbols.objectType.primitiveType()).isNull();
+    assertThat(symbols.objectType.primitiveWrapperType()).isNull();
+  }
+
+  @Test
   public void parametrizedTypeType_methods_tests() {
     Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
     Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
