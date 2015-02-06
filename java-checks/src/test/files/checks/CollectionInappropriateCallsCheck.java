@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,17 +72,43 @@ class C extends B {
     if (mySet.contains(myA)) { // Compliant
       mySet.remove(new B()); // Compliant
     }
+    
+    List<Integer> myIntegerList = new ArrayList<Integer>();
+    if (myIntegerList.contains(0)) { // Compliant (boxing)
+      myIntegerList.remove(0); // Compliant (boxing)
+      myIntegerList.remove(0L); // Noncompliant
+    }
+    
+    List<String> myStringList = new ArrayList<String>();
+    if (myStringList.contains(0)) { // Noncompliant
+      // do nothing
+    }
   }
 }
 
+class D {
+}
+
 class MyCollection<E> extends ArrayList<E> {
-  
+
   @Override
   public boolean add(E e) {
     if (contains(e)) { // Compliant
       return false;
     }
     return super.add(e);
+  }
+
+  @Override
+  public boolean removeAll(Collection<?> c) {
+    MyCollection<D> myColl = new MyCollection<D>();
+    myColl.add(new D());
+    for (D d : myColl) {
+      if (c.contains(d)) { // Compliant
+        // do nothing
+      }
+    }
+    return super.removeAll(c);
   }
 
 }

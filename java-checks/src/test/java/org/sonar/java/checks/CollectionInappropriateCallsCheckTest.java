@@ -34,17 +34,19 @@ public class CollectionInappropriateCallsCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CollectionInappropriateCallsCheck.java"), new VisitorsBridge(
       new CollectionInappropriateCallsCheck()));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(18).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
       .next().atLine(19).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
-      .next().atLine(26).withMessage("A \"ArrayList<B>\" cannot contain a \"Integer\"")
+      .next().atLine(20).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
       .next().atLine(27).withMessage("A \"ArrayList<B>\" cannot contain a \"Integer\"")
-      .next().atLine(30).withMessage("A \"List<Set>\" cannot contain a \"String\"")
+      .next().atLine(28).withMessage("A \"ArrayList<B>\" cannot contain a \"Integer\"")
       .next().atLine(31).withMessage("A \"List<Set>\" cannot contain a \"String\"")
-      .next().atLine(34).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
+      .next().atLine(32).withMessage("A \"List<Set>\" cannot contain a \"String\"")
       .next().atLine(35).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
-      .next().atLine(39).withMessage("A \"ArrayList<B>\" cannot contain a \"A\"")
-      // .next().atLine(42).withMessage("A \"List<String>\" cannot contain a \"String[]\"") // currently false negative
-      .next().atLine(43).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
+      .next().atLine(36).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
+      .next().atLine(40).withMessage("A \"ArrayList<B>\" cannot contain a \"A\"")
+      // .next().atLine(43).withMessage("A \"List<String>\" cannot contain a \"String[]\"") // currently false negative
+      .next().atLine(44).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
+      .next().atLine(79).withMessage("A \"List<Integer>\" cannot contain a \"long\"")
+      .next().atLine(83).withMessage("A \"List<String>\" cannot contain a \"int\"")
       .noMore();
   }
 }
