@@ -89,7 +89,7 @@ public class DependenciesVisitor extends BytecodeVisitor {
 
   @Override
   public String toString() {
-    return "deperecated dependencies metrics";
+    return "deprecated dependencies metrics";
   }
 
 }
