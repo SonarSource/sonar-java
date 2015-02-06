@@ -19,12 +19,14 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Type {
 
@@ -267,6 +269,22 @@ public class Type {
     @Override
     public Type erasure() {
       return rawType.erasure();
+    }
+
+    @Nullable
+    public Type substitution(TypeVariableType typeVariableType) {
+      Type result = null;
+      if (typeSubstitution != null) {
+        result = typeSubstitution.get(typeVariableType);
+      }
+      return result;
+    }
+
+    public Set<TypeVariableType> typeParameters() {
+      if (typeSubstitution != null) {
+        return typeSubstitution.keySet();
+      }
+      return Sets.newHashSet();
     }
   }
 }
