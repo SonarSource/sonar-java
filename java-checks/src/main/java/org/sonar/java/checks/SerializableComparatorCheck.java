@@ -53,7 +53,7 @@ public class SerializableComparatorCheck extends SubscriptionBaseVisitor {
       ClassTreeImpl classTree = (ClassTreeImpl) tree;
       TypeSymbol symbol = classTree.getSymbol();
       Type type = symbol.getType();
-      if (type.isSubtypeOf("java.util.Comparator") && !type.isSubtypeOf("java.io.Serializable") && !symbol.isAbstract()) {
+      if (classTree.simpleName() != null && type.isSubtypeOf("java.util.Comparator") && !type.isSubtypeOf("java.io.Serializable") && !symbol.isAbstract()) {
         addIssue(classTree, "Make this class \"Serializable\".");
       }
     }
