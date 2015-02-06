@@ -126,7 +126,7 @@ public class Symbols {
 
     // predefined types for java lang
     Symbol.PackageSymbol javalang = bytecodeCompleter.enterPackage("java.lang");
-    //define a star import scope to let resolve types to java.lang when needed.
+    // define a star import scope to let resolve types to java.lang when needed.
     javalang.members = new Scope.StarImportScope(javalang, bytecodeCompleter);
     javalang.members.enter(javalang);
 
@@ -138,7 +138,7 @@ public class Symbols {
     annotationType = bytecodeCompleter.loadClass("java.lang.annotation.Annotation").type;
     enumType = bytecodeCompleter.loadClass("java.lang.Enum").type;
 
-    //Associate boxed types
+    // Associate boxed types
     boxedTypes = HashBiMap.create();
     boxedTypes.put(byteType, bytecodeCompleter.loadClass("java.lang.Byte").type);
     boxedTypes.put(charType, bytecodeCompleter.loadClass("java.lang.Character").type);
@@ -150,8 +150,8 @@ public class Symbols {
     boxedTypes.put(booleanType, bytecodeCompleter.loadClass("java.lang.Boolean").type);
 
     for (Type boxedType : boxedTypes.keySet()) {
-      boxedType.setPrimitiveWrapperType(boxedTypes.get(boxedType));
-      boxedTypes.get(boxedType).setPrimitiveType(boxedType);
+      boxedType.primitiveWrapperType = boxedTypes.get(boxedType);
+      boxedTypes.get(boxedType).primitiveType = boxedType;
     }
 
     // TODO comment me
@@ -182,28 +182,28 @@ public class Symbols {
    * Registers operators as methods, so that they can be found as an usual methods.
    */
   private void enterOperators() {
-    for (String op : new String[]{"+", "-", "*", "/", "%"}) {
+    for (String op : new String[] {"+", "-", "*", "/", "%"}) {
       for (Type type : Arrays.asList(doubleType, floatType, longType, intType)) {
         enterBinop(op, type, type, type);
       }
     }
-    for (String op : new String[]{"&", "|", "^"}) {
+    for (String op : new String[] {"&", "|", "^"}) {
       for (Type type : Arrays.asList(booleanType, longType, intType)) {
         enterBinop(op, type, type, type);
       }
     }
-    for (String op : new String[]{"<<", ">>", ">>>"}) {
+    for (String op : new String[] {"<<", ">>", ">>>"}) {
       enterBinop(op, longType, longType, longType);
       enterBinop(op, intType, longType, intType);
       enterBinop(op, longType, intType, longType);
       enterBinop(op, intType, intType, intType);
     }
-    for (String op : new String[]{"<", ">", ">=", "<="}) {
+    for (String op : new String[] {"<", ">", ">=", "<="}) {
       for (Type type : Arrays.asList(doubleType, floatType, longType, intType)) {
         enterBinop(op, type, type, booleanType);
       }
     }
-    for (String op : new String[]{"==", "!="}) {
+    for (String op : new String[] {"==", "!="}) {
       for (Type type : Arrays.asList(objectType, booleanType, doubleType, floatType, longType, intType)) {
         enterBinop(op, type, type, booleanType);
       }
@@ -246,7 +246,7 @@ public class Symbols {
       case 'V':
         return voidType;
       default:
-        throw new IllegalStateException("Descriptor '"+descriptor+"' cannot be mapped to a primitive type");
+        throw new IllegalStateException("Descriptor '" + descriptor + "' cannot be mapped to a primitive type");
     }
   }
 }

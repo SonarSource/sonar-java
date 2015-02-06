@@ -48,9 +48,9 @@ public class Type {
 
   int tag;
 
-  private Type primitiveType = null;
+  Type primitiveType = null;
 
-  private Type primitiveWrapperType = null;
+  Type primitiveWrapperType = null;
 
   /**
    * Symbol, which defines this type.
@@ -147,17 +147,9 @@ public class Type {
     return primitiveType;
   }
 
-  protected void setPrimitiveType(Type primitiveType) {
-    this.primitiveType = primitiveType;
-  }
-
   @Nullable
   public Type primitiveWrapperType() {
     return primitiveWrapperType;
-  }
-
-  protected void setPrimitiveWrapperType(Type primitiveWrapperType) {
-    this.primitiveWrapperType = primitiveWrapperType;
   }
 
   public static class ClassType extends Type {
