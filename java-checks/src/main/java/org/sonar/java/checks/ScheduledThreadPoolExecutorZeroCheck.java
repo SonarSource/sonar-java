@@ -74,6 +74,6 @@ public class ScheduledThreadPoolExecutorZeroCheck extends AbstractMethodDetectio
   }
 
   private boolean isZeroIntLiteral(ExpressionTree arg) {
-    return arg.is(Tree.Kind.INT_LITERAL) && ((LiteralTree) arg).value().equals("0");
+    return arg.is(Tree.Kind.INT_LITERAL) && "0".equals(((LiteralTree) arg).value());
   }
 }
