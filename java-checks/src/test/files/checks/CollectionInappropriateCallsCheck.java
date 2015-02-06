@@ -43,7 +43,7 @@ class A {
     }
 
     if (myBList.contains(new B())) { // Compliant
-      myBList.remove(new A()); // Noncompliant
+      myBList.remove(new A()); // Compliant
     }
 
     if (myList.contains(myArrayInteger)) { // Noncompliant - False negative
@@ -93,6 +93,8 @@ class C extends B {
     if (myStringList.contains(0)) { // Noncompliant
       // do nothing
     }
+    Object o = null;
+    myStringList.contains(o);
   }
 }
 

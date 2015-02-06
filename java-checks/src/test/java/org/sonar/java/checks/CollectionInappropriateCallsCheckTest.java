@@ -42,7 +42,6 @@ public class CollectionInappropriateCallsCheckTest {
       .next().atLine(38).withMessage("A \"List<Set>\" cannot contain a \"String\"")
       .next().atLine(41).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
       .next().atLine(42).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
-      .next().atLine(46).withMessage("A \"ArrayList<B>\" cannot contain a \"A\"")
       // .next().atLine(49).withMessage("A \"List<String>\" cannot contain a \"String[]\"") // false negative
       .next().atLine(50).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
       .next().atLine(89).withMessage("A \"List<Integer>\" cannot contain a \"long\"")
