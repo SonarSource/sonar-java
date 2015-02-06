@@ -174,8 +174,18 @@ public class SymbolTableTest {
     assertThat(typeSymbol.owner()).isSameAs(result.symbol("method"));
     assertThat(typeSymbol.flags()).isEqualTo(0);
     assertThat(typeSymbol.name).isEqualTo("");
-    assertThat(typeSymbol.getSuperclass()).isNull(); // FIXME should be result.symbol("Superclass")
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass").type);
     assertThat(typeSymbol.getInterfaces()).isEmpty();
+    assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
+
+
+    typeSymbol = (Symbol.TypeSymbol) result.symbol("methodInAnonymousClassInterface").owner();
+    assertThat(typeSymbol.owner()).isSameAs(result.symbol("method"));
+    assertThat(typeSymbol.flags()).isEqualTo(0);
+    assertThat(typeSymbol.name).isEqualTo("");
+    assertThat(typeSymbol.getSuperclass().getSymbol().getName()).isEqualTo("Object");
+    assertThat(typeSymbol.getInterfaces()).hasSize(1);
+    assertThat(typeSymbol.getInterfaces().get(0)).isSameAs(result.symbol("SuperInterface").type);
     assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
   }
 

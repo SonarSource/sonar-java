@@ -443,9 +443,21 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) tree;
     resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassEnv, getParameterTypes(tree.arguments()));
     if (tree.classBody() != null) {
-      //TODO create a new symbol and type for each anonymous class
+      Type.ClassType anonymousClassType = symbols.unknownType;
+      Type type = ((AbstractTypedTree) tree.identifier()).getSymbolType();
+      Symbol.TypeSymbol symbol = ((ClassTreeImpl) tree.classBody()).getSymbol();
+      if (symbol != null) {
+        anonymousClassType = (Type.ClassType) symbol.type;
+        if (type.getSymbol().isFlag(Flags.INTERFACE)) {
+          anonymousClassType.interfaces = ImmutableList.of(type);
+          anonymousClassType.supertype = symbols.objectType;
+        } else {
+          anonymousClassType.supertype = type;
+          anonymousClassType.interfaces = ImmutableList.of();
+        }
+      }
       scan(tree.classBody());
-      registerType(tree, symbols.unknownType);
+      registerType(tree, anonymousClassType);
     } else {
       registerType(tree, getType(tree.identifier()));
     }

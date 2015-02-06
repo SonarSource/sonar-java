@@ -5,4 +5,12 @@ class A implements Comparator<String> {} // Noncompliant
 class B implements Comparator<String>, Serializable {}
 abstract class C implements Comparator<String> {}
 class D extends C {} // Noncompliant
-class E implements Cloneable {}
+class E implements Cloneable {
+  Comparator comp = new Comparator() {
+    @Override
+    public int compare(Object o, Object o2) {
+      return 0;
+    }
+  };
+
+}

@@ -9,11 +9,21 @@ class AnonymousClassDeclaration {
   class Superclass {
   }
 
+
+  interface SuperInterface {
+  }
+
   void method() {
     new Superclass() {
       void methodInAnonymousClass() {
       }
     };
+    new SuperInterface() {
+      void methodInAnonymousClassInterface() {
+      }
+    };
   }
+
+
 
 }
