@@ -22,42 +22,21 @@ class A {
     String[] myArrayString = new String[] {"myString"};
     Integer[] myArrayInteger = new Integer[] {Integer.valueOf(1)};
 
-    if (myList.contains(myInteger)) { // Noncompliant. Always false.
-      myList.remove(myInteger); // Noncompliant. list.add(iger) doesn't compile, so this will always return false
-    }
-
-    if (myList.contains(myString)) { // Compliant
-      myList.remove(myString); // Compliant
-    }
-
-    if (myBList.contains(myInteger)) { // Noncompliant
-      myBList.remove(myInteger); // Noncompliant
-    }
-
-    if (mySetList.contains(myString)) { // Noncompliant
-      mySetList.remove(myString); // Noncompliant
-    }
-
-    if (mySetList.contains(returnOne())) { // Noncompliant
-      mySetList.remove(B.returnOne()); // Noncompliant
-    }
-
-    if (myBList.contains(new B())) { // Compliant
-      myBList.remove(new A()); // Compliant
-    }
-
-    if (myList.contains(myArrayInteger)) { // Noncompliant - False negative
-      myList.remove(myArrayInteger[0]); // Noncompliant
-      myList.remove(myArrayString[0]); // Compliant
-    }
-
-    if (myASet.contains(new C())) { // Compliant
-      myASet.remove(new B()); // Compliant
-    }
-    
-    if (myNumberList.contains(myInteger)) { // Compliant
-      myNumberList.remove(myInteger); // Compliant
-    }
+    myList.contains(myInteger); // Noncompliant. Always false.
+    myList.remove(myInteger); // Noncompliant. list.add(iger) doesn't compile, so this will always return false
+    myList.contains(myString); // Compliant
+    myBList.contains(myInteger); // Noncompliant
+    mySetList.contains(myString); // Noncompliant
+    mySetList.contains(returnOne()); // Noncompliant
+    mySetList.remove(B.returnOne()); // Noncompliant
+    myBList.contains(new B()); // Compliant
+    myBList.remove(new A()); // Compliant
+    myList.contains(myArrayInteger); // Noncompliant - False negative
+    myList.remove(myArrayInteger[0]); // Noncompliant
+    myList.remove(myArrayString[0]); // Compliant
+    myASet.contains(new C()); // Compliant
+    myASet.remove(new B()); // Compliant
+    myNumberList.contains(myInteger); // Compliant
   }
 
   private static Integer returnOne() {
@@ -79,29 +58,26 @@ class C extends B {
     Set mySet = new HashSet<B>();
     A myA = new A();
 
-    if (mySet.contains(myA)) { // Compliant
-      mySet.remove(new B()); // Compliant
-    }
+    mySet.contains(myA); // Compliant
+    mySet.remove(new B()); // Compliant
     
     List<Integer> myIntegerList = new ArrayList<Integer>();
-    if (myIntegerList.contains(0)) { // Compliant (boxing)
-      myIntegerList.remove(0); // Compliant (boxing)
-      myIntegerList.remove(0L); // Noncompliant
-    }
+    myIntegerList.contains(0); // Compliant (boxing)
+    myIntegerList.remove(0L); // Noncompliant
     
     List<String> myStringList = new ArrayList<String>();
-    if (myStringList.contains(0)) { // Noncompliant
-      // do nothing
-    }
-    Object o = null;
-    myStringList.contains(o);
+    myStringList.contains(0); // Noncompliant
+    myStringList.contains(new Object()); // Compliant
+    
+    List<String[]> myListArrayString = new ArrayList<String[]>();
+    myListArrayString.contains("myString"); // Compliant - False positive
   }
 }
 
 class D {
   List myList = Lists.newArrayList(1);
   void myMethod() {
-    myList.contains(1);
+    myList.contains(1); // Compliant
   }
 }
 
@@ -120,9 +96,7 @@ class MyCollection<E> extends ArrayList<E> {
     MyCollection<D> myColl = new MyCollection<D>();
     myColl.add(new D());
     for (D d : myColl) {
-      if (c.contains(d)) { // Compliant
-        // do nothing
-      }
+      c.contains(d); // Compliant
     }
     return super.removeAll(c);
   }
@@ -144,7 +118,7 @@ class mySet<E> extends AbstractSet<E> {
 
   @Override
   public boolean add(E e) {
-    if (!elements.contains(e)) {
+    if (!elements.contains(e)) { // Compliant
       return elements.add(e);
     }
     return false;

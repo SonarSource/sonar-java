@@ -36,16 +36,15 @@ public class CollectionInappropriateCallsCheckTest {
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(25).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
       .next().atLine(26).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
-      .next().atLine(33).withMessage("A \"ArrayList<B>\" cannot contain a \"Integer\"")
-      .next().atLine(34).withMessage("A \"ArrayList<B>\" cannot contain a \"Integer\"")
-      .next().atLine(37).withMessage("A \"List<Set>\" cannot contain a \"String\"")
-      .next().atLine(38).withMessage("A \"List<Set>\" cannot contain a \"String\"")
-      .next().atLine(41).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
-      .next().atLine(42).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
-      // .next().atLine(49).withMessage("A \"List<String>\" cannot contain a \"String[]\"") // false negative
-      .next().atLine(50).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
-      .next().atLine(89).withMessage("A \"List<Integer>\" cannot contain a \"long\"")
-      .next().atLine(93).withMessage("A \"List<String>\" cannot contain a \"int\"")
+      .next().atLine(28).withMessage("A \"ArrayList<B>\" cannot contain a \"Integer\"")
+      .next().atLine(29).withMessage("A \"List<Set>\" cannot contain a \"String\"")
+      .next().atLine(30).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
+      .next().atLine(31).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
+      // .next().atLine(34).withMessage("A \"List<String>\" cannot contain a \"String[]\"") // False negative
+      .next().atLine(35).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
+      .next().atLine(66).withMessage("A \"List<Integer>\" cannot contain a \"long\"")
+      .next().atLine(69).withMessage("A \"List<String>\" cannot contain a \"int\"")
+      .next().atLine(73) // False positive
       .noMore();
   }
 }
