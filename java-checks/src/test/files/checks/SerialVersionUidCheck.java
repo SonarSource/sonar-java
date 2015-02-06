@@ -38,3 +38,10 @@ class K implements Serializable {} // Noncompliant
 
 @SuppressWarnings(UNKNOWN)
 class L implements Serializable {} // Noncompliant
+enum MyEnum {
+  FOO {
+    void fun() {}
+  },
+  BAR;
+  void fun(){}
+}

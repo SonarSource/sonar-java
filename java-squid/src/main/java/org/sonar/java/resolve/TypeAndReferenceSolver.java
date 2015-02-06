@@ -543,7 +543,13 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     registerType(newClassTree.identifier(), ((VariableTreeImpl) tree).getSymbol().getType());
     scan(newClassTree.typeArguments());
     scan(newClassTree.arguments());
-    scan(newClassTree.classBody());
+    if(newClassTree.classBody() != null) {
+      scan(newClassTree.classBody());
+      Symbol.TypeSymbol symbol = ((ClassTreeImpl) newClassTree.classBody()).getSymbol();
+      if(symbol != null) {
+        ((Type.ClassType) symbol.type).supertype = getType(newClassTree.identifier());
+      }
+    }
     resolveConstructorSymbol(tree.simpleName(), semanticModel.getEnv(tree), getParameterTypes(newClassTree.arguments()));
   }
 

@@ -64,7 +64,7 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
 
   private void visitClassTree(ClassTreeImpl classTree) {
     TypeSymbol symbol = classTree.getSymbol();
-    if (isSerializable(symbol.getType())) {
+    if (!isAnonymous(classTree) && isSerializable(symbol.getType())) {
       VariableSymbol serialVersionUidSymbol = findSerialVersionUid(symbol);
       if (serialVersionUidSymbol == null) {
         if (!isExclusion(symbol)) {
@@ -74,6 +74,10 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
         checkModifiers(serialVersionUidSymbol);
       }
     }
+  }
+
+  private boolean isAnonymous(ClassTreeImpl classTree) {
+    return classTree.simpleName() == null;
   }
 
   private void checkModifiers(VariableSymbol serialVersionUidSymbol) {

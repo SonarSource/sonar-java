@@ -270,7 +270,7 @@ public class SymbolTableTest {
     assertThat(anonymousSymbol.name).isEqualTo("");
     assertThat(anonymousSymbol.owner()).isSameAs(enumSymbol);
     assertThat(anonymousSymbol.flags()).isEqualTo(0); // FIXME should be ENUM
-    assertThat(anonymousSymbol.getSuperclass()).isNull(); // FIXME should be result.symbol("EnumDeclaration")
+    assertThat(anonymousSymbol.getSuperclass()).isSameAs(result.symbol("Declaration").type);
     assertThat(anonymousSymbol.getInterfaces()).isEmpty();
 
     variableSymbol = (Symbol.VariableSymbol) result.symbol("SECOND_CONSTANT");
@@ -281,7 +281,7 @@ public class SymbolTableTest {
     assertThat(anonymousSymbol.name).isEqualTo("");
     assertThat(anonymousSymbol.owner()).isSameAs(enumSymbol);
     assertThat(anonymousSymbol.flags()).isEqualTo(0); // FIXME should be ENUM
-    assertThat(anonymousSymbol.getSuperclass()).isNull(); // FIXME should be result.symbol("EnumDeclaration")
+    assertThat(anonymousSymbol.getSuperclass()).isSameAs(result.symbol("Declaration").type);
     assertThat(anonymousSymbol.getInterfaces()).isEmpty();
 
     Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) result.symbol("method", 21);
