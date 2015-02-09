@@ -47,3 +47,12 @@ class A {
     return;
   }
 }
+interface B {
+  default void method() { //non-compliant
+    return;
+    return;
+    return;
+    return;
+    return;
+  }
+}

@@ -39,7 +39,8 @@ public class MethodWithExcessiveReturnsCheckTest {
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(19).withMessage("Reduce the number of returns of this method 4, down to the maximum allowed 3.")
         .next().atLine(26).withMessage("Reduce the number of returns of this method 4, down to the maximum allowed 3.")
-        .next().atLine(31).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 3.");
+        .next().atLine(31).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 3.")
+        .next().atLine(51).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 3.");
   }
 
   @Test
@@ -49,7 +50,8 @@ public class MethodWithExcessiveReturnsCheckTest {
 
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodWithExcessiveReturnsCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(31).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 4.");
+        .next().atLine(31).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 4.")
+        .next().atLine(51).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 4.");
   }
 
 }
