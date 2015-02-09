@@ -281,7 +281,8 @@ public final class CheckList {
       FinalizeFieldsSetCheck.class,
       NotifyCheck.class,
       ScheduledThreadPoolExecutorZeroCheck.class,
-      ThreadOverridesRunCheck.class
+      ThreadOverridesRunCheck.class,
+      CollectionInappropriateCallsCheck.class
       );
   }
 }
