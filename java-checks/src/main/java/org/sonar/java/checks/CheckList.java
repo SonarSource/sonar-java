@@ -284,7 +284,8 @@ public final class CheckList {
       ThreadOverridesRunCheck.class,
       CollectionInappropriateCallsCheck.class,
       BooleanMethodReturnCheck.class,
-      PrimitiveTypeBoxingWithToStringCheck.class
+      PrimitiveTypeBoxingWithToStringCheck.class,
+      SillyBitOperationCheck.class
       );
   }
 }
