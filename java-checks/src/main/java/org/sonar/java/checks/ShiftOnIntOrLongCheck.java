@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -80,7 +81,7 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
     if (shift.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
       int base = getBase(tree);
-      long numberBits = sign * Long.decode(trimLongSuffix(((LiteralTree) shift).value()));
+      long numberBits = sign * Long.decode(LiteralUtils.trimLongSuffix(((LiteralTree) shift).value()));
       long reducedNumberBits = numberBits % base;
       String message = getMessage(numberBits, reducedNumberBits, base, identifier);
       if (message != null) {
@@ -95,19 +96,9 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
   private boolean isLiteralValue(ExpressionTree tree, long value) {
     if (tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      return Long.decode(trimLongSuffix(((LiteralTree) tree).value())) == value;
+      return Long.decode(LiteralUtils.trimLongSuffix(((LiteralTree) tree).value())) == value;
     }
     return false;
-  }
-
-  private String trimLongSuffix(String longString) {
-    int lastCharPosition = longString.length() - 1;
-    char lastChar = longString.charAt(lastCharPosition);
-    String value = longString;
-    if (lastChar == 'L' || lastChar == 'l') {
-      value = longString.substring(0, lastCharPosition);
-    }
-    return value;
   }
 
   private String getMessage(long numberBits, long reducedNumberBits, int base, String identifier) {
