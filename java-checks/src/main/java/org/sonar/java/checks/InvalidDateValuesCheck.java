@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -39,6 +40,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +56,75 @@ import java.util.Map;
 public class InvalidDateValuesCheck extends AbstractMethodDetection {
 
   private static final String[] GREGORIAN_PARAMETERS = {"year", "month", "dayOfMonth", "hourOfDay", "minute", "second"};
+
+  private static final List<MethodInvocationMatcher> DATE_METHODS_COMPARISON = ImmutableList.<MethodInvocationMatcher>builder()
+    .add(MethodInvocationMatcher.create().typeDefinition("java.util.Calendar").name("get").addParameter("int"))
+    .add(dateMethodInvocationMatcherGetter("java.util.Date", "getDate"))
+    .add(dateMethodInvocationMatcherGetter("java.util.Date", "getMonth"))
+    .add(dateMethodInvocationMatcherGetter("java.util.Date", "getHours"))
+    .add(dateMethodInvocationMatcherGetter("java.util.Date", "getMinutes"))
+    .add(dateMethodInvocationMatcherGetter("java.util.Date", "getSeconds"))
+    .add(dateMethodInvocationMatcherGetter("java.sql.Date", "getDate"))
+    .add(dateMethodInvocationMatcherGetter("java.sql.Date", "getMonth"))
+    .add(dateMethodInvocationMatcherGetter("java.sql.Date", "getHours"))
+    .add(dateMethodInvocationMatcherGetter("java.sql.Date", "getMinutes"))
+    .add(dateMethodInvocationMatcherGetter("java.sql.Date", "getSeconds"))
+    .build();
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.<Tree.Kind>builder().addAll(super.nodesToVisit())
+      .add(Tree.Kind.EQUAL_TO)
+      .add(Tree.Kind.NOT_EQUAL_TO)
+      .build();
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    super.visitNode(tree);
+    if (hasSemantic() && tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+      BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
+      String name = getThresholdToCheck(binaryExpressionTree.leftOperand());
+      ExpressionTree argToCheck = null;
+      if (name == null) {
+        name = getThresholdToCheck(binaryExpressionTree.rightOperand());
+        if (name != null) {
+          argToCheck = binaryExpressionTree.leftOperand();
+        }
+      } else {
+        argToCheck = binaryExpressionTree.rightOperand();
+      }
+      if (argToCheck != null) {
+        checkArgument(argToCheck, name, "\"{0}\" is not a valid value for \"{1}\".");
+      }
+    }
+  }
+
+  @Nullable
+  private String getThresholdToCheck(ExpressionTree tree) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      String name = getMethodName(mit);
+      for (MethodInvocationMatcher methodInvocationMatcher : DATE_METHODS_COMPARISON) {
+        if (methodInvocationMatcher.matches(mit, getSemanticModel())) {
+          if (name.equals("get")) {
+            // Calendar
+            ExpressionTree arg0 = mit.arguments().get(0);
+            if (arg0.is(Tree.Kind.MEMBER_SELECT)) {
+              MemberSelectExpressionTree mse = (MemberSelectExpressionTree) arg0;
+              Symbol reference = getSemanticModel().getReference(mse.identifier());
+              if (reference.owner().getType().is("java.util.Calendar") && Threshold.getThreshold(reference.getName()) != null) {
+                return reference.getName();
+              }
+            }
+          } else {
+            return name;
+          }
+        }
+      }
+    }
+    return null;
+  }
 
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
@@ -73,7 +144,11 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
       .build();
   }
 
-  private MethodInvocationMatcher dateMethodInvocationMatcher(String type, String methodName) {
+  private static MethodInvocationMatcher dateMethodInvocationMatcherGetter(String type, String methodName) {
+    return MethodInvocationMatcher.create().typeDefinition(type).name(methodName);
+  }
+
+  private static MethodInvocationMatcher dateMethodInvocationMatcher(String type, String methodName) {
     return MethodInvocationMatcher.create().typeDefinition(type).name(methodName).addParameter("int");
   }
 
@@ -110,11 +185,11 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     int sign = 1;
     if (arg.is(Tree.Kind.INT_LITERAL)) {
       literal = (LiteralTree) arg;
-    } else if(arg.is(Tree.Kind.UNARY_MINUS) && ((UnaryExpressionTree) arg).expression().is(Tree.Kind.INT_LITERAL)) {
+    } else if (arg.is(Tree.Kind.UNARY_MINUS) && ((UnaryExpressionTree) arg).expression().is(Tree.Kind.INT_LITERAL)) {
       sign = -1;
       literal = (LiteralTree) ((UnaryExpressionTree) arg).expression();
     }
-    if(literal != null) {
+    if (literal != null) {
       int argValue = Integer.parseInt(literal.value()) * sign;
       if (argValue > Threshold.getThreshold(name) || argValue < 0) {
         addIssue(arg, MessageFormat.format(message, argValue, name));
@@ -130,22 +205,24 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   }
 
   private static enum Threshold {
-    MONTH(11, "setMonth", "MONTH", "month"),
-    DATE(31, "setDate", "DAY_OF_MONTH", "dayOfMonth"),
-    HOURS(23, "setHours", "HOUR_OF_DAY", "hourOfDay"),
-    MINUTE(60, "setMinutes", "MINUTE", "minute"),
-    SECOND(61, "setSeconds", "SECOND", "second");
+    MONTH(11, "setMonth", "getMonth", "MONTH", "month"),
+    DATE(31, "setDate", "getDate", "DAY_OF_MONTH", "dayOfMonth"),
+    HOURS(23, "setHours", "getHours", "HOUR_OF_DAY", "hourOfDay"),
+    MINUTE(60, "setMinutes", "getMinutes", "MINUTE", "minute"),
+    SECOND(61, "setSeconds", "getSeconds", "SECOND", "second");
 
     private static Map<String, Integer> thresholdByName = null;
 
     private final int threshold;
-    private final String javaDate;
+    private final String javaDateSetter;
+    private final String javaDateGetter;
     private final String calendarConstant;
     private final String gregorianParam;
 
-    Threshold(int threshold, String javaDate, String calendarConstant, String gregorianParam) {
+    Threshold(int threshold, String javaDateSetter, String javaDateGetter, String calendarConstant, String gregorianParam) {
       this.threshold = threshold;
-      this.javaDate = javaDate;
+      this.javaDateSetter = javaDateSetter;
+      this.javaDateGetter = javaDateGetter;
       this.calendarConstant = calendarConstant;
       this.gregorianParam = gregorianParam;
     }
@@ -154,7 +231,8 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
       if (thresholdByName == null) {
         thresholdByName = Maps.newHashMap();
         for (Threshold value : Threshold.values()) {
-          thresholdByName.put(value.javaDate, value.threshold);
+          thresholdByName.put(value.javaDateSetter, value.threshold);
+          thresholdByName.put(value.javaDateGetter, value.threshold);
           thresholdByName.put(value.calendarConstant, value.threshold);
           thresholdByName.put(value.gregorianParam, value.threshold);
         }

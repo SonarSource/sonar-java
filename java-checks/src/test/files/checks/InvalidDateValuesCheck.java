@@ -56,5 +56,17 @@ class A {
     gc = new GregorianCalendar(2015, -foo(), 31, 23, 59, 63); //NonCompliant
 
     cal.set(Calendar.DAY_OF_WEEK_IN_MONTH, 11);
+
+    cal.get(Calendar.MONTH) == 11;
+    cal.get(Calendar.MONTH) == foo();
+    cal.get(Calendar.MONTH) == 12; //NonCompliant
+    cal.get(Calendar.DAY_OF_MONTH) != 11;
+    cal.get(Calendar.DAY_OF_MONTH) != foo();
+    cal.get(Calendar.DAY_OF_MONTH) != 32; //NonCompliant
+    31 == d.getDate();
+    foo() == d.getDate();
+    32 == d.getDate(); //NonCompliant
+    d1.getSeconds() == -1;// NonCompliant
+    calendar.get(Calendar.DST_OFFSET) == 0;
   }
 }
