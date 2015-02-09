@@ -1,0 +1,43 @@
+<p>Whether the valid value ranges for <code>Date</code> fields start with 0 or 1 varies by field. For instance, month starts at 0, and day of month starts at 1. Enter a date value that goes past the end of the valid range, and the date will roll without error or exception. For instance, enter 12 for month, and you'll get January of the following year.</p>
+
+<p>This rule checks for bad values used in conjunction with <code>java.util.Date</code>, <code>java.sql.Date</code>, and <code>java.util.Calendar</code>. Specifically, values outside of the valid ranges:</p>
+<table>
+  <thead>
+  <tr><td>Field</td> <td>Valid</td></tr>
+  </thead>
+  <tbody>
+    <tr><td>month</td><td>0-11</td></tr>
+    <tr><td>date (day)</td><td>0-31</td></tr>
+    <tr><td>hour</td><td>0-23</td></tr>
+    <tr><td>minute</td><td>0-60</td></tr>
+    <tr><td>second</td><td>0-61</td></tr>
+  </tbody>
+</table>
+
+<p>Note that this rule does not check for invalid leap years, leap seconds (second = 61), or invalid uses of the 31st day of the month.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+Date d = new Date();
+d.setDate(25);
+d.setYear(2014);
+d.setMonth(12);  // Noncompliant; rolls d into the next year
+
+Calendar c = new GregorianCalendar(2014, 12, 25);  // Noncompliant
+if (c.get(Calendar.MONTH) == 12) {  // Noncompliant; invalid comparison
+  // ...
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+Date d = new Date();
+d.setDate(25);
+d.setYear(2014);
+d.setMonth(11);
+
+Calendar c = new Gregorian Calendar(2014, 11, 25);
+if (c.get(Calendar.MONTH) == 11) {
+  // ...
+}
+</pre>

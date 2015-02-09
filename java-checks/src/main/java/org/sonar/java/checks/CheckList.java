@@ -285,7 +285,9 @@ public final class CheckList {
       CollectionInappropriateCallsCheck.class,
       BooleanMethodReturnCheck.class,
       PrimitiveTypeBoxingWithToStringCheck.class,
-      SillyBitOperationCheck.class
+      SillyBitOperationCheck.class,
+      PrimitiveTypeBoxingWithToStringCheck.class,
+      InvalidDateValuesCheck.class
       );
   }
 }
