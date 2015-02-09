@@ -282,7 +282,8 @@ public final class CheckList {
       NotifyCheck.class,
       ScheduledThreadPoolExecutorZeroCheck.class,
       ThreadOverridesRunCheck.class,
-      CollectionInappropriateCallsCheck.class
+      CollectionInappropriateCallsCheck.class,
+      BooleanMethodReturnCheck.class
       );
   }
 }

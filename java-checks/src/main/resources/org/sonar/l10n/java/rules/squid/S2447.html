@@ -1,0 +1,9 @@
+<p>While <code>null</code> is technically a valid <code>Boolean</code> value, that fact, and the distinction between <code>Boolean</code> and <code>boolean</code> is easy to forget. So returning <code>null</code> from a <code>Boolean</code> method is likely to cause problems with callers' code.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public Boolean isUsable() {
+  // ...
+  return null;  // Noncompliant
+}
+</pre>
