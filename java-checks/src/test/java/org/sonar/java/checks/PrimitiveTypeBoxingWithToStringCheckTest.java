@@ -47,6 +47,7 @@ public class PrimitiveTypeBoxingWithToStringCheckTest {
       .next().atLine(22).withMessage("Use \"Long.toString\" instead.")
       .next().atLine(23).withMessage("Use \"Float.toString\" instead.")
       .next().atLine(24).withMessage("Use \"Double.toString\" instead.")
+      .next().atLine(27).withMessage("Use \"Integer.toString\" instead.")
       .noMore();
   }
 

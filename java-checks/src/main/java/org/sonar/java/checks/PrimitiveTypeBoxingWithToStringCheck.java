@@ -27,7 +27,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -83,8 +83,11 @@ public class PrimitiveTypeBoxingWithToStringCheck extends AbstractMethodDetectio
     if (!abstractTypedTree.is(Kind.METHOD_INVOCATION)) {
       return false;
     }
-    MethodInvocationTreeImpl methodInvocationTreeImpl = (MethodInvocationTreeImpl) abstractTypedTree;
-    AbstractTypedTree firstArgument = (AbstractTypedTree) methodInvocationTreeImpl.arguments().get(0);
-    return "valueOf".equals((methodInvocationTreeImpl).getSymbol().getName()) && firstArgument.getSymbolType().isPrimitive();
+    Type type = abstractTypedTree.getSymbolType();
+    MethodInvocationMatcher valueOfMatcher = MethodInvocationMatcher.create()
+      .typeDefinition(type.getSymbol().getFullyQualifiedName())
+      .name("valueOf")
+      .addParameter(type.primitiveType().getSymbol().getFullyQualifiedName());
+    return valueOfMatcher.matches((MethodInvocationTree) abstractTypedTree, getSemanticModel());
   }
 }

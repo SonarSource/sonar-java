@@ -3,7 +3,7 @@ class A {
     int myInt = 4;
     boolean myBoolean = true;
 
-    new Integer(myInt).toString(); // Noncompliant; creates & discards an Integer object
+    new Integer(myInt).toString(); // Noncompliant; creates and discards an Integer object
     Integer.toString(myInt); // Compliant
     A.returnInteger(myInt).toString(); // Compliant
     Integer.valueOf(myInt).toString(); // Noncompliant
@@ -24,6 +24,7 @@ class A {
     new Double(0.0).toString(); // Noncompliant
 
     Integer.valueOf("4").toString(); // Compliant
+    new Integer("4").toString(); // Noncompliant
   }
 
   static Integer returnInteger(int value) {
