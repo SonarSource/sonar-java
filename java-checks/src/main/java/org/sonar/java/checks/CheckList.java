@@ -283,7 +283,8 @@ public final class CheckList {
       ScheduledThreadPoolExecutorZeroCheck.class,
       ThreadOverridesRunCheck.class,
       CollectionInappropriateCallsCheck.class,
-      BooleanMethodReturnCheck.class
+      BooleanMethodReturnCheck.class,
+      PrimitiveTypeBoxingWithToStringCheck.class
       );
   }
 }
