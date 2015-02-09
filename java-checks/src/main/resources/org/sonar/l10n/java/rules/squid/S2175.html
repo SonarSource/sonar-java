@@ -3,10 +3,10 @@
 <h2>Noncompliant Code Example</h2>
 
 <pre>
-List<String> list = new ArrayList<String>();
+List&lt;String&gt; list = new ArrayList&lt;String&gt;();
 Integer integer = Integer.valueOf(1);
 
-if (list.contains(integer)) {  // Noncompliant. Always false.
+if (list.contains(integer)) { // Noncompliant. Always false.
   list.remove(integer); // Noncompliant. list.add(iger) doesn't compile, so this will always return false
 }
 </pre>
