@@ -35,6 +35,10 @@ public class JavaRulesDefinition implements RulesDefinition {
       .setName("SonarQube");
 
     AnnotationBasedRulesDefinition.load(repository, Java.KEY, CheckList.getChecks());
+    for (NewRule rule : repository.rules()) {
+      //FIXME: set internal key to key to ensure rule templates works properly : should be removed when SONAR-6162 is fixed.
+      rule.setInternalKey(rule.key());
+    }
     repository.done();
   }
 }
