@@ -21,9 +21,11 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -132,5 +134,40 @@ public class TypeTest {
     }
     assertThat(symbols.objectType.isPrimitiveWrapper()).isFalse();
     assertThat(symbols.intType.isPrimitiveWrapper()).isFalse();
+  }
+
+  @Test
+  public void mapping_wrapper_primitive() {
+    for (Type wrapper : symbols.boxedTypes.values()) {
+      assertThat(wrapper.primitiveType()).isNotNull();
+      assertThat(wrapper.primitiveWrapperType()).isNull();
+    }
+    for (Type primitive : symbols.boxedTypes.keySet()) {
+      assertThat(primitive.primitiveType()).isNull();
+      assertThat(primitive.primitiveWrapperType()).isNotNull();
+    }
+    assertThat(symbols.objectType.primitiveType()).isNull();
+    assertThat(symbols.objectType.primitiveWrapperType()).isNull();
+  }
+
+  @Test
+  public void parametrizedTypeType_methods_tests() {
+    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
+    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    Symbol.TypeVariableSymbol typeVariableSymbol = new Symbol.TypeVariableSymbol("E", typeSymbol);
+    Type.ClassType classType = (Type.ClassType) typeSymbol.type;
+    Type.TypeVariableType typeVariableType = (Type.TypeVariableType) typeVariableSymbol.type;
+    Map<Type.TypeVariableType, Type> typeSubstitution = Maps.newHashMap();
+    typeSubstitution.put(typeVariableType, classType);
+
+    Type.ParametrizedTypeType ptt = new Type.ParametrizedTypeType(typeSymbol, typeSubstitution);
+    assertThat(ptt.substitution(typeVariableType)).isEqualTo(classType);
+    assertThat(ptt.substitution(new Type.TypeVariableType(new Symbol.TypeVariableSymbol("F", typeSymbol)))).isNull();
+    assertThat(ptt.typeParameters()).hasSize(1);
+    assertThat(ptt.typeParameters()).contains(typeVariableType);
+
+    ptt = new Type.ParametrizedTypeType(typeSymbol, null);
+    assertThat(ptt.substitution(typeVariableType)).isNull();
+    assertThat(ptt.typeParameters()).isEmpty();
   }
 }
