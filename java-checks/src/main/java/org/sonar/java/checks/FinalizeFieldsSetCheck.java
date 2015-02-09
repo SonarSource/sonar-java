@@ -41,6 +41,7 @@ import java.util.List;
 
 @Rule(
   key = "S2165",
+  name = "\"finalize\" should not set fields to \"null\"",
   priority = Priority.MAJOR,
   tags = {"clumsy", "performance"})
 @ActivatedByDefault

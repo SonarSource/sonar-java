@@ -73,7 +73,8 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   protected void onMethodFound(MethodInvocationTree tree) {
     Type argumentType = getType(tree.arguments().get(0));
     Type collectionType = getMethodOwner(tree);
-    Type collectionParameterType = getTypeParameter(collectionType); // can be null when using raw types
+    // can be null when using raw types
+    Type collectionParameterType = getTypeParameter(collectionType);
 
     if (collectionParameterType != null && !collectionParameterType.isTagged(Type.UNKNOWN) && !isArgumentCompatible(argumentType, collectionParameterType)) {
       addIssue(tree, MessageFormat.format("A \"{0}<{1}>\" cannot contain a \"{2}\"", collectionType, collectionParameterType, argumentType));

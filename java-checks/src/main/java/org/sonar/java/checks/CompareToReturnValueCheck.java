@@ -44,6 +44,7 @@ import java.util.List;
 
 @Rule(
   key = "S2167",
+  name = "\"compareTo\" should not return \"Integer.MIN_VALUE\"",
   priority = Priority.CRITICAL,
   tags = {"bug"})
 @ActivatedByDefault
