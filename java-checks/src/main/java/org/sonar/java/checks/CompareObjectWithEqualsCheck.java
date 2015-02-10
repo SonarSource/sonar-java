@@ -51,6 +51,10 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
 
   private JavaFileScannerContext context;
 
+  protected JavaFileScannerContext getContext() {
+	  return context;
+  }
+  
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
@@ -67,18 +71,18 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   }
 
   // TODO(Godin): It seems to be quite common need - operate with signature of methods, so this operation should be generalized and simplified.
-  private boolean isEquals(MethodTree tree) {
+  protected boolean isEquals(MethodTree tree) {
     String methodName = tree.simpleName().name();
     return "equals".equals(methodName) && hasObjectParam(tree) && returnsBoolean(tree);
   }
 
-  private boolean returnsBoolean(MethodTree tree) {
+  protected boolean returnsBoolean(MethodTree tree) {
     Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
     // TODO(Godin): Not very convenient way to get a return type
     return (methodSymbol != null) && (methodSymbol.getReturnType().getType().isTagged(Type.BOOLEAN));
   }
 
-  private boolean hasObjectParam(MethodTree tree) {
+  protected boolean hasObjectParam(MethodTree tree) {
     boolean result = false;
     if (tree.parameters().size() == 1 && tree.parameters().get(0).type().is(Tree.Kind.IDENTIFIER)) {
       result = ((IdentifierTree) tree.parameters().get(0).type()).name().endsWith("Object");
@@ -93,32 +97,36 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
       Type leftOpType = ((AbstractTypedTree) tree.leftOperand()).getSymbolType();
       Type rightOpType = ((AbstractTypedTree) tree.rightOperand()).getSymbolType();
       if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType)) {
-        context.addIssue(tree, ruleKey, "Change this comparison to use the equals method.");
+        addIssue(tree, "Change this comparison to use the equals method.");
       }
     }
   }
+  
+  protected void addIssue(Tree tree, String message) {
+	  context.addIssue(tree, ruleKey, message);
+  }
 
-  private boolean hasObjectOperand(Type leftOpType, Type rightOpType) {
+  protected boolean hasObjectOperand(Type leftOpType, Type rightOpType) {
     return isObject(leftOpType) || isObject(rightOpType);
   }
 
-  private boolean isExcluded(Type leftOpType, Type rightOpType) {
+  protected boolean isExcluded(Type leftOpType, Type rightOpType) {
     return isNullComparison(leftOpType, rightOpType) || isNumericalComparison(leftOpType, rightOpType) || isJavaLangClassComparison(leftOpType, rightOpType);
   }
 
-  private boolean isObject(Type operandType) {
+  protected boolean isObject(Type operandType) {
     return operandType.erasure().isTagged(Type.CLASS) && !operandType.getSymbol().isEnum();
   }
 
-  private boolean isNullComparison(Type leftOpType, Type rightOpType) {
+  protected boolean isNullComparison(Type leftOpType, Type rightOpType) {
     return leftOpType.isTagged(Type.BOT) || rightOpType.isTagged(Type.BOT);
   }
 
-  private boolean isNumericalComparison(Type leftOperandType, Type rightOperandType) {
+  protected boolean isNumericalComparison(Type leftOperandType, Type rightOperandType) {
     return leftOperandType.isNumerical() || rightOperandType.isNumerical();
   }
 
-  private boolean isJavaLangClassComparison(Type leftOpType, Type rightOpType) {
+  protected boolean isJavaLangClassComparison(Type leftOpType, Type rightOpType) {
     return leftOpType.is("java.lang.Class") || rightOpType.is("java.lang.Class");
   }
 }
