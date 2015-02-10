@@ -1,13 +1,28 @@
-<p>
-Not using curly braces could be error-prone in some cases. For instance in the following example, the two statements seems to be attached to the if statement whereas this is the case only for the first one:
-</p>
+<p>While not technically incorrect, the omission of curly braces can be misleading, and may lead to the introduction of errors during maintenance.</p>
+<h2>Noncompliant Code Example</h2>
+
 <pre>
-if (condition) // Non-Compliant
+// the two statements seems to be attached to the if statement, but that is only true for the first one:
+if (condition)
   executeSomething();
   checkSomething();
-
-if (condition) { // Compliant
-  executeSomething();
-}
-checkSomething();
 </pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+if (condition) {
+  executeSomething();
+  checkSomething();
+}
+</pre>
+<h2>See</h2>
+
+<ul>
+<li> MISRA C:2004, 14.8</li>
+<li> MISRA C:2004, 14.9</li>
+<li> MISRA C++:2008, 6-3-1</li>
+<li> MISRA C++:2008, 6-4-1</li>
+<li> MISRA C:2012, 15.6</li>
+<li> <a href="http://cwe.mitre.org/data/definitions/483.html">MITRE, CWE-483</a> - Incorrect Block Delimitation</li>
+</ul>
+
