@@ -55,4 +55,12 @@ public class LiteralUtilsTest {
     }
   }
 
+  @Test
+  public void testTrimLongSuffix() throws Exception {
+    String longValue = "12345";
+    assertThat(LiteralUtils.trimLongSuffix(longValue)).isEqualTo(longValue);
+    assertThat(LiteralUtils.trimLongSuffix(longValue + "l")).isEqualTo(longValue);
+    assertThat(LiteralUtils.trimLongSuffix(longValue + "L")).isEqualTo(longValue);
+  }
+
 }

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -64,7 +65,7 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
     Long identityElement = getBitwiseOperationIdentityElement(tree);
     Long evaluatedExpression = evaluateExpression(getExpression(tree));
 
-    if (evaluatedExpression != null && evaluatedExpression == identityElement) {
+    if (evaluatedExpression != null && identityElement.equals(evaluatedExpression)) {
       addIssue(tree, "Remove this silly bit operation.");
     }
   }
@@ -97,19 +98,8 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
     }
 
     if (expression.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      return sign * Long.decode(trimLongSuffix(((LiteralTree) expression).value()));
+      return sign * Long.decode(LiteralUtils.trimLongSuffix(((LiteralTree) expression).value()));
     }
     return null;
   }
-
-  private String trimLongSuffix(String longString) {
-    int lastCharPosition = longString.length() - 1;
-    char lastChar = longString.charAt(lastCharPosition);
-    String value = longString;
-    if (lastChar == 'L' || lastChar == 'l') {
-      value = longString.substring(0, lastCharPosition);
-    }
-    return value;
-  }
-
 }

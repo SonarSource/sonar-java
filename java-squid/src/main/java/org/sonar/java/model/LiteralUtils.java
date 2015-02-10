@@ -60,9 +60,18 @@ public class LiteralUtils {
     return nullableInteger == null ? null : -nullableInteger;
   }
 
-
   public static String trimQuotes(String value) {
     return value.substring(1, value.length() - 1);
+  }
+
+  public static String trimLongSuffix(String longString) {
+    int lastCharPosition = longString.length() - 1;
+    char lastChar = longString.charAt(lastCharPosition);
+    String value = longString;
+    if (lastChar == 'L' || lastChar == 'l') {
+      value = longString.substring(0, lastCharPosition);
+    }
+    return value;
   }
 
 }
