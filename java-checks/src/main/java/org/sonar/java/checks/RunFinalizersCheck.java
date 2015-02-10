@@ -36,7 +36,7 @@ import java.util.List;
 @Rule(
   key = "S2151",
   name = "\"runFinalizersOnExit\" should not be called",
-  tags = {"bug"},
+  tags = {"bug", "cert", "security"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)

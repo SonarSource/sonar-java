@@ -41,6 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = EmptyMethodsCheck.RULE_KEY,
   name = "Methods should not be empty",
+  tags = {"bug"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)

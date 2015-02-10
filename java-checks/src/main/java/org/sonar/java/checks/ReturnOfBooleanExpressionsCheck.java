@@ -39,6 +39,7 @@ import java.util.List;
 @Rule(
   key = "S1126",
   name = "Return of boolean expressions should not be wrapped into an if-then-else statement",
+  tags = {"clumsy"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

@@ -34,7 +34,7 @@ import java.util.List;
 @Rule(
   key = "S2094",
   name = "Classes should not be empty",
-  tags = {},
+  tags = {"clumsy"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

@@ -37,6 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = PublicStaticFieldShouldBeFinalCheck.RULE_KEY,
   name = "\"public static\" fields should always be constant",
+  tags = {"cert", "cwe", "security"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)

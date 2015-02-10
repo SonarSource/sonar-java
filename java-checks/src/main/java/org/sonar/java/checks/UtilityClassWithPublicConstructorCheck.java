@@ -38,6 +38,7 @@ import java.util.List;
 @Rule(
   key = "S1118",
   name = "Utility classes should not have a public constructor",
+  tags = {"design"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

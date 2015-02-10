@@ -39,7 +39,7 @@ import java.util.List;
 @Rule(
   key = "S00121",
   name = "if/else/for/while/do statements should always use curly braces",
-  tags = {"convention"},
+  tags = {"convention", "cwe", "misra"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")

@@ -32,6 +32,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = DefaultPackageCheck.RULE_KEY,
   name = "The default unnamed package should not be used",
+  tags = {"convention"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)

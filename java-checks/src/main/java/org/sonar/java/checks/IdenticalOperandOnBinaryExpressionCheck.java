@@ -40,7 +40,7 @@ import java.util.List;
 @Rule(
   key = "S1764",
   name = "Identical expressions should not be used on both sides of a binary operator",
-  tags = {"cert"},
+  tags = {"bug", "cert"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

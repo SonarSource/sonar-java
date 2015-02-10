@@ -38,6 +38,7 @@ import java.util.List;
 @Rule(
   key = "S1182",
   name = "super.clone() should be called when overriding Object.clone()",
+  tags = {"cwe"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)

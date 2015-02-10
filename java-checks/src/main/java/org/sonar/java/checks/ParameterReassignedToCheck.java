@@ -47,7 +47,7 @@ import java.util.Set;
 @Rule(
   key = ParameterReassignedToCheck.RULE_KEY,
   name = "Method parameters, caught exceptions and foreach variables should not be reassigned",
-  tags = {"pitfall", "misra"},
+  tags = {"misra", "pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)

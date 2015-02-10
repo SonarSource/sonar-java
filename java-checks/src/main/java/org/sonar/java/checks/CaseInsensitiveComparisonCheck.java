@@ -37,6 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = CaseInsensitiveComparisonCheck.RULE_KEY,
   name = "Case insensitive string comparisons should be made without intermediate upper or lower casing",
+  tags = {"clumsy"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

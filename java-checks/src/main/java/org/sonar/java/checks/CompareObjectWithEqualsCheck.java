@@ -40,7 +40,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = CompareObjectWithEqualsCheck.RULE_KEY,
   name = "Objects should be compared with \"equals()\"",
-  tags = {"cwe"},
+  tags = {"cert", "cwe"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("2min")

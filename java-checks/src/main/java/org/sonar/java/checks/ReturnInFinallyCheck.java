@@ -39,7 +39,7 @@ import java.util.LinkedList;
 @Rule(
   key = ReturnInFinallyCheck.RULE_KEY,
   name = "Return statements should not occur in finally blocks",
-  tags = {"bug"},
+  tags = {"bug", "cwe"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)

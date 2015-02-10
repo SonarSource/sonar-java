@@ -30,6 +30,7 @@ import org.sonar.squidbridge.annotations.NoSqale;
 @Rule(
   key = EmptyFileCheck.RULE_KEY,
   name = "Empty file",
+  tags = {"unused"},
   priority = Priority.MAJOR)
 @NoSqale
 public final class EmptyFileCheck implements JavaFileScanner {

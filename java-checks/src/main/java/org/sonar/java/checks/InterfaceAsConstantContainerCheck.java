@@ -34,6 +34,7 @@ import java.util.List;
 @Rule(
   key = "S1214",
   name = "Constants should not be defined in interfaces",
+  tags = {"bad-practice"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)

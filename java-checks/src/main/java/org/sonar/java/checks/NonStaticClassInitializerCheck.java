@@ -33,6 +33,7 @@ import java.util.List;
 @Rule(
   key = "S1171",
   name = "Non-static class initializers should not be used",
+  tags = {"pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

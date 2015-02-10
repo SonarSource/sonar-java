@@ -42,7 +42,7 @@ import java.util.List;
 @Rule(
   key = "S1699",
   name = "Constructors should only call non-overridable methods",
-  tags = "bug",
+  tags = {"bug"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("10min")

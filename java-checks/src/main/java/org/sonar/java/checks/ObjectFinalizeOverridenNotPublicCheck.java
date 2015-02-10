@@ -36,6 +36,7 @@ import java.util.List;
 @Rule(
   key = "S1174",
   name = "Object.finalize() should remain protected (versus public) when overriding",
+  tags = {"cert", "cwe", "security"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)

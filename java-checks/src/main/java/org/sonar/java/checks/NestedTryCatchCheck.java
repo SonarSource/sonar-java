@@ -34,6 +34,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = NestedTryCatchCheck.RULE_KEY,
   name = "Try-catch blocks should not be nested",
+  tags = {"confusing"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

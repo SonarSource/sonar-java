@@ -44,7 +44,7 @@ import java.util.Set;
 @Rule(
   key = RawException_S00112_Check.RULE_KEY,
   name = "Generic exceptions Error, RuntimeException, Throwable and Exception should never be thrown",
-  tags = {"error-handling"},
+  tags = {"cwe", "error-handling"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)

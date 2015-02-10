@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 @Rule(
   key = HardcodedIpCheck.RULE_KEY,
   name = "IP addresses should not be hardcoded",
-  tags = {"security"},
+  tags = {"cert", "security"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
