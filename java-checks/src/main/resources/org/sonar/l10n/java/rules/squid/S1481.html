@@ -1,19 +1,17 @@
-<p>
-If a local variable is declared but not used in the program, it can be considered dead code and should therefore be removed.
-This will improve maintainability because developers will not wonder what the variable is used for.
-</p>
-
+<p>If a local variable is declared but not used, it is dead code and should be removed. Doing so will improve maintainability because developers will not wonder what the variable is used for.</p>
 <h2>Noncompliant Code Example</h2>
+
 <pre>
-public int compute(int a){
-  int foo = 6;
-  return a * 4;
+public int numberOfMinutes(int hours) {
+  int seconds = 0;   // seconds is never used 
+  return hours * 60;
+}
+</pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+public int numberOfMinutes(int hours) {
+  return hours * 60;
 }
 </pre>
 
-<h2>Compliant Solution</h2>
-<pre>
-public int compute(int a){
-  return a * 4;
-}
-</pre>
