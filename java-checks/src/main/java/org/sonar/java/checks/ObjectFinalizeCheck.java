@@ -37,7 +37,7 @@ import java.util.List;
 
 @Rule(
   key = "ObjectFinalizeCheck",
-  name = "The Object.finalize() method should never be called",
+  name = "The Object.finalize() method should not be called",
   tags = {"cert", "cwe", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

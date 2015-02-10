@@ -43,7 +43,7 @@ import java.util.Deque;
 
 @Rule(
   key = SeveralBreakOrContinuePerLoopCheck.RULE_KEY,
-  name = "Loops should not contain more than a single \"break\" or \"continue\" statement",
+  name = "Loops should not contain more than a single [\"break\" or \"continue\"|\"CONTINUE\", \"EXIT\", \"CHECK\"] statement",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

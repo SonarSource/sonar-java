@@ -43,7 +43,7 @@ import java.util.Set;
 
 @Rule(
   key = SunPackagesUsedCheck.RULE_KEY,
-  name = "Classes from \"com.sun.*\" and \"sun.*\" packages should not be used",
+  name = "Classes from \"sun.*\" packages should not be used",
   tags = {"lock-in", "pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

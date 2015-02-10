@@ -36,7 +36,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1151",
-  name = "Switch cases should not have too many lines",
+  name = "\"[switch|case|CASE|WHEN]\" clauses should not have too many lines",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

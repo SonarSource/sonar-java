@@ -41,7 +41,7 @@ import java.util.Set;
 
 @Rule(
   key = StringBufferAndBuilderWithCharCheck.RULE_KEY,
-  name = "StringBuilder and StringBuffer should not be instantiated with a character",
+  name = "\"StringBuilder\" and \"StringBuffer\" should not be instantiated with a character ",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

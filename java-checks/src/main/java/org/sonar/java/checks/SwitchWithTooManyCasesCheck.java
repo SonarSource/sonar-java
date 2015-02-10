@@ -35,7 +35,7 @@ import java.util.List;
 
 @Rule(
   key = "S1479",
-  name = "\"switch\" statements should not have too many \"case\" clauses",
+  name = "\"[switch|CASE]\" statements should not have too many \"[case|WHEN]\" clauses",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

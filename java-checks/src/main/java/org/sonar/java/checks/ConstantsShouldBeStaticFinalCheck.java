@@ -40,7 +40,7 @@ import java.util.List;
 
 @Rule(
   key = "S1170",
-  name = "Constants should be declared \"final static\" rather than merely \"final\"",
+  name = "Public constants should be declared \"static [final|const]\" rather than merely \"[final|const]\"",
   tags = {"convention"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

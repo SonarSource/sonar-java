@@ -35,7 +35,7 @@ import java.util.List;
 
 @Rule(
   key = "S106",
-  name = "System.out and System.err should not be used as loggers",
+  name = "Standard ouputs should not be used directly to log anything",
   tags = {"bad-practice"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

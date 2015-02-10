@@ -32,7 +32,7 @@ import org.sonar.squidbridge.api.SourceFile;
 
 @Rule(
   key = UnusedProtectedMethodCheck.RULE_KEY,
-  name = "Unused protected method",
+  name = "Unused protected methods should be removed",
   tags = {"unused"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

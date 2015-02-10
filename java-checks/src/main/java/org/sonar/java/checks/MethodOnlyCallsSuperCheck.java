@@ -44,7 +44,7 @@ import java.util.List;
 
 @Rule(
   key = "S1185",
-  name = "Overriding methods should do more than simply call the same method in the super class",
+  name = "Overriding methods should do more than simply call the same method in the super class ",
   tags = {"clumsy"},
   priority = Priority.MINOR)
 @ActivatedByDefault

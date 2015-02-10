@@ -34,7 +34,7 @@ import java.util.List;
 
 @Rule(
   key = "ObjectFinalizeOverridenCheck",
-  name = "The Object.finalize() method should never be overriden",
+  name = "The Object.finalize() method should not be overriden",
   tags = {"cert", "unpredictable"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

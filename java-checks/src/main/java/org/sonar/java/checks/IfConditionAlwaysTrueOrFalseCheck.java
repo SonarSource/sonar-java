@@ -33,7 +33,7 @@ import java.util.List;
 
 @Rule(
   key = "S1145",
-  name = "If statement conditions should not always evaluate to \"true\" or to \"false\"",
+  name = "\"if\" statement conditions should not unconditionally evaluate to \"true\" or to \"false\"",
   tags = {"bug", "cwe", "misra", "security"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

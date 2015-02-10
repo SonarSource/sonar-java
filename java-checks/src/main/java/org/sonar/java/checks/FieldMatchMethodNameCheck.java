@@ -44,7 +44,7 @@ import java.util.Set;
 
 @Rule(
   key = FieldMatchMethodNameCheck.RULE_KEY,
-  name = "Fields should not duplicate method names",
+  name = "Fields and methods should not have conflicting names",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)

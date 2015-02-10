@@ -34,7 +34,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "RightCurlyBraceStartLineCheck",
-  name = "Right curly braces should be located at the beginning of lines of code",
+  name = "A close curly brace should be located at the beginning of a line",
   tags = {"convention"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

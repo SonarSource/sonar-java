@@ -42,7 +42,7 @@ import java.util.Deque;
 
 @Rule(
   key = SwitchCaseWithoutBreakCheck.RULE_KEY,
-  name = "Switch cases should end with an unconditional break statement",
+  name = "Switch cases should end with an unconditional \"break\" statement",
   tags = {"cert", "cwe", "misra", "pitfall"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

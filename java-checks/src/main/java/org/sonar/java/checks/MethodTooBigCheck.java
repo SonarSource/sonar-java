@@ -35,7 +35,7 @@ import java.util.List;
 
 @Rule(
   key = "S138",
-  name = "Methods should not have too many lines",
+  name = "[Functions|Methods|Modules|Subroutines] should not have too many lines",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

@@ -38,7 +38,7 @@ import java.util.List;
 
 @Rule(
   key = "S1147",
-  name = "System.exit(...) and Runtime.getRuntime().exit(...) should not be called",
+  name = "Exit methods should not be called",
   tags = {"cwe"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

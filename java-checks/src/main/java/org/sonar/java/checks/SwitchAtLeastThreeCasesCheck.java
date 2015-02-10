@@ -34,7 +34,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = SwitchAtLeastThreeCasesCheck.RULE_KEY,
-  name = "\"switch\" statements should have at least 3 cases",
+  name = "[\"switch\"|\"CASE\"|\"Select Case\"] statements should have at least 3 [\"case\"|\"WHEN\"|\"Case\"] clauses",
   tags = {"misra"},
   priority = Priority.MINOR)
 @ActivatedByDefault

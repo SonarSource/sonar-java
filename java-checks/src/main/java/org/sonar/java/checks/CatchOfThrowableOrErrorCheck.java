@@ -39,7 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = CatchOfThrowableOrErrorCheck.RULE_KEY,
-  name = "Throwable and Error classes should not be caught",
+  name = "Throwable and Error should not be caught",
   tags = {"cwe", "error-handling"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault

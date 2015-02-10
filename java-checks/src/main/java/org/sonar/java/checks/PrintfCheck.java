@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 
 @Rule(
   key = "S2275",
-  name = "Printf-style format strings should not lead to any runtime unexpected behavior",
+  name = "Printf-style format strings should not lead to unexpected behavior at runtime",
   tags = {"bug", "pitfall"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

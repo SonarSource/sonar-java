@@ -41,7 +41,7 @@ import java.util.Map;
 
 @Rule(
   key = "S2070",
-  name = "SHA-1 and MD5 hash algorithms should not be used",
+  name = "SHA-1 and Message-Digest hash algorithms should not be used",
   tags = {"cwe", "owasp-top10", "sans-top25", "security"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
