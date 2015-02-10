@@ -48,7 +48,7 @@ import java.util.List;
   tags = {"bug"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
 

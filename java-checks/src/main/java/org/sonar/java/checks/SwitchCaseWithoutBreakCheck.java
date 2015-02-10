@@ -47,7 +47,7 @@ import java.util.Deque;
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("10min")
 public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S128";

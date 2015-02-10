@@ -38,7 +38,7 @@ import java.util.List;
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("10min")
 public class InterfaceAsConstantContainerCheck extends SubscriptionBaseVisitor {
 
   @Override

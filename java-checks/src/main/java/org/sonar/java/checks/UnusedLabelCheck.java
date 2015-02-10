@@ -37,7 +37,7 @@ import java.util.List;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("2min")
 public class UnusedLabelCheck extends SubscriptionBaseVisitor {
 
   @Override

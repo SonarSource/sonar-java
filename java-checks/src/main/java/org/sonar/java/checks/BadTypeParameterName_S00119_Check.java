@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("10min")
 public class BadTypeParameterName_S00119_Check extends SubscriptionBaseVisitor {
 
   private static final String DEFAULT_FORMAT = "^[A-Z]$";

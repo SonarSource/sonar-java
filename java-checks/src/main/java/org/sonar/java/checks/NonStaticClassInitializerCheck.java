@@ -36,8 +36,8 @@ import java.util.List;
   tags = {"pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("30min")
 public class NonStaticClassInitializerCheck extends SubscriptionBaseVisitor{
 
   @Override

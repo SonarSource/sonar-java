@@ -41,7 +41,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("5min")
 public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final int DEFAULT_MAX = 5;

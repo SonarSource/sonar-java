@@ -37,8 +37,8 @@ import java.util.List;
   tags = {"bug", "cwe", "misra", "security"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("2min")
 public class IfConditionAlwaysTrueOrFalseCheck extends SubscriptionBaseVisitor {
 
   @Override

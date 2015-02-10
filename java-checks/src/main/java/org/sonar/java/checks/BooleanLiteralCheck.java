@@ -40,8 +40,8 @@ import java.util.List;
   tags = {"clumsy"},
   priority = Priority.MINOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("2min")
 public class BooleanLiteralCheck extends SubscriptionBaseVisitor {
 
   @Override

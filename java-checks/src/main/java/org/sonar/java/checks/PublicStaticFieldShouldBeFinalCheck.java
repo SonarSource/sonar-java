@@ -40,7 +40,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   tags = {"cert", "cwe", "security"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("20min")
 public class PublicStaticFieldShouldBeFinalCheck extends BaseTreeVisitor implements JavaFileScanner {
 

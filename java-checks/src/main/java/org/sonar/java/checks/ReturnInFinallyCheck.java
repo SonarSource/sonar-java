@@ -43,7 +43,7 @@ import java.util.LinkedList;
   priority = Priority.BLOCKER)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("30min")
 public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileScanner{
 
   public static final String RULE_KEY = "S1143";

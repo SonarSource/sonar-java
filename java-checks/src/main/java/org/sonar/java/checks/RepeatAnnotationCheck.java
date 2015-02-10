@@ -45,7 +45,7 @@ import java.util.List;
   tags = {"java8"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("2min")
+@SqaleConstantRemediation("2 min")
 public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1710";

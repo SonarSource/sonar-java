@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("5min")
 public class BadMethodName_S00100_Check extends SubscriptionBaseVisitor {
 
   private static final String DEFAULT_FORMAT = "^[a-z][a-zA-Z0-9]*$";

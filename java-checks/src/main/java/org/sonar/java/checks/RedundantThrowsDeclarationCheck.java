@@ -42,7 +42,7 @@ import java.util.Set;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleConstantRemediation("5min")
 public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "RedundantThrowsDeclarationCheck";

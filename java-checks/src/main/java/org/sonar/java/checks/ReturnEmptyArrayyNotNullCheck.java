@@ -47,8 +47,8 @@ import java.util.Set;
   tags = {"cert"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("30min")
 public class ReturnEmptyArrayyNotNullCheck extends SubscriptionBaseVisitor {
 
   private static final Set<String> COLLECTION_TYPES = ImmutableSet.of(

@@ -48,7 +48,7 @@ import java.util.Deque;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("30min")
+@SqaleConstantRemediation("20min")
 public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S135";

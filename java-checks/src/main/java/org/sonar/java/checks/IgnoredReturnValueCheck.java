@@ -43,7 +43,7 @@ import java.util.List;
   tags = {"bug", "cert", "misra"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("15min")
+@SqaleConstantRemediation("10min")
 public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
 
   private static List<String> CHECKED_TYPES = ImmutableList.<String>builder()
