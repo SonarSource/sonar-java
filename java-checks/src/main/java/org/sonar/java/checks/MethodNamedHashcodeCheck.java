@@ -33,7 +33,7 @@ import java.util.List;
 
 @Rule(
   key = "S1221",
-  name = "Methods should not be named \"hashcode\" or \"equal\"",
+  name = "Methods should not be named \"hashcode\"",
   tags = {"bug", "pitfall"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

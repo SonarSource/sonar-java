@@ -46,10 +46,10 @@ public class ArchitectureCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "ArchitecturalConstraint";
 
-  @RuleProperty
+  @RuleProperty(description = "Optional. If this property is not defined, all classes should adhere to this constraint. Ex : **.web.**")
   private String fromClasses = "";
 
-  @RuleProperty
+  @RuleProperty(description = "Mandatory. Ex : java.util.Vector, java.util.Hashtable, java.util.Enumeration")
   private String toClasses = "";
 
   private WildcardPattern[] fromPatterns;

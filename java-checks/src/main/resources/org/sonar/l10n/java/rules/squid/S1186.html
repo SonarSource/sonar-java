@@ -1,37 +1,38 @@
-<p>There are three reasons for a method not to have a method body:</p>
-
+<p>There are several reasons for a method not to have a method body:</p>
 <ul>
-  <li>It is an unintentional omission, and should be fixed.</li>
-  <li>It is not yet, or never will be, supported. In this case an <code>UnsupportedOperationException</code> should be thrown.</li>
-  <li>The method is an intentionally-blank override. In this case a nested comment should explain the reason for the blank override.</li>
+<li> It is an unintentional omission, and should be fixed to prevent an unexpected behavior in production.</li>
+<li> It is not yet, or never will be, supported. In this case an <code>[UnsupportedOperationException|NotSupportedException|IllegalOperationError]</code> should be thrown.</li>
+<li> The method is an intentionally-blank override. In this case a nested comment should explain the reason for the blank override.</li>
 </ul>
-
-<p>The following code snippet:</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
-// Non-Compliant
 public void doSomething() {
 }
-</pre>
 
-should be refactored into:
-
-<pre>
-// Compliant
-@Override
 public void doSomethingElse() {
-  // Do nothing because of X and Y.
 }
 </pre>
-
-or:
+<h2>Compliant Solution</h2>
 
 <pre>
-// Compliant
+@Override
+public void doSomething() {
+  // Do nothing because of X and Y.
+}
+
 @Override
 public void doSomethingElse() {
   throw new UnsupportedOperationException();
 }
 </pre>
+<h2>Exceptions</h2>
 
-<p>Empty methods not having any nested comments are tolerated in Abstract classes as those empty methods are usual when implementing the visitor pattern.</p>
+<p>An abstract class' may have empty methods, in order to provide default implementations for child classes.</p>
+<pre>
+public abstract class Animal {
+  void speak() {
+  }
+}
+</pre>
+

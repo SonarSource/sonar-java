@@ -52,7 +52,9 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final int DEFAULT_MAX = 20;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX)
+  @RuleProperty(key = "Max",
+      defaultValue = "" + DEFAULT_MAX,
+      description = "Maximum allowed lines in an anonymous class/lambda")
   public int max = DEFAULT_MAX;
 
   private JavaFileScannerContext context;

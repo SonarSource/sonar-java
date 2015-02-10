@@ -1,12 +1,16 @@
-<p>
-As of Java 5, <code>enum</code> is a keyword and can therefore no longer be used a variable names for instance.
-Recent versions of the Java compiler will generate errors while compiling code still using <code>enum</code> as a name.
-</p>
-
+<p>Through Java's evolution keywords have been added. While code that uses those words as identifiers may be compilable under older versions of Java, it will not be under modern versions. </p>
+<table>
+<tr><th>Keyword</th><th>Added</th></tr>
+<tr><td>assert</td><td>1.4</td></tr>
+<tr><td>const</td><td>reserved</td></tr>
+<tr><td>enum</td><td>5.0</td></tr>
+<tr><td>goto</td><td>reserved</td></tr>
+<tr><td>strictfp</td><td>1.2</td></tr>
+</table>
 <p>The following code snippet illustrates this rule:</p>
-
 <pre>
 public void doSomething() {
   int enum = 42;            // Non-Compliant
 }
 </pre>
+

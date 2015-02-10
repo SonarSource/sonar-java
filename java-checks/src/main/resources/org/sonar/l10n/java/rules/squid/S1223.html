@@ -1,17 +1,18 @@
-Having a class and some of its methods sharing the same name is misleading, and leaves others to wonder whether it was done that way on purpose, or was the methods supposed to be a constructor.
-
+<p>Having a class and some of its methods sharing the same name is misleading, and leaves others to wonder whether it was done that way on purpose, or was the methods supposed to be a constructor.</p>
 <h2>Noncompliant Code Example</h2>
+
 <pre>
-class Foo {
-  public Foo() {...}
-  public int Foo(String label) {...} // Noncompliant
+public class Foo {
+   public Foo() {...}
+   public void Foo(String label) {...}  // Noncompliant
+}
+</pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+public class Foo {
+   public Foo() {...}
+   public void foo(String label) {...}  // Compliant
 }
 </pre>
 
-<h2>Compliant Solution</h2>
-<pre>
-class Foo {
-  public Foo() {...}
-  public int foo(String label) {...} // Compliant
-}
-</pre>

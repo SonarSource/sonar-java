@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
   key = "S00120",
   name = "Package names should comply with a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")
@@ -57,6 +57,7 @@ public class BadPackageName_S00120_Check extends BaseTreeVisitor implements Java
 
   @RuleProperty(
     key = "format",
+    description = "Regular expression used to check the package names against.",
     defaultValue = DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

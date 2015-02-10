@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
   key = BadClassName_S00101_Check.RULE_KEY,
   name = "Class names should comply with a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
@@ -52,6 +52,7 @@ public class BadClassName_S00101_Check extends BaseTreeVisitor implements JavaFi
 
   @RuleProperty(
     key = "format",
+    description = "Regular expression used to check the class names against.",
     defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

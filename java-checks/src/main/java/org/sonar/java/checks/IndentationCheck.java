@@ -44,7 +44,7 @@ import java.util.List;
   key = "IndentationCheck",
   name = "Source code should be indented consistently",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class IndentationCheck extends SubscriptionBaseVisitor {
@@ -66,6 +66,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
 
   @RuleProperty(
       key = "indentationLevel",
+      description = "Number of white-spaces of an indent. If this property is not set, we just check that the code is indented.",
       defaultValue = "" + DEFAULT_INDENTATION_LEVEL)
   public int indentationLevel = DEFAULT_INDENTATION_LEVEL;
 

@@ -34,7 +34,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = TooManyParameters_S00107_Check.RULE_KEY,
-  name = "[Functions|Methods|Lambdas] should not have too many parameters",
+  name = "Methods should not have too many parameters",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
@@ -48,7 +48,8 @@ public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements J
   private static final int DEFAULT_MAXIMUM = 7;
 
   @RuleProperty(
-    key = "maximumMethodParameters",
+    key = "max",
+    description = "Maximum authorized number of parameters",
     defaultValue = "" + DEFAULT_MAXIMUM)
   public int maximum = DEFAULT_MAXIMUM;
 

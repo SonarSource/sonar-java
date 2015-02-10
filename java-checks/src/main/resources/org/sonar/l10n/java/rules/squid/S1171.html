@@ -1,13 +1,10 @@
-<p>
-Non-static initializers are rarely used, and can be confusing for most developers.
-When possible, they should be refactored into standard constructors or field initializers.
-</p>
-
-<p>The following code:</p>
+<p>Non-static initializers are rarely used, and can be confusing for most developers.</p>
+<p>When possible, they should be refactored into standard constructors or field initializers.</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
 class MyClass {
-  private static final Map<String, String> MY_MAP = new HashMap<String, String>() {
+  private static final Map&lt;String, String&gt; MY_MAP = new HashMap&lt;String, String&gt;() {
 
     // Non-Compliant - HashMap should be extended only to add behavior, not for initialization
     {
@@ -17,12 +14,22 @@ class MyClass {
   };
 }
 </pre>
-
-<p>could be refactored using Guava into:</p>
+<h2>Compliant Solution</h2>
 
 <pre>
 class MyClass {
-  // Compliant
-  private static final Map<String, String> MY_MAP = ImmutableMap.of("a", "b");
+  private static final Map&lt;String, String&gt; MY_MAP = new HashMap&lt;String, String&gt;();
+
+  static {
+    MY_MAP.put("a", "b");
+  }
 }
 </pre>
+<p>or using Guava:</p>
+<pre>
+class MyClass {
+  // Compliant
+  private static final Map&lt;String, String&gt; MY_MAP = ImmutableMap.of("a", "b");
+}
+</pre>
+

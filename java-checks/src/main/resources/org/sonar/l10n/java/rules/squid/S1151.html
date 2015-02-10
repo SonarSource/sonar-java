@@ -1,19 +1,35 @@
-<p>Switch cases should remain small to keep the overall switch compact and readable.</p>
+<p>The <code>switch</code> statement should be used only to clearly define some new branches in the control flow. As soon as a <code>case</code> clause contains too many statements this highly decreases the readability of the overall control flow statement. In such case, the content of <code>case</code> clause should be extracted in a dedicated method.</p>
+<h2>Noncompliant Code Example</h2>
 
 <p>The following code snippet illustrates this rule with the default threshold of 5:</p>
+<pre>
+switch (myVariable) {
+  case 0: // 6 lines till next case
+    methodCall1("");
+    methodCall2("");
+    methodCall3("");
+    methodCall4("");
+    break;
+  case 1:
+  ...
+}
+</pre> 
+<h2>Compliant Solution</h2>
 
 <pre>
 switch (myVariable) {
-  case 0:                     // Compliant - 5 lines till following case
-    System.out.println("");
-    System.out.println("");
-    System.out.println("");
+  case 0:                  
+    doSomething()
     break;
-  default:                    // Non-Compliant - 6 lines till switch end
-    System.out.println("");
-    System.out.println("");
-    System.out.println("");
-    System.out.println("");
-    break;
+  case 1:
+  ...
 }
-</pre>
+...
+private void doSomething(){
+    methodCall1("");
+    methodCall2("");
+    methodCall3("");
+    methodCall4("");
+}
+</pre> 
+

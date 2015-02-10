@@ -20,10 +20,12 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.RecognitionException;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
-import org.sonar.squidbridge.annotations.NoSqale;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.checks.SquidCheck;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -34,7 +36,8 @@ import java.io.StringWriter;
   key = "ParsingError",
   name = "Java parser failure",
   priority = Priority.MAJOR)
-@NoSqale
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
+@SqaleConstantRemediation("30min")
 public class ParsingErrorCheck extends SquidCheck<LexerlessGrammar> implements AstScannerExceptionHandler {
 
   @Override

@@ -2,13 +2,13 @@
 <h2>Noncompliant Code Example</h2>
 
 <pre>
- x -> {System.out.println(x+1);}
-(a, b) -> { return a + b; }
+x -&gt; {System.out.println(x+1);}
+(a, b) -&gt; { return a+b; }
 </pre>
-
 <h2>Compliant Solution</h2>
 
 <pre>
- x -> System.out.println(x+1)
-(a, b) -> a + b
+x -&gt; System.out.println(x+1)
+(a, b) -&gt; a+b    //For return statement, the return keyword should also be dropped
 </pre>
+

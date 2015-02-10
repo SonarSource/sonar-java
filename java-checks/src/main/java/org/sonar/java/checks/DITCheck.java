@@ -51,7 +51,10 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX)
+  @RuleProperty(
+      key = "max",
+      description = "Maximum depth of the inheritance tree. (Number)",
+      defaultValue = "" + DEFAULT_MAX)
   private Integer max = DEFAULT_MAX;
 
 

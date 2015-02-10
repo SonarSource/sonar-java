@@ -38,9 +38,9 @@ import java.util.regex.Pattern;
 
 @Rule(
   key = BadLocalVariableName_S00117_Check.RULE_KEY,
-  name = "Local variable and function parameter names should comply with a naming convention",
+  name = "Local variable and method parameter names should comply with a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
@@ -53,6 +53,7 @@ public class BadLocalVariableName_S00117_Check  extends BaseTreeVisitor implemen
 
   @RuleProperty(
     key = "format",
+    description = "Regular expression used to check the names against.",
     defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

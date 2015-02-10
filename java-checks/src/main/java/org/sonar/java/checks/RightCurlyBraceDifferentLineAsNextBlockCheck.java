@@ -37,7 +37,7 @@ import java.util.Set;
   key = "RightCurlyBraceDifferentLineAsNextBlockCheck",
   name = "Close curly brace and the next \"else\", \"catch\" and \"finally\" keywords should be on two different lines",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class RightCurlyBraceDifferentLineAsNextBlockCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {

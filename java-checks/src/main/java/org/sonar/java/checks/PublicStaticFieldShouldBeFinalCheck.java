@@ -38,7 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = PublicStaticFieldShouldBeFinalCheck.RULE_KEY,
   name = ":",
   tags = {"cert", "cwe", "security"},
-  priority = Priority.MAJOR)
+  priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("20min")

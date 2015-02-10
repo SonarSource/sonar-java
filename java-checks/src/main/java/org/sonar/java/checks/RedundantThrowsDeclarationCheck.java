@@ -39,7 +39,7 @@ import java.util.Set;
   key = RedundantThrowsDeclarationCheck.RULE_KEY,
   name = "Throws declarations should not be redundant",
   tags = {"error-handling"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

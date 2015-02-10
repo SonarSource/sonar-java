@@ -57,7 +57,8 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   private static final String DEFAULT_EXCLUDE = "";
 
   @RuleProperty(
-      key = "exclude",
+      key = "Exclude",
+      description = "Comma separated list of Sun packages to be ignored by this rule. Example: com.sun.jna,sun.misc",
       defaultValue = "" + DEFAULT_EXCLUDE)
   public String exclude = DEFAULT_EXCLUDE;
   private String[] excludePackages = null;

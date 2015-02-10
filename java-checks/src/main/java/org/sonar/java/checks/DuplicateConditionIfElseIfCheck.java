@@ -37,7 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = DuplicateConditionIfElseIfCheck.RULE_KEY,
-  name = "Conditions in related \"if/else if\" statements and \"cases\" in a \"(switch|Select Case)\" should not have the same condition",
+  name = "Conditions in related \"if/else if\" statements should not have the same condition",
   tags = {"bug", "cert", "pitfall", "unused"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

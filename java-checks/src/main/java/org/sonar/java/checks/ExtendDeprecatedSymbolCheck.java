@@ -35,7 +35,7 @@ import java.util.List;
 
 @Rule(
   key = "S1724",
-  name = "[Deprecated|Obsolete] classes and interfaces should not be extended/implemented",
+  name = "Deprecated classes and interfaces should not be extended/implemented",
   tags = {"cwe", "obsolete"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)

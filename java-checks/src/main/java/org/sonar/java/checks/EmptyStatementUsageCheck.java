@@ -35,7 +35,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   key = "EmptyStatementUsageCheck",
   name = "Empty statements should be removed",
   tags = {"cert", "misra", "unused"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("2min")

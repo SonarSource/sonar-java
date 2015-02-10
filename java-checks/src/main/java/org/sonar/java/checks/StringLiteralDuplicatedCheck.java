@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Map;
@@ -46,7 +46,7 @@ import java.util.Map;
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation("2min")
+@SqaleLinearWithOffsetRemediation(coeff = "2min", offset = "2min", effortToFixDescription = "number of duplicate instances")
 public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1192";
@@ -56,6 +56,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   private static final Integer MINIMAL_LITERAL_LENGTH = 7;
   @RuleProperty(
       key = "threshold",
+      description = "Number of times a literal must be duplicated to trigger an issue",
       defaultValue = "" + DEFAULT_THRESHOLD)
   public int threshold = DEFAULT_THRESHOLD;
 
