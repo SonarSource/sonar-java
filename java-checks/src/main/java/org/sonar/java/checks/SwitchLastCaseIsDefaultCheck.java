@@ -36,7 +36,7 @@ import java.util.List;
 
 @Rule(
   key = "SwitchLastCaseIsDefaultCheck",
-  name = "Switch statements should end with a default case",
+  name = "\"[switch|CASE]\" statements should end with a \"[default|case default|WHEN OTHERS|Case Else]\" clause",
   tags = {"cert", "cwe", "misra"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

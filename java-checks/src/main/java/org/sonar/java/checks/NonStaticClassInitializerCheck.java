@@ -32,7 +32,7 @@ import java.util.List;
 
 @Rule(
   key = "S1171",
-  name = "Non-static class initializers should not be used",
+  name = "Only static class initializers should be used",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

@@ -34,7 +34,7 @@ import java.util.List;
 
 @Rule(
   key = "ClassCyclomaticComplexity",
-  name = "Avoid too complex class",
+  name = "Classes should not be too complex",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

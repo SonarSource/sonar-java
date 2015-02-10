@@ -33,7 +33,7 @@ import java.util.List;
 
 @Rule(
   key = "S1135",
-  name = "TODO tags should be handled",
+  name = "\"TODO\" tags should be handled",
   priority = Priority.INFO)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

@@ -32,7 +32,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "LeftCurlyBraceStartLineCheck",
-  name = "Left curly braces should be located at the beginning of lines of code",
+  name = "An open curly brace should be located at the beginning of a line",
   tags = {"convention"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

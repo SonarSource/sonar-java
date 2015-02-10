@@ -42,7 +42,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = NestedIfStatementsCheck.KEY,
-  name = "Control flow statements \"if\", \"for\", \"while\", \"switch\" and \"try\" should not be nested too deeply",
+  name = "Control flow statements [\"if\", \"for\", \"while\", \"switch\" and \"try\"|\"IF\", \"CASE\", \"DO\", \"LOOP\", \"SELECT\", \"WHILE\" and \"PROVIDE\"] should not be nested too deeply",
   tags = {"brain-overload"},
   priority = Priority.MINOR)
 @ActivatedByDefault

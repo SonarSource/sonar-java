@@ -35,7 +35,7 @@ import java.util.Set;
 
 @Rule(
   key = "RightCurlyBraceDifferentLineAsNextBlockCheck",
-  name = "Right curly brace and next \"else\", \"catch\" and \"finally\" keywords should be located on two different lines",
+  name = "Close curly brace and the next \"else\", \"catch\" and \"finally\" keywords should be on two different lines",
   tags = {"convention"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

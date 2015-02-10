@@ -34,7 +34,7 @@ import java.util.List;
 
 @Rule(
   key = "S2254",
-  name = "\"HttpServletRequest.getRequestedSessionId()\" should only be used by servlet containers",
+  name = "\"HttpServletRequest.getRequestedSessionId()\" should not be used",
   tags = {"owasp-top10", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

@@ -44,7 +44,7 @@ import java.util.Set;
 
 @Rule(
   key = "S00103",
-  name = "Lines of code should not be too long",
+  name = "Lines should not be too long",
   tags = {"convention"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

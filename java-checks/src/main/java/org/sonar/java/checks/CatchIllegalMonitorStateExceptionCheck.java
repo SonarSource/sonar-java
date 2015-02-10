@@ -37,7 +37,7 @@ import java.util.List;
 
 @Rule(
   key = "S2235",
-  name = "IllegalMonitorStateException should never be caught",
+  name = "IllegalMonitorStateException should not be caught",
   tags = {"bug", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

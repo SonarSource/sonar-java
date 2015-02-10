@@ -33,7 +33,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = EnumAsIdentifierCheck.RULE_KEY,
-  name = "\"enum\" should no longer be used as a name",
+  name = "Future keywords should not be used as names",
   tags = {"obsolete", "pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

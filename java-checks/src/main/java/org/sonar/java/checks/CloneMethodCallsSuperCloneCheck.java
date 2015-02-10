@@ -37,7 +37,7 @@ import java.util.List;
 
 @Rule(
   key = "S1182",
-  name = "super.clone() should be called when overriding Object.clone()",
+  name = "Classes that override \"clone\" should be \"Cloneable\" and call \"super.clone()\"",
   tags = {"cwe"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

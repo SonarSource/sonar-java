@@ -42,7 +42,7 @@ import java.util.List;
 
 @Rule(
   key = "IndentationCheck",
-  name = "Source code should be correctly indented",
+  name = "Source code should be indented consistently",
   tags = {"convention"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

@@ -35,7 +35,7 @@ import java.util.List;
 
 @Rule(
   key = "S1850",
-  name = "\"instanceof\" operators that always return \"true\" should be removed",
+  name = "\"instanceof\" operators that always return \"true\" or \"false\" should be removed",
   tags = {"bug", "cwe"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

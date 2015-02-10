@@ -38,7 +38,7 @@ import java.util.Set;
 
 @Rule(
   key = "S1871",
-  name = "Two cases in the same \"switch\" should not have exactly the same implementation",
+  name = "Two branches in the same conditional structure should not have exactly the same implementation",
   tags = {"bug"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)

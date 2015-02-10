@@ -42,7 +42,7 @@ import java.util.Set;
 
 @Rule(
   key = ForLoopCounterChangedCheck.RULE_KEY,
-  name = "Loop counters should not be assigned to from within the loop body",
+  name = "Loop invariants should not be calculated inside the loop",
   tags = {"performance"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

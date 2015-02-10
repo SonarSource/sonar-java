@@ -38,7 +38,7 @@ import java.util.LinkedList;
 
 @Rule(
   key = ReturnInFinallyCheck.RULE_KEY,
-  name = "Return statements should not occur in finally blocks",
+  name = "\"return\" statements should not occur in \"finally\" blocks",
   tags = {"bug", "cwe"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault

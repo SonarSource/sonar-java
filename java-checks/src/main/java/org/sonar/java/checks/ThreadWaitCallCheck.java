@@ -35,7 +35,7 @@ import java.util.List;
 
 @Rule(
   key = "S2236",
-  name = "Methods \"wait(...)\", \"notify()\" or \"notifyAll()\" should never be called on Thread instances",
+  name = "Methods \"wait(...)\", \"notify()\" and \"notifyAll()\" should never be called on Thread instances",
   tags = {"bug", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

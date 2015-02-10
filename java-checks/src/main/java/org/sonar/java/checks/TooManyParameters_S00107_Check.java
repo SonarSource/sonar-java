@@ -34,7 +34,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = TooManyParameters_S00107_Check.RULE_KEY,
-  name = "Methods should not have too many parameters",
+  name = "[Functions|Methods|Lambdas] should not have too many parameters",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
