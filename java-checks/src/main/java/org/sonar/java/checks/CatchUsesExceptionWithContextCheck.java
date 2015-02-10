@@ -54,7 +54,7 @@ import java.util.List;
   key = CatchUsesExceptionWithContextCheck.RULE_KEY,
   name = "Exception handlers should preserve the original exception",
   tags = {"error-handling"},
-  priority = Priority.MAJOR)
+  priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("10min")

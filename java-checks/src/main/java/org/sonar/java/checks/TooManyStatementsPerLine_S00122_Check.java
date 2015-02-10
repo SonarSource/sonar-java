@@ -42,7 +42,7 @@ import java.util.Map;
   key = "S00122",
   name = "Statements should be on separate lines",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")

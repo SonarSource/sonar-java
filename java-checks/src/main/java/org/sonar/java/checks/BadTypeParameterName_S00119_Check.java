@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
   key = "S00119",
   name = "Type parameter names should comply with a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")

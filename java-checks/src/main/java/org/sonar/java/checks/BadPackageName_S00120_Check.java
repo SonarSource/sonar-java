@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
   key = "S00120",
   name = "Package names should comply with a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")

@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
   key = BadInterfaceName_S00114_Check.RULE_KEY,
   name = "Interface names should comply with a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")

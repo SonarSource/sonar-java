@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
   key = BadLocalVariableName_S00117_Check.RULE_KEY,
   name = "Local variable and function parameter names should comply with a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

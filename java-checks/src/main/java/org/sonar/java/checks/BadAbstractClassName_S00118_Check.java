@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
   key = BadAbstractClassName_S00118_Check.RULE_KEY,
   name = "Abstract class names should comply with a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")
 public class BadAbstractClassName_S00118_Check extends BaseTreeVisitor implements JavaFileScanner {

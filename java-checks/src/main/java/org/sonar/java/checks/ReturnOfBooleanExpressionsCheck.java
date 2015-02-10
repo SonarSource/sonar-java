@@ -40,7 +40,7 @@ import java.util.List;
   key = "S1126",
   name = "Return of boolean expressions should not be wrapped into an \"if-then-else\" statement",
   tags = {"clumsy"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

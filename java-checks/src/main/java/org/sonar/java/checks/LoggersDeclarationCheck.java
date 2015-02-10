@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
   key = LoggersDeclarationCheck.KEY,
   name = "Loggers should be \"private static [final|const]\" and should share a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
