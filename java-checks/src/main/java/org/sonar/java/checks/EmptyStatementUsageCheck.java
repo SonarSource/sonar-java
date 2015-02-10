@@ -38,7 +38,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("2min")
 public class EmptyStatementUsageCheck extends SquidCheck<LexerlessGrammar> {
 
   @Override

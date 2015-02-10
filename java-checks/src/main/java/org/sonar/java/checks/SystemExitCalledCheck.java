@@ -42,8 +42,8 @@ import java.util.List;
   tags = {"cwe"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
+@SqaleConstantRemediation("30min")
 public class SystemExitCalledCheck extends SubscriptionBaseVisitor {
 
   private String idName;

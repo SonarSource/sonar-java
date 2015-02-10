@@ -39,7 +39,7 @@ import java.util.LinkedList;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("5min")
 public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();

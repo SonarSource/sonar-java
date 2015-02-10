@@ -41,7 +41,7 @@ import java.util.List;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
-@SqaleConstantRemediation("30min")
+@SqaleConstantRemediation("15min")
 public class ExceptionsShouldBeImmutableCheck extends SubscriptionBaseVisitor {
 
 

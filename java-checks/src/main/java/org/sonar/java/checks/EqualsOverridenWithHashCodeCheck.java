@@ -44,7 +44,7 @@ import java.util.List;
   priority = Priority.BLOCKER)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation("30min")
+@SqaleConstantRemediation("15min")
 public class EqualsOverridenWithHashCodeCheck extends SubscriptionBaseVisitor {
 
   private static final String HASHCODE = "hashCode";

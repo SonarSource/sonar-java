@@ -40,8 +40,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   tags = {"clumsy"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
+@SqaleConstantRemediation("5min")
 public class CaseInsensitiveComparisonCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1157";

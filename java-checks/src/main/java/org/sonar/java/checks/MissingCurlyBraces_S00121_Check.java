@@ -42,7 +42,7 @@ import java.util.List;
   tags = {"convention", "cwe", "misra"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("2min")
 public class MissingCurlyBraces_S00121_Check extends SubscriptionBaseVisitor {
 
   @Override

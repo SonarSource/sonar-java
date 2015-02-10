@@ -39,7 +39,7 @@ import java.util.List;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("5min")
 public class EmptyBlock_S00108_Check extends SubscriptionBaseVisitor {
 
 

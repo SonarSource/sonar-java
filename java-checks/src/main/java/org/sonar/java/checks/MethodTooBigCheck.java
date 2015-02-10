@@ -39,7 +39,7 @@ import java.util.List;
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleConstantRemediation("20min")
 public class MethodTooBigCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 100;

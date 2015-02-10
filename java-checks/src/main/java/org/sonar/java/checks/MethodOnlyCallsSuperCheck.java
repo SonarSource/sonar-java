@@ -49,7 +49,7 @@ import java.util.List;
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("5min")
 public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
 
   @Override

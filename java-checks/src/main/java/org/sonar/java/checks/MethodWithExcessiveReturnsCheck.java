@@ -40,7 +40,7 @@ import java.util.List;
   name = "Methods should not contain too many return statements",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("20min")
 public class MethodWithExcessiveReturnsCheck extends SubscriptionBaseVisitor {
 

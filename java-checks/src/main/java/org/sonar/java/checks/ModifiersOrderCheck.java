@@ -45,7 +45,7 @@ import java.util.Set;
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("2min")
 public class ModifiersOrderCheck extends SubscriptionBaseVisitor {
 
 

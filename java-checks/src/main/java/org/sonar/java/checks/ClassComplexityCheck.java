@@ -38,8 +38,8 @@ import java.util.List;
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("1min")
 public class ClassComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 200;

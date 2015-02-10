@@ -41,7 +41,7 @@ import java.util.List;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleConstantRemediation("5min")
 public class SwitchLastCaseIsDefaultCheck extends SubscriptionBaseVisitor {
 
   @Override

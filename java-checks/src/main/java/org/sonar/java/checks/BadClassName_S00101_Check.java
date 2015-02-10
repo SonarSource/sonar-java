@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("5min")
 public class BadClassName_S00101_Check extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S00101";

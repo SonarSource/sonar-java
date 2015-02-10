@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
   tags = {"convention"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("10min")
 public class BadAbstractClassName_S00118_Check extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S00118";

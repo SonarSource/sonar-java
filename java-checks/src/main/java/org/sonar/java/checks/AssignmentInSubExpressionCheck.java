@@ -48,7 +48,7 @@ import javax.annotation.Nullable;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("5min")
 public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "AssignmentInSubExpressionCheck";

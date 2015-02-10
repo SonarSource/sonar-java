@@ -41,7 +41,7 @@ import java.util.List;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleConstantRemediation("30min")
 public class ImplementsEnumerationCheck extends SubscriptionBaseVisitor {
 
   @Override

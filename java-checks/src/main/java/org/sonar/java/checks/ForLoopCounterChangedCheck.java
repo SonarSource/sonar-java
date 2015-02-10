@@ -46,8 +46,8 @@ import java.util.Set;
   tags = {"performance"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
+@SqaleConstantRemediation("3min")
 public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "ForLoopCounterChangedCheck";

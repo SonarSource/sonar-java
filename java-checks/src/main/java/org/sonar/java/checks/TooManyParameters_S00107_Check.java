@@ -39,7 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleConstantRemediation("20min")
 public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S00107";

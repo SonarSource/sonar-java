@@ -39,8 +39,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   tags = {"error-handling"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
-@SqaleConstantRemediation("20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleConstantRemediation("30min")
 public class ThrowsFromFinallyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String KEY = "S1163";

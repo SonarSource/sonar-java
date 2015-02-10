@@ -45,7 +45,7 @@ import java.util.List;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("2min")
 public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
 
   private int nestedClassesLevel;

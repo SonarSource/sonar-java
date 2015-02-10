@@ -44,7 +44,7 @@ import java.util.List;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleConstantRemediation("5min")
 public class CommentedOutCodeLineCheck extends SubscriptionBaseVisitor {
 
   private static final double THRESHOLD = 0.9;
