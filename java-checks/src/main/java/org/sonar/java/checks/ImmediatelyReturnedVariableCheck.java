@@ -46,6 +46,7 @@ import java.util.Map;
 @Rule(
   key = ImmediatelyReturnedVariableCheck.RULE_KEY,
   name = "Variables should not be declared and then immediately returned or thrown",
+  tags = {"clumsy"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

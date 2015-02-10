@@ -36,6 +36,7 @@ import java.util.List;
 @Rule(
   key = "S106",
   name = "System.out and System.err should not be used as loggers",
+  tags = {"bad-practice"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ERRORS)

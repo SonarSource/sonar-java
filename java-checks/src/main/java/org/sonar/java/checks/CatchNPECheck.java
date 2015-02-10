@@ -39,7 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = CatchNPECheck.RULE_KEY,
   name = "\"NullPointerException\" should not be caught",
-  tags = {"error-handling"},
+  tags = {"cert", "cwe", "error-handling"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")

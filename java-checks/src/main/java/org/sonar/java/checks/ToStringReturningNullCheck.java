@@ -36,7 +36,7 @@ import java.util.List;
 @Rule(
   key = "S2225",
   name = "\"toString\" should not return null",
-  tags = {"bug"},
+  tags = {"bug", "cwe"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)

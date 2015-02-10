@@ -38,6 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = DITCheck.RULE_KEY,
   name = "Avoid too deep inheritance tree",
+  tags = {"design"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("4h")

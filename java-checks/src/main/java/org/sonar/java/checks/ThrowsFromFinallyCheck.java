@@ -36,6 +36,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = ThrowsFromFinallyCheck.KEY,
   name = "Exceptions should not be thrown in finally blocks",
+  tags = {"error-handling"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)

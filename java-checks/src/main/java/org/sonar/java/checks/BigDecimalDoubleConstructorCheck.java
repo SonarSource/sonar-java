@@ -36,7 +36,7 @@ import java.util.List;
 @Rule(
   key = "S2111",
   name = "\"BigDecimal(double)\" should not be used",
-  tags = {"bug"},
+  tags = {"bug", "cert"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)

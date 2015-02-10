@@ -35,6 +35,7 @@ import org.sonar.squidbridge.api.SourceFile;
 @Rule(
   key = CallToDeprecatedMethodCheck.RULE_KEY,
   name = "Avoid use of deprecated method",
+  tags = {"cwe"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SOFTWARE_RELATED_PORTABILITY)
 @SqaleConstantRemediation("1h")

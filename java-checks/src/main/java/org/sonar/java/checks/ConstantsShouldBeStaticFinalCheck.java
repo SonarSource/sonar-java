@@ -41,6 +41,7 @@ import java.util.List;
 @Rule(
   key = "S1170",
   name = "Constants should be declared \"final static\" rather than merely \"final\"",
+  tags = {"convention"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)

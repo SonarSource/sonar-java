@@ -40,8 +40,8 @@ import java.util.List;
 @Rule(
   key = "S2131",
   name = "Primitives should not be boxed just for \"String\" conversion",
-  priority = Priority.MAJOR,
-  tags = {"performance"})
+  tags = {"performance"},
+  priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("5min")

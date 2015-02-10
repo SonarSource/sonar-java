@@ -38,7 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = ArrayEqualsCheck.RULE_KEY,
   name = "The Array.equals(Object obj) method should never be used",
-  tags = {"convention"},
+  tags = {"bug"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)

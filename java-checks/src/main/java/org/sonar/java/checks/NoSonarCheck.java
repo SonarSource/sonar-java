@@ -36,6 +36,7 @@ import java.util.List;
 @Rule(
   key = "NoSonar",
   name = "Avoid use of //NOSONAR marker",
+  tags = {"bad-practice"},
   priority = Priority.INFO)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("30min")

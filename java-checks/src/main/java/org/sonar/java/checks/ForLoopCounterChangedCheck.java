@@ -43,7 +43,7 @@ import java.util.Set;
 @Rule(
   key = ForLoopCounterChangedCheck.RULE_KEY,
   name = "Loop counters should not be assigned to from within the loop body",
-  tags = {"bug"},
+  tags = {"performance"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)

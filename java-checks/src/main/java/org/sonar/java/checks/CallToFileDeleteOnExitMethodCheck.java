@@ -34,6 +34,7 @@ import org.sonar.squidbridge.api.SourceFile;
 @Rule(
   key = CallToFileDeleteOnExitMethodCheck.RULE_KEY,
   name = "Do not use File#deleteOnExit()",
+  tags = {"performance"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("30min")

@@ -40,7 +40,7 @@ import java.util.List;
 @Rule(
   key = "CommentedOutCodeLine",
   name = "Avoid commented-out lines of code",
-  tags = {"unused"},
+  tags = {"misra", "unused"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

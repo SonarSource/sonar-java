@@ -42,6 +42,7 @@ import java.util.Map;
 @Rule(
   key = StringLiteralDuplicatedCheck.RULE_KEY,
   name = "String literals should not be duplicated",
+  tags = {"design"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)

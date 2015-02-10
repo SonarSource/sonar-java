@@ -39,6 +39,7 @@ import java.util.Set;
 @Rule(
   key = "S1158",
   name = "Primitive wrappers should not be instantiated only to perform a to String conversion",
+  tags = {"clumsy"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)

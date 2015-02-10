@@ -35,7 +35,7 @@ import java.util.List;
 @Rule(
   key = "S1161",
   name = "\"@Override\" annotation should be used on any method overriding (since Java 5) or implementing (since Java 6) another one",
-  tags = {},
+  tags = {"bad-practice"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

@@ -43,7 +43,7 @@ import java.util.Set;
 @Rule(
   key = "S1905",
   name = "Redundant casts should not be used",
-  tags = {},
+  tags = {"clumsy"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

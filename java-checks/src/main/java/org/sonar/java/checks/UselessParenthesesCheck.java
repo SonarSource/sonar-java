@@ -39,6 +39,7 @@ import java.util.List;
 @Rule(
   key = "UselessParenthesesCheck",
   name = "Useless parentheses around expressions should be removed to prevent any misunderstanding",
+  tags = {"confusing"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

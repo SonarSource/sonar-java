@@ -38,7 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = DuplicateConditionIfElseIfCheck.RULE_KEY,
   name = "Conditions in related \"if/else if\" statements should not be duplicated",
-  tags = {"bug", "unused"},
+  tags = {"bug", "cert", "pitfall", "unused"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)

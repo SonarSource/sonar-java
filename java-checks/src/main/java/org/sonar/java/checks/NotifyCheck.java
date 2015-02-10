@@ -34,7 +34,7 @@ import java.util.List;
 @Rule(
   key = "S2446",
   name = "\"notifyAll\" should be used",
-  tags = {"bug", "multithreading"},
+  tags = {"bug", "multi-threading"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("2min")

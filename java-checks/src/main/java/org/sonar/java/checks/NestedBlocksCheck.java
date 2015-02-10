@@ -39,6 +39,7 @@ import java.util.List;
 @Rule(
   key = NestedBlocksCheck.RULE_KEY,
   name = "Nested code blocks should not be used",
+  tags = {"bad-practice"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

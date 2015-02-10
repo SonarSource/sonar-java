@@ -37,6 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = ObjectEqualsNullCheck.KEY,
   name = "\"object == null\" should be used instead of \"object.equals(null)\"",
+  tags = {"bug"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)

@@ -36,7 +36,7 @@ import java.util.List;
 @Rule(
   key = "S1873",
   name = "\"static final\" arrays should be \"private\"",
-  tags = {"security", "cwe"},
+  tags = {"cwe", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)

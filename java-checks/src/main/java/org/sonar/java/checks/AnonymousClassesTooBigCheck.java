@@ -41,7 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = AnonymousClassesTooBigCheck.RULE_KEY,
   name = "Lambdas and anonymous classes should not have too many lines",
-  tags = {"brain-overload"},
+  tags = {"java8"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
