@@ -1,32 +1,20 @@
-<p>
-Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all function/method names match a provided regular expression.
-</p>
+<p>Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all method names match a provided regular expression.</p>
+<h2>Noncompliant Code Example</h2>
 
-<h2>
-Noncompliant Code Example
-</h2>
-<p>
-With default provided regular expression: "^[a-z][a-zA-Z0-9]*$":
-</p>
+<p>With default provided regular expression: XXXXX</p>
 <pre>
-public void Do_Something() {...}
+public int DoSomething(){...}
+</pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+public int doSomething(){...}
+</pre>
+<h2>Exceptions</h2>
+
+<p>Overriding methods are excluded. </p>
+<pre> 
+@Override 
+public int Do_Something(){...} 
 </pre>
 
-<h2>
-Compliant Solution
-</h2>
-<pre>
-public void doSomething(int value) {…}
-}
-</pre>
-
-<h2>
-Exceptions
-</h2>
-<p>
-Overriding methods are excluded.
-</p>
-<pre>
-@Override
-public void Do_Something() {...}
-</pre>

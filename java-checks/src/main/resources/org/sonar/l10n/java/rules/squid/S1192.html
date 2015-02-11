@@ -1,9 +1,6 @@
-<p>
-  Duplicated string literals make the process of refactoring error-prone, since you must be sure to update all occurrences.
-  On the other hand, constants can be referenced from many places, but only need to be updated in a single place.
-</p>
-
-<h2>Non Compliant Code Example</h2>
+<p>Duplicated string literals make the process of refactoring error-prone, since you must be sure to update all occurrences.</p>
+<p>On the other hand, constants can be referenced from many places, but only need to be updated in a single place.</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
 public void run() {
@@ -22,8 +19,7 @@ public String method3(String a) {
   return "";                                       // Compliant - literal "" has less than 5 characters and is excluded
 }
 </pre>
-
-<h2>Compliant Code Example</h2>
+<h2>Compliant Solution</h2>
 
 <pre>
 private static final String ACTION_1 = "action1";  // Compliant
@@ -34,6 +30,7 @@ public void run() {
   release(ACTION_1);
 }
 </pre>
-
 <h2>Exceptions</h2>
+
 <p>To prevent generating some false-positives, literals having less than 5 characters are excluded.</p>
+
