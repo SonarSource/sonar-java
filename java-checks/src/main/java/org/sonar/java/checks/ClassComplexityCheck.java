@@ -26,7 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.text.MessageFormat;
@@ -39,7 +39,7 @@ import java.util.List;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("1min")
+@SqaleLinearWithOffsetRemediation(coeff = "1min", offset = "10min", effortToFixDescription = "per complexity point over the threshold")
 public class ClassComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 200;

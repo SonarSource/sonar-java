@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayDeque;
@@ -48,7 +48,7 @@ import java.util.Deque;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleLinearRemediation(coeff = "20min", effortToFixDescription = "number of extra \"break\" or \"continue\" statements.")
 public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S135";
