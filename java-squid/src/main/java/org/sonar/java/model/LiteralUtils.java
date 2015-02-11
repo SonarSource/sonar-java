@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -60,9 +61,21 @@ public class LiteralUtils {
     return nullableInteger == null ? null : -nullableInteger;
   }
 
-
   public static String trimQuotes(String value) {
     return value.substring(1, value.length() - 1);
   }
 
+  @Nullable
+  public static String trimLongSuffix(String longString) {
+    if (StringUtils.isBlank(longString)) {
+      return longString;
+    }
+    int lastCharPosition = longString.length() - 1;
+    char lastChar = longString.charAt(lastCharPosition);
+    String value = longString;
+    if (lastChar == 'L' || lastChar == 'l') {
+      value = longString.substring(0, lastCharPosition);
+    }
+    return value;
+  }
 }
