@@ -65,6 +65,7 @@ public class LiteralUtils {
     return value.substring(1, value.length() - 1);
   }
 
+  @Nullable
   public static String trimLongSuffix(String longString) {
     if (StringUtils.isBlank(longString)) {
       return longString;
