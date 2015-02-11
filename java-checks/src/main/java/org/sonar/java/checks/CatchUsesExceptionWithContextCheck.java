@@ -71,6 +71,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   @RuleProperty(
       key = "exceptions",
+      description = "List of exceptions which should not be checked",
       defaultValue = "" + EXCLUDED_EXCEPTION_TYPE)
   public String exceptionsCommaSeparated = EXCLUDED_EXCEPTION_TYPE;
 

@@ -54,6 +54,7 @@ public class BadFieldName_S00116_Check extends BaseTreeVisitor implements JavaFi
 
   @RuleProperty(
     key = "format",
+    description = "Regular expression used to check the field names against.",
     defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

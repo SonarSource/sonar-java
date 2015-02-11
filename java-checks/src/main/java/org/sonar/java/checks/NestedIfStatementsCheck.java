@@ -55,7 +55,8 @@ public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFile
 
   private static final int DEFAULT_MAX = 3;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX)
+  @RuleProperty(defaultValue = "" + DEFAULT_MAX,
+  description = "Maximum allowed control flow statement nesting depth.")
   public int max = DEFAULT_MAX;
 
   private JavaFileScannerContext context;

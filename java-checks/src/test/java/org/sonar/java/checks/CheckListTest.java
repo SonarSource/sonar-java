@@ -32,8 +32,6 @@ import org.sonar.squidbridge.api.CodeVisitor;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -69,8 +67,6 @@ public class CheckListTest {
         .isNotNull();
     }
 
-    ResourceBundle resourceBundle = ResourceBundle.getBundle("org.sonar.l10n.java", Locale.ENGLISH);
-
     Set<String> keys = Sets.newHashSet();
     List<Rule> rules = new AnnotationRuleParser().parse("repositoryKey", checks);
     for (Rule rule : rules) {
@@ -86,11 +82,7 @@ public class CheckListTest {
         .isNull();
 
       for (RuleParam param : rule.getParams()) {
-        resourceBundle.getString("rule." + CheckList.REPOSITORY_KEY + "." + rule.getKey() + ".param." + param.getKey());
-
-        assertThat(param.getDescription())
-          .overridingErrorMessage("Description for param " + param.getKey() + " of " + rule.getKey() + " should be in separate file")
-          .isEmpty();
+        assertThat(param.getDescription()).overridingErrorMessage(rule.getKey() +" missing description for param "+ param.getKey()).isNotEmpty();
       }
     }
   }

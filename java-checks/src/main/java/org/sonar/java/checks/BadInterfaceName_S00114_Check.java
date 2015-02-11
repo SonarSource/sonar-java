@@ -52,6 +52,7 @@ public class BadInterfaceName_S00114_Check extends BaseTreeVisitor implements Ja
 
   @RuleProperty(
     key = "format",
+    description = "Regular expression used to check the interface names against.",
     defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

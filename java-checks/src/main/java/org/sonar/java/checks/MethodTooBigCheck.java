@@ -35,7 +35,7 @@ import java.util.List;
 
 @Rule(
   key = "S138",
-  name = "[Functions|Methods|Modules|Subroutines] should not have too many lines",
+  name = "Methods should not have too many lines",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
@@ -44,7 +44,7 @@ public class MethodTooBigCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 100;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX)
+  @RuleProperty(defaultValue = "" + DEFAULT_MAX, description = "Maximum authorized lines in a method")
   public int max = DEFAULT_MAX;
 
   @Override

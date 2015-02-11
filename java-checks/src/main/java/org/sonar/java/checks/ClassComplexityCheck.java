@@ -44,7 +44,8 @@ public class ClassComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 200;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX)
+  @RuleProperty(defaultValue = "" + DEFAULT_MAX,
+      description = "Maximum complexity allowed.")
   private int max = DEFAULT_MAX;
 
   @Override

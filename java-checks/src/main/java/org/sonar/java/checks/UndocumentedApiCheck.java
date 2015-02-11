@@ -69,6 +69,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @RuleProperty(
     key = "forClasses",
+    description = "Pattern of classes which should adhere to this constraint. Ex : *<em>.api.</em>*",
     defaultValue = DEFAULT_FOR_CLASSES)
   public String forClasses = DEFAULT_FOR_CLASSES;
 

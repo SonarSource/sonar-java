@@ -51,6 +51,7 @@ public class BadAbstractClassName_S00118_Check extends BaseTreeVisitor implement
 
   @RuleProperty(
     key = "format",
+    description = "Regular expression used to check the abstract class names against.",
     defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

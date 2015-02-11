@@ -57,6 +57,7 @@ public class BadConstantName_S00115_Check extends BaseTreeVisitor implements Jav
 
   @RuleProperty(
       key = "format",
+      description = "Regular expression used to check the constant names against.",
       defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

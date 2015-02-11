@@ -52,6 +52,7 @@ public class BadClassName_S00101_Check extends BaseTreeVisitor implements JavaFi
 
   @RuleProperty(
     key = "format",
+    description = "Regular expression used to check the class names against.",
     defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

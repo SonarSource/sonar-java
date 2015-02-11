@@ -49,6 +49,7 @@ public class BadTypeParameterName_S00119_Check extends SubscriptionBaseVisitor {
 
   @RuleProperty(
       key = "format",
+      description = "Regular expression used to check the type parameter names against.",
       defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
   private Pattern pattern = null;

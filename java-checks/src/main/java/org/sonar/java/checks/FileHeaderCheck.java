@@ -40,8 +40,8 @@ import java.util.List;
 
 @Rule(
   key = "S1451",
-  name = "Copyright and license headers should be defined in all source files",
-  tags = {"convention"},
+  name = "Copyright and license headers should be defined",
+  tags = {},
   priority = Priority.BLOCKER)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("5min")
@@ -51,6 +51,7 @@ public class FileHeaderCheck extends SubscriptionBaseVisitor implements CharsetA
 
   @RuleProperty(
     key = "headerFormat",
+    description = "Expected copyright and license header (plain text)",
     type = "TEXT",
     defaultValue = DEFAULT_HEADER_FORMAT)
   public String headerFormat = DEFAULT_HEADER_FORMAT;

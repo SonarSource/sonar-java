@@ -55,6 +55,7 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
 
   @RuleProperty(
     key = "format",
+    description = "Regular expression used to check the logger names against.",
     defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

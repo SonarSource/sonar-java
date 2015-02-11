@@ -50,6 +50,7 @@ public class BadMethodName_S00100_Check extends SubscriptionBaseVisitor {
 
   @RuleProperty(
       key = "format",
+      description = "Regular expression used to check the method names against.",
       defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

@@ -52,7 +52,8 @@ public class TrailingCommentCheck extends SubscriptionBaseVisitor {
   private static final Set<String> EXCLUDED_PATTERNS = ImmutableSet.of("NOSONAR", "NOPMD", "CHECKSTYLE:");
 
   @RuleProperty(
-    key = "legalCommentPattern",
+    key = "legalTrailingCommentPattern",
+    description = "Description Pattern for text of trailing comments that are allowed. By default, comments containing only one word.",
     defaultValue = DEFAULT_LEGAL_COMMENT_PATTERN)
   public String legalCommentPattern = DEFAULT_LEGAL_COMMENT_PATTERN;
 

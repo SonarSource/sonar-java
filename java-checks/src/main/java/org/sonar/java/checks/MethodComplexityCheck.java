@@ -45,7 +45,9 @@ public class MethodComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 10;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX)
+  @RuleProperty(defaultValue = "" + DEFAULT_MAX,
+      description = "The maximum authorized complexity."
+  )
   private int max = DEFAULT_MAX;
 
   @Override

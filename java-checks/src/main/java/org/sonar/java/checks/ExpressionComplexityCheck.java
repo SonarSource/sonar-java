@@ -47,7 +47,7 @@ public class ExpressionComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 3;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX)
+  @RuleProperty(defaultValue = "" + DEFAULT_MAX, description = "Maximum number of allowed conditional operators in an expression")
   public int max = DEFAULT_MAX;
 
   private final Deque<Integer> count = new LinkedList<Integer>();

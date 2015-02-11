@@ -56,6 +56,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   private static final Integer MINIMAL_LITERAL_LENGTH = 7;
   @RuleProperty(
       key = "threshold",
+      description = "Number of times a literal must be duplicated to trigger an issue",
       defaultValue = "" + DEFAULT_THRESHOLD)
   public int threshold = DEFAULT_THRESHOLD;
 

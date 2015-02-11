@@ -67,6 +67,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
 
   @RuleProperty(
       key = "max",
+      description = "Maximum number of classes a single class is allowed to depend upon",
       defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 

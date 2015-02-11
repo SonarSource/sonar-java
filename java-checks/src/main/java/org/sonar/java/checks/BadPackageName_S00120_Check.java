@@ -57,6 +57,7 @@ public class BadPackageName_S00120_Check extends BaseTreeVisitor implements Java
 
   @RuleProperty(
     key = "format",
+    description = "Regular expression used to check the package names against.",
     defaultValue = DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 
