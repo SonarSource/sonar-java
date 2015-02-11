@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -65,6 +66,9 @@ public class LiteralUtils {
   }
 
   public static String trimLongSuffix(String longString) {
+    if (StringUtils.isBlank(longString)) {
+      return longString;
+    }
     int lastCharPosition = longString.length() - 1;
     char lastChar = longString.charAt(lastCharPosition);
     String value = longString;
@@ -73,5 +77,4 @@ public class LiteralUtils {
     }
     return value;
   }
-
 }

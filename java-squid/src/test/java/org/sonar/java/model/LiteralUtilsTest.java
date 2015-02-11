@@ -61,6 +61,7 @@ public class LiteralUtilsTest {
     assertThat(LiteralUtils.trimLongSuffix(longValue)).isEqualTo(longValue);
     assertThat(LiteralUtils.trimLongSuffix(longValue + "l")).isEqualTo(longValue);
     assertThat(LiteralUtils.trimLongSuffix(longValue + "L")).isEqualTo(longValue);
+    assertThat(LiteralUtils.trimLongSuffix("")).isEqualTo("");
   }
 
 }
