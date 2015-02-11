@@ -48,7 +48,7 @@ public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements J
   private static final int DEFAULT_MAXIMUM = 7;
 
   @RuleProperty(
-    key = "maximumMethodParameters",
+    key = "max",
     description = "Maximum authorized number of parameters",
     defaultValue = "" + DEFAULT_MAXIMUM)
   public int maximum = DEFAULT_MAXIMUM;

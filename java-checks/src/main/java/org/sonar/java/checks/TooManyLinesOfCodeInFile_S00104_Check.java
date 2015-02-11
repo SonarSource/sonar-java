@@ -45,7 +45,7 @@ public class TooManyLinesOfCodeInFile_S00104_Check extends SubscriptionBaseVisit
   private static final int DEFAULT_MAXIMUM = 1000;
 
   @RuleProperty(
-      key = "maximumFileLocThreshold",
+      key = "Max",
       description = "Maximum authorized lines in a file.",
       defaultValue = "" + DEFAULT_MAXIMUM)
   public int maximum = DEFAULT_MAXIMUM;

@@ -44,7 +44,7 @@ import java.util.LinkedList;
 
 @Rule(
   key = PrintStackTraceCalledWithoutArgumentCheck.RULE_KEY,
-  name = "Throwable.printStackTrace(...) should never be called",
+  name = "Throwable.printStackTrace(...) should not be called",
   tags = {"error-handling"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
