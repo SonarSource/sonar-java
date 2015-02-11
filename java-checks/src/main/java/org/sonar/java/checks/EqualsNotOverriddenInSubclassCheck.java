@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -59,10 +58,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (hasSemantic()
-      && hasAtLeastOneField(classTree)
-      && !implementsEquals(classTree)
-      && parentClassImplementsEquals(classTree)) {
+    if (hasSemantic() && hasAtLeastOneField(classTree) && !implementsEquals(classTree) && parentClassImplementsEquals(classTree)) {
       addIssue(classTree, "Override this superclass' \"equals\" method.");
     }
   }
@@ -77,7 +73,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean isField(Tree tree) {
-    return tree.is(Kind.VARIABLE) && !((VariableTree) tree).modifiers().modifiers().containsAll(Lists.newArrayList(Modifier.FINAL, Modifier.STATIC));
+    return tree.is(Kind.VARIABLE) && !((VariableTree) tree).modifiers().modifiers().contains(Modifier.STATIC);
   }
 
   private boolean implementsEquals(ClassTree classTree) {
@@ -87,16 +83,13 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   private boolean parentClassImplementsEquals(ClassTree tree) {
     Tree superClass = tree.superClass();
     if (superClass != null) {
-      TypeSymbol superClassSymbol = ((AbstractTypedTree) superClass).getSymbolType().getSymbol();
-      while (!superClassSymbol.getType().is("java.lang.Object")) {
+      Type superClassType = ((AbstractTypedTree) superClass).getSymbolType();
+      while (!superClassType.erasure().isTagged(Type.UNKNOWN) && !superClassType.is("java.lang.Object")) {
+        TypeSymbol superClassSymbol = superClassType.getSymbol();
         if (hasEqualsMethod(superClassSymbol)) {
           return true;
         }
-        Type superClassType = superClassSymbol.getSuperclass();
-        if (superClassType == null) {
-          break;
-        }
-        superClassSymbol = superClassType.getSymbol();
+        superClassType = superClassSymbol.getSuperclass();
       }
     }
     return false;
@@ -115,8 +108,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   private boolean isEqualsMethod(Symbol symbol) {
     if (symbol.isKind(Symbol.MTH)) {
       MethodSymbol methodSymbol = (MethodSymbol) symbol;
-      return !methodSymbol.getParametersTypes().isEmpty()
-        && methodSymbol.getParametersTypes().get(0).is("java.lang.Object");
+      return !methodSymbol.getParametersTypes().isEmpty() && methodSymbol.getParametersTypes().get(0).is("java.lang.Object");
     }
     return false;
   }

@@ -38,8 +38,7 @@ public class EqualsNotOverriddenInSubclassCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EqualsNotOverriddenInSubclassCheck.java"),
       new VisitorsBridge(new EqualsNotOverriddenInSubclassCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(10).withMessage("Override this superclass' \"equals\" method.")
+      .next().atLine(11).withMessage("Override this superclass' \"equals\" method.")
       .noMore();
   }
-
 }

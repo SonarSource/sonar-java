@@ -1,5 +1,6 @@
 class A {
   static final String CONST = "constant";
+  static String staticMember = "static member";
   String s1;
 
   public boolean equals(Object obj) {
@@ -55,6 +56,10 @@ class H extends G { // Compliant
   }
 }
 
-class J extends tst.MyUnknownClass {
-  
+class J {
+  String s;
+}
+
+class K extends com.tst.UnknownClass {
+  String s;
 }
