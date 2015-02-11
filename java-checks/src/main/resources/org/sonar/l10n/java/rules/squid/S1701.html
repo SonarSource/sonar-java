@@ -1,30 +1,13 @@
-<p>It's confusing to have a class member with the same name as a method in the class.</p>
-
-<p>Typically this situation indicates that the method is poorly named; method names should be action-oriented, and thus contain a verb, which is unlikely in the case where both a method and a member have the same name. However, renaming a public method could be disruptive to callers. Therefore renaming the member is the recommended action.</p>
-
-<h2>Noncompliant Code Sample</h2>
-<pre>
-public class Foo {
-
-  private String query;
-  public String query() {
-    // do something...
-  }
-
-  private void doSomething() {
-
-    String tmp = query; // is this what was intended? Should this have been a call to query()?
-
-  }
-}
-</pre>
-
+<p>It's confusing to have a class field with the same name as a method in the class. It's also confusing to have multiple fields that differ only in capitalization</p>
+<p>Typically this situation indicates poor naming. Method names should be action-oriented, and thus contain a verb, which is unlikely in the case where both a method and a member have the same name. However, renaming a public method could be disruptive to callers. Therefore renaming the member is the recommended action.</p>
 <h2>Compliant Solution</h2>
+
 <pre>
 public class Foo {
 
-  private string queryString; // member has been renamed
-  public String query() {
+  public static final String NAME_QUERY = "Select name from person";
+  private String queryString; // member has been renamed
+  public String query() { 
     // do something...
   }
 
@@ -35,3 +18,4 @@ public class Foo {
   }
 }
 </pre>
+
