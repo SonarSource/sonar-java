@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 
 @Rule(
   key = LoggersDeclarationCheck.KEY,
-  name = "Loggers should be \"private static [final|const]\" and should share a naming convention",
+  name = "Loggers should be \"private static final\" and should share a naming convention",
   tags = {"convention"},
   priority = Priority.MINOR)
 @ActivatedByDefault
