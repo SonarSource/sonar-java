@@ -1,6 +1,6 @@
-<p><code>instanceof</code> operators that always return <code>true</code> are either useless or the result of a misunderstanding which could lead to unexpected behavior in production.</p>
-
+<p><code>instanceof</code> operators that always return <code>true</code> or <code>false</code> are either useless or the result of a misunderstanding which could lead to unexpected behavior in production.</p>
 <h2>Noncompliant Code Example</h2>
+
 <pre>
 public boolean isSuitable(Integer param) {
 ...
@@ -10,8 +10,8 @@ public boolean isSuitable(Integer param) {
 ...
 }
 </pre>
-
 <h2>Compliant Solution</h2>
+
 <pre>
 public boolean isSuitable(Integer param) {
 ...
@@ -19,8 +19,10 @@ public boolean isSuitable(Integer param) {
 ...
 }
 </pre>
-
 <h2>See</h2>
-    <ul>
-      <li><a href="http://cwe.mitre.org/data/definitions/571.html">MITRE, CWE-571</a> - Expression is Always True</li>
-    </ul>
+
+<ul>
+<li> <a href="http://cwe.mitre.org/data/definitions/571.html">MITRE, CWE-571</a> - Expression is Always True</li>
+<li> <a href="http://cwe.mitre.org/data/definitions/570.html">MITRE, CWE-570</a> - Expression is Always False</li>
+</ul>
+
