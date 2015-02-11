@@ -63,3 +63,7 @@ class J {
 class K extends com.tst.UnknownClass {
   String s;
 }
+
+class L<T> extends com.tst.MyList<T> {
+  int s;
+}

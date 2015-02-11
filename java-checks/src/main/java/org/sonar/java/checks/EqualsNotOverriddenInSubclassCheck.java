@@ -84,7 +84,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
     Tree superClass = tree.superClass();
     if (superClass != null) {
       Type superClassType = ((AbstractTypedTree) superClass).getSymbolType();
-      while (!superClassType.erasure().isTagged(Type.UNKNOWN) && !superClassType.is("java.lang.Object")) {
+      while (!superClassType.getSymbol().getType().isTagged(Type.UNKNOWN) && !superClassType.is("java.lang.Object")) {
         TypeSymbol superClassSymbol = superClassType.getSymbol();
         if (hasEqualsMethod(superClassSymbol)) {
           return true;
