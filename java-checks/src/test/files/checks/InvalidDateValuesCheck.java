@@ -5,7 +5,7 @@ import java.util.GregorianCalendar;
 
 
 class A {
-  void foo() {
+  int foo() {
 
 
 
@@ -52,7 +52,7 @@ class A {
     gc = new GregorianCalendar(2015, 11, 31, 23, 61); //NonCompliant
     gc = new GregorianCalendar(2015, 11, 31, 23, 59, 61);
     gc = new GregorianCalendar(2015, 11, 31, 23, 59, 63); //NonCompliant
-    gc = new GregorianCalendar(2015, -1, 31, 23, 59, 63); //NonCompliant
+    gc = new GregorianCalendar(2015, -1, 31, 23, 59, +63); //NonCompliant
     gc = new GregorianCalendar(2015, -foo(), 31, 23, 59, 63); //NonCompliant
 
     cal.set(Calendar.DAY_OF_WEEK_IN_MONTH, 11);

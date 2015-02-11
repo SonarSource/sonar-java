@@ -63,6 +63,7 @@ public class InvalidDateValuesCheckTest {
         .next().atLine(54).withMessage("\"63\" is not a valid value for setting \"second\".")
         .next().atLine(55).withMessage("\"-1\" is not a valid value for setting \"month\".")
         .next().atLine(55).withMessage("\"63\" is not a valid value for setting \"second\".")
+        .next().atLine(56).withMessage("\"63\" is not a valid value for setting \"second\".")
         //Comparisons
         .next().atLine(62).withMessage("\"12\" is not a valid value for \"MONTH\".")
         .next().atLine(65).withMessage("\"32\" is not a valid value for \"DAY_OF_MONTH\".")

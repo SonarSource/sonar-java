@@ -129,16 +129,16 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
     return ImmutableList.<MethodInvocationMatcher>builder()
-      .add(dateMethodInvocationMatcher("java.util.Date", "setDate"))
-      .add(dateMethodInvocationMatcher("java.util.Date", "setMonth"))
-      .add(dateMethodInvocationMatcher("java.util.Date", "setHours"))
-      .add(dateMethodInvocationMatcher("java.util.Date", "setMinutes"))
-      .add(dateMethodInvocationMatcher("java.util.Date", "setSeconds"))
-      .add(dateMethodInvocationMatcher("java.sql.Date", "setDate"))
-      .add(dateMethodInvocationMatcher("java.sql.Date", "setMonth"))
-      .add(dateMethodInvocationMatcher("java.sql.Date", "setHours"))
-      .add(dateMethodInvocationMatcher("java.sql.Date", "setMinutes"))
-      .add(dateMethodInvocationMatcher("java.sql.Date", "setSeconds"))
+      .add(dateMethodInvocationMatcherSetter("java.util.Date", "setDate"))
+      .add(dateMethodInvocationMatcherSetter("java.util.Date", "setMonth"))
+      .add(dateMethodInvocationMatcherSetter("java.util.Date", "setHours"))
+      .add(dateMethodInvocationMatcherSetter("java.util.Date", "setMinutes"))
+      .add(dateMethodInvocationMatcherSetter("java.util.Date", "setSeconds"))
+      .add(dateMethodInvocationMatcherSetter("java.sql.Date", "setDate"))
+      .add(dateMethodInvocationMatcherSetter("java.sql.Date", "setMonth"))
+      .add(dateMethodInvocationMatcherSetter("java.sql.Date", "setHours"))
+      .add(dateMethodInvocationMatcherSetter("java.sql.Date", "setMinutes"))
+      .add(dateMethodInvocationMatcherSetter("java.sql.Date", "setSeconds"))
       .add(MethodInvocationMatcher.create().typeDefinition("java.util.Calendar").name("set").addParameter("int").addParameter("int"))
       .add(MethodInvocationMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withNoParameterConstraint())
       .build();
@@ -148,7 +148,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     return MethodInvocationMatcher.create().typeDefinition(type).name(methodName);
   }
 
-  private static MethodInvocationMatcher dateMethodInvocationMatcher(String type, String methodName) {
+  private static MethodInvocationMatcher dateMethodInvocationMatcherSetter(String type, String methodName) {
     return MethodInvocationMatcher.create().typeDefinition(type).name(methodName).addParameter("int");
   }
 
@@ -185,8 +185,10 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     int sign = 1;
     if (arg.is(Tree.Kind.INT_LITERAL)) {
       literal = (LiteralTree) arg;
-    } else if (arg.is(Tree.Kind.UNARY_MINUS) && ((UnaryExpressionTree) arg).expression().is(Tree.Kind.INT_LITERAL)) {
-      sign = -1;
+    } else if (arg.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS) && ((UnaryExpressionTree) arg).expression().is(Tree.Kind.INT_LITERAL)) {
+      if(arg.is(Tree.Kind.UNARY_MINUS)) {
+        sign = -1;
+      }
       literal = (LiteralTree) ((UnaryExpressionTree) arg).expression();
     }
     if (literal != null) {
@@ -198,10 +200,11 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   }
 
   private String getMethodName(MethodInvocationTree mit) {
-    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      return ((MemberSelectExpressionTree) mit.methodSelect()).identifier().name();
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      return ((MemberSelectExpressionTree) methodSelect).identifier().name();
     }
-    return ((IdentifierTree) mit.methodSelect()).name();
+    return ((IdentifierTree) methodSelect).name();
   }
 
   private static enum Threshold {
