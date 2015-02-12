@@ -289,7 +289,8 @@ public final class CheckList {
       InvalidDateValuesCheck.class,
       EqualsNotOverriddenInSubclassCheck.class,
       ClassComparedByNameCheck.class,
-      ClassWithOnlyStaticMethodsInstantiationCheck.class
+      ClassWithOnlyStaticMethodsInstantiationCheck.class,
+      SerializableObjectInSessionCheck.class
       );
   }
 }
