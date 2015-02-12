@@ -288,7 +288,8 @@ public final class CheckList {
       SillyBitOperationCheck.class,
       InvalidDateValuesCheck.class,
       EqualsNotOverriddenInSubclassCheck.class,
-      ClassComparedByNameCheck.class
+      ClassComparedByNameCheck.class,
+      ClassWithOnlyStaticMethodsInstantiationCheck.class
       );
   }
 }
