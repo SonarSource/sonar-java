@@ -37,10 +37,10 @@ public class ClassComparedByNameCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassComparedByNameCheck.java"), new VisitorsBridge(new ClassComparedByNameCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("")
-        .next().atLine(5).withMessage("")
-        .next().atLine(6).withMessage("")
-        .next().atLine(9).withMessage("")
+        .next().atLine(4).withMessage("Use an \"instanceof\" comparison instead.")
+        .next().atLine(5).withMessage("Use an \"instanceof\" comparison instead.")
+        .next().atLine(6).withMessage("Use an \"instanceof\" comparison instead.")
+        .next().atLine(9).withMessage("Use an \"instanceof\" comparison instead.")
     ;
   }
 }

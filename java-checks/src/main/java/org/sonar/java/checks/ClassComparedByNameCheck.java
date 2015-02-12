@@ -72,7 +72,7 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       for (MethodInvocationMatcher methodMatcher : methodMatchers) {
         if(methodMatcher.matches(tree, getSemanticModel())) {
-          addIssue(tree, "");
+          addIssue(tree, "Use an \"instanceof\" comparison instead.");
         }
       }
       scan(tree.methodSelect());
