@@ -20,11 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -54,20 +55,26 @@ public class ProtectedMemberInFinalClassCheck extends SubscriptionBaseVisitor {
     ClassTree classTree = (ClassTree) tree;
     if (classTree.modifiers().modifiers().contains(Modifier.FINAL)) {
       for (Tree member : classTree.members()) {
-        if (member.is(Tree.Kind.VARIABLE)) {
-          VariableTree variableTree = (VariableTree) member;
-          checkMemberModifier(variableTree.modifiers());
-        } else if (member.is(Tree.Kind.METHOD)) {
-          MethodTree methodTree = (MethodTree) member;
-          checkMemberModifier(methodTree.modifiers());
-        }
+        checkMember(member);
       }
     }
   }
 
-  private void checkMemberModifier(ModifiersTree modifiers) {
+  private void checkMember(Tree member) {
+    if (member.is(Kind.VARIABLE)) {
+      VariableTree variableTree = (VariableTree) member;
+      checkMemberModifier(variableTree.modifiers(), variableTree);
+    } else if (member.is(Kind.METHOD)) {
+      MethodTreeImpl methodTree = (MethodTreeImpl) member;
+      if (BooleanUtils.isFalse(methodTree.isOverriding())) {
+        checkMemberModifier(methodTree.modifiers(), methodTree.simpleName());
+      }
+    }
+  }
+
+  private void checkMemberModifier(ModifiersTree modifiers, Tree reportingTree) {
     if (modifiers.modifiers().contains(Modifier.PROTECTED)) {
-      addIssue(modifiers, "Remove this \"protected\" modifier.");
+      addIssue(reportingTree, "Remove this \"protected\" modifier.");
     }
   }
 
