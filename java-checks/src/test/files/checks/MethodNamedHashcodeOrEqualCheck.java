@@ -16,6 +16,17 @@ class A {
   int hashCode() { // Compliant
     return 0;
   }
+
+  void equal() { // Noncompliant
+  }
+
+  int equal(Object obj) { // Noncompliant
+    return 0;
+  }
+
+  int equals(Object obj) { // Compliant
+    return 0;
+  }
 }
 
 interface B {
@@ -25,4 +36,6 @@ interface B {
   @Bar
   int hashcode(); // Non-Compliant
   int foo(); // Compliant
+  
+  int equal(); // Noncompliant
 }
