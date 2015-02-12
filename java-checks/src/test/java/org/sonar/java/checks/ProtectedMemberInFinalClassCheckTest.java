@@ -39,7 +39,7 @@ public class ProtectedMemberInFinalClassCheckTest {
       new VisitorsBridge(new ProtectedMemberInFinalClassCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(5).withMessage("Remove this \"protected\" modifier.")
-      .next().atLine(10);
+      .next().atLine(11);
   }
 
 }
