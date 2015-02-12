@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -33,13 +34,13 @@ import java.util.List;
 
 @Rule(
   key = "S1221",
-  name = "Methods should not be named \"hashcode\"",
+  name = "Methods should not be named \"hashcode\" or \"equal\"",
   tags = {"bug", "pitfall"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("10min")
-public class MethodNamedHashcodeCheck extends SubscriptionBaseVisitor {
+public class MethodNamedHashcodeOrEqualCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -48,8 +49,14 @@ public class MethodNamedHashcodeCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if ("hashcode".equals(((MethodTree) tree).simpleName().name())) {
-      addIssue(((MethodTree) tree).simpleName(), "Either override Object.hashCode(), or totally rename the method to prevent any confusion.");
+    IdentifierTree methodIdentifier = ((MethodTree) tree).simpleName();
+    String methodName = methodIdentifier.name();
+    if ("hashcode".equals(methodName) || "equal".equals(methodName)) {
+      String substitute = "hashCode()";
+      if ("equal".equals(methodName)) {
+        substitute = "equals(Object obj)";
+      }
+      addIssue(methodIdentifier, "Either override Object." + substitute + ", or totally rename the method to prevent any confusion.");
     }
   }
 
