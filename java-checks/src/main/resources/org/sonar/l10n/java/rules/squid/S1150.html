@@ -5,13 +5,13 @@
 <p>The following code:</p>
 <pre>
 public class MyClass implements Enumeration {  // Non-Compliant
-  /* … */
+  /* ... */
 }
 </pre>
 <p>should be refactored into:</p>
 <pre>
 public class MyClass implements Iterator {     // Compliant
-  /* … */
+  /* ... */
 }
 </pre>
 

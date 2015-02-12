@@ -2,9 +2,9 @@
 <h2>Noncompliant Code Example</h2>
 
 <pre>
-if (booleanVariable == true) { /* ... */ }      
-if (booleanVariable != true) { /* ... */ }   
-if (booleanVariable || false) { /* ... */ }     
+if (booleanVariable == true) { /* ... */ }
+if (booleanVariable != true) { /* ... */ }
+if (booleanVariable || false) { /* ... */ }
 doSomething(!false);
 
 booleanVariable = condition ? true : exp;
@@ -16,9 +16,9 @@ booleanVariable = condition ?  true : false;
 <h2>Compliant Solution</h2>
 
 <pre>
-if (booleanVariable) { /* ... */ }              
-if (!booleanVariable) { /* ... */ }    
-if (booleanVariable) { /* ... */ }       
+if (booleanVariable) { /* ... */ }
+if (!booleanVariable) { /* ... */ }
+if (booleanVariable) { /* ... */ }
 doSomething(true);
 
 booleanVariable = condition || exp;
