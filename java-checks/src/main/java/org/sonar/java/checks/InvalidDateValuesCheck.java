@@ -40,7 +40,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -55,21 +55,28 @@ import java.util.Map;
 @ActivatedByDefault
 public class InvalidDateValuesCheck extends AbstractMethodDetection {
 
+  public static final String JAVA_UTIL_CALENDAR = "java.util.Calendar";
+  public static final String JAVA_UTIL_DATE = "java.util.Date";
+  public static final String JAVA_SQL_DATE = "java.sql.Date";
+
   private static final String[] GREGORIAN_PARAMETERS = {"year", "month", "dayOfMonth", "hourOfDay", "minute", "second"};
+  private static final String[] DATE_GET_METHODS = {"getDate", "getMonth", "getHours", "getMinutes", "getSeconds"};
+  private static final String[] DATE_SET_METHODS = {"setDate", "setMonth", "setHours", "setMinutes", "setSeconds"};
+
 
   private static final List<MethodInvocationMatcher> DATE_METHODS_COMPARISON = ImmutableList.<MethodInvocationMatcher>builder()
-    .add(MethodInvocationMatcher.create().typeDefinition("java.util.Calendar").name("get").addParameter("int"))
-    .add(dateMethodInvocationMatcherGetter("java.util.Date", "getDate"))
-    .add(dateMethodInvocationMatcherGetter("java.util.Date", "getMonth"))
-    .add(dateMethodInvocationMatcherGetter("java.util.Date", "getHours"))
-    .add(dateMethodInvocationMatcherGetter("java.util.Date", "getMinutes"))
-    .add(dateMethodInvocationMatcherGetter("java.util.Date", "getSeconds"))
-    .add(dateMethodInvocationMatcherGetter("java.sql.Date", "getDate"))
-    .add(dateMethodInvocationMatcherGetter("java.sql.Date", "getMonth"))
-    .add(dateMethodInvocationMatcherGetter("java.sql.Date", "getHours"))
-    .add(dateMethodInvocationMatcherGetter("java.sql.Date", "getMinutes"))
-    .add(dateMethodInvocationMatcherGetter("java.sql.Date", "getSeconds"))
+    .add(MethodInvocationMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("get").addParameter("int"))
+    .addAll(dateGetMatchers())
     .build();
+
+  private static List<MethodInvocationMatcher> dateGetMatchers() {
+    ImmutableList.Builder<MethodInvocationMatcher> builder = ImmutableList.builder();
+    for (String dateGetMethod : DATE_GET_METHODS) {
+      builder.add(dateMethodInvocationMatcherGetter(JAVA_UTIL_DATE, dateGetMethod));
+      builder.add(dateMethodInvocationMatcherGetter(JAVA_SQL_DATE, dateGetMethod));
+    }
+    return builder.build();
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -100,23 +107,16 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     }
   }
 
-  @Nullable
+  @CheckForNull
   private String getThresholdToCheck(ExpressionTree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       String name = getMethodName(mit);
       for (MethodInvocationMatcher methodInvocationMatcher : DATE_METHODS_COMPARISON) {
         if (methodInvocationMatcher.matches(mit, getSemanticModel())) {
-          if (name.equals("get")) {
+          if ("get".equals(name)) {
             // Calendar
-            ExpressionTree arg0 = mit.arguments().get(0);
-            if (arg0.is(Tree.Kind.MEMBER_SELECT)) {
-              MemberSelectExpressionTree mse = (MemberSelectExpressionTree) arg0;
-              Symbol reference = getSemanticModel().getReference(mse.identifier());
-              if (reference.owner().getType().is("java.util.Calendar") && Threshold.getThreshold(reference.getName()) != null) {
-                return reference.getName();
-              }
-            }
+            return getReferencedCalendarName(mit.arguments().get(0));
           } else {
             return name;
           }
@@ -126,20 +126,27 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     return null;
   }
 
+  @CheckForNull
+  private String getReferencedCalendarName(ExpressionTree argument) {
+    if (argument.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) argument;
+      Symbol reference = getSemanticModel().getReference(mse.identifier());
+      if (reference.owner().getType().is(JAVA_UTIL_CALENDAR) && Threshold.getThreshold(reference.getName()) != null) {
+        return reference.getName();
+      }
+    }
+    return null;
+  }
+
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.<MethodInvocationMatcher>builder()
-      .add(dateMethodInvocationMatcherSetter("java.util.Date", "setDate"))
-      .add(dateMethodInvocationMatcherSetter("java.util.Date", "setMonth"))
-      .add(dateMethodInvocationMatcherSetter("java.util.Date", "setHours"))
-      .add(dateMethodInvocationMatcherSetter("java.util.Date", "setMinutes"))
-      .add(dateMethodInvocationMatcherSetter("java.util.Date", "setSeconds"))
-      .add(dateMethodInvocationMatcherSetter("java.sql.Date", "setDate"))
-      .add(dateMethodInvocationMatcherSetter("java.sql.Date", "setMonth"))
-      .add(dateMethodInvocationMatcherSetter("java.sql.Date", "setHours"))
-      .add(dateMethodInvocationMatcherSetter("java.sql.Date", "setMinutes"))
-      .add(dateMethodInvocationMatcherSetter("java.sql.Date", "setSeconds"))
-      .add(MethodInvocationMatcher.create().typeDefinition("java.util.Calendar").name("set").addParameter("int").addParameter("int"))
+    ImmutableList.Builder<MethodInvocationMatcher> builder = ImmutableList.builder();
+    for (String dateSetMethod : DATE_SET_METHODS) {
+      builder.add(dateMethodInvocationMatcherSetter(JAVA_UTIL_DATE, dateSetMethod));
+      builder.add(dateMethodInvocationMatcherSetter(JAVA_SQL_DATE, dateSetMethod));
+    }
+    return builder
+      .add(MethodInvocationMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("set").addParameter("int").addParameter("int"))
       .add(MethodInvocationMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withNoParameterConstraint())
       .build();
   }
@@ -155,16 +162,13 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
     String name = getMethodName(mit);
-    if (name.equals("set")) {
+    if ("set".equals(name)) {
       // Calendar method
       ExpressionTree arg0 = mit.arguments().get(0);
       ExpressionTree arg1 = mit.arguments().get(1);
-      if (arg0.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) arg0;
-        Symbol reference = getSemanticModel().getReference(mse.identifier());
-        if (reference.owner().getType().is("java.util.Calendar") && Threshold.getThreshold(reference.getName()) != null) {
-          checkArgument(arg1, reference.getName(), "\"{0}\" is not a valid value for setting \"{1}\".");
-        }
+      String referenceName = getReferencedCalendarName(arg0);
+      if(referenceName != null) {
+        checkArgument(arg1, referenceName, "\"{0}\" is not a valid value for setting \"{1}\".");
       }
     } else {
       ExpressionTree arg = mit.arguments().get(0);
@@ -214,16 +218,25 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     MINUTE(60, "setMinutes", "getMinutes", "MINUTE", "minute"),
     SECOND(61, "setSeconds", "getSeconds", "SECOND", "second");
 
-    private static Map<String, Integer> thresholdByName = null;
+    private static Map<String, Integer> thresholdByName = Maps.newHashMap();
 
-    private final int threshold;
+    static {
+      for (Threshold value : Threshold.values()) {
+        thresholdByName.put(value.javaDateSetter, value.edgeValue);
+        thresholdByName.put(value.javaDateGetter, value.edgeValue);
+        thresholdByName.put(value.calendarConstant, value.edgeValue);
+        thresholdByName.put(value.gregorianParam, value.edgeValue);
+      }
+    }
+
+    private final int edgeValue;
     private final String javaDateSetter;
     private final String javaDateGetter;
     private final String calendarConstant;
     private final String gregorianParam;
 
-    Threshold(int threshold, String javaDateSetter, String javaDateGetter, String calendarConstant, String gregorianParam) {
-      this.threshold = threshold;
+    Threshold(int edgeValue, String javaDateSetter, String javaDateGetter, String calendarConstant, String gregorianParam) {
+      this.edgeValue = edgeValue;
       this.javaDateSetter = javaDateSetter;
       this.javaDateGetter = javaDateGetter;
       this.calendarConstant = calendarConstant;
@@ -231,15 +244,6 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     }
 
     public static Integer getThreshold(String name) {
-      if (thresholdByName == null) {
-        thresholdByName = Maps.newHashMap();
-        for (Threshold value : Threshold.values()) {
-          thresholdByName.put(value.javaDateSetter, value.threshold);
-          thresholdByName.put(value.javaDateGetter, value.threshold);
-          thresholdByName.put(value.calendarConstant, value.threshold);
-          thresholdByName.put(value.gregorianParam, value.threshold);
-        }
-      }
       return thresholdByName.get(name);
     }
   }
