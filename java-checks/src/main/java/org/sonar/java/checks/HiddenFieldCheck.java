@@ -44,12 +44,12 @@ import java.util.List;
 
 @Rule(
   key = "HiddenFieldCheck",
-  name = "Local variables should not shadow class fields",
+  name = "Local variables should not (shadow|have the same name as) class fields",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation("30min")
+@SqaleConstantRemediation("5min")
 public class HiddenFieldCheck extends SubscriptionBaseVisitor {
 
   private final Deque<ImmutableMap<String, VariableTree>> fields = Lists.newLinkedList();

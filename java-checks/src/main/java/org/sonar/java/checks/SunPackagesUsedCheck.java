@@ -43,7 +43,8 @@ import java.util.Set;
 
 @Rule(
   key = SunPackagesUsedCheck.RULE_KEY,
-  name = "Classes from \"com.sun.*\" and \"sun.*\" packages should not be used",
+  name = "Classes from \"sun.*\" packages should not be used",
+  tags = {"lock-in", "pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
@@ -56,7 +57,8 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   private static final String DEFAULT_EXCLUDE = "";
 
   @RuleProperty(
-      key = "exclude",
+      key = "Exclude",
+      description = "Comma separated list of Sun packages to be ignored by this rule. Example: com.sun.jna,sun.misc",
       defaultValue = "" + DEFAULT_EXCLUDE)
   public String exclude = DEFAULT_EXCLUDE;
   private String[] excludePackages = null;

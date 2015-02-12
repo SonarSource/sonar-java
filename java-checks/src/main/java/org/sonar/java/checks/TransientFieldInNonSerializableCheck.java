@@ -40,7 +40,7 @@ import java.util.List;
 @Rule(
   key = "S2065",
   name = "Fields in non-serializable classes should not be \"transient\"",
-  tags = {"unused", "serialization"},
+  tags = {"serialization", "unused"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

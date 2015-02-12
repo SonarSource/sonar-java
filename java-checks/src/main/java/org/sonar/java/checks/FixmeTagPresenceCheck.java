@@ -33,7 +33,7 @@ import java.util.List;
 
 @Rule(
   key = "S1134",
-  name = "FIXME tags should be handled",
+  name = "\"FIXME\" tags should be handled",
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)

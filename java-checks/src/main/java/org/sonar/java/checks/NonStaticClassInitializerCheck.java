@@ -32,11 +32,12 @@ import java.util.List;
 
 @Rule(
   key = "S1171",
-  name = "Non-static class initializers should not be used",
+  name = "Only static class initializers should be used",
+  tags = {"pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
+@SqaleConstantRemediation("30min")
 public class NonStaticClassInitializerCheck extends SubscriptionBaseVisitor{
 
   @Override

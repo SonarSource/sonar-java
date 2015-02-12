@@ -34,10 +34,11 @@ import org.sonar.squidbridge.api.SourceFile;
 
 @Rule(
   key = CallToDeprecatedMethodCheck.RULE_KEY,
-  name = "Avoid use of deprecated method",
+  name = "Avoid use of deprecated methods",
+  tags = {"cwe", "obsolete", "owasp-top10"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SOFTWARE_RELATED_PORTABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleConstantRemediation("15min")
 public class CallToDeprecatedMethodCheck extends BytecodeVisitor {
 
   public static final String RULE_KEY = "CallToDeprecatedMethod";

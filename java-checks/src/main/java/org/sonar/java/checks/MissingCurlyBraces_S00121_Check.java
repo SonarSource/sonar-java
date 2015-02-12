@@ -38,11 +38,11 @@ import java.util.List;
 
 @Rule(
   key = "S00121",
-  name = "if/else/for/while/do statements should always use curly braces",
-  tags = {"convention"},
-  priority = Priority.MAJOR)
+  name = "Control structures should always use curly braces",
+  tags = {"convention", "cwe", "misra"},
+  priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("2min")
 public class MissingCurlyBraces_S00121_Check extends SubscriptionBaseVisitor {
 
   @Override

@@ -43,7 +43,7 @@ import java.util.List;
   key = "S1948",
   name = "Fields in a \"Serializable\" class should either be transient or serializable",
   tags = {"bug", "cwe", "serialization"},
-  priority = Priority.MAJOR)
+  priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("30min")

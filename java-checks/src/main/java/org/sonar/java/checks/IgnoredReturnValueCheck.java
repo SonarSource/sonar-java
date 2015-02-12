@@ -40,10 +40,10 @@ import java.util.List;
 @Rule(
   key = "S2201",
   name = "Return values should not be ignored when function calls don't have any side effects",
-  tags = {"bug"},
+  tags = {"bug", "cert", "misra"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("15min")
+@SqaleConstantRemediation("10min")
 public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
 
   private static List<String> CHECKED_TYPES = ImmutableList.<String>builder()

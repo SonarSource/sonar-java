@@ -48,6 +48,7 @@ public class SwitchWithTooManyCasesCheck extends SubscriptionBaseVisitor {
 
   @RuleProperty(
       key = "maximum",
+      description = "Maximum number of case",
       defaultValue = "" + DEFAULT_MAXIMUM_CASES)
   public int maximumCases = DEFAULT_MAXIMUM_CASES;
 

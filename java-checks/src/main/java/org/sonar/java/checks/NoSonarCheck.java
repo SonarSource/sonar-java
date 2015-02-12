@@ -35,10 +35,11 @@ import java.util.List;
  */
 @Rule(
   key = "NoSonar",
-  name = "Avoid use of //NOSONAR marker",
-  priority = Priority.INFO)
+  name = "\"NOSONAR\" marker should not be used to switch-off issues",
+  tags = {"bad-practice"},
+  priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
-@SqaleConstantRemediation("30min")
+@SqaleConstantRemediation("1min")
 public class NoSonarCheck extends SubscriptionBaseVisitor {
 
   private static final String PATTERN = "NOSONAR";

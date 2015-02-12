@@ -37,10 +37,11 @@ import java.util.List;
 @Rule(
   key = "S1150",
   name = "Enumeration should not be implemented",
+  tags = {"obsolete"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleConstantRemediation("30min")
 public class ImplementsEnumerationCheck extends SubscriptionBaseVisitor {
 
   @Override

@@ -41,10 +41,10 @@ import java.util.regex.Pattern;
   key = BadFieldName_S00116_Check.RULE_KEY,
   name = "Field names should comply with a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("2min")
 public class BadFieldName_S00116_Check extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S00116";
@@ -54,6 +54,7 @@ public class BadFieldName_S00116_Check extends BaseTreeVisitor implements JavaFi
 
   @RuleProperty(
     key = "format",
+    description = "Regular expression used to check the field names against.",
     defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

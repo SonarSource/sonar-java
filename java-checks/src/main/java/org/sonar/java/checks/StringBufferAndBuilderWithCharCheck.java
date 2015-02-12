@@ -41,11 +41,12 @@ import java.util.Set;
 
 @Rule(
   key = StringBufferAndBuilderWithCharCheck.RULE_KEY,
-  name = "StringBuilder and StringBuffer should not be instantiated with a character",
+  name = "\"StringBuilder\" and \"StringBuffer\" should not be instantiated with a character ",
+  tags = {"pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation("5min")
+@SqaleConstantRemediation("5 min")
 public class StringBufferAndBuilderWithCharCheck extends BaseTreeVisitor implements JavaFileScanner {
 
 

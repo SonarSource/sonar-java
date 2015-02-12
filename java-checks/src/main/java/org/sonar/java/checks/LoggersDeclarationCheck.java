@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
   key = LoggersDeclarationCheck.KEY,
   name = "Loggers should be \"private static final\" and should share a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
@@ -55,6 +55,7 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
 
   @RuleProperty(
     key = "format",
+    description = "Regular expression used to check the logger names against.",
     defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

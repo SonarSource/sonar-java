@@ -36,7 +36,7 @@ import org.sonar.squidbridge.api.SourceFile;
 @Rule(
   key = ThreadRunCheck.RULE_KEY,
   name = "Thread.run() and Runnable.run() should not be called directly",
-  tags = {"multi-threading"},
+  tags = {"cert", "cwe", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)

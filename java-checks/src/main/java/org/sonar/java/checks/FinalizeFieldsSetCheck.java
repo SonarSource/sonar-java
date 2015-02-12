@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S2165",
   name = "\"finalize\" should not set fields to \"null\"",
-  priority = Priority.MAJOR,
-  tags = {"clumsy", "performance"})
+  tags = {"clumsy", "performance"},
+  priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")

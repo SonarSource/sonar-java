@@ -44,10 +44,10 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = NestedIfStatementsCheck.KEY,
   name = "Control flow statements \"if\", \"for\", \"while\", \"switch\" and \"try\" should not be nested too deeply",
   tags = {"brain-overload"},
-  priority = Priority.MINOR)
+  priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_CHANGEABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("10min")
 public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String KEY = "S134";
@@ -55,7 +55,8 @@ public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFile
 
   private static final int DEFAULT_MAX = 3;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX)
+  @RuleProperty(defaultValue = "" + DEFAULT_MAX,
+  description = "Maximum allowed control flow statement nesting depth.")
   public int max = DEFAULT_MAX;
 
   private JavaFileScannerContext context;

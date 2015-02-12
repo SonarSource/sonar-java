@@ -42,12 +42,12 @@ import java.util.Deque;
 
 @Rule(
   key = SwitchCaseWithoutBreakCheck.RULE_KEY,
-  name = "Switch cases should end with an unconditional break statement",
-  tags = {"pitfall"},
+  name = "Switch cases should end with an unconditional \"break\" statement",
+  tags = {"cert", "cwe", "misra", "pitfall"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("10min")
 public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S128";

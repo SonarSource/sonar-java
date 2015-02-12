@@ -40,16 +40,17 @@ import java.util.regex.Pattern;
   key = "S00100",
   name = "Method names should comply with a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("5min")
 public class BadMethodName_S00100_Check extends SubscriptionBaseVisitor {
 
   private static final String DEFAULT_FORMAT = "^[a-z][a-zA-Z0-9]*$";
 
   @RuleProperty(
       key = "format",
+      description = "Regular expression used to check the method names against.",
       defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 

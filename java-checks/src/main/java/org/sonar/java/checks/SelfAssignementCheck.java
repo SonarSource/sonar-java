@@ -35,7 +35,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = SelfAssignementCheck.RULE_KEY,
   name = "Variables should not be self-assigned",
-  tags = {"bug"},
+  tags = {"bug", "cert"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("3min")

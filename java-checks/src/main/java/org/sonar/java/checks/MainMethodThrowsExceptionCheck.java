@@ -33,8 +33,8 @@ import java.util.List;
 @Rule(
   key = "S2096",
   name = "\"main\" should not \"throw\" anything",
-  priority = Priority.MAJOR
-)
+  tags = {"error-handling"},
+  priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("15min")
 public class MainMethodThrowsExceptionCheck extends SubscriptionBaseVisitor {

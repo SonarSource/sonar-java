@@ -38,11 +38,12 @@ import java.util.List;
 
 @Rule(
   key = "S1126",
-  name = "Return of boolean expressions should not be wrapped into an if-then-else statement",
-  priority = Priority.MAJOR)
+  name = "Return of boolean expressions should not be wrapped into an \"if-then-else\" statement",
+  tags = {"clumsy"},
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("2min")
 public class ReturnOfBooleanExpressionsCheck extends SubscriptionBaseVisitor {
 
 

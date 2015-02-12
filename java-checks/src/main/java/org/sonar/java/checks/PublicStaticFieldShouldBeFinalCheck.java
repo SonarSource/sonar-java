@@ -36,10 +36,11 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = PublicStaticFieldShouldBeFinalCheck.RULE_KEY,
-  name = "\"public static\" fields should always be constant",
-  priority = Priority.MAJOR)
+  name = ":",
+  tags = {"cert", "cwe", "security"},
+  priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("20min")
 public class PublicStaticFieldShouldBeFinalCheck extends BaseTreeVisitor implements JavaFileScanner {
 

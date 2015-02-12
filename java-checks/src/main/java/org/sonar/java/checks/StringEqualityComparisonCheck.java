@@ -31,8 +31,8 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "StringEqualityComparisonCheck",
-  name = "Strings should be compared using equals()",
-  tags = {"bug"},
+  name = "Strings should be compared using \"[equals()|Equals()]\"",
+  tags = {"bug", "cwe"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

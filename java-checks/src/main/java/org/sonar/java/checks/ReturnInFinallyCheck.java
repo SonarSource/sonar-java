@@ -38,12 +38,12 @@ import java.util.LinkedList;
 
 @Rule(
   key = ReturnInFinallyCheck.RULE_KEY,
-  name = "Return statements should not occur in finally blocks",
-  tags = {"bug"},
+  name = "\"return\" statements should not occur in \"finally\" blocks",
+  tags = {"bug", "cwe"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("30min")
 public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileScanner{
 
   public static final String RULE_KEY = "S1143";

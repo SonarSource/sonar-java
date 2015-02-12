@@ -1,18 +1,24 @@
-<p>
-Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all constant names match a provided regular expression.
-</p>
+<p>Shared coding conventions allow teams to collaborate efficiently. This rule checks that all constant names match a provided regular expression.</p>
+<h2>Noncompliant Code Example</h2>
 
-<p>
-The following code snippet illustrates this rule when the regular expression value is "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$":
-</p>
 <pre>
 public class MyClass {
-  public static final int first = 1; // Non-Compliant
-  public static final int SECOND = 2; // Compliant
+  public static final int first = 1;
 }
 
 public enum MyEnum {
-  first, // Non-Compliant
-  SECOND; // Compliant
+  first;
 }
 </pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+public class MyClass {
+  public static final int FIRST = 1; 
+}
+
+public enum MyEnum {
+  FIRST;
+}
+</pre>
+

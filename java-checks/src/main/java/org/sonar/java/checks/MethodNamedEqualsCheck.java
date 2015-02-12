@@ -44,7 +44,7 @@ import java.util.List;
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation("30min")
+@SqaleConstantRemediation("10min")
 public class MethodNamedEqualsCheck extends SubscriptionBaseVisitor {
 
   @Override

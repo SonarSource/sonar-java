@@ -42,6 +42,7 @@ import java.util.LinkedList;
 @Rule(
   key = MismatchPackageDirectoryCheck.RULE_KEY,
   name = "Package declaration should match source file directory",
+  tags = {"pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

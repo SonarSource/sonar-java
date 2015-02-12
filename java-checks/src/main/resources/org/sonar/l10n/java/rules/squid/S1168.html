@@ -1,10 +1,6 @@
-<p>
-Returning <code>null</code> instead of an actual array or collection forces callers of the method to explicitly test for nullity, making them more complex and less readable.
-Moreover, in many cases, <code>null</code> is used as a synonym for empty.
-</p>
-
-<p>The following code:</p>
-
+<p>Returning <code>null</code> instead of an actual array or collection forces callers of the method to explicitly test for nullity, making them more complex and less readable.</p>
+<p>Moreover, in many cases, <code>null</code> is used as a synonym for empty.</p>
+<p>The following code: </p>
 <pre>
 public static Result[] getResults() {
   return null;                             // Non-Compliant
@@ -12,7 +8,7 @@ public static Result[] getResults() {
 
 public static void main(String[] args) {
   Result[] results = getResults();
-
+  
   if (results != null) {                   // Nullity test required to prevent NPE
     for (Result result: results) {
       /* ... */
@@ -20,9 +16,7 @@ public static void main(String[] args) {
   }
 }
 </pre>
-
 <p>should be refactored into:</p>
-
 <pre>
 public static Result[] getResults() {
   return new Result[0];                    // Compliant
@@ -34,19 +28,21 @@ public static void main(String[] args) {
   }
 }
 </pre>
-
 <p>This rule also applies to collections:</p>
-
 <pre>
 public static List&lt;Result&gt; getResults() {
   return null;                             // Non-Compliant
 }
 </pre>
-
 <p>should be refactored into:</p>
-
 <pre>
 public static List&lt;Result&gt; getResults() {
-  return Collections.emptyList();           // Compliant
+  return Collections.emptyList();          // Compliant
 }
 </pre>
+<h2>See</h2>
+
+<ul>
+<li> <a href="https://www.securecoding.cert.org/confluence/x/AgG7AQ">CERT, MSC19-C</a> - For functions that return an array, prefer returning an empty array over a null value</li>
+</ul>
+

@@ -39,16 +39,17 @@ import java.util.regex.Pattern;
   key = "S00119",
   name = "Type parameter names should comply with a naming convention",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("20min")
+@SqaleConstantRemediation("10min")
 public class BadTypeParameterName_S00119_Check extends SubscriptionBaseVisitor {
 
   private static final String DEFAULT_FORMAT = "^[A-Z]$";
 
   @RuleProperty(
       key = "format",
+      description = "Regular expression used to check the type parameter names against.",
       defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
   private Pattern pattern = null;

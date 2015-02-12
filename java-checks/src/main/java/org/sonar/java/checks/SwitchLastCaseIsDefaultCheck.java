@@ -36,12 +36,12 @@ import java.util.List;
 
 @Rule(
   key = "SwitchLastCaseIsDefaultCheck",
-  name = "Switch statements should end with a default case",
+  name = "\"switch\" statements should end with a \"default\" clause",
   tags = {"cert", "cwe", "misra"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleConstantRemediation("5min")
 public class SwitchLastCaseIsDefaultCheck extends SubscriptionBaseVisitor {
 
   @Override

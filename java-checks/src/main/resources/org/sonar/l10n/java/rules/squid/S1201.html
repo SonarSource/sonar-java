@@ -1,20 +1,13 @@
-<p>
-"equals" as a method name should be exclusively used to override <code>Object.equals(Object)</code> to prevent any confusion.
-</p>
-
-<p>
-It is tempting to overload the method to take a specific class instead of <code>Object</code> as parameter, to save class comparison check.
-However, this will not work as expected.
-</p>
-
-<p>For example:</p>
+<p>"equals" as a method name should be used exclusively to override <code>Object.equals(Object)</code> to prevent any confusion.</p>
+<p>It is tempting to overload the method to take a specific class instead of <code>Object</code> as parameter, to save the class comparison check. However, this will not work as expected.</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
 class MyClass {
   private int foo = 1;
 
   public boolean equals(MyClass o) {                    // Non-Compliant - "equals" method which does not override Object.equals(Object)
-    return o != null && o.foo == this.foo;
+    return o != null &amp;&amp; o.foo == this.foo;
   }
 
   public static void main(String[] args) {
@@ -24,8 +17,7 @@ class MyClass {
   }
 }
 </pre>
-
-<p>should be refactored into:</p>
+<h2>Compliant Solution</h2>
 
 <pre>
 class MyClass {
@@ -44,3 +36,4 @@ class MyClass {
   /* ... */
 }
 </pre>
+

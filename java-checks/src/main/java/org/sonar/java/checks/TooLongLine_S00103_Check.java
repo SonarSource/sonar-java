@@ -44,17 +44,18 @@ import java.util.Set;
 
 @Rule(
   key = "S00103",
-  name = "Lines of code should not be too long",
+  name = "Lines should not be too long",
   tags = {"convention"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
-  private static final int DEFAULT_MAXIMUM_LINE_LENHGTH = 80;
+  private static final int DEFAULT_MAXIMUM_LINE_LENHGTH = 120;
 
   @RuleProperty(
       key = "maximumLineLength",
+      description = "The maximum authorized line length.",
       defaultValue = "" + DEFAULT_MAXIMUM_LINE_LENHGTH)
   public int maximumLineLength = DEFAULT_MAXIMUM_LINE_LENHGTH;
 

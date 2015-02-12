@@ -40,11 +40,12 @@ import java.util.List;
 
 @Rule(
   key = "S1170",
-  name = "Constants should be declared \"final static\" rather than merely \"final\"",
-  priority = Priority.MAJOR)
+  name = "Public constants should be declared \"static final\" rather than merely \"final\"",
+  tags = {"convention"},
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("2min")
 public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
 
   private int nestedClassesLevel;

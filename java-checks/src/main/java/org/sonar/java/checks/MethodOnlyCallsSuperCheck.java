@@ -44,12 +44,12 @@ import java.util.List;
 
 @Rule(
   key = "S1185",
-  name = "Overriding methods should do more than simply call the same method in the super class",
-  tags = {"brain-overload"},
+  name = "Overriding methods should do more than simply call the same method in the super class ",
+  tags = {"clumsy"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("5min")
 public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
 
   @Override

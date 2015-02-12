@@ -37,7 +37,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = DITCheck.RULE_KEY,
-  name = "Avoid too deep inheritance tree",
+  name = "Inheritance tree of classes should not be too deep",
+  tags = {"design"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("4h")
@@ -50,7 +51,10 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX)
+  @RuleProperty(
+      key = "max",
+      description = "Maximum depth of the inheritance tree. (Number)",
+      defaultValue = "" + DEFAULT_MAX)
   private Integer max = DEFAULT_MAX;
 
 

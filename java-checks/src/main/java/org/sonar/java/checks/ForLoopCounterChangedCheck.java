@@ -42,12 +42,12 @@ import java.util.Set;
 
 @Rule(
   key = ForLoopCounterChangedCheck.RULE_KEY,
-  name = "Loop counters should not be assigned to from within the loop body",
-  tags = {"bug"},
+  name = "Loop invariants should not be calculated inside the loop",
+  tags = {"performance"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("30min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
+@SqaleConstantRemediation("3min")
 public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "ForLoopCounterChangedCheck";

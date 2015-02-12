@@ -34,7 +34,7 @@ import java.util.List;
 @Rule(
   key = "S1221",
   name = "Methods should not be named \"hashcode\"",
-  tags = {"pitfall"},
+  tags = {"bug", "pitfall"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)

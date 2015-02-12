@@ -39,7 +39,7 @@ import java.util.Collection;
   key = AbstractClassWithoutAbstractMethodCheck.RULE_KEY,
   name = "An abstract class should have both abstract and concrete methods",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor implements JavaFileScanner {

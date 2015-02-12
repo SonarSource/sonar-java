@@ -35,9 +35,9 @@ import java.util.Set;
 
 @Rule(
   key = "RightCurlyBraceSameLineAsNextBlockCheck",
-  name = "Right curly brace and next \"else\", \"catch\" and \"finally\" keywords should be located on the same line",
+  name = "Close curly brace and the next \"else\", \"catch\" and \"finally\" keywords should be located on the same line",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class RightCurlyBraceSameLineAsNextBlockCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {

@@ -42,6 +42,7 @@ import java.util.List;
 @Rule(
   key = MagicNumberCheck.RULE_KEY,
   name = "Magic numbers should not be used",
+  tags = {"brain-overload"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
 @SqaleConstantRemediation("5min")

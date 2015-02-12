@@ -52,6 +52,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
 
   @RuleProperty(
     key = "listOfWarnings",
+    description = "Comma separated list of warnings that can't be suppressed. Example: 'unchecked, cast, all, boxing'. An empty list means that all no warning can be suppressed.",
     defaultValue = "")
   public String warningsCommaSeparated = "";
 

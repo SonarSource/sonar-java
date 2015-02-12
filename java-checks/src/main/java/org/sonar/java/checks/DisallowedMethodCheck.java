@@ -41,13 +41,13 @@ import java.util.List;
 @NoSqale
 public class DisallowedMethodCheck extends AbstractMethodDetection {
 
-  @RuleProperty(key = "className")
+  @RuleProperty(key = "className", description = "Name of the class whose method is forbidden")
   private String className = "";
 
-  @RuleProperty(key = "methodName")
+  @RuleProperty(key = "methodName", description = "Name of the forbidden method")
   private String methodName = "";
 
-  @RuleProperty(key = "argumentTypes")
+  @RuleProperty(key = "argumentTypes", description = "Comma-delimited list of argument types, E.G. java.lang.String, int[], int")
   private String argumentTypes = "";
 
   @Override

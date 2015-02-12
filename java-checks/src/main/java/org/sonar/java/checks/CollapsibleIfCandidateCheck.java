@@ -40,6 +40,7 @@ import java.util.Deque;
 @Rule(
   key = CollapsibleIfCandidateCheck.RULE_KEY,
   name = "Collapsible \"if\" statements should be merged",
+  tags = {"clumsy"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

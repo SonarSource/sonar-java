@@ -36,17 +36,18 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "S1151",
-  name = "Switch cases should not have too many lines",
+  name = "\"switch case\" clauses should not have too many lines",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("5min")
 public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> {
 
   private static final int DEFAULT_MAX = 5;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX)
+  @RuleProperty(defaultValue = "" + DEFAULT_MAX,
+  description = "Maximum number of lines")
   public int max = DEFAULT_MAX;
 
   @Override

@@ -40,10 +40,10 @@ import java.util.List;
 @Rule(
   key = "S1764",
   name = "Identical expressions should not be used on both sides of a binary operator",
-  tags = {"cert"},
-  priority = Priority.MAJOR)
+  tags = {"bug", "cert"},
+  priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("2min")
 public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVisitor {
 

@@ -1,12 +1,12 @@
-<p>
-Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all package names match a provided regular expression.
-</p>
+<p>Shared coding conventions allow teams to collaborate efficiently. This rule checks that all package names match a provided regular expression.</p>
+<h2>Noncompliant Code Example</h2>
 
-<p>
-The following code snippet illustrates this rule when the regular expression value is "^[a-z]+(\\.[a-z][a-z0-9]*)*$":
-</p>
 <pre>
-package org.Example; // Non-Compliant
-
-package org.example; // Compliant
+package org.exAmple; // Noncompliant
 </pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+package org.example; 
+</pre>
+

@@ -42,6 +42,7 @@ import java.util.Set;
 @Rule(
   key = ConcatenationWithStringValueOfCheck.RULE_KEY,
   name = "String.valueOf() should not be appended to a String",
+  tags = {"clumsy"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

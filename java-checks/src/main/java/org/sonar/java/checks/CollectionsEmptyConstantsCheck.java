@@ -38,7 +38,8 @@ import java.util.Map;
 
 @Rule(
   key = CollectionsEmptyConstantsCheck.RULE_KEY,
-  name = "Collections.emptyList(),emptyMap() and emptySet() should be used instead of Collections.EMPTY_LIST, EMPTY_MAP and EMPTY_SET",
+  name = "Collections.emptyList(), emptyMap() and emptySet() should be used instead of Collections.EMPTY_LIST, EMPTY_MAP and EMPTY_SET",
+  tags = {"obsolete", "pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

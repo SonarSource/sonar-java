@@ -39,12 +39,12 @@ import java.util.List;
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleConstantRemediation("20min")
 public class MethodTooBigCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 100;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX)
+  @RuleProperty(defaultValue = "" + DEFAULT_MAX, description = "Maximum authorized lines in a method")
   public int max = DEFAULT_MAX;
 
   @Override

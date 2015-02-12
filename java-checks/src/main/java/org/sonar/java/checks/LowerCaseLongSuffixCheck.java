@@ -36,10 +36,10 @@ import java.util.List;
   key = "LowerCaseLongSuffixCheck",
   name = "Long suffix \"L\" should be upper case",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("2min")
 public class LowerCaseLongSuffixCheck extends SubscriptionBaseVisitor{
 
   @Override

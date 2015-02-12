@@ -56,7 +56,7 @@ import java.util.regex.Pattern;
   key = UndocumentedApiCheck.RULE_KEY,
   name = "Public types, methods and fields (API) should be documented with Javadoc",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("30min")
 public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -69,6 +69,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @RuleProperty(
     key = "forClasses",
+    description = "Pattern of classes which should adhere to this constraint. Ex : **.api.**",
     defaultValue = DEFAULT_FOR_CLASSES)
   public String forClasses = DEFAULT_FOR_CLASSES;
 

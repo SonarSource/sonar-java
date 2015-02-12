@@ -34,12 +34,12 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = SwitchAtLeastThreeCasesCheck.RULE_KEY,
-  name = "\"switch\" statements should have at least 3 cases",
+  name = "\"switch\" statements should have at least 3 \"case\" clauses",
   tags = {"misra"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("5min")
 public class SwitchAtLeastThreeCasesCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1301";
