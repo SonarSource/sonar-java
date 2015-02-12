@@ -43,7 +43,7 @@ public class MethodSymbols {
 
     public int methodOverriden(int i) {//Overriden
       Object obj = new MethodSymbolsParentTypes.ForAnonymousClass() {
-        public int methodUndecidable() { //Not found as overidden for anonymous classes
+        public int methodUndecidable() { //found as overidden for anonymous classes
           return 0;
         }
       };

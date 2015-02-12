@@ -49,8 +49,8 @@ public class MethodSymbolTest {
 
   private static class MethodVisitor extends SubscriptionVisitor {
 
-    private static final Set<Integer> overriden = Sets.newHashSet(28, 32, 40, 44, 56, 72, 76, 84);
-    private static final Set<Integer> undecidable = Sets.newHashSet(46);
+    private static final Set<Integer> overriden = Sets.newHashSet(28, 32, 40, 44, 46, 56, 72, 76, 84);
+    private static final Set<Integer> undecidable = Sets.newHashSet();
 
     @Override
     public List<Tree.Kind> nodesToVisit() {

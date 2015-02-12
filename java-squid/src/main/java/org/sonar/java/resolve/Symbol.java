@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -312,10 +311,6 @@ public class Symbol {
     public Boolean isOverriden() {
       Boolean result = false;
       Symbol.TypeSymbol enclosingClass = enclosingClass();
-      if (StringUtils.isEmpty(enclosingClass.getName())) {
-        //FIXME : SONARJAVA-645 : exclude methods within anonymous classes
-        return null;
-      }
       for (Type.ClassType superType : enclosingClass.superTypes()) {
         Boolean overrideFromType = overridesFromSymbol(superType);
         if (overrideFromType == null) {
