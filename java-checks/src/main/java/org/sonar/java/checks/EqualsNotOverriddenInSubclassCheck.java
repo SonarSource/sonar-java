@@ -84,7 +84,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
     Tree superClass = tree.superClass();
     if (superClass != null) {
       Type superClassType = ((AbstractTypedTree) superClass).getSymbolType();
-      // Workaround for SONARJAVA-901 : ParametrizedTypeType with unknown rawType is tagged as CLASS instead of UNKNOWN.
+      // FIXME Workaround until SONARJAVA-901 is resolved
       while (!superClassType.getSymbol().getType().isTagged(Type.UNKNOWN) && !superClassType.is("java.lang.Object")) {
         TypeSymbol superClassSymbol = superClassType.getSymbol();
         if (hasEqualsMethod(superClassSymbol)) {
