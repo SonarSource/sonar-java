@@ -292,7 +292,8 @@ public final class CheckList {
       ClassWithOnlyStaticMethodsInstantiationCheck.class,
       SerializableObjectInSessionCheck.class,
       StaticFieldInitializationCheck.class,
-      UselessIncrementCheck.class
+      UselessIncrementCheck.class,
+      ObjectCreatedOnlyToCallGetClassCheck.class
       );
   }
 }
