@@ -287,7 +287,8 @@ public final class CheckList {
       PrimitiveTypeBoxingWithToStringCheck.class,
       SillyBitOperationCheck.class,
       InvalidDateValuesCheck.class,
-      EqualsNotOverriddenInSubclassCheck.class
+      EqualsNotOverriddenInSubclassCheck.class,
+      ClassComparedByNameCheck.class
       );
   }
 }
