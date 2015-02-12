@@ -130,7 +130,7 @@ public final class CheckList {
       GarbageCollectorCalledCheck.class,
       ArrayDesignatorOnVariableCheck.class,
       DefaultPackageCheck.class,
-      MethodNamedHashcodeCheck.class,
+      MethodNamedHashcodeOrEqualCheck.class,
       NestedBlocksCheck.class,
       InterfaceAsConstantContainerCheck.class,
       MethodNamedEqualsCheck.class,
