@@ -25,14 +25,20 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
+
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 
@@ -52,26 +58,29 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
 
   @Override
   public void visitNode(Tree tree) {
-    NewClassTree newClassTree = (NewClassTree) tree;
-    if (hasOnlyStaticMethod((AbstractTypedTree) newClassTree.identifier())) {
-      String className = ((IdentifierTree) newClassTree.identifier()).name();
-      addIssue(tree, "Remove this instantiation of \"" + className + "\".");
+    Tree identifier = ((NewClassTree) tree).identifier();
+    if (hasOnlyStaticMethod(((AbstractTypedTree) identifier).getSymbolType().getSymbol())) {
+      String message = "Remove this instantiation.";
+      String name = getNewClassName(identifier);
+      if (name != null) {
+        message = "Remove this instantiation of \"{0}\".";
+      }
+      addIssue(tree, MessageFormat.format(message, name));
     }
   }
 
-  private boolean hasOnlyStaticMethod(AbstractTypedTree tree) {
-    Collection<Symbol> members = tree.getSymbolType().getSymbol().members().scopeSymbols();
-    boolean hasOnlyThisOrSuper = true;
+  private boolean hasOnlyStaticMethod(TypeSymbol typeSymbol) {
+    Collection<Symbol> members = typeSymbol.members().scopeSymbols();
+    boolean hasStaticMethod = false;
     for (Symbol symbol : members) {
       if (!isThisOrSuper(symbol)) {
         if (!isStaticMethod(symbol)) {
           return false;
-        } else {
-          hasOnlyThisOrSuper = false;
         }
+        hasStaticMethod = true;
       }
     }
-    return !hasOnlyThisOrSuper;
+    return hasStaticMethod;
   }
 
   private boolean isThisOrSuper(Symbol symbol) {
@@ -81,5 +90,17 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
 
   private boolean isStaticMethod(Symbol symbol) {
     return symbol.isStatic() && symbol.isKind(Symbol.MTH);
+  }
+
+  @Nullable
+  private String getNewClassName(Tree tree) {
+    if (tree.is(Kind.IDENTIFIER)) {
+      return ((IdentifierTree) tree).name();
+    } else if (tree.is(Kind.MEMBER_SELECT)) {
+      return ((MemberSelectExpressionTree) tree).identifier().name();
+    } else if (tree.is(Kind.PARAMETERIZED_TYPE)) {
+      return getNewClassName(((ParameterizedTypeTree) tree).type());
+    }
+    return null;
   }
 }

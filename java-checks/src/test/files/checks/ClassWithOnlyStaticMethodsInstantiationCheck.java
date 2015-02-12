@@ -1,6 +1,26 @@
+class Tester {
+  void bar() {
+    A a = new A(); // Noncompliant
+    F f = new F(); // Noncompliant
+    H h = new H(); // Noncompliant
+    InnerClass i1 = new InnerClass(); // Noncompliant
+    Tester.InnerClass i2 = new Tester.InnerClass(); // Noncompliant
+    J<A> j = new J<A>(); // Noncompliant
+    B b = new B(); // Compliant
+    C c = new C(); // Compliant
+    D d = new D(); // Compliant
+    E e = new E(); // Compliant
+    G g = new G(); // Compliant
+  }
+
+  static class InnerClass {
+    static void foo() {
+    }
+  }
+}
+
 class A {
-  static int foo() {
-    return 0;
+  static void foo() {
   }
 }
 
@@ -11,24 +31,21 @@ class C extends A {
 }
 
 class D extends A {
-  static int val = 0;
+  static int val;
 
-  static int bar() {
-    return 0;
+  static void bar() {
   }
 }
 
 class E {
-  static int val = 0;
+  static int val;
 
-  static int foo() {
-    return 0;
+  static void foo() {
   }
 }
 
 class F extends A {
-  static int bar() {
-    return 0;
+  static void bar() {
   }
 }
 
@@ -40,20 +57,11 @@ class G {
 }
 
 class H extends G {
-  static int bar() {
-    return 0;
+  static void bar() {
   }
 }
 
-class Tester {
-  void bar() {
-    A a = new A(); // Noncompliant
-    F f = new F(); // Noncompliant
-    H h = new H(); // Noncompliant
-    B b = new B(); // Compliant
-    C c = new C(); // Compliant
-    D d = new D(); // Compliant
-    E e = new E(); // Compliant
-    G g = new G(); // Compliant
+class J<T> {
+  static void foo() {
   }
 }
