@@ -45,6 +45,7 @@ class A {
     }
     foo();
     instance4 = new Object();  // compliant instance 4 is volatile
+    unresolvedIdentifier = new Object();
     return instance4;
   }
 

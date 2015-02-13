@@ -53,13 +53,17 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
       AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
       if (aet.variable().is(Tree.Kind.IDENTIFIER) && !isInSyncBlock()) {
         IdentifierTree variable = (IdentifierTree) aet.variable();
-        Symbol symbol = getSemanticModel().getReference(variable);
-        if (symbol.isStatic() && !symbol.isVolatile()) {
+        if (isStaticNotVolatile(variable)) {
           addIssue(variable, "Synchronize this lazy initialization of '" + variable.name() + "'");
         }
       }
     }
     super.visitNode(tree);
+  }
+
+  private boolean isStaticNotVolatile(IdentifierTree variable) {
+    Symbol symbol = getSemanticModel().getReference(variable);
+    return symbol != null && symbol.isStatic() && !symbol.isVolatile();
   }
 
   @Override
