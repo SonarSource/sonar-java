@@ -36,8 +36,10 @@ public class OverrideAnnotationCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/OverrideAnnotationCheck.java"), new VisitorsBridge(new OverrideAnnotationCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("Add the \"@Override\" annotation above this method signature")
-        .next().atLine(9).withMessage("Add the \"@Override\" annotation above this method signature")
-    ;
+      .next().atLine(9).withMessage("Add the \"@Override\" annotation above this method signature")
+      .next().atLine(10).withMessage("Add the \"@Override\" annotation above this method signature")
+      .next().atLine(16).withMessage("Add the \"@Override\" annotation above this method signature")
+      .next().atLine(17).withMessage("Add the \"@Override\" annotation above this method signature")
+      .noMore();
   }
 }
