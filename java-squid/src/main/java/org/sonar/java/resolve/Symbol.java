@@ -440,6 +440,10 @@ public class Symbol {
     return isFlag(Flags.DEPRECATED);
   }
 
+  public boolean isVolatile() {
+    return isFlag(Flags.VOLATILE);
+  }
+
   protected boolean isFlag(int flag) {
     complete();
     return (flags & flag) != 0;

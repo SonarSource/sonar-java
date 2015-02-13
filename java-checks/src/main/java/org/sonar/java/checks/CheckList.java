@@ -290,7 +290,8 @@ public final class CheckList {
       EqualsNotOverriddenInSubclassCheck.class,
       ClassComparedByNameCheck.class,
       ClassWithOnlyStaticMethodsInstantiationCheck.class,
-      SerializableObjectInSessionCheck.class
+      SerializableObjectInSessionCheck.class,
+      StaticFieldInitializationCheck.class
       );
   }
 }
