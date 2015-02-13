@@ -51,7 +51,7 @@ public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetecti
       super.visitNode(tree);
     } else if (tree.is(Tree.Kind.METHOD)) {
       withinSynchronizedBlock.push(((MethodTree) tree).modifiers().modifiers().contains(Modifier.SYNCHRONIZED));
-    } else {
+    } else if (tree.is(Tree.Kind.SYNCHRONIZED_STATEMENT)) {
       withinSynchronizedBlock.push(true);
     }
   }
