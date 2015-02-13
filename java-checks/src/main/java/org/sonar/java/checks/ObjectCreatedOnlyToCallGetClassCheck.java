@@ -23,6 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
@@ -48,72 +51,69 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.FAULT_TOLERANCE)
 @SqaleConstantRemediation("2min")
-public class ObjectCreatedOnlyToCallGetClassCheck extends SubscriptionBaseVisitor {
+public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetection {
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.METHOD_INVOCATION);
+  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(
+      MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Object")).name("getClass"));
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
+  protected void onMethodFound(MethodInvocationTree mit) {
     if (hasSemantic() && mit.methodSelect().is(Kind.MEMBER_SELECT)) {
       ExpressionTree expressionTree = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
-      boolean calledFromNewObject = expressionTree.is(Kind.NEW_CLASS);
-      boolean calledFromVariable = expressionTree.is(Kind.IDENTIFIER);
-      if (isGetClassInvocation(mit) && (calledFromNewObject || calledFromVariable)) {
-        Tree issueTarget = null;
-        if (calledFromVariable && isInstantiationOnlyOtherOperation(expressionTree)) {
-          issueTarget = getInstantiationTree(expressionTree);
-        } else if (calledFromNewObject) {
-          issueTarget = expressionTree;
-        }
-        if (issueTarget != null) {
-          addIssue(issueTarget, "Remove this object instantiation and use \"" + getTypeName(issueTarget) + ".class\" instead.");
-        }
+      if (expressionTree.is(Kind.NEW_CLASS)) {
+        reportIssue(expressionTree);
+      } else if (expressionTree.is(Kind.IDENTIFIER) && variableUsedOnlyToGetClass((IdentifierTree) expressionTree)) {
+        reportIssue(getInitializer((IdentifierTree) expressionTree));
       }
     }
   }
 
+  private ExpressionTree getInitializer(IdentifierTree tree) {
+    Symbol symbol = getSemanticModel().getReference(tree);
+    return ((VariableTree) getSemanticModel().getTree(symbol)).initializer();
+  }
+
+  private boolean variableUsedOnlyToGetClass(IdentifierTree tree) {
+    if ("this".equals(tree.name()) || "super".equals(tree.name())) {
+      return false;
+    }
+    Symbol symbol = getSemanticModel().getReference(tree);
+    return getSemanticModel().getUsages(symbol).size() == 1 && hasBeenInitialized(symbol);
+  }
+
+  private boolean hasBeenInitialized(Symbol symbol) {
+    VariableTree source = (VariableTree) getSemanticModel().getTree(symbol);
+    return source.initializer() != null;
+  }
+
+  private void reportIssue(ExpressionTree expressionTree) {
+    addIssue(expressionTree, "Remove this object instantiation and use \"" + getTypeName(expressionTree) + ".class\" instead.");
+  }
+
   private String getTypeName(Tree tree) {
     Type type = ((AbstractTypedTree) tree).getSymbolType();
-    TypeSymbol symbol = type.getSymbol();
-    String name = symbol.getName();
+    String name = getTypeName(type);
     if (name.isEmpty()) {
-      name = getAnonymousClassTypeName(symbol);
+      name = getAnonymousClassTypeName(type.getSymbol());
     }
     return name;
   }
 
   private String getAnonymousClassTypeName(TypeSymbol symbol) {
     String name = "";
-    if (!symbol.getSuperclass().is("java.lang.Object")) {
-      // abstract method
-      name = symbol.getSuperclass().getSymbol().getName();
+    if (symbol.getInterfaces().isEmpty()) {
+      name = getTypeName(symbol.getSuperclass());
     } else {
-      // interface
-      name = symbol.getInterfaces().get(0).getSymbol().getName();
+      name = getTypeName(symbol.getInterfaces().get(0));
     }
     return name;
   }
 
-  private boolean isInstantiationOnlyOtherOperation(ExpressionTree tree) {
-    Symbol symbol = getSemanticModel().getReference((IdentifierTree) tree);
-    String symbolName = symbol.getName();
-    if ("this".equals(symbolName) || "super".equals(symbolName)) {
-      return false;
-    }
-    VariableTree source = (VariableTree) getSemanticModel().getTree(symbol);
-    return getSemanticModel().getUsages(symbol).size() == 1 && source.initializer() != null;
+  private String getTypeName(Type type) {
+    return type.getSymbol().getName();
   }
 
-  private Tree getInstantiationTree(ExpressionTree tree) {
-    Symbol symbol = getSemanticModel().getReference((IdentifierTree) tree);
-    return ((VariableTree) getSemanticModel().getTree(symbol)).initializer();
-  }
-
-  private boolean isGetClassInvocation(MethodInvocationTree tree) {
-    return tree.arguments().isEmpty() && "getClass".equals(((MemberSelectExpressionTree) tree.methodSelect()).identifier().name());
-  }
 }
