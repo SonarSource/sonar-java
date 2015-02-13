@@ -83,4 +83,21 @@ public class MethodSymbols {
   class B2<T extends CharSequence> implements B1<T> {
     public void foo(T t) {}
   }
+  
+  interface C1 {
+    public boolean equals(Object obj);
+    @Override
+    public String toString();
+    void foo();
+    void bar();
+  }
+  
+  interface C2 extends C1 {
+    void foo();
+    @Override
+    void bar();
+    
+    @Override
+    public boolean equals(Object obj);
+  }
 }

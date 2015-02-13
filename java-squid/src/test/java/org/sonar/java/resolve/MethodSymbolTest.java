@@ -39,17 +39,18 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class MethodSymbolTest {
 
-
   @Test
   public void test() {
     File bytecodeDir = new File("target/test-classes");
-    JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/resolve/targets/MethodSymbols.java"), new VisitorsBridge(new MethodVisitor(), Lists.newArrayList(bytecodeDir)));
+    JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/resolve/targets/MethodSymbols.java"),
+      new VisitorsBridge(new MethodVisitor(), Lists.newArrayList(bytecodeDir)));
 
   }
 
   private static class MethodVisitor extends SubscriptionVisitor {
 
-    private static final Set<Integer> overriden = Sets.newHashSet(28, 32, 40, 44, 46, 56, 72, 76, 84);
+    private static final Set<Integer> overriden = Sets.newHashSet(28, 32, 40, 44, 46, 56, 72, 76, 84, 88, 90, 96, 98, 101);
+    private static final Set<Integer> overriddingFromObject = Sets.newHashSet(88, 90, 101);
     private static final Set<Integer> undecidable = Sets.newHashSet();
 
     @Override
@@ -61,8 +62,16 @@ public class MethodSymbolTest {
     public void visitNode(Tree tree) {
       int line = ((JavaTree) tree).getLine();
       Symbol.MethodSymbol symbol = ((MethodTreeImpl) tree).getSymbol();
-      BooleanAssert assertion = assertThat(symbol.isOverriden()).as("Method at line "+line);
+      BooleanAssert assertion = assertThat(symbol.isOverriden()).as("Method at line " + line);
       if (overriden.contains(line)) {
+        assertion.isTrue();
+      } else if (undecidable.contains(line)) {
+        assertion.isNull();
+      } else {
+        assertion.isFalse();
+      }
+      assertion = assertThat(symbol.overridesFromGivenType("java.lang.Object")).as("Method at line " + line);
+      if (overriddingFromObject.contains(line)) {
         assertion.isTrue();
       } else if (undecidable.contains(line)) {
         assertion.isNull();
