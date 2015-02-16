@@ -309,18 +309,13 @@ public class Symbol {
     }
 
     public Boolean isOverriden() {
-      return overridesFromGivenType(null);
-    }
-
-    @Nullable
-    public Boolean overridesFromGivenType(@Nullable String fullyQualifiedName) {
       Boolean result = false;
       Symbol.TypeSymbol enclosingClass = enclosingClass();
       for (Type.ClassType superType : enclosingClass.superTypes()) {
         Boolean overrideFromType = overridesFromSymbol(superType);
         if (overrideFromType == null) {
           result = null;
-        } else if (BooleanUtils.isTrue(overrideFromType) && (fullyQualifiedName == null || superType.is(fullyQualifiedName))) {
+        } else if (BooleanUtils.isTrue(overrideFromType)) {
           return true;
         }
       }
@@ -447,10 +442,6 @@ public class Symbol {
 
   public boolean isVolatile() {
     return isFlag(Flags.VOLATILE);
-  }
-
-  public boolean isInterface() {
-    return isFlag(Flags.INTERFACE);
   }
 
   protected boolean isFlag(int flag) {
