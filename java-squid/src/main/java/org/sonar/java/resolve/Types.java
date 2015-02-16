@@ -52,7 +52,8 @@ public class Types {
           break;
         case Type.ARRAY:
           if(t.tag != s.tag) {
-            result = false;
+            //t is array, if tags are different then the only way t is subtype of s is s to be object ie: superclass of arrayClass
+            result = t.getSymbol().getSuperclass() == s;
             break;
           }
           result = isSubtype(((Type.ArrayType) t).elementType(), ((Type.ArrayType) s).elementType());

@@ -40,11 +40,11 @@ public class CollectionInappropriateCallsCheckTest {
       .next().atLine(29).withMessage("A \"List<Set>\" cannot contain a \"String\"")
       .next().atLine(30).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
       .next().atLine(31).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
-      // .next().atLine(34).withMessage("A \"List<String>\" cannot contain a \"String[]\"") // False negative
+      .next().atLine(34).withMessage("A \"List<String>\" cannot contain a \"Integer[]\"")
       .next().atLine(35).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
       .next().atLine(66).withMessage("A \"List<Integer>\" cannot contain a \"long\"")
       .next().atLine(69).withMessage("A \"List<String>\" cannot contain a \"int\"")
-      .next().atLine(73) // False positive
+      .next().atLine(73)
       .noMore();
   }
 }

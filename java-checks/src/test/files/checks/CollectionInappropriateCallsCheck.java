@@ -31,7 +31,7 @@ class A {
     mySetList.remove(B.returnOne()); // Noncompliant
     myBList.contains(new B()); // Compliant
     myBList.remove(new A()); // Compliant
-    myList.contains(myArrayInteger); // Noncompliant - False negative
+    myList.contains(myArrayInteger); // Noncompliant
     myList.remove(myArrayInteger[0]); // Noncompliant
     myList.remove(myArrayString[0]); // Compliant
     myASet.contains(new C()); // Compliant
@@ -70,7 +70,7 @@ class C extends B {
     myStringList.contains(new Object()); // Compliant
     
     List<String[]> myListArrayString = new ArrayList<String[]>();
-    myListArrayString.contains("myString"); // Compliant - False positive
+    myListArrayString.contains("myString"); // NonCompliant
   }
 }
 
@@ -122,5 +122,9 @@ class mySet<E> extends AbstractSet<E> {
       return elements.add(e);
     }
     return false;
+  }
+
+  void deepToString(Object[] a, Set<Object[]> dejaVu) {
+    dejaVu.remove(a);
   }
 }
