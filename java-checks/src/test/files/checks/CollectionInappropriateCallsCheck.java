@@ -123,4 +123,8 @@ class mySet<E> extends AbstractSet<E> {
     }
     return false;
   }
+
+  void deepToString(Object[] a, Set<Object[]> dejaVu) {
+    dejaVu.remove(a);
+  }
 }
