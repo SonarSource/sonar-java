@@ -25,9 +25,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -52,32 +49,12 @@ public class OverrideAnnotationCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    if (isOverriding(methodTree) && !methodTree.isAnnotatedOverride()) {
-      MethodSymbol methodSymbol = methodTree.getSymbol();
-      if (!isInInterface(methodSymbol) || overridesFromOtherInterface(methodSymbol)) {
-        addIssue(tree, "Add the \"@Override\" annotation above this method signature");
-      }
+    if(isOverriding(methodTree) && !methodTree.isAnnotatedOverride()){
+      addIssue(tree, "Add the \"@Override\" annotation above this method signature");
     }
-  }
-
-  private boolean isInInterface(MethodSymbol methodSymbol) {
-    return methodSymbol.owner().isInterface();
   }
 
   public boolean isOverriding(MethodTreeImpl methodTree) {
     return BooleanUtils.isTrue(methodTree.isOverriding());
-  }
-
-  private boolean overridesFromOtherInterface(MethodSymbol methodSymbol) {
-    for (Type interfaceType : ((TypeSymbol) methodSymbol.owner()).getInterfaces()) {
-      if (BooleanUtils.isTrue(methodSymbol.overridesFromGivenType(interfaceType.getSymbol().getFullyQualifiedName()))) {
-        return true;
-      }
-    }
-    return !overridesFromObject(methodSymbol);
-  }
-
-  private boolean overridesFromObject(MethodSymbol methodSymbol) {
-    return BooleanUtils.isTrue(methodSymbol.overridesFromGivenType("java.lang.Object"));
   }
 }
