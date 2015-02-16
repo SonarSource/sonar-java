@@ -1,6 +1,8 @@
 class Tester {
   void bar() {
     A a = new A(); // Noncompliant
+    D d = new D(); // Noncompliant
+    E e = new E(); // Noncompliant
     F f = new F(); // Noncompliant
     H h = new H(); // Noncompliant
     InnerClass i1 = new InnerClass(); // Noncompliant
@@ -8,9 +10,9 @@ class Tester {
     J<A> j = new J<A>(); // Noncompliant
     B b = new B(); // Compliant
     C c = new C(); // Compliant
-    D d = new D(); // Compliant
-    E e = new E(); // Compliant
     G g = new G(); // Compliant
+    K k = new K(); // Compliant
+    L l = new L(); // Compliant
   }
 
   static class InnerClass {
@@ -63,5 +65,16 @@ class H extends G {
 
 class J<T> {
   static void foo() {
+  }
+}
+
+class K {
+  enum myEnum {
+    FOO
+  }
+}
+
+class L {
+  class M {
   }
 }

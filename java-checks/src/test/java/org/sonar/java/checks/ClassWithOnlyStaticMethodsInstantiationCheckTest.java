@@ -34,15 +34,17 @@ public class ClassWithOnlyStaticMethodsInstantiationCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassWithOnlyStaticMethodsInstantiationCheck.java"), new VisitorsBridge(
-      new ClassWithOnlyStaticMethodsInstantiationCheck()));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassWithOnlyStaticMethodsInstantiationCheck.java"),
+      new VisitorsBridge(new ClassWithOnlyStaticMethodsInstantiationCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(3).withMessage("Remove this instantiation of \"A\".")
-      .next().atLine(4).withMessage("Remove this instantiation of \"F\".")
-      .next().atLine(5).withMessage("Remove this instantiation of \"H\".")
-      .next().atLine(6).withMessage("Remove this instantiation of \"InnerClass\".")
-      .next().atLine(7).withMessage("Remove this instantiation of \"InnerClass\".")
-      .next().atLine(8).withMessage("Remove this instantiation of \"J\".")
+      .next().atLine(4).withMessage("Remove this instantiation of \"D\".")
+      .next().atLine(5).withMessage("Remove this instantiation of \"E\".")
+      .next().atLine(6).withMessage("Remove this instantiation of \"F\".")
+      .next().atLine(7).withMessage("Remove this instantiation of \"H\".")
+      .next().atLine(8).withMessage("Remove this instantiation of \"InnerClass\".")
+      .next().atLine(9).withMessage("Remove this instantiation of \"InnerClass\".")
+      .next().atLine(10).withMessage("Remove this instantiation of \"J\".")
       .noMore();
   }
 }
