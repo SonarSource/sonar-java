@@ -28,20 +28,26 @@ import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
-public class OverrideAnnotationCheckTest {
+public class ObjectCreatedOnlyToCallGetClassCheckTest {
+
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/OverrideAnnotationCheck.java"), new VisitorsBridge(new OverrideAnnotationCheck()));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ObjectCreatedOnlyToCallGetClassCheck.java"), new VisitorsBridge(
+      new ObjectCreatedOnlyToCallGetClassCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(5).withMessage("Add the \"@Override\" annotation above this method signature")
-      .next().atLine(9)
-      .next().atLine(10)
-      .next().atLine(13)
-      .next().atLine(16)
-      .next().atLine(17)
+      .next().atLine(3).withMessage("Remove this object instantiation and use \"A.class\" instead.")
+      .next().atLine(5).withMessage("Remove this object instantiation and use \"B.class\" instead.")
+      .next().atLine(10).withMessage("Remove this object instantiation and use \"C.class\" instead.")
+      .next().atLine(11).withMessage("Remove this object instantiation and use \"C.class\" instead.")
+      .next().atLine(21).withMessage("Remove this object instantiation and use \"E.class\" instead.")
+      .next().atLine(23).withMessage("Remove this object instantiation and use \"E.class\" instead.")
+      .next().atLine(27).withMessage("Remove this object instantiation and use \"I.class\" instead.")
+      .next().atLine(32).withMessage("Remove this object instantiation and use \"I.class\" instead.")
+      .next().atLine(39).withMessage("Remove this object instantiation and use \"F.class\" instead.")
+      .next().atLine(40).withMessage("Remove this object instantiation and use \"F.class\" instead.")
       .noMore();
   }
 }

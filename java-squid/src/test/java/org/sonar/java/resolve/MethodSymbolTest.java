@@ -49,7 +49,7 @@ public class MethodSymbolTest {
 
   private static class MethodVisitor extends SubscriptionVisitor {
 
-    private static final Set<Integer> overriden = Sets.newHashSet(28, 32, 40, 44, 46, 56, 72, 76, 84);
+    private static final Set<Integer> overriden = Sets.newHashSet(28, 32, 40, 44, 46, 56, 72, 76, 84, 89, 91, 98, 100, 102);
     private static final Set<Integer> undecidable = Sets.newHashSet();
 
     @Override
