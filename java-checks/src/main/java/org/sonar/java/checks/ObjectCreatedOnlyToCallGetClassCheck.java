@@ -85,8 +85,8 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
   }
 
   private boolean hasBeenInitialized(Symbol symbol) {
-    VariableTree source = (VariableTree) getSemanticModel().getTree(symbol);
-    return source.initializer() != null;
+    ExpressionTree initializer = ((VariableTree) getSemanticModel().getTree(symbol)).initializer();
+    return initializer != null && initializer.is(Kind.NEW_CLASS);
   }
 
   private void reportIssue(ExpressionTree expressionTree) {

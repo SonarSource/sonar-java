@@ -4,7 +4,7 @@ class A {
     a1.getClass();
     new B().getClass(); // Noncompliant
     new A().bar().getClass(); // Compliant
-    A.class; // Compliant
+    Class clazz = A.class; // Compliant
     getClass(); // Compliant
 
     new C().getClass(); // Noncompliant
@@ -39,14 +39,17 @@ class A {
     new F().getClass(); // Noncompliant
     F<A> f1 = new F<A>();
     f1.getClass(); // Noncompliant
-    
+
     this.getClass(); // Compliant
+
+    B b = new A().bar();
+    b.getClass(); // Compliant
   }
 
   B bar() {
     return new B();
   }
-  
+
   void pom(A a) {
     a.getClass(); // Compliant
   }
@@ -56,7 +59,7 @@ class B {
 }
 
 class C extends A {
-  
+
   void foo() {
     super.getClass(); // Compliant
   }
