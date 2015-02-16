@@ -60,7 +60,8 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
   @Override
   public void visitNode(Tree tree) {
     Tree identifier = ((NewClassTree) tree).identifier();
-    if (hasOnlyStaticMethod(((AbstractTypedTree) identifier).getSymbolType().getSymbol())) {
+    TypeSymbol newClassTypeSymbol = ((AbstractTypedTree) identifier).getSymbolType().getSymbol();
+    if (!newClassTypeSymbol.isEnum() && hasOnlyStaticMethod(newClassTypeSymbol)) {
       String message = "Remove this instantiation.";
       String name = getNewClassName(identifier);
       if (name != null) {
@@ -74,23 +75,14 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     Collection<Symbol> members = typeSymbol.members().scopeSymbols();
     boolean hasStaticMethod = false;
     for (Symbol symbol : members) {
-      if (!isThisOrSuper(symbol)) {
-        if (!isStaticMethod(symbol)) {
+      if (symbol.isKind(Symbol.MTH)) {
+        if (!symbol.isStatic()) {
           return false;
         }
         hasStaticMethod = true;
       }
     }
     return hasStaticMethod;
-  }
-
-  private boolean isThisOrSuper(Symbol symbol) {
-    String name = symbol.getName();
-    return symbol.isKind(Symbol.VAR) && ("this".equals(name) || "super".equals(name));
-  }
-
-  private boolean isStaticMethod(Symbol symbol) {
-    return symbol.isStatic() && symbol.isKind(Symbol.MTH);
   }
 
   @Nullable
