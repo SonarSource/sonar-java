@@ -293,7 +293,8 @@ public final class CheckList {
       SerializableObjectInSessionCheck.class,
       StaticFieldInitializationCheck.class,
       UselessIncrementCheck.class,
-      ObjectCreatedOnlyToCallGetClassCheck.class
+      ObjectCreatedOnlyToCallGetClassCheck.class,
+      PrimitiveWrappersInTernaryOperatorCheck.class
       );
   }
 }
