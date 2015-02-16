@@ -31,6 +31,7 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.Type;
 import org.sonar.java.resolve.Type.ParametrizedTypeType;
 import org.sonar.java.resolve.Type.TypeVariableType;
+import org.sonar.java.resolve.Types;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -113,7 +114,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   }
 
   private boolean isSubtypeOf(Type type, Type superType) {
-    return type.isSubtypeOf(superType.erasure().getSymbol().getFullyQualifiedName());
+    return new Types().isSubtype(type, superType);
   }
 
   private boolean autoboxing(Type argumentType, Type collectionParameterType) {
