@@ -49,4 +49,13 @@ class A {
     return instance4;
   }
 
+  protected static int instance5;
+
+  public static int getInstance5() {
+    instance5 = 12;  // compliant - primitive type
+    return instance5;
+  }
+
+
+
 }
