@@ -22,6 +22,9 @@ class Tester {
 }
 
 class A {
+  A() {
+  }
+
   static void foo() {
   }
 }

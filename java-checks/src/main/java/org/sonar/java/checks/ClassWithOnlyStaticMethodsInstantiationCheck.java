@@ -76,13 +76,17 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     boolean hasStaticMethod = false;
     for (Symbol symbol : members) {
       if (symbol.isKind(Symbol.MTH)) {
-        if (!symbol.isStatic()) {
+        if (!symbol.isStatic() && !isConstructor(symbol)) {
           return false;
         }
         hasStaticMethod = true;
       }
     }
     return hasStaticMethod;
+  }
+
+  private boolean isConstructor(Symbol symbol) {
+    return "<init>".equals(symbol.getName());
   }
 
   @Nullable
