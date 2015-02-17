@@ -38,11 +38,14 @@ public class ModulusEqualityCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ModulusEqualityCheck.java"),
       new VisitorsBridge(new ModulusEqualityCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("The results of this modulus operation may not be positive.")
-      .next().atLine(5).withMessage("The results of this modulus operation may not be negative.")
-      .next().atLine(6).withMessage("The results of this modulus operation may not be positive.")
-      .next().atLine(7)
-      .next().atLine(8);
+      .next().atLine(9).withMessage("The results of this modulus operation may not be positive.")
+      .next().atLine(10).withMessage("The results of this modulus operation may not be negative.")
+      .next().atLine(11).withMessage("The results of this modulus operation may not be positive.")
+      .next().atLine(12).withMessage("The results of this modulus operation may not be positive.")
+      .next().atLine(13).withMessage("The results of this modulus operation may not be positive.")
+      .next().atLine(29).withMessage("The results of this modulus operation may not be positive.")
+      .next().atLine(30).withMessage("The results of this modulus operation may not be positive.")
+      .next().atLine(31).withMessage("The results of this modulus operation may not be negative.")
+      .noMore();
   }
-
 }
