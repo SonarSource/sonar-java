@@ -291,7 +291,8 @@ public final class CheckList {
       ClassComparedByNameCheck.class,
       ClassWithOnlyStaticMethodsInstantiationCheck.class,
       SerializableObjectInSessionCheck.class,
-      StaticFieldInitializationCheck.class
+      StaticFieldInitializationCheck.class,
+      PrimitiveWrappersInTernaryOperatorCheck.class
       );
   }
 }
