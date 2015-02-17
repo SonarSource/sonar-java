@@ -47,10 +47,10 @@ import java.util.List;
   key = "S2133",
   name = "Objects should not be created only to \"getClass\"",
   tags = {"performance"},
-  priority = Priority.BLOCKER)
+  priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.FAULT_TOLERANCE)
-@SqaleConstantRemediation("2min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
+@SqaleConstantRemediation("5min")
 public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetection {
 
   @Override
