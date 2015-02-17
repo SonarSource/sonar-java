@@ -60,10 +60,23 @@ public class UnusedPrivateMethodCheckTest {
     SourceFile file = BytecodeFixture.scan("UnusedPrivateMethod", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().withMessage("Private constructor 'org.sonar.java.checks.targets.UnusedPrivateMethod$A(UnusedPrivateMethod)' is never used.")
-        .next().atLine(54).withMessage("Private method 'unusedPrivateMethod' is never used.")
-        .next().atLine(57).withMessage("Private method 'unusedPrivateMethod' is never used.")
-        .next().atLine(67).withMessage("Private constructor 'org.sonar.java.checks.targets.UnusedPrivateMethod$Attribute(String,String[],int)' is never used.")
+        .next().atLine(53).withMessage("Private method 'unusedPrivateMethodExcludedByPattern' is never used.")
+        .next().atLine(58).withMessage("Private method 'unusedPrivateMethod' is never used.")
+        .next().atLine(61).withMessage("Private method 'unusedPrivateMethod' is never used.")
+        .next().atLine(71).withMessage("Private constructor 'org.sonar.java.checks.targets.UnusedPrivateMethod$Attribute(String,String[],int)' is never used.")
         .noMore();
+  }
+
+  @Test
+  public void test_exclusionByPattern() {
+	  check.setExcludeMethodNamePattern("^\\w+ExcludedByPattern$");
+	  SourceFile file = BytecodeFixture.scan("UnusedPrivateMethod", check);
+	  CheckMessagesVerifier.verify(file.getCheckMessages())
+	  .next().withMessage("Private constructor 'org.sonar.java.checks.targets.UnusedPrivateMethod$A(UnusedPrivateMethod)' is never used.")
+	  .next().atLine(58).withMessage("Private method 'unusedPrivateMethod' is never used.")
+	  .next().atLine(61).withMessage("Private method 'unusedPrivateMethod' is never used.")
+	  .next().atLine(71).withMessage("Private constructor 'org.sonar.java.checks.targets.UnusedPrivateMethod$Attribute(String,String[],int)' is never used.")
+	  .noMore();
   }
 
   @Test

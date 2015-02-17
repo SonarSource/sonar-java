@@ -19,12 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
@@ -36,7 +38,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
-import java.util.List;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 @Rule(
   key = UnusedPrivateMethodCheck.RULE_KEY,
@@ -48,6 +51,11 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
+  @RuleProperty(key = "exclude_pattern",
+                defaultValue = "",
+                description = "Exclude methods with name matching this regular expression pattern")
+  private String excludeMethodNamePattern;
+
   public static final String RULE_KEY = "UnusedPrivateMethod";
   private AsmClass asmClass;
 
@@ -58,7 +66,7 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
   @Override
   public void visitMethod(AsmMethod asmMethod) {
-    if (isPrivateUnused(asmMethod) && !isExcludedFromCheck(asmMethod)) {
+    if (isPrivateUnused(asmMethod) && !isExcludedFromCheck(asmMethod) && !isExcludedByPattern(asmMethod)) {
       String messageStr = "Private method '" + asmMethod.getName() + "' is never used.";
       if ("<init>".equals(asmMethod.getName())) {
         messageStr = "Private constructor '" + asmClass.getDisplayName() + "(";
@@ -80,6 +88,17 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
       SourceFile file = getSourceFile(asmClass);
       file.log(message);
     }
+  }
+
+  public void setExcludeMethodNamePattern(String excludeMethodNamePattern) {
+	this.excludeMethodNamePattern = excludeMethodNamePattern;
+  }
+
+  private boolean isExcludedByPattern(AsmMethod asmMethod) {
+    if (StringUtils.isBlank(excludeMethodNamePattern)) {
+      return false;
+    }
+    return Pattern.matches(excludeMethodNamePattern, asmMethod.getName());
   }
 
   private boolean isPrivateUnused(AsmMethod asmMethod) {
