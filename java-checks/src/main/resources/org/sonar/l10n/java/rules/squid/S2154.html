@@ -5,7 +5,7 @@
 <pre>
 Integer i = 123456789;
 Float f = 1.0f;
-Number n = condition ? i : f;  // Noncompliant; i is coerced to float. x = 1.23456792E8
+Number n = condition ? i : f;  // Noncompliant; i is coerced to float. n = 1.23456792E8
 </pre>
 
 <h2>Compliant Solution</h2>
@@ -13,7 +13,7 @@ Number n = condition ? i : f;  // Noncompliant; i is coerced to float. x = 1.234
 <pre>
 Integer i = 123456789;
 Float f = 1.0f;
-Number n = condition ? (Number) i : f;  // x = 123456789
+Number n = condition ? (Number) i : f;  // n = 123456789
 </pre>
 
 
