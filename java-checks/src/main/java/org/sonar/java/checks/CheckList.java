@@ -295,7 +295,8 @@ public final class CheckList {
       UselessIncrementCheck.class,
       ObjectCreatedOnlyToCallGetClassCheck.class,
       PrimitiveWrappersInTernaryOperatorCheck.class,
-      SynchronizedLockCheck.class
+      SynchronizedLockCheck.class,
+      SymmetricEqualsCheck.class
       );
   }
 }
