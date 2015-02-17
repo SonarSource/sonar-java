@@ -58,3 +58,20 @@ public class Fruit3 extends Food {
 public interface I {
   public abstract boolean equals(Object anObject);
 }
+public final class Fruit4 extends Food {
+  private Season ripe;
+
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (Fruit4.class == obj.getClass()) { // Compliant; class is final
+      return ripe.equals(((Fruit4) obj).getRipe());
+    }
+    if (obj instanceof Fruit4) {  // Compliant; class is final
+      return ripe.equals(((Fruit4) obj).getRipe());
+    }
+    if (Fruit4.class != obj.getClass()) { // Compliant; class is final
+    }
+  }
+}
