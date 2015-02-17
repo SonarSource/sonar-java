@@ -34,8 +34,7 @@ public class PrimitiveWrappersInTernaryOperatorCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/PrimitiveWrappersInTernaryOperatorCheck.java"),
       new VisitorsBridge(new PrimitiveWrappersInTernaryOperatorCheck()));
     new CheckMessagesVerifierRule().verify(file.getCheckMessages())
-      .next().atLine(5).withMessage("Add explicit cast to match types of operands.")
+      .next().atLine(9).withMessage("Add an explicit cast to match types of operands.")
       .noMore();
   }
-
 }

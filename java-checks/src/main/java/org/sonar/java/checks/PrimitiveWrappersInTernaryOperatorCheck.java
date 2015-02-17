@@ -38,7 +38,7 @@ import java.util.List;
   key = "S2154",
   name = "Dissimilar primitive wrappers should not be used with the ternary operator without explicit casting",
   tags = {"bug"},
-  priority = Priority.MAJOR)
+  priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
@@ -55,7 +55,7 @@ public class PrimitiveWrappersInTernaryOperatorCheck extends SubscriptionBaseVis
     Type trueExpressionType = ((AbstractTypedTree) cet.trueExpression()).getSymbolType();
     Type falseExpressionType = ((AbstractTypedTree) cet.falseExpression()).getSymbolType();
     if (dissimilarPrimitiveTypeWrappers(trueExpressionType, falseExpressionType)) {
-      addIssue(tree, "Add explicit cast to match types of operands.");
+      addIssue(tree, "Add an explicit cast to match types of operands.");
     }
   }
 
