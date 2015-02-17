@@ -120,6 +120,7 @@ public class MethodTreeImplTest {
     assertThat(getUniqueMethod("class A { public boolean equals(Object o, int a){} }").isEqualsMethod()).isFalse();
     assertThat(getUniqueMethod("class A { public boolean equals(int a){} }").isEqualsMethod()).isFalse();
     assertThat(getUniqueMethod("class equals { public equals(Object o){} }").isEqualsMethod()).isFalse();
+    assertThat(getUniqueMethod("interface I { public abstract boolean equals(Object o); }").isEqualsMethod()).isTrue();
   }
 
   @Test

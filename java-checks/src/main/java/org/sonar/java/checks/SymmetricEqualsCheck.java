@@ -58,7 +58,7 @@ public class SymmetricEqualsCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    if (methodTree.isEqualsMethod()) {
+    if (methodTree.isEqualsMethod() && methodTree.block() != null) {
       methodTree.block().accept(new SymmetryBrokePatterns(methodTree.getSymbol().owner()));
     }
   }
@@ -83,7 +83,7 @@ public class SymmetricEqualsCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitClass(ClassTree tree) {
-      //inner classes will be visited by main visitor.
+      // inner classes will be visited by main visitor.
     }
 
     @Override

@@ -54,3 +54,7 @@ public class Fruit3 extends Food {
     return false;
   }
 }
+
+public interface I {
+  public abstract boolean equals(Object anObject);
+}
