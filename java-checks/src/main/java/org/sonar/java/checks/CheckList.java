@@ -294,7 +294,8 @@ public final class CheckList {
       StaticFieldInitializationCheck.class,
       UselessIncrementCheck.class,
       ObjectCreatedOnlyToCallGetClassCheck.class,
-      PrimitiveWrappersInTernaryOperatorCheck.class
+      PrimitiveWrappersInTernaryOperatorCheck.class,
+      SynchronizedLockCheck.class
       );
   }
 }
