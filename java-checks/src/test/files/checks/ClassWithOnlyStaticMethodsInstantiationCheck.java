@@ -1,10 +1,11 @@
+import java.nio.channels.IllegalSelectorException;
+
 class Tester {
   void bar() {
     A a = new A(); // Noncompliant
     D d = new D(); // Noncompliant
     E e = new E(); // Noncompliant
     F f = new F(); // Noncompliant
-    H h = new H(); // Noncompliant
     InnerClass i1 = new InnerClass(); // Noncompliant
     Tester.InnerClass i2 = new Tester.InnerClass(); // Noncompliant
     J<A> j = new J<A>(); // Noncompliant
@@ -19,6 +20,11 @@ class Tester {
     static void foo() {
     }
   }
+
+  void foo() throws NumberFormatException {
+    throw new NumberFormatException(); // Compliant
+  }
+
 }
 
 class A {
@@ -45,7 +51,7 @@ class D extends A {
 class E {
   static int val;
 
-  static void foo() {
+  public static void foo() {
   }
 }
 
@@ -58,11 +64,6 @@ class G {
   int val;
 
   void foo() {
-  }
-}
-
-class H extends G {
-  static void bar() {
   }
 }
 
@@ -79,5 +80,13 @@ class K {
 
 class L {
   class M {
+  }
+}
+
+class M {
+  M() {
+  }
+  public static M foo() {
+    return new M(); // Noncompliant
   }
 }
