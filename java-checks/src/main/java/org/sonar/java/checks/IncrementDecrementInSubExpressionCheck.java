@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -51,28 +52,32 @@ public class IncrementDecrementInSubExpressionCheck extends BaseTreeVisitor impl
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-
     scan(context.getTree());
   }
 
   @Override
   public void visitExpressionStatement(ExpressionStatementTree tree) {
     ExpressionTree expressionTree = tree.expression();
-
     if (isIncrementOrDecrement(expressionTree)) {
       UnaryExpressionTree unaryExpressionTree = (UnaryExpressionTree) expressionTree;
       expressionTree = unaryExpressionTree.expression();
     }
-
     scan(expressionTree);
   }
 
   @Override
   public void visitUnaryExpression(UnaryExpressionTree tree) {
     super.visitUnaryExpression(tree);
-
     if (isIncrementOrDecrement(tree)) {
       context.addIssue(tree, RULE, "Extract this increment or decrement operator into a dedicated statement.");
+    }
+  }
+
+  @Override
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    ExpressionTree expression = tree.expression();
+    if(expression == null || !isIncrementOrDecrement(expression)) {
+      scan(expression);
     }
   }
 

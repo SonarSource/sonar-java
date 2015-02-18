@@ -14,6 +14,11 @@ class Foo {
     foo[--i] = 0; // Noncompliant
 
     foo[~i] = 0; // Compliant
+
+    return i++; // Compliant
+    return ++i; // Compliant
+    return foo[++i]; // NonCompliant
+    return;
   }
 
 }
