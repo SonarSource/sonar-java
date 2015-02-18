@@ -41,7 +41,9 @@ public class IncrementDecrementInSubExpressionCheckTest {
       .next().atLine(11).withMessage("Extract this increment or decrement operator into a dedicated statement.")
       .next().atLine(12)
       .next().atLine(13)
-      .next().atLine(14);
+      .next().atLine(14)
+      .next().atLine(20)
+    ;
   }
 
 }
