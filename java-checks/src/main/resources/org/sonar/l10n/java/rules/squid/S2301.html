@@ -1,0 +1,27 @@
+<p>A selector argument is an extra, <code>boolean</code> argument that's used to determine which of two paths to take through a method. Instead of requiring the caller to set a flag to determine behavior, two methods should be used instead.</p>
+
+<p>This rule finds methods with more than one argument, where one is a <code>boolean</code> that's used to determine which path to take through the method.</p>
+
+<p>By definition, extending the Thread class without overriding the <code>run</code> method doesn't make sense, and implies that the contract of the <code>Thread</code> class is not well understood.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public void tempt(String name, boolean ofAge) {
+  if (ofAge) {
+    offerLiquor(name);
+  } else {
+    offerCandy(name);
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public void temptAdult(String name) {
+  offerLiquor(name);
+}
+
+public void temptChild(String name) {
+    offerCandy(name);
+}
+</pre>
