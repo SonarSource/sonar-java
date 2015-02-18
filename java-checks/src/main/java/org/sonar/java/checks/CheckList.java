@@ -297,7 +297,8 @@ public final class CheckList {
       PrimitiveWrappersInTernaryOperatorCheck.class,
       SynchronizedLockCheck.class,
       SymmetricEqualsCheck.class,
-      CallSuperMethodFromInnerClassCheck.class
+      CallSuperMethodFromInnerClassCheck.class,
+      SelectorMethodArgumentCheck.class
       );
   }
 }
