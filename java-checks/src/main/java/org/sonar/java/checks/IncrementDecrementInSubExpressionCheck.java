@@ -75,8 +75,9 @@ public class IncrementDecrementInSubExpressionCheck extends BaseTreeVisitor impl
 
   @Override
   public void visitReturnStatement(ReturnStatementTree tree) {
-    if(tree.expression()== null || !isIncrementOrDecrement(tree.expression())) {
-      scan(tree.expression());
+    ExpressionTree expression = tree.expression();
+    if(expression == null || !isIncrementOrDecrement(expression)) {
+      scan(expression);
     }
   }
 
