@@ -40,10 +40,11 @@ public class SelectorMethodArgumentCheckTest {
       new VisitorsBridge(new SelectorMethodArgumentCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(2).withMessage("Provide multiple methods instead of using \"ofAge\" to determine which action to take.")
-      .next().atLine(31).withMessage("Provide multiple methods instead of using \"b\" to determine which action to take.")
-      .next().atLine(31).withMessage("Provide multiple methods instead of using \"c\" to determine which action to take.")
-      .next().atLine(50).withMessage("Provide multiple methods instead of using \"b\" to determine which action to take.")
-      .next().atLine(62).withMessage("Provide multiple methods instead of using \"b\" to determine which action to take.")
+      .next().atLine(20).withMessage("Provide multiple methods instead of using \"willingly\" to determine which action to take.")
+      .next().atLine(37).withMessage("Provide multiple methods instead of using \"b\" to determine which action to take.")
+      .next().atLine(37).withMessage("Provide multiple methods instead of using \"c\" to determine which action to take.")
+      .next().atLine(56).withMessage("Provide multiple methods instead of using \"b\" to determine which action to take.")
+      .next().atLine(68).withMessage("Provide multiple methods instead of using \"b\" to determine which action to take.")
       .noMore();
   }
 

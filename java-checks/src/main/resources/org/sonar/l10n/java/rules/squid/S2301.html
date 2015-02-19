@@ -1,8 +1,10 @@
-<p>A selector argument is an extra, <code>boolean</code> argument that's used to determine which of two paths to take through a method. Instead of requiring the caller to set a flag to determine behavior, two methods should be used instead.</p>
+<p>A selector argument is a <code>boolean</code> argument that's used to determine which of two paths to take through a method. Specifying such a parameter may seem innocuous, particularly if it's well named.</p>
 
-<p>This rule finds methods with more than one argument, where one is a <code>boolean</code> that's used to determine which path to take through the method.</p>
+<p>Unfortunately, the maintainers of the code calling the method won't see the parameter name, only its value. They'll be forced either to guess at the meaning or to take extra time to look the method up.</p>
 
-<p>By definition, extending the Thread class without overriding the <code>run</code> method doesn't make sense, and implies that the contract of the <code>Thread</code> class is not well understood.</p>
+<p>Instead, separate methods should be written.</p>
+
+<p>This rule finds methods with a <code>boolean</code> that's used to determine which path to take through the method.</p>
 
 <h2>Noncompliant Code Example</h2>
 <pre>
@@ -12,6 +14,11 @@ public void tempt(String name, boolean ofAge) {
   } else {
     offerCandy(name);
   }
+}
+
+// ...
+public void corrupt() {
+  tempt("Joe", false); // does this mean not to temp Joe?
 }
 </pre>
 
@@ -23,5 +30,10 @@ public void temptAdult(String name) {
 
 public void temptChild(String name) {
     offerCandy(name);
+}
+
+// ...
+public void corrupt() {
+  offerCandy("Joe");
 }
 </pre>

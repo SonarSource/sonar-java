@@ -17,6 +17,12 @@ class A {
     offerLiquor(name);
   }
 
+  public void doOtherStuff(boolean willingly) { // Noncompliant
+    if (willingly) {
+    } else {
+    }
+  }
+
   public void attempt(String name, int size, boolean isNice) { // Compliant
     boolean freeLiquor = isNice || (size > 165);
     if (freeLiquor) {
