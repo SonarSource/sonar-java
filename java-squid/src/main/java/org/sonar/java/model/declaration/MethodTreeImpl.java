@@ -291,5 +291,18 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return name.equals(simpleName().name());
   }
 
+  public boolean isEqualsMethod() {
+    return isPublic() && !isStatic() && isNamed("equals") && returnsBoolean() && hasObjectParameter();
+  }
 
+  private boolean hasObjectParameter() {
+    return parameters.size()==1 && parameters.get(0).getSymbol().getType().is("java.lang.Object");
+  }
+
+  private boolean returnsBoolean() {
+    if (returnType != null) {
+      return returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "boolean".equals(((PrimitiveTypeTree) returnType).keyword().text());
+    }
+    return false;
+  }
 }

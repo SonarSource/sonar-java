@@ -113,6 +113,17 @@ public class MethodTreeImplTest {
   }
 
   @Test
+  public void is_equals_method() throws Exception {
+    assertThat(getUniqueMethod("class A { public boolean equals(Object o){} }").isEqualsMethod()).isTrue();
+    assertThat(getUniqueMethod("class A { public static boolean equals(Object o){} }").isEqualsMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public boolean equal(Object o){} }").isEqualsMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public boolean equals(Object o, int a){} }").isEqualsMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public boolean equals(int a){} }").isEqualsMethod()).isFalse();
+    assertThat(getUniqueMethod("class equals { public equals(Object o){} }").isEqualsMethod()).isFalse();
+    assertThat(getUniqueMethod("interface I { public abstract boolean equals(Object o); }").isEqualsMethod()).isTrue();
+  }
+
+  @Test
   public void varargs_flag() {
     assertThat((getUniqueMethod("class A { public static void main(String[] args){} }").getSymbol().flags() & Flags.VARARGS) != 0).isFalse();
     assertThat((getUniqueMethod("class A { public static void main(String... args){} }").getSymbol().flags() & Flags.VARARGS) != 0).isTrue();
