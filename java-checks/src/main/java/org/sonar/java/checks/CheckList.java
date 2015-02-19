@@ -296,7 +296,7 @@ public final class CheckList {
       ObjectCreatedOnlyToCallGetClassCheck.class,
       PrimitiveWrappersInTernaryOperatorCheck.class,
       SynchronizedLockCheck.class,
-      RunnableAsThreadArgumentCheck.class
+      ThreadAsRunnableArgumentCheck.class
       );
   }
 }

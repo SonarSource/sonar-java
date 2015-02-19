@@ -28,18 +28,21 @@ import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
-public class RunnableAsThreadArgumentCheckTest {
+public class ThreadAsRunnableArgumentCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RunnableAsThreadArgumentCheck.java"), new VisitorsBridge(new RunnableAsThreadArgumentCheck()));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThreadAsRunnableArgumentCheck.java"), new VisitorsBridge(new ThreadAsRunnableArgumentCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(9).withMessage("\"t\" is a \"Thread\".")
-      .next().atLine(11).withMessage("First argument is a \"Thread\".")
+      .next().atLine(11).withMessage("\"arg0\" is a \"Thread\".")
       .next().atLine(14).withMessage("\"myThread\" is a \"Thread\".")
+      .next().atLine(25).withMessage("\"myThread\" is a \"Thread\".")
+      .next().atLine(26).withMessage("\"myThread\" is a \"Thread\".")
+      .next().atLine(27).withMessage("\"arg1\" is a \"Thread\".")
       .noMore();
   }
 }
