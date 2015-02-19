@@ -299,7 +299,7 @@ public final class CheckList {
       SymmetricEqualsCheck.class,
       CallSuperMethodFromInnerClassCheck.class,
       SelectorMethodArgumentCheck.class,
-      RunnableAsThreadArgumentCheck.class
+      ThreadAsRunnableArgumentCheck.class
       );
   }
 }
