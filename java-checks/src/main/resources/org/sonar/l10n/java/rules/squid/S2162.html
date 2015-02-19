@@ -1,5 +1,5 @@
 <p>A key facet of the <code>equals</code> contract is that if <code>a.equals(b)</code> then <code>b.equals(a)</code>, i.e. that the relationship is symmetric. </p>
-<p>Using <code>instanceof</code> breaks the contract when there are subclasses, because while the child is an <code>instanceof</code> the parent, the parent is not an <code>intanceof</code> the child. For instance, assume that <code>Raspberry extends Fruit</code>:</p>
+<p>Using <code>instanceof</code> breaks the contract when there are subclasses, because while the child is an <code>instanceof</code> the parent, the parent is not an <code>intanceof</code> the child. For instance, assume that <code>Raspberry extends Fruit</code> and add some fields on which the <code>equals</code> method is based on:</p>
 <pre>
 Fruit fruit = new Fruit();
 Raspberry raspberry = new Raspberry();
@@ -7,7 +7,11 @@ Raspberry raspberry = new Raspberry();
 if (raspberry instanceof Fruit) { ... } // true
 if (fruit instanceof Raspberry) { ... } // false
 </pre>
-<p>If similar <code>instanceof</code> checks were used in the classes' <code>equals</code> methods, the symmetry principle would be broken.</p>
+<p>If similar <code>instanceof</code> checks were used in the classes' <code>equals</code> methods, the symmetry principle would be broken:</p>
+<pre>
+raspberry.equals(fruit); // false
+fruit.equals(raspberry); //true
+</pre>
 <p>Additionally, non <code>final</code> classes shouldn't use a hardcoded class name in the <code>equals</code> method because doing so breaks the method for subclasses. Instead, make the comparison dynamic.</p>
 <p>Further, comparing to an unrelated class type breaks the contract for that unrelated type, because while <code>thisClass.equals(unrelatedClass)</code> can return true, <code>unrelatedClass.equals(thisClass)</code> will not.</p>
 <h2>Noncompliant Code Example</h2>
