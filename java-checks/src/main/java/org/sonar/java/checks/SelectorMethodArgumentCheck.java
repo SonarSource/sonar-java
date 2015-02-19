@@ -86,16 +86,16 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
   private List<VariableSymbol> getBooleanParametersAsSymbol(List<VariableTree> parameters) {
     List<VariableSymbol> booleanParameters = Lists.newLinkedList();
     for (VariableTree variableTree : parameters) {
-      VariableSymbol variableSymvol = ((VariableTreeImpl) variableTree).getSymbol();
-      if (isBooleanVariable(variableSymvol)) {
-        booleanParameters.add(variableSymvol);
+      VariableSymbol variableSymbol = ((VariableTreeImpl) variableTree).getSymbol();
+      if (isBooleanVariable(variableSymbol)) {
+        booleanParameters.add(variableSymbol);
       }
     }
     return booleanParameters;
   }
 
-  private boolean isBooleanVariable(VariableSymbol variableSymvol) {
-    return variableSymvol.getType().isTagged(Type.BOOLEAN);
+  private boolean isBooleanVariable(VariableSymbol variableSymbol) {
+    return variableSymbol.getType().isTagged(Type.BOOLEAN);
   }
 
   private class ConditionalStatementVisitor extends BaseTreeVisitor {
