@@ -77,7 +77,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean implementsEquals(ClassTree classTree) {
-    return hasEqualsMethod(((ClassTreeImpl) classTree).getSymbol());
+    return hasNotFinalEqualsMethod(((ClassTreeImpl) classTree).getSymbol());
   }
 
   private boolean parentClassImplementsEquals(ClassTree tree) {
@@ -87,7 +87,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
       // FIXME Workaround until SONARJAVA-901 is resolved
       while (!superClassType.getSymbol().getType().isTagged(Type.UNKNOWN) && !superClassType.is("java.lang.Object")) {
         TypeSymbol superClassSymbol = superClassType.getSymbol();
-        if (hasEqualsMethod(superClassSymbol)) {
+        if (hasNotFinalEqualsMethod(superClassSymbol)) {
           return true;
         }
         superClassType = superClassSymbol.getSuperclass();
@@ -96,10 +96,10 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
     return false;
   }
 
-  private boolean hasEqualsMethod(TypeSymbol superClassSymbol) {
+  private boolean hasNotFinalEqualsMethod(TypeSymbol superClassSymbol) {
     List<Symbol> equalsMembers = superClassSymbol.members().lookup("equals");
     for (Symbol symbol : equalsMembers) {
-      if (isEqualsMethod(symbol)) {
+      if (isEqualsMethod(symbol) && !symbol.isFinal()) {
         return true;
       }
     }
