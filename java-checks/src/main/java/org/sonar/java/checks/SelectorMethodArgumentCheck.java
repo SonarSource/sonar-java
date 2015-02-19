@@ -62,6 +62,9 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
     List<VariableSymbol> booleanParameterSymbols = getBooleanParametersAsSymbol(methodTree.parameters());
     BlockTree blockTree = methodTree.block();
@@ -70,7 +73,7 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
       for (VariableSymbol variable : booleanParameterSymbols) {
         Collection<IdentifierTree> usages = getSemanticModel().getUsages(variable);
         if (usages.size() == 1) {
-          blockTree.accept(new ConditionnalStatementVisitor(variable.getName(), getSingleUsage(usages), tree));
+          blockTree.accept(new ConditionalStatementVisitor(variable.getName(), Iterables.get(usages, 0), tree));
         }
       }
     }
@@ -83,31 +86,25 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
   private List<VariableSymbol> getBooleanParametersAsSymbol(List<VariableTree> parameters) {
     List<VariableSymbol> booleanParameters = Lists.newLinkedList();
     for (VariableTree variableTree : parameters) {
-      if (isBooleanVariable(variableTree)) {
-        booleanParameters.add(((VariableTreeImpl) variableTree).getSymbol());
+      VariableSymbol variableSymvol = ((VariableTreeImpl) variableTree).getSymbol();
+      if (isBooleanVariable(variableSymvol)) {
+        booleanParameters.add(variableSymvol);
       }
     }
     return booleanParameters;
   }
 
-  private IdentifierTree getSingleUsage(Collection<IdentifierTree> usages) {
-    return Iterables.get(usages, 0);
+  private boolean isBooleanVariable(VariableSymbol variableSymvol) {
+    return variableSymvol.getType().isTagged(Type.BOOLEAN);
   }
 
-  private boolean isBooleanVariable(VariableTree variableTree) {
-    if (!hasSemantic()) {
-      return false;
-    }
-    return ((VariableTreeImpl) variableTree).getSymbol().getType().isTagged(Type.BOOLEAN);
-  }
-
-  private class ConditionnalStatementVisitor extends BaseTreeVisitor {
+  private class ConditionalStatementVisitor extends BaseTreeVisitor {
 
     private final String variableName;
     private final Tree method;
     private IdentifierTree usage;
 
-    public ConditionnalStatementVisitor(String variableName, IdentifierTree usage, Tree method) {
+    public ConditionalStatementVisitor(String variableName, IdentifierTree usage, Tree method) {
       this.variableName = variableName;
       this.usage = usage;
       this.method = method;
@@ -124,13 +121,9 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
     }
 
     private void checkParameterUsage(ExpressionTree condition) {
-      if (condition.is(Kind.IDENTIFIER) && usage.equals((IdentifierTree) condition)) {
-        reportIssue();
+      if (usage.equals(condition)) {
+        addIssue(method, MessageFormat.format("Provide multiple methods instead of using \"{0}\" to determine which action to take.", variableName));
       }
-    }
-
-    private void reportIssue() {
-      addIssue(method, MessageFormat.format("Provide multiple methods instead of using \"{0}\" to determine which action to take.", variableName));
     }
   }
 }

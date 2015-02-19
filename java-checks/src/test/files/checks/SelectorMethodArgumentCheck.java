@@ -63,7 +63,7 @@ abstract class B {
     return b ? a+1 : a-1;
   }
 
-  private int hal(int a, boolean b) { // Compliant
+  private int hal(int a, boolean b) { // Compliant - rule only check for public methods
     return b ? a+1 : a-1;
   }
 
