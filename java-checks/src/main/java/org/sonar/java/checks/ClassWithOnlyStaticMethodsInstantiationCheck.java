@@ -89,11 +89,10 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
 
   private boolean superClassHasOnlyStaticMethods(TypeSymbol newClassTypeSymbol) {
     Type superClass = newClassTypeSymbol.getSuperclass();
-    if (superClass != null && !superClass.is("java.lang.Object")) {
+    if (!superClass.is("java.lang.Object")) {
       return hasOnlyStaticMethods(superClass.getSymbol());
-    } else {
-      return true;
     }
+    return true;
   }
 
   private Collection<MethodSymbol> filterMethods(Collection<Symbol> symbols) {
