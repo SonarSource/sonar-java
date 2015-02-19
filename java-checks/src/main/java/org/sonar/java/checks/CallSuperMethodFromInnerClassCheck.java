@@ -76,7 +76,7 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     public void visitMethodInvocation(MethodInvocationTree tree) {
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
       Symbol symbol = mit.getSymbol();
-      if (mit.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol)) {
+      if (symbol.isKind(Symbol.MTH) && mit.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol)) {
         String methodName = ((IdentifierTree) mit.methodSelect()).name();
         addIssue(tree, "Prefix this call to \""+methodName+"\" with \"super.\".");
       }

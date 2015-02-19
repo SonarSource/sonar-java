@@ -12,7 +12,9 @@ public class Outer {
       foo();  // Noncompliant; was Outer.this.foo() intended instead?
       super.foo(); //Compliant: unambiguous
       Outer.this.foo(); //Compliant: unambiguous
+      bar();//Compliant : symbol is unresolved.
       // ...
+      doTheThing();//Compliant not from super type
     }
   }
 }
