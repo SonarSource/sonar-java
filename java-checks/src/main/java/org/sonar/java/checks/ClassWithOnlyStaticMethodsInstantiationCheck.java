@@ -20,12 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
+import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -61,7 +64,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
   public void visitNode(Tree tree) {
     Tree identifier = ((NewClassTree) tree).identifier();
     TypeSymbol newClassTypeSymbol = ((AbstractTypedTree) identifier).getSymbolType().getSymbol();
-    if (!newClassTypeSymbol.isEnum() && hasOnlyStaticMethod(newClassTypeSymbol)) {
+    if (!newClassTypeSymbol.isEnum() && hasOnlyStaticMethods(newClassTypeSymbol)) {
       String message = "Remove this instantiation.";
       String name = getNewClassName(identifier);
       if (name != null) {
@@ -71,18 +74,39 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     }
   }
 
-  private boolean hasOnlyStaticMethod(TypeSymbol typeSymbol) {
-    Collection<Symbol> members = typeSymbol.members().scopeSymbols();
-    boolean hasStaticMethod = false;
-    for (Symbol symbol : members) {
-      if (symbol.isKind(Symbol.MTH)) {
-        if (!symbol.isStatic()) {
-          return false;
-        }
-        hasStaticMethod = true;
+  private boolean hasOnlyStaticMethods(TypeSymbol newClassTypeSymbol) {
+    Collection<MethodSymbol> methods = filterMethods(newClassTypeSymbol.members().scopeSymbols());
+    if (methods.isEmpty()) {
+      return false;
+    }
+    for (MethodSymbol method : methods) {
+      if (!method.isStatic()) {
+        return false;
       }
     }
-    return hasStaticMethod;
+    return superClassHasOnlyStaticMethods(newClassTypeSymbol);
+  }
+
+  private boolean superClassHasOnlyStaticMethods(TypeSymbol newClassTypeSymbol) {
+    Type superClass = newClassTypeSymbol.getSuperclass();
+    if (!superClass.is("java.lang.Object")) {
+      return hasOnlyStaticMethods(superClass.getSymbol());
+    }
+    return true;
+  }
+
+  private Collection<MethodSymbol> filterMethods(Collection<Symbol> symbols) {
+    List<MethodSymbol> methods = Lists.newArrayList();
+    for (Symbol symbol : symbols) {
+      if (symbol.isKind(Symbol.MTH) && !isConstructor(symbol)) {
+        methods.add((MethodSymbol) symbol);
+      }
+    }
+    return methods;
+  }
+
+  private boolean isConstructor(Symbol symbol) {
+    return "<init>".equals(symbol.getName());
   }
 
   @Nullable
