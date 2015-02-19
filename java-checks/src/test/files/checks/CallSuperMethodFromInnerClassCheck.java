@@ -17,4 +17,13 @@ public class Outer {
       doTheThing();//Compliant not from super type
     }
   }
+
+  public interface I extends I2{
+    default void toto() {
+      plop();
+    }
+  }
+  public interface I2  {
+    void plop();
+  }
 }

@@ -49,7 +49,7 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
+    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE);
   }
 
   @Override

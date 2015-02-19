@@ -38,6 +38,7 @@ public class CallSuperMethodFromInnerClassCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CallSuperMethodFromInnerClassCheck.java"), new VisitorsBridge(new CallSuperMethodFromInnerClassCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(12).withMessage("Prefix this call to \"foo\" with \"super.\".")
+        .next().atLine(23).withMessage("Prefix this call to \"plop\" with \"super.\".")
     ;
   }
 }
