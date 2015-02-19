@@ -275,7 +275,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     if (variableTree.type().is(Tree.Kind.ARRAY_TYPE)) {
       ArrayTypeTree arrayTypeTree = (ArrayTypeTree) variableTree.type();
       Type arrayType = ((AbstractTypedTree) arrayTypeTree.type()).getSymbolType();
-      result = arrayType.isTagged(Type.CLASS) && "String".equals(((Type.ClassType) arrayType).getSymbol().getName());
+      result = arrayType.isTagged(Type.CLASS) && "String".equals(arrayType.getSymbol().getName());
     }
     return result;
   }
@@ -292,7 +292,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   public boolean isEqualsMethod() {
-    return isPublic() && !isStatic() && isNamed("equals") && returnsBoolean() && hasObjectParameter();
+    boolean hasEqualsSignature = isNamed("equals") && returnsBoolean() && hasObjectParameter();
+    return isPublic() && !isStatic() && hasEqualsSignature;
   }
 
   private boolean hasObjectParameter() {

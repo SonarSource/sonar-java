@@ -115,6 +115,7 @@ public class MethodTreeImplTest {
   @Test
   public void is_equals_method() throws Exception {
     assertThat(getUniqueMethod("class A { public boolean equals(Object o){} }").isEqualsMethod()).isTrue();
+    assertThat(getUniqueMethod("class A { private boolean equals(Object o){} }").isEqualsMethod()).isFalse();
     assertThat(getUniqueMethod("class A { public static boolean equals(Object o){} }").isEqualsMethod()).isFalse();
     assertThat(getUniqueMethod("class A { public boolean equal(Object o){} }").isEqualsMethod()).isFalse();
     assertThat(getUniqueMethod("class A { public boolean equals(Object o, int a){} }").isEqualsMethod()).isFalse();
