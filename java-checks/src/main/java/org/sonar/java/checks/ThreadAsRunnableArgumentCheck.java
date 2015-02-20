@@ -113,6 +113,6 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
     if (tree.is(Kind.IDENTIFIER)) {
       return ((IdentifierTree) tree).name();
     }
-    return "arg" + index;
+    return "Argument " + (index + 1);
   }
 }
