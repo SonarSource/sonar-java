@@ -57,7 +57,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     super(Kind.TRY_STATEMENT);
 
     this.openParenToken = null;
-    this.resources = ImmutableList.<VariableTree>of();
+    this.resources = ImmutableList.of();
     this.closeParenToken = null;
 
     this.catches = catches;
@@ -98,8 +98,8 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     addChild(closeParenToken);
     addChild(block);
 
-    for (CatchTreeImpl catch_ : catches) {
-      addChild(catch_);
+    for (CatchTreeImpl catchTree : catches) {
+      addChild(catchTree);
     }
 
     if (finallyBlock != null) {
