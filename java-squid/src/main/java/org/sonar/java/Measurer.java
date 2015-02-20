@@ -23,13 +23,13 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.measures.PersistenceMode;
 import org.sonar.api.measures.RangeDistributionBuilder;
+import org.sonar.api.resources.File;
+import org.sonar.api.resources.Project;
 import org.sonar.java.ast.visitors.AccessorVisitor;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
@@ -54,9 +54,9 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private static final Number[] LIMITS_COMPLEXITY_FILES = {0, 5, 10, 20, 30, 60, 90};
 
   private final SensorContext sensorContext;
-  private final FileSystem fs;
+  private final Project project;
   private final boolean separateAccessorsFromMethods;
-  private InputFile sonarFile;
+  private File sonarFile;
   private int methods;
   private int accessors;
   private int complexityInMethods;
@@ -67,8 +67,8 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private Charset charset;
   private double classes;
 
-  public Measurer(FileSystem fs, SensorContext context, boolean separateAccessorsFromMethods) {
-    this.fs = fs;
+  public Measurer(Project project, SensorContext context, boolean separateAccessorsFromMethods) {
+    this.project = project;
     this.sensorContext = context;
     this.separateAccessorsFromMethods = separateAccessorsFromMethods;
     accessorVisitor = new AccessorVisitor();
@@ -84,7 +84,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    sonarFile = fs.inputFile(fs.predicates().hasAbsolutePath(context.getFile().getAbsolutePath()));
+    sonarFile = File.fromIOFile(context.getFile(), project);
     classTrees.clear();
     methods = 0;
     complexityInMethods = 0;

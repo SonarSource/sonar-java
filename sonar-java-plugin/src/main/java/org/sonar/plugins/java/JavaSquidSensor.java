@@ -87,7 +87,7 @@ public class JavaSquidSensor implements Sensor {
     Checks<CodeVisitor> checks = checkFactory.<CodeVisitor>create(CheckList.REPOSITORY_KEY).addAnnotatedChecks(CheckList.getChecks());
     Collection<CodeVisitor> checkList = checks.all();
     JavaConfiguration configuration = createConfiguration();
-    Measurer measurer = new Measurer(fs, context, configuration.separatesAccessorsFromMethods());
+    Measurer measurer = new Measurer(project, context, configuration.separatesAccessorsFromMethods());
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, checkList.toArray(new CodeVisitor[checkList.size()]));
     squid.scan(getSourceFiles(), getTestFiles(), getBytecodeFiles());
     new Bridges(squid, settings).save(context, project, checks, javaResourceLocator.getResourceMapping(),

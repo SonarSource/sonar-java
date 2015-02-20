@@ -25,10 +25,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.measures.Measure;
+import org.sonar.api.resources.Project;
+import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
@@ -38,20 +37,24 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MeasurerTest {
 
   private static final int NB_OF_METRICS = 14;
   private SensorContext context;
+  private JavaSquid squid;
   private File baseDir;
-  private DefaultFileSystem fs;
+  private Project sonarProject;
 
   @Before
   public void setUp() throws Exception {
     context = mock(SensorContext.class);
-    fs = new DefaultFileSystem();
+    sonarProject = mock(Project.class);
+    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     baseDir = new File("src/test/files/metrics");
-    fs.setBaseDir(baseDir);
+    when(sonarProject.getFileSystem()).thenReturn(pfs);
+    when(pfs.getBasedir()).thenReturn(baseDir);
   }
 
   @Test
@@ -132,19 +135,13 @@ public class MeasurerTest {
    * Utility method to quickly get metric out of a file.
    */
   private void checkMetric(boolean separateAccessorsFromMethods, File baseDir, String filename, String metric, double expectedValue) {
-    Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods);
+    Measurer measurer = new Measurer(sonarProject, context, separateAccessorsFromMethods);
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
-    JavaSquid squid = new JavaSquid(conf, null, measurer, null, new CodeVisitor[0]);
-    //set up file
-    File file = new File(baseDir, filename);
-    DefaultInputFile inputFile = new DefaultInputFile(filename);
-    inputFile.setFile(file);
-    fs.add(inputFile);
-
-    squid.scan(Lists.newArrayList(file), Collections.<File>emptyList(), Collections.<File>emptyList());
+    squid = new JavaSquid(conf, null, measurer, null, new CodeVisitor[0]);
+    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList(), Collections.<File>emptyList());
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
-    ArgumentCaptor<InputFile> sonarFilescaptor = ArgumentCaptor.forClass(InputFile.class);
+    ArgumentCaptor<org.sonar.api.resources.File> sonarFilescaptor = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
     //-1 for metrics in case we don't analyse Accessors.
     verify(context, times(NB_OF_METRICS)).saveMeasure(sonarFilescaptor.capture(), captor.capture());
     int checkedMetrics = 0;
