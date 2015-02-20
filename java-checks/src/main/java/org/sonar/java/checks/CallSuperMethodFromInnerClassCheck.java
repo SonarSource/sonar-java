@@ -78,14 +78,14 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
       Symbol symbol = mit.getSymbol();
       if (symbol.isKind(Symbol.MTH) && mit.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol)) {
         String methodName = ((IdentifierTree) mit.methodSelect()).name();
-        addIssue(tree, "Prefix this call to \""+methodName+"\" with \"super.\".");
+        addIssue(tree, "Prefix this call to \"" + methodName + "\" with \"super.\".");
       }
       super.visitMethodInvocation(tree);
     }
 
     private boolean isInherited(Symbol symbol) {
       return new Types().isSubtype(classSymbol.getType(), symbol.owner().getType())
-          && classSymbol.getType() != symbol.owner().getType();
+        && !classSymbol.getType().equals(symbol.owner().getType());
     }
   }
 }
