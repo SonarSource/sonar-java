@@ -50,6 +50,10 @@ public class UnusedPrivateMethod {
     // this method should not be considered as dead code, see Serializable contract
   }
 
+  private void unusedPrivateMethodExcludedByPattern() {
+    // this method should not be considered as dead code, see exclusion pattern
+  }
+
   @SuppressWarnings("unused")
   private int unusedPrivateMethod() {
     return 1;
