@@ -39,7 +39,6 @@ public class SerializableFieldInSerializableClassCheckTest {
         .next().atLine(12).withMessage("Make \"address\" transient or serializable.")
         .next().atLine(13).withMessage("Make \"addressArray\" transient or serializable.")
         .next().atLine(24).withMessage("Make \"address\" transient or serializable.")
-        .next().atLine(27).withMessage("Make \"t\" transient or serializable.") //false positive for type variable
         .next().atLine(28).withMessage("Make \"s\" transient or serializable.")
         .noMore();
   }

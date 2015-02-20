@@ -118,7 +118,9 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
       }
       return hasSupertypeSerializable((Type.ClassType) type);
     }
-    //TODO handle typeVar subtyping.
+    if(type.isTagged(Type.TYPEVAR)) {
+      return type.erasure().isSubtypeOf("java.io.Serializable");
+    }
     return false;
   }
 
