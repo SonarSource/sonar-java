@@ -24,6 +24,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +68,7 @@ public class Type {
   }
 
   public boolean isNumerical() {
-    //JLS8 4.2
+    // JLS8 4.2
     return tag <= DOUBLE;
   }
 
@@ -80,7 +81,7 @@ public class Type {
     if (isTagged(CLASS)) {
       return fullyQualifiedName.equals(symbol.getFullyQualifiedName());
     } else if (tag < CLASS) {
-      //primitive type
+      // primitive type
       return fullyQualifiedName.equals(symbol.name);
     } else if (isTagged(ARRAY)) {
       return fullyQualifiedName.endsWith("[]") && ((ArrayType) this).elementType.is(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2));
@@ -100,8 +101,9 @@ public class Type {
           return true;
         }
       }
-    }
-    if(isTagged(TYPEVAR)) {
+    } else if (isTagged(ARRAY)) {
+      return fullyQualifiedName.endsWith("[]") && ((ArrayType) this).elementType.isSubtypeOf(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2));
+    } else if (isTagged(TYPEVAR)) {
       return erasure().isSubtypeOf(fullyQualifiedName);
     }
     return false;
@@ -124,17 +126,17 @@ public class Type {
   }
 
   public boolean isPrimitiveWrapper() {
-    if(!isTagged(CLASS)) {
+    if (!isTagged(CLASS)) {
       return false;
     }
     return is("java.lang.Byte") ||
-        is("java.lang.Character") ||
-        is("java.lang.Short") ||
-        is("java.lang.Integer") ||
-        is("java.lang.Long") ||
-        is("java.lang.Float") ||
-        is("java.lang.Double") ||
-        is("java.lang.Boolean");
+      is("java.lang.Character") ||
+      is("java.lang.Short") ||
+      is("java.lang.Integer") ||
+      is("java.lang.Long") ||
+      is("java.lang.Float") ||
+      is("java.lang.Double") ||
+      is("java.lang.Boolean");
   }
 
   @Override
@@ -176,13 +178,14 @@ public class Type {
      */
     Type elementType;
     private final ArrayType erasure;
+
     /**
      * @param arrayClass {@link Symbols#arrayClass}
      */
     public ArrayType(Type elementType, Symbol.TypeSymbol arrayClass) {
       super(ARRAY, arrayClass);
       this.elementType = elementType;
-      //element
+      // element
       this.erasure = new ArrayType(arrayClass);
     }
 
@@ -209,8 +212,8 @@ public class Type {
       }
       ArrayType rhs = (ArrayType) obj;
       return new EqualsBuilder()
-          .append(elementType, rhs.elementType)
-          .isEquals();
+        .append(elementType, rhs.elementType)
+        .isEquals();
     }
 
     @Override
@@ -224,7 +227,7 @@ public class Type {
 
     @Override
     public Type erasure() {
-      if(erasure.elementType == null) {
+      if (erasure.elementType == null) {
         erasure.elementType = elementType.erasure();
       }
       return erasure;
@@ -234,7 +237,7 @@ public class Type {
   public static class MethodType extends Type {
 
     List<Type> argTypes;
-    //Return type of constructor is null.
+    // Return type of constructor is null.
     @Nullable
     Type resultType;
     List<Type> thrown;

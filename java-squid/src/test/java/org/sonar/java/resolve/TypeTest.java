@@ -51,6 +51,7 @@ public class TypeTest {
   public void checkTagging() {
     assertThat(new Type(Type.VOID, null).isTagged(Type.VOID)).isTrue();
   }
+
   @Test
   public void isNumerical_should_return_true_for_numerical_types() {
     assertThat(new Type(Type.BYTE, null).isNumerical()).isTrue();
@@ -68,7 +69,8 @@ public class TypeTest {
   @Test
   public void to_string_on_type() throws Exception {
     assertThat(new Type(Type.VOID, null).toString()).isEmpty();
-    String methodToString  = new Type.MethodType(ImmutableList.<Type>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType, ImmutableList.<Type>of(), null).toString();
+    String methodToString = new Type.MethodType(ImmutableList.<Type>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType,
+      ImmutableList.<Type>of(), null).toString();
     assertThat(methodToString).isEqualTo("returns int");
   }
 
@@ -86,6 +88,8 @@ public class TypeTest {
     assertThat(typeSymbol2.type.is("MyType")).isTrue();
     assertThat(classType.is("org.foo.bar.SomeClass")).isFalse();
     assertThat(arrayType.is("org.foo.bar.MyType[]")).isTrue();
+    assertThat(arrayType.is("org.foo.bar.MyType")).isFalse();
+    assertThat(arrayType.is("org.foo.bar.SomeClass[]")).isFalse();
     assertThat(symbols.nullType.is("org.foo.bar.SomeClass")).isTrue();
     assertThat(symbols.unknownType.is("org.foo.bar.SomeClass")).isFalse();
   }
@@ -112,6 +116,7 @@ public class TypeTest {
     Symbol.TypeVariableSymbol typeVariableSymbol = new Symbol.TypeVariableSymbol("T", typeSymbol);
     Type.ClassType classType = (Type.ClassType) typeSymbol.type;
     Type.TypeVariableType typeVariableType = (Type.TypeVariableType) typeVariableSymbol.type;
+    Type.ArrayType arrayType = new Type.ArrayType(typeSymbol.type, symbols.arrayClass);
     typeVariableType.bounds = Lists.newArrayList(symbols.objectType);
 
     classType.supertype = symbols.objectType;
@@ -121,6 +126,11 @@ public class TypeTest {
     assertThat(classType.isSubtypeOf("java.lang.CharSequence")).isFalse();
     assertThat(classType.isSubtypeOf("java.lang.Cloneable")).isTrue();
     assertThat(new Type(Type.BYTE, null).isSubtypeOf("java.lang.Object")).isFalse();
+
+    assertThat(arrayType.isSubtypeOf("org.foo.bar.MyType[]")).isTrue();
+    assertThat(arrayType.isSubtypeOf("org.foo.bar.MyType")).isFalse();
+    assertThat(arrayType.isSubtypeOf("java.lang.Object[]")).isTrue();
+    assertThat(arrayType.isSubtypeOf("org.foo.bar.SomeClass[]")).isFalse();
 
     assertThat(typeVariableType.isSubtypeOf("java.lang.Object")).isTrue();
     assertThat(typeVariableType.is("java.lang.Object")).isFalse();
