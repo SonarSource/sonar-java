@@ -63,8 +63,8 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     this.catches = catches;
     this.finallyBlock = finallyBlock;
 
-    for (CatchTreeImpl catch_ : catches) {
-      addChild(catch_);
+    for (CatchTreeImpl catchTree : catches) {
+      addChild(catchTree);
     }
 
     if (finallyBlock != null) {
