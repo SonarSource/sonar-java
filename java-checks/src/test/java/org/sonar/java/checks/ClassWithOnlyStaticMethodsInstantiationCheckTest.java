@@ -46,7 +46,6 @@ public class ClassWithOnlyStaticMethodsInstantiationCheckTest {
       .next().atLine(9).withMessage("Remove this instantiation of \"InnerClass\".")
       .next().atLine(10).withMessage("Remove this instantiation of \"InnerClass\".")
       .next().atLine(11).withMessage("Remove this instantiation of \"J\".")
-      .next().atLine(90).withMessage("Remove this instantiation of \"M\".")
       .noMore();
   }
 }
