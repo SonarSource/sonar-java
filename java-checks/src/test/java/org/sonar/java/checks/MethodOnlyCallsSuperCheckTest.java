@@ -44,7 +44,9 @@ public class MethodOnlyCallsSuperCheckTest {
         .next().atLine(44)
         .next().atLine(56)
         .next().atLine(70)
-        .next().atLine(98);
+        .next().atLine(98)
+        .next().atLine(104)
+    ;
   }
 
 }
