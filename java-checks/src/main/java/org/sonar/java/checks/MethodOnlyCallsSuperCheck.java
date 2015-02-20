@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -60,9 +62,14 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (isSingleStatementMethod(methodTree) && isUselessSuperCall(methodTree) && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations())) {
+    if (isSingleStatementMethod(methodTree) && isUselessSuperCall(methodTree) && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations()) && !isFinalEquals(methodTree)) {
       addIssue(methodTree, "Remove this method to simply inherit it.");
     }
+  }
+
+  private boolean isFinalEquals(MethodTree methodTree) {
+    MethodTreeImpl methodTreeImpl = (MethodTreeImpl) methodTree;
+    return hasSemantic() && methodTree.modifiers().modifiers().contains(Modifier.FINAL) && methodTreeImpl.isEqualsMethod();
   }
 
   private boolean isSingleStatementMethod(MethodTree methodTree) {
