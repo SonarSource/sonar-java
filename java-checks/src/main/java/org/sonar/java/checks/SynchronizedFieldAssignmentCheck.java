@@ -30,11 +30,14 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import javax.annotation.Nullable;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -60,21 +63,33 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
     }
     SynchronizedStatementTree sst = (SynchronizedStatementTree) tree;
     ExpressionTree synchronizedExpression = sst.expression();
-    if (isField(synchronizedExpression)) {
-      Symbol field = getSemanticModel().getReference((IdentifierTree) synchronizedExpression);
+    Symbol field = getField(synchronizedExpression);
+    if (field != null) {
       sst.block().accept(new AssignmentVisitor(field, tree));
     }
   }
 
-  private boolean isField(ExpressionTree tree) {
+  @Nullable
+  private Symbol getField(ExpressionTree tree) {
     TypeSymbol enclosingClass = (TypeSymbol) getSemanticModel().getEnclosingClass(tree);
     if (tree.is(Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) tree;
       List<Symbol> lookup = ((TypeSymbol) enclosingClass).members().lookup(identifier.name());
       Symbol reference = getSemanticModel().getReference(identifier);
-      return lookup.contains(reference);
+      if (lookup.contains(reference)) {
+        return reference;
+      }
+    } else if (tree.is(Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
+      if (isThis(mse.expression())) {
+        return getField(mse.identifier());
+      }
     }
-    return false;
+    return null;
+  }
+
+  private boolean isThis(ExpressionTree expression) {
+    return expression.is(Kind.IDENTIFIER) && "this".equals(((IdentifierTree) expression).name());
   }
 
   private class AssignmentVisitor extends BaseTreeVisitor {
@@ -89,14 +104,25 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      AbstractTypedTree variable = (AbstractTypedTree) tree.variable();
+      checkSymbolAssignment((AbstractTypedTree) tree.variable());
+    }
+
+    private void checkSymbolAssignment(AbstractTypedTree variable) {
       if (variable.is(Kind.IDENTIFIER)) {
         Symbol variableSymbol = getSemanticModel().getReference((IdentifierTree) variable);
         if (field.equals(variableSymbol)) {
-          addIssue(synchronizedStatement,
-            MessageFormat.format("Don''t synchronize on \"{0}\" or remove its reassignment on line {1}.", field.getName(), String.valueOf(variable.getLine())));
+          addIssue(synchronizedStatement, getMessage(variable));
+        }
+      } else if (variable.is(Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) variable;
+        if (isThis(mse.expression())) {
+          checkSymbolAssignment((AbstractTypedTree) mse.identifier());
         }
       }
+    }
+
+    private String getMessage(AbstractTypedTree variable) {
+      return MessageFormat.format("Don''t synchronize on \"{0}\" or remove its reassignment on line {1}.", field.getName(), variable.getLine());
     }
   }
 }
