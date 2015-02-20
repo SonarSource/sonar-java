@@ -58,6 +58,9 @@ class A<T, S extends CharSequence> {
     A.<E>methodStatic().method_of_e();
   }
   static <T> T methodStatic(){};
+  void unknownSymbol() {
+    Foo<String> foo;
+  }
 
 }
 
