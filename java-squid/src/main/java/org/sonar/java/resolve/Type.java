@@ -278,6 +278,10 @@ public class Type {
       super(symbol);
       this.rawType = symbol.getType();
       this.typeSubstitution = typeSubstitution;
+      if (rawType.isTagged(UNKNOWN)) {
+        // force unknown instead of keeping CLASS
+        this.tag = UNKNOWN;
+      }
     }
 
     @Override
