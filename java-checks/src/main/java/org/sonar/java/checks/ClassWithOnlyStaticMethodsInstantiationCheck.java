@@ -64,7 +64,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
   public void visitNode(Tree tree) {
     Tree identifier = ((NewClassTree) tree).identifier();
     TypeSymbol newClassTypeSymbol = ((AbstractTypedTree) identifier).getSymbolType().getSymbol();
-    if (!newClassTypeSymbol.isEnum() && hasOnlyStaticMethods(newClassTypeSymbol)) {
+    if (!newClassTypeSymbol.isEnum() && hasOnlyStaticMethods(newClassTypeSymbol) && !instantiateOwnClass(identifier, newClassTypeSymbol)) {
       String message = "Remove this instantiation.";
       String name = getNewClassName(identifier);
       if (name != null) {
@@ -72,6 +72,11 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
       }
       addIssue(tree, MessageFormat.format(message, name));
     }
+  }
+
+  private boolean instantiateOwnClass(Tree identifier, TypeSymbol newClassTypeSymbol) {
+    Type enclosingClassType = getSemanticModel().getEnclosingClass(identifier).getType();
+    return enclosingClassType.equals(newClassTypeSymbol.getType());
   }
 
   private boolean hasOnlyStaticMethods(TypeSymbol newClassTypeSymbol) {

@@ -87,6 +87,6 @@ class M {
   M() {
   }
   public static M foo() {
-    return new M(); // Noncompliant
+    return new M(); // Compliant
   }
 }
