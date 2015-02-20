@@ -67,3 +67,14 @@ class K extends com.tst.UnknownClass {
 class L<T> extends com.tst.MyList<T> {
   int s;
 }
+
+class M {
+  @Override
+  public final boolean equals(Object obj) {
+    return false;
+  }
+}
+
+class N extends M { // Compliant - M.equals() is final
+  int i;
+}

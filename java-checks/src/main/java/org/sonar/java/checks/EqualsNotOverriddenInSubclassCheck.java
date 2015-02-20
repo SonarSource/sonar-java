@@ -99,7 +99,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   private boolean hasEqualsMethod(TypeSymbol superClassSymbol) {
     List<Symbol> equalsMembers = superClassSymbol.members().lookup("equals");
     for (Symbol symbol : equalsMembers) {
-      if (isEqualsMethod(symbol)) {
+      if (isEqualsMethod(symbol) && !symbol.isFinal()) {
         return true;
       }
     }
