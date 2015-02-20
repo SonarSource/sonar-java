@@ -99,4 +99,14 @@ class A {
     super.f();
   }
 
+
+  @Override
+  public boolean equals(Object obj) { //non compliant, equals is not final
+    return super.equals(obj);
+  }
+
+  @Override
+  public final boolean equals(Object obj) { //Compliant, equals is final
+    return super.equals(obj);
+  }
 }
