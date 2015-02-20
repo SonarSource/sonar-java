@@ -35,7 +35,10 @@ public class ThreadAsRunnableArgumentCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThreadAsRunnableArgumentCheck.java"), new VisitorsBridge(new ThreadAsRunnableArgumentCheck()));
+    // SourceFile file = JavaAstScanner.scanSingleFile(new
+    // File("C:/dev/workspaces/git/it-sources/sslr/oracle-jdk-1.7.0.3/com/sun/jmx/mbeanserver/DefaultMXBeanMappingFactory.java"),
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThreadAsRunnableArgumentCheck.java"),
+      new VisitorsBridge(new ThreadAsRunnableArgumentCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(9).withMessage("\"t\" is a \"Thread\".")
       .next().atLine(11).withMessage("\"arg0\" is a \"Thread\".")
@@ -43,6 +46,9 @@ public class ThreadAsRunnableArgumentCheckTest {
       .next().atLine(25).withMessage("\"myThread\" is a \"Thread\".")
       .next().atLine(26).withMessage("\"myThread\" is a \"Thread\".")
       .next().atLine(27).withMessage("\"arg1\" is a \"Thread\".")
+      .next().atLine(28).withMessage("\"arg3\" is a \"Thread\".")
+      .next().atLine(28).withMessage("\"myThread\" is a \"Thread\".")
+      .next().atLine(29).withMessage("\"arg1\" is a \"Thread[]\".")
       .noMore();
   }
 }

@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -30,6 +29,7 @@ import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Type;
+import org.sonar.java.resolve.Type.ArrayType;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -61,38 +61,52 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
     if (!hasSemantic()) {
       return;
     }
-    List<Type> parametersTypes;
     List<ExpressionTree> arguments;
+    Symbol methodSymbol;
     if (tree.is(Kind.NEW_CLASS)) {
       NewClassTreeImpl nct = (NewClassTreeImpl) tree;
-      parametersTypes = getParametersTypes(getSemanticModel().getReference(nct.getConstructorIdentifier()));
+      methodSymbol = getSemanticModel().getReference(nct.getConstructorIdentifier());
       arguments = nct.arguments();
     } else {
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
-      parametersTypes = getParametersTypes(mit.getSymbol());
+      methodSymbol = mit.getSymbol();
       arguments = mit.arguments();
     }
-    checkArgumentsTypes(arguments, parametersTypes);
-  }
-
-  private List<Type> getParametersTypes(Symbol symbol) {
-    if (symbol instanceof MethodSymbol) {
-      return ((MethodSymbol) symbol).getParametersTypes();
+    // FIXME semantic - symbol should never be null!
+    if (!arguments.isEmpty() && methodSymbol != null && methodSymbol.isKind(Symbol.MTH)) {
+      checkArgumentsTypes(arguments, (MethodSymbol) methodSymbol);
     }
-    return Lists.newArrayList();
   }
 
-  private void checkArgumentsTypes(List<ExpressionTree> arguments, List<Type> parametersTypes) {
-    if (!arguments.isEmpty() && arguments.size() == parametersTypes.size()) {
+  private void checkArgumentsTypes(List<ExpressionTree> arguments, MethodSymbol methodSymbol) {
+    List<Type> parametersTypes = methodSymbol.getParametersTypes();
+    // FIXME semantic - if there is arguments and method symbol has been resolved, the list of parameters should not be empty!
+    if (!parametersTypes.isEmpty()) {
       for (int index = 0; index < arguments.size(); index++) {
         AbstractTypedTree argument = (AbstractTypedTree) arguments.get(index);
-        Type expectedType = parametersTypes.get(index);
         Type providedType = argument.getSymbolType();
-        if (expectedType.is("java.lang.Runnable") && providedType.isSubtypeOf("java.lang.Thread")) {
-          addIssue(argument, MessageFormat.format("\"{0}\" is a \"Thread\".", getArgName(argument, index)));
+        Type expectedType = getExpectedType(providedType, parametersTypes, index, methodSymbol.isVarArgs());
+        if (expectedType.is("java.lang.Runnable") && providedType.isSubtypeOf("java.lang.Thread")
+          || (expectedType.is("java.lang.Runnable[]") && (providedType.isSubtypeOf("java.lang.Thread[]")))) {
+          addIssue(argument, getMessage(argument, providedType, index));
         }
       }
     }
+  }
+
+  private Type getExpectedType(Type providedType, List<Type> parametersTypes, int index, boolean varargs) {
+    int lastParameterIndex = parametersTypes.size() - 1;
+    Type lastParameterType = parametersTypes.get(lastParameterIndex);
+    Type lastExpectedType = varargs ? ((ArrayType) lastParameterType).elementType() : lastParameterType;
+    if (index > lastParameterIndex || (index == lastParameterIndex && varargs && !providedType.isTagged(Type.ARRAY))) {
+      return lastExpectedType;
+    }
+    return parametersTypes.get(index);
+  }
+
+  private String getMessage(AbstractTypedTree argument, Type providedType, int index) {
+    String array = providedType.isTagged(Type.ARRAY) ? "[]" : "";
+    return MessageFormat.format("\"{0}\" is a \"Thread{1}\".", getArgName(argument, index), array);
   }
 
   private String getArgName(AbstractTypedTree tree, int index) {
