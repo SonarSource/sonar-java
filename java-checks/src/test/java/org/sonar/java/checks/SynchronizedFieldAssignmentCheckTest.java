@@ -38,12 +38,14 @@ public class SynchronizedFieldAssignmentCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SynchronizedFieldAssignmentCheck.java"),
       new VisitorsBridge(new SynchronizedFieldAssignmentCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(7).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 8.")
-      .next().atLine(20).withMessage("Don't synchronize on \"b\" or remove its reassignment on line 21.")
-      .next().atLine(20).withMessage("Don't synchronize on \"b\" or remove its reassignment on line 23.")
+      .next().atLine(9).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 10.")
+      .next().atLine(22).withMessage("Don't synchronize on \"b\" or remove its reassignment on line 23.")
       .next().atLine(26).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 27.")
       .next().atLine(30).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 31.")
-      .next().atLine(34).withMessage("Don't synchronize on \"b\" or remove its reassignment on line 35.")
+      .next().atLine(34).withMessage("Don't synchronize on \"val\" or remove its reassignment on line 35.")
+      .next().atLine(38).withMessage("Don't synchronize on \"val\" or remove its reassignment on line 39.")
+      .next().atLine(42).withMessage("Don't synchronize on \"val\" or remove its reassignment on line 43.")
+      .next().atLine(46).withMessage("Don't synchronize on \"val\" or remove its reassignment on line 47.")
       .noMore();
   }
 }

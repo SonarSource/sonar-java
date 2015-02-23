@@ -1,7 +1,9 @@
 class A {
   private String color = "red";
   private Object lockObj = new Object();
+  private A a = new A();
   private B b = new B();
+
 
   private void doSomething() {
     synchronized (color) { // Noncompliant
@@ -17,9 +19,7 @@ class A {
       array[0] = color;
     }
 
-    synchronized (b) { // Noncompliant for object field reassigned (l.21) and whole object reassigned (l.23)
-      b.val = 1;
-      b.foo();
+    synchronized (b) { // Noncompliant
       b = new B();
     }
 
@@ -31,12 +31,42 @@ class A {
       this.color = "green";
     }
 
-    synchronized (this.b.val) { // Noncompliant because of whole object b reassigned
-      b = new B();
+    synchronized (this.b.val) { // Noncompliant
+      b.val = foo();
+    }
+
+    synchronized (b.val) { // Noncompliant
+      this.b.val = foo();
+    }
+
+    synchronized (a.b.val) { // Noncompliant
+      this.a.b.val = foo();
+    }
+
+    synchronized (this.a.b.val) { // Noncompliant
+      a.b.val = foo();
+    }
+
+    synchronized (a.b.thing) { // Compliant - thing is unknown
+      a.b.thing = "test";
     }
 
     synchronized (Integer.valueOf(42)) { // Compliant
       color = "green";
+    }
+
+    String tmp = "tst";
+    synchronized (tmp) { // Compliant
+      tmp = "tmp";
+    }
+
+    B b2 = new B();
+    synchronized (b2.val) { // Compliant
+      b2.val = foo();
+    }
+
+    synchronized (new A().color) { // Compliant
+      color = "yellow";
     }
 
     synchronized (this.thing) { // Compliant - thing is unknown

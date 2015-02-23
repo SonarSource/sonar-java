@@ -25,7 +25,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -71,24 +70,36 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
 
   @Nullable
   private Symbol getField(ExpressionTree tree) {
-    TypeSymbol enclosingClass = (TypeSymbol) getSemanticModel().getEnclosingClass(tree);
     if (tree.is(Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) tree;
-      List<Symbol> lookup = ((TypeSymbol) enclosingClass).members().lookup(identifier.name());
       Symbol reference = getSemanticModel().getReference(identifier);
-      if (lookup.contains(reference)) {
+      if (reference != null && reference.owner().isKind(Symbol.TYP)) {
         return reference;
       }
     } else if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
-      ExpressionTree mseExpression = mse.expression();
-      if (isThis(mseExpression)) {
+      if (isField(mse.expression())) {
         return getField(mse.identifier());
-      } else {
-        return getField(mseExpression);
       }
     }
     return null;
+  }
+
+  private boolean isField(ExpressionTree tree) {
+    if (tree.is(Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) tree;
+      Symbol reference = getSemanticModel().getReference(identifier);
+      return reference.owner().equals(getSemanticModel().getEnclosingClass(identifier));
+    } else if (tree.is(Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
+      ExpressionTree mseExpression = mse.expression();
+      if (isThis(mseExpression)) {
+        return isField(mse.identifier());
+      } else {
+        return isField(mseExpression);
+      }
+    }
+    return false;
   }
 
   private boolean isThis(ExpressionTree expression) {
@@ -118,12 +129,7 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
         }
       } else if (variable.is(Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) variable;
-        ExpressionTree mseExpression = mse.expression();
-        if (isThis(mseExpression)) {
-          checkSymbolAssignment((AbstractTypedTree) mse.identifier());
-        } else {
-          checkSymbolAssignment((AbstractTypedTree) mseExpression);
-        }
+        checkSymbolAssignment((AbstractTypedTree) mse.identifier());
       }
     }
 
