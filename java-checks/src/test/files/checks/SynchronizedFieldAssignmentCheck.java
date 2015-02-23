@@ -17,8 +17,9 @@ class A {
       array[0] = color;
     }
 
-    synchronized (b) { // Noncompliant because of line 22
+    synchronized (b) { // Noncompliant for object field reassigned (l.21) and whole object reassigned (l.23)
       b.val = 1;
+      b.foo();
       b = new B();
     }
 
@@ -30,16 +31,16 @@ class A {
       this.color = "green";
     }
 
-    synchronized (this.b.val) { // Compliant
-      b = new B();
-    }
-    
-    synchronized (this.thing) { // Compliant
+    synchronized (this.b.val) { // Noncompliant because of whole object b reassigned
       b = new B();
     }
 
     synchronized (Integer.valueOf(42)) { // Compliant
       color = "green";
+    }
+
+    synchronized (this.thing) { // Compliant - thing is unknown
+      b = new B();
     }
   }
 
@@ -49,7 +50,7 @@ class A {
 }
 
 class B {
-  public int val = 0;
+  public Integer val = 0;
 
   public Integer foo() {
     return Integer.valueOf(0);

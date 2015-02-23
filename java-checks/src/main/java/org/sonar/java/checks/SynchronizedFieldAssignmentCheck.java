@@ -81,8 +81,11 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
       }
     } else if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
-      if (isThis(mse.expression())) {
+      ExpressionTree mseExpression = mse.expression();
+      if (isThis(mseExpression)) {
         return getField(mse.identifier());
+      } else {
+        return getField(mseExpression);
       }
     }
     return null;
@@ -115,8 +118,11 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
         }
       } else if (variable.is(Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) variable;
-        if (isThis(mse.expression())) {
+        ExpressionTree mseExpression = mse.expression();
+        if (isThis(mseExpression)) {
           checkSymbolAssignment((AbstractTypedTree) mse.identifier());
+        } else {
+          checkSymbolAssignment((AbstractTypedTree) mseExpression);
         }
       }
     }

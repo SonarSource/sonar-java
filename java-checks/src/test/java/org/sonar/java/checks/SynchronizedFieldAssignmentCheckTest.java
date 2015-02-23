@@ -39,9 +39,11 @@ public class SynchronizedFieldAssignmentCheckTest {
       new VisitorsBridge(new SynchronizedFieldAssignmentCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(7).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 8.")
-      .next().atLine(20).withMessage("Don't synchronize on \"b\" or remove its reassignment on line 22.")
-      .next().atLine(25).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 26.")
-      .next().atLine(29).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 30.")
+      .next().atLine(20).withMessage("Don't synchronize on \"b\" or remove its reassignment on line 21.")
+      .next().atLine(20).withMessage("Don't synchronize on \"b\" or remove its reassignment on line 23.")
+      .next().atLine(26).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 27.")
+      .next().atLine(30).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 31.")
+      .next().atLine(34).withMessage("Don't synchronize on \"b\" or remove its reassignment on line 35.")
       .noMore();
   }
 }
