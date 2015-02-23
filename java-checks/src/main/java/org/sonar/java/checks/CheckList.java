@@ -298,7 +298,8 @@ public final class CheckList {
       SynchronizedLockCheck.class,
       SymmetricEqualsCheck.class,
       CallSuperMethodFromInnerClassCheck.class,
-      SelectorMethodArgumentCheck.class
+      SelectorMethodArgumentCheck.class,
+      SynchronizedFieldAssignmentCheck.class
       );
   }
 }
