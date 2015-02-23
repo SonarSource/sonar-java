@@ -89,7 +89,7 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean isInherited(Symbol symbol) {
-      return new Types().isSubtype(classSymbol.getType(), symbol.owner().getType())
+      return !symbol.isStatic() && new Types().isSubtype(classSymbol.getType(), symbol.owner().getType())
         && !classSymbol.getType().equals(symbol.owner().getType());
     }
 

@@ -1,13 +1,13 @@
 public class Parent {
   public void foo() {  }
   void qix();
+  public static void staticMethod(){};
 }
 public class Outer {
-
+  public static void staticMethod(){};
   public void foo() {  }
   public void plop() {  }
   public class Inner extends Parent {
-
     public void doTheThing() {
       foo();  // Noncompliant; was Outer.this.foo() intended instead?
       super.foo(); //Compliant: unambiguous
@@ -15,9 +15,9 @@ public class Outer {
       bar();//Compliant : symbol is unresolved.
       qix(); //Compliant: No ambiguity, not defined in outer class
       doTheThing();//Compliant not from super type
+      staticMethod(); //Compliant: static method.
     }
   }
-
   public interface I extends I2{
     default void toto() {
       plop();//NonCompliant
@@ -33,7 +33,6 @@ public class Child extends Parent {
     foo();
   }
 }
-
 
 class OuterClass {
   void foo() {}
