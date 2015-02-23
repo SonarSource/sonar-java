@@ -27,16 +27,18 @@ public class ParametrizedTypeCache {
 
   private Map<Symbol, Map<Map<Type.TypeVariableType, Type>, Type.ParametrizedTypeType>> typeCache = Maps.newHashMap();
 
-  public Type.ParametrizedTypeType getParametrizedTypeType(Symbol.TypeSymbol symbol, Map<Type.TypeVariableType, Type> typeSubstitution) {
-    if(typeCache.get(symbol) == null) {
+  public Type getParametrizedTypeType(Symbol.TypeSymbol symbol, Map<Type.TypeVariableType, Type> typeSubstitution) {
+    if (symbol.getType().isTagged(Type.UNKNOWN)) {
+      return symbol.getType();
+    }
+    if (typeCache.get(symbol) == null) {
       Map<Map<Type.TypeVariableType, Type>, Type.ParametrizedTypeType> map = Maps.newHashMap();
       typeCache.put(symbol, map);
     }
-    if(typeCache.get(symbol).get(typeSubstitution) == null) {
+    if (typeCache.get(symbol).get(typeSubstitution) == null) {
       typeCache.get(symbol).put(typeSubstitution, new Type.ParametrizedTypeType(symbol, typeSubstitution));
     }
     return typeCache.get(symbol).get(typeSubstitution);
   }
-
 
 }
