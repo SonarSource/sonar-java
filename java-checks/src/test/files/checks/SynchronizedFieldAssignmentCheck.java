@@ -47,10 +47,6 @@ class A {
       a.b.val = foo();
     }
 
-    synchronized (a.b.thing) { // Compliant - thing is unknown
-      a.b.thing = "test";
-    }
-
     synchronized (Integer.valueOf(42)) { // Compliant
       color = "green";
     }
@@ -69,13 +65,25 @@ class A {
       color = "yellow";
     }
 
+    synchronized (a.getB().val) { // Compliant
+      a.getB().val = foo();
+    }
+
     synchronized (this.thing) { // Compliant - thing is unknown
       b = new B();
+    }
+
+    synchronized (a.b.thing) { // Compliant - thing is unknown
+      a.b.thing = "test";
     }
   }
 
   Integer foo() {
     return Integer.valueOf(0);
+  }
+
+  B getB() {
+    return b;
   }
 }
 

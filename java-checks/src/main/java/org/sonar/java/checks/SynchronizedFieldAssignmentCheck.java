@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -68,17 +68,16 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  @Nullable
+  @CheckForNull
   private Symbol getField(ExpressionTree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
-      IdentifierTree identifier = (IdentifierTree) tree;
-      Symbol reference = getSemanticModel().getReference(identifier);
+      Symbol reference = getSemanticModel().getReference((IdentifierTree) tree);
       if (reference != null && reference.owner().isKind(Symbol.TYP)) {
         return reference;
       }
     } else if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
-      if (isField(mse.expression())) {
+      if (isField(mse)) {
         return getField(mse.identifier());
       }
     }
@@ -87,9 +86,8 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
 
   private boolean isField(ExpressionTree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
-      IdentifierTree identifier = (IdentifierTree) tree;
-      Symbol reference = getSemanticModel().getReference(identifier);
-      return reference.owner().equals(getSemanticModel().getEnclosingClass(identifier));
+      Symbol reference = getSemanticModel().getReference((IdentifierTree) tree);
+      return reference != null && reference.owner().isKind(Symbol.TYP);
     } else if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
       ExpressionTree mseExpression = mse.expression();
