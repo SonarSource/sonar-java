@@ -169,12 +169,5 @@ public class TypeTest {
     ptt = new Type.ParametrizedTypeType(typeSymbol, null);
     assertThat(ptt.substitution(typeVariableType)).isNull();
     assertThat(ptt.typeParameters()).isEmpty();
-
-    ptt = new Type.ParametrizedTypeType(symbols.unknownType.getSymbol(), typeSubstitution);
-    assertThat(ptt.substitution(typeVariableType)).isEqualTo(classType);
-    assertThat(ptt.substitution(new Type.TypeVariableType(new Symbol.TypeVariableSymbol("F", typeSymbol)))).isNull();
-    assertThat(ptt.typeParameters()).hasSize(1);
-    assertThat(ptt.typeParameters()).contains(typeVariableType);
-    assertThat(ptt.tag).isEqualTo(Type.UNKNOWN);
   }
 }
