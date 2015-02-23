@@ -27,3 +27,7 @@ class Person4<T extends Serializable, S extends Address> implements MyCustomInte
   T t; //Compliant
   S s; //NonCompliant
 }
+class Person5 implements Serializable {
+  int[][] matrix; //Compliant
+  Integer integer; //Compliant
+}
