@@ -37,6 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
@@ -76,7 +77,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree methodTree = (MethodTree) member;
-        //FIXME detect methods based on type of arg and throws, not arity.
+        // FIXME detect methods based on type of arg and throws, not arity.
         if (methodTree.modifiers().modifiers().contains(Modifier.PRIVATE) && methodTree.parameters().size() == 1) {
           hasWriteObject |= "writeObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 1;
           hasReadObject |= "readObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 2;
@@ -107,31 +108,16 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     if (type == null || type.isTagged(Type.UNKNOWN)) {
       return false;
     }
+    if (type.isPrimitive()) {
+      return true;
+    }
     if (type.isTagged(Type.ARRAY)) {
       return implementsSerializable(((Type.ArrayType) type).elementType());
     }
-    if (type.isTagged(Type.CLASS)) {
-      Type.ClassType classType = (Type.ClassType) type;
-      String interfaceName = classType.getSymbol().owner().getName() + "." + classType.getSymbol().getName();
-      if ("java.io.Serializable".equals(interfaceName)) {
-        return true;
-      }
-      return hasSupertypeSerializable((Type.ClassType) type);
-    }
-    if(type.isTagged(Type.TYPEVAR)) {
+    if (type.isTagged(Type.CLASS) || type.isTagged(Type.TYPEVAR)) {
       return type.erasure().isSubtypeOf("java.io.Serializable");
     }
     return false;
-  }
-
-  private boolean hasSupertypeSerializable(Type.ClassType type) {
-    Symbol.TypeSymbol symbol = type.getSymbol();
-    for (Type interfaceType : symbol.getInterfaces()) {
-      if (implementsSerializable(interfaceType)) {
-        return true;
-      }
-    }
-    return implementsSerializable(symbol.getSuperclass());
   }
 
 }
