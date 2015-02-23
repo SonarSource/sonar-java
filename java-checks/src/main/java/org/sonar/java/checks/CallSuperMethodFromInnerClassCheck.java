@@ -56,13 +56,18 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
   public void visitNode(Tree tree) {
     ClassTreeImpl classTree = (ClassTreeImpl) tree;
     Symbol.TypeSymbol classSymbol = classTree.getSymbol();
-    if (classSymbol != null && isInnerClass(classSymbol)) {
+    if (classSymbol != null && isInnerClass(classSymbol) && !extendsOuterClass(classSymbol)) {
       classTree.accept(new MethodInvocationVisitor(classSymbol));
     }
   }
 
+
   private boolean isInnerClass(Symbol.TypeSymbol symbol) {
     return symbol.owner().isKind(Symbol.TYP);
+  }
+
+  private boolean extendsOuterClass(Symbol.TypeSymbol classSymbol) {
+    return classSymbol.getSuperclass() != null && classSymbol.getSuperclass().equals(classSymbol.owner().getType());
   }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
@@ -76,7 +81,7 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     public void visitMethodInvocation(MethodInvocationTree tree) {
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
       Symbol symbol = mit.getSymbol();
-      if (symbol.isKind(Symbol.MTH) && mit.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol)) {
+      if (symbol.isKind(Symbol.MTH) && mit.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol) && outerClassHasMethodWithSameName(symbol)) {
         String methodName = ((IdentifierTree) mit.methodSelect()).name();
         addIssue(tree, "Prefix this call to \"" + methodName + "\" with \"super.\".");
       }
@@ -87,5 +92,10 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
       return new Types().isSubtype(classSymbol.getType(), symbol.owner().getType())
         && !classSymbol.getType().equals(symbol.owner().getType());
     }
+
+    private boolean outerClassHasMethodWithSameName(Symbol symbol) {
+      return !((Symbol.TypeSymbol) classSymbol.owner()).members().lookup(symbol.getName()).isEmpty();
+    }
+
   }
 }
