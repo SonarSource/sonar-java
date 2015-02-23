@@ -81,6 +81,11 @@ public class SymbolTableTest {
     Symbol innerClassField = classCSymbol.members().lookup("innerClassField").get(0);
     assertThat(innerClassField.type).isSameAs(STypeVariableType);
 
+    //Unknown parametrized type should be tagged as unknown
+    MethodTree methodTree = (MethodTree) result.getTree(result.symbol("unknownSymbol"));
+    VariableTree variableTree = (VariableTree) methodTree.block().body().get(0);
+    assertThat(((AbstractTypedTree) variableTree.type()).getSymbolType().isTagged(Type.UNKNOWN)).isTrue();
+
   }
 
   @Test
