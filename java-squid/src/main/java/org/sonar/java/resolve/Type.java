@@ -93,18 +93,22 @@ public class Type {
 
   public boolean isSubtypeOf(String fullyQualifiedName) {
     if (isTagged(CLASS)) {
-      if (is(fullyQualifiedName)) {
+      if (is(fullyQualifiedName) || superTypeContains(fullyQualifiedName)) {
         return true;
-      }
-      for (ClassType classType : symbol.superTypes()) {
-        if (classType.is(fullyQualifiedName)) {
-          return true;
-        }
       }
     } else if (isTagged(ARRAY)) {
       return fullyQualifiedName.endsWith("[]") && ((ArrayType) this).elementType.isSubtypeOf(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2));
     } else if (isTagged(TYPEVAR)) {
       return erasure().isSubtypeOf(fullyQualifiedName);
+    }
+    return false;
+  }
+
+  private boolean superTypeContains(String fullyQualifiedName) {
+    for (ClassType classType : symbol.superTypes()) {
+      if (classType.is(fullyQualifiedName)) {
+        return true;
+      }
     }
     return false;
   }
@@ -173,11 +177,11 @@ public class Type {
 
   public static class ArrayType extends Type {
 
+    private final ArrayType erasure;
     /**
      * Type of elements of this array.
      */
     Type elementType;
-    private final ArrayType erasure;
 
     /**
      * @param arrayClass {@link Symbols#arrayClass}

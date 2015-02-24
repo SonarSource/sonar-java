@@ -62,7 +62,8 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (isSingleStatementMethod(methodTree) && isUselessSuperCall(methodTree) && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations()) && !isFinalEquals(methodTree)) {
+    if (isSingleStatementMethod(methodTree) && isUselessSuperCall(methodTree)
+      && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations()) && !isFinalEquals(methodTree)) {
       addIssue(methodTree, "Remove this method to simply inherit it.");
     }
   }
@@ -103,8 +104,8 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
 
   private boolean callSuperMethodWithSameName(MemberSelectExpressionTree mset, MethodTree methodTree) {
     return mset.expression().is(Tree.Kind.IDENTIFIER)
-        && "super".equals(((IdentifierTree) mset.expression()).name())
-        && mset.identifier().name().equals(methodTree.simpleName().name());
+      && "super".equals(((IdentifierTree) mset.expression()).name())
+      && mset.identifier().name().equals(methodTree.simpleName().name());
   }
 
   private boolean callsWithSameParameters(List<ExpressionTree> arguments, List<VariableTree> parameters) {
@@ -134,6 +135,5 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
     }
     return false;
   }
-
 
 }
