@@ -43,7 +43,7 @@ import java.util.List;
 
 @Rule(
   key = "S2445",
-  name = "Blocks synchronized on fields should not contain assignments new objects to those fields",
+  name = "Blocks synchronized on fields should not contain assignments of new objects to those fields",
   tags = {"multi-threading", "bug"},
   priority = Priority.BLOCKER)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
