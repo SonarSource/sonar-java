@@ -146,7 +146,7 @@ public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implemen
       count = breakAndContinueCounter.pop();
     }
     if (count > 1) {
-      context.addIssue(tree, ruleKey, "Reduce the total number of break and continue statement in this loop to use at most one.");
+      context.addIssue(tree, ruleKey, "Reduce the total number of break and continue statements in this loop to use at most one.");
     }
     loopCount--;
     currentScopeIsSwitch.pop();
