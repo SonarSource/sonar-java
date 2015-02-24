@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Type;
 import org.sonar.java.resolve.Types;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -61,7 +62,6 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     }
   }
 
-
   private boolean isInnerClass(Symbol.TypeSymbol symbol) {
     return symbol.owner().isKind(Symbol.TYP);
   }
@@ -89,8 +89,10 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean isInherited(Symbol symbol) {
-      return !symbol.isStatic() && new Types().isSubtype(classSymbol.getType(), symbol.owner().getType())
-        && !classSymbol.getType().equals(symbol.owner().getType());
+      Type methodOwnerType = symbol.owner().getType();
+      Type innerType = classSymbol.getType();
+      return !symbol.isStatic() && new Types().isSubtype(innerType, methodOwnerType)
+        && !classSymbol.owner().getType().equals(methodOwnerType) && !innerType.equals(methodOwnerType);
     }
 
     private boolean outerClassHasMethodWithSameName(Symbol symbol) {

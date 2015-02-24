@@ -43,3 +43,22 @@ class OuterClass {
     }
   }
 }
+class Foo extends OuterClass2 {}
+class OuterClass2 {
+  void foo() {}
+
+  class innerClass extends Foo {
+    void fun() {
+      foo();
+    }
+  }
+}
+class OuterClass3 {
+  void foo(){}
+  class innerClass {
+    void foo() {}
+    void fun() {
+      foo();
+    }
+  }
+}
