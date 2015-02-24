@@ -55,7 +55,15 @@ class A {
     instance5 = 12;  // compliant - primitive type
     return instance5;
   }
-
+  private static final URI FAKE_URI;
+  static {
+    try {
+      FAKE_URI = new URI("tests://unittest");
+    } catch (URISyntaxException e) {
+      // Can't happen
+      throw new IllegalStateException(e);
+    }
+  }
 
 
 }
