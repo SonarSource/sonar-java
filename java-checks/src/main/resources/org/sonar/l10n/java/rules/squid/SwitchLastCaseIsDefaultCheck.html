@@ -1,7 +1,43 @@
 <p>The requirement for a final <code>default</code> clause is defensive programming. The clause should either take appropriate action, or contain a suitable comment as to why no action is taken.</p>
+
 <h2>Noncompliant Code Example</h2>
+<pre>
+switch (param) {  //missing default clause
+  case 0:
+    doSomething();
+    break;
+  case 1:
+    doSomethingElse();
+    break;
+}
+
+switch (param) {
+  default: // default clause should be the last one
+    error();
+    break;
+  case 0:
+    doSomething();
+    break;
+  case 1:
+    doSomethingElse();
+    break;
+}
+</pre>
 
 <h2>Compliant Solution</h2>
+<pre>
+switch (param) {
+  case 0:
+    doSomething();
+    break;
+  case 1:
+    doSomethingElse();
+    break;
+  default:
+    error();
+    break;
+}
+</pre>
 
 <h2>See</h2>
 
