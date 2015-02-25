@@ -44,7 +44,7 @@ import java.util.List;
 
 @Rule(
   key = "HiddenFieldCheck",
-  name = "Local variables should not (shadow|have the same name as) class fields",
+  name = "Local variables should not shadow class fields",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
