@@ -65,5 +65,15 @@ class A {
     }
   }
 
+  private static URI FAKE_URI2;
+  static {
+    try {
+      FAKE_URI2 = new URI("tests://unittest");
+    } catch (URISyntaxException e) {
+      // Can't happen
+      throw new IllegalStateException(e);
+    }
+  }
+
 
 }

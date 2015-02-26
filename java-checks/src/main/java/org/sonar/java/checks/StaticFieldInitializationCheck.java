@@ -25,12 +25,15 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
@@ -42,28 +45,48 @@ import java.util.List;
 @SqaleConstantRemediation("30min")
 public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker {
 
+  private Deque<Boolean> withinStaticInitializer = new LinkedList<>();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION, Tree.Kind.SYNCHRONIZED_STATEMENT);
+    return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION, Tree.Kind.SYNCHRONIZED_STATEMENT, Tree.Kind.STATIC_INITIALIZER);
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    withinStaticInitializer.push(false);
+    super.scanFile(context);
+    withinStaticInitializer.clear();
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic() && tree.is(Tree.Kind.ASSIGNMENT)) {
       AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
-      if (aet.variable().is(Tree.Kind.IDENTIFIER) && !isInSyncBlock()) {
+      if (aet.variable().is(Tree.Kind.IDENTIFIER) && !isInSyncBlock() && !withinStaticInitializer.peek()) {
         IdentifierTree variable = (IdentifierTree) aet.variable();
         if (isStaticNotVolatileObject(variable)) {
           addIssue(variable, "Synchronize this lazy initialization of '" + variable.name() + "'");
         }
       }
     }
+    if (tree.is(Tree.Kind.STATIC_INITIALIZER)) {
+      withinStaticInitializer.push(true);
+    }
     super.visitNode(tree);
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.STATIC_INITIALIZER)) {
+      withinStaticInitializer.pop();
+    }
+    super.leaveNode(tree);
   }
 
   private boolean isStaticNotVolatileObject(IdentifierTree variable) {
     Symbol symbol = getSemanticModel().getReference(variable);
-    if( symbol != null ) {
+    if (symbol != null) {
       return isStaticNotFinalNotVolatile(symbol) && !symbol.getType().isPrimitive();
     }
     return false;
