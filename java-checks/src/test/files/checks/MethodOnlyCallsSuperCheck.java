@@ -106,7 +106,27 @@ class A {
   }
 
   @Override
+  public int hashCode() {//non compliant, hashCode is not final
+    return super.hashCode();
+  }
+
+  @Override
+  public String toString() {//non compliant, string is not final
+    return super.toString();
+  }
+
+  @Override
   public final boolean equals(Object obj) { //Compliant, equals is final
     return super.equals(obj);
+  }
+
+  @Override
+  public final int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  public final String toString() {
+    return super.toString();
   }
 }

@@ -63,14 +63,18 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (isSingleStatementMethod(methodTree) && isUselessSuperCall(methodTree)
-      && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations()) && !isFinalEquals(methodTree)) {
+      && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations()) && !isFinalObjectMethod(methodTree)) {
       addIssue(methodTree, "Remove this method to simply inherit it.");
     }
   }
 
-  private boolean isFinalEquals(MethodTree methodTree) {
+  private boolean isFinalObjectMethod(MethodTree methodTree) {
     MethodTreeImpl methodTreeImpl = (MethodTreeImpl) methodTree;
-    return hasSemantic() && methodTree.modifiers().modifiers().contains(Modifier.FINAL) && methodTreeImpl.isEqualsMethod();
+    return hasSemantic() && methodTree.modifiers().modifiers().contains(Modifier.FINAL) && isObjectMethod(methodTreeImpl);
+  }
+
+  private boolean isObjectMethod(MethodTreeImpl methodTreeImpl) {
+    return methodTreeImpl.isEqualsMethod() || methodTreeImpl.isHashCodeMethod() || methodTreeImpl.isToStringMethod();
   }
 
   private boolean isSingleStatementMethod(MethodTree methodTree) {

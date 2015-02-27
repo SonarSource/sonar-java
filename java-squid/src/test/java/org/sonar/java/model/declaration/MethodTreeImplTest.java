@@ -125,6 +125,27 @@ public class MethodTreeImplTest {
   }
 
   @Test
+  public void is_hashcode_method() throws Exception {
+    assertThat(getUniqueMethod("class A { public int hashCode(){} }").isHashCodeMethod()).isTrue();
+    assertThat(getUniqueMethod("class A { public static int hashCode(){} }").isHashCodeMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { private int hashCode(){} }").isHashCodeMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public int hashcode(){} }").isHashCodeMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public boolean hashCode(){} }").isHashCodeMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public int hashCode(int a){} }").isHashCodeMethod()).isFalse();
+  }
+
+  @Test
+  public void is_toString_method() throws Exception {
+    assertThat(getUniqueMethod("class A { public String toString(){} }").isToStringMethod()).isTrue();
+    assertThat(getUniqueMethod("class A { public java.lang.String toString(){} }").isToStringMethod()).isTrue();
+    assertThat(getUniqueMethod("class A { public static String toString(){} }").isToStringMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { private String toString(){} }").isToStringMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public String tostring(){} }").isToStringMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public int toString(){} }").isToStringMethod()).isFalse();
+    assertThat(getUniqueMethod("class A { public String toString(String foo){} }").isToStringMethod()).isFalse();
+  }
+
+  @Test
   public void varargs_flag() {
     assertThat((getUniqueMethod("class A { public static void main(String[] args){} }").getSymbol().flags() & Flags.VARARGS) != 0).isFalse();
     assertThat((getUniqueMethod("class A { public static void main(String... args){} }").getSymbol().flags() & Flags.VARARGS) != 0).isTrue();

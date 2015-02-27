@@ -281,10 +281,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   private boolean returnsVoid() {
-    if (returnType != null) {
-      return returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
-    }
-    return false;
+    return returnsPrimitive("void");
   }
 
   private boolean isNamed(String name) {
@@ -301,8 +298,33 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   private boolean returnsBoolean() {
+    return returnsPrimitive("boolean");
+  }
+
+  private boolean returnsPrimitive(String primitive) {
     if (returnType != null) {
-      return returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "boolean".equals(((PrimitiveTypeTree) returnType).keyword().text());
+      return returnType.is(Tree.Kind.PRIMITIVE_TYPE) && primitive.equals(((PrimitiveTypeTree) returnType).keyword().text());
+    }
+    return false;
+  }
+
+  public boolean isHashCodeMethod() {
+    boolean hasHashCodeSignature = isNamed("hashCode") && parameters.isEmpty() && returnsInt();
+    return isPublic() && !isStatic() && hasHashCodeSignature;
+  }
+
+  private boolean returnsInt() {
+    return returnsPrimitive("int");
+  }
+
+  public boolean isToStringMethod() {
+    boolean hasToStringSignature = isNamed("toString") && parameters.isEmpty() && returnsString();
+    return isPublic() && !isStatic() && hasToStringSignature;
+  }
+
+  private boolean returnsString() {
+    if (returnType != null) {
+      return ((AbstractTypedTree) returnType).getSymbolType().is("java.lang.String");
     }
     return false;
   }
