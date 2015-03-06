@@ -71,7 +71,9 @@ public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> {
 
   private void check(int caseStartLine, int nextCaseStartLine) {
     int lines = Math.max(nextCaseStartLine - caseStartLine, 1);
-
+    // That number is not correct if the case statement contains empty lines.
+    // My students like to create empty lines in their code and their are caught
+    // by that too simple calculation.
     if (lines > max) {
       getContext().createLineViolation(
         this,
