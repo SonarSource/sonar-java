@@ -37,6 +37,10 @@ public class AnnotationInstance {
     values.add(annotationValue);
   }
 
+  public Symbol.TypeSymbol getTypeSymbol() {
+    return this.typeSymbol;
+  }
+
   public boolean isTyped(String annotationQualifiedClassName) {
     return typeSymbol.type.is(annotationQualifiedClassName);
   }
