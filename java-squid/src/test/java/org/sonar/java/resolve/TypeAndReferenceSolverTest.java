@@ -27,6 +27,9 @@ import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -35,6 +38,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -63,7 +67,6 @@ public class TypeAndReferenceSolverTest {
   public void setUp() {
     Symbol.PackageSymbol p = symbols.defaultPackage;
     p.members = new Scope(p);
-
     // class MyClass
     classSymbol = new Symbol.TypeSymbol(0, "MyClass", p);
     classType = (Type.ClassType) classSymbol.type;
@@ -89,7 +92,6 @@ public class TypeAndReferenceSolverTest {
     ((Symbol.MethodSymbol)argMethodSymbol).setMethodType(new Type.MethodType(ImmutableList.of(symbols.intType), symbols.intType, ImmutableList.<Type>of(), classSymbol));
     classSymbol.members.enter(argMethodSymbol);
 
-
     classSymbol.members.enter(new Symbol.VariableSymbol(0, "this", classType, classSymbol));
     classSymbol.members.enter(new Symbol.VariableSymbol(0, "super", classType.supertype, classSymbol));
 
@@ -110,6 +112,69 @@ public class TypeAndReferenceSolverTest {
     env.outer = compilationUnitEnv;
     env.enclosingClass = classSymbol;
     env.scope = classSymbol.members;
+  }
+
+  @Test
+  public void annotation_on_method() {
+    CompilationUnitTree compilationUnit = treeOf("@interface MyAnnotation { } class Class { @MyAnnotation void method() { } }");
+    ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
+    ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(1);
+    MethodTreeImpl method = (MethodTreeImpl) clazz.members().get(0);
+    List<AnnotationInstance> annotations = method.getSymbol().metadata().annotations();
+    assertThat(annotations.size()).isEqualTo(1);
+    assertThat(annotations.get(0).getTypeSymbol()).isSameAs(annotation.getSymbol());
+  }
+
+  @Test
+  public void annotation_on_type() {
+    CompilationUnitTree compilationUnit = treeOf("@interface MyAnnotation { } @MyAnnotation class Class { }");
+    ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
+    ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(1);
+    List<AnnotationInstance> annotations = clazz.getSymbol().metadata().annotations();
+    assertThat(annotations.size()).isEqualTo(1);
+    assertThat(annotations.get(0).getTypeSymbol()).isSameAs(annotation.getSymbol());
+  }
+
+  @Test
+  public void annotation_on_variable() {
+    CompilationUnitTree compilationUnit = treeOf("@interface MyAnnotation { } class Class { @MyAnnotation Object field; }");
+    ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
+    ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(1);
+    VariableTreeImpl variable = (VariableTreeImpl) clazz.members().get(0);
+    List<AnnotationInstance> annotations = variable.getSymbol().metadata().annotations();
+    assertThat(annotations.size()).isEqualTo(1);
+    assertThat(annotations.get(0).getTypeSymbol()).isSameAs(annotation.getSymbol());
+  }
+
+  @Test
+  public void annotation_completion() {
+    AnnotationInstance annotation1 = extractFirstAnnotationInstance("@interface MyAnnotation { } @MyAnnotation() class Class { }");
+    assertThat(annotation1.values()).isEmpty();
+
+    AnnotationInstance annotation2 = extractFirstAnnotationInstance("@interface MyAnnotation { } @MyAnnotation(expr) class Class { }");
+    assertThat(annotation2.values().size()).isEqualTo(1);
+    assertThat(annotation2.values().get(0).name()).isEqualTo("");
+    // FIXME(merciesa): check value 'expr'
+
+    AnnotationInstance annotation3 = extractFirstAnnotationInstance("@interface MyAnnotation { public static final String field; String value(); } @MyAnnotation(expr) class Class { }");
+    assertThat(annotation3.values().size()).isEqualTo(1);
+    assertThat(annotation3.values().get(0).name()).isEqualTo("value");
+    // FIXME(merciesa): check value 'expr'
+
+    AnnotationInstance annotation4 = extractFirstAnnotationInstance("@interface MyAnnotation { } @MyAnnotation(expr = val) class Class { }");
+    assertThat(annotation4.values().size()).isEqualTo(1);
+    assertThat(annotation4.values().get(0).name()).isEqualTo("expr");
+    // FIXME(merciesa): check value 'expr'
+
+    AnnotationInstance annotation5 = extractFirstAnnotationInstance("@interface MyAnnotation { } @MyAnnotation(expr1 = val1, expr2 = val2) class Class { }");
+    assertThat(annotation5.values().size()).isEqualTo(2);
+    assertThat(annotation5.values().get(0).name()).isEqualTo("expr1");
+    assertThat(annotation5.values().get(1).name()).isEqualTo("expr2");
+    // FIXME(merciesa): check values 'expr1' and  'expr2'
+  }
+
+  private AnnotationInstance extractFirstAnnotationInstance(String source) {
+    return ((ClassTreeImpl) treeOf(source).types().get(1)).getSymbol().metadata().annotations().get(0);
   }
 
   @Test
@@ -392,6 +457,12 @@ public class TypeAndReferenceSolverTest {
   private static final String BOOLEAN = "true";
   private static final String NULL = "null";
   private static final String STRING = "\"string\"";
+
+  private CompilationUnitTree treeOf(String input) {
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(input);
+    SemanticModel.createFor(tree, ImmutableList.<File>of());
+    return tree;
+  }
 
   private Type typeOf(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
