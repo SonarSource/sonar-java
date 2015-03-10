@@ -17,16 +17,26 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.plugins.java.api;
 
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.rules.RuleAnnotationUtils;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.Tree;
 
-public abstract class SubscriptionBaseVisitor extends IssuableSubscriptionVisitor {
+public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
-  @Override
-  protected RuleKey ruleKey() {
-    return RuleKey.of(CheckList.REPOSITORY_KEY, RuleAnnotationUtils.getRuleKey(this.getClass()));
+  public void addIssue(Tree tree, String message) {
+    context.addIssue(tree, ruleKey(), message);
   }
+
+  public void addIssue(int line, String message) {
+    context.addIssue(line, ruleKey(), message);
+  }
+
+  public void addIssueOnFile(String message) {
+    context.addIssueOnFile(ruleKey(), message);
+  }
+
+  protected abstract RuleKey ruleKey();
+
 }
