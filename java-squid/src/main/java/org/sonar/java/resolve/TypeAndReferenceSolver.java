@@ -28,6 +28,7 @@ import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
@@ -108,6 +109,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitMethod(MethodTree tree) {
     //skip return type, args, and throw clauses : visited in second pass.
     scan(tree.modifiers());
+    completeMetadata(((MethodTreeImpl) tree).getSymbol(), tree.modifiers().annotations());
     scan(tree.typeParameters());
     scan(tree.defaultValue());
     scan(tree.block());
@@ -122,8 +124,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     scan(tree.members());
   }
 
-  //FIXME also support method symbol and field symbols
-  private void completeMetadata(Symbol.TypeSymbol symbol, List<AnnotationTree> annotations) {
+  private void completeMetadata(Symbol symbol, List<AnnotationTree> annotations) {
     for (AnnotationTree tree : annotations) {
       AnnotationTreeImpl treeImpl = (AnnotationTreeImpl) tree;
       AnnotationInstance annotationInstance = new AnnotationInstance(treeImpl.getSymbolType().getSymbol());
@@ -141,7 +142,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
   }
 
-  private void addConstantValue(Symbol.TypeSymbol symbol, AnnotationTree tree, AnnotationInstance annotationInstance) {
+  private void addConstantValue(Symbol symbol, AnnotationTree tree, AnnotationInstance annotationInstance) {
     Collection<Symbol> scopeSymbols = ((AbstractTypedTree) tree.annotationType()).getSymbolType().getSymbol().members().scopeSymbols();
     for (ExpressionTree expressionTree : tree.arguments()) {
       String name = "";
@@ -481,6 +482,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitVariable(VariableTree tree) {
     scan(tree.modifiers());
+    completeMetadata(((VariableTreeImpl) tree).getSymbol(), tree.modifiers().annotations());
     //skip type, it has been resolved in second pass
     if (tree.initializer() != null) {
       resolveAs(tree.initializer(), Symbol.VAR);
