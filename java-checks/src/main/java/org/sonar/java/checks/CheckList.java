@@ -300,7 +300,8 @@ public final class CheckList {
       CallSuperMethodFromInnerClassCheck.class,
       SelectorMethodArgumentCheck.class,
       ThreadAsRunnableArgumentCheck.class,
-      SynchronizedFieldAssignmentCheck.class
+      SynchronizedFieldAssignmentCheck.class,
+      NullPointerCheck.class
       );
   }
 }
