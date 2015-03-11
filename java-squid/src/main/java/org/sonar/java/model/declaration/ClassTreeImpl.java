@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameters;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -50,8 +51,8 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private IdentifierTree simpleName;
   private TypeParameters typeParameters;
   @Nullable
-  private Tree superClass;
-  private List<Tree> superInterfaces;
+  private TypeTree superClass;
+  private List<TypeTree> superInterfaces;
   private final List<Tree> members;
 
   // FIXME(Godin): never should be null, i.e. should have default value
@@ -88,7 +89,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   public ClassTreeImpl(
     AstNode astNode, Kind kind,
-    ModifiersTree modifiers, @Nullable IdentifierTree simpleName, TypeParameters typeParameters, @Nullable Tree superClass, List<Tree> superInterfaces, List<Tree> members) {
+    ModifiersTree modifiers, @Nullable IdentifierTree simpleName, TypeParameters typeParameters, @Nullable TypeTree superClass, List<TypeTree> superInterfaces, List<Tree> members) {
     super(astNode);
     this.kind = Preconditions.checkNotNull(kind);
     this.modifiers = Preconditions.checkNotNull(modifiers);
@@ -114,13 +115,13 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return this;
   }
 
-  public ClassTreeImpl completeSuperclass(Tree superClass) {
+  public ClassTreeImpl completeSuperclass(TypeTree superClass) {
     this.superClass = superClass;
     return this;
   }
 
   public ClassTreeImpl completeInterfaces(QualifiedIdentifierListTreeImpl interfaces) {
-    this.superInterfaces = (List) interfaces;
+    this.superInterfaces = interfaces;
     return this;
   }
 
@@ -156,12 +157,12 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Nullable
   @Override
-  public Tree superClass() {
+  public TypeTree superClass() {
     return superClass;
   }
 
   @Override
-  public List<Tree> superInterfaces() {
+  public List<TypeTree> superInterfaces() {
     return superInterfaces;
   }
 

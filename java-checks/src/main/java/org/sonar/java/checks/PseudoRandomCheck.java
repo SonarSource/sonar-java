@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -50,7 +50,7 @@ public class PseudoRandomCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (isMathRandom(tree) || isJavaUtilRandom(tree)) {
+    if (isMathRandom(tree) || isJavaUtilRandom((ExpressionTree) tree)) {
       addIssue(tree, "Use a cryptographically strong random number generator (RNG) like \"java.security.SecureRandom\" in place of this PRNG");
     }
   }
@@ -59,7 +59,7 @@ public class PseudoRandomCheck extends SubscriptionBaseVisitor {
     return tree.is(Tree.Kind.METHOD_INVOCATION) && hasSemantic() && methodInvocationMatcher.matches((MethodInvocationTree) tree, getSemanticModel());
   }
 
-  private boolean isJavaUtilRandom(Tree tree) {
-    return tree.is(Tree.Kind.NEW_CLASS) && ((AbstractTypedTree) tree).getSymbolType().is("java.util.Random");
+  private boolean isJavaUtilRandom(ExpressionTree tree) {
+    return tree.is(Tree.Kind.NEW_CLASS) && tree.symbolType().is("java.util.Random");
   }
 }

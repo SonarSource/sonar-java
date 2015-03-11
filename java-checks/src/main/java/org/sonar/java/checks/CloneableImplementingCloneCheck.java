@@ -23,13 +23,13 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -73,9 +73,8 @@ public class CloneableImplementingCloneCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isCloneable(ClassTreeImpl classTree) {
-    for (Tree superInterface : classTree.superInterfaces()) {
-      AbstractTypedTree typedInterface = (AbstractTypedTree) superInterface;
-      if (typedInterface.getSymbolType().is("java.lang.Cloneable")) {
+    for (TypeTree superInterface : classTree.superInterfaces()) {
+      if (superInterface.symbolType().is("java.lang.Cloneable")) {
         return true;
       }
     }

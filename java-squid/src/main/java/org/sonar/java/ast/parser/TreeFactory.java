@@ -743,7 +743,7 @@ public class TreeFactory {
     return new Tuple<InternalSyntaxToken, ExpressionTree>(defaultToken, elementValue);
   }
 
-  public AnnotationTreeImpl newAnnotation(AstNode atTokenAstNode, ExpressionTree qualifiedIdentifier, Optional<ArgumentListTreeImpl> arguments) {
+  public AnnotationTreeImpl newAnnotation(AstNode atTokenAstNode, TypeTree qualifiedIdentifier, Optional<ArgumentListTreeImpl> arguments) {
     InternalSyntaxToken atToken = InternalSyntaxToken.create(atTokenAstNode);
 
     return new AnnotationTreeImpl(
@@ -1840,7 +1840,7 @@ public class TreeFactory {
     return new ArgumentListTreeImpl(expressions.build(), children);
   }
 
-  public ExpressionTree annotationIdentifier(AstNode firstIdentifier, Optional<List<Tuple<AstNode, AstNode>>> rests) {
+  public TypeTree annotationIdentifier(AstNode firstIdentifier, Optional<List<Tuple<AstNode, AstNode>>> rests) {
     List<AstNode> children = Lists.newArrayList();
     children.add(firstIdentifier);
     if (rests.isPresent()) {
@@ -1876,7 +1876,7 @@ public class TreeFactory {
       }
     }
 
-    return (ExpressionTree) result;
+    return (TypeTree) result;
   }
 
   public <T extends Tree> T  newQualifiedIdentifier(ExpressionTree firstIdentifier, Optional<List<Tuple<AstNode, ExpressionTree>>> rests) {

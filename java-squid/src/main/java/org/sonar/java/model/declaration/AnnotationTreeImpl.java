@@ -28,18 +28,20 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationTree {
 
-  private final Tree annotationType;
+  private final TypeTree annotationType;
   private final List<ExpressionTree> arguments;
 
-  public AnnotationTreeImpl(InternalSyntaxToken atToken, Tree annotationType, @Nullable ArgumentListTreeImpl arguments) {
+  public AnnotationTreeImpl(InternalSyntaxToken atToken, TypeTree annotationType, @Nullable ArgumentListTreeImpl arguments) {
     super(Kind.ANNOTATION);
     this.annotationType = annotationType;
     this.arguments = arguments == null ? Collections.<ExpressionTree>emptyList() : arguments;
@@ -51,14 +53,14 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
     }
   }
 
-  public AnnotationTreeImpl(AstNode astNode, Tree annotationType, List<ExpressionTree> arguments) {
+  public AnnotationTreeImpl(AstNode astNode, TypeTree annotationType, List<ExpressionTree> arguments) {
     super(astNode);
     this.annotationType = annotationType;
     this.arguments = arguments;
   }
 
   @Override
-  public Tree annotationType() {
+  public TypeTree annotationType() {
     return annotationType;
   }
 
