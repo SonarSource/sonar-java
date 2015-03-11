@@ -126,6 +126,18 @@ public class TypeAndReferenceSolverTest {
   }
 
   @Test
+  public void annotation_on_method_parameter() {
+    CompilationUnitTree compilationUnit = treeOf("@interface MyAnnotation { } class Class { void method(@MyAnnotation int a) { } }");
+    ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
+    ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(1);
+    MethodTreeImpl method = (MethodTreeImpl) clazz.members().get(0);
+    VariableTreeImpl  parameter = (VariableTreeImpl)method.parameters().get(0);
+    List<AnnotationInstance> annotations = parameter.getSymbol().metadata().annotations();
+    assertThat(annotations.size()).isEqualTo(1);
+    assertThat(annotations.get(0).isTyped(annotation.getSymbol().getName())).isTrue();
+  }
+
+  @Test
   public void annotation_on_type() {
     CompilationUnitTree compilationUnit = treeOf("@interface MyAnnotation { } @MyAnnotation class Class { }");
     ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
@@ -154,23 +166,19 @@ public class TypeAndReferenceSolverTest {
     AnnotationInstance annotation2 = extractFirstAnnotationInstance("@interface MyAnnotation { } @MyAnnotation(expr) class Class { }");
     assertThat(annotation2.values().size()).isEqualTo(1);
     assertThat(annotation2.values().get(0).name()).isEqualTo("");
-    // TODO(merciesa): check value 'expr'
 
     AnnotationInstance annotation3 = extractFirstAnnotationInstance("@interface MyAnnotation { public static final String field; String value(); } @MyAnnotation(expr) class Class { }");
     assertThat(annotation3.values().size()).isEqualTo(1);
     assertThat(annotation3.values().get(0).name()).isEqualTo("value");
-    // TODO(merciesa): check value 'expr'
 
     AnnotationInstance annotation4 = extractFirstAnnotationInstance("@interface MyAnnotation { } @MyAnnotation(expr = val) class Class { }");
     assertThat(annotation4.values().size()).isEqualTo(1);
     assertThat(annotation4.values().get(0).name()).isEqualTo("expr");
-    // TODO(merciesa): check value 'expr'
 
     AnnotationInstance annotation5 = extractFirstAnnotationInstance("@interface MyAnnotation { } @MyAnnotation(expr1 = val1, expr2 = val2) class Class { }");
     assertThat(annotation5.values().size()).isEqualTo(2);
     assertThat(annotation5.values().get(0).name()).isEqualTo("expr1");
     assertThat(annotation5.values().get(1).name()).isEqualTo("expr2");
-    // TODO(merciesa): check values 'expr1' and  'expr2'
   }
 
   private AnnotationInstance extractFirstAnnotationInstance(String source) {
