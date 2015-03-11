@@ -17,17 +17,11 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.plugins.java.api.semantic;
 
-import com.google.common.annotations.Beta;
-import org.sonar.plugins.java.api.semantic.Type;
+public interface Symbol {
 
-/**
- * Common interface for all types of expressions.
- *
- * JLS 15
- */
-@Beta
-public interface ExpressionTree extends Tree {
-  Type symbolType();
+
+
+
 }
