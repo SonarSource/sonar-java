@@ -24,7 +24,7 @@ import org.sonar.java.model.AbstractTypedTree;
 
 import java.util.Iterator;
 
-public class InferedTypeTree extends AbstractTypedTree {
+public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
 
 
   public InferedTypeTree(){

@@ -39,7 +39,7 @@ public interface VariableTree extends StatementTree {
 
   ModifiersTree modifiers();
 
-  Tree type();
+  TypeTree type();
 
   IdentifierTree simpleName();
 

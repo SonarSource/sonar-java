@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -41,7 +42,7 @@ import java.util.List;
 public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree {
 
   private ExpressionTree enclosingExpression;
-  private ExpressionTree identifier;
+  private TypeTree identifier;
   private final List<ExpressionTree> arguments;
   @Nullable
   private final ClassTree classBody;
@@ -57,7 +58,7 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     }
   }
 
-  public NewClassTreeImpl completeWithIdentifier(ExpressionTree identifier) {
+  public NewClassTreeImpl completeWithIdentifier(TypeTree identifier) {
     this.identifier = identifier;
     return this;
   }

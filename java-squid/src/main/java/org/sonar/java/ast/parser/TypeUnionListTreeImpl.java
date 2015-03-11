@@ -20,13 +20,13 @@
 package org.sonar.java.ast.parser;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.List;
 
-public class TypeUnionListTreeImpl extends ListTreeImpl<Tree> {
+public class TypeUnionListTreeImpl extends ListTreeImpl<TypeTree> {
 
-  public TypeUnionListTreeImpl(List<Tree> types, List<AstNode> children) {
+  public TypeUnionListTreeImpl(List<TypeTree> types, List<AstNode> children) {
     super(JavaLexer.CATCH_TYPE, types, children);
   }
 

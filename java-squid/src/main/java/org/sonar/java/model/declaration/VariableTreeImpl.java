@@ -33,15 +33,17 @@ import org.sonar.plugins.java.api.tree.InferedTypeTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
 public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ModifiersTree modifiers;
-  private Tree type;
+  private TypeTree type;
   private IdentifierTree simpleName;
   @Nullable
   private ExpressionTree initializer;
@@ -91,7 +93,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     this.initializer = initializer;
   }
 
-  public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
+  public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, TypeTree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
     super(astNode);
     this.modifiers = Preconditions.checkNotNull(modifiers);
     this.type = Preconditions.checkNotNull(type);
@@ -100,8 +102,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     this.initializer = initializer;
   }
 
-  public VariableTreeImpl completeType(Tree type) {
-    Tree actualType = type;
+  public VariableTreeImpl completeType(TypeTree type) {
+    TypeTree actualType = type;
 
     // TODO Remove logic?
     for (int i = isVararg() ? 1 + dims() : dims(); i > 0; i--) {
@@ -119,12 +121,12 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     return this;
   }
 
-  public VariableTreeImpl completeModifiersAndType(ModifiersTreeImpl modifiers, Tree type) {
+  public VariableTreeImpl completeModifiersAndType(ModifiersTreeImpl modifiers, TypeTree type) {
     return completeModifiers(modifiers).
       completeType(type);
   }
 
-  public VariableTreeImpl completeTypeAndInitializer(Tree type, ExpressionTree initializer) {
+  public VariableTreeImpl completeTypeAndInitializer(TypeTree type, ExpressionTree initializer) {
     this.initializer = initializer;
 
     return completeType(type);
@@ -160,7 +162,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   @Override
-  public Tree type() {
+  public TypeTree type() {
     return type;
   }
 
