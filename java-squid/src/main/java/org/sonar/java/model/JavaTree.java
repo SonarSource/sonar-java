@@ -311,7 +311,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     private final Kind kind;
     @Nullable
-    private final Tree bound;
+    private final TypeTree bound;
 
     public WildcardTreeImpl(Kind kind, InternalSyntaxToken queryToken) {
       super(kind);
@@ -346,12 +346,6 @@ public abstract class JavaTree extends AstNode implements Tree {
       return this;
     }
 
-    public WildcardTreeImpl(AstNode astNode, Kind kind, @Nullable Tree bound) {
-      super(astNode);
-      this.kind = Preconditions.checkNotNull(kind);
-      this.bound = bound;
-    }
-
     @Override
     public Kind getKind() {
       return kind;
@@ -359,7 +353,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Nullable
     @Override
-    public Tree bound() {
+    public TypeTree bound() {
       return bound;
     }
 
@@ -370,7 +364,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.singletonIterator(
+      return Iterators.<Tree>singletonIterator(
         bound
         );
     }
