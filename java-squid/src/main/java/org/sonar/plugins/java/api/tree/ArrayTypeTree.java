@@ -33,8 +33,8 @@ import com.google.common.annotations.Beta;
  * @since Java 1.3
  */
 @Beta
-public interface ArrayTypeTree extends ExpressionTree {
+public interface ArrayTypeTree extends ExpressionTree, TypeTree {
 
-  Tree type();
+  TypeTree type();
 
 }

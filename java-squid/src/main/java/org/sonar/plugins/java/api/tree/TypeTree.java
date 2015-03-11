@@ -19,18 +19,5 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
-/**
- * Primitive type.
- *
- * JLS 4.2
- *
- * @since Java 1.3
- */
-@Beta
-public interface PrimitiveTypeTree extends TypeTree, ExpressionTree {
-
-  SyntaxToken keyword();
-
+public interface TypeTree extends Tree {
 }

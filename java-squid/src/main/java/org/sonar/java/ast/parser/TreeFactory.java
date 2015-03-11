@@ -93,6 +93,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collections;
@@ -216,11 +217,11 @@ public class TreeFactory {
 
   // Types
 
-  public ExpressionTree newType(ExpressionTree basicOrClassType, Optional<List<AstNode>> dims) {
+  public TypeTree newType(TypeTree basicOrClassType, Optional<List<AstNode>> dims) {
     if (!dims.isPresent()) {
       return basicOrClassType;
     } else {
-      ExpressionTree result = basicOrClassType;
+      TypeTree result = basicOrClassType;
 
       for (AstNode dim : dims.get()) {
         List<AstNode> children = Lists.newArrayList();
@@ -275,7 +276,7 @@ public class TreeFactory {
     return partial;
   }
 
-  public ExpressionTree newBasicTypeArgument(ExpressionTree type) {
+  public TypeTree newBasicTypeArgument(TypeTree type) {
     return type;
   }
 
@@ -287,7 +288,7 @@ public class TreeFactory {
       new WildcardTreeImpl(Kind.UNBOUNDED_WILDCARD, queryToken);
   }
 
-  public WildcardTreeImpl newWildcardTypeArguments(AstNode extendsOrSuperTokenAstNode, Optional<List<AnnotationTreeImpl>> annotations, ExpressionTree type) {
+  public WildcardTreeImpl newWildcardTypeArguments(AstNode extendsOrSuperTokenAstNode, Optional<List<AnnotationTreeImpl>> annotations, TypeTree type) {
     InternalSyntaxToken extendsOrSuperToken = InternalSyntaxToken.create(extendsOrSuperTokenAstNode);
     return new WildcardTreeImpl(
       JavaKeyword.EXTENDS.getValue().equals(extendsOrSuperToken.text()) ? Kind.EXTENDS_WILDCARD : Kind.SUPER_WILDCARD,
@@ -337,7 +338,7 @@ public class TreeFactory {
     return new TypeParameterTreeImpl(InternalSyntaxToken.create(extendsTokenAstNode), bounds);
   }
 
-  public BoundListTreeImpl newBounds(ExpressionTree classType, Optional<List<AstNode>> rests) {
+  public BoundListTreeImpl newBounds(TypeTree classType, Optional<List<AstNode>> rests) {
     ImmutableList.Builder<Tree> classTypes = ImmutableList.builder();
     List<AstNode> children = Lists.newArrayList();
 
@@ -366,7 +367,7 @@ public class TreeFactory {
   public ClassTreeImpl completeClassDeclaration(
     AstNode classTokenAstNode,
     AstNode identifierAstNode, Optional<TypeParameterListTreeImpl> typeParameters,
-    Optional<Tuple<AstNode, ExpressionTree>> extendsClause,
+    Optional<Tuple<AstNode, TypeTree>> extendsClause,
     Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> implementsClause,
     ClassTreeImpl partial) {
 
@@ -581,14 +582,14 @@ public class TreeFactory {
   }
 
   private MethodTreeImpl newMethodOrConstructor(
-    Optional<ExpressionTree> type, AstNode identifierAstNode, FormalParametersListTreeImpl parameters,
+    Optional<TypeTree> type, AstNode identifierAstNode, FormalParametersListTreeImpl parameters,
     Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> annotatedDimensions,
     Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> throwsClause,
     AstNode blockOrSemicolon) {
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
 
-    ExpressionTree actualType;
+    TypeTree actualType;
     if (type.isPresent()) {
       actualType = applyDim(type.get(), annotatedDimensions.isPresent() ? annotatedDimensions.get().size() : 0);
     } else {
@@ -599,7 +600,7 @@ public class TreeFactory {
       actualType,
       identifier,
       parameters,
-      throwsClause.isPresent() ? (List<ExpressionTree>) throwsClause.get().second() : ImmutableList.<ExpressionTree>of(),
+      throwsClause.isPresent() ? (List<TypeTree>) throwsClause.get().second() : ImmutableList.<TypeTree>of(),
       blockOrSemicolon.is(Kind.BLOCK) ? (BlockTreeImpl) blockOrSemicolon : null);
 
     List<AstNode> children = Lists.newArrayList();
@@ -630,7 +631,7 @@ public class TreeFactory {
   }
 
   public MethodTreeImpl newMethod(
-    ExpressionTree type, AstNode identifierAstNode, FormalParametersListTreeImpl parameters,
+    TypeTree type, AstNode identifierAstNode, FormalParametersListTreeImpl parameters,
     Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> annotatedDimensions,
     Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> throwsClause,
     AstNode blockOrSemicolon) {
@@ -644,10 +645,10 @@ public class TreeFactory {
     Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> throwsClause,
     AstNode blockOrSemicolon) {
 
-    return newMethodOrConstructor(Optional.<ExpressionTree>absent(), identifierAstNode, parameters, annotatedDimensions, throwsClause, blockOrSemicolon);
+    return newMethodOrConstructor(Optional.<TypeTree>absent(), identifierAstNode, parameters, annotatedDimensions, throwsClause, blockOrSemicolon);
   }
 
-  public VariableDeclaratorListTreeImpl completeFieldDeclaration(ExpressionTree type, VariableDeclaratorListTreeImpl partial, AstNode semicolonTokenAstNode) {
+  public VariableDeclaratorListTreeImpl completeFieldDeclaration(TypeTree type, VariableDeclaratorListTreeImpl partial, AstNode semicolonTokenAstNode) {
     partial.prependChildren((AstNode) type);
     for (VariableTreeImpl variable : partial) {
       variable.completeType(type);
@@ -716,7 +717,7 @@ public class TreeFactory {
     return partial;
   }
 
-  public AstNode completeAnnotationMethod(ExpressionTree type, AstNode identifierAstNode, MethodTreeImpl partial, AstNode semiTokenAstNode) {
+  public AstNode completeAnnotationMethod(TypeTree type, AstNode identifierAstNode, MethodTreeImpl partial, AstNode semiTokenAstNode) {
     partial.complete(type, new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode)));
     partial.addChild(semiTokenAstNode);
 
@@ -860,7 +861,7 @@ public class TreeFactory {
       new FormalParametersListTreeImpl(openParenToken, closeParenToken);
   }
 
-  public FormalParametersListTreeImpl completeTypeFormalParameters(ModifiersTreeImpl modifiers, ExpressionTree type, FormalParametersListTreeImpl partial) {
+  public FormalParametersListTreeImpl completeTypeFormalParameters(ModifiersTreeImpl modifiers, TypeTree type, FormalParametersListTreeImpl partial) {
     VariableTreeImpl variable = partial.get(0);
 
     variable.completeModifiersAndType(modifiers, type);
@@ -902,7 +903,7 @@ public class TreeFactory {
       dims.isPresent() ? dims.get() : ImmutableList.<AstNode>of());
   }
 
-  public VariableTreeImpl newFormalParameter(ModifiersTreeImpl modifiers, ExpressionTree type, VariableTreeImpl variable) {
+  public VariableTreeImpl newFormalParameter(ModifiersTreeImpl modifiers, TypeTree type, VariableTreeImpl variable) {
     variable.prependChildren(modifiers, (AstNode) type);
     return variable.completeType(type);
   }
@@ -913,7 +914,7 @@ public class TreeFactory {
 
   public VariableDeclaratorListTreeImpl completeLocalVariableDeclaration(
     ModifiersTreeImpl modifiers,
-    ExpressionTree type,
+    TypeTree type,
     VariableDeclaratorListTreeImpl variables,
     AstNode semicolonTokenAstNode) {
 
@@ -1053,7 +1054,7 @@ public class TreeFactory {
     return result;
   }
 
-  public StatementExpressionListTreeImpl newForInitDeclaration(ModifiersTreeImpl modifiers, ExpressionTree type, VariableDeclaratorListTreeImpl variables) {
+  public StatementExpressionListTreeImpl newForInitDeclaration(ModifiersTreeImpl modifiers, TypeTree type, VariableDeclaratorListTreeImpl variables) {
     for (VariableTreeImpl variable : variables) {
       variable.completeModifiersAndType(modifiers, type);
     }
@@ -1145,7 +1146,7 @@ public class TreeFactory {
     return new CatchTreeImpl(catchToken, openParenToken, parameter, closeParenToken, block);
   }
 
-  public VariableTreeImpl newCatchFormalParameter(Optional<ModifiersTreeImpl> modifiers, Tree type, VariableTreeImpl parameter) {
+  public VariableTreeImpl newCatchFormalParameter(Optional<ModifiersTreeImpl> modifiers, TypeTree type, VariableTreeImpl parameter) {
     // TODO modifiers
 
     if (modifiers.isPresent()) {
@@ -1157,13 +1158,13 @@ public class TreeFactory {
     return parameter.completeType(type);
   }
 
-  public Tree newCatchType(ExpressionTree qualifiedIdentifier, Optional<List<AstNode>> rests) {
+  public TypeTree newCatchType(TypeTree qualifiedIdentifier, Optional<List<AstNode>> rests) {
     if (!rests.isPresent()) {
       return qualifiedIdentifier;
     }
 
     List<AstNode> children = Lists.newArrayList();
-    ImmutableList.Builder<Tree> types = ImmutableList.builder();
+    ImmutableList.Builder<TypeTree> types = ImmutableList.builder();
 
     children.add((AstNode) qualifiedIdentifier);
     types.add(qualifiedIdentifier);
@@ -1171,7 +1172,7 @@ public class TreeFactory {
     for (AstNode rest : rests.get()) {
       children.add(rest.getFirstChild());
 
-      ExpressionTree qualifiedIdentifier2 = (ExpressionTree) rest.getLastChild();
+      TypeTree qualifiedIdentifier2 = (TypeTree) rest.getLastChild();
       types.add(qualifiedIdentifier2);
 
       children.add((AstNode) qualifiedIdentifier2);
@@ -1221,7 +1222,7 @@ public class TreeFactory {
     return new ResourceListTreeImpl(resources.build(), children);
   }
 
-  public VariableTreeImpl newResource(ModifiersTreeImpl modifiers, ExpressionTree classType, VariableTreeImpl partial, AstNode equalTokenAstNode, ExpressionTree expression) {
+  public VariableTreeImpl newResource(ModifiersTreeImpl modifiers, TypeTree classType, VariableTreeImpl partial, AstNode equalTokenAstNode, ExpressionTree expression) {
     // TODO modifiers
     partial.prependChildren(modifiers, (AstNode) classType);
     partial.addChild(equalTokenAstNode);
@@ -1703,12 +1704,12 @@ public class TreeFactory {
     return partial;
   }
 
-  public ExpressionTree newClassCreator(ExpressionTree qualifiedIdentifier, NewClassTreeImpl classCreatorRest) {
+  public ExpressionTree newClassCreator(TypeTree qualifiedIdentifier, NewClassTreeImpl classCreatorRest) {
     classCreatorRest.prependChildren((AstNode) qualifiedIdentifier);
     return classCreatorRest.completeWithIdentifier(qualifiedIdentifier);
   }
 
-  public ExpressionTree newArrayCreator(Tree type, NewArrayTreeImpl partial) {
+  public ExpressionTree newArrayCreator(TypeTree type, NewArrayTreeImpl partial) {
     return partial.complete(type,
       (AstNode) type);
   }
@@ -1785,9 +1786,8 @@ public class TreeFactory {
     children.add(dotToken);
     children.add(classToken);
 
-    return new MemberSelectExpressionTreeImpl(
-      applyDim(basicType, dimensions.isPresent() ? dimensions.get().size() : 0), classToken,
-      children.toArray(new AstNode[children.size()]));
+    TypeTree typeTree = applyDim(basicType, dimensions.isPresent() ? dimensions.get().size() : 0);
+    return new MemberSelectExpressionTreeImpl((ExpressionTree) typeTree, classToken, children.toArray(new AstNode[children.size()]));
   }
 
   public ExpressionTree voidClassExpression(AstNode voidTokenAstNode, AstNode dotToken, AstNode classTokenAstNode) {
@@ -1879,7 +1879,7 @@ public class TreeFactory {
     return (ExpressionTree) result;
   }
 
-  public ExpressionTree newQualifiedIdentifier(ExpressionTree firstIdentifier, Optional<List<Tuple<AstNode, ExpressionTree>>> rests) {
+  public <T extends Tree> T  newQualifiedIdentifier(ExpressionTree firstIdentifier, Optional<List<Tuple<AstNode, ExpressionTree>>> rests) {
     ExpressionTree result = firstIdentifier;
 
     if (rests.isPresent()) {
@@ -1901,7 +1901,7 @@ public class TreeFactory {
       }
     }
 
-    return result;
+    return (T) result;
   }
 
   public ExpressionTree newAnnotatedParameterizedIdentifier(
@@ -1940,15 +1940,15 @@ public class TreeFactory {
     return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), initializers.build(), children);
   }
 
-  public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(ExpressionTree qualifiedIdentifier, Optional<List<Tuple<AstNode, ExpressionTree>>> rests) {
-    ImmutableList.Builder<ExpressionTree> qualifiedIdentifiers = ImmutableList.builder();
+  public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(TypeTree qualifiedIdentifier, Optional<List<Tuple<AstNode, TypeTree>>> rests) {
+    ImmutableList.Builder<TypeTree> qualifiedIdentifiers = ImmutableList.builder();
     List<AstNode> children = Lists.newArrayList();
 
     qualifiedIdentifiers.add(qualifiedIdentifier);
     children.add((AstNode) qualifiedIdentifier);
 
     if (rests.isPresent()) {
-      for (Tuple<AstNode, ExpressionTree> rest : rests.get()) {
+      for (Tuple<AstNode, TypeTree> rest : rests.get()) {
         qualifiedIdentifiers.add(rest.second());
         children.add(rest.first());
         children.add((AstNode) rest.second());
@@ -2292,8 +2292,8 @@ public class TreeFactory {
 
   // End
 
-  private ExpressionTree applyDim(ExpressionTree expression, int count) {
-    ExpressionTree result = expression;
+  private TypeTree applyDim(TypeTree expression, int count) {
+    TypeTree result = expression;
     for (int i = 0; i < count; i++) {
       result = new JavaTree.ArrayTypeTreeImpl(/* FIXME should not be null */null, result);
     }

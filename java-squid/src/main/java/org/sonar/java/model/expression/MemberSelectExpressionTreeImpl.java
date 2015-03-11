@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.Iterator;
 import java.util.List;
@@ -77,7 +78,7 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
 
     // TODO Remove logic?
     for (int i = 0; i < dims; i++) {
-      result = new ArrayTypeTreeImpl(null, result);
+      result = new ArrayTypeTreeImpl(null, (TypeTree) result);
     }
 
     this.expression = result;

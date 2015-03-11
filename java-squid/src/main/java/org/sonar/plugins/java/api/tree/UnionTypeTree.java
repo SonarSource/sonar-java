@@ -29,8 +29,8 @@ import java.util.List;
  * @since Java 1.7
  */
 @Beta
-public interface UnionTypeTree extends Tree {
+public interface UnionTypeTree extends TypeTree {
 
-  List<Tree> typeAlternatives();
+  List<TypeTree> typeAlternatives();
 
 }

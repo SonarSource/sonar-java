@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
@@ -323,7 +324,7 @@ public abstract class JavaTree extends AstNode implements Tree {
       addChild(queryToken);
     }
 
-    public WildcardTreeImpl(Kind kind, InternalSyntaxToken extendsOrSuperToken, List<AnnotationTreeImpl> annotations, ExpressionTree bound) {
+    public WildcardTreeImpl(Kind kind, InternalSyntaxToken extendsOrSuperToken, List<AnnotationTreeImpl> annotations, TypeTree bound) {
       super(kind);
 
       Preconditions.checkArgument(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
@@ -376,7 +377,7 @@ public abstract class JavaTree extends AstNode implements Tree {
   }
 
   public static class UnionTypeTreeImpl extends AbstractTypedTree implements UnionTypeTree {
-    private final List<Tree> typeAlternatives;
+    private final List<TypeTree> typeAlternatives;
 
     public UnionTypeTreeImpl(TypeUnionListTreeImpl typeAlternatives) {
       super(Kind.UNION_TYPE);
@@ -385,18 +386,13 @@ public abstract class JavaTree extends AstNode implements Tree {
       addChild(typeAlternatives);
     }
 
-    public UnionTypeTreeImpl(AstNode astNode, List<Tree> typeAlternatives) {
-      super(astNode);
-      this.typeAlternatives = Preconditions.checkNotNull(typeAlternatives);
-    }
-
     @Override
     public Kind getKind() {
       return Kind.UNION_TYPE;
     }
 
     @Override
-    public List<Tree> typeAlternatives() {
+    public List<TypeTree> typeAlternatives() {
       return typeAlternatives;
     }
 
@@ -564,9 +560,9 @@ public abstract class JavaTree extends AstNode implements Tree {
   }
 
   public static class ArrayTypeTreeImpl extends AbstractTypedTree implements ArrayTypeTree {
-    private final Tree type;
+    private final TypeTree type;
 
-    public ArrayTypeTreeImpl(Tree type, List<AstNode> children) {
+    public ArrayTypeTreeImpl(TypeTree type, List<AstNode> children) {
       super(Kind.ARRAY_TYPE);
       this.type = Preconditions.checkNotNull(type);
 
@@ -575,7 +571,7 @@ public abstract class JavaTree extends AstNode implements Tree {
       }
     }
 
-    public ArrayTypeTreeImpl(@Nullable AstNode astNode, Tree type) {
+    public ArrayTypeTreeImpl(@Nullable AstNode astNode, TypeTree type) {
       super(astNode);
       this.type = Preconditions.checkNotNull(type);
     }
@@ -586,7 +582,7 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
 
     @Override
-    public Tree type() {
+    public TypeTree type() {
       return type;
     }
 
@@ -597,7 +593,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.singletonIterator(type);
+      return Iterators.<Tree>singletonIterator(type);
     }
   }
 }
