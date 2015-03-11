@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Type {
+public class Type implements org.sonar.plugins.java.api.semantic.Type {
 
   public static final int BYTE = 1;
   public static final int CHAR = 2;
@@ -156,6 +156,11 @@ public class Type {
   @Nullable
   public Type primitiveWrapperType() {
     return primitiveWrapperType;
+  }
+
+  @Override
+  public boolean isArray() {
+    return isTagged(ARRAY);
   }
 
   public static class ClassType extends Type {

@@ -47,7 +47,15 @@ public abstract class AbstractTypedTree extends JavaTree {
     super(astNodeType, token);
   }
 
+  /**
+   * @deprecated should use symbolType() method
+   */
+  @Deprecated
   public Type getSymbolType() {
+    return type;
+  }
+
+  public org.sonar.plugins.java.api.semantic.Type symbolType() {
     return type;
   }
 
