@@ -160,7 +160,8 @@ public abstract class JavaTree extends AstNode implements Tree {
     private final List<Tree> types;
     private final List<AnnotationTree> packageAnnotations;
 
-    public CompilationUnitTreeImpl(@Nullable ExpressionTree packageName, List<ImportTree> imports, List<Tree> types, List<AnnotationTree> packageAnnotations, List<AstNode> children) {
+    public CompilationUnitTreeImpl(@Nullable ExpressionTree packageName, List<ImportTree> imports,
+                                   List<Tree> types, List<AnnotationTree> packageAnnotations, List<AstNode> children) {
       super(Kind.COMPILATION_UNIT);
       this.packageName = packageName;
       this.imports = Preconditions.checkNotNull(imports);
@@ -311,7 +312,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     private final Kind kind;
     @Nullable
-    private final Tree bound;
+    private final TypeTree bound;
 
     public WildcardTreeImpl(Kind kind, InternalSyntaxToken queryToken) {
       super(kind);
@@ -346,12 +347,6 @@ public abstract class JavaTree extends AstNode implements Tree {
       return this;
     }
 
-    public WildcardTreeImpl(AstNode astNode, Kind kind, @Nullable Tree bound) {
-      super(astNode);
-      this.kind = Preconditions.checkNotNull(kind);
-      this.bound = bound;
-    }
-
     @Override
     public Kind getKind() {
       return kind;
@@ -359,7 +354,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Nullable
     @Override
-    public Tree bound() {
+    public TypeTree bound() {
       return bound;
     }
 
@@ -370,7 +365,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.singletonIterator(
+      return Iterators.<Tree>singletonIterator(
         bound
         );
     }
@@ -512,10 +507,10 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   public static class ParameterizedTypeTreeImpl extends AbstractTypedTree implements ParameterizedTypeTree, ExpressionTree {
 
-    private final ExpressionTree type;
+    private final TypeTree type;
     private final List<Tree> typeArguments;
 
-    public ParameterizedTypeTreeImpl(ExpressionTree type, TypeArgumentListTreeImpl typeArguments) {
+    public ParameterizedTypeTreeImpl(TypeTree type, TypeArgumentListTreeImpl typeArguments) {
       super(Kind.PARAMETERIZED_TYPE);
       this.type = Preconditions.checkNotNull(type);
       this.typeArguments = Preconditions.checkNotNull(typeArguments);
@@ -524,19 +519,13 @@ public abstract class JavaTree extends AstNode implements Tree {
       addChild(typeArguments);
     }
 
-    public ParameterizedTypeTreeImpl(AstNode child, ExpressionTree type, List<Tree> typeArguments) {
-      super(child);
-      this.type = Preconditions.checkNotNull(type);
-      this.typeArguments = Preconditions.checkNotNull(typeArguments);
-    }
-
     @Override
     public Kind getKind() {
       return Kind.PARAMETERIZED_TYPE;
     }
 
     @Override
-    public Tree type() {
+    public TypeTree type() {
       return type;
     }
 

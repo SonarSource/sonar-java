@@ -25,9 +25,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -36,10 +34,13 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import javax.annotation.Nullable;
 
 import java.util.Map;
 
@@ -53,7 +54,6 @@ import java.util.Map;
 @SqaleConstantRemediation("20min")
 public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private JavaFileScannerContext context;
   public static final String RULE_KEY = "S1149";
   private static final RuleKey RULE_KEY_FOR_REPOSITORY = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String>builder()
@@ -62,6 +62,7 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
     .put("java.lang.StringBuffer", "\"StringBuilder\"")
     .put("java.util.Stack", "\"Deque\"")
     .build();
+  private JavaFileScannerContext context;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -101,23 +102,31 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
   @Override
   public void visitClass(ClassTree tree) {
     super.visitClass(tree);
-    for (Tree parent : tree.superInterfaces()) {
+    for (TypeTree parent : tree.superInterfaces()) {
       reportIssueIfDeprecatedType(parent);
     }
 
   }
 
-  private boolean reportIssueIfDeprecatedType(Tree tree) {
+  private boolean reportIssueIfDeprecatedType(@Nullable ExpressionTree tree) {
     if (tree == null) {
       return false;
     }
-    Type symbolType = ((AbstractTypedTree) tree).getSymbolType();
-    if (symbolType != null) {
-      for (String forbiddenTypeName : REPLACEMENTS.keySet()) {
-        if (symbolType.is(forbiddenTypeName)) {
-          reportIssue(tree, forbiddenTypeName);
-          return true;
-        }
+    return reportIssueIfDeprecatedType(tree.symbolType(), tree);
+  }
+
+  private boolean reportIssueIfDeprecatedType(@Nullable TypeTree tree) {
+    if (tree == null) {
+      return false;
+    }
+    return reportIssueIfDeprecatedType(tree.symbolType(), tree);
+  }
+
+  private boolean reportIssueIfDeprecatedType(org.sonar.plugins.java.api.semantic.Type symbolType, Tree tree) {
+    for (String forbiddenTypeName : REPLACEMENTS.keySet()) {
+      if (symbolType.is(forbiddenTypeName)) {
+        reportIssue(tree, forbiddenTypeName);
+        return true;
       }
     }
     return false;

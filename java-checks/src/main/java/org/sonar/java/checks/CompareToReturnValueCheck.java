@@ -25,7 +25,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -94,7 +93,7 @@ public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
     private boolean returnsIntegerMinValue(ExpressionTree expressionTree) {
       if (expressionTree.is(Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expressionTree;
-        boolean isInteger = ((IdentifierTreeImpl) memberSelect.expression()).getSymbolType().is("java.lang.Integer");
+        boolean isInteger = memberSelect.expression().symbolType().is("java.lang.Integer");
         boolean isMinValue = "MIN_VALUE".equals(memberSelect.identifier().name());
         return isInteger && isMinValue;
       }

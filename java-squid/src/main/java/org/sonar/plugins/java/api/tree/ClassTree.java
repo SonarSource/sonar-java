@@ -66,9 +66,9 @@ public interface ClassTree extends StatementTree {
   ModifiersTree modifiers();
 
   @Nullable
-  Tree superClass();
+  TypeTree superClass();
 
-  List<Tree> superInterfaces();
+  List<TypeTree> superInterfaces();
 
   @Nullable
   SyntaxToken openBraceToken();

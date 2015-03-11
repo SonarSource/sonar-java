@@ -25,10 +25,8 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -275,8 +273,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     boolean result = false;
     if (variableTree.type().is(Tree.Kind.ARRAY_TYPE)) {
       ArrayTypeTree arrayTypeTree = (ArrayTypeTree) variableTree.type();
-      Type arrayType = ((AbstractTypedTree) arrayTypeTree.type()).getSymbolType();
-      result = arrayType.isTagged(Type.CLASS) && "String".equals(arrayType.getSymbol().getName());
+      result = arrayTypeTree.type().symbolType().isClass() && "String".equals(arrayTypeTree.type().symbolType().name());
     }
     return result;
   }
@@ -325,7 +322,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   private boolean returnsString() {
     if (returnType != null) {
-      return ((AbstractTypedTree) returnType).getSymbolType().is("java.lang.String");
+      return returnType.symbolType().is("java.lang.String");
     }
     return false;
   }

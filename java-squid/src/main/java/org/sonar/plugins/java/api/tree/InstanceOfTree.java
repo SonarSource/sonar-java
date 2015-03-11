@@ -39,6 +39,6 @@ public interface InstanceOfTree extends ExpressionTree {
 
   SyntaxToken instanceofKeyword();
 
-  Tree type();
+  TypeTree type();
 
 }

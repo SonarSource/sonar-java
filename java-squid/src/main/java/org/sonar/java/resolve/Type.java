@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+//FIXME should be renamed to avoid having two classes named Type
 public class Type implements org.sonar.plugins.java.api.semantic.Type {
 
   public static final int BYTE = 1;
@@ -67,6 +68,7 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     return tag == this.tag;
   }
 
+  @Override
   public boolean isNumerical() {
     // JLS8 4.2
     return tag <= DOUBLE;
@@ -77,6 +79,7 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     return symbol;
   }
 
+  @Override
   public boolean is(String fullyQualifiedName) {
     if (isTagged(CLASS)) {
       return fullyQualifiedName.equals(symbol.getFullyQualifiedName());
@@ -91,6 +94,7 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     return isTagged(BOT) || !isTagged(UNKNOWN);
   }
 
+  @Override
   public boolean isSubtypeOf(String fullyQualifiedName) {
     if (isTagged(CLASS)) {
       if (is(fullyQualifiedName) || superTypeContains(fullyQualifiedName)) {
@@ -100,6 +104,20 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
       return fullyQualifiedName.endsWith("[]") && ((ArrayType) this).elementType.isSubtypeOf(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2));
     } else if (isTagged(TYPEVAR)) {
       return erasure().isSubtypeOf(fullyQualifiedName);
+    }
+    return false;
+  }
+
+  @Override
+  public boolean isSubtypeOf(org.sonar.plugins.java.api.semantic.Type superType) {
+    Type supType = (Type) superType;
+    if (this.isTagged(Type.ARRAY) && supType.isTagged(Type.ARRAY)) {
+      //Handle covariance of arrays.
+      return (((Type.ArrayType) this).elementType().isSubtypeOf(((Type.ArrayType) supType).elementType()));
+    } else if (this.isTagged(Type.CLASS) && supType.isTagged(Type.CLASS)) {
+      Type.ClassType expressionType = (Type.ClassType) this;
+      Type.ClassType instanceOfType = (Type.ClassType) supType;
+      return expressionType == instanceOfType || expressionType.getSymbol().superTypes().contains(instanceOfType);
     }
     return false;
   }
@@ -125,6 +143,7 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     return this;
   }
 
+  @Override
   public boolean isPrimitive() {
     return tag <= BOOLEAN;
   }
@@ -161,6 +180,21 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
   @Override
   public boolean isArray() {
     return isTagged(ARRAY);
+  }
+
+  @Override
+  public boolean isClass() {
+    return isTagged(CLASS);
+  }
+
+  @Override
+  public String fullyQualifiedName() {
+    return symbol.getFullyQualifiedName();
+  }
+
+  @Override
+  public String name() {
+    return symbol.name;
   }
 
   public static class ClassType extends Type {

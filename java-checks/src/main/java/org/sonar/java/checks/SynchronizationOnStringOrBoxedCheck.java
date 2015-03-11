@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -63,8 +62,7 @@ public class SynchronizationOnStringOrBoxedCheck extends SubscriptionBaseVisitor
   @Override
   public void visitNode(Tree tree) {
     SynchronizedStatementTree syncStatement = (SynchronizedStatementTree) tree;
-    AbstractTypedTree expression = (AbstractTypedTree) syncStatement.expression();
-    Type expressionType = expression.getSymbolType();
+    Type expressionType = syncStatement.expression().symbolType();
     if (expressionType.isPrimitive() || isForbiddenType(expressionType)) {
       addIssue(syncStatement, "Synchronize on a new \"Object\" instead.");
     }
