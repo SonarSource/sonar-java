@@ -27,8 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -38,6 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -79,7 +79,7 @@ public class PrintfCheck extends AbstractMethodDetection {
     ExpressionTree formatStringTree;
     List<ExpressionTree> args;
     //Check type of first argument:
-    if (((AbstractTypedTree) mit.arguments().get(0)).getSymbolType().is("java.lang.String")) {
+    if (mit.arguments().get(0).symbolType().is("java.lang.String")) {
       formatStringTree = mit.arguments().get(0);
       args = mit.arguments().subList(1, mit.arguments().size());
     } else {
@@ -136,7 +136,7 @@ public class PrintfCheck extends AbstractMethodDetection {
       }
       ExpressionTree argExpressionTree = args.get(argIndex);
       unusedArgs.remove(argExpressionTree);
-      Type argType = ((AbstractTypedTree) argExpressionTree).getSymbolType();
+      Type argType = argExpressionTree.symbolType();
       if (param.startsWith("d") && !isNumerical(argType)) {
         addIssue(mit, "An 'int' is expected rather than a " + argType + ".");
       }

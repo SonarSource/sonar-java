@@ -90,6 +90,12 @@ public interface Type {
   boolean isPrimitive();
 
   /**
+   * Check if this type is a primitive numerical type.
+   * @return true if type is byte, char, short, int, long, float or double.
+   */
+  boolean isNumerical();
+
+  /**
    * Fully qualified name of the type.
    * @return complete name of type.
    */
