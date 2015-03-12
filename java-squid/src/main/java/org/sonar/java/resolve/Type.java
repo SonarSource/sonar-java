@@ -163,6 +163,16 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     return isTagged(ARRAY);
   }
 
+  @Override
+  public boolean isClass() {
+    return isTagged(CLASS);
+  }
+
+  @Override
+  public String name() {
+    return toString();
+  }
+
   public static class ClassType extends Type {
 
     /**

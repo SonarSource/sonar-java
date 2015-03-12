@@ -19,10 +19,67 @@
  */
 package org.sonar.plugins.java.api.semantic;
 
+/**
+ * Interface to access resolved type of an expression or a Type.
+ */
 public interface Type {
 
+  /**
+   * Check whether a type is the one designed by the fully qualified name.
+   *
+   * <code><pre>
+   *   Type type;
+   *   type.is("int");
+   *   type.is("int[]");
+   *   type.is("java.lang.String[]");
+   *   type.is("java.lang.Object");
+   *</pre></code>
+   *
+   * @param fullyQualifiedName fully qualified name to check. Use "[]" for arrays and the simple name for primitive type ("int", "byte"...).
+   * @return true if the type is the one looked for. false otherwise.
+   */
   boolean is(String fullyQualifiedName);
 
+  /**
+   * Check whether a type is a subtype of the one designed by the fully qualified name.
+   *<p>
+   * This method will consider implementing interfaces as well as superclasses.
+   * <code><pre>
+   *   Type type;
+   *   type.isSubtypeOf("Object[]");
+   *   type.isSubtypeOf("org.mypackage.MyClass");
+   *   type.isSubtypeOf("org.mypackage.MyInterface");
+   *   type.isSubtypeOf("java.lang.Object");
+   *</pre></code>
+   *
+   * @param fullyQualifiedName fully qualified name to check in the type hierarchy. Use "[]" for arrays.
+   * @return true if the type is the one passed in parameter or have this type in its hierarchy. false otherwise.
+   */
+  boolean isSubtypeOf(String fullyQualifiedName);
+
+
+  /**
+   * Check if this type is an array.
+   * @return true if this is an array.
+   */
   boolean isArray();
+
+  /**
+   * Check if this type is a class, an enum, an interface or an annotation.
+   * @return true if this is a class, enum, interface or annotation.
+   */
+  boolean isClass();
+
+  /**
+   * Check if this type is a primitive.
+   * @return true if this is a primitive type.
+   */
+  boolean isPrimitive();
+
+  /**
+   * Fully qualified name of the type.
+   * @return complete name of type, followed by [] for arrays.
+   */
+  String name();
 
 }
