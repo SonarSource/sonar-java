@@ -107,10 +107,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    //skip return type, args, and throw clauses : visited in second pass.
+    //skip return type, and throw clauses : visited in second pass.
     scan(tree.modifiers());
     completeMetadata(((MethodTreeImpl) tree).getSymbol(), tree.modifiers().annotations());
     scan(tree.typeParameters());
+    // revisits the parameters to resolve their annotations.
+    scan(tree.parameters());
     scan(tree.defaultValue());
     scan(tree.block());
   }
