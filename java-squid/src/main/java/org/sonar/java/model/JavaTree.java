@@ -160,7 +160,8 @@ public abstract class JavaTree extends AstNode implements Tree {
     private final List<Tree> types;
     private final List<AnnotationTree> packageAnnotations;
 
-    public CompilationUnitTreeImpl(@Nullable ExpressionTree packageName, List<ImportTree> imports, List<Tree> types, List<AnnotationTree> packageAnnotations, List<AstNode> children) {
+    public CompilationUnitTreeImpl(@Nullable ExpressionTree packageName, List<ImportTree> imports,
+                                   List<Tree> types, List<AnnotationTree> packageAnnotations, List<AstNode> children) {
       super(Kind.COMPILATION_UNIT);
       this.packageName = packageName;
       this.imports = Preconditions.checkNotNull(imports);
