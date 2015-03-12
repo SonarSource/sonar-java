@@ -106,7 +106,16 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
 
   @Override
   public boolean isSubtypeOf(org.sonar.plugins.java.api.semantic.Type superType) {
-    return new Types().isSubtype(this, (Type) superType);
+    Type supType = (Type) superType;
+    if (this.isTagged(Type.ARRAY) && supType.isTagged(Type.ARRAY)) {
+      //Handle covariance of arrays.
+      return (((Type.ArrayType) this).elementType().isSubtypeOf(((Type.ArrayType) supType).elementType()));
+    } else if (this.isTagged(Type.CLASS) && supType.isTagged(Type.CLASS)) {
+      Type.ClassType expressionType = (Type.ClassType) this;
+      Type.ClassType instanceOfType = (Type.ClassType) supType;
+      return expressionType == instanceOfType || expressionType.getSymbol().superTypes().contains(instanceOfType);
+    }
+    return false;
   }
 
   private boolean superTypeContains(String fullyQualifiedName) {
