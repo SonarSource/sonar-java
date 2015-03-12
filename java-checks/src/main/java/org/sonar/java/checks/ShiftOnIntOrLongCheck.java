@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -80,7 +79,7 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
     }
 
     if (shift.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      int base = getBase(tree);
+      int base = getBase((ExpressionTree) tree);
       long numberBits = sign * Long.decode(LiteralUtils.trimLongSuffix(((LiteralTree) shift).value()));
       long reducedNumberBits = numberBits % base;
       String message = getMessage(numberBits, reducedNumberBits, base, identifier);
@@ -118,8 +117,8 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
     return null;
   }
 
-  private int getBase(Tree tree) {
-    if (((AbstractTypedTree) tree).getSymbolType().is("int")) {
+  private int getBase(ExpressionTree tree) {
+    if (tree.symbolType().is("int")) {
       return 32;
     }
     return 64;

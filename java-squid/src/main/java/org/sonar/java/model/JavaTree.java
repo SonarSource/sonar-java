@@ -507,10 +507,10 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   public static class ParameterizedTypeTreeImpl extends AbstractTypedTree implements ParameterizedTypeTree, ExpressionTree {
 
-    private final ExpressionTree type;
+    private final TypeTree type;
     private final List<Tree> typeArguments;
 
-    public ParameterizedTypeTreeImpl(ExpressionTree type, TypeArgumentListTreeImpl typeArguments) {
+    public ParameterizedTypeTreeImpl(TypeTree type, TypeArgumentListTreeImpl typeArguments) {
       super(Kind.PARAMETERIZED_TYPE);
       this.type = Preconditions.checkNotNull(type);
       this.typeArguments = Preconditions.checkNotNull(typeArguments);
@@ -519,19 +519,13 @@ public abstract class JavaTree extends AstNode implements Tree {
       addChild(typeArguments);
     }
 
-    public ParameterizedTypeTreeImpl(AstNode child, ExpressionTree type, List<Tree> typeArguments) {
-      super(child);
-      this.type = Preconditions.checkNotNull(type);
-      this.typeArguments = Preconditions.checkNotNull(typeArguments);
-    }
-
     @Override
     public Kind getKind() {
       return Kind.PARAMETERIZED_TYPE;
     }
 
     @Override
-    public Tree type() {
+    public TypeTree type() {
       return type;
     }
 

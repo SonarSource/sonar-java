@@ -1894,7 +1894,7 @@ public class TreeFactory {
           result = new MemberSelectExpressionTreeImpl(result, identifier,
             (AstNode) result, rest.first(), identifier);
 
-          result = new ParameterizedTypeTreeImpl(result, (TypeArgumentListTreeImpl) parameterizedType.typeArguments());
+          result = new ParameterizedTypeTreeImpl((TypeTree) result, (TypeArgumentListTreeImpl) parameterizedType.typeArguments());
         } else {
           throw new IllegalArgumentException();
         }
@@ -1914,7 +1914,7 @@ public class TreeFactory {
     }
 
     if (typeArguments.isPresent()) {
-      result = new ParameterizedTypeTreeImpl(result, typeArguments.get());
+      result = new ParameterizedTypeTreeImpl((TypeTree) result, typeArguments.get());
     }
 
     return result;
