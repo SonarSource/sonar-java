@@ -26,7 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
@@ -34,6 +33,7 @@ import org.sonar.java.resolve.Type.ClassType;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -96,8 +96,8 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
     public void visitThrowStatement(ThrowStatementTree throwStatementTree) {
       ExpressionTree expression = throwStatementTree.expression();
       if (expression.is(Tree.Kind.NEW_CLASS)) {
-        NewClassTreeImpl newClassTree = (NewClassTreeImpl) expression;
-        if (newClassTree.getSymbolType().is("java.util.NoSuchElementException")) {
+        NewClassTree newClassTree = (NewClassTree) expression;
+        if (newClassTree.symbolType().is("java.util.NoSuchElementException")) {
           foundThrow = true;
         }
       }
