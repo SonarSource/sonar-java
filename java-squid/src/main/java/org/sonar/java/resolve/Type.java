@@ -104,6 +104,11 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     return false;
   }
 
+  @Override
+  public boolean isSubtypeOf(org.sonar.plugins.java.api.semantic.Type superType) {
+    return new Types().isSubtype(this, (Type) superType);
+  }
+
   private boolean superTypeContains(String fullyQualifiedName) {
     for (ClassType classType : symbol.superTypes()) {
       if (classType.is(fullyQualifiedName)) {
@@ -170,7 +175,7 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
 
   @Override
   public String name() {
-    return toString();
+    return symbol.getFullyQualifiedName();
   }
 
   public static class ClassType extends Type {

@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -50,24 +49,10 @@ public class InstanceOfAlwaysTrueCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     InstanceOfTree instanceOfTree = (InstanceOfTree) tree;
-    Type type = ((AbstractTypedTree) instanceOfTree.expression()).getSymbolType();
-    Type instanceOf = ((AbstractTypedTree) instanceOfTree.type()).getSymbolType();
-    if (typeInherits(type, instanceOf)) {
+    Type expressionType = instanceOfTree.expression().symbolType();
+    Type instanceOf = instanceOfTree.type().symbolType();
+    if (expressionType.isSubtypeOf(instanceOf)) {
       addIssue(tree, "Remove this useless \"instanceof\" operator; it will always return \"true\". ");
     }
   }
-
-
-  private boolean typeInherits(Type type, Type instanceOf) {
-    if (type.isTagged(Type.ARRAY) && instanceOf.isTagged(Type.ARRAY)) {
-      //Handle covariance of arrays.
-      return typeInherits(((Type.ArrayType) type).elementType(), ((Type.ArrayType) instanceOf).elementType());
-    } else if (type.isTagged(Type.CLASS) && instanceOf.isTagged(Type.CLASS)) {
-      Type.ClassType expressionType = (Type.ClassType) type;
-      Type.ClassType instanceOfType = (Type.ClassType) instanceOf;
-      return expressionType == instanceOfType || expressionType.getSymbol().superTypes().contains(instanceOfType);
-    }
-    return false;
-  }
-
 }

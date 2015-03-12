@@ -43,7 +43,7 @@ public interface Type {
   /**
    * Check whether a type is a subtype of the one designed by the fully qualified name.
    *<p>
-   * This method will consider implementing interfaces as well as superclasses.
+   * This method will consider implemented interfaces as well as superclasses.
    * <code><pre>
    *   Type type;
    *   type.isSubtypeOf("Object[]");
@@ -57,6 +57,19 @@ public interface Type {
    */
   boolean isSubtypeOf(String fullyQualifiedName);
 
+  /**
+   * Check whether a type is a subtype of another.
+   *<p>
+   * This method will consider implemented interfaces as well as superclasses.
+   * <code><pre>
+   *   Type type, myOtherType;
+   *   type.isSubtypeOf(myOtherType);
+   *</pre></code>
+   *
+   * @param  superType instance of a potential superType.
+   * @return true if types are equivalent or if the one passed in parameter is in the hierarchy. false otherwise.
+   */
+  boolean isSubtypeOf(Type superType);
 
   /**
    * Check if this type is an array.
