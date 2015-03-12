@@ -174,8 +174,13 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
   }
 
   @Override
-  public String name() {
+  public String fullyQualifiedName() {
     return symbol.getFullyQualifiedName();
+  }
+
+  @Override
+  public String name() {
+    return symbol.name;
   }
 
   public static class ClassType extends Type {

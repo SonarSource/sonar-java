@@ -99,6 +99,11 @@ public interface Type {
    * Fully qualified name of the type.
    * @return complete name of type.
    */
-  String name();
+  String fullyQualifiedName();
 
+  /**
+   * simple name of the type.
+   * @return simple name of type.
+   */
+  String name();
 }
