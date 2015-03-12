@@ -91,7 +91,7 @@ public interface Type {
 
   /**
    * Fully qualified name of the type.
-   * @return complete name of type, followed by [] for arrays.
+   * @return complete name of type.
    */
   String name();
 
