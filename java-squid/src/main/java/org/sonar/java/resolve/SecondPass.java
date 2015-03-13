@@ -34,7 +34,6 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -174,15 +173,15 @@ public class SecondPass implements Symbol.Completer {
         symbol.returnType = returnType.symbol;
       }
     }
+    List<VariableTree> parametersTree = methodTree.parameters();
     List<Type> argTypes = Lists.newArrayList();
-    Collection<Symbol> scopeSymbols = symbol.parameters.scopeSymbols();
-    // Guarantee order of params.
-    for (VariableTree variableTree : methodTree.parameters()) {
-      for (Symbol param : scopeSymbols) {
-        if (variableTree.simpleName().name().equals(param.getName())) {
-          param.complete();
-          argTypes.add(param.getType());
-        }
+    List<Symbol> scopeSymbols = symbol.parameters.scopeSymbols();
+    for(int i = 0; i < parametersTree.size(); i += 1) {
+      VariableTree variableTree = parametersTree.get(i);
+      Symbol param = scopeSymbols.get(i);
+      if (variableTree.simpleName().name().equals(param.getName())) {
+        param.complete();
+        argTypes.add(param.getType());
       }
       if(((VariableTreeImpl)variableTree).isVararg()) {
         symbol.flags |= Flags.VARARGS;

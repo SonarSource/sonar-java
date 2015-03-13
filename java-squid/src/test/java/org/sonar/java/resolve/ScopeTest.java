@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import org.junit.Test;
+import org.sonar.java.resolve.Scope.OrderedScope;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -58,6 +59,22 @@ public class ScopeTest {
     assertThat(scope.lookup("shadowed")).containsOnly(third);
     assertThat(scope.lookup("name")).containsOnly(second);
     assertThat(scope.lookup("nonexistent")).isEmpty();
+  }
+
+  @Test
+  public void ordered() {
+    OrderedScope scope = new OrderedScope(owner);
+
+    Symbol first = new Symbol(0, 0, "first", null);
+    scope.enter(first);
+
+    Symbol second = new Symbol(0, 0, "second", null);
+    scope.enter(second);
+
+    Symbol third = new Symbol(0, 0, "third", null);
+    scope.enter(third);
+
+    assertThat(scope.scopeSymbols()).containsExactly(first, second, third);
   }
 
 }

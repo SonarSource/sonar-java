@@ -24,8 +24,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.BooleanUtils;
+import org.sonar.java.resolve.Scope.OrderedScope;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 import java.util.Set;
 
@@ -266,7 +268,7 @@ public class Symbol {
   public static class MethodSymbol extends Symbol {
 
     TypeSymbol returnType;
-    Scope parameters;
+    OrderedScope parameters;
     Scope typeParameters;
     List<TypeSymbol> thrown;
     List<Type.TypeVariableType> typeVariableTypes;
@@ -286,6 +288,10 @@ public class Symbol {
 
     public TypeSymbol getReturnType() {
       return returnType;
+    }
+
+    public OrderedScope getParameters() {
+      return parameters;
     }
 
     public List<TypeSymbol> getThrownTypes() {
