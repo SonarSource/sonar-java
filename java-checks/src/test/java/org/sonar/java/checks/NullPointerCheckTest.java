@@ -43,6 +43,9 @@ public class NullPointerCheckTest {
       .next().atLine(78).withMessage("Value returned by method 'checkForNullMethod' can be null.")
       .next().atLine(99).withMessage("Value returned by method 'nullableMethod' can be null.")
       .next().atLine(100).withMessage("Value returned by method 'nullableMethod' can be null.")
-      .next().atLine(101).withMessage("Value returned by method 'nullableMethod' can be null.");
+      .next().atLine(101).withMessage("Value returned by method 'nullableMethod' can be null.")
+      .next().atLine(152).withMessage("Value returned by method 'checkForNullMethod' can be null.")
+      .next().atLine(153).withMessage("Value returned by method 'checkForNullMethod' can be null.")
+      .next().atLine(154).withMessage("Value returned by method 'checkForNullMethod' can be null.");
   }
 }

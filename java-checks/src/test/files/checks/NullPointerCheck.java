@@ -120,14 +120,51 @@ class NullPointerTest {
     a1.c.hashCode(); // False negative
   }
 
-  public void method(Object[] a1, @Nullable Object[] a2) {
+  public void method1(@Nullable Object[] a1, @Nullable Object... variadic) {
+  }
+
+  public void method2(Object[] a1, Object... variadic) {
   }
 
   public void testMethodInvocation() {
-    method(notnullableField, // No issue
+    method1(notnullableField, // No issue
+      notnullableField, // No issue
       notnullableField); // No issue
-    method(checkForNullField, // Noncompliant
-      checkForNullField); // False positive
+    method2(notnullableField, // No issue
+      notnullableField, // No issue
+      notnullableField); // No issue
+    method1(checkForNullField, // No issue
+      checkForNullField, // No issue
+      checkForNullField); // No issue
+    method2(checkForNullField, // False negative
+      checkForNullField, // False negative
+      checkForNullField); // False negative
+
+    method1(notnullableMethod(), // No issue
+      notnullableMethod(), // No issue
+      notnullableMethod()); // No issue
+    method2(notnullableMethod(), // No issue
+      notnullableMethod(), // No issue
+      notnullableMethod()); // No issue
+    method1(checkForNullMethod(), // No issue
+      checkForNullMethod(), // No issue
+      checkForNullMethod()); // No issue
+    method2(checkForNullMethod(), // Not compliant
+      checkForNullMethod(), // Not compliant
+      checkForNullMethod()); // Not compliant
+  }
+
+  @interface CoverageAnnotation {
+  }
+
+  @CoverageAnnotation // Coverage
+  public Object coverageMethod() { // Coverage
+    return new Object();
+  }
+
+  public void testCoverage() {
+    coverageMethod().hashCode(); // Coverage
+    invalidMethod(); // Coverage
   }
 
 }

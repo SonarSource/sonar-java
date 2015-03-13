@@ -27,14 +27,18 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.AnnotationInstance;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.List;
 
 @Rule(
   key = "S2259",
@@ -72,13 +76,26 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     super.visitMemberSelectExpression(tree);
   }
 
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
+    if (symbol.isKind(Symbol.MTH)) {
+      MethodSymbol methodSymbol = (MethodSymbol) ((MethodInvocationTreeImpl) tree).getSymbol();
+      for (int i = 0; i < tree.arguments().size(); i += 1) {
+        List<Symbol> parameters = methodSymbol.getParameters().scopeSymbols();
+        if (!canBeNull(parameters.get(i < parameters.size() ? i : parameters.size() - 1))) {
+          this.checkForIssue(tree.arguments().get(i));
+        }
+      }
+    }
+    super.visitMethodInvocation(tree);
+  }
+
   // returns true if the symbol is annotated with CheckForNull or Nullable.
   private boolean canBeNull(Symbol symbol) {
-    if (symbol != null) {
-      for (AnnotationInstance annotation : symbol.metadata().annotations()) {
-        if (annotation.isTyped("javax.annotation.CheckForNull") || annotation.isTyped("javax.annotation.Nullable")) {
-          return true;
-        }
+    for (AnnotationInstance annotation : symbol.metadata().annotations()) {
+      if (annotation.isTyped("javax.annotation.CheckForNull") || annotation.isTyped("javax.annotation.Nullable")) {
+        return true;
       }
     }
     return false;
