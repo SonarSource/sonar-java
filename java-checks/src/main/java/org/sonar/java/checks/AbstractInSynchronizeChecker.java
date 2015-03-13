@@ -67,4 +67,8 @@ public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetecti
     return withinSynchronizedBlock.peek();
   }
 
+  public boolean hasAnyParentSync() {
+    return withinSynchronizedBlock.contains(true);
+  }
+
 }
