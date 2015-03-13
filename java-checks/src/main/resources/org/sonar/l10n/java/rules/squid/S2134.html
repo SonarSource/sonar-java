@@ -8,7 +8,7 @@ The other way to create a thread is to declare a class that implements the Runna
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-public class MyRunner extends Threads { // Noncompliant; run method not overridden
+public class MyRunner extends Thread { // Noncompliant; run method not overridden
 
   public void doSometing() {...}
 }
