@@ -23,6 +23,9 @@ class A {
     resultLong = bitMaskLong & 0L; // Compliant
     resultLong = bitMaskLong & returnLong(); // Compliant
     resultLong = bitMaskLong & 0x0F; // Compliant
+    
+    resultLong = bitMaskLong & 0xFFFFFFFFFFFFFFFEL; // Compliant
+    resultLong = bitMaskLong & 0xFFFFFFFFFFFFFFFFL; // Compliant
   }
   
   private long returnLong() {

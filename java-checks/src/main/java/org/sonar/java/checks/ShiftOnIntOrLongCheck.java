@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -50,6 +51,12 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
+
+  private static final List<String> UNEVALUABLE_LONGS = Lists.newArrayList(
+    // Only 1
+    "0xffffffffffffffff",
+    // zero the LSB
+    "0xfffffffffffffffe");
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -96,7 +103,12 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
   private boolean isLiteralValue(ExpressionTree tree, long value) {
     if (tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      return Long.decode(LiteralUtils.trimLongSuffix(((LiteralTree) tree).value())) == value;
+      String expressionValue = LiteralUtils.trimLongSuffix(((LiteralTree) tree).value()).toLowerCase();
+      if (UNEVALUABLE_LONGS.contains(expressionValue)) {
+        return false;
+      } else {
+        return Long.decode(expressionValue) == value;
+      }
     }
     return false;
   }

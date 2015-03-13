@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -49,6 +50,12 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
 
+  private static final List<String> UNEVALUABLE_LONGS = Lists.newArrayList(
+    // Only 1
+    "0xffffffffffffffff",
+    // Zero the LSB
+    "0xfffffffffffffffe");
+
   @Override
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(
@@ -64,7 +71,6 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     Long identityElement = getBitwiseOperationIdentityElement(tree);
     Long evaluatedExpression = evaluateExpression(getExpression(tree));
-
     if (evaluatedExpression != null && identityElement.equals(evaluatedExpression)) {
       addIssue(tree, "Remove this silly bit operation.");
     }
@@ -98,7 +104,10 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
     }
 
     if (expression.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      return sign * Long.decode(LiteralUtils.trimLongSuffix(((LiteralTree) expression).value()));
+      String value = LiteralUtils.trimLongSuffix(((LiteralTree) expression).value()).toLowerCase();
+      if (!UNEVALUABLE_LONGS.contains(value)) {
+        return sign * Long.decode(value);
+      }
     }
     return null;
   }
