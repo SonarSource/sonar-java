@@ -25,6 +25,7 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.resolve.Scope.OrderedScope;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -283,7 +284,7 @@ public class FirstPass extends BaseTreeVisitor {
     }
     symbol.isParametrized = !tree.typeParameters().isEmpty();
     enterSymbol(tree, symbol);
-    symbol.parameters = new Scope(symbol);
+    symbol.parameters = new OrderedScope(symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
 

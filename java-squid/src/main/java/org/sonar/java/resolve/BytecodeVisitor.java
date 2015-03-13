@@ -32,8 +32,10 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
+import org.sonar.java.resolve.Scope.OrderedScope;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 import java.util.Map;
 
@@ -191,8 +193,9 @@ public class BytecodeVisitor extends ClassVisitor {
         symbol.type = typeReader.typeRead;
         symbol.isParametrized = symbol.type instanceof Type.TypeVariableType;
       }
+      // checks for annotations on the field
+      return new BytecodeFieldVisitor(symbol, this);
     }
-    // (Godin): can return FieldVisitor to read annotations
     return null;
   }
 
@@ -214,8 +217,13 @@ public class BytecodeVisitor extends ClassVisitor {
       if (signature != null) {
         new SignatureReader(signature).accept(new ReadMethodSignature(methodSymbol));
       }
+      methodSymbol.parameters = new OrderedScope(methodSymbol);
+      for (int i = 0; i < type.argTypes.size(); i += 1) {
+        methodSymbol.parameters.enter(new Symbol.VariableSymbol(0, "arg" + i, methodSymbol));
+      }
+      // checks for annotations on the method and its parameters
+      return new BytecodeMethodVisitor(methodSymbol, this);
     }
-    // (Godin): can return MethodVisitor to read annotations
     return null;
   }
 

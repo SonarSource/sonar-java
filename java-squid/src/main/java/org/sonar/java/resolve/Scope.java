@@ -62,6 +62,31 @@ public class Scope {
     return ImmutableList.copyOf(symbols.values());
   }
 
+  public static class OrderedScope extends Scope {
+    private List<Symbol> orderedSymbols;
+
+    public OrderedScope(Symbol owner) {
+      super(owner);
+      this.orderedSymbols = Lists.newArrayList();
+    }
+
+    @Override
+    public void enter(Symbol symbol) {
+      this.orderedSymbols.add(symbol);
+      super.enter(symbol);
+    }
+
+    /**
+     * returns the symbols contained in this scope, in declaration order.
+     *
+     * @return list of symbols, in declaration order
+     */
+    @Override
+    public List<Symbol> scopeSymbols() {
+      return ImmutableList.copyOf(orderedSymbols);
+    }
+  }
+
   public static class StarImportScope extends Scope {
 
     private final BytecodeCompleter bytecodeCompleter;

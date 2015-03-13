@@ -264,5 +264,15 @@ public class BytecodeCompleterTest {
     assertThat(symbol.getReturnType().getName()).isEqualTo("S");
   }
 
+  @Test
+  public void annotations_on_members() {
+    Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.AnnotationsOnMembers");
+    Symbol.VariableSymbol field = (Symbol.VariableSymbol) clazz.members().lookup("field").get(0);
+    Symbol.MethodSymbol method = (Symbol.MethodSymbol) clazz.members().lookup("method").get(0);
+    Symbol.VariableSymbol parameter = (Symbol.VariableSymbol) method.getParameters().scopeSymbols().get(0);
+    assertThat(field.metadata().getValuesFor("javax.annotation.Nullable")).isNotNull();
+    assertThat(method.metadata().getValuesFor("javax.annotation.CheckForNull")).isNotNull();
+    assertThat(parameter.metadata().getValuesFor("javax.annotation.Nullable")).isNotNull();
+  }
 
 }
