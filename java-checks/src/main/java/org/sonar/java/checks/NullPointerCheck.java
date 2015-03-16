@@ -53,8 +53,10 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import javax.annotation.Nullable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Rule(
   key = "S2259",
@@ -125,7 +127,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     tree.trueExpression().accept(this);
     currentState = falseState;
     tree.falseExpression().accept(this);
-    currentState = currentState.parentState;
+    currentState = currentState.parentState.merge(trueState, falseState);
   }
 
   @Override
@@ -139,7 +141,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       currentState = falseState;
       tree.elseStatement().accept(this);
     }
-    currentState = currentState.parentState;
+    currentState = currentState.parentState.merge(trueState, falseState);
   }
 
   @Override
@@ -297,6 +299,33 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     // sets the value of the variable in the current state.
     public void setVariableValue(VariableSymbol variable, AbstractValue value) {
       variables.put(variable, value);
+    }
+
+    public State merge(State trueState, @Nullable State falseState) {
+      Set<VariableSymbol> variables = new HashSet<>();
+      variables.addAll(trueState.variables.keySet());
+      if (falseState != null) {
+        variables.addAll(falseState.variables.keySet());
+      }
+      for (VariableSymbol variable : variables) {
+        AbstractValue currentValue = getVariableValue(variable);
+        AbstractValue trueValue = trueState.getVariableValue(variable);
+        if (trueValue == null) {
+          trueValue = currentValue;
+        }
+        AbstractValue falseValue = falseState != null ? falseState.getVariableValue(variable) : currentValue;
+        if (falseValue == null) {
+          falseValue = currentValue;
+        }
+        if (trueValue == AbstractValue.NOTNULL && falseValue == AbstractValue.NOTNULL) {
+          setVariableValue(variable, AbstractValue.NOTNULL);
+        } else if (trueValue == AbstractValue.NULL && falseValue == AbstractValue.NULL) {
+          setVariableValue(variable, AbstractValue.NULL);
+        } else {
+          setVariableValue(variable, AbstractValue.UNKNOWN);
+        }
+      }
+      return this;
     }
   }
 

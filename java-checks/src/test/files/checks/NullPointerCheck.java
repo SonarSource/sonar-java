@@ -200,6 +200,36 @@ class NullPointerTest {
     int result4 = argument != null ? argument.hashCode() : 0; // Compliant
   }
 
+  public void testIfMerge1(Object argument1, Object argument2, Object argument3, Object argument4, boolean condition) {
+    if (argument1 == null) {
+      argument1 = new Object();
+    } else {
+    }
+    argument1.hashCode(); // Compliant
+
+    if (null != argument2) {
+    } else {
+      argument2 = new Object();
+    }
+    argument2.hashCode(); // Compliant
+
+    if (argument3 == null) {
+      if (condition) {
+        argument3 = new Object();
+      } else {
+        argument3 = new Object();
+      }
+      argument3.hashCode(); // Compliant
+    }
+
+    if (condition) {
+      argument4 = null;
+    } else {
+      argument4 = null;
+    }
+    argument4.hashCode(); // Noncompliant
+  }
+
   @interface CoverageAnnotation {
   }
 
@@ -211,13 +241,13 @@ class NullPointerTest {
   public void testCoverage(Object[] a) {
     coverageMethod().hashCode(); // Coverage
     invalidMethod(); // Coverage
-    if(0) {} // Coverage
-    if(0 == 0) { } // Coverage
+    if (0) { } // Coverage
+    if (0 == 0) { } // Coverage
     a[0] = null; // Coverage
-    if(null == coverageMethod()) {} // Coverage
-    if(a == a) {} // Coverage
-    if(a == null) { } // Coverage
-    if(a != null) { } // Coverage
+    if (null == coverageMethod()) { } // Coverage
+    if (a == a) { } // Coverage
+    if (a == null) { } // Coverage
+    if (a != null) { } // Coverage
     undefined.field; // Coverage
   }
 
