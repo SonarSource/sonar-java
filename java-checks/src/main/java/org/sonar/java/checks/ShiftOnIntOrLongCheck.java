@@ -96,7 +96,7 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
   private boolean isLiteralValue(ExpressionTree tree, long value) {
     if (tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      String expressionValue = LiteralUtils.trimLongSuffix(((LiteralTree) tree).value()).toLowerCase();
+      String expressionValue = LiteralUtils.trimLongSuffix(((LiteralTree) tree).value());
       try {
         return Long.decode(expressionValue) == value;
       } catch (NumberFormatException e) {

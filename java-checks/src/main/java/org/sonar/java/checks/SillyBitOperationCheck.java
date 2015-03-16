@@ -97,7 +97,7 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
     }
 
     if (expression.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      String value = LiteralUtils.trimLongSuffix(((LiteralTree) expression).value()).toLowerCase();
+      String value = LiteralUtils.trimLongSuffix(((LiteralTree) expression).value());
       try {
         return sign * Long.decode(value);
       } catch (NumberFormatException e) {
