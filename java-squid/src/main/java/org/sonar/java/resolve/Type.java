@@ -131,11 +131,6 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     return false;
   }
 
-  public boolean isParametrized() {
-    symbol.complete();
-    return symbol.isParametrized;
-  }
-
   /**
    * JLS8 4.6
    */

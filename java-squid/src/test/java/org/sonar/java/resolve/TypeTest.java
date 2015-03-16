@@ -122,14 +122,27 @@ public class TypeTest {
     classType.supertype = symbols.objectType;
     classType.interfaces = Lists.newArrayList(symbols.cloneableType);
     assertThat(classType.isSubtypeOf("java.lang.Object")).isTrue();
+    assertThat(classType.isSubtypeOf(symbols.objectType)).isTrue();
+
     assertThat(classType.isSubtypeOf("org.foo.bar.MyType")).isTrue();
+    assertThat(classType.isSubtypeOf(typeSymbol.type)).isTrue();
+
     assertThat(classType.isSubtypeOf("java.lang.CharSequence")).isFalse();
+    assertThat(classType.isSubtypeOf(symbols.stringType)).isFalse();
+
     assertThat(classType.isSubtypeOf("java.lang.Cloneable")).isTrue();
+    assertThat(classType.isSubtypeOf(symbols.cloneableType)).isTrue();
     assertThat(new Type(Type.BYTE, null).isSubtypeOf("java.lang.Object")).isFalse();
 
     assertThat(arrayType.isSubtypeOf("org.foo.bar.MyType[]")).isTrue();
+    assertThat(arrayType.isSubtypeOf(new Type.ArrayType(typeSymbol.type, symbols.arrayClass))).isTrue();
+
     assertThat(arrayType.isSubtypeOf("org.foo.bar.MyType")).isFalse();
+    assertThat(arrayType.isSubtypeOf(typeSymbol.type)).isFalse();
+
     assertThat(arrayType.isSubtypeOf("java.lang.Object[]")).isTrue();
+    assertThat(arrayType.isSubtypeOf(new Type.ArrayType(symbols.objectType, symbols.arrayClass))).isTrue();
+
     assertThat(arrayType.isSubtypeOf("org.foo.bar.SomeClass[]")).isFalse();
 
     assertThat(typeVariableType.isSubtypeOf("java.lang.Object")).isTrue();
@@ -179,5 +192,27 @@ public class TypeTest {
     ptt = new Type.ParametrizedTypeType(typeSymbol, null);
     assertThat(ptt.substitution(typeVariableType)).isNull();
     assertThat(ptt.typeParameters()).isEmpty();
+  }
+
+  @Test
+  public void fully_qualified_name() throws Exception {
+    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
+    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    Symbol.TypeSymbol rootPackageTypeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType2", symbols.defaultPackage);
+    assertThat(typeSymbol.type.fullyQualifiedName()).isEqualTo("org.foo.bar.MyType");
+    assertThat(rootPackageTypeSymbol.type.fullyQualifiedName()).isEqualTo("MyType2");
+  }
+
+  @Test
+  public void is_class_is_array() throws Exception {
+    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
+    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    Type.ArrayType arrayType = new Type.ArrayType(typeSymbol.type, symbols.arrayClass);
+
+    assertThat(typeSymbol.type.isClass()).isTrue();
+    assertThat(typeSymbol.type.isArray()).isFalse();
+    assertThat(arrayType.isClass()).isFalse();
+    assertThat(arrayType.isArray()).isTrue();
+
   }
 }
