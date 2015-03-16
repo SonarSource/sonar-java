@@ -89,10 +89,6 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     return symbolMetadata;
   }
 
-  interface Completer {
-    void complete(Symbol symbol);
-  }
-
   public void complete() {
     if (completer != null) {
       Completer c = completer;
@@ -142,6 +138,71 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
 
   public Type getType() {
     return type;
+  }
+
+  @Override
+  public boolean isVariableSymbol() {
+    return isKind(VAR);
+  }
+
+  @Override
+  public boolean isTypeSymbol() {
+    return isKind(TYP);
+  }
+
+  @Override
+  public boolean isMethodSymbol() {
+    return isKind(MTH);
+  }
+
+  public boolean isStatic() {
+    return isFlag(Flags.STATIC);
+  }
+
+  public boolean isFinal() {
+    return isFlag(Flags.FINAL);
+  }
+
+  public boolean isEnum() {
+    return isFlag(Flags.ENUM);
+  }
+
+  public boolean isAbstract() {
+    return isFlag(Flags.ABSTRACT);
+  }
+
+  public boolean isPublic() {
+    return isFlag(Flags.PUBLIC);
+  }
+
+  public boolean isPrivate() {
+    return isFlag(Flags.PRIVATE);
+  }
+
+  public boolean isProtected() {
+    return isFlag(Flags.PROTECTED);
+  }
+
+  public boolean isDeprecated() {
+    return isFlag(Flags.DEPRECATED);
+  }
+
+  public boolean isVolatile() {
+    return isFlag(Flags.VOLATILE);
+  }
+
+  protected boolean isFlag(int flag) {
+    complete();
+    return (flags & flag) != 0;
+  }
+
+  public boolean isPackageVisibility() {
+    complete();
+    return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
+  }
+
+  interface Completer {
+    void complete(Symbol symbol);
   }
 
   /**
@@ -203,7 +264,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
 
     public String getFullyQualifiedName() {
       String ownerName = "";
-      if(!owner.name.isEmpty()) {
+      if (!owner.name.isEmpty()) {
         ownerName = owner.name + ".";
       }
       return ownerName + name;
@@ -274,11 +335,10 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     List<TypeSymbol> thrown;
     List<Type.TypeVariableType> typeVariableTypes;
 
-
     public MethodSymbol(int flags, String name, Type type, Symbol owner) {
       super(MTH, flags, name, owner);
       super.type = type;
-      this.returnType = ((Type.MethodType)type).resultType.symbol;
+      this.returnType = ((Type.MethodType) type).resultType.symbol;
       this.typeVariableTypes = Lists.newArrayList();
     }
 
@@ -310,7 +370,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
 
     public void setMethodType(Type.MethodType methodType) {
       super.type = methodType;
-      if(methodType.resultType != null) {
+      if (methodType.resultType != null) {
         this.returnType = methodType.resultType.symbol;
       }
     }
@@ -359,22 +419,22 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     }
 
     private Boolean isOverriding(Symbol.MethodSymbol overridee, Type.ClassType classType) {
-      //same number and type of formal parameters
+      // same number and type of formal parameters
       if (getParametersTypes().size() != overridee.getParametersTypes().size()) {
         return false;
       }
       for (int i = 0; i < getParametersTypes().size(); i++) {
         Type paramOverrider = getParametersTypes().get(i);
         if (paramOverrider.isTagged(Type.UNKNOWN)) {
-          //FIXME : complete symbol table should not have unknown types and generics should be handled properly for this.
+          // FIXME : complete symbol table should not have unknown types and generics should be handled properly for this.
           return null;
         }
-        //Generics type should have same erasure see JLS8 8.4.2
+        // Generics type should have same erasure see JLS8 8.4.2
 
         Type overrideeType = overridee.getParametersTypes().get(i);
-        if(classType instanceof Type.ParametrizedTypeType) {
+        if (classType instanceof Type.ParametrizedTypeType) {
           overrideeType = ((Type.ParametrizedTypeType) classType).typeSubstitution.get(overrideeType);
-          if(overrideeType == null) {
+          if (overrideeType == null) {
             overrideeType = overridee.getParametersTypes().get(i);
           }
         }
@@ -382,7 +442,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
           return false;
         }
       }
-      //we assume code is compiling so no need to check return type at this point.
+      // we assume code is compiling so no need to check return type at this point.
       return true;
     }
 
@@ -408,79 +468,15 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
 
     @Override
     public Type getSuperclass() {
-      //FIXME : should return upper bound or Object if no bound defined.
+      // FIXME : should return upper bound or Object if no bound defined.
       return null;
     }
 
     @Override
     public List<Type> getInterfaces() {
-      //FIXME : should return upperbound
+      // FIXME : should return upperbound
       return ImmutableList.of();
     }
   }
-
-  @Override
-  public boolean isVariableSymbol() {
-    return isKind(VAR);
-  }
-
-  @Override
-  public boolean isTypeSymbol() {
-    return isKind(TYP);
-  }
-
-  @Override
-  public boolean isMethodSymbol() {
-    return isKind(MTH);
-  }
-
-
-
-  public boolean isStatic() {
-    return isFlag(Flags.STATIC);
-  }
-
-  public boolean isFinal() {
-    return isFlag(Flags.FINAL);
-  }
-
-  public boolean isEnum() {
-    return isFlag(Flags.ENUM);
-  }
-
-  public boolean isAbstract() {
-    return isFlag(Flags.ABSTRACT);
-  }
-
-  public boolean isPublic() {
-    return isFlag(Flags.PUBLIC);
-  }
-
-  public boolean isPrivate() {
-    return isFlag(Flags.PRIVATE);
-  }
-
-  public boolean isProtected() {
-    return isFlag(Flags.PROTECTED);
-  }
-
-  public boolean isDeprecated() {
-    return isFlag(Flags.DEPRECATED);
-  }
-
-  public boolean isVolatile() {
-    return isFlag(Flags.VOLATILE);
-  }
-
-  protected boolean isFlag(int flag) {
-    complete();
-    return (flags & flag) != 0;
-  }
-
-  public boolean isPackageVisibility() {
-    complete();
-    return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
-  }
-
 
 }
