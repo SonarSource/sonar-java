@@ -33,7 +33,7 @@ import com.google.common.annotations.Beta;
  * @since Java 1.3
  */
 @Beta
-public interface IdentifierTree extends ExpressionTree {
+public interface IdentifierTree extends ExpressionTree, TypeTree {
 
   SyntaxToken identifierToken();
 

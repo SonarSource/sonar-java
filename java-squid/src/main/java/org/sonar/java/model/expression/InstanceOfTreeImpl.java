@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.Iterator;
 
@@ -36,9 +37,9 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
 
   private ExpressionTree expression;
   private final InternalSyntaxToken instanceofToken;
-  private final Tree type;
+  private final TypeTree type;
 
-  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, Tree type, AstNode child) {
+  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, TypeTree type, AstNode child) {
     super(Kind.INSTANCE_OF);
     this.instanceofToken = instanceofToken;
     this.type = Preconditions.checkNotNull(type);
@@ -72,7 +73,7 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
   }
 
   @Override
-  public Tree type() {
+  public TypeTree type() {
     return type;
   }
 

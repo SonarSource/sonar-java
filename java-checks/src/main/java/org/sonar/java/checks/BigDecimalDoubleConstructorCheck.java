@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -52,7 +51,7 @@ public class BigDecimalDoubleConstructorCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       NewClassTree nct = (NewClassTree) tree;
-      if (((AbstractTypedTree) nct).getSymbolType().is("java.math.BigDecimal") && isDoubleConstructor(nct)) {
+      if (nct.symbolType().is("java.math.BigDecimal") && isDoubleConstructor(nct)) {
         addIssue(tree, "Use \"BigDecimal.valueOf\" instead.");
       }
     }
@@ -60,7 +59,7 @@ public class BigDecimalDoubleConstructorCheck extends SubscriptionBaseVisitor {
 
   private boolean isDoubleConstructor(NewClassTree nct) {
     if (!nct.arguments().isEmpty() && nct.arguments().size() <= 2) {
-      Type argumentType = ((AbstractTypedTree) nct.arguments().get(0)).getSymbolType();
+      Type argumentType = nct.arguments().get(0).symbolType();
       return argumentType.is("double") || argumentType.is("float");
     }
     return false;

@@ -23,7 +23,7 @@ import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.Token;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
 
@@ -47,12 +47,20 @@ public abstract class AbstractTypedTree extends JavaTree {
     super(astNodeType, token);
   }
 
-  public Type getSymbolType() {
+  /**
+   * @deprecated should use symbolType() method
+   */
+  @Deprecated
+  public org.sonar.java.resolve.Type getSymbolType() {
+    return (org.sonar.java.resolve.Type) type;
+  }
+
+  public Type symbolType() {
     return type;
   }
 
   public void setType(Type type) {
-    //type are computed and set only once
+    // type are computed and set only once
     Preconditions.checkState(this.type == null);
     this.type = type;
   }

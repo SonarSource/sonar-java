@@ -54,13 +54,13 @@ public interface MethodTree extends Tree {
    * @return null in case of constructor
    */
   @Nullable
-  Tree returnType();
+  TypeTree returnType();
 
   IdentifierTree simpleName();
 
   List<VariableTree> parameters();
 
-  List<ExpressionTree> throwsClauses();
+  List<TypeTree> throwsClauses();
 
   @Nullable
   BlockTree block();

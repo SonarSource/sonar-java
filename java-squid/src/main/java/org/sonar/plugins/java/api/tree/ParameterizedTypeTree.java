@@ -35,9 +35,9 @@ import java.util.List;
  * @since Java 1.5
  */
 @Beta
-public interface ParameterizedTypeTree extends Tree {
+public interface ParameterizedTypeTree extends TypeTree {
 
-  Tree type();
+  TypeTree type();
 
   List<Tree> typeArguments();
 

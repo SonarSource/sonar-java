@@ -24,7 +24,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -60,7 +59,7 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
       if (tree.is(Tree.Kind.METHOD_INVOCATION) && RUNTIME_EXEC_MATCHER.matches((MethodInvocationTree) tree, getSemanticModel())) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
         checkForIssue(tree, mit.arguments().get(0));
-      } else if (tree.is(Tree.Kind.NEW_CLASS) && ((AbstractTypedTree) tree).getSymbolType().is("java.lang.ProcessBuilder")) {
+      } else if (tree.is(Tree.Kind.NEW_CLASS) && ((NewClassTree) tree).symbolType().is("java.lang.ProcessBuilder")) {
         for (ExpressionTree expressionTree : ((NewClassTree) tree).arguments()) {
           checkForIssue(tree, expressionTree);
         }
@@ -88,7 +87,7 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
       return false;
     }
     setParameterNameFromArgument(arg);
-    boolean argIsString = ((AbstractTypedTree) arg).getSymbolType().is("java.lang.String");
+    boolean argIsString = arg.symbolType().is("java.lang.String");
     return !argIsString || isDynamicString(mit, arg, null);
   }
 

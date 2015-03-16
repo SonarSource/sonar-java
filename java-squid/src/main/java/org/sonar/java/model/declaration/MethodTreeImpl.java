@@ -25,10 +25,8 @@ import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -42,6 +40,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameters;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
@@ -53,12 +52,12 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   private ModifiersTree modifiers;
   private TypeParameters typeParameters;
   @Nullable
-  private Tree returnType;
+  private TypeTree returnType;
   private IdentifierTree simpleName;
   private final FormalParametersListTreeImpl parameters;
   @Nullable
   private final BlockTree block;
-  private final List<ExpressionTree> throwsClauses;
+  private final List<TypeTree> throwsClauses;
   private final SyntaxToken defaultToken;
   private final ExpressionTree defaultValue;
 
@@ -83,10 +82,10 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   public MethodTreeImpl(
-      @Nullable Tree returnType,
+      @Nullable TypeTree returnType,
       IdentifierTree simpleName,
       FormalParametersListTreeImpl parameters,
-      List<ExpressionTree> throwsClauses,
+      List<TypeTree> throwsClauses,
       @Nullable BlockTree block) {
 
     super(returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD);
@@ -102,7 +101,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.defaultValue = null;
   }
 
-  public MethodTreeImpl complete(Tree returnType, IdentifierTree simpleName) {
+  public MethodTreeImpl complete(TypeTree returnType, IdentifierTree simpleName) {
     Preconditions.checkState(this.simpleName == null);
     this.returnType = returnType;
     this.simpleName = simpleName;
@@ -143,7 +142,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Nullable
   @Override
-  public Tree returnType() {
+  public TypeTree returnType() {
     return returnType;
   }
 
@@ -158,7 +157,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   @Override
-  public List<ExpressionTree> throwsClauses() {
+  public List<TypeTree> throwsClauses() {
     return throwsClauses;
   }
 
@@ -274,8 +273,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     boolean result = false;
     if (variableTree.type().is(Tree.Kind.ARRAY_TYPE)) {
       ArrayTypeTree arrayTypeTree = (ArrayTypeTree) variableTree.type();
-      Type arrayType = ((AbstractTypedTree) arrayTypeTree.type()).getSymbolType();
-      result = arrayType.isTagged(Type.CLASS) && "String".equals(arrayType.getSymbol().getName());
+      result = arrayTypeTree.type().symbolType().isClass() && "String".equals(arrayTypeTree.type().symbolType().name());
     }
     return result;
   }
@@ -324,7 +322,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   private boolean returnsString() {
     if (returnType != null) {
-      return ((AbstractTypedTree) returnType).getSymbolType().is("java.lang.String");
+      return returnType.symbolType().is("java.lang.String");
     }
     return false;
   }

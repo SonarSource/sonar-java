@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -47,7 +47,7 @@ public class NullCipherCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (((AbstractTypedTree) tree).getSymbolType().is("javax.crypto.NullCipher")) {
+    if (((NewClassTree) tree).symbolType().is("javax.crypto.NullCipher")) {
       addIssue(tree, "Remove this use of the \"NullCipher\" class.");
     }
   }

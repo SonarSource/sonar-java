@@ -23,8 +23,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -61,8 +59,7 @@ public class ArrayEqualsCheck extends BaseTreeVisitor implements JavaFileScanner
     if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) tree.methodSelect();
       if ("equals".equals(mset.identifier().name())) {
-        AbstractTypedTree typedTree = (AbstractTypedTree) mset.expression();
-        if (typedTree.getSymbolType().isTagged(Type.ARRAY)) {
+        if (mset.expression().symbolType().isArray()) {
           context.addIssue(tree, ruleKey, "Use the '==' operator instead of calling the equals() method to prevent any misunderstandings");
         }
       }

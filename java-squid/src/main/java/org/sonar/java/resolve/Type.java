@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Type {
+public class Type implements org.sonar.plugins.java.api.semantic.Type {
 
   public static final int BYTE = 1;
   public static final int CHAR = 2;
@@ -104,6 +104,20 @@ public class Type {
     return false;
   }
 
+  @Override
+  public boolean isSubtypeOf(org.sonar.plugins.java.api.semantic.Type superType) {
+    Type supType = (Type) superType;
+    if (this.isTagged(Type.ARRAY) && supType.isTagged(Type.ARRAY)) {
+      //Handle covariance of arrays.
+      return (((Type.ArrayType) this).elementType().isSubtypeOf(((Type.ArrayType) supType).elementType()));
+    } else if (this.isTagged(Type.CLASS) && supType.isTagged(Type.CLASS)) {
+      Type.ClassType expressionType = (Type.ClassType) this;
+      Type.ClassType instanceOfType = (Type.ClassType) supType;
+      return expressionType == instanceOfType || expressionType.getSymbol().superTypes().contains(instanceOfType);
+    }
+    return false;
+  }
+
   private boolean superTypeContains(String fullyQualifiedName) {
     for (ClassType classType : symbol.superTypes()) {
       if (classType.is(fullyQualifiedName)) {
@@ -156,6 +170,26 @@ public class Type {
   @Nullable
   public Type primitiveWrapperType() {
     return primitiveWrapperType;
+  }
+
+  @Override
+  public boolean isArray() {
+    return isTagged(ARRAY);
+  }
+
+  @Override
+  public boolean isClass() {
+    return isTagged(CLASS);
+  }
+
+  @Override
+  public String fullyQualifiedName() {
+    return symbol.getFullyQualifiedName();
+  }
+
+  @Override
+  public String name() {
+    return symbol.name;
   }
 
   public static class ClassType extends Type {

@@ -25,9 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -82,14 +80,13 @@ public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
 
   private void visitInstanceOf(InstanceOfTree instanceOfTree) {
     ExpressionTree expression = instanceOfTree.expression();
-    AbstractTypedTree testedType = (AbstractTypedTree) instanceOfTree.type();
-    if (expression.is(Tree.Kind.IDENTIFIER) && testedType.getSymbolType().is("java.io.Serializable")) {
+    if (expression.is(Tree.Kind.IDENTIFIER) && instanceOfTree.type().symbolType().is("java.io.Serializable")) {
       testedSymbols.add(getSemanticModel().getReference((IdentifierTree) expression));
     }
   }
 
   // If we met a test such as "x instanceof Serializable", we suppose that symbol x is Serializable
-  private boolean isTestedSymbol(AbstractTypedTree tree) {
+  private boolean isTestedSymbol(ExpressionTree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = getSemanticModel().getReference((IdentifierTree) tree);
       return testedSymbols.contains(symbol);
@@ -99,18 +96,18 @@ public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
 
   private void visitMethodInvocation(MethodInvocationTree methodInvocation) {
     if (WRITE_OBJECT_MATCHER.matches(methodInvocation, getSemanticModel())) {
-      AbstractTypedTree argument = (AbstractTypedTree) methodInvocation.arguments().get(0);
-      if (!isAcceptableType(argument.getSymbolType()) && !isTestedSymbol(argument)) {
-        addIssue(methodInvocation, "Make the \"" + argument.getSymbolType() + "\" class \"Serializable\" or don't write it.");
+      ExpressionTree argument = methodInvocation.arguments().get(0);
+      if (!isAcceptableType(argument.symbolType()) && !isTestedSymbol(argument)) {
+        addIssue(methodInvocation, "Make the \"" + argument.symbolType().fullyQualifiedName() + "\" class \"Serializable\" or don't write it.");
       }
     }
   }
 
-  private boolean isAcceptableType(Type argType) {
+  private boolean isAcceptableType(org.sonar.plugins.java.api.semantic.Type argType) {
     return argType.isSubtypeOf("java.io.Serializable")
       || argType.is("java.lang.Object")
       || argType.isPrimitive()
-      || !argType.isTagged(Type.CLASS);
+      || !argType.isClass();
   }
 
 }
