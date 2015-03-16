@@ -186,9 +186,8 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodSelect;
         AbstractTypedTree unboxedExpression = (AbstractTypedTree) memberSelectExpressionTree.expression();
-        Type unboxedExpressionType = unboxedExpression.getSymbolType();
-        String unboxingResultTypeName = methodInvocationTree.getSymbolType().getSymbol().getFullyQualifiedName();
-        if (unboxingResultTypeName.equals(PRIMITIVE_TYPES_BY_WRAPPER.get(unboxedExpressionType.getSymbol().getFullyQualifiedName()))) {
+        String unboxingResultTypeName = methodInvocationTree.symbolType().fullyQualifiedName();
+        if (unboxingResultTypeName.equals(PRIMITIVE_TYPES_BY_WRAPPER.get(unboxedExpression.symbolType().fullyQualifiedName()))) {
           addUnboxingIssue(expressionTree, unboxedExpression);
         }
       }
@@ -200,7 +199,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
       IdentifierTree identifier = (IdentifierTree) expression;
       addIssue(expressionTree, "Remove the unboxing of \"" + identifier.name() + "\".");
     } else {
-      String name = expression.getSymbolType().getSymbol().getName();
+      String name = expression.symbolType().name();
       addIssue(expressionTree, "Remove the unboxing from \"" + name + "\".");
     }
   }

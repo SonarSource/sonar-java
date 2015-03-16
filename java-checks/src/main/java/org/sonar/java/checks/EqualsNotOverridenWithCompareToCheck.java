@@ -99,7 +99,7 @@ public class EqualsNotOverridenWithCompareToCheck extends BaseTreeVisitor implem
       return false;
     }
     for (Type type : typeSymbol.getInterfaces()) {
-      if ("Comparable".equals(type.getSymbol().getName())) {
+      if (type.is("java.lang.Comparable")) {
         return true;
       }
     }
