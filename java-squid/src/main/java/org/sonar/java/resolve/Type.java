@@ -113,7 +113,7 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     Type supType = (Type) superType;
     if (this.isTagged(Type.ARRAY) && supType.isTagged(Type.ARRAY)) {
       //Handle covariance of arrays.
-      return (((Type.ArrayType) this).elementType().isSubtypeOf(((Type.ArrayType) supType).elementType()));
+      return ((Type.ArrayType) this).elementType().isSubtypeOf(((Type.ArrayType) supType).elementType());
     } else if (this.isTagged(Type.CLASS) && supType.isTagged(Type.CLASS)) {
       Type.ClassType expressionType = (Type.ClassType) this;
       Type.ClassType instanceOfType = (Type.ClassType) supType;

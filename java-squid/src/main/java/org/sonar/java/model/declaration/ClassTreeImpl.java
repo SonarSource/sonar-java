@@ -41,20 +41,20 @@ import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
 public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   private final Kind kind;
+  private final List<Tree> members;
   private ModifiersTree modifiers;
   private IdentifierTree simpleName;
   private TypeParameters typeParameters;
   @Nullable
   private TypeTree superClass;
   private List<TypeTree> superInterfaces;
-  private final List<Tree> members;
-
   // FIXME(Godin): never should be null, i.e. should have default value
   @Nullable
   private Symbol.TypeSymbol symbol;
@@ -88,8 +88,8 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   public ClassTreeImpl(
-    AstNode astNode, Kind kind,
-    ModifiersTree modifiers, @Nullable IdentifierTree simpleName, TypeParameters typeParameters, @Nullable TypeTree superClass, List<TypeTree> superInterfaces, List<Tree> members) {
+    AstNode astNode, Kind kind, ModifiersTree modifiers,
+    @Nullable IdentifierTree simpleName, TypeParameters typeParameters, @Nullable TypeTree superClass, List<TypeTree> superInterfaces, List<Tree> members) {
     super(astNode);
     this.kind = Preconditions.checkNotNull(kind);
     this.modifiers = Preconditions.checkNotNull(modifiers);
@@ -209,7 +209,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public int getLine() {
-    if(simpleName==null) {
+    if (simpleName == null) {
       return super.getLine();
     }
     return ((IdentifierTreeImpl) simpleName).getLine();
@@ -218,7 +218,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Override
   public Iterator<Tree> childrenIterator() {
     Iterator<TypeParameters> typeParamIterator = Iterators.emptyIterator();
-    if(typeParameters != null) {
+    if (typeParameters != null) {
       typeParamIterator = Iterators.singletonIterator(typeParameters);
     }
     return Iterators.concat(

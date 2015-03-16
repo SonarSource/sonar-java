@@ -58,10 +58,8 @@ public class ArrayEqualsCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitMethodInvocation(MethodInvocationTree tree) {
     if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) tree.methodSelect();
-      if ("equals".equals(mset.identifier().name())) {
-        if (mset.expression().symbolType().isArray()) {
-          context.addIssue(tree, ruleKey, "Use the '==' operator instead of calling the equals() method to prevent any misunderstandings");
-        }
+      if ("equals".equals(mset.identifier().name()) && mset.expression().symbolType().isArray()) {
+        context.addIssue(tree, ruleKey, "Use the '==' operator instead of calling the equals() method to prevent any misunderstandings");
       }
     }
     super.visitMethodInvocation(tree);
