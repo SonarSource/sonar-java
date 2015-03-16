@@ -19,6 +19,9 @@
  */
 package org.sonar.plugins.java.api.semantic;
 
+/**
+ * Interface to access symbol information.
+ */
 public interface Symbol {
 
 

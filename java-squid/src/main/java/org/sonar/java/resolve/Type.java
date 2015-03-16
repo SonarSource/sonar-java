@@ -143,6 +143,11 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     return tag <= BOOLEAN;
   }
 
+  @Override
+  public boolean isPrimitive(Primitives primitive) {
+    return tag == primitive.ordinal() + 1;
+  }
+
   public boolean isPrimitiveWrapper() {
     if (!isTagged(CLASS)) {
       return false;

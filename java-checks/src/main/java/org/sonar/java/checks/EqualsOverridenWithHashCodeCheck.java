@@ -24,13 +24,10 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -80,34 +77,17 @@ public class EqualsOverridenWithHashCodeCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isEquals(MethodTree methodTree) {
-    return EQUALS.equals(methodTree.simpleName().name()) && hasObjectParam(methodTree) && returnsType(methodTree, Type.BOOLEAN);
+    return ((MethodTreeImpl) methodTree).isEqualsMethod();
   }
 
   private boolean isHashCode(MethodTree methodTree) {
-    return HASHCODE.equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty() && returnsType(methodTree, Type.INT);
+    return HASHCODE.equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty() && returnsInt(methodTree);
   }
 
-
-  private boolean hasObjectParam(MethodTree tree) {
-    if (tree.parameters().size() == 1) {
-      Tree type = tree.parameters().get(0).type();
-      //FIXME : should rely on type symbol when problem of expression visitor is solved.
-      String name = "";
-      if(type.is(Tree.Kind.MEMBER_SELECT)){
-        name = ((MemberSelectExpressionTree) type).identifier().name();
-      }else if(type.is(Tree.Kind.IDENTIFIER)) {
-        name = ((IdentifierTree) type).name();
-      }
-      return name.endsWith("Object");
-    }
-    return false;
+  private boolean returnsInt(MethodTree tree) {
+    TypeTree typeTree = tree.returnType();
+    return typeTree != null && typeTree.symbolType().isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.INT);
   }
-
-  private boolean returnsType(MethodTree tree, int typeTag) {
-    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
-    return methodSymbol != null && methodSymbol.getReturnType().getType().isTagged(typeTag);
-  }
-
 
   private String getMessage(String overridenMethod, String methodToOverride) {
     return "This class overrides \"" + overridenMethod + "()\" and should therefore also override \"" + methodToOverride + "()\".";

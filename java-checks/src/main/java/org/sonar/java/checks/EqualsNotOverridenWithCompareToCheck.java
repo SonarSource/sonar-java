@@ -31,9 +31,9 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -89,8 +89,7 @@ public class EqualsNotOverridenWithCompareToCheck extends BaseTreeVisitor implem
   }
 
   private boolean isEqualsMethod(MethodTree method) {
-    String name = method.simpleName().name();
-    return "equals".equals(name) && hasObjectParam(method) && returnsBoolean(method);
+    return ((MethodTreeImpl) method).isEqualsMethod();
   }
 
 
@@ -100,29 +99,16 @@ public class EqualsNotOverridenWithCompareToCheck extends BaseTreeVisitor implem
       return false;
     }
     for (Type type : typeSymbol.getInterfaces()) {
-      if ("Comparable".equals(((Type.ClassType) type).getSymbol().getName())) {
+      if ("Comparable".equals(type.getSymbol().getName())) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean hasObjectParam(MethodTree tree) {
-    boolean result = false;
-    if (tree.parameters().size() == 1 && tree.parameters().get(0).type().is(Tree.Kind.IDENTIFIER)) {
-      result = ((IdentifierTree) tree.parameters().get(0).type()).name().endsWith("Object");
-    }
-    return result;
-  }
-
-  private boolean returnsBoolean(MethodTree tree) {
-    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
-    return methodSymbol != null && methodSymbol.getReturnType().getType().isTagged(Type.BOOLEAN);
-  }
-
   private boolean returnsInt(MethodTree tree) {
-    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
-    return methodSymbol != null && methodSymbol.getReturnType().getType().isTagged(Type.INT);
+    TypeTree typeTree = tree.returnType();
+    return typeTree != null && typeTree.symbolType().isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.INT);
   }
 
 }

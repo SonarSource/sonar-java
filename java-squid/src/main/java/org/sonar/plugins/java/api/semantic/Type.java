@@ -24,6 +24,16 @@ package org.sonar.plugins.java.api.semantic;
  */
 public interface Type {
 
+  enum Primitives {
+    BYTE,
+    CHAR,
+    SHORT,
+    INT,
+    LONG,
+    FLOAT,
+    DOUBLE,
+    BOOLEAN
+  }
   /**
    * Check whether a type is the one designed by the fully qualified name.
    *
@@ -88,6 +98,8 @@ public interface Type {
    * @return true if this is a primitive type.
    */
   boolean isPrimitive();
+
+  boolean isPrimitive(Primitives primitive);
 
   /**
    * Check if this type is a primitive numerical type.

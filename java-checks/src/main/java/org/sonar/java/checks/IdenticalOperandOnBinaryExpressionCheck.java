@@ -23,10 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -113,8 +112,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
 
   private boolean isNanTest(BinaryExpressionTree tree) {
     if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
-      Type symbolType = ((AbstractTypedTree) tree.leftOperand()).getSymbolType();
-      if (symbolType.isTagged(Type.FLOAT) || symbolType.isTagged(Type.DOUBLE)) {
+      if (tree.leftOperand().symbolType().isPrimitive(Type.Primitives.FLOAT) || tree.leftOperand().symbolType().isPrimitive(Type.Primitives.DOUBLE)) {
         return true;
       }
     }

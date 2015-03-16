@@ -23,9 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -34,6 +32,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -74,11 +73,12 @@ public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
 
   private boolean hasOneNonPrimitiveParameter(MethodTree methodTree) {
     List<VariableTree> parameters = methodTree.parameters();
-    return parameters.size() == 1 && !((VariableTreeImpl) parameters.get(0)).getSymbol().getType().isPrimitive();
+    return parameters.size() == 1 && !parameters.get(0).type().symbolType().isPrimitive();
   }
 
   private boolean returnsInt(MethodTree methodTree) {
-    return ((MethodTreeImpl) methodTree).getSymbol().getReturnType().getType().isTagged(Type.INT);
+    TypeTree typeTree = methodTree.returnType();
+    return typeTree != null && typeTree.symbolType().isPrimitive(Type.Primitives.INT);
   }
 
   private class ReturnStatementVisitor extends BaseTreeVisitor {

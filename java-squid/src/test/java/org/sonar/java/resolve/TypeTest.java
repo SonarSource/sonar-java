@@ -107,6 +107,13 @@ public class TypeTest {
     assertThat(new Type(Type.VOID, null).isPrimitive()).isFalse();
     assertThat(new Type(Type.ARRAY, null).isPrimitive()).isFalse();
     assertThat(new Type(Type.CLASS, null).isPrimitive()).isFalse();
+
+
+    //Test primitive type
+    for (org.sonar.plugins.java.api.semantic.Type.Primitives primitive : org.sonar.plugins.java.api.semantic.Type.Primitives.values()) {
+      assertThat(symbols.charType.isPrimitive(primitive)).isEqualTo(primitive.equals(org.sonar.plugins.java.api.semantic.Type.Primitives.CHAR));
+    }
+
   }
 
   @Test

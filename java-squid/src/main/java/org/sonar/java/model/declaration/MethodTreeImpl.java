@@ -292,7 +292,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   private boolean hasObjectParameter() {
-    return parameters.size()==1 && parameters.get(0).getSymbol().getType().is("java.lang.Object");
+    return parameters.size()==1 && parameters.get(0).type().symbolType().is("java.lang.Object");
   }
 
   private boolean returnsBoolean() {
