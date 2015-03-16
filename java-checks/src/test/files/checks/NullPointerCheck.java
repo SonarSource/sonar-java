@@ -193,6 +193,13 @@ class NullPointerTest {
     argument1.hashCode(); // Compliant
   }
 
+  public void testConditional(Object argument) {
+    int result1 = argument == null ? 0 : argument.hashCode(); // Compliant
+    int result2 = argument == null ? argument.hashCode() : 0; // Noncompliant
+    int result3 = argument != null ? 0 : argument.hashCode(); // Noncompliant
+    int result4 = argument != null ? argument.hashCode() : 0; // Compliant
+  }
+
   @interface CoverageAnnotation {
   }
 

@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -113,6 +114,18 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitCompilationUnit(CompilationUnitTree tree) {
     // skips package name, imports, and annotations.
     scan(tree.types());
+  }
+
+  @Override
+  public void visitConditionalExpression(ConditionalExpressionTree tree) {
+    State trueState = new State(currentState);
+    State falseState = new State(currentState);
+    conditionVisitor.visitCondition(tree.condition(), trueState, falseState);
+    currentState = trueState;
+    tree.trueExpression().accept(this);
+    currentState = falseState;
+    tree.falseExpression().accept(this);
+    currentState = currentState.parentState;
   }
 
   @Override
