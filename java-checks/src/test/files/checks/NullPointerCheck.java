@@ -1,3 +1,4 @@
+@SomeAnnotation(name = value)
 package javax.annotation;
 
 @interface CheckForNull {}
@@ -169,6 +170,29 @@ class NullPointerTest {
       null); // Not compliant
   }
 
+  public void testIf(Object argument1, Object argument2) {
+    argument1.hashCode(); // Compliant
+    if (argument1 == null) {
+      argument1.hashCode(); // Noncompliant
+      argument1 = argument2;
+      argument1.hashCode(); // Compliant
+    } else {
+      argument1.hashCode(); // Compliant
+      argument1 = null;
+      argument1.hashCode(); // Noncompliant
+    }
+    if (null != argument1) {
+      argument1.hashCode(); // Compliant
+      argument1 = null;
+      argument1.hashCode(); // Noncompliant
+    } else {
+      argument1.hashCode(); // Noncompliant
+      argument1 = argument2;
+      argument1.hashCode(); // Compliant
+    }
+    argument1.hashCode(); // Compliant
+  }
+
   @interface CoverageAnnotation {
   }
 
@@ -177,9 +201,21 @@ class NullPointerTest {
     return new Object();
   }
 
-  public void testCoverage() {
+  public void testCoverage(Object[] a) {
     coverageMethod().hashCode(); // Coverage
     invalidMethod(); // Coverage
+    if(0) {} // Coverage
+    if(0 == 0) { } // Coverage
+    a[0] = null; // Coverage
+    if(null == coverageMethod()) {} // Coverage
+    if(a == a) {} // Coverage
+    if(a == null) { } // Coverage
+    if(a != null) { } // Coverage
+  }
+
+  static int a;
+  static {
+    a = 0;
   }
 
 }
