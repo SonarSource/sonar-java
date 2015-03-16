@@ -81,6 +81,7 @@ class Shifts {
     a = 1 << 1l; // Compliant
     a = 0xfffffffffffffffeL << 7;  // Compliant
     a = 0xffffffffffffffffL << 7;  // Compliant
+    a = 0x8000000000000000L << 7;  // Compliant
   }
 
   public int returnInt() {

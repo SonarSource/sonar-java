@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -51,12 +50,6 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
-
-  private static final List<String> UNEVALUABLE_LONGS = Lists.newArrayList(
-    // Only 1
-    "0xffffffffffffffff",
-    // zero the LSB
-    "0xfffffffffffffffe");
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -104,10 +97,16 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
   private boolean isLiteralValue(ExpressionTree tree, long value) {
     if (tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
       String expressionValue = LiteralUtils.trimLongSuffix(((LiteralTree) tree).value()).toLowerCase();
-      if (UNEVALUABLE_LONGS.contains(expressionValue)) {
-        return false;
-      } else {
+      try {
         return Long.decode(expressionValue) == value;
+      } catch (NumberFormatException e) {
+        // Long.decode() may fail in case of very large long number written in hexadecimal. In such situation, the long we provide
+        // is necessarily not equals.
+        // Note that Long.MAX_VALUE = "0x7FFF_FFFF_FFFF_FFFFL", but it is possible to write larger numbers in hexadecimal
+        // to be used as mask in bitwise operation. For instance:
+        // 0x8000_0000_0000_0000L (MAX_VALUE + 1),
+        // 0xFFFF_FFFF_FFFF_FFFFL (only ones),
+        // 0xFFFF_FFFF_FFFF_FFFEL (only ones except least significant bit), ...
       }
     }
     return false;
