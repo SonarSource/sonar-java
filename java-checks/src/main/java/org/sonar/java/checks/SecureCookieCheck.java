@@ -112,7 +112,7 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isCallSiteCookie(Symbol methodSymbol) {
-    return !methodSymbol.isKind(Symbol.ERRONEOUS) && methodSymbol.owner().getType().is("javax.servlet.http.Cookie");
+    return methodSymbol.isMethodSymbol() && methodSymbol.owner().getType().is("javax.servlet.http.Cookie");
   }
 
   private IdentifierTree getIdentifier(MethodInvocationTree mit) {

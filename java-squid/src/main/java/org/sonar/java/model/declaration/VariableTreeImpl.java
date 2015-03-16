@@ -178,6 +178,11 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   @Override
+  public org.sonar.plugins.java.api.semantic.Symbol symbol() {
+    return symbol;
+  }
+
+  @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitVariable(this);
   }

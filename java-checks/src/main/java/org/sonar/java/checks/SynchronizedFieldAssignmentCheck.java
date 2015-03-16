@@ -72,7 +72,7 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
   private Symbol getField(ExpressionTree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
       Symbol reference = getSemanticModel().getReference((IdentifierTree) tree);
-      if (reference != null && reference.owner().isKind(Symbol.TYP)) {
+      if (reference != null && reference.owner().isTypeSymbol()) {
         return reference;
       }
     } else if (tree.is(Kind.MEMBER_SELECT)) {
@@ -87,7 +87,7 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
   private boolean isField(ExpressionTree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
       Symbol reference = getSemanticModel().getReference((IdentifierTree) tree);
-      return reference != null && reference.owner().isKind(Symbol.TYP);
+      return reference != null && reference.owner().isTypeSymbol();
     } else if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
       ExpressionTree mseExpression = mse.expression();

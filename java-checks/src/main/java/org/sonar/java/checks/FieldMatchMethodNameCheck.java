@@ -77,12 +77,12 @@ public class FieldMatchMethodNameCheck extends BaseTreeVisitor implements JavaFi
       Collection<Symbol> symbols = classSymbol.members().scopeSymbols();
       for (Symbol sym : symbols) {
         String symName = sym.getName().toLowerCase();
-        if (sym.isKind(Symbol.VAR)) {
+        if (sym.isVariableSymbol()) {
           indexSymbol.put(symName, sym);
           fields.add(symName);
           fieldsOriginal.put(symName, sym.getName());
         }
-        if (sym.isKind(Symbol.MTH)) {
+        if (sym.isMethodSymbol()) {
           methodNames.add(symName);
         }
       }

@@ -47,12 +47,12 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
     TypeSymbol symbol = classTree.getSymbol();
     if (isInnerClass(symbol) && directlyImplementsSerializable(symbol)) {
       Symbol owner = symbol.owner();
-      if (owner.isKind(Symbol.TYP)) {
+      if (owner.isTypeSymbol()) {
         TypeSymbol ownerType = (TypeSymbol) owner;
         if (isMatchingOuterClass(ownerType.getType()) && !symbol.isStatic()) {
           addIssue(classTree, "Make this inner class static");
         }
-      } else if (owner.isKind(Symbol.MTH)) {
+      } else if (owner.isMethodSymbol()) {
         TypeSymbol methodOwner = (TypeSymbol) owner.owner();
         if (isMatchingOuterClass(methodOwner.getType()) && !owner.isStatic()) {
           String methodName = owner.getName();

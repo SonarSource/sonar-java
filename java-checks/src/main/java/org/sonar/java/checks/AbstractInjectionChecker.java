@@ -86,7 +86,7 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
     }
     //arg is not a local variable nor a constant, so it is a parameter or a field.
     parameterName = arg.name();
-    return symbol.owner().isKind(Symbol.MTH) && !firstLevel;
+    return symbol.owner().isMethodSymbol() && !firstLevel;
   }
 
   public boolean isConstant(Symbol symbol) {

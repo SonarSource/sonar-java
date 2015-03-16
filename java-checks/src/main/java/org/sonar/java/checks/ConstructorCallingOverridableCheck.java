@@ -114,7 +114,7 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean isOverridableMethod(Symbol symbol) {
-      if (symbol.isKind(Symbol.MTH)) {
+      if (symbol.isMethodSymbol()) {
         Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
         if (!methodSymbol.isPrivate() && !methodSymbol.isFinal() && !methodSymbol.isStatic()) {
           return true;

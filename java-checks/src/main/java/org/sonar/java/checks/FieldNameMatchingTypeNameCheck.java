@@ -74,7 +74,7 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
       Symbol.TypeSymbol classSymbol = ((ClassTreeImpl) tree).getSymbol();
       Collection<Symbol> members = classSymbol.members().scopeSymbols();
       for (Symbol sym : members) {
-        if (sym.isKind(Symbol.VAR) && !staticFieldSameType(classSymbol, sym)) {
+        if (sym.isVariableSymbol() && !staticFieldSameType(classSymbol, sym)) {
           //Exclude static fields of the same type.
           fields.add(semanticModel.getTree(sym));
         }

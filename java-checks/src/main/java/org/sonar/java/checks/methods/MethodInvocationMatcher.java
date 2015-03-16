@@ -98,7 +98,7 @@ public class MethodInvocationMatcher {
 
   private boolean matches(IdentifierTree id, Type callSiteType, SemanticModel semanticModel) {
     Symbol symbol = semanticModel.getReference(id);
-    if (symbol != null && symbol.isKind(Symbol.MTH)) {
+    if (symbol != null && symbol.isMethodSymbol()) {
       Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
       if (isSearchedMethod(methodSymbol, callSiteType)) {
         return true;

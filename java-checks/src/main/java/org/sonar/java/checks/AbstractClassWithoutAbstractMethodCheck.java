@@ -91,6 +91,6 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
   }
 
   private boolean isAbstractMethod(Symbol sym) {
-    return sym.isKind(Symbol.MTH) && sym.isAbstract();
+    return sym.isMethodSymbol() && sym.isAbstract();
   }
 }

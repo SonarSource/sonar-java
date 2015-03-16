@@ -107,7 +107,7 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
     VariableTree variableDefinition = (VariableTree) getSemanticModel().getTree(variableSymbol);
     if (variableDefinition != null) {
       ExpressionTree initializer = variableDefinition.initializer();
-      if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) && variableSymbol.owner().isKind(Symbol.MTH)) {
+      if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) && variableSymbol.owner().isMethodSymbol()) {
         Tree method = getSemanticModel().getTree(variableSymbol.owner());
         return isCompareToInvocation((MethodInvocationTreeImpl) initializer) && !isReassigned(variableSymbol, method);
       }

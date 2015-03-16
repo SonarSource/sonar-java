@@ -79,7 +79,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
     Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
-    if (symbol.isKind(Symbol.MTH)) {
+    if (symbol.isMethodSymbol()) {
       MethodSymbol methodSymbol = (MethodSymbol) symbol;
       List<Symbol> parameters = methodSymbol.getParameters().scopeSymbols();
       // FIXME(merciesa): in some cases (method overloading with parameterized methods) a method symbol without parameter can be called with arguments.

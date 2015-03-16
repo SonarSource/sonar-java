@@ -154,7 +154,7 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     private void checkIdentifier(IdentifierTree tree) {
       Symbol reference = getSemanticModel().getReference(tree);
       String name = tree.name();
-      if (reference != null && reference.isKind(Symbol.MTH)) {
+      if (reference != null && reference.isMethodSymbol()) {
         name += "()";
       }
       conditionNames.add(name);

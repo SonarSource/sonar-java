@@ -24,7 +24,35 @@ package org.sonar.plugins.java.api.semantic;
  */
 public interface Symbol {
 
+  //kinds of symbols
+  boolean isVariableSymbol();
 
+  boolean isTypeSymbol();
+
+  boolean isMethodSymbol();
+
+
+
+  //flags method
+  boolean isStatic();
+
+  boolean isFinal();
+
+  boolean isEnum();
+
+  boolean isAbstract();
+
+  boolean isPublic();
+
+  boolean isPrivate();
+
+  boolean isProtected();
+
+  boolean isPackageVisibility();
+
+  boolean isDeprecated();
+
+  boolean isVolatile();
 
 
 }

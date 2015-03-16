@@ -31,7 +31,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
-public class Symbol {
+//FIXME rename this class to avoid clash of name with interface.
+public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
 
   public static final int PCK = 1 << 0;
   public static final int TYP = 1 << 1;
@@ -135,7 +136,7 @@ public class Symbol {
     return (TypeSymbol) result;
   }
 
-  public boolean isKind(int kind) {
+  boolean isKind(int kind) {
     return (this.kind & kind) != 0;
   }
 
@@ -418,6 +419,23 @@ public class Symbol {
     }
   }
 
+  @Override
+  public boolean isVariableSymbol() {
+    return isKind(VAR);
+  }
+
+  @Override
+  public boolean isTypeSymbol() {
+    return isKind(TYP);
+  }
+
+  @Override
+  public boolean isMethodSymbol() {
+    return isKind(MTH);
+  }
+
+
+
   public boolean isStatic() {
     return isFlag(Flags.STATIC);
   }
@@ -440,6 +458,10 @@ public class Symbol {
 
   public boolean isPrivate() {
     return isFlag(Flags.PRIVATE);
+  }
+
+  public boolean isProtected() {
+    return isFlag(Flags.PROTECTED);
   }
 
   public boolean isDeprecated() {

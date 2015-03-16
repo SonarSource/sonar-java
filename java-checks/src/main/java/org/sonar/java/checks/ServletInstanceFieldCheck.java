@@ -63,7 +63,7 @@ public class ServletInstanceFieldCheck extends SubscriptionBaseVisitor {
   private boolean isOwnedByAServlet(VariableTree variable) {
     VariableTreeImpl vti = (VariableTreeImpl) variable;
     Symbol owner = vti.getSymbol().owner();
-    if (owner.isKind(Symbol.TYP)) {
+    if (owner.isTypeSymbol()) {
       TypeSymbol ownerType = (TypeSymbol) owner;
       for (ClassType classType : ownerType.superTypes()) {
         if (classType.is("javax.servlet.http.HttpServlet") || classType.is("org.apache.struts.action.Action")) {

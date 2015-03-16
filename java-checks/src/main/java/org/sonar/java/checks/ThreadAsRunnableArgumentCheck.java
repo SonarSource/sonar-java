@@ -73,7 +73,7 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
       arguments = mit.arguments();
     }
     // FIXME SONARJAVA-919
-    if (!arguments.isEmpty() && methodSymbol != null && methodSymbol.isKind(Symbol.MTH)) {
+    if (!arguments.isEmpty() && methodSymbol != null && methodSymbol.isMethodSymbol()) {
       checkArgumentsTypes(arguments, (MethodSymbol) methodSymbol);
     }
   }

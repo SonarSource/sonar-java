@@ -31,8 +31,8 @@ import org.sonar.java.resolve.AnnotationValue;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Symbol.VariableSymbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -99,7 +99,7 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
 
   private VariableSymbol findSerialVersionUid(TypeSymbol symbol) {
     for (Symbol member : symbol.members().lookup("serialVersionUID")) {
-      if (member.isKind(Symbol.VAR)) {
+      if (member.isVariableSymbol()) {
         return (VariableSymbol) member;
       }
     }

@@ -63,7 +63,7 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean isInnerClass(Symbol.TypeSymbol symbol) {
-    return symbol.owner().isKind(Symbol.TYP);
+    return symbol.owner().isTypeSymbol();
   }
 
   private boolean extendsOuterClass(Symbol.TypeSymbol classSymbol) {
@@ -81,7 +81,7 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     public void visitMethodInvocation(MethodInvocationTree tree) {
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
       Symbol symbol = mit.getSymbol();
-      if (symbol.isKind(Symbol.MTH) && mit.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol) && outerClassHasMethodWithSameName(symbol)) {
+      if (symbol.isMethodSymbol() && mit.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol) && outerClassHasMethodWithSameName(symbol)) {
         String methodName = ((IdentifierTree) mit.methodSelect()).name();
         addIssue(tree, "Prefix this call to \"" + methodName + "\" with \"super.\".");
       }

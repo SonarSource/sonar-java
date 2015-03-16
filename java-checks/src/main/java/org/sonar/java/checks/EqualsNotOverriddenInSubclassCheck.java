@@ -107,7 +107,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean isEqualsMethod(Symbol symbol) {
-    if (symbol.isKind(Symbol.MTH)) {
+    if (symbol.isMethodSymbol()) {
       MethodSymbol methodSymbol = (MethodSymbol) symbol;
       return !methodSymbol.getParametersTypes().isEmpty() && methodSymbol.getParametersTypes().get(0).is("java.lang.Object");
     }

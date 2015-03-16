@@ -115,7 +115,7 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
     public boolean throwsNoSuchElementException(MethodInvocationTree methodInvocationTree) {
       MethodInvocationTreeImpl methodInvocationTreeImpl = (MethodInvocationTreeImpl) methodInvocationTree;
       Symbol symbol = methodInvocationTreeImpl.getSymbol();
-      if (!symbol.isKind(Symbol.MTH)) {
+      if (!symbol.isMethodSymbol()) {
         return false;
       }
       MethodSymbol methodSymbol = (MethodSymbol) symbol;

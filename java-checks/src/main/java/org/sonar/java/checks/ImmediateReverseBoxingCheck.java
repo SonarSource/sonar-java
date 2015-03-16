@@ -120,7 +120,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
       }
     } else {
       Symbol symbol = methodInvocationTree.getSymbol();
-      if (symbol.isKind(Symbol.MTH)) {
+      if (symbol.isMethodSymbol()) {
         MethodSymbol methodSymbol = (MethodSymbol) symbol;
         List<Type> parametersTypes = methodSymbol.getParametersTypes();
         checkMethodInvocationArguments(methodInvocationTree, parametersTypes);

@@ -62,7 +62,7 @@ public class CloneableImplementingCloneCheck extends SubscriptionBaseVisitor {
 
   private boolean declaresCloneMethod(TypeSymbol classSymbol) {
     for (Symbol memberSymbol : classSymbol.members().lookup("clone")) {
-      if (memberSymbol.isKind(Symbol.MTH)) {
+      if (memberSymbol.isMethodSymbol()) {
         MethodSymbol methodSymbol = (MethodSymbol) memberSymbol;
         if (methodSymbol.getParametersTypes().isEmpty()) {
           return true;

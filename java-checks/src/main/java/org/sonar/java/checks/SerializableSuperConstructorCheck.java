@@ -72,7 +72,7 @@ public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
   private boolean hasNonPrivateNoArgConstructor(Type type) {
     List<Symbol> constructors = type.getSymbol().members().lookup("<init>");
     for (Symbol member : constructors) {
-      if (member.isKind(Symbol.MTH)) {
+      if (member.isMethodSymbol()) {
         MethodSymbol method = (MethodSymbol) member;
         if (method.getParametersTypes().isEmpty() && !method.isPrivate()) {
           return true;

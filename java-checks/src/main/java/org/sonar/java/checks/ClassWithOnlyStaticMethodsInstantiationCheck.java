@@ -103,7 +103,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
   private Collection<MethodSymbol> filterMethods(Collection<Symbol> symbols) {
     List<MethodSymbol> methods = Lists.newArrayList();
     for (Symbol symbol : symbols) {
-      if (symbol.isKind(Symbol.MTH) && !isConstructor(symbol)) {
+      if (symbol.isMethodSymbol() && !isConstructor(symbol)) {
         methods.add((MethodSymbol) symbol);
       }
     }

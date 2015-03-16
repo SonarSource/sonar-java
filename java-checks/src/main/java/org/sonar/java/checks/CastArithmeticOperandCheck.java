@@ -95,7 +95,7 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
 
   private void checkMethodInvocationArgument(MethodInvocationTreeImpl mit) {
     Symbol symbol = mit.getSymbol();
-    if (symbol.isKind(Symbol.MTH)) {
+    if (symbol.isMethodSymbol()) {
       List<org.sonar.java.resolve.Type> parametersTypes = ((Symbol.MethodSymbol) symbol).getParametersTypes();
       if (mit.arguments().size() == parametersTypes.size()) {
         int i = 0;
