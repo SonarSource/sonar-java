@@ -126,8 +126,29 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
     }
   }
 
+  private boolean isLombok(IdentifierTree tree) {
+    String name = tree.name();
+    return ("Getter".equals(name) || "Setter".equals(name));
+  }
+
+  private boolean isLombok(VariableTree tree) {
+    for (AnnotationTree annotationTree : tree.modifiers().annotations()) {
+      if (annotationTree.annotationType().is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree annotationType = (MemberSelectExpressionTree) annotationTree.annotationType();
+        if ("lombok".equals(annotationType.expression().toString()) && isLombok(annotationType.identifier())) {
+          return true;
+        }
+      } else if (annotationTree.annotationType().is(Tree.Kind.IDENTIFIER)) {
+        if (isLombok((IdentifierTree) annotationTree.annotationType())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   public void checkIfUnused(VariableTree tree) {
-    if (tree.modifiers().modifiers().contains(Modifier.PRIVATE) && !"serialVersionUID".equals(tree.simpleName().name())) {
+    if (!isLombok(treeu) && tree.modifiers().modifiers().contains(Modifier.PRIVATE) && !"serialVersionUID".equals(tree.simpleName().name())) {
       SemanticModel semanticModel = getSemanticModel();
       Symbol symbol = semanticModel.getSymbol(tree);
       if (symbol != null && semanticModel.getUsages(symbol).size() == assignments.get(symbol).size() && !hasExcludedAnnotation(tree)) {
