@@ -1,15 +1,23 @@
 package javax.annotation;
 
-@interface CheckForNull {
-}
+@interface CheckForNull {}
 
-@interface Nullable {
-}
+@interface Nonnull {}
+
+@interface Nullable {}
 
 class NullPointerTest {
 
+  public Object[] field;
+
+  public Object[] method() {
+    return null;
+  }
+
+  @Nonnull
   public Object[] notnullableField;
 
+  @Nonnull
   public Object[] notnullableMethod() {
     return null;
   }
@@ -123,7 +131,7 @@ class NullPointerTest {
   public void method1(@Nullable Object[] a1, @Nullable Object... variadic) {
   }
 
-  public void method2(Object[] a1, Object... variadic) {
+  public void method2(@Nonnull Object[] a1, @Nonnull Object... variadic) {
   }
 
   public void testMethodInvocation() {
@@ -152,6 +160,13 @@ class NullPointerTest {
     method2(checkForNullMethod(), // Not compliant
       checkForNullMethod(), // Not compliant
       checkForNullMethod()); // Not compliant
+
+    method1(null, // No issue
+      null, // No issue
+      null); // No issue
+    method2(null, // Not compliant
+      null, // Not compliant
+      null); // Not compliant
   }
 
   @interface CoverageAnnotation {

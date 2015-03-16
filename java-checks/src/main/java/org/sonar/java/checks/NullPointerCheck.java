@@ -86,7 +86,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       if (parameters.size() != 0) {
         for (int i = 0; i < tree.arguments().size(); i += 1) {
           // in case of varargs, there could be more arguments than parameters. in that case, pick the last parameter.
-          if (!canBeNull(parameters.get(i < parameters.size() ? i : parameters.size() - 1))) {
+          if (isNonnullParameter(parameters.get(i < parameters.size() ? i : parameters.size() - 1))) {
             this.checkForIssue(tree.arguments().get(i));
           }
         }
@@ -95,9 +95,21 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     super.visitMethodInvocation(tree);
   }
 
-  // returns true if the symbol is annotated with CheckForNull or Nullable.
-  private boolean canBeNull(Symbol symbol) {
+  // returns true if the passed method parameter cannot be null.
+  private boolean isNonnullParameter(Symbol symbol) {
+    // FIXME(merciesa): it should also use annotation on package and class
     for (AnnotationInstance annotation : symbol.metadata().annotations()) {
+      if (annotation.isTyped("javax.annotation.Nonnull")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // returns true if the symbol can be null.
+  private boolean isNullReturnValue(Symbol symbol) {
+    for (AnnotationInstance annotation : symbol.metadata().annotations()) {
+      // FIXME(merciesa): it should also use annotation on package and class
       if (annotation.isTyped("javax.annotation.CheckForNull") || annotation.isTyped("javax.annotation.Nullable")) {
         return true;
       }
@@ -109,9 +121,11 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   private void checkForIssue(Tree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
-      if (canBeNull(symbol)) {
+      if (isNullReturnValue(symbol)) {
         context.addIssue(tree, RULE_KEY, String.format("Value returned by method '%s' can be null.", symbol.getName()));
       }
+    } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
+      context.addIssue(tree, RULE_KEY, "null is dereferenced or passed as argument.");
     }
   }
 

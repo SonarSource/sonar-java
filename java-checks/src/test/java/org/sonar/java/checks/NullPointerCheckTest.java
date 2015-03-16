@@ -38,14 +38,17 @@ public class NullPointerCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NullPointerCheck.java"),
       new VisitorsBridge(new NullPointerCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(76).withMessage("Value returned by method 'checkForNullMethod' can be null.")
-      .next().atLine(77).withMessage("Value returned by method 'checkForNullMethod' can be null.")
-      .next().atLine(78).withMessage("Value returned by method 'checkForNullMethod' can be null.")
-      .next().atLine(99).withMessage("Value returned by method 'nullableMethod' can be null.")
-      .next().atLine(100).withMessage("Value returned by method 'nullableMethod' can be null.")
-      .next().atLine(101).withMessage("Value returned by method 'nullableMethod' can be null.")
-      .next().atLine(152).withMessage("Value returned by method 'checkForNullMethod' can be null.")
-      .next().atLine(153).withMessage("Value returned by method 'checkForNullMethod' can be null.")
-      .next().atLine(154).withMessage("Value returned by method 'checkForNullMethod' can be null.");
+      .next().atLine(84).withMessage("Value returned by method 'checkForNullMethod' can be null.")
+      .next().atLine(85).withMessage("Value returned by method 'checkForNullMethod' can be null.")
+      .next().atLine(86).withMessage("Value returned by method 'checkForNullMethod' can be null.")
+      .next().atLine(107).withMessage("Value returned by method 'nullableMethod' can be null.")
+      .next().atLine(108).withMessage("Value returned by method 'nullableMethod' can be null.")
+      .next().atLine(109).withMessage("Value returned by method 'nullableMethod' can be null.")
+      .next().atLine(160).withMessage("Value returned by method 'checkForNullMethod' can be null.")
+      .next().atLine(161).withMessage("Value returned by method 'checkForNullMethod' can be null.")
+      .next().atLine(162).withMessage("Value returned by method 'checkForNullMethod' can be null.")
+      .next().atLine(167).withMessage("null is dereferenced or passed as argument.")
+      .next().atLine(168).withMessage("null is dereferenced or passed as argument.")
+      .next().atLine(169).withMessage("null is dereferenced or passed as argument.");
   }
 }
