@@ -29,6 +29,8 @@ import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
+import junit.framework.Assert;
+
 public class UnusedPrivateFieldCheckTest {
 
   @Rule
@@ -54,6 +56,14 @@ public class UnusedPrivateFieldCheckTest {
     return JavaAstScanner.scanSingleFile(
       new File("src/test/files/checks/" + fileName),
       new VisitorsBridge(new UnusedPrivateFieldCheck(), ImmutableList.of(new File("target/test-classes"))));
+  }
+
+  @Test
+  public void lombokTest() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UnusedPrivateMethodCheckLombok.java"), new VisitorsBridge(new UnusedPrivateFieldCheck()));
+    Assert.assertEquals(1, file.getCheckMessages().size());
+    checkMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(6).withMessage("Remove this unused \"unused\" private field.");
   }
 
 }
