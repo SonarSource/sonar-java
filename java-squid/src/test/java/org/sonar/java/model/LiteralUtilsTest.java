@@ -39,18 +39,41 @@ public class LiteralUtilsTest {
   int x4 = 42 + x1;
   int x5 = -x1;
   int x6 = 0xff;
+  int x7 = 0b0100;
+
+  long y1 = 42;
+  long y2 = 42L;
+  long y3 = -7;
+  long y4 = -7l;
+  long y5 = +3;
+  long y6 = +3L;
+  long y7 = 42 + y1;
+  long y8 = -y1;
+  long y9 = 0xFFL;
+  long y10 = 0xFFFFFFFFFFFFFFFFL;
+  long y11 = 0xFFFFFFFFFFFFFFFEL;
+  long y12 = 0x8000000000000000L;
+  long y13 = 0x7FFFFFFFFFFFFFFFL;
+  long y14 = 0x7FFF_FFFF_FFFF_FFFFL;
+  long y15 = 0b11010010_01101001_10010100_10010010;
 
   @Test
-  public void intValue() throws Exception {
-    Integer[] expectedIntegerValues = {42, -7, 3, null, null, null};
+  public void test_int_and_long_value() throws Exception {
+    Integer[] expectedIntegerValues = {42, -7, 3, null, null, null, null};
+    Long[] expectedLongValues = {42L, 42L, -7L, -7L, +3L, +3L, null, null, 255L, null, null, null, Long.MAX_VALUE, Long.MAX_VALUE, null};
     File file = new File("src/test/java/org/sonar/java/model/LiteralUtilsTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(file);
     ClassTree classTree = (ClassTree) tree.types().get(0);
     int i = 0;
+    int j = 0;
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) member;
-        assertThat(LiteralUtils.intLiteralValue(variableTree.initializer())).isEqualTo(expectedIntegerValues[i++]);
+        if (variableTree.simpleName().name().startsWith("x")) {
+          assertThat(LiteralUtils.intLiteralValue(variableTree.initializer())).isEqualTo(expectedIntegerValues[i++]);
+        } else {
+          assertThat(LiteralUtils.longLiteralValue(variableTree.initializer())).isEqualTo(expectedLongValues[j++]);
+        }
       }
     }
   }
@@ -63,6 +86,11 @@ public class LiteralUtilsTest {
     assertThat(LiteralUtils.trimLongSuffix(longValue)).isEqualTo(longValue);
     assertThat(LiteralUtils.trimLongSuffix(longValue + "l")).isEqualTo(longValue);
     assertThat(LiteralUtils.trimLongSuffix(longValue + "L")).isEqualTo(longValue);
+  }
+
+  @Test
+  public void testTrimQuotes() {
+    assertThat(LiteralUtils.trimQuotes("\"test\"")).isEqualTo("test");
   }
 
 }
