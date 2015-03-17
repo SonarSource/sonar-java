@@ -180,7 +180,10 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitVariable(VariableTree tree) {
     // skips modifiers (annotations) and type.
-    scan(tree.initializer());
+    if (tree.initializer() != null) {
+      currentState.setVariableValue((VariableSymbol) tree.symbol(), checkNullity(tree.initializer()));
+      scan(tree.initializer());
+    }
   }
 
   private AbstractValue checkNullity(Symbol symbol) {
@@ -191,6 +194,28 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       if (annotation.isTyped("javax.annotation.CheckForNull") || annotation.isTyped("javax.annotation.Nullable")) {
         return AbstractValue.NULL;
       }
+    }
+    // FIXME(merciesa): should use annotation on package and class
+    return AbstractValue.UNKNOWN;
+  }
+
+  public AbstractValue checkNullity(Tree tree) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
+      if (symbol != null && symbol.isVariableSymbol()) {
+        AbstractValue value = currentState.getVariableValue((VariableSymbol) symbol);
+        if (value != AbstractValue.UNKNOWN) {
+          return value;
+        }
+        return checkNullity(symbol);
+      }
+    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
+      if (symbol.isMethodSymbol() && checkNullity(symbol) == AbstractValue.NULL) {
+        return AbstractValue.NULL;
+      }
+    } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
+      return AbstractValue.NULL;
     }
     // FIXME(merciesa): should use annotation on package and class
     return AbstractValue.UNKNOWN;
@@ -233,6 +258,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       } else if (binaryTree.leftOperand().is(Tree.Kind.IDENTIFIER) && binaryTree.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
         identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) binaryTree.leftOperand());
       } else {
+        super.visitBinaryExpression(binaryTree);
         return;
       }
       if (binaryTree.is(Tree.Kind.EQUAL_TO)) {
@@ -248,6 +274,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
         }
       }
     }
+    scan(tree);
   }
 
   private static class State {
