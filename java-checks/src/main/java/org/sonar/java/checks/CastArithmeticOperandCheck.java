@@ -27,7 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -96,7 +96,7 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
   private void checkMethodInvocationArgument(MethodInvocationTreeImpl mit) {
     Symbol symbol = mit.getSymbol();
     if (symbol.isMethodSymbol()) {
-      List<org.sonar.java.resolve.Type> parametersTypes = ((Symbol.MethodSymbol) symbol).getParametersTypes();
+      List<org.sonar.java.resolve.Type> parametersTypes = ((org.sonar.java.resolve.Symbol.MethodSymbol) symbol).getParametersTypes();
       if (mit.arguments().size() == parametersTypes.size()) {
         int i = 0;
         for (Type argType : parametersTypes) {

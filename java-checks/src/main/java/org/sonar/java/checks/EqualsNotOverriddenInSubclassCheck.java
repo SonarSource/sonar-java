@@ -25,7 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type;
@@ -97,8 +97,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean hasNotFinalEqualsMethod(TypeSymbol superClassSymbol) {
-    List<Symbol> equalsMembers = superClassSymbol.members().lookup("equals");
-    for (Symbol symbol : equalsMembers) {
+    for (Symbol symbol : superClassSymbol.members().lookup("equals")) {
       if (isEqualsMethod(symbol) && !symbol.isFinal()) {
         return true;
       }

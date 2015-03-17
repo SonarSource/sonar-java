@@ -25,9 +25,9 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.java.resolve.Types;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -56,24 +56,24 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
   @Override
   public void visitNode(Tree tree) {
     ClassTreeImpl classTree = (ClassTreeImpl) tree;
-    Symbol.TypeSymbol classSymbol = classTree.getSymbol();
+    org.sonar.java.resolve.Symbol.TypeSymbol classSymbol = classTree.getSymbol();
     if (classSymbol != null && isInnerClass(classSymbol) && !extendsOuterClass(classSymbol)) {
       classTree.accept(new MethodInvocationVisitor(classSymbol));
     }
   }
 
-  private boolean isInnerClass(Symbol.TypeSymbol symbol) {
+  private boolean isInnerClass(Symbol symbol) {
     return symbol.owner().isTypeSymbol();
   }
 
-  private boolean extendsOuterClass(Symbol.TypeSymbol classSymbol) {
+  private boolean extendsOuterClass(org.sonar.java.resolve.Symbol.TypeSymbol classSymbol) {
     return classSymbol.getSuperclass() != null && classSymbol.getSuperclass().equals(classSymbol.owner().getType());
   }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
-    private final Symbol.TypeSymbol classSymbol;
+    private final org.sonar.java.resolve.Symbol.TypeSymbol classSymbol;
 
-    public MethodInvocationVisitor(Symbol.TypeSymbol classSymbol) {
+    public MethodInvocationVisitor(org.sonar.java.resolve.Symbol.TypeSymbol classSymbol) {
       this.classSymbol = classSymbol;
     }
 
@@ -89,14 +89,14 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean isInherited(Symbol symbol) {
-      Type methodOwnerType = symbol.owner().getType();
+      Type methodOwnerType = (Type) symbol.owner().type();
       Type innerType = classSymbol.getType();
       return !symbol.isStatic() && new Types().isSubtype(innerType, methodOwnerType)
         && !classSymbol.owner().getType().equals(methodOwnerType) && !innerType.equals(methodOwnerType);
     }
 
     private boolean outerClassHasMethodWithSameName(Symbol symbol) {
-      return !((Symbol.TypeSymbol) classSymbol.owner()).members().lookup(symbol.getName()).isEmpty();
+      return !((org.sonar.java.resolve.Symbol.TypeSymbol) classSymbol.owner()).members().lookup(symbol.name()).isEmpty();
     }
 
   }

@@ -28,7 +28,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -102,7 +101,7 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
 
   private boolean hasOneAbstractMethod(ClassTree classTree) {
 
-    Symbol.TypeSymbol symbol = ((ClassTreeImpl) classTree).getSymbol();
+    org.sonar.java.resolve.Symbol.TypeSymbol symbol = ((ClassTreeImpl) classTree).getSymbol();
     if (symbol != null) {
       List<Type> types = symbol.getInterfaces();
       for (Type type : types) {

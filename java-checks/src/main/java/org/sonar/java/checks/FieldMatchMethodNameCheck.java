@@ -29,9 +29,9 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -68,19 +68,19 @@ public class FieldMatchMethodNameCheck extends BaseTreeVisitor implements JavaFi
 
   @Override
   public void visitClass(ClassTree tree) {
-    Symbol.TypeSymbol classSymbol = ((ClassTreeImpl) tree).getSymbol();
+    org.sonar.java.resolve.Symbol.TypeSymbol classSymbol = ((ClassTreeImpl) tree).getSymbol();
     if (classSymbol != null) {
       Map<String, Symbol> indexSymbol = Maps.newHashMap();
       Multiset<String> fields = HashMultiset.create();
       Map<String, String> fieldsOriginal = Maps.newHashMap();
       Set<String> methodNames = Sets.newHashSet();
-      Collection<Symbol> symbols = classSymbol.members().scopeSymbols();
+      Collection<? extends Symbol> symbols = classSymbol.members().scopeSymbols();
       for (Symbol sym : symbols) {
-        String symName = sym.getName().toLowerCase();
+        String symName = sym.name().toLowerCase();
         if (sym.isVariableSymbol()) {
           indexSymbol.put(symName, sym);
           fields.add(symName);
-          fieldsOriginal.put(symName, sym.getName());
+          fieldsOriginal.put(symName, sym.name());
         }
         if (sym.isMethodSymbol()) {
           methodNames.add(symName);

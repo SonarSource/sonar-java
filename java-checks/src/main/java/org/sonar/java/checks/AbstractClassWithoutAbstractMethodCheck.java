@@ -24,9 +24,9 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -58,9 +58,9 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.is(Tree.Kind.CLASS)) {
-      Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();
+      org.sonar.java.resolve.Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();
       if (typeSymbol != null && typeSymbol.isAbstract()) {
-        Collection<Symbol> symbols = typeSymbol.members().scopeSymbols();
+        Collection<? extends Symbol> symbols = typeSymbol.members().scopeSymbols();
         int abstractMethod = countAbstractMethods(symbols);
         //only count "this" in symbols and not "super" because abstract classes extending cannot be converted to interface
         if (symbols.size() == 1 || abstractMethod == symbols.size() - 1) {
@@ -80,7 +80,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
     return tree.superClass() != null || !tree.superInterfaces().isEmpty();
   }
 
-  private int countAbstractMethods(Collection<Symbol> symbols) {
+  private int countAbstractMethods(Collection<? extends Symbol> symbols) {
     int abstractMethod = 0;
     for (Symbol sym : symbols) {
       if (isAbstractMethod(sym)) {

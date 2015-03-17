@@ -31,7 +31,7 @@ import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type;
@@ -171,7 +171,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
       IdentifierTree identifier = (IdentifierTree) boxingArg;
       addIssue(tree, "Remove the boxing of \"" + identifier.name() + "\".");
     } else {
-      addIssue(tree, "Remove the boxing to \"" + classSymbol.getName() + "\".");
+      addIssue(tree, "Remove the boxing to \"" + classSymbol.name() + "\".");
     }
   }
 

@@ -25,7 +25,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -94,7 +93,7 @@ public class EqualsNotOverridenWithCompareToCheck extends BaseTreeVisitor implem
 
 
   private boolean isComparable(ClassTree tree) {
-    Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();
+    org.sonar.java.resolve.Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();
     if (typeSymbol == null) {
       return false;
     }

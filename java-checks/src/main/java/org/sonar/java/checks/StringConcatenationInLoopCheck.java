@@ -26,7 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -150,11 +149,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
   }
 
   private boolean isString(Type type) {
-    if (type.isTagged(Type.CLASS)) {
-      Symbol.TypeSymbol typeSymbol = ((Type.ClassType) type).getSymbol();
-      return "String".equals(typeSymbol.getName()) && "java.lang".equals(typeSymbol.owner().getName());
-    }
-    return false;
+    return type.is("java.lang.String");
   }
 
   @Override

@@ -193,6 +193,11 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   @Override
+  public org.sonar.plugins.java.api.semantic.Symbol.TypeSymbolSemantic symbol() {
+    return symbol;
+  }
+
+  @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitClass(this);
   }
