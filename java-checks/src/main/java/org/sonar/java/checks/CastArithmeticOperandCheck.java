@@ -39,6 +39,8 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
+
 import java.util.List;
 import java.util.Map;
 
@@ -52,14 +54,12 @@ import java.util.Map;
 @SqaleConstantRemediation("5min")
 public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
 
-
   private static final Map<Tree.Kind, String> OPERATION_BY_KIND = ImmutableMap.<Tree.Kind, String>builder()
-      .put(Tree.Kind.PLUS, "addition")
-      .put(Tree.Kind.MINUS, "substraction")
-      .put(Tree.Kind.MULTIPLY, "multiplication")
-      .put(Tree.Kind.DIVIDE, "division")
-      .build();
-
+    .put(Tree.Kind.PLUS, "addition")
+    .put(Tree.Kind.MINUS, "substraction")
+    .put(Tree.Kind.MULTIPLY, "multiplication")
+    .put(Tree.Kind.DIVIDE, "division")
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -85,7 +85,7 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
         checkMethodInvocationArgument((MethodInvocationTreeImpl) tree);
       } else if (tree.is(Tree.Kind.METHOD)) {
         MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-        Type returnType = methodTree.returnType()!=null ? methodTree.returnType().symbolType() : null;
+        Type returnType = methodTree.returnType() != null ? methodTree.returnType().symbolType() : null;
         if (returnType != null && isVarTypeErrorProne(returnType)) {
           methodTree.accept(new ReturnStatementVisitor(returnType));
         }
@@ -107,12 +107,15 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private void checkExpression(Type varType, ExpressionTree expr) {
-    if (expr != null && expr.is(Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE, Tree.Kind.PLUS, Tree.Kind.MINUS) && isVarTypeErrorProne(varType)) {
-      if(expr.symbolType().isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.INT)) {
-        addIssue(expr, "Cast one of the operands of this " + OPERATION_BY_KIND.get(((JavaTree) expr).getKind()) + " operation to a \"" + varType.name() + "\".");
-      }
+  private void checkExpression(Type varType, @Nullable ExpressionTree expr) {
+    if (isVarTypeErrorProne(varType) && expressionIsOperationToInt(expr)) {
+      addIssue(expr, "Cast one of the operands of this " + OPERATION_BY_KIND.get(((JavaTree) expr).getKind()) + " operation to a \"" + varType.name() + "\".");
     }
+  }
+
+  private boolean expressionIsOperationToInt(ExpressionTree expr) {
+    return expr != null && expr.is(Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE, Tree.Kind.PLUS, Tree.Kind.MINUS)
+      && expr.symbolType().isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.INT);
   }
 
   private boolean isVarTypeErrorProne(Type varType) {
@@ -132,4 +135,3 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
     }
   }
 }
-

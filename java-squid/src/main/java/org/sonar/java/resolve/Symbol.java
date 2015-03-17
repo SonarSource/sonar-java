@@ -155,38 +155,47 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     return isKind(MTH);
   }
 
+  @Override
   public boolean isStatic() {
     return isFlag(Flags.STATIC);
   }
 
+  @Override
   public boolean isFinal() {
     return isFlag(Flags.FINAL);
   }
 
+  @Override
   public boolean isEnum() {
     return isFlag(Flags.ENUM);
   }
 
+  @Override
   public boolean isAbstract() {
     return isFlag(Flags.ABSTRACT);
   }
 
+  @Override
   public boolean isPublic() {
     return isFlag(Flags.PUBLIC);
   }
 
+  @Override
   public boolean isPrivate() {
     return isFlag(Flags.PRIVATE);
   }
 
+  @Override
   public boolean isProtected() {
     return isFlag(Flags.PROTECTED);
   }
 
+  @Override
   public boolean isDeprecated() {
     return isFlag(Flags.DEPRECATED);
   }
 
+  @Override
   public boolean isVolatile() {
     return isFlag(Flags.VOLATILE);
   }
@@ -196,6 +205,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     return (flags & flag) != 0;
   }
 
+  @Override
   public boolean isPackageVisibility() {
     complete();
     return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
