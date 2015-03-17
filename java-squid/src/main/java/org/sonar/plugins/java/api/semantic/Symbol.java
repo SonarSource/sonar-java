@@ -24,6 +24,18 @@ package org.sonar.plugins.java.api.semantic;
  */
 public interface Symbol {
 
+  /**
+   * Name of this symbol.
+   * @return simple name of the symbol.
+   */
+  String name();
+
+  /**
+   * The owner of this symbol.
+   * @return the symbol that owns this symbol.
+   */
+  Symbol owner();
+
   //kinds of symbols
   boolean isVariableSymbol();
 
@@ -53,6 +65,4 @@ public interface Symbol {
   boolean isDeprecated();
 
   boolean isVolatile();
-
-
 }

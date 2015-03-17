@@ -23,10 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -61,8 +60,7 @@ public class ServletInstanceFieldCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isOwnedByAServlet(VariableTree variable) {
-    VariableTreeImpl vti = (VariableTreeImpl) variable;
-    Symbol owner = vti.getSymbol().owner();
+    Symbol owner = variable.symbol().owner();
     if (owner.isTypeSymbol()) {
       TypeSymbol ownerType = (TypeSymbol) owner;
       for (ClassType classType : ownerType.superTypes()) {

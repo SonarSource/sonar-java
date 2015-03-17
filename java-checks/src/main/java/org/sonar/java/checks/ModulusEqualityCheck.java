@@ -25,10 +25,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -75,8 +73,7 @@ public class ModulusEqualityCheck extends SubscriptionBaseVisitor {
     } else {
       MethodTree methodTree = (MethodTree) tree;
       for (VariableTree variableTree : methodTree.parameters()) {
-        VariableSymbol symbol = ((VariableTreeImpl) variableTree).getSymbol();
-        methodParams.add(symbol);
+        methodParams.add(variableTree.symbol());
       }
     }
   }

@@ -29,13 +29,13 @@ import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -86,11 +86,11 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
         VariableTreeImpl variableTree = (VariableTreeImpl) tree;
         ExpressionTree initializer = variableTree.initializer();
         if (initializer != null) {
-          checkExpression(initializer, variableTree.getSymbol().getType());
+          checkExpression(initializer, variableTree.type().symbolType());
         }
       } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
-        AssignmentExpressionTreeImpl assignmentTree = (AssignmentExpressionTreeImpl) tree;
-        checkExpression(assignmentTree.expression(), assignmentTree.getSymbolType());
+        AssignmentExpressionTree assignmentTree = (AssignmentExpressionTree) tree;
+        checkExpression(assignmentTree.expression(), assignmentTree.symbolType());
       } else {
         NewClassTreeImpl newClassTree = (NewClassTreeImpl) tree;
         TypeSymbol classSymbol = wrapperClassSymbol(newClassTree);
@@ -101,7 +101,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private void checkExpression(ExpressionTree expression, Type implicitType) {
+  private void checkExpression(ExpressionTree expression, org.sonar.plugins.java.api.semantic.Type implicitType) {
     if (implicitType.isPrimitive()) {
       checkForBoxing(expression);
     } else {
@@ -122,7 +122,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
       Symbol symbol = methodInvocationTree.getSymbol();
       if (symbol.isMethodSymbol()) {
         MethodSymbol methodSymbol = (MethodSymbol) symbol;
-        List<Type> parametersTypes = methodSymbol.getParametersTypes();
+        List<org.sonar.java.resolve.Type> parametersTypes = methodSymbol.getParametersTypes();
         checkMethodInvocationArguments(methodInvocationTree, parametersTypes);
       }
     }
@@ -144,8 +144,8 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
       NewClassTreeImpl newClassTree = (NewClassTreeImpl) expression;
       TypeSymbol classSymbol = wrapperClassSymbol(newClassTree);
       if (classSymbol != null) {
-        AbstractTypedTree boxingArg = (AbstractTypedTree) newClassTree.arguments().get(0);
-        if (boxingArg.getSymbolType().isPrimitive()) {
+        ExpressionTree boxingArg = newClassTree.arguments().get(0);
+        if (boxingArg.symbolType().isPrimitive()) {
           addBoxingIssue(newClassTree, classSymbol, boxingArg);
         }
       }
@@ -160,8 +160,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
 
   private TypeSymbol wrapperClassSymbol(NewClassTreeImpl newClassTree) {
     TypeSymbol classSymbol = newClassTree.getSymbolType().getSymbol();
-    String fullyQualifiedName = classSymbol.getFullyQualifiedName();
-    if (PRIMITIVE_TYPES_BY_WRAPPER.containsKey(fullyQualifiedName)) {
+    if (PRIMITIVE_TYPES_BY_WRAPPER.containsKey(newClassTree.symbolType().fullyQualifiedName())) {
       return classSymbol;
     }
     return null;

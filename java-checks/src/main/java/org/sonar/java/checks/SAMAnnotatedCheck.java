@@ -28,7 +28,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -107,7 +106,7 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
     if (symbol != null) {
       List<Type> types = symbol.getInterfaces();
       for (Type type : types) {
-        if (!((Type.ClassType) type).getSymbol().members().scopeSymbols().isEmpty()) {
+        if (!type.getSymbol().members().scopeSymbols().isEmpty()) {
           return false;
         }
       }
@@ -132,11 +131,7 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
         List<String> args = Lists.newArrayList(arguments);
         if (method.parameters().size() == args.size()) {
           for (VariableTree var : method.parameters()) {
-            Symbol.VariableSymbol symbol = ((VariableTreeImpl) var).getSymbol();
-            // TODO(Godin): get rid of null check
-            if (symbol != null) {
-              args.remove(symbol.type());
-            }
+            args.remove(var.type().symbolType().name());
           }
           if (args.isEmpty()) {
             return false;

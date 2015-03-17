@@ -71,9 +71,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     return flags;
   }
 
-  /**
-   * The owner of this symbol.
-   */
+  @Override
   public Symbol owner() {
     return owner;
   }
@@ -196,6 +194,11 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   @Override
   public boolean isVolatile() {
     return isFlag(Flags.VOLATILE);
+  }
+
+  @Override
+  public String name() {
+    return name;
   }
 
   protected boolean isFlag(int flag) {
@@ -323,11 +326,6 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     public VariableSymbol(int flags, String name, Type type, Symbol owner) {
       super(VAR, flags, name, owner);
       this.type = type;
-    }
-
-    // FIXME(Godin): method "type", which returns a String, looks very strange here:
-    public String type() {
-      return type.symbol.name;
     }
 
   }

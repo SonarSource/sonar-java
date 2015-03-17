@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -52,8 +51,8 @@ public class PrimitiveWrappersInTernaryOperatorCheck extends SubscriptionBaseVis
   @Override
   public void visitNode(Tree tree) {
     ConditionalExpressionTree cet = (ConditionalExpressionTree) tree;
-    Type trueExpressionType = ((AbstractTypedTree) cet.trueExpression()).getSymbolType();
-    Type falseExpressionType = ((AbstractTypedTree) cet.falseExpression()).getSymbolType();
+    Type trueExpressionType = ((Type) cet.trueExpression().symbolType());
+    Type falseExpressionType = ((Type) cet.falseExpression().symbolType());
     if (dissimilarPrimitiveTypeWrappers(trueExpressionType, falseExpressionType)) {
       addIssue(tree, "Add an explicit cast to match types of operands.");
     }

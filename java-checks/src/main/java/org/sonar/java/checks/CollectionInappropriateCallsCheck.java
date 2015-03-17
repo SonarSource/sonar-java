@@ -26,7 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.Type;
 import org.sonar.java.resolve.Type.ParametrizedTypeType;
@@ -41,7 +40,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -83,7 +81,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   }
 
   private Type getType(ExpressionTree tree) {
-    return ((AbstractTypedTree) tree).getSymbolType();
+    return (Type) tree.symbolType();
   }
 
   private Type getMethodOwner(MethodInvocationTree mit) {

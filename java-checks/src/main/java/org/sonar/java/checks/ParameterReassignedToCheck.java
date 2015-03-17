@@ -24,7 +24,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -87,9 +86,9 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitCatch(CatchTree tree) {
-    variables.add(((VariableTreeImpl) tree.parameter()).getSymbol());
+    variables.add(tree.parameter().symbol());
     super.visitCatch(tree);
-    variables.remove(((VariableTreeImpl) tree.parameter()).getSymbol());
+    variables.remove(tree.parameter().symbol());
   }
 
   @Override
