@@ -70,7 +70,6 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public static final String KEY = "S2259";
   private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
-  private final ConditionVisitor conditionVisitor = new ConditionVisitor();
   private JavaFileScannerContext context;
   private State currentState;
   private SemanticModel semanticModel;
@@ -122,7 +121,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitConditionalExpression(ConditionalExpressionTree tree) {
     State trueState = new State(currentState);
     State falseState = new State(currentState);
-    conditionVisitor.visitCondition(tree.condition(), trueState, falseState);
+    visitCondition(tree.condition(), trueState, falseState);
     currentState = trueState;
     tree.trueExpression().accept(this);
     currentState = falseState;
@@ -134,7 +133,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitIfStatement(IfStatementTree tree) {
     State trueState = new State(currentState);
     State falseState = tree.elseStatement() != null ? new State(currentState) : null;
-    conditionVisitor.visitCondition(tree.condition(), trueState, falseState);
+    visitCondition(tree.condition(), trueState, falseState);
     currentState = trueState;
     tree.thenStatement().accept(this);
     if (tree.elseStatement() != null) {
@@ -232,36 +231,26 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     UNKNOWN
   }
 
-  private class ConditionVisitor extends BaseTreeVisitor {
-    private State trueState;
-    @Nullable
-    private State falseState;
-
-    void visitCondition(ExpressionTree tree, State trueState, @Nullable State falseState) {
-      this.trueState = trueState;
-      this.falseState = falseState;
-      tree.accept(this);
-    }
-
-    @Override
-    public void visitBinaryExpression(BinaryExpressionTree tree) {
+  private void visitCondition(ExpressionTree tree, State trueState, @Nullable State falseState) {
+    if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+      BinaryExpressionTree binaryTree = (BinaryExpressionTree) tree;
       VariableSymbol identifierSymbol;
       // currently only ident == null, ident != null, null == ident and null != ident are covered.
       // logical and/or operators are not supported.
-      if (tree.leftOperand().is(Tree.Kind.NULL_LITERAL) && tree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
-        identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.rightOperand());
-      } else if (tree.leftOperand().is(Tree.Kind.IDENTIFIER) && tree.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
-        identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.leftOperand());
+      if (binaryTree.leftOperand().is(Tree.Kind.NULL_LITERAL) && binaryTree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
+        identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) binaryTree.rightOperand());
+      } else if (binaryTree.leftOperand().is(Tree.Kind.IDENTIFIER) && binaryTree.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
+        identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) binaryTree.leftOperand());
       } else {
         return;
       }
-      if (tree.is(Tree.Kind.EQUAL_TO)) {
+      if (binaryTree.is(Tree.Kind.EQUAL_TO)) {
         trueState.setVariableValue(identifierSymbol, AbstractValue.NULL);
         if (falseState != null) {
           falseState.setVariableValue(identifierSymbol, AbstractValue.NOTNULL);
         }
       } else {
-        Preconditions.checkState(tree.is(Tree.Kind.NOT_EQUAL_TO));
+        Preconditions.checkState(binaryTree.is(Tree.Kind.NOT_EQUAL_TO));
         trueState.setVariableValue(identifierSymbol, AbstractValue.NOTNULL);
         if (falseState != null) {
           falseState.setVariableValue(identifierSymbol, AbstractValue.NULL);
