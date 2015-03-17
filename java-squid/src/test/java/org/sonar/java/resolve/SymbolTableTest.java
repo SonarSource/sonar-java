@@ -119,7 +119,6 @@ public class SymbolTableTest {
     Result result = Result.createFor("declarations/ClassDeclaration");
     Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration");
     Symbol classDeclaration = result.symbol("ClassDeclaration");
-    assertThat(classDeclaration.isParametrized).isTrue();
     List<Symbol> parameters = classDeclaration.type.symbol.typeParameters.lookup("T");
     assertThat(parameters).hasSize(1);
     assertThat(parameters.get(0).getName()).isEqualTo("T");
@@ -357,7 +356,6 @@ public class SymbolTableTest {
     assertThat(methodSymbol.getThrownTypes()).containsExactly(
         result.symbol("FirstExceptionType"),
         result.symbol("SecondExceptionType"));
-    assertThat(methodSymbol.isParametrized).isTrue();
   }
 
   @Test

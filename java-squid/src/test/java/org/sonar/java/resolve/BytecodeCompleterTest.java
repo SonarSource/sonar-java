@@ -103,7 +103,6 @@ public class BytecodeCompleterTest {
     }
     assertThat(interfacesName).hasSize(4);
     assertThat(interfacesName).contains("List", "RandomAccess", "Cloneable", "Serializable");
-    assertThat(arrayList.isParametrized).isTrue();
   }
 
   @Test
@@ -141,7 +140,6 @@ public class BytecodeCompleterTest {
     assertThat(innerEnum.isPublic()).isTrue();
     assertThat(innerEnum.isStatic()).isTrue();
     assertThat(innerEnum.isFinal()).isTrue();
-    assertThat(innerEnum.isParametrized).isFalse();
   }
 
   @Test

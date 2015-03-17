@@ -218,7 +218,6 @@ public class FirstPass extends BaseTreeVisitor {
       flag = computeClassFlags(tree);
     }
     Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
-    symbol.isParametrized = !tree.typeParameters().isEmpty();
 
     ((ClassTreeImpl) tree).setSymbol(symbol);
     //Only register classes that can be accessible, so classes owned by a method are not registered.
@@ -282,7 +281,6 @@ public class FirstPass extends BaseTreeVisitor {
       //enum constructors are private.
       symbol.flags |= Flags.PRIVATE;
     }
-    symbol.isParametrized = !tree.typeParameters().isEmpty();
     enterSymbol(tree, symbol);
     symbol.parameters = new OrderedScope(symbol);
     symbol.completer = completer;
