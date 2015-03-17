@@ -22,11 +22,17 @@ package org.sonar.java.checks;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.checks.NullPointerCheck.AbstractValue;
+import org.sonar.java.checks.NullPointerCheck.State;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.resolve.Symbol.VariableSymbol;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class NullPointerCheckTest {
 
@@ -34,7 +40,7 @@ public class NullPointerCheckTest {
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
-  public void detected() {
+  public void check() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NullPointerCheck.java"),
       new VisitorsBridge(new NullPointerCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
@@ -72,4 +78,71 @@ public class NullPointerCheckTest {
       .next().atLine(235).withMessage("var1 can be null.")
       .next().atLine(237).withMessage("var2 can be null.");
   }
+
+  @Test
+  public void test_state() {
+    VariableSymbol variable = mock(VariableSymbol.class);
+
+    State parentState = new State();
+    State currentState = new State(parentState);
+
+    assertThat(currentState.parentState).isSameAs(parentState);
+
+    // undefined variable must be unknown
+    assertThat(parentState.getVariableValue(variable)).isSameAs(AbstractValue.UNKNOWN);
+
+    // variable defined in parent must be visible in current.
+    parentState.setVariableValue(variable, AbstractValue.NOTNULL);
+    assertThat(parentState.getVariableValue(variable)).isSameAs(AbstractValue.NOTNULL);
+    assertThat(currentState.getVariableValue(variable)).isSameAs(AbstractValue.NOTNULL);
+
+    // variable redefined in current must not affect value in parent.
+    currentState.setVariableValue(variable, AbstractValue.NULL);
+    assertThat(parentState.getVariableValue(variable)).isSameAs(AbstractValue.NOTNULL);
+    assertThat(currentState.getVariableValue(variable)).isSameAs(AbstractValue.NULL);
+  }
+
+  private AbstractValue testMerge(AbstractValue parentValue, AbstractValue trueValue, AbstractValue falseValue) {
+    VariableSymbol variable = mock(VariableSymbol.class);
+    State parentState = new State();
+    if (parentValue != null) {
+      parentState.setVariableValue(variable, parentValue);
+    }
+    State trueState = new State(parentState);
+    if (trueValue != null) {
+      trueState.setVariableValue(variable, trueValue);
+    }
+    if (falseValue == null) {
+      return parentState.merge(trueState, null).getVariableValue(variable);
+    }
+    State falseState = new State(parentState);
+    falseState.setVariableValue(variable, falseValue);
+    return parentState.merge(trueState, falseState).getVariableValue(variable);
+  }
+
+  @Test
+  public void test_state_merge() {
+    // variable defined in parentState only should not change
+    assertThat(testMerge(AbstractValue.NOTNULL, null, null)).isSameAs(AbstractValue.NOTNULL);
+    // variable defined in parentState and trueState, must match
+    assertThat(testMerge(AbstractValue.NOTNULL, AbstractValue.NOTNULL, null)).isSameAs(AbstractValue.NOTNULL);
+    assertThat(testMerge(AbstractValue.NULL, AbstractValue.NULL, null)).isSameAs(AbstractValue.NULL);
+    assertThat(testMerge(AbstractValue.NOTNULL, AbstractValue.NULL, null)).isSameAs(AbstractValue.UNKNOWN);
+    // variable defined in parentState and falseState, must match
+    assertThat(testMerge(AbstractValue.NOTNULL, null, AbstractValue.NOTNULL)).isSameAs(AbstractValue.NOTNULL);
+    assertThat(testMerge(AbstractValue.NULL, null, AbstractValue.NULL)).isSameAs(AbstractValue.NULL);
+    assertThat(testMerge(AbstractValue.NOTNULL, null, AbstractValue.NULL)).isSameAs(AbstractValue.UNKNOWN);
+    // variable defined in trueState and falseState, must match
+    assertThat(testMerge(null, AbstractValue.NOTNULL, AbstractValue.NOTNULL)).isSameAs(AbstractValue.NOTNULL);
+    assertThat(testMerge(null, AbstractValue.NULL, AbstractValue.NULL)).isSameAs(AbstractValue.NULL);
+    assertThat(testMerge(null, AbstractValue.NOTNULL, AbstractValue.NULL)).isSameAs(AbstractValue.UNKNOWN);
+    // variable defined in parentState, trueState and falseState, trueState and falseState must match
+    assertThat(testMerge(AbstractValue.NOTNULL, AbstractValue.NOTNULL, AbstractValue.NOTNULL)).isSameAs(AbstractValue.NOTNULL);
+    assertThat(testMerge(AbstractValue.NOTNULL, AbstractValue.NULL, AbstractValue.NULL)).isSameAs(AbstractValue.NULL);
+    assertThat(testMerge(AbstractValue.NOTNULL, AbstractValue.NOTNULL, AbstractValue.NULL)).isSameAs(AbstractValue.UNKNOWN);
+    assertThat(testMerge(AbstractValue.NULL, AbstractValue.NOTNULL, AbstractValue.NOTNULL)).isSameAs(AbstractValue.NOTNULL);
+    assertThat(testMerge(AbstractValue.NULL, AbstractValue.NULL, AbstractValue.NULL)).isSameAs(AbstractValue.NULL);
+    assertThat(testMerge(AbstractValue.NULL, AbstractValue.NOTNULL, AbstractValue.NULL)).isSameAs(AbstractValue.UNKNOWN);
+  }
+
 }
