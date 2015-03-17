@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -132,7 +132,7 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
     }
 
     private String getMessage(AbstractTypedTree variable) {
-      return MessageFormat.format("Don''t synchronize on \"{0}\" or remove its reassignment on line {1}.", field.getName(), variable.getLine());
+      return MessageFormat.format("Don''t synchronize on \"{0}\" or remove its reassignment on line {1}.", field.name(), variable.getLine());
     }
   }
 }

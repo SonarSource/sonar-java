@@ -26,7 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -131,8 +131,8 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     if (argument.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) argument;
       Symbol reference = getSemanticModel().getReference(mse.identifier());
-      if (reference.owner().getType().is(JAVA_UTIL_CALENDAR) && Threshold.getThreshold(reference.getName()) != null) {
-        return reference.getName();
+      if (reference.owner().type().is(JAVA_UTIL_CALENDAR) && Threshold.getThreshold(reference.name()) != null) {
+        return reference.name();
       }
     }
     return null;

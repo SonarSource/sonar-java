@@ -26,8 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -148,14 +147,14 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
         IdentifierTree identifier = (IdentifierTree) expression;
         Symbol reference = getSemanticModel().getReference(identifier);
         if (reference != null && reference.isVariableSymbol() && getSemanticModel().getUsages(reference).size() == 1) {
-          VariableSymbol variableSymbol = (VariableSymbol) reference;
+          org.sonar.plugins.java.api.semantic.Symbol.VariableSymbolSemantic variableSymbol = (org.sonar.plugins.java.api.semantic.Symbol.VariableSymbolSemantic) reference;
           result = isBadlyInstanciatedVariable(variableSymbol);
         }
       }
       return result;
     }
 
-    private boolean isBadlyInstanciatedVariable(VariableSymbol variableSymbol) {
+    private boolean isBadlyInstanciatedVariable(org.sonar.plugins.java.api.semantic.Symbol.VariableSymbolSemantic variableSymbol) {
       Tree tree = getSemanticModel().getTree(variableSymbol);
       if (tree != null && tree.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) tree;

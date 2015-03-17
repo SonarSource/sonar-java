@@ -120,6 +120,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   /**
    * The closest enclosing class.
    */
+  @Override
   public TypeSymbol enclosingClass() {
     Symbol result = this;
     while (result != null && result.kind != TYP) {
@@ -133,6 +134,11 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   }
 
   public Type getType() {
+    return type;
+  }
+
+  @Override
+  public org.sonar.plugins.java.api.semantic.Type type() {
     return type;
   }
 
@@ -237,7 +243,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   /**
    * Represents a class, interface, enum or annotation type.
    */
-  public static class TypeSymbol extends Symbol {
+  public static class TypeSymbol extends Symbol implements TypeSymbolSemantic {
 
     Scope members;
     Scope typeParameters;
@@ -317,7 +323,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   /**
    * Represents a field, enum constant, method or constructor parameter, local variable, resource variable or exception parameter.
    */
-  public static class VariableSymbol extends Symbol {
+  public static class VariableSymbol extends Symbol implements VariableSymbolSemantic {
 
     public VariableSymbol(int flags, String name, Symbol owner) {
       super(VAR, flags, name, owner);
@@ -333,7 +339,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   /**
    * Represents a method, constructor or initializer (static or instance).
    */
-  public static class MethodSymbol extends Symbol {
+  public static class MethodSymbol extends Symbol implements MethodSymbolSemantic {
 
     TypeSymbol returnType;
     OrderedScope parameters;

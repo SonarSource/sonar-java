@@ -24,8 +24,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -87,7 +87,7 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
   private boolean isStaticNotVolatileObject(IdentifierTree variable) {
     Symbol symbol = getSemanticModel().getReference(variable);
     if (symbol != null) {
-      return isStaticNotFinalNotVolatile(symbol) && !symbol.getType().isPrimitive();
+      return isStaticNotFinalNotVolatile(symbol) && !symbol.type().isPrimitive();
     }
     return false;
   }

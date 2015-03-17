@@ -55,7 +55,7 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
       } else if (owner.isMethodSymbol()) {
         TypeSymbol methodOwner = (TypeSymbol) owner.owner();
         if (isMatchingOuterClass(methodOwner.getType()) && !owner.isStatic()) {
-          String methodName = owner.getName();
+          String methodName = owner.name();
           addIssue(classTree, "Make \"" + methodName + "\" static");
         }
       }

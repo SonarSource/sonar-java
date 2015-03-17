@@ -72,6 +72,6 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
   private boolean isNotRuntimeAnnotation(Type symbolType) {
     List<AnnotationValue> valuesFor = symbolType.getSymbol().metadata().getValuesFor("java.lang.annotation.Retention");
     //default policy is CLASS
-    return valuesFor == null || !"RUNTIME".equals(((Symbol.VariableSymbol) valuesFor.get(0).value()).getName());
+    return valuesFor == null || !"RUNTIME".equals(((Symbol) valuesFor.get(0).value()).name());
   }
 }

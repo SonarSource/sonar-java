@@ -26,7 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -77,7 +77,7 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
         if (type.is("javax.servlet.http.Cookie") && isConstructorInitialized(variableTree)) {
           Symbol variableSymbol = getSemanticModel().getSymbol(variableTree);
           //Ignore field variables
-          if (variableSymbol.owner().getType().isTagged(Type.METHOD)) {
+          if (variableSymbol.owner().isMethodSymbol()) {
             unsecuredCookies.add(variableSymbol);
           }
         }
@@ -112,7 +112,7 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isCallSiteCookie(Symbol methodSymbol) {
-    return methodSymbol.isMethodSymbol() && methodSymbol.owner().getType().is("javax.servlet.http.Cookie");
+    return methodSymbol.isMethodSymbol() && methodSymbol.owner().type().is("javax.servlet.http.Cookie");
   }
 
   private IdentifierTree getIdentifier(MethodInvocationTree mit) {

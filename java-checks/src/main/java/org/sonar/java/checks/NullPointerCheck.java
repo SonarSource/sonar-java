@@ -28,7 +28,7 @@ import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.AnnotationInstance;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.VariableSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -163,7 +163,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
     if (symbol.isMethodSymbol()) {
       MethodSymbol methodSymbol = (MethodSymbol) symbol;
-      List<Symbol> parameters = methodSymbol.getParameters().scopeSymbols();
+      List<org.sonar.java.resolve.Symbol> parameters = methodSymbol.getParameters().scopeSymbols();
       // FIXME(merciesa): in some cases (method overloading with parameterized methods) a method symbol without parameter can be called with
       // arguments.
       if (parameters.size() != 0) {
@@ -185,7 +185,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   // returns true if the passed method parameter cannot be null.
-  private boolean isNonnullParameter(Symbol symbol) {
+  private boolean isNonnullParameter(org.sonar.java.resolve.Symbol symbol) {
     // FIXME(merciesa): it should also use annotation on package and class
     for (AnnotationInstance annotation : symbol.metadata().annotations()) {
       if (annotation.isTyped("javax.annotation.Nonnull")) {
@@ -211,12 +211,12 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
       if (symbol != null && symbol.isVariableSymbol() && currentState.getVariableValue((VariableSymbol) symbol) == AbstractValue.NULL) {
-        context.addIssue(tree, RULE_KEY, String.format("%s can be null.", symbol.getName()));
+        context.addIssue(tree, RULE_KEY, String.format("%s can be null.", symbol.name()));
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
       if (symbol.isMethodSymbol() && isNullReturnValue((MethodSymbol) symbol)) {
-        context.addIssue(tree, RULE_KEY, String.format("Value returned by method '%s' can be null.", symbol.getName()));
+        context.addIssue(tree, RULE_KEY, String.format("Value returned by method '%s' can be null.", symbol.name()));
       }
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
       context.addIssue(tree, RULE_KEY, "null is dereferenced or passed as argument.");

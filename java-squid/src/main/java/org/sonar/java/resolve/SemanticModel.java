@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
 import java.io.File;

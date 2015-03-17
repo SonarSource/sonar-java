@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -104,7 +104,7 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean isMethodDefinedOnConstructedType(Symbol symbol) {
-      TypeSymbol methodEnclosingClass = symbol.enclosingClass();
+      TypeSymbol methodEnclosingClass = (TypeSymbol) symbol.enclosingClass();
       for (ClassType superType : constructorType.superTypes()) {
         if (superType.getSymbol().equals(methodEnclosingClass)) {
           return true;
@@ -114,11 +114,8 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean isOverridableMethod(Symbol symbol) {
-      if (symbol.isMethodSymbol()) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-        if (!methodSymbol.isPrivate() && !methodSymbol.isFinal() && !methodSymbol.isStatic()) {
-          return true;
-        }
+      if (symbol.isMethodSymbol() && !symbol.isPrivate() && !symbol.isFinal() && !symbol.isStatic()) {
+        return true;
       }
       return false;
     }

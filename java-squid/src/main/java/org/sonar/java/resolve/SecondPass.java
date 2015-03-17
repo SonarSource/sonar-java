@@ -135,7 +135,7 @@ public class SecondPass implements Symbol.Completer {
           bounds.add(resolveType(env, boundTree));
         }
       }
-      ((Type.TypeVariableType) semanticModel.getSymbol(typeParameterTree).type).bounds = bounds;
+      ((Type.TypeVariableType) semanticModel.getSymbol(typeParameterTree).type()).bounds = bounds;
     }
   }
 

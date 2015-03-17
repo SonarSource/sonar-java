@@ -71,7 +71,7 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
 
     @Override
     public boolean matches(Type type) {
-      return type.isTagged(Type.ARRAY);
+      return type.isArray();
     }
 
   }

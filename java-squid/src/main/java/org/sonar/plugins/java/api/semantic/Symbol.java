@@ -36,6 +36,8 @@ public interface Symbol {
    */
   Symbol owner();
 
+  Type type();
+
   //kinds of symbols
   boolean isVariableSymbol();
 
@@ -65,4 +67,20 @@ public interface Symbol {
   boolean isDeprecated();
 
   boolean isVolatile();
+
+  TypeSymbolSemantic enclosingClass();
+
+  interface TypeSymbolSemantic extends Symbol {
+
+  }
+
+  interface VariableSymbolSemantic  extends Symbol {
+
+  }
+
+  interface MethodSymbolSemantic  extends Symbol {
+
+  }
+
+
 }

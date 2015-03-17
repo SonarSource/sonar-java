@@ -28,9 +28,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.AnnotationValue;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
 import org.sonar.java.resolve.Type.ClassType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -64,8 +63,8 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
 
   private void visitClassTree(ClassTreeImpl classTree) {
     TypeSymbol symbol = classTree.getSymbol();
-    if (!isAnonymous(classTree) && isSerializable(symbol.getType())) {
-      VariableSymbol serialVersionUidSymbol = findSerialVersionUid(symbol);
+    if (!isAnonymous(classTree) && isSerializable(symbol.type())) {
+      Symbol.VariableSymbolSemantic serialVersionUidSymbol = findSerialVersionUid(symbol);
       if (serialVersionUidSymbol == null) {
         if (!isExclusion(symbol)) {
           addIssue(classTree, "Add a \"static final long serialVersionUID\" field to this class.");
@@ -80,7 +79,7 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     return classTree.simpleName() == null;
   }
 
-  private void checkModifiers(VariableSymbol serialVersionUidSymbol) {
+  private void checkModifiers(org.sonar.plugins.java.api.semantic.Symbol.VariableSymbolSemantic serialVersionUidSymbol) {
     List<String> missingModifiers = Lists.newArrayList();
     if (!serialVersionUidSymbol.isStatic()) {
       missingModifiers.add("static");
@@ -88,7 +87,7 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     if (!serialVersionUidSymbol.isFinal()) {
       missingModifiers.add("final");
     }
-    if (!serialVersionUidSymbol.getType().is("long")) {
+    if (!serialVersionUidSymbol.type().is("long")) {
       missingModifiers.add("long");
     }
     if (!missingModifiers.isEmpty()) {
@@ -97,10 +96,10 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private VariableSymbol findSerialVersionUid(TypeSymbol symbol) {
+  private Symbol.VariableSymbolSemantic findSerialVersionUid(TypeSymbol symbol) {
     for (Symbol member : symbol.members().lookup("serialVersionUID")) {
       if (member.isVariableSymbol()) {
-        return (VariableSymbol) member;
+        return (Symbol.VariableSymbolSemantic) member;
       }
     }
     return null;

@@ -75,8 +75,8 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
   }
 
   private boolean instantiateOwnClass(Tree identifier, TypeSymbol newClassTypeSymbol) {
-    Type enclosingClassType = getSemanticModel().getEnclosingClass(identifier).getType();
-    return enclosingClassType.equals(newClassTypeSymbol.getType());
+    org.sonar.plugins.java.api.semantic.Type enclosingClassType = getSemanticModel().getEnclosingClass(identifier).type();
+    return enclosingClassType.equals(newClassTypeSymbol.type());
   }
 
   private boolean hasOnlyStaticMethods(TypeSymbol newClassTypeSymbol) {
@@ -111,7 +111,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
   }
 
   private boolean isConstructor(Symbol symbol) {
-    return "<init>".equals(symbol.getName());
+    return "<init>".equals(symbol.name());
   }
 
   @Nullable

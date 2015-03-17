@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type.ClassType;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -87,8 +87,8 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
 
   private boolean isCompareToInvocation(MethodInvocationTreeImpl invocation) {
     Symbol method = invocation.getSymbol();
-    if ("compareTo".equals(method.getName()) && invocation.arguments().size() == 1) {
-      TypeSymbol methodOwner = method.owner().enclosingClass();
+    if ("compareTo".equals(method.name()) && invocation.arguments().size() == 1) {
+      TypeSymbol methodOwner = (TypeSymbol) method.owner().enclosingClass();
       Set<ClassType> superTypes = methodOwner.superTypes();
       for (ClassType classType : superTypes) {
         if (classType.is("java.lang.Comparable")) {

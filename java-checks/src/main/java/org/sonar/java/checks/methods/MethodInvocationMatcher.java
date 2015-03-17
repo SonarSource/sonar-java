@@ -97,7 +97,7 @@ public class MethodInvocationMatcher {
   }
 
   private boolean matches(IdentifierTree id, Type callSiteType, SemanticModel semanticModel) {
-    Symbol symbol = semanticModel.getReference(id);
+    Symbol symbol = (Symbol) semanticModel.getReference(id);
     if (symbol != null && symbol.isMethodSymbol()) {
       Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
       if (isSearchedMethod(methodSymbol, callSiteType)) {
@@ -109,7 +109,7 @@ public class MethodInvocationMatcher {
 
   private Type getCallSiteType(MethodInvocationTree mit, SemanticModel semanticModel) {
     if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
-      return semanticModel.getEnclosingClass(mit).getType();
+      return (Type) semanticModel.getEnclosingClass(mit).type();
     } else if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTree) mit.methodSelect();
       return ((AbstractTypedTree) methodSelect.expression()).getSymbolType();
