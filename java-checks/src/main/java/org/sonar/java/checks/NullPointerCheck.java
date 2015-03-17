@@ -277,10 +277,10 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     scan(tree);
   }
 
-  private static class State {
+  static class State {
     @Nullable
-    public final State parentState;
-    Map<VariableSymbol, AbstractValue> variables;
+    final State parentState;
+    final Map<VariableSymbol, AbstractValue> variables;
 
     public State() {
       this.parentState = null;
@@ -295,7 +295,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     // returns the value of the variable in the current state.
     public AbstractValue getVariableValue(VariableSymbol variable) {
       for (State state = this; state != null; state = state.parentState) {
-        AbstractValue result = variables.get(variable);
+        AbstractValue result = state.variables.get(variable);
         if (result != null) {
           return result;
         }
@@ -316,11 +316,11 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       }
       for (VariableSymbol variable : variables) {
         AbstractValue currentValue = getVariableValue(variable);
-        AbstractValue trueValue = trueState.getVariableValue(variable);
+        AbstractValue trueValue = trueState.variables.get(variable);
         if (trueValue == null) {
           trueValue = currentValue;
         }
-        AbstractValue falseValue = falseState != null ? falseState.getVariableValue(variable) : currentValue;
+        AbstractValue falseValue = falseState != null ? falseState.variables.get(variable) : currentValue;
         if (falseValue == null) {
           falseValue = currentValue;
         }
