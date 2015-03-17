@@ -27,15 +27,11 @@ import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -63,7 +59,7 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     Long identityElement = getBitwiseOperationIdentityElement(tree);
-    Long evaluatedExpression = evaluateExpression(getExpression(tree));
+    Long evaluatedExpression = LiteralUtils.longLiteralValue(getExpression(tree));
     if (evaluatedExpression != null && identityElement.equals(evaluatedExpression)) {
       addIssue(tree, "Remove this silly bit operation.");
     }
@@ -85,30 +81,5 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
       expression = ((AssignmentExpressionTree) tree).expression();
     }
     return expression;
-  }
-
-  @Nullable
-  private Long evaluateExpression(ExpressionTree tree) {
-    ExpressionTree expression = tree;
-
-    int sign = expression.is(Kind.UNARY_MINUS) ? -1 : 1;
-    if (expression.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
-      expression = ((UnaryExpressionTree) expression).expression();
-    }
-
-    if (expression.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      String value = LiteralUtils.trimLongSuffix(((LiteralTree) expression).value());
-      try {
-        return sign * Long.decode(value);
-      } catch (NumberFormatException e) {
-        // Long.decode() may fail in case of very large long number written in hexadecimal. In such situation, we ignore the number.
-        // Note that Long.MAX_VALUE = "0x7FFF_FFFF_FFFF_FFFFL", but it is possible to write larger numbers in hexadecimal
-        // to be used as mask in bitwise operation. For instance:
-        // 0x8000_0000_0000_0000L (MAX_VALUE + 1),
-        // 0xFFFF_FFFF_FFFF_FFFFL (only ones),
-        // 0xFFFF_FFFF_FFFF_FFFEL (only ones except least significant bit), ...
-      }
-    }
-    return null;
   }
 }
