@@ -28,6 +28,10 @@ abstract class A {
     }
   }
 
+  public synchronized void synchronizedMethod() {
+    staticValue++; // Compliant
+  }
+
   public static void compliantStaticMethod() {
     staticValue++; // Compliant
   }
@@ -39,7 +43,10 @@ abstract class A {
     A myA = new B();
     myA.value = value++; // Compliant
     
-    getValue()++; // Compliant
+    synchronized (new Object()) {
+      staticValue++; // Compliant
+      staticValue = value + 1; // Compliant
+    }
   }
 
   private class CompliantInnerClass {
@@ -47,6 +54,14 @@ abstract class A {
 
     CompliantInnerClass() {
       value = 1; // Compliant
+    }
+  }
+
+  static class StaticClass {
+    private static int value;
+
+    void foo() {
+      value++; // Compliant
     }
   }
 
@@ -59,7 +74,7 @@ abstract class A {
     value = a;
   }
 
-  public void getValue() {
+  public int getValue() {
     return value;
   }
 }
@@ -68,13 +83,5 @@ class B extends A {
 
   @Override
   public void bar() {
-  }
-}
-
-static class C {
-  private static int value;
-  
-  vodi foo() {
-    value++; // Compliant
   }
 }

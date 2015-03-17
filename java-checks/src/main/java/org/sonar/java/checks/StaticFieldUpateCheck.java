@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -69,11 +70,11 @@ public class StaticFieldUpateCheck extends SubscriptionBaseVisitor {
 
     ClassTree classTree = (ClassTree) tree;
     if (isNonStatic(classTree)) {
-      List<MethodTree> nonStaticMethods = Lists.newArrayList();
+      List<MethodTree> methodsToAnalyze = Lists.newArrayList();
       List<VariableSymbol> staticNonFinalFields = Lists.newArrayList();
 
-      extractMembers(classTree, staticNonFinalFields, nonStaticMethods);
-      checkMethods(staticNonFinalFields, nonStaticMethods);
+      extractMembers(classTree, staticNonFinalFields, methodsToAnalyze);
+      checkMethods(staticNonFinalFields, methodsToAnalyze);
     }
   }
 
@@ -81,11 +82,11 @@ public class StaticFieldUpateCheck extends SubscriptionBaseVisitor {
     return !classTree.modifiers().modifiers().contains(Modifier.STATIC);
   }
 
-  private void extractMembers(ClassTree classTree, List<VariableSymbol> staticNonFinalFields, List<MethodTree> nonStaticMethods) {
-    extractMembers(classTree.members(), staticNonFinalFields, nonStaticMethods, true);
+  private void extractMembers(ClassTree classTree, List<VariableSymbol> staticNonFinalFields, List<MethodTree> methodsToAnalyze) {
+    extractMembers(classTree.members(), staticNonFinalFields, methodsToAnalyze, true);
   }
 
-  private void extractMembers(List<Tree> members, List<VariableSymbol> staticNonFinalFields, List<MethodTree> nonStaticMethods, boolean lookForStaticFields) {
+  private void extractMembers(List<Tree> members, List<VariableSymbol> staticNonFinalFields, List<MethodTree> methodsToAnalyze, boolean lookForStaticFields) {
     for (Tree member : members) {
       if (member.is(Kind.VARIABLE) && lookForStaticFields) {
         VariableTreeImpl variable = (VariableTreeImpl) member;
@@ -94,12 +95,12 @@ public class StaticFieldUpateCheck extends SubscriptionBaseVisitor {
         }
       } else if (member.is(Kind.METHOD, Kind.CONSTRUCTOR)) {
         MethodTree method = (MethodTree) member;
-        if (isNonStaticMethod(method)) {
-          nonStaticMethods.add(method);
+        if (isNonStaticNonSyncMethod(method.modifiers().modifiers())) {
+          methodsToAnalyze.add(method);
         }
       } else if (member.is(Kind.CLASS)) {
         // don't look for static fields of the inner classes, as inner class will be explored later
-        extractMembers(((ClassTree) member).members(), staticNonFinalFields, nonStaticMethods, false);
+        extractMembers(((ClassTree) member).members(), staticNonFinalFields, methodsToAnalyze, false);
       }
     }
   }
@@ -113,8 +114,8 @@ public class StaticFieldUpateCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isNonStaticMethod(MethodTree method) {
-    return !method.modifiers().modifiers().contains(Modifier.STATIC);
+  private boolean isNonStaticNonSyncMethod(List<Modifier> modifiers) {
+    return !modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.SYNCHRONIZED);
   }
 
   private boolean isStaticNonFinalField(List<Modifier> modifiers) {
@@ -138,6 +139,11 @@ public class StaticFieldUpateCheck extends SubscriptionBaseVisitor {
       if (tree.is(Kind.POSTFIX_DECREMENT, Kind.POSTFIX_INCREMENT, Kind.PREFIX_DECREMENT, Kind.PREFIX_INCREMENT)) {
         checkFieldAssignement(tree.expression());
       }
+    }
+
+    @Override
+    public void visitSynchronizedStatement(SynchronizedStatementTree tree) {
+      // do not explore the synchronized block body, as modifications of static fields in it will be shared by other instances
     }
 
     private void checkFieldAssignement(ExpressionTree expression) {
