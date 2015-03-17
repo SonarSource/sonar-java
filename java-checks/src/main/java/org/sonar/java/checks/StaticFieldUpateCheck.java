@@ -24,20 +24,16 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Symbol.VariableSymbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -45,6 +41,8 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
@@ -55,108 +53,95 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("20min")
-public class StaticFieldUpateCheck extends SubscriptionBaseVisitor {
+public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
+
+  private static final Kind[] ASSIGNMENT_EXPRESSIONS = new Kind[] {
+    Kind.AND_ASSIGNMENT,
+    Kind.ASSIGNMENT,
+    Kind.DIVIDE_ASSIGNMENT,
+    Kind.LEFT_SHIFT_ASSIGNMENT,
+    Kind.MINUS_ASSIGNMENT,
+    Kind.MULTIPLY_ASSIGNMENT,
+    Kind.OR_ASSIGNMENT,
+    Kind.PLUS_ASSIGNMENT,
+    Kind.REMAINDER_ASSIGNMENT,
+    Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
+    Kind.XOR_ASSIGNMENT};
+
+  private static final Kind[] UNARY_EXPRESSIONS = new Kind[] {
+    Kind.POSTFIX_DECREMENT,
+    Kind.POSTFIX_INCREMENT,
+    Kind.PREFIX_DECREMENT,
+    Kind.PREFIX_INCREMENT};
+
+  private Deque<Boolean> withinStaticMethod = new LinkedList<>();
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.CLASS);
+    List<Kind> results = Lists.newArrayList(super.nodesToVisit());
+    results.addAll(Lists.newArrayList(ASSIGNMENT_EXPRESSIONS));
+    results.addAll(Lists.newArrayList(UNARY_EXPRESSIONS));
+    return results;
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
+    // use AbstractInSynchronizeChecker logic to check synchronized blocks
+    super.visitNode(tree);
 
-    ClassTree classTree = (ClassTree) tree;
-    if (isNonStatic(classTree)) {
-      List<MethodTree> methodsToAnalyze = Lists.newArrayList();
-      List<VariableSymbol> staticNonFinalFields = Lists.newArrayList();
-
-      extractMembers(classTree, staticNonFinalFields, methodsToAnalyze);
-      checkMethods(staticNonFinalFields, methodsToAnalyze);
-    }
-  }
-
-  private boolean isNonStatic(ClassTree classTree) {
-    return !classTree.modifiers().modifiers().contains(Modifier.STATIC);
-  }
-
-  private void extractMembers(ClassTree classTree, List<VariableSymbol> staticNonFinalFields, List<MethodTree> methodsToAnalyze) {
-    extractMembers(classTree.members(), staticNonFinalFields, methodsToAnalyze, true);
-  }
-
-  private void extractMembers(List<Tree> members, List<VariableSymbol> staticNonFinalFields, List<MethodTree> methodsToAnalyze, boolean lookForStaticFields) {
-    for (Tree member : members) {
-      if (member.is(Kind.VARIABLE) && lookForStaticFields) {
-        VariableTreeImpl variable = (VariableTreeImpl) member;
-        if (isStaticNonFinalField(variable.modifiers().modifiers())) {
-          staticNonFinalFields.add(variable.getSymbol());
-        }
-      } else if (member.is(Kind.METHOD, Kind.CONSTRUCTOR)) {
-        MethodTree method = (MethodTree) member;
-        if (isNonStaticNonSyncMethod(method.modifiers().modifiers())) {
-          methodsToAnalyze.add(method);
-        }
-      } else if (member.is(Kind.CLASS)) {
-        // don't look for static fields of the inner classes, as inner class will be explored later
-        extractMembers(((ClassTree) member).members(), staticNonFinalFields, methodsToAnalyze, false);
+    if (tree.is(Kind.METHOD)) {
+      withinStaticMethod.push(isMethodStatic((MethodTree) tree));
+    } else if (hasSemantic() && !isInSyncBlock() && isInInstancecMethod()) {
+      if (tree.is(ASSIGNMENT_EXPRESSIONS)) {
+        checkAssignement(((AssignmentExpressionTree) tree).variable());
+      } else if (tree.is(UNARY_EXPRESSIONS)) {
+        checkAssignement(((UnaryExpressionTree) tree).expression());
       }
     }
   }
 
-  private void checkMethods(List<VariableSymbol> staticNonFinalFields, List<MethodTree> nonStaticMethods) {
-    for (MethodTree method : nonStaticMethods) {
-      BlockTree block = method.block();
-      if (block != null) {
-        block.accept(new AssignmentVisitor(staticNonFinalFields));
-      }
+  private boolean isInInstancecMethod() {
+    return !withinStaticMethod.isEmpty() && !withinStaticMethod.peek();
+  }
+
+  private boolean isMethodStatic(MethodTree tree) {
+    return tree.modifiers().modifiers().contains(Modifier.STATIC);
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    super.leaveNode(tree);
+
+    if (tree.is(Tree.Kind.METHOD)) {
+      withinStaticMethod.pop();
     }
   }
 
-  private boolean isNonStaticNonSyncMethod(List<Modifier> modifiers) {
-    return !modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.SYNCHRONIZED);
+  private void checkAssignement(ExpressionTree expression) {
+    if (expression.is(Kind.IDENTIFIER)) {
+      Symbol variable = getSemanticModel().getReference((IdentifierTree) expression);
+      if (variable != null && variable.isKind(Symbol.VAR)) {
+        checkVariable((VariableSymbol) variable, expression);
+      }
+    } else if (expression.is(Kind.MEMBER_SELECT)) {
+      checkAssignement(((MemberSelectExpressionTree) expression).identifier());
+    } else if (expression.is(Kind.ARRAY_ACCESS_EXPRESSION)) {
+      checkAssignement(((ArrayAccessExpressionTree) expression).expression());
+    }
   }
 
-  private boolean isStaticNonFinalField(List<Modifier> modifiers) {
-    return modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.FINAL);
+  private void checkVariable(VariableSymbol variable, ExpressionTree expression) {
+    if (isStaticField(variable)) {
+      addIssue(expression, "Make the enclosing method \"static\" or remove this set.");
+    }
   }
 
-  private class AssignmentVisitor extends BaseTreeVisitor {
-    private final List<VariableSymbol> targets;
+  private boolean isStaticField(VariableSymbol variable) {
+    return variable.owner().isKind(Symbol.TYP) && variable.isStatic();
+  }
 
-    public AssignmentVisitor(List<VariableSymbol> staticNonFinalFields) {
-      this.targets = staticNonFinalFields;
-    }
-
-    @Override
-    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      checkFieldAssignement(tree.variable());
-    }
-
-    @Override
-    public void visitUnaryExpression(UnaryExpressionTree tree) {
-      if (tree.is(Kind.POSTFIX_DECREMENT, Kind.POSTFIX_INCREMENT, Kind.PREFIX_DECREMENT, Kind.PREFIX_INCREMENT)) {
-        checkFieldAssignement(tree.expression());
-      }
-    }
-
-    @Override
-    public void visitSynchronizedStatement(SynchronizedStatementTree tree) {
-      // do not explore the synchronized block body, as modifications of static fields in it will be shared by other instances
-    }
-
-    private void checkFieldAssignement(ExpressionTree expression) {
-      if (expression.is(Kind.IDENTIFIER)) {
-        Symbol symbol = getSemanticModel().getReference((IdentifierTree) expression);
-        if (targets.contains(symbol)) {
-          addIssue(expression, "Make the enclosing method \"static\" or remove this set.");
-        }
-      } else if (expression.is(Kind.MEMBER_SELECT)) {
-        checkFieldAssignement(((MemberSelectExpressionTree) expression).identifier());
-      } else if (expression.is(Kind.ARRAY_ACCESS_EXPRESSION)) {
-        checkFieldAssignement(((ArrayAccessExpressionTree) expression).expression());
-      }
-    }
+  @Override
+  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of();
   }
 }

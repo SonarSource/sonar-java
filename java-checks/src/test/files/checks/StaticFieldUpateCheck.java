@@ -1,6 +1,6 @@
 abstract class A {
-  private static final int CONST = 0;
-  private static int staticValue = 0;
+  public static int staticValue = 0;
+  private static final int CONST = staticValue++;
   private int value;
   private static int[] staticArray;
 
@@ -23,7 +23,7 @@ abstract class A {
   }
 
   private class InnerClassWithNonCompliantAssignment {
-    InnerClassWithNonCompliantAssignment() {
+    void foo() {
       staticValue++; // Noncompliant
     }
   }
@@ -43,10 +43,15 @@ abstract class A {
     A myA = new B();
     myA.value = value++; // Compliant
     
+    int variable;
+    variable = staticValue; // Compliant
+    
     synchronized (new Object()) {
       staticValue++; // Compliant
       staticValue = value + 1; // Compliant
     }
+    
+    MyUnknownClass.staticField = value; // Compliant
   }
 
   private class CompliantInnerClass {
@@ -54,14 +59,6 @@ abstract class A {
 
     CompliantInnerClass() {
       value = 1; // Compliant
-    }
-  }
-
-  static class StaticClass {
-    private static int value;
-
-    void foo() {
-      value++; // Compliant
     }
   }
 
