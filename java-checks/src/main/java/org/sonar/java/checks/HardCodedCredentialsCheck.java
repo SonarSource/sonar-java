@@ -23,11 +23,13 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -53,7 +55,7 @@ public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.STRING_LITERAL, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT);
+    return ImmutableList.of(Tree.Kind.STRING_LITERAL, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
@@ -68,12 +70,42 @@ public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
       if (isStringLiteral(variable.initializer()) && isPasswordVariableName(variable.simpleName())) {
         addIssue(tree);
       }
-    } else {
+    } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
       AssignmentExpressionTree assignmentExpression = (AssignmentExpressionTree) tree;
       if (isStringLiteral(assignmentExpression.expression()) && isPasswordVariable(assignmentExpression.variable())) {
         addIssue(tree);
       }
+    } else {
+      if (isSettingPassword((MethodInvocationTree) tree)) {
+        addIssue(tree);
+      }
     }
+  }
+
+  private boolean isSettingPassword(MethodInvocationTree tree) {
+    List<ExpressionTree> arguments = tree.arguments();
+    return arguments.size() == 2 && argumentsAreLiterals(arguments) && isPassword((LiteralTree) arguments.get(0));
+  }
+
+  private boolean isPassword(LiteralTree argument) {
+    return argument.is(Tree.Kind.STRING_LITERAL) && PASSWORD_VARIABLE_PATTERN.matcher(LiteralUtils.trimQuotes(argument.value())).matches();
+  }
+
+  private boolean argumentsAreLiterals(List<ExpressionTree> arguments) {
+    for (ExpressionTree argument : arguments) {
+      if (!argument.is(
+        Kind.INT_LITERAL,
+        Kind.LONG_LITERAL,
+        Kind.FLOAT_LITERAL,
+        Kind.DOUBLE_LITERAL,
+        Kind.BOOLEAN_LITERAL,
+        Kind.CHAR_LITERAL,
+        Kind.STRING_LITERAL,
+        Kind.NULL_LITERAL)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private boolean isStringLiteral(ExpressionTree initializer) {
