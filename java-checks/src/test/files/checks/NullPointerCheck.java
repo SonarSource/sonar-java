@@ -211,6 +211,7 @@ class NullPointerTest {
     if(a == a) {} // Coverage
     if(a == null) { } // Coverage
     if(a != null) { } // Coverage
+    undefined.field; // Coverage
   }
 
   static int a;
