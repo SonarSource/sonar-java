@@ -56,4 +56,11 @@ public class UnusedPrivateFieldCheckTest {
       new VisitorsBridge(new UnusedPrivateFieldCheck(), ImmutableList.of(new File("target/test-classes"))));
   }
 
+  @Test
+  public void testLombok() {
+    for (String name : new File("src/test/files/checks/lombok/").list()) {
+      SourceFile file = scanFile("lombok/" + name);
+      checkMessagesVerifier.verify(file.getCheckMessages()).noMore();
+    }
+  }
 }
