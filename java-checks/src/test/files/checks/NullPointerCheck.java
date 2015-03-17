@@ -69,18 +69,18 @@ class NullPointerTest {
     Object o;
 
     Object[] array1 = checkForNullField;
-    i = array1.length; // False negative
-    o = array1[0]; // False negative
-    array1.hashCode(); // False negative
+    i = array1.length; // Noncompliant
+    o = array1[0]; // Noncompliant
+    array1.hashCode(); // Noncompliant
 
     i = checkForNullField.length; // False negative
     o = checkForNullField[0]; // False negative
     checkForNullField.hashCode(); // False negative
 
     Object[] array2 = checkForNullMethod();
-    i = array2.length; // False negative
-    o = array2[0]; // False negative
-    array2.hashCode(); // False negative
+    i = array2.length; // Noncompliant
+    o = array2[0]; // Noncompliant
+    array2.hashCode(); // Noncompliant
 
     i = checkForNullMethod().length; // Noncompliant
     o = checkForNullMethod()[0]; // Noncompliant
@@ -92,9 +92,9 @@ class NullPointerTest {
     Object o;
 
     Object[] array1 = nullableField;
-    i = array1.length; // False negative
-    o = array1[0]; // False negative
-    array1.hashCode(); // False negative
+    if (array1.length != 0) { } // Noncompliant
+    if (array1[0] != 0) { } // Noncompliant
+    if (array1.hashCode() != 0) { } // Noncompliant
 
     i = nullableField.length; // False negative
     o = nullableField[0]; // False negative
@@ -228,6 +228,13 @@ class NullPointerTest {
       argument4 = null;
     }
     argument4.hashCode(); // Noncompliant
+  }
+
+  public void testCondition() {
+    String var1 = null;
+    if (var1.equals("")) { } // Noncompliant
+    String var2 = nullableMethod();
+    if (var2.equals("")) { } // Noncompliant
   }
 
   @interface CoverageAnnotation {

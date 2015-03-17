@@ -70,7 +70,6 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public static final String KEY = "S2259";
   private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
-  private final ConditionVisitor conditionVisitor = new ConditionVisitor();
   private JavaFileScannerContext context;
   private State currentState;
   private SemanticModel semanticModel;
@@ -122,7 +121,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitConditionalExpression(ConditionalExpressionTree tree) {
     State trueState = new State(currentState);
     State falseState = new State(currentState);
-    conditionVisitor.visitCondition(tree.condition(), trueState, falseState);
+    visitCondition(tree.condition(), trueState, falseState);
     currentState = trueState;
     tree.trueExpression().accept(this);
     currentState = falseState;
@@ -134,7 +133,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitIfStatement(IfStatementTree tree) {
     State trueState = new State(currentState);
     State falseState = tree.elseStatement() != null ? new State(currentState) : null;
-    conditionVisitor.visitCondition(tree.condition(), trueState, falseState);
+    visitCondition(tree.condition(), trueState, falseState);
     currentState = trueState;
     tree.thenStatement().accept(this);
     if (tree.elseStatement() != null) {
@@ -169,7 +168,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       if (parameters.size() != 0) {
         for (int i = 0; i < tree.arguments().size(); i += 1) {
           // in case of varargs, there could be more arguments than parameters. in that case, pick the last parameter.
-          if (isNonnullParameter(parameters.get(i < parameters.size() ? i : parameters.size() - 1))) {
+          if (checkNullity(parameters.get(i < parameters.size() ? i : parameters.size() - 1)) == AbstractValue.NOTNULL) {
             this.checkForIssue(tree.arguments().get(i));
           }
         }
@@ -181,32 +180,48 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitVariable(VariableTree tree) {
     // skips modifiers (annotations) and type.
-    scan(tree.initializer());
+    if (tree.initializer() != null) {
+      currentState.setVariableValue((VariableSymbol) tree.symbol(), checkNullity(tree.initializer()));
+      scan(tree.initializer());
+    }
   }
 
-  // returns true if the passed method parameter cannot be null.
-  private boolean isNonnullParameter(Symbol symbol) {
-    // FIXME(merciesa): it should also use annotation on package and class
+  private AbstractValue checkNullity(Symbol symbol) {
     for (AnnotationInstance annotation : symbol.metadata().annotations()) {
       if (annotation.isTyped("javax.annotation.Nonnull")) {
-        return true;
+        return AbstractValue.NOTNULL;
       }
-    }
-    return false;
-  }
-
-  // returns true if the symbol can be null.
-  private boolean isNullReturnValue(MethodSymbol symbol) {
-    for (AnnotationInstance annotation : symbol.metadata().annotations()) {
-      // FIXME(merciesa): it should also use annotation on package and class
       if (annotation.isTyped("javax.annotation.CheckForNull") || annotation.isTyped("javax.annotation.Nullable")) {
-        return true;
+        return AbstractValue.NULL;
       }
     }
-    return false;
+    // FIXME(merciesa): should use annotation on package and class
+    return AbstractValue.UNKNOWN;
   }
 
-  // raises an issue if the passed tree is a method invocation that can return null.
+  public AbstractValue checkNullity(Tree tree) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
+      if (symbol != null && symbol.isVariableSymbol()) {
+        AbstractValue value = currentState.getVariableValue((VariableSymbol) symbol);
+        if (value != AbstractValue.UNKNOWN) {
+          return value;
+        }
+        return checkNullity(symbol);
+      }
+    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
+      if (symbol.isMethodSymbol() && checkNullity(symbol) == AbstractValue.NULL) {
+        return AbstractValue.NULL;
+      }
+    } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
+      return AbstractValue.NULL;
+    }
+    // FIXME(merciesa): should use annotation on package and class
+    return AbstractValue.UNKNOWN;
+  }
+
+  // raises an issue if the passed tree can be null.
   private void checkForIssue(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
@@ -215,7 +230,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
-      if (symbol.isMethodSymbol() && isNullReturnValue((MethodSymbol) symbol)) {
+      if (symbol.isMethodSymbol() && checkNullity(symbol) == AbstractValue.NULL) {
         context.addIssue(tree, RULE_KEY, String.format("Value returned by method '%s' can be null.", symbol.getName()));
       }
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
@@ -232,42 +247,34 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     UNKNOWN
   }
 
-  private class ConditionVisitor extends BaseTreeVisitor {
-    private State trueState;
-    @Nullable
-    private State falseState;
-
-    void visitCondition(ExpressionTree tree, State trueState, @Nullable State falseState) {
-      this.trueState = trueState;
-      this.falseState = falseState;
-      tree.accept(this);
-    }
-
-    @Override
-    public void visitBinaryExpression(BinaryExpressionTree tree) {
+  private void visitCondition(ExpressionTree tree, State trueState, @Nullable State falseState) {
+    if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+      BinaryExpressionTree binaryTree = (BinaryExpressionTree) tree;
       VariableSymbol identifierSymbol;
       // currently only ident == null, ident != null, null == ident and null != ident are covered.
       // logical and/or operators are not supported.
-      if (tree.leftOperand().is(Tree.Kind.NULL_LITERAL) && tree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
-        identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.rightOperand());
-      } else if (tree.leftOperand().is(Tree.Kind.IDENTIFIER) && tree.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
-        identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.leftOperand());
+      if (binaryTree.leftOperand().is(Tree.Kind.NULL_LITERAL) && binaryTree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
+        identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) binaryTree.rightOperand());
+      } else if (binaryTree.leftOperand().is(Tree.Kind.IDENTIFIER) && binaryTree.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
+        identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) binaryTree.leftOperand());
       } else {
+        super.visitBinaryExpression(binaryTree);
         return;
       }
-      if (tree.is(Tree.Kind.EQUAL_TO)) {
+      if (binaryTree.is(Tree.Kind.EQUAL_TO)) {
         trueState.setVariableValue(identifierSymbol, AbstractValue.NULL);
         if (falseState != null) {
           falseState.setVariableValue(identifierSymbol, AbstractValue.NOTNULL);
         }
       } else {
-        Preconditions.checkState(tree.is(Tree.Kind.NOT_EQUAL_TO));
+        Preconditions.checkState(binaryTree.is(Tree.Kind.NOT_EQUAL_TO));
         trueState.setVariableValue(identifierSymbol, AbstractValue.NOTNULL);
         if (falseState != null) {
           falseState.setVariableValue(identifierSymbol, AbstractValue.NULL);
         }
       }
     }
+    scan(tree);
   }
 
   private static class State {
