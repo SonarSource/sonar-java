@@ -19,6 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -49,8 +53,36 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   public static final String RULE_KEY = "S1698";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
+  private static final String DEFAULT_EXCLUSIONS = "java.lang.Class";
+  private static final String SEPARATOR = ";";
+
   private JavaFileScannerContext context;
 
+  @RuleProperty(
+      key = "exclusions",
+      defaultValue = "" + DEFAULT_EXCLUSIONS)
+  private String exclusions;
+  
+  private Set<String> exclusionSet;
+  
+  public CompareObjectWithEqualsCheck() {
+	  exclusionSet = new HashSet<String>();
+	  setExclusions(DEFAULT_EXCLUSIONS);
+  }
+
+  public void setExclusions(String exclusions) {
+	  this.exclusions = exclusions;
+	  exclusionSet.clear();
+	  
+	  if (exclusions != null) {
+		  exclusionSet.addAll(Arrays.asList(exclusions.split(SEPARATOR)));
+	  }
+  }
+  
+  public String getExclusions() {
+	  return exclusions;
+  }
+  
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
@@ -103,7 +135,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   }
 
   private boolean isExcluded(Type leftOpType, Type rightOpType) {
-    return isNullComparison(leftOpType, rightOpType) || isNumericalComparison(leftOpType, rightOpType) || isJavaLangClassComparison(leftOpType, rightOpType);
+    return isNullComparison(leftOpType, rightOpType) || isNumericalComparison(leftOpType, rightOpType) || isExcludedComparison(leftOpType, rightOpType);
   }
 
   private boolean isObject(Type operandType) {
@@ -118,7 +150,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
     return leftOperandType.isNumerical() || rightOperandType.isNumerical();
   }
 
-  private boolean isJavaLangClassComparison(Type leftOpType, Type rightOpType) {
-    return leftOpType.is("java.lang.Class") || rightOpType.is("java.lang.Class");
+  private boolean isExcludedComparison(Type leftOpType, Type rightOpType) {
+    return exclusionSet.contains(leftOpType.toString()) || exclusionSet.contains(rightOpType.toString());
   }
 }
