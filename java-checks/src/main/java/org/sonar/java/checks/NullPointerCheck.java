@@ -168,7 +168,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       if (parameters.size() != 0) {
         for (int i = 0; i < tree.arguments().size(); i += 1) {
           // in case of varargs, there could be more arguments than parameters. in that case, pick the last parameter.
-          if (isNonnullParameter(parameters.get(i < parameters.size() ? i : parameters.size() - 1))) {
+          if (checkNullity(parameters.get(i < parameters.size() ? i : parameters.size() - 1)) == AbstractValue.NOTNULL) {
             this.checkForIssue(tree.arguments().get(i));
           }
         }
@@ -183,29 +183,20 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     scan(tree.initializer());
   }
 
-  // returns true if the passed method parameter cannot be null.
-  private boolean isNonnullParameter(Symbol symbol) {
-    // FIXME(merciesa): it should also use annotation on package and class
+  private AbstractValue checkNullity(Symbol symbol) {
     for (AnnotationInstance annotation : symbol.metadata().annotations()) {
       if (annotation.isTyped("javax.annotation.Nonnull")) {
-        return true;
+        return AbstractValue.NOTNULL;
       }
-    }
-    return false;
-  }
-
-  // returns true if the symbol can be null.
-  private boolean isNullReturnValue(MethodSymbol symbol) {
-    for (AnnotationInstance annotation : symbol.metadata().annotations()) {
-      // FIXME(merciesa): it should also use annotation on package and class
       if (annotation.isTyped("javax.annotation.CheckForNull") || annotation.isTyped("javax.annotation.Nullable")) {
-        return true;
+        return AbstractValue.NULL;
       }
     }
-    return false;
+    // FIXME(merciesa): should use annotation on package and class
+    return AbstractValue.UNKNOWN;
   }
 
-  // raises an issue if the passed tree is a method invocation that can return null.
+  // raises an issue if the passed tree can be null.
   private void checkForIssue(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
@@ -214,7 +205,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
-      if (symbol.isMethodSymbol() && isNullReturnValue((MethodSymbol) symbol)) {
+      if (symbol.isMethodSymbol() && checkNullity(symbol) == AbstractValue.NULL) {
         context.addIssue(tree, RULE_KEY, String.format("Value returned by method '%s' can be null.", symbol.getName()));
       }
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
