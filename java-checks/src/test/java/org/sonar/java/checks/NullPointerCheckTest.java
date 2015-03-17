@@ -38,9 +38,21 @@ public class NullPointerCheckTest {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NullPointerCheck.java"),
       new VisitorsBridge(new NullPointerCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(72).withMessage("array1 can be null.")
+      .next().atLine(73).withMessage("array1 can be null.")
+      .next().atLine(74).withMessage("array1 can be null.")
+      .next().atLine(81).withMessage("array2 can be null.")
+      .next().atLine(82).withMessage("array2 can be null.")
+      .next().atLine(83).withMessage("array2 can be null.")
       .next().atLine(85).withMessage("Value returned by method 'checkForNullMethod' can be null.")
       .next().atLine(86).withMessage("Value returned by method 'checkForNullMethod' can be null.")
       .next().atLine(87).withMessage("Value returned by method 'checkForNullMethod' can be null.")
+      .next().atLine(95).withMessage("array1 can be null.")
+      .next().atLine(96).withMessage("array1 can be null.")
+      .next().atLine(97).withMessage("array1 can be null.")
+      .next().atLine(104).withMessage("array2 can be null.")
+      .next().atLine(105).withMessage("array2 can be null.")
+      .next().atLine(106).withMessage("array2 can be null.")
       .next().atLine(108).withMessage("Value returned by method 'nullableMethod' can be null.")
       .next().atLine(109).withMessage("Value returned by method 'nullableMethod' can be null.")
       .next().atLine(110).withMessage("Value returned by method 'nullableMethod' can be null.")
@@ -56,6 +68,8 @@ public class NullPointerCheckTest {
       .next().atLine(189).withMessage("argument1 can be null.")
       .next().atLine(198).withMessage("argument can be null.")
       .next().atLine(199).withMessage("argument can be null.")
-      .next().atLine(230).withMessage("argument4 can be null.");
+      .next().atLine(230).withMessage("argument4 can be null.")
+      .next().atLine(235).withMessage("var1 can be null.")
+      .next().atLine(237).withMessage("var2 can be null.");
   }
 }
