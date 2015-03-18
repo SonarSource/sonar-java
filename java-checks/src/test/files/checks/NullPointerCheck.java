@@ -248,6 +248,39 @@ class NullPointerTest {
     }
   }
 
+  public void testLogicalAnd(String str) {
+    Object object = null;
+    if (object != null && object.hashCode() == 0); // Compliant
+    if (object != null && object.hashCode() != 0 && object.hashCode() != 0); // Compliant
+    if (object == null && object.hashCode() == 0); // Noncompliant
+    if (object == null && object.hashCode() == 0 && object.hashCode() == 0); // Noncompliant
+    boolean b2 = str != null && str.length() == 0; // Compliant
+    boolean b1 = str == null && str.length() == 0; // Noncompliant
+  }
+
+  public void testLogicalOr(String str) {
+    Object object = null;
+    if (object == null || object.hashCode() == 0); // Compliant
+    if (object == null || object.hashCode() != 0 || object.hashCode() != 0); // Compliant
+    if (object != null || object.hashCode() == 0); // Noncompliant
+    if (object != null || object.hashCode() == 0 || object.hashCode() == 0); // Noncompliant
+    boolean b1 = str == null || str.length() == 0; // Compliant
+    boolean b2 = str != null || str.length() == 0; // Noncompliant
+  }
+
+  public void testForLoop() {
+    Object object = null;
+    while(object != null) {
+      object.hashCode(); // Compliant
+    }
+  }
+
+  public void testWhileLoop() {
+    for(Object object = null; object != null; object.hashCode()) { // Compliant
+      object.hashCode(); // Compliant
+    }
+  }
+
   @interface CoverageAnnotation {
   }
 
@@ -267,6 +300,7 @@ class NullPointerTest {
     if (a == null) { } // Coverage
     if (a != null) { } // Coverage
     undefined.field; // Coverage
+    a = 1 + 2; // Coverage
   }
 
   static int a;
