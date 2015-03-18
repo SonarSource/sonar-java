@@ -29,13 +29,13 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import javax.annotation.CheckForNull;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -73,14 +73,13 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
       shift = assignmentExpressionTree.expression();
     }
 
-    int sign = shift.is(Kind.UNARY_MINUS) ? -1 : 1;
-    if (shift.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
-      shift = ((UnaryExpressionTree) shift).expression();
-    }
+    checkShiftValidity((ExpressionTree) tree, identifier, shift);
+  }
 
-    if (shift.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      int base = getBase((ExpressionTree) tree);
-      long numberBits = sign * Long.decode(LiteralUtils.trimLongSuffix(((LiteralTree) shift).value()));
+  private void checkShiftValidity(ExpressionTree tree, String identifier, ExpressionTree shift) {
+    int base = getBase(tree);
+    Long numberBits = LiteralUtils.longLiteralValue(shift);
+    if (numberBits != null) {
       long reducedNumberBits = numberBits % base;
       String message = getMessage(numberBits, reducedNumberBits, base, identifier);
       if (message != null) {
@@ -90,27 +89,15 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isZeroMaskShift(BinaryExpressionTree binaryExpressionTree) {
-    return isLiteralValue(binaryExpressionTree.leftOperand(), 1) && isLiteralValue(binaryExpressionTree.rightOperand(), 0);
+    return hasValue(binaryExpressionTree.leftOperand(), 1) && hasValue(binaryExpressionTree.rightOperand(), 0);
   }
 
-  private boolean isLiteralValue(ExpressionTree tree, long value) {
-    if (tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      String expressionValue = LiteralUtils.trimLongSuffix(((LiteralTree) tree).value());
-      try {
-        return Long.decode(expressionValue) == value;
-      } catch (NumberFormatException e) {
-        // Long.decode() may fail in case of very large long number written in hexadecimal. In such situation, the long we provide
-        // is necessarily not equals.
-        // Note that Long.MAX_VALUE = "0x7FFF_FFFF_FFFF_FFFFL", but it is possible to write larger numbers in hexadecimal
-        // to be used as mask in bitwise operation. For instance:
-        // 0x8000_0000_0000_0000L (MAX_VALUE + 1),
-        // 0xFFFF_FFFF_FFFF_FFFFL (only ones),
-        // 0xFFFF_FFFF_FFFF_FFFEL (only ones except least significant bit), ...
-      }
-    }
-    return false;
+  private boolean hasValue(ExpressionTree tree, long value) {
+    Long evaluatedValue = LiteralUtils.longLiteralValue(tree);
+    return evaluatedValue != null && evaluatedValue.longValue() == value;
   }
 
+  @CheckForNull
   private String getMessage(long numberBits, long reducedNumberBits, int base, String identifier) {
     if (reducedNumberBits == 0L) {
       return "Remove this useless shift";
@@ -139,6 +126,7 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
     return Math.abs(numberBits) >= base;
   }
 
+  @CheckForNull
   private String getIdentifierName(ExpressionTree tree) {
     if (tree.is(Kind.ARRAY_ACCESS_EXPRESSION)) {
       return getIdentifierName(((ArrayAccessExpressionTree) tree).expression());
