@@ -211,8 +211,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
-      if (symbol.isMethodSymbol() && checkNullity(symbol) == AbstractValue.NULL) {
-        return AbstractValue.NULL;
+      if (symbol.isMethodSymbol()) {
+        return checkNullity(symbol);
       }
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
       return AbstractValue.NULL;
@@ -252,7 +252,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       BinaryExpressionTree binaryTree = (BinaryExpressionTree) tree;
       VariableSymbol identifierSymbol;
       // currently only ident == null, ident != null, null == ident and null != ident are covered.
-      // logical and/or operators are not supported.
+      // constraints nested in logical and/or operators are not covered.
       if (binaryTree.leftOperand().is(Tree.Kind.NULL_LITERAL) && binaryTree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
         identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) binaryTree.rightOperand());
       } else if (binaryTree.leftOperand().is(Tree.Kind.IDENTIFIER) && binaryTree.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
