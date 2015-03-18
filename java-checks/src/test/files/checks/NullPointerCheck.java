@@ -9,6 +9,13 @@ package javax.annotation;
 
 class NullPointerTest {
 
+  // tests constructs that can generate an issue. namely, syntax constructs that performs a potential null dereference.
+  public void testIssues() {
+    null[0]; // Noncompliant
+    null.field; // Noncompliant
+    null.method(); // Noncompliant
+  }
+
   public Object[] field;
 
   public Object[] method() {
@@ -45,21 +52,13 @@ class NullPointerTest {
 
     Object[] array1 = notnullableField;
     i = array1.length; // No issue
-    o = array1[0]; // No issue
-    array1.hashCode(); // No issue
 
     i = notnullableField.length; // No issue
-    o = notnullableField[0]; // No issue
-    notnullableField.hashCode(); // No issue
 
     Object[] array2 = notnullableMethod();
     i = array2.length; // No issue
-    o = array2[0]; // No issue
-    array2.hashCode(); // No issue
 
     i = notnullableMethod().length; // No issue
-    o = notnullableMethod()[0]; // No issue
-    notnullableMethod().hashCode(); // No issue
 
     parameter.hashCode();
   }
@@ -70,21 +69,13 @@ class NullPointerTest {
 
     Object[] array1 = checkForNullField;
     i = array1.length; // Noncompliant
-    o = array1[0]; // Noncompliant
-    array1.hashCode(); // Noncompliant
 
     i = checkForNullField.length; // False negative
-    o = checkForNullField[0]; // False negative
-    checkForNullField.hashCode(); // False negative
 
     Object[] array2 = checkForNullMethod();
     i = array2.length; // Noncompliant
-    o = array2[0]; // Noncompliant
-    array2.hashCode(); // Noncompliant
 
     i = checkForNullMethod().length; // Noncompliant
-    o = checkForNullMethod()[0]; // Noncompliant
-    checkForNullMethod().hashCode(); // Noncompliant
   }
 
   public void testNullable(@Nullable Object parameter) {
@@ -93,21 +84,13 @@ class NullPointerTest {
 
     Object[] array1 = nullableField;
     if (array1.length != 0) { } // Noncompliant
-    if (array1[0] != 0) { } // Noncompliant
-    if (array1.hashCode() != 0) { } // Noncompliant
 
-    i = nullableField.length; // False negative
-    o = nullableField[0]; // False negative
-    nullableField.hashCode(); // False negative
+    i = nullableField.length; // False negative, instance and static fields are not checked
 
     Object[] array2 = nullableMethod();
-    i = array2.length; // False negative
-    o = array2[0]; // False negative
-    array2.hashCode(); // False negative
+    i = array2.length; // Noncompliant
 
     i = nullableMethod().length; // Noncompliant
-    o = nullableMethod()[0]; // Noncompliant
-    nullableMethod().hashCode(); // Noncompliant
   }
 
   public class A {
@@ -145,9 +128,9 @@ class NullPointerTest {
     method1(checkForNullField, // No issue
       checkForNullField, // No issue
       checkForNullField); // No issue
-    method2(checkForNullField, // False negative
-      checkForNullField, // False negative
-      checkForNullField); // False negative
+    method2(checkForNullField, // False negative, instance and static fields are not checked
+      checkForNullField, // False negative, instance and static fields are not checked
+      checkForNullField); // False negative, instance and static fields are not checked
 
     method1(notnullableMethod(), // No issue
       notnullableMethod(), // No issue
@@ -170,34 +153,29 @@ class NullPointerTest {
       null); // Not compliant
   }
 
-  public void testIf(Object argument1, Object argument2) {
+  public void testIf(Object argument1, Object argument2, Object argument3) {
     argument1.hashCode(); // Compliant
     if (argument1 == null) {
       argument1.hashCode(); // Noncompliant
-      argument1 = argument2;
+      argument1 = argument3;
       argument1.hashCode(); // Compliant
     } else {
       argument1.hashCode(); // Compliant
       argument1 = null;
       argument1.hashCode(); // Noncompliant
-    }
-    if (null != argument1) {
-      argument1.hashCode(); // Compliant
-      argument1 = null;
-      argument1.hashCode(); // Noncompliant
-    } else {
-      argument1.hashCode(); // Noncompliant
-      argument1 = argument2;
-      argument1.hashCode(); // Compliant
     }
     argument1.hashCode(); // Compliant
-  }
-
-  public void testConditional(Object argument) {
-    int result1 = argument == null ? 0 : argument.hashCode(); // Compliant
-    int result2 = argument == null ? argument.hashCode() : 0; // Noncompliant
-    int result3 = argument != null ? 0 : argument.hashCode(); // Noncompliant
-    int result4 = argument != null ? argument.hashCode() : 0; // Compliant
+    argument2.hashCode(); // Compliant
+    if (null != argument2) {
+      argument2.hashCode(); // Compliant
+      argument2 = null;
+      argument2.hashCode(); // Noncompliant
+    } else {
+      argument2.hashCode(); // Noncompliant
+      argument2 = argument3;
+      argument2.hashCode(); // Compliant
+    }
+    argument2.hashCode(); // Compliant
   }
 
   public void testIfMerge1(Object argument1, Object argument2, Object argument3, Object argument4, boolean condition) {
@@ -221,6 +199,7 @@ class NullPointerTest {
       }
       argument3.hashCode(); // Compliant
     }
+    argument3.hashCode(); // Compliant
 
     if (condition) {
       argument4 = null;
@@ -228,6 +207,17 @@ class NullPointerTest {
       argument4 = null;
     }
     argument4.hashCode(); // Noncompliant
+  }
+
+  public void testConditional(Object argument1, Object argument2, Object argument3, Object argument4) {
+    int result1 = argument1 == null ? 0 : argument1.hashCode(); // Compliant
+    argument1.hashCode(); // Compliant
+    int result2 = argument2 == null ? argument2.hashCode() : 0; // Noncompliant
+    argument2.hashCode(); // Compliant
+    int result3 = argument3 != null ? 0 : argument3.hashCode(); // Noncompliant
+    argument3.hashCode(); // Compliant
+    int result4 = argument4 != null ? argument4.hashCode() : 0; // Compliant
+    argument4.hashCode(); // Compliant
   }
 
   public void testCondition() {
@@ -246,6 +236,40 @@ class NullPointerTest {
     } finally {
       object.hashCode(); // Noncompliant
     }
+  }
+
+  public void testLogicalAnd(String str) {
+    Object object = null;
+    if (object != null && object.hashCode() == 0); // Compliant
+    if (object != null && object.hashCode() != 0 && object.hashCode() != 0); // Compliant
+    if (object == null && object.hashCode() == 0); // Noncompliant
+    if (object == null && object.hashCode() == 0 && object.hashCode() == 0); // Noncompliant
+    boolean b2 = str != null && str.length() == 0; // Compliant
+    boolean b1 = str == null && str.length() == 0; // Noncompliant
+  }
+
+  public void testLogicalOr(String str) {
+    Object object = null;
+    if (object == null || object.hashCode() == 0); // Compliant
+    if (object == null || object.hashCode() != 0 || object.hashCode() != 0); // Compliant
+    if (object != null || object.hashCode() == 0); // Noncompliant
+    if (object != null || object.hashCode() == 0 || object.hashCode() == 0); // Noncompliant
+    boolean b1 = str == null || str.length() == 0; // Compliant
+    boolean b2 = str != null || str.length() == 0; // Noncompliant
+  }
+
+  public void testForLoop() {
+    for(Object object = null; object != null; object.hashCode()) { // Compliant
+      object.hashCode(); // Compliant
+    }
+  }
+
+  public void testWhileLoop() {
+    Object object = null;
+    while(object != null) {
+      object.hashCode(); // Compliant
+    }
+    object.hashCode(); // Compliant
   }
 
   @interface CoverageAnnotation {
@@ -267,6 +291,7 @@ class NullPointerTest {
     if (a == null) { } // Coverage
     if (a != null) { } // Coverage
     undefined.field; // Coverage
+    a = 1 + 2; // Coverage
   }
 
   static int a;
