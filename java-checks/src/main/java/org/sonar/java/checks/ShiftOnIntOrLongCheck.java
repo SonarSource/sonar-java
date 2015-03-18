@@ -36,6 +36,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -74,10 +75,10 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
       shift = assignmentExpressionTree.expression();
     }
 
-    checkShift((ExpressionTree) tree, identifier, shift);
+    checkShift((ExpressionTree) tree, shift, identifier);
   }
 
-  private void checkShift(ExpressionTree tree, String identifier, ExpressionTree shift) {
+  private void checkShift(ExpressionTree tree, ExpressionTree shift, @Nullable String identifier) {
     Long literalValue = LiteralUtils.longLiteralValue(shift);
     if (literalValue != null) {
       int numericalBase = getNumericalBase(tree);
@@ -102,8 +103,7 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
     return evaluatedValue != null && evaluatedValue.longValue() == value;
   }
 
-  @CheckForNull
-  private String getMessage(long numberBits, long reducedNumberBits, int base, String identifier) {
+  private String getMessage(long numberBits, long reducedNumberBits, int base, @Nullable String identifier) {
     if (reducedNumberBits == 0L) {
       return "Remove this useless shift";
     } else if (base == 32) {
