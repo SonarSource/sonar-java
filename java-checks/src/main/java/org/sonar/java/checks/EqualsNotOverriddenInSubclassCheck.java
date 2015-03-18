@@ -24,11 +24,10 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -77,7 +76,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean implementsEquals(ClassTree classTree) {
-    return hasNotFinalEqualsMethod(((ClassTreeImpl) classTree).getSymbol());
+    return hasNotFinalEqualsMethod(classTree.symbol());
   }
 
   private boolean parentClassImplementsEquals(ClassTree tree) {
@@ -96,8 +95,8 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
     return false;
   }
 
-  private boolean hasNotFinalEqualsMethod(TypeSymbol superClassSymbol) {
-    for (Symbol symbol : superClassSymbol.members().lookup("equals")) {
+  private boolean hasNotFinalEqualsMethod(Symbol.TypeSymbolSemantic superClassSymbol) {
+    for (Symbol symbol : ((TypeSymbol) superClassSymbol).members().lookup("equals")) {
       if (isEqualsMethod(symbol) && !symbol.isFinal()) {
         return true;
       }

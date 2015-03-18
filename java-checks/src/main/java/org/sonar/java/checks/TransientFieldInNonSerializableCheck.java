@@ -23,10 +23,11 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type;
 import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -54,8 +55,8 @@ public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisito
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTreeImpl classTree = (ClassTreeImpl) tree;
-    if (hasSemantic() && isNotSerializable(classTree.getSymbol())) {
+    ClassTree classTree = (ClassTree) tree;
+    if (hasSemantic() && isNotSerializable(classTree.symbol())) {
       for (Tree member : classTree.members()) {
         if (isTransient(member)) {
           addIssue(member, "Remove the \"transient\" modifier from this field.");
@@ -64,13 +65,13 @@ public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisito
     }
   }
 
-  private boolean isNotSerializable(TypeSymbol symbol) {
-    for (ClassType superType : symbol.superTypes()) {
+  private boolean isNotSerializable(Symbol.TypeSymbolSemantic symbol) {
+    for (ClassType superType : ((TypeSymbol) symbol).superTypes()) {
       if (superType.isTagged(Type.UNKNOWN)) {
         return false;
       }
     }
-    return !symbol.getType().isSubtypeOf("java.io.Serializable");
+    return !symbol.type().isSubtypeOf("java.io.Serializable");
   }
 
   private boolean isTransient(Tree tree) {

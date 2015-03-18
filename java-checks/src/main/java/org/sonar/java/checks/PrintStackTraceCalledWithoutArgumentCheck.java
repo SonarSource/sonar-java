@@ -23,10 +23,9 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -52,8 +51,8 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
 
   public static final String RULE_KEY = "S1148";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-  private JavaFileScannerContext context;
   private final Deque<Symbol.TypeSymbolSemantic> enclosingClass = new LinkedList<>();
+  private JavaFileScannerContext context;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -63,7 +62,7 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
 
   @Override
   public void visitClass(ClassTree tree) {
-    Symbol.TypeSymbolSemantic enclosingSymbol = ((ClassTreeImpl) tree).getSymbol();
+    Symbol.TypeSymbolSemantic enclosingSymbol = tree.symbol();
     enclosingClass.push(enclosingSymbol);
     super.visitClass(tree);
     enclosingClass.pop();

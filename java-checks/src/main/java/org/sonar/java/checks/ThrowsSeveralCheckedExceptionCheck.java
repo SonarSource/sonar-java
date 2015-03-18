@@ -91,14 +91,14 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
       if (superType == null) {
         typeSymbol = null;
       } else {
-        typeSymbol = ((Type.ClassType) superType).getSymbol();
+        typeSymbol = superType.getSymbol();
       }
     }
     return false;
   }
 
-  private static boolean isRuntimeException(Symbol.TypeSymbol thrownClass) {
-    return "RuntimeException".equals(thrownClass.getName()) && "java.lang".equals(thrownClass.owner().getName());
+  private static boolean isRuntimeException(Symbol.TypeSymbolSemantic thrownClass) {
+    return thrownClass.type().is("java.lang.RuntimeException");
   }
 
 }

@@ -26,12 +26,12 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.AnnotationValue;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -57,12 +57,12 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      visitClassTree((ClassTreeImpl) tree);
+      visitClassTree((ClassTree) tree);
     }
   }
 
-  private void visitClassTree(ClassTreeImpl classTree) {
-    TypeSymbol symbol = classTree.getSymbol();
+  private void visitClassTree(ClassTree classTree) {
+    Symbol.TypeSymbolSemantic symbol = classTree.symbol();
     if (!isAnonymous(classTree) && isSerializable(symbol.type())) {
       Symbol.VariableSymbolSemantic serialVersionUidSymbol = findSerialVersionUid(symbol);
       if (serialVersionUidSymbol == null) {
@@ -75,7 +75,7 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isAnonymous(ClassTreeImpl classTree) {
+  private boolean isAnonymous(ClassTree classTree) {
     return classTree.simpleName() == null;
   }
 
@@ -96,8 +96,8 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private Symbol.VariableSymbolSemantic findSerialVersionUid(TypeSymbol symbol) {
-    for (Symbol member : symbol.members().lookup("serialVersionUID")) {
+  private Symbol.VariableSymbolSemantic findSerialVersionUid(Symbol.TypeSymbolSemantic symbol) {
+    for (Symbol member : ((TypeSymbol) symbol).members().lookup("serialVersionUID")) {
       if (member.isVariableSymbol()) {
         return (Symbol.VariableSymbolSemantic) member;
       }
@@ -109,11 +109,11 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     return type.isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean isExclusion(TypeSymbol symbol) {
+  private boolean isExclusion(Symbol.TypeSymbolSemantic symbol) {
     return symbol.isAbstract()
-      || symbol.getType().isSubtypeOf("java.lang.Throwable")
-      || isGuiClass(symbol)
-      || hasSuppressWarningAnnotation(symbol);
+      || symbol.type().isSubtypeOf("java.lang.Throwable")
+      || isGuiClass((TypeSymbol) symbol)
+      || hasSuppressWarningAnnotation((TypeSymbol) symbol);
   }
 
   private boolean isGuiClass(TypeSymbol symbol) {

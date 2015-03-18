@@ -23,10 +23,10 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -53,15 +53,15 @@ public class CloneableImplementingCloneCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTreeImpl classTree = (ClassTreeImpl) tree;
-    TypeSymbol classSymbol = classTree.getSymbol();
+    ClassTree classTree = (ClassTree) tree;
+    Symbol.TypeSymbolSemantic classSymbol = classTree.symbol();
     if (isCloneable(classTree) && !classSymbol.isAbstract() && !declaresCloneMethod(classSymbol)) {
       addIssue(tree, "Add a \"clone()\" method to this class.");
     }
   }
 
-  private boolean declaresCloneMethod(TypeSymbol classSymbol) {
-    for (Symbol memberSymbol : classSymbol.members().lookup("clone")) {
+  private boolean declaresCloneMethod(Symbol.TypeSymbolSemantic classSymbol) {
+    for (Symbol memberSymbol : ((TypeSymbol) classSymbol).members().lookup("clone")) {
       if (memberSymbol.isMethodSymbol()) {
         MethodSymbol methodSymbol = (MethodSymbol) memberSymbol;
         if (methodSymbol.getParametersTypes().isEmpty()) {
@@ -72,7 +72,7 @@ public class CloneableImplementingCloneCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isCloneable(ClassTreeImpl classTree) {
+  private boolean isCloneable(ClassTree classTree) {
     for (TypeTree superInterface : classTree.superInterfaces()) {
       if (superInterface.symbolType().is("java.lang.Cloneable")) {
         return true;

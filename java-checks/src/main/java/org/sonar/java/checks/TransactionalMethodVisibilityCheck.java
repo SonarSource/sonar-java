@@ -23,8 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -62,8 +60,7 @@ public class TransactionalMethodVisibilityCheck extends SubscriptionBaseVisitor 
 
   private boolean hasTransactionalAnnotation(MethodTree method) {
     for (AnnotationTree annotation : method.modifiers().annotations()) {
-      Type annotationType = ((AbstractTypedTree) annotation).getSymbolType();
-      if (annotationType.is("org.springframework.transaction.annotation.Transactional")) {
+      if (annotation.symbolType().is("org.springframework.transaction.annotation.Transactional")) {
         return true;
       }
     }

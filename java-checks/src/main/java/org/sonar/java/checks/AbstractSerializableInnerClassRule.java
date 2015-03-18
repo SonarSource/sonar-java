@@ -20,10 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -39,12 +39,12 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      visitClassTree((ClassTreeImpl) tree);
+      visitClassTree((ClassTree) tree);
     }
   }
 
-  private void visitClassTree(ClassTreeImpl classTree) {
-    TypeSymbol symbol = classTree.getSymbol();
+  private void visitClassTree(ClassTree classTree) {
+    Symbol.TypeSymbolSemantic symbol = classTree.symbol();
     if (isInnerClass(symbol) && directlyImplementsSerializable(symbol)) {
       Symbol owner = symbol.owner();
       if (owner.isTypeSymbol()) {
@@ -62,16 +62,16 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
     }
   }
 
-  private boolean isInnerClass(TypeSymbol typeSymbol) {
-    return !typeSymbol.equals(typeSymbol.outermostClass());
+  private boolean isInnerClass(Symbol.TypeSymbolSemantic typeSymbol) {
+    return !typeSymbol.equals(((TypeSymbol) typeSymbol).outermostClass());
   }
 
   protected boolean isSerializable(Type type) {
     return type.isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean directlyImplementsSerializable(TypeSymbol symbol) {
-    for (Type type : symbol.getInterfaces()) {
+  private boolean directlyImplementsSerializable(Symbol.TypeSymbolSemantic symbol) {
+    for (org.sonar.plugins.java.api.semantic.Type type : symbol.interfaces()) {
       if (type.is("java.io.Serializable")) {
         return true;
       }

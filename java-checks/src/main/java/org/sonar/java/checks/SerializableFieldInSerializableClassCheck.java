@@ -23,14 +23,12 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -95,26 +93,27 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     if (tree.is(Tree.Kind.ENUM, Tree.Kind.PRIMITIVE_TYPE)) {
       return true;
     } else if (tree.is(Tree.Kind.CLASS)) {
-      Symbol.TypeSymbol symbol = ((ClassTreeImpl) tree).getSymbol();
+      org.sonar.plugins.java.api.semantic.Symbol.TypeSymbolSemantic symbol = ((ClassTree) tree).symbol();
       if (symbol == null) {
         return false;
       }
-      return implementsSerializable(symbol.getType());
+      return implementsSerializable(symbol.type());
     }
-    return implementsSerializable(((AbstractTypedTree) tree).getSymbolType());
+    return implementsSerializable(((TypeTree) tree).symbolType());
   }
 
-  private boolean implementsSerializable(@Nullable Type type) {
-    if (type == null || type.isTagged(Type.UNKNOWN)) {
+  private boolean implementsSerializable(@Nullable Type semanticType) {
+    org.sonar.java.resolve.Type type = (org.sonar.java.resolve.Type) semanticType;
+    if (type == null || type.isTagged(org.sonar.java.resolve.Type.UNKNOWN)) {
       return false;
     }
     if (type.isPrimitive()) {
       return true;
     }
-    if (type.isTagged(Type.ARRAY)) {
-      return implementsSerializable(((Type.ArrayType) type).elementType());
+    if (type.isArray()) {
+      return implementsSerializable(((org.sonar.java.resolve.Type.ArrayType) type).elementType());
     }
-    if (type.isTagged(Type.CLASS) || type.isTagged(Type.TYPEVAR)) {
+    if (type.isClass() || type.isTagged(org.sonar.java.resolve.Type.TYPEVAR)) {
       return type.erasure().isSubtypeOf("java.io.Serializable");
     }
     return false;
