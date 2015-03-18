@@ -202,11 +202,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     visitor.visitClass(this);
   }
 
-  @Nullable
-  public Symbol.TypeSymbol getSymbol() {
-    return symbol;
-  }
-
   public void setSymbol(Symbol.TypeSymbol symbol) {
     Preconditions.checkState(this.symbol == null);
     this.symbol = symbol;
