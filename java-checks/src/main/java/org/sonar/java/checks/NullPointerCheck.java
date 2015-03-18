@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -46,6 +47,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -175,6 +177,25 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       }
     }
     super.visitMethodInvocation(tree);
+  }
+
+  @Override
+  public void visitTryStatement(TryStatementTree tree) {
+    scan(tree.resources());
+    State blockState = new State(currentState);
+    currentState = blockState;
+    scan(tree.block());
+    for (CatchTree catchTree : tree.catches()) {
+      currentState = new State(blockState.parentState);
+      scan(catchTree);
+      blockState.merge(currentState, null);
+    }
+    if (tree.finallyBlock() != null) {
+      currentState = new State(blockState.parentState);
+      scan(tree.finallyBlock());
+      blockState.merge(currentState, null);
+    }
+    currentState = blockState.parentState.merge(blockState, null);
   }
 
   @Override

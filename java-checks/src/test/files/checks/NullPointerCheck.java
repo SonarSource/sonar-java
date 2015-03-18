@@ -237,6 +237,17 @@ class NullPointerTest {
     if (var2.equals("")) { } // Noncompliant
   }
 
+  public void testTry() {
+    Object object = null;
+    try {
+      object = new Object();
+    } catch (Exception e) {
+      object.hashCode(); // Noncompliant
+    } finally {
+      object.hashCode(); // Noncompliant
+    }
+  }
+
   @interface CoverageAnnotation {
   }
 
