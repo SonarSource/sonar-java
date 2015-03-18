@@ -61,26 +61,17 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   @RuleProperty(
       key = "exclusions",
       defaultValue = "" + DEFAULT_EXCLUSIONS)
-  private String exclusions;
+  private String exclusions = DEFAULT_EXCLUSIONS;
   
   private Set<String> exclusionSet;
   
-  public CompareObjectWithEqualsCheck() {
-	  exclusionSet = new HashSet<String>();
-	  setExclusions(DEFAULT_EXCLUSIONS);
-  }
-
-  public void setExclusions(String exclusions) {
-	  this.exclusions = exclusions;
-	  exclusionSet.clear();
-	  
-	  if (exclusions != null) {
+  private synchronized Set<String> getExclusionSet() {
+	  if (exclusionSet == null) {
+		  exclusionSet = new HashSet<String>();
 		  exclusionSet.addAll(Arrays.asList(exclusions.split(SEPARATOR)));
 	  }
-  }
-  
-  public String getExclusions() {
-	  return exclusions;
+	  
+	  return exclusionSet;
   }
   
   @Override
@@ -151,6 +142,6 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   }
 
   private boolean isExcludedComparison(Type leftOpType, Type rightOpType) {
-    return exclusionSet.contains(leftOpType.toString()) || exclusionSet.contains(rightOpType.toString());
+    return getExclusionSet().contains(leftOpType.toString()) || getExclusionSet().contains(rightOpType.toString());
   }
 }
