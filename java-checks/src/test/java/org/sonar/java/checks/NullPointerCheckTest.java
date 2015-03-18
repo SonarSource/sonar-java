@@ -76,7 +76,9 @@ public class NullPointerCheckTest {
       .next().atLine(199).withMessage("argument can be null.")
       .next().atLine(230).withMessage("argument4 can be null.")
       .next().atLine(235).withMessage("var1 can be null.")
-      .next().atLine(237).withMessage("var2 can be null.");
+      .next().atLine(237).withMessage("var2 can be null.")
+      .next().atLine(245).withMessage("object can be null.")
+      .next().atLine(247).withMessage("object can be null.");
   }
 
   @Test
