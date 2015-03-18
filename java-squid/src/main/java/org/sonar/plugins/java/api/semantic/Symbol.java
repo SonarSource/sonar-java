@@ -19,6 +19,10 @@
  */
 package org.sonar.plugins.java.api.semantic;
 
+import javax.annotation.CheckForNull;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Interface to access symbol information.
  */
@@ -70,8 +74,19 @@ public interface Symbol {
 
   TypeSymbolSemantic enclosingClass();
 
+
   interface TypeSymbolSemantic extends Symbol {
 
+    /**
+     * Returns the superclass of this type symbol.
+     * @return null for java.lang.Object, the superclass for every other type.
+     */
+    @CheckForNull
+    Type superClass();
+
+    List<Type> interfaces();
+
+    Collection<Symbol> memberSymbols();
   }
 
   interface VariableSymbolSemantic  extends Symbol {

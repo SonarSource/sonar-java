@@ -197,6 +197,11 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     return symbol.name;
   }
 
+  @Override
+  public org.sonar.plugins.java.api.semantic.Symbol.TypeSymbolSemantic symbol() {
+    return getSymbol();
+  }
+
   public static class ClassType extends Type {
 
     /**

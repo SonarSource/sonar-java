@@ -20,61 +20,47 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Sets;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.SemanticModel;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 @Rule(
-  key = FieldMatchMethodNameCheck.RULE_KEY,
+  key = "S1701",
   name = "Fields and methods should not have conflicting names",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
-public class FieldMatchMethodNameCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1701";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
-  private JavaFileScannerContext context;
-  private SemanticModel semanticModel;
+public class FieldMatchMethodNameCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    this.semanticModel = (SemanticModel) context.getSemanticModel();
-    if (semanticModel != null) {
-      scan(context.getTree());
-    }
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    org.sonar.java.resolve.Symbol.TypeSymbol classSymbol = ((ClassTreeImpl) tree).getSymbol();
+  public void visitNode(Tree tree) {
+    Symbol.TypeSymbolSemantic classSymbol = ((ClassTree) tree).symbol();
     if (classSymbol != null) {
       Map<String, Symbol> indexSymbol = Maps.newHashMap();
       Multiset<String> fields = HashMultiset.create();
       Map<String, String> fieldsOriginal = Maps.newHashMap();
       Set<String> methodNames = Sets.newHashSet();
-      Collection<? extends Symbol> symbols = classSymbol.members().scopeSymbols();
+      Collection<Symbol> symbols = classSymbol.memberSymbols();
       for (Symbol sym : symbols) {
         String symName = sym.name().toLowerCase();
         if (sym.isVariableSymbol()) {
@@ -89,13 +75,12 @@ public class FieldMatchMethodNameCheck extends BaseTreeVisitor implements JavaFi
       fields.addAll(methodNames);
       for (Multiset.Entry<String> entry : fields.entrySet()) {
         if (entry.getCount() > 1) {
-          Tree field = semanticModel.getTree(indexSymbol.get(entry.getElement()));
-          if(field != null) {
-            context.addIssue(field, ruleKey, "Rename the \"" + fieldsOriginal.get(entry.getElement()) + "\" member.");
+          Tree field = getSemanticModel().getTree(indexSymbol.get(entry.getElement()));
+          if (field != null) {
+            addIssue(field, "Rename the \"" + fieldsOriginal.get(entry.getElement()) + "\" member.");
           }
         }
       }
     }
-    super.visitClass(tree);
   }
 }

@@ -23,7 +23,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -58,9 +57,9 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.is(Tree.Kind.CLASS)) {
-      org.sonar.java.resolve.Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();
+      Symbol.TypeSymbolSemantic typeSymbol = tree.symbol();
       if (typeSymbol != null && typeSymbol.isAbstract()) {
-        Collection<? extends Symbol> symbols = typeSymbol.members().scopeSymbols();
+        Collection<Symbol> symbols = typeSymbol.memberSymbols();
         int abstractMethod = countAbstractMethods(symbols);
         //only count "this" in symbols and not "super" because abstract classes extending cannot be converted to interface
         if (symbols.size() == 1 || abstractMethod == symbols.size() - 1) {

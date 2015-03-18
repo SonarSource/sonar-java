@@ -24,23 +24,21 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbolSemantic;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
@@ -62,8 +60,8 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
 
   @Override
   public void visitNode(Tree tree) {
-    Tree identifier = ((NewClassTree) tree).identifier();
-    TypeSymbol newClassTypeSymbol = ((AbstractTypedTree) identifier).getSymbolType().getSymbol();
+    TypeTree identifier = ((NewClassTree) tree).identifier();
+    Symbol.TypeSymbolSemantic newClassTypeSymbol = identifier.symbolType().symbol();
     if (!newClassTypeSymbol.isEnum() && hasOnlyStaticMethods(newClassTypeSymbol) && !instantiateOwnClass(identifier, newClassTypeSymbol)) {
       String message = "Remove this instantiation.";
       String name = getNewClassName(identifier);
@@ -74,17 +72,17 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     }
   }
 
-  private boolean instantiateOwnClass(Tree identifier, TypeSymbol newClassTypeSymbol) {
-    org.sonar.plugins.java.api.semantic.Type enclosingClassType = getSemanticModel().getEnclosingClass(identifier).type();
+  private boolean instantiateOwnClass(Tree identifier, Symbol.TypeSymbolSemantic newClassTypeSymbol) {
+    Type enclosingClassType = getSemanticModel().getEnclosingClass(identifier).type();
     return enclosingClassType.equals(newClassTypeSymbol.type());
   }
 
-  private boolean hasOnlyStaticMethods(TypeSymbol newClassTypeSymbol) {
-    Collection<MethodSymbol> methods = filterMethods(newClassTypeSymbol.members().scopeSymbols());
+  private boolean hasOnlyStaticMethods(Symbol.TypeSymbolSemantic newClassTypeSymbol) {
+    Collection<MethodSymbolSemantic> methods = filterMethods(newClassTypeSymbol.memberSymbols());
     if (methods.isEmpty()) {
       return false;
     }
-    for (MethodSymbol method : methods) {
+    for (MethodSymbolSemantic method : methods) {
       if (!method.isStatic()) {
         return false;
       }
@@ -92,19 +90,19 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     return superClassHasOnlyStaticMethods(newClassTypeSymbol);
   }
 
-  private boolean superClassHasOnlyStaticMethods(TypeSymbol newClassTypeSymbol) {
-    Type superClass = newClassTypeSymbol.getSuperclass();
+  private boolean superClassHasOnlyStaticMethods(Symbol.TypeSymbolSemantic newClassTypeSymbol) {
+    Type superClass = newClassTypeSymbol.superClass();
     if (!superClass.is("java.lang.Object")) {
-      return hasOnlyStaticMethods(superClass.getSymbol());
+      return hasOnlyStaticMethods(superClass.symbol());
     }
     return true;
   }
 
-  private Collection<MethodSymbol> filterMethods(Collection<? extends Symbol> symbols) {
-    List<MethodSymbol> methods = Lists.newArrayList();
+  private Collection<MethodSymbolSemantic> filterMethods(Collection<Symbol> symbols) {
+    List<MethodSymbolSemantic> methods = Lists.newArrayList();
     for (Symbol symbol : symbols) {
       if (symbol.isMethodSymbol() && !isConstructor(symbol)) {
-        methods.add((MethodSymbol) symbol);
+        methods.add((MethodSymbolSemantic) symbol);
       }
     }
     return methods;

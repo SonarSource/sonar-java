@@ -24,7 +24,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -71,8 +70,8 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.simpleName() != null) {
-      org.sonar.java.resolve.Symbol.TypeSymbol classSymbol = ((ClassTreeImpl) tree).getSymbol();
-      Collection<? extends Symbol> members = classSymbol.members().scopeSymbols();
+      Symbol.TypeSymbolSemantic classSymbol = tree.symbol();
+      Collection<Symbol> members = classSymbol.memberSymbols();
       for (Symbol sym : members) {
         if (sym.isVariableSymbol() && !staticFieldSameType(classSymbol, sym)) {
           //Exclude static fields of the same type.

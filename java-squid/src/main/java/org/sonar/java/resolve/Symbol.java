@@ -27,7 +27,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.java.resolve.Scope.OrderedScope;
 
 import javax.annotation.Nullable;
-
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -317,6 +317,21 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     @Override
     public String toString() {
       return name;
+    }
+
+    @Override
+    public org.sonar.plugins.java.api.semantic.Type superClass() {
+      return getSuperclass();
+    }
+
+    @Override
+    public List<org.sonar.plugins.java.api.semantic.Type> interfaces() {
+      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(getInterfaces());
+    }
+
+    @Override
+    public Collection<org.sonar.plugins.java.api.semantic.Symbol> memberSymbols() {
+      return Lists.<org.sonar.plugins.java.api.semantic.Symbol>newArrayList(members().scopeSymbols());
     }
   }
 

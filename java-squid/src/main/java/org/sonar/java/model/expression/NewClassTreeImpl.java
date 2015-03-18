@@ -86,7 +86,7 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   }
 
   @Override
-  public Tree identifier() {
+  public TypeTree identifier() {
     return identifier;
   }
 

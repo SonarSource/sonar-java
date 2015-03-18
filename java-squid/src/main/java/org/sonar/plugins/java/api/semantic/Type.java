@@ -118,4 +118,10 @@ public interface Type {
    * @return simple name of type.
    */
   String name();
+
+  /**
+   * Symbol of this type.
+   * @return the symbol declaring this type.
+   */
+  Symbol.TypeSymbolSemantic symbol();
 }

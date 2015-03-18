@@ -49,7 +49,7 @@ public interface NewClassTree extends ExpressionTree {
    */
   List<Tree> typeArguments();
 
-  Tree identifier();
+  TypeTree identifier();
 
   List<ExpressionTree> arguments();
 
