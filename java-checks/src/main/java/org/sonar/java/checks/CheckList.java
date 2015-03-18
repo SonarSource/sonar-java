@@ -302,7 +302,8 @@ public final class CheckList {
       ThreadAsRunnableArgumentCheck.class,
       SynchronizedFieldAssignmentCheck.class,
       NullPointerCheck.class,
-      StaticFieldUpateCheck.class
+      StaticFieldUpateCheck.class,
+      IgnoredStreamReturnValueCheck.class
       );
   }
 }
