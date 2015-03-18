@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -46,6 +47,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -178,6 +180,25 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   @Override
+  public void visitTryStatement(TryStatementTree tree) {
+    scan(tree.resources());
+    State blockState = new State(currentState);
+    currentState = blockState;
+    scan(tree.block());
+    for (CatchTree catchTree : tree.catches()) {
+      currentState = new State(blockState.parentState);
+      scan(catchTree);
+      blockState.merge(currentState, null);
+    }
+    if (tree.finallyBlock() != null) {
+      currentState = new State(blockState.parentState);
+      scan(tree.finallyBlock());
+      blockState.merge(currentState, null);
+    }
+    currentState = blockState.parentState.merge(blockState, null);
+  }
+
+  @Override
   public void visitVariable(VariableTree tree) {
     // skips modifiers (annotations) and type.
     if (tree.initializer() != null) {
@@ -211,8 +232,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
-      if (symbol.isMethodSymbol() && checkNullity(symbol) == AbstractValue.NULL) {
-        return AbstractValue.NULL;
+      if (symbol.isMethodSymbol()) {
+        return checkNullity(symbol);
       }
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
       return AbstractValue.NULL;
@@ -252,7 +273,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       BinaryExpressionTree binaryTree = (BinaryExpressionTree) tree;
       VariableSymbol identifierSymbol;
       // currently only ident == null, ident != null, null == ident and null != ident are covered.
-      // logical and/or operators are not supported.
+      // constraints nested in logical and/or operators are not covered.
       if (binaryTree.leftOperand().is(Tree.Kind.NULL_LITERAL) && binaryTree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
         identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) binaryTree.rightOperand());
       } else if (binaryTree.leftOperand().is(Tree.Kind.IDENTIFIER) && binaryTree.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
@@ -277,10 +298,10 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     scan(tree);
   }
 
-  private static class State {
+  static class State {
     @Nullable
-    public final State parentState;
-    Map<VariableSymbol, AbstractValue> variables;
+    final State parentState;
+    final Map<VariableSymbol, AbstractValue> variables;
 
     public State() {
       this.parentState = null;
@@ -295,7 +316,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     // returns the value of the variable in the current state.
     public AbstractValue getVariableValue(VariableSymbol variable) {
       for (State state = this; state != null; state = state.parentState) {
-        AbstractValue result = variables.get(variable);
+        AbstractValue result = state.variables.get(variable);
         if (result != null) {
           return result;
         }
@@ -316,11 +337,11 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       }
       for (VariableSymbol variable : variables) {
         AbstractValue currentValue = getVariableValue(variable);
-        AbstractValue trueValue = trueState.getVariableValue(variable);
+        AbstractValue trueValue = trueState.variables.get(variable);
         if (trueValue == null) {
           trueValue = currentValue;
         }
-        AbstractValue falseValue = falseState != null ? falseState.getVariableValue(variable) : currentValue;
+        AbstractValue falseValue = falseState != null ? falseState.variables.get(variable) : currentValue;
         if (falseValue == null) {
           falseValue = currentValue;
         }
