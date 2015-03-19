@@ -121,7 +121,7 @@ public class TypeAndReferenceSolverTest {
     ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
     ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(1);
     MethodTreeImpl method = (MethodTreeImpl) clazz.members().get(0);
-    List<AnnotationInstance> annotations = method.getSymbol().metadata().annotations();
+    List<AnnotationInstance> annotations = ((Symbol.MethodSymbol) method.symbol()).metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
     assertThat(annotations.get(0).isTyped(annotation.symbol().name())).isTrue();
   }

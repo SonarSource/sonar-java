@@ -26,9 +26,8 @@ import com.sonar.sslr.impl.Parser;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -46,7 +45,7 @@ public class MethodInvocationTreeImplTest {
   public void symbol_should_be_set() {
     CompilationUnitTree cut = createTree("class A { void foo(){} void bar(){foo();} }");
     ClassTree classTree = (ClassTree) cut.types().get(0);
-    Symbol.MethodSymbol declaration = ((MethodTreeImpl) classTree.members().get(0)).getSymbol();
+    Symbol.MethodSymbolSemantic declaration = ((MethodTree) classTree.members().get(0)).symbol();
     StatementTree statementTree = ((MethodTree) classTree.members().get(1)).block().body().get(0);
     MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree)statementTree).expression();
     Assertions.assertThat(mit.symbol()).isSameAs(declaration);

@@ -180,12 +180,13 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   @Override
-  public void accept(TreeVisitor visitor) {
-    visitor.visitMethod(this);
+  public org.sonar.plugins.java.api.semantic.Symbol.MethodSymbolSemantic symbol() {
+    return symbol;
   }
 
-  public Symbol.MethodSymbol getSymbol() {
-    return symbol;
+  @Override
+  public void accept(TreeVisitor visitor) {
+    visitor.visitMethod(this);
   }
 
   public void setSymbol(Symbol.MethodSymbol symbol) {

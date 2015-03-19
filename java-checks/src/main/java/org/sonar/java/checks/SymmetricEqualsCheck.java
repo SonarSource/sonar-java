@@ -57,7 +57,7 @@ public class SymmetricEqualsCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       MethodTreeImpl methodTree = (MethodTreeImpl) tree;
       if (methodTree.isEqualsMethod() && methodTree.block() != null) {
-        methodTree.block().accept(new SymmetryBrokePatterns(methodTree.getSymbol().owner()));
+        methodTree.block().accept(new SymmetryBrokePatterns(methodTree.symbol().owner()));
       }
     }
   }

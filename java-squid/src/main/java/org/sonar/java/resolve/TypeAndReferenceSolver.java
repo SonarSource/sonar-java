@@ -27,7 +27,6 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
@@ -108,7 +107,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitMethod(MethodTree tree) {
     //skip return type, and throw clauses : visited in second pass.
     scan(tree.modifiers());
-    completeMetadata(((MethodTreeImpl) tree).getSymbol(), tree.modifiers().annotations());
+    completeMetadata((Symbol.MethodSymbol) tree.symbol(), tree.modifiers().annotations());
     scan(tree.typeParameters());
     // revisits the parameters to resolve their annotations.
     scan(tree.parameters());

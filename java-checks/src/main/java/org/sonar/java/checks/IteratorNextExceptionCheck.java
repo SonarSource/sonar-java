@@ -24,12 +24,12 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -62,8 +62,8 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    if (hasSemantic() && isIteratorNextMethod(methodTree.getSymbol()) && methodTree.block() != null) {
+    MethodTree methodTree = (MethodTree) tree;
+    if (hasSemantic() && isIteratorNextMethod(methodTree.symbol()) && methodTree.block() != null) {
       NextMethodBodyVisitor visitor = new NextMethodBodyVisitor();
       tree.accept(visitor);
       if (!visitor.foundThrow) {

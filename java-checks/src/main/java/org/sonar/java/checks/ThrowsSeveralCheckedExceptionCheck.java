@@ -67,11 +67,11 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean isPublic(MethodTree methodTree) {
-    return ((MethodTreeImpl) methodTree).getSymbol().isPublic();
+    return methodTree.symbol().isPublic();
   }
 
   private List<String> getThrownCheckedExceptions(MethodTree methodTree) {
-    List<Symbol.TypeSymbol> thrownClasses = ((MethodTreeImpl) methodTree).getSymbol().getThrownTypes();
+    List<Symbol.TypeSymbol> thrownClasses = ((Symbol.MethodSymbol) methodTree.symbol()).getThrownTypes();
     ImmutableList.Builder<String> builder = ImmutableList.builder();
     for (Symbol.TypeSymbol thrownClass : thrownClasses) {
       if (!isSubClassOfRuntimeException(thrownClass)) {

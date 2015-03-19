@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -76,5 +77,7 @@ public interface MethodTree extends Tree {
    */
   @Nullable
   ExpressionTree defaultValue();
+
+  Symbol.MethodSymbolSemantic symbol();
 
 }

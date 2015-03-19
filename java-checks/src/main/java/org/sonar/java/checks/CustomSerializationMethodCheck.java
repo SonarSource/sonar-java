@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -51,8 +51,8 @@ public class CustomSerializationMethodCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    Symbol.MethodSymbolSemantic methodSymbol = methodTree.getSymbol();
+    MethodTree methodTree = (MethodTree) tree;
+    Symbol.MethodSymbolSemantic methodSymbol = methodTree.symbol();
     if (hasSemantic() && isOwnedBySerializable(methodSymbol)) {
       if (hasSignature(methodSymbol, "writeObject", "java.io.ObjectOutputStream")) {
         checkPrivate(methodTree);
@@ -91,22 +91,22 @@ public class CustomSerializationMethodCheck extends SubscriptionBaseVisitor {
     return parametersTypes.size() == 1 && parametersTypes.get(0).is(searchedParamType);
   }
 
-  private void checkNotStatic(MethodTreeImpl methodTree) {
-    Symbol.MethodSymbolSemantic methodSymbol = methodTree.getSymbol();
+  private void checkNotStatic(MethodTree methodTree) {
+    Symbol.MethodSymbolSemantic methodSymbol = methodTree.symbol();
     if (methodSymbol.isStatic()) {
       addIssue(methodTree, "The \"static\" modifier should not be applied to \"" + methodSymbol.name() + "\".");
     }
   }
 
-  private void checkPrivate(MethodTreeImpl methodTree) {
-    Symbol.MethodSymbolSemantic methodSymbol = methodTree.getSymbol();
+  private void checkPrivate(MethodTree methodTree) {
+    Symbol.MethodSymbolSemantic methodSymbol = methodTree.symbol();
     if (!methodSymbol.isPrivate()) {
       addIssue(methodTree, "Make \"" + methodSymbol.name() + "\" \"private\".");
     }
   }
 
-  private void checkReturnType(MethodTreeImpl methodTree, String requiredReturnType) {
-    Symbol.MethodSymbolSemantic methodSymbol = methodTree.getSymbol();
+  private void checkReturnType(MethodTree methodTree, String requiredReturnType) {
+    Symbol.MethodSymbolSemantic methodSymbol = methodTree.symbol();
     if (!methodSymbol.returnType().type().is(requiredReturnType)) {
       addIssue(methodTree, "\"" + methodSymbol.name() + "\" should return \"" + requiredReturnType + "\".");
     }
