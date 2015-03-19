@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.Types;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -79,10 +78,9 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
-      Symbol symbol = mit.getSymbol();
-      if (symbol.isMethodSymbol() && mit.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol) && outerClassHasMethodWithSameName(symbol)) {
-        String methodName = ((IdentifierTree) mit.methodSelect()).name();
+      Symbol symbol = tree.symbol();
+      if (symbol.isMethodSymbol() && tree.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol) && outerClassHasMethodWithSameName(symbol)) {
+        String methodName = ((IdentifierTree) tree.methodSelect()).name();
         addIssue(tree, "Prefix this call to \"" + methodName + "\" with \"super.\".");
       }
       super.visitMethodInvocation(tree);

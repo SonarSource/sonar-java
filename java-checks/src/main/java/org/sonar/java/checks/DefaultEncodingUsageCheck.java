@@ -156,9 +156,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
-    MethodInvocationTreeImpl methodInvocationTreeImpl = (MethodInvocationTreeImpl) mit;
-    String methodName = methodInvocationTreeImpl.getSymbol().getName();
-    addIssue(mit, "Remove this use of \"" + methodName + "\"");
+    addIssue(mit, "Remove this use of \"" + mit.symbol().name() + "\"");
   }
 
   @Override

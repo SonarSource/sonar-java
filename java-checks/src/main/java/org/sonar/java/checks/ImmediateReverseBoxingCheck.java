@@ -31,14 +31,15 @@ import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -109,7 +110,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private void visitMethodInvocationTree(MethodInvocationTreeImpl methodInvocationTree) {
+  private void visitMethodInvocationTree(MethodInvocationTree methodInvocationTree) {
     if (isValueOfInvocation(methodInvocationTree)) {
       checkForUnboxing(methodInvocationTree.arguments().get(0));
     } else if (isUnboxingMethodInvocation(methodInvocationTree)) {
@@ -119,7 +120,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
         checkForBoxing(memberSelectExpressionTree.expression());
       }
     } else {
-      Symbol symbol = methodInvocationTree.getSymbol();
+      Symbol symbol = methodInvocationTree.symbol();
       if (symbol.isMethodSymbol()) {
         MethodSymbol methodSymbol = (MethodSymbol) symbol;
         List<org.sonar.java.resolve.Type> parametersTypes = methodSymbol.getParametersTypes();
@@ -128,7 +129,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private void checkMethodInvocationArguments(MethodInvocationTreeImpl methodInvocationTree, List<Type> parametersTypes) {
+  private void checkMethodInvocationArguments(MethodInvocationTree methodInvocationTree, List<Type> parametersTypes) {
     List<ExpressionTree> arguments = methodInvocationTree.arguments();
     int position = 0;
     for (Type paramType : parametersTypes) {
@@ -150,10 +151,10 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
         }
       }
     } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTreeImpl methodInvocationTree = (MethodInvocationTreeImpl) expression;
+      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) expression;
       if (isValueOfInvocation(methodInvocationTree)) {
         ExpressionTree boxingArg = methodInvocationTree.arguments().get(0);
-        addBoxingIssue(expression, methodInvocationTree.getSymbol().owner(), boxingArg);
+        addBoxingIssue(expression, methodInvocationTree.symbol().owner(), boxingArg);
       }
     }
   }
@@ -226,15 +227,15 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     return matchers;
   }
 
-  private boolean isUnboxingMethodInvocation(MethodInvocationTreeImpl methodInvocationTree) {
+  private boolean isUnboxingMethodInvocation(MethodInvocationTree methodInvocationTree) {
     return matchesMethodInvocation(methodInvocationTree, unboxingInvocationMatchers);
   }
 
-  private boolean isValueOfInvocation(MethodInvocationTreeImpl methodInvocationTree) {
+  private boolean isValueOfInvocation(MethodInvocationTree methodInvocationTree) {
     return matchesMethodInvocation(methodInvocationTree, valueOfInvocationMatchers);
   }
 
-  private boolean matchesMethodInvocation(MethodInvocationTreeImpl methodInvocationTree, List<MethodInvocationMatcher> matchers) {
+  private boolean matchesMethodInvocation(MethodInvocationTree methodInvocationTree, List<MethodInvocationMatcher> matchers) {
     for (MethodInvocationMatcher methodInvocationMatcher : matchers) {
       if (methodInvocationMatcher.matches(methodInvocationTree, getSemanticModel())) {
         return true;

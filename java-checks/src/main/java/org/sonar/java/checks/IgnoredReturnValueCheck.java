@@ -24,9 +24,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -76,7 +75,7 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isCheckedType(MethodInvocationTree mit) {
-    Symbol owner = ((MethodInvocationTreeImpl) mit).getSymbol().owner();
+    Symbol owner = mit.symbol().owner();
     for (String type : CHECKED_TYPES) {
       if (owner.type().is(type)) {
         return true;

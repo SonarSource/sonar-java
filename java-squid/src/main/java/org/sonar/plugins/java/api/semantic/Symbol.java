@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.semantic;
 
 import javax.annotation.CheckForNull;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -42,16 +43,14 @@ public interface Symbol {
 
   Type type();
 
-  //kinds of symbols
+  // kinds of symbols
   boolean isVariableSymbol();
 
   boolean isTypeSymbol();
 
   boolean isMethodSymbol();
 
-
-
-  //flags method
+  // flags method
   boolean isStatic();
 
   boolean isFinal();
@@ -73,7 +72,6 @@ public interface Symbol {
   boolean isVolatile();
 
   TypeSymbolSemantic enclosingClass();
-
 
   interface TypeSymbolSemantic extends Symbol {
 
@@ -102,13 +100,14 @@ public interface Symbol {
 
   }
 
-  interface VariableSymbolSemantic  extends Symbol {
+  interface VariableSymbolSemantic extends Symbol {
 
   }
 
-  interface MethodSymbolSemantic  extends Symbol {
+  interface MethodSymbolSemantic extends Symbol {
+
+    List<Type> parameterTypes();
 
   }
-
 
 }

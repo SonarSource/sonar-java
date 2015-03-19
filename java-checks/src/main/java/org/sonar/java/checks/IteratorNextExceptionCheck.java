@@ -25,11 +25,10 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -113,8 +112,7 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
     }
 
     public boolean throwsNoSuchElementException(MethodInvocationTree methodInvocationTree) {
-      MethodInvocationTreeImpl methodInvocationTreeImpl = (MethodInvocationTreeImpl) methodInvocationTree;
-      Symbol symbol = methodInvocationTreeImpl.getSymbol();
+      Symbol symbol = methodInvocationTree.symbol();
       if (!symbol.isMethodSymbol()) {
         return false;
       }

@@ -24,7 +24,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Type;
@@ -32,6 +31,7 @@ import org.sonar.java.resolve.Type.ArrayType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -68,8 +68,8 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
       methodSymbol = getSemanticModel().getReference(nct.getConstructorIdentifier());
       arguments = nct.arguments();
     } else {
-      MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
-      methodSymbol = mit.getSymbol();
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      methodSymbol = mit.symbol();
       arguments = mit.arguments();
     }
     // FIXME SONARJAVA-919

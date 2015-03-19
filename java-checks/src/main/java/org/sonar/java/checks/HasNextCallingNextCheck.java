@@ -24,10 +24,9 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -86,9 +85,8 @@ public class HasNextCallingNextCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      MethodInvocationTreeImpl invocation = (MethodInvocationTreeImpl) tree;
-      Symbol method = invocation.getSymbol();
-      if ("next".equals(method.name()) && invocation.arguments().isEmpty() && isIteratorMethod(method)) {
+      Symbol method = tree.symbol();
+      if ("next".equals(method.name()) && tree.arguments().isEmpty() && isIteratorMethod(method)) {
         addIssue(tree, "Refactor the implementation of this \"Iterator.hasNext()\" method to not call \"Iterator.next()\".");
       }
       super.visitMethodInvocation(tree);

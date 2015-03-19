@@ -26,7 +26,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.AnnotationInstance;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
@@ -54,7 +53,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -162,7 +160,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
+    Symbol symbol = tree.symbol();
     if (symbol.isMethodSymbol()) {
       MethodSymbol methodSymbol = (MethodSymbol) symbol;
       List<org.sonar.java.resolve.Symbol> parameters = methodSymbol.getParameters().scopeSymbols();
@@ -232,7 +230,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
         return checkNullity(symbol);
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
+      Symbol symbol = ((MethodInvocationTree) tree).symbol();
       if (symbol.isMethodSymbol()) {
         return checkNullity(symbol);
       }
@@ -251,7 +249,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
         context.addIssue(tree, RULE_KEY, String.format("%s can be null.", symbol.name()));
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      Symbol symbol = ((MethodInvocationTreeImpl) tree).getSymbol();
+      Symbol symbol = ((MethodInvocationTree) tree).symbol();
       if (symbol.isMethodSymbol() && checkNullity(symbol) == AbstractValue.NULL) {
         context.addIssue(tree, RULE_KEY, String.format("Value returned by method '%s' can be null.", symbol.name()));
       }

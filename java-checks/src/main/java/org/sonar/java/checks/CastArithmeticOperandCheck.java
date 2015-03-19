@@ -26,12 +26,12 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -82,7 +82,7 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
         expr = variableTree.initializer();
         checkExpression(varType, expr);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        checkMethodInvocationArgument((MethodInvocationTreeImpl) tree);
+        checkMethodInvocationArgument((MethodInvocationTree) tree);
       } else if (tree.is(Tree.Kind.METHOD)) {
         MethodTreeImpl methodTree = (MethodTreeImpl) tree;
         Type returnType = methodTree.returnType() != null ? methodTree.returnType().symbolType() : null;
@@ -93,10 +93,10 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private void checkMethodInvocationArgument(MethodInvocationTreeImpl mit) {
-    Symbol symbol = mit.getSymbol();
+  private void checkMethodInvocationArgument(MethodInvocationTree mit) {
+    Symbol symbol = mit.symbol();
     if (symbol.isMethodSymbol()) {
-      List<org.sonar.java.resolve.Type> parametersTypes = ((org.sonar.java.resolve.Symbol.MethodSymbol) symbol).getParametersTypes();
+      List<Type> parametersTypes = ((Symbol.MethodSymbolSemantic) symbol).parameterTypes();
       if (mit.arguments().size() == parametersTypes.size()) {
         int i = 0;
         for (Type argType : parametersTypes) {

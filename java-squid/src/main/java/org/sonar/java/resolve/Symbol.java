@@ -486,6 +486,10 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
       typeVariableTypes.add(typeVariableType);
     }
 
+    @Override
+    public List<org.sonar.plugins.java.api.semantic.Type> parameterTypes() {
+      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(getParametersTypes());
+    }
   }
 
   /**
