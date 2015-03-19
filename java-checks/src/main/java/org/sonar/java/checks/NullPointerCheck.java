@@ -158,6 +158,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     currentState = conditionalState.trueState;
     scan(tree.statement());
     scan(tree.update());
+    // restores the parent state and discards the constraints found in the condition.
+    // e.g. if a == null before the loop, and a != null in the condition, then the merge will set a to UNKNOWN after the loop.
     currentState = currentState.parentState.merge(conditionalState.trueState, conditionalState.falseState);
   }
 
@@ -240,6 +242,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     ConditionalState conditionalState = visitCondition(tree.condition());
     currentState = conditionalState.trueState;
     scan(tree.statement());
+    // restores the parent state and discards the constraints found in the condition.
+    // e.g. if a == null before the loop, and a != null in the condition, then the merge will set a to UNKNOWN after the loop.
     currentState = currentState.parentState.merge(conditionalState.trueState, conditionalState.falseState);
   }
 
@@ -327,16 +331,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     // because the right operand is evaluated only if the left operand was true.
     ConditionalState rightConditionalState = visitCondition(tree.rightOperand(), leftConditionalState.trueState);
     if (currentConditionalState != null) {
-      // merges the information for the false state.
-      // the false state of the right operand also contains the information from the true state of the left operand.
-      // first, discards the information learned from the left operand.
-      leftConditionalState.falseState.merge(leftConditionalState.trueState, null);
-      leftConditionalState.falseState.merge(rightConditionalState.falseState, null);
-      // merges the information for the true state.
-      leftConditionalState.trueState.merge(rightConditionalState.trueState, null);
-      // applies changes in the parent state.
-      currentConditionalState.falseState.apply(leftConditionalState.falseState);
-      currentConditionalState.trueState.apply(leftConditionalState.trueState);
+      currentConditionalState.mergeConditionalAnd(leftConditionalState, rightConditionalState);
     }
   }
 
@@ -346,16 +341,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     // because of the right operand is evaluated only if the left operand was false.
     ConditionalState rightConditionalState = visitCondition(tree.rightOperand(), leftConditionalState.falseState);
     if (currentConditionalState != null) {
-      // merges the information for the false state.
-      leftConditionalState.falseState.merge(rightConditionalState.falseState, null);
-      // merges the information for the true state.
-      // the true state of the right operand also contains the information from the false state of the left operand.
-      // first, discards the information learned from the left operand.
-      leftConditionalState.trueState.merge(leftConditionalState.falseState, null);
-      leftConditionalState.trueState.merge(rightConditionalState.trueState, null);
-      // applies changes in the parent state.
-      currentConditionalState.falseState.apply(leftConditionalState.falseState);
-      currentConditionalState.trueState.apply(leftConditionalState.trueState);
+      currentConditionalState.mergeConditionalOr(leftConditionalState, rightConditionalState);
     }
   }
 
@@ -395,6 +381,32 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       falseState = new State(currentState);
       trueState = new State(currentState);
     }
+
+    void mergeConditionalAnd(ConditionalState leftConditionalState, ConditionalState rightConditionalState) {
+      // merges the information for the false state.
+      // the false state of the right operand also contains the information from the true state of the left operand.
+      // first, discards the information learned from the left operand.
+      leftConditionalState.falseState.merge(leftConditionalState.trueState, null);
+      leftConditionalState.falseState.merge(rightConditionalState.falseState, null);
+      // merges the information for the true state.
+      leftConditionalState.trueState.merge(rightConditionalState.trueState, null);
+      // applies changes in the parent state.
+      falseState.apply(leftConditionalState.falseState);
+      trueState.apply(leftConditionalState.trueState);
+    }
+
+    void mergeConditionalOr(ConditionalState leftConditionalState, ConditionalState rightConditionalState) {
+      // merges the information for the false state.
+      leftConditionalState.falseState.merge(rightConditionalState.falseState, null);
+      // merges the information for the true state.
+      // the true state of the right operand also contains the information from the false state of the left operand.
+      // first, discards the information learned from the left operand.
+      leftConditionalState.trueState.merge(leftConditionalState.falseState, null);
+      leftConditionalState.trueState.merge(rightConditionalState.trueState, null);
+      // applies changes in the parent state.
+      falseState.apply(leftConditionalState.falseState);
+      trueState.apply(leftConditionalState.trueState);
+    }
   }
 
   @VisibleForTesting
@@ -429,6 +441,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       variables.put(variable, value);
     }
 
+    // copies the values from state to this.
     public State apply(State state) {
       for (VariableSymbol variable : state.variables.keySet()) {
         this.setVariableValue(variable, state.getVariableValue(variable));
@@ -436,6 +449,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       return this;
     }
 
+    // merges the values from state1 and state2 (or this if state2 is null) into this.
     public State merge(State state1, @Nullable State state2) {
       Set<VariableSymbol> variables = new HashSet<>();
       variables.addAll(state1.variables.keySet());

@@ -269,16 +269,17 @@ class NullPointerTest {
   }
 
   public void testForLoop() {
-    Object object = null;
-    while(object != null) {
+    for(Object object = null; object != null; object.hashCode()) { // Compliant
       object.hashCode(); // Compliant
     }
   }
 
   public void testWhileLoop() {
-    for(Object object = null; object != null; object.hashCode()) { // Compliant
+    Object object = null;
+    while(object != null) {
       object.hashCode(); // Compliant
     }
+    object.hashCode(); // Compliant
   }
 
   @interface CoverageAnnotation {
