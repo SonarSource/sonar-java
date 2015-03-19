@@ -23,12 +23,12 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -60,29 +60,32 @@ public class IgnoredStreamReturnValueCheck extends SubscriptionBaseVisitor {
 
     ExpressionTree statement = ((ExpressionStatementTree) tree).expression();
     if (statement.is(Kind.METHOD_INVOCATION)) {
-      ExpressionTree methodSelect = ((MethodInvocationTree) statement).methodSelect();
-      if (methodSelect.is(Kind.MEMBER_SELECT)) {
-        MethodSymbol symbol = (MethodSymbol) getSemanticModel().getReference(((MemberSelectExpressionTree) methodSelect).identifier());
-        if (symbol != null && symbol.owner().type().isSubtypeOf("java.io.InputStream") && (isRead(symbol) || isSkip(symbol))) {
-          addIssue(methodSelect, "Check the return value of the \"" + symbol.name() + "\" call to see how many bytes were read.");
-        }
+      Symbol symbol = ((MethodInvocationTreeImpl) statement).getSymbol();
+      if (symbol.isMethodSymbol()) {
+        checkMethod(statement, (MethodSymbol) symbol);
       }
     }
   }
 
-  private boolean isSkip(MethodSymbol symbol) {
-    List<Type> parameters = symbol.getParametersTypes();
-    return "skip".equals(symbol.name())
-      && symbol.getReturnType().type().is("long")
-      && parameters.size() == 1
-      && parameters.get(0).is("long");
+  private void checkMethod(ExpressionTree statement, MethodSymbol method) {
+    if (method.owner().type().isSubtypeOf("java.io.InputStream") && (isRead(method) || isSkip(method))) {
+      addIssue(statement, "Check the return value of the \"" + method.name() + "\" call to see how many bytes were read.");
+    }
   }
 
-  private boolean isRead(MethodSymbol symbol) {
-    List<Type> parameters = symbol.getParametersTypes();
-    return "read".equals(symbol.name())
-      && symbol.getReturnType().type().is("int")
+  private boolean isSkip(MethodSymbol method) {
+    return isMethod(method, "skip", "long", "long");
+  }
+
+  private boolean isRead(MethodSymbol method) {
+    return isMethod(method, "read", "int", "byte[]");
+  }
+
+  private boolean isMethod(MethodSymbol method, String name, String returnType, String parameterType) {
+    List<Type> parameters = method.getParametersTypes();
+    return name.equals(method.name())
+      && method.getReturnType().type().is(returnType)
       && parameters.size() == 1
-      && parameters.get(0).is("byte[]");
+      && parameters.get(0).is(parameterType);
   }
 }
