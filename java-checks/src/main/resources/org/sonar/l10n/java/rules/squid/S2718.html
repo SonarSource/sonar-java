@@ -1,0 +1,19 @@
+<p>The use of the <code>Instant</code> class introduced in Java 8 to truncate a date can be significantly faster than the <code>DateUtils</code> class from Commons Lang.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public Date trunc(Date date) {
+  return DateUtils.truncate(date, Calendar.SECOND);  // Noncompliant 
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+
+<pre>
+public Date trunc(Date date) {
+  Instant instant = date.toInstant();
+  instant = instant.truncatedTo(ChronoUnit.SECONDS);
+  return Date.from(instant);
+}
+</pre>
