@@ -26,15 +26,12 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -93,27 +90,27 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
     addIssue(expressionTree, "Remove this object instantiation and use \"" + getTypeName(expressionTree) + ".class\" instead.");
   }
 
-  private String getTypeName(Tree tree) {
-    Type type = ((AbstractTypedTree) tree).getSymbolType();
+  private String getTypeName(ExpressionTree tree) {
+    Type type = tree.symbolType();
     String name = getTypeName(type);
     if (name.isEmpty()) {
-      name = getAnonymousClassTypeName(type.getSymbol());
+      name = getAnonymousClassTypeName(type.symbol());
     }
     return name;
   }
 
-  private String getAnonymousClassTypeName(TypeSymbol symbol) {
+  private String getAnonymousClassTypeName(Symbol.TypeSymbolSemantic symbol) {
     String name = "";
-    if (symbol.getInterfaces().isEmpty()) {
-      name = getTypeName(symbol.getSuperclass());
+    if (symbol.interfaces().isEmpty()) {
+      name = getTypeName(symbol.superClass());
     } else {
-      name = getTypeName(symbol.getInterfaces().get(0));
+      name = getTypeName(symbol.interfaces().get(0));
     }
     return name;
   }
 
   private String getTypeName(Type type) {
-    return type.getSymbol().getName();
+    return type.symbol().name();
   }
 
 }

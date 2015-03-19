@@ -28,7 +28,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -89,7 +88,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isJavaLangSuppressWarnings(AnnotationTree tree) {
-    return ((AbstractTypedTree) tree).getSymbolType().is("java.lang.SuppressWarnings");
+    return tree.symbolType().is("java.lang.SuppressWarnings");
   }
 
   private List<String> getForbiddenWarnings() {
