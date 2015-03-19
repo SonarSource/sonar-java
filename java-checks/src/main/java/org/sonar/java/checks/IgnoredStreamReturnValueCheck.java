@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -62,29 +61,28 @@ public class IgnoredStreamReturnValueCheck extends SubscriptionBaseVisitor {
     if (statement.is(Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTree) statement).symbol();
       if (symbol.isMethodSymbol()) {
-        checkMethod(statement, (MethodSymbol) symbol);
+        checkMethod(statement, (Symbol.MethodSymbolSemantic) symbol);
       }
     }
   }
 
-  private void checkMethod(ExpressionTree statement, MethodSymbol method) {
+  private void checkMethod(ExpressionTree statement, Symbol.MethodSymbolSemantic method) {
     if (method.owner().type().isSubtypeOf("java.io.InputStream") && (isRead(method) || isSkip(method))) {
       addIssue(statement, "Check the return value of the \"" + method.name() + "\" call to see how many bytes were read.");
     }
   }
 
-  private boolean isSkip(MethodSymbol method) {
-    return isMethod(method, "skip", "long", "long");
+  private boolean isSkip(Symbol.MethodSymbolSemantic method) {
+    return isMethod(method, "skip", "long");
   }
 
-  private boolean isRead(MethodSymbol method) {
-    return isMethod(method, "read", "int", "byte[]");
+  private boolean isRead(Symbol.MethodSymbolSemantic method) {
+    return isMethod(method, "read", "byte[]");
   }
 
-  private boolean isMethod(MethodSymbol method, String name, String returnType, String parameterType) {
+  private boolean isMethod(Symbol.MethodSymbolSemantic method, String name, String parameterType) {
     List<Type> parameters = method.parameterTypes();
     return name.equals(method.name())
-      && method.getReturnType().type().is(returnType)
       && parameters.size() == 1
       && parameters.get(0).is(parameterType);
   }
