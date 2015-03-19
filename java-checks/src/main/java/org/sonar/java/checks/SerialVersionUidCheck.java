@@ -97,7 +97,7 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
   }
 
   private Symbol.VariableSymbolSemantic findSerialVersionUid(Symbol.TypeSymbolSemantic symbol) {
-    for (Symbol member : ((TypeSymbol) symbol).members().lookup("serialVersionUID")) {
+    for (Symbol member : symbol.lookupSymbols("serialVersionUID")) {
       if (member.isVariableSymbol()) {
         return (Symbol.VariableSymbolSemantic) member;
       }

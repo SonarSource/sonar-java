@@ -23,13 +23,15 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Symbol.MethodSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.Collection;
 import java.util.List;
 
 @Rule(
@@ -50,18 +52,18 @@ public class ThreadOverridesRunCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    org.sonar.plugins.java.api.semantic.Symbol.TypeSymbolSemantic classSymbol = classTree.symbol();
+    Symbol.TypeSymbolSemantic classSymbol = classTree.symbol();
     if (classSymbol != null && classSymbol.superClass().is("java.lang.Thread") && !overridesRunMethod(classSymbol)) {
       addIssue(tree, "Stop extending the Thread class as the \"run\" method is not overridden");
     }
   }
 
-  private boolean overridesRunMethod(org.sonar.plugins.java.api.semantic.Symbol.TypeSymbolSemantic classSymbol) {
-    List<Symbol> runSymbols = ((Symbol.TypeSymbol) classSymbol).members().lookup("run");
+  private boolean overridesRunMethod(Symbol.TypeSymbolSemantic classSymbol) {
+    Collection<Symbol> runSymbols = classSymbol.lookupSymbols("run");
     boolean overridesRunMethod = false;
     for (Symbol run : runSymbols) {
       if (run.isMethodSymbol()) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) run;
+        MethodSymbol methodSymbol = (MethodSymbol) run;
         if (methodSymbol.getParametersTypes().isEmpty()) {
           overridesRunMethod = true;
           break;

@@ -86,7 +86,20 @@ public interface Symbol {
 
     List<Type> interfaces();
 
+    /**
+     * List of symbols defined by this type symbols.
+     * This will not return any inherited symbol.
+     * @return The collection of symbols defined by this type.
+     */
     Collection<Symbol> memberSymbols();
+
+    /**
+     * Lookup symbols accessible from this type with the name passed in parameter.
+     * @param name name of searched symbol.
+     * @return A collection of symbol matching the looked up name.
+     */
+    Collection<Symbol> lookupSymbols(String name);
+
   }
 
   interface VariableSymbolSemantic  extends Symbol {

@@ -26,9 +26,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -143,8 +141,7 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
 
   private boolean hasAnnotation(ModifiersTree modifiers, String annotationName) {
     for (AnnotationTree annotation : modifiers.annotations()) {
-      Type annotationType = ((AbstractTypedTree) annotation).getSymbolType();
-      if (annotationType.is(annotationName)) {
+      if (annotation.symbolType().is(annotationName)) {
         return true;
       }
     }

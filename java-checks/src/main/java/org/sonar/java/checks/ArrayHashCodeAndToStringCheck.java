@@ -27,7 +27,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;

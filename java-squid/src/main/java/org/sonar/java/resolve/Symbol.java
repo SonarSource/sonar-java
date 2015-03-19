@@ -333,6 +333,11 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     public Collection<org.sonar.plugins.java.api.semantic.Symbol> memberSymbols() {
       return Lists.<org.sonar.plugins.java.api.semantic.Symbol>newArrayList(members().scopeSymbols());
     }
+
+    @Override
+    public Collection<org.sonar.plugins.java.api.semantic.Symbol> lookupSymbols(String name) {
+      return Lists.<org.sonar.plugins.java.api.semantic.Symbol>newArrayList(members().lookup(name));
+    }
   }
 
   /**

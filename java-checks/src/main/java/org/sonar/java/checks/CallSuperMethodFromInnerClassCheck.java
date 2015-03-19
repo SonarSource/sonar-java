@@ -96,7 +96,7 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean outerClassHasMethodWithSameName(Symbol symbol) {
-      return !((org.sonar.java.resolve.Symbol.TypeSymbol) classSymbol.owner()).members().lookup(symbol.name()).isEmpty();
+      return !((Symbol.TypeSymbolSemantic)classSymbol.owner()).lookupSymbols(symbol.name()).isEmpty();
     }
 
   }

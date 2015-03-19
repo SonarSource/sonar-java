@@ -33,6 +33,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.Collection;
 import java.util.List;
 
 @Rule(
@@ -68,7 +69,7 @@ public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean hasNonPrivateNoArgConstructor(Type type) {
-    List<? extends Symbol> constructors = ((org.sonar.java.resolve.Type) type).getSymbol().members().lookup("<init>");
+    Collection<Symbol> constructors = type.symbol().lookupSymbols("<init>");
     for (Symbol member : constructors) {
       if (member.isMethodSymbol()) {
         MethodSymbol method = (MethodSymbol) member;
