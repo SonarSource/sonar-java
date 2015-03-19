@@ -24,9 +24,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -53,7 +52,7 @@ public class CustomSerializationMethodCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    MethodSymbol methodSymbol = methodTree.getSymbol();
+    Symbol.MethodSymbolSemantic methodSymbol = methodTree.getSymbol();
     if (hasSemantic() && isOwnedBySerializable(methodSymbol)) {
       if (hasSignature(methodSymbol, "writeObject", "java.io.ObjectOutputStream")) {
         checkPrivate(methodTree);
@@ -74,42 +73,42 @@ public class CustomSerializationMethodCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isOwnedBySerializable(MethodSymbol methodSymbol) {
-    TypeSymbol owner = (TypeSymbol) methodSymbol.owner();
-    return owner.getType().isSubtypeOf("java.io.Serializable");
+  private boolean isOwnedBySerializable(Symbol.MethodSymbolSemantic methodSymbol) {
+    Symbol.TypeSymbolSemantic owner = (Symbol.TypeSymbolSemantic) methodSymbol.owner();
+    return owner.type().isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean hasSignature(MethodSymbol methodSymbol, String name, String paramType) {
-    return name.equals(methodSymbol.getName()) && hasSingleParam(methodSymbol, paramType);
+  private boolean hasSignature(Symbol.MethodSymbolSemantic methodSymbol, String name, String paramType) {
+    return name.equals(methodSymbol.name()) && hasSingleParam(methodSymbol, paramType);
   }
 
-  private boolean hasSignature(MethodSymbol methodSymbol, String name) {
-    return name.equals(methodSymbol.getName()) && methodSymbol.getParametersTypes().isEmpty();
+  private boolean hasSignature(Symbol.MethodSymbolSemantic methodSymbol, String name) {
+    return name.equals(methodSymbol.name()) && methodSymbol.parameterTypes().isEmpty();
   }
 
-  private boolean hasSingleParam(MethodSymbol methodSymbol, String searchedParamType) {
-    List<Type> parametersTypes = methodSymbol.getParametersTypes();
+  private boolean hasSingleParam(Symbol.MethodSymbolSemantic methodSymbol, String searchedParamType) {
+    List<Type> parametersTypes = methodSymbol.parameterTypes();
     return parametersTypes.size() == 1 && parametersTypes.get(0).is(searchedParamType);
   }
 
   private void checkNotStatic(MethodTreeImpl methodTree) {
-    MethodSymbol methodSymbol = methodTree.getSymbol();
+    Symbol.MethodSymbolSemantic methodSymbol = methodTree.getSymbol();
     if (methodSymbol.isStatic()) {
-      addIssue(methodTree, "The \"static\" modifier should not be applied to \"" + methodSymbol.getName() + "\".");
+      addIssue(methodTree, "The \"static\" modifier should not be applied to \"" + methodSymbol.name() + "\".");
     }
   }
 
   private void checkPrivate(MethodTreeImpl methodTree) {
-    MethodSymbol methodSymbol = methodTree.getSymbol();
+    Symbol.MethodSymbolSemantic methodSymbol = methodTree.getSymbol();
     if (!methodSymbol.isPrivate()) {
-      addIssue(methodTree, "Make \"" + methodSymbol.getName() + "\" \"private\".");
+      addIssue(methodTree, "Make \"" + methodSymbol.name() + "\" \"private\".");
     }
   }
 
   private void checkReturnType(MethodTreeImpl methodTree, String requiredReturnType) {
-    MethodSymbol methodSymbol = methodTree.getSymbol();
-    if (!methodSymbol.getReturnType().getType().is(requiredReturnType)) {
-      addIssue(methodTree, "\"" + methodSymbol.getName() + "\" should return \"" + requiredReturnType + "\".");
+    Symbol.MethodSymbolSemantic methodSymbol = methodTree.getSymbol();
+    if (!methodSymbol.returnType().type().is(requiredReturnType)) {
+      addIssue(methodTree, "\"" + methodSymbol.name() + "\" should return \"" + requiredReturnType + "\".");
     }
   }
 

@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -62,8 +61,8 @@ public class CloneableImplementingCloneCheck extends SubscriptionBaseVisitor {
   private boolean declaresCloneMethod(Symbol.TypeSymbolSemantic classSymbol) {
     for (Symbol memberSymbol : classSymbol.lookupSymbols("clone")) {
       if (memberSymbol.isMethodSymbol()) {
-        MethodSymbol methodSymbol = (MethodSymbol) memberSymbol;
-        if (methodSymbol.getParametersTypes().isEmpty()) {
+        Symbol.MethodSymbolSemantic methodSymbol = (Symbol.MethodSymbolSemantic) memberSymbol;
+        if (methodSymbol.parameterTypes().isEmpty()) {
           return true;
         }
       }

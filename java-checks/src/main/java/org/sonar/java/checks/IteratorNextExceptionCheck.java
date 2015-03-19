@@ -26,8 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type.ClassType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -74,17 +72,12 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isIteratorNextMethod(MethodSymbol symbol) {
-    return "next".equals(symbol.getName()) && symbol.getParametersTypes().isEmpty() && isIterator(symbol.enclosingClass());
+  private boolean isIteratorNextMethod(Symbol.MethodSymbolSemantic symbol) {
+    return "next".equals(symbol.name()) && symbol.parameterTypes().isEmpty() && isIterator(symbol.enclosingClass());
   }
 
-  private boolean isIterator(TypeSymbol typeSymbol) {
-    for (ClassType superType : typeSymbol.superTypes()) {
-      if (superType.is("java.util.Iterator")) {
-        return true;
-      }
-    }
-    return false;
+  private boolean isIterator(Symbol.TypeSymbolSemantic typeSymbol) {
+    return typeSymbol.type().isSubtypeOf("java.util.Iterator");
   }
 
   private class NextMethodBodyVisitor extends BaseTreeVisitor {
@@ -118,8 +111,8 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
       }
       MethodSymbol methodSymbol = (MethodSymbol) symbol;
       if (methodSymbol.getThrownTypes() != null) {
-        for (TypeSymbol thrownType : methodSymbol.getThrownTypes()) {
-          if (thrownType.getType().is("java.util.NoSuchElementException")) {
+        for (Symbol.TypeSymbolSemantic thrownType : methodSymbol.getThrownTypes()) {
+          if (thrownType.type().is("java.util.NoSuchElementException")) {
             return true;
           }
         }

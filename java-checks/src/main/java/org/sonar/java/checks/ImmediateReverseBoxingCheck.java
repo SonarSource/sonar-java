@@ -27,21 +27,17 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.model.expression.NewClassTreeImpl;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -82,9 +78,9 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        visitMethodInvocationTree((MethodInvocationTreeImpl) tree);
+        visitMethodInvocationTree((MethodInvocationTree) tree);
       } else if (tree.is(Tree.Kind.VARIABLE)) {
-        VariableTreeImpl variableTree = (VariableTreeImpl) tree;
+        VariableTree variableTree = (VariableTree) tree;
         ExpressionTree initializer = variableTree.initializer();
         if (initializer != null) {
           checkExpression(initializer, variableTree.type().symbolType());
@@ -93,8 +89,8 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
         AssignmentExpressionTree assignmentTree = (AssignmentExpressionTree) tree;
         checkExpression(assignmentTree.expression(), assignmentTree.symbolType());
       } else {
-        NewClassTreeImpl newClassTree = (NewClassTreeImpl) tree;
-        TypeSymbol classSymbol = wrapperClassSymbol(newClassTree);
+        NewClassTree newClassTree = (NewClassTree) tree;
+        Symbol.TypeSymbolSemantic classSymbol = wrapperClassSymbol(newClassTree);
         if (classSymbol != null) {
           checkForUnboxing(newClassTree.arguments().get(0));
         }
@@ -122,8 +118,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     } else {
       Symbol symbol = methodInvocationTree.symbol();
       if (symbol.isMethodSymbol()) {
-        MethodSymbol methodSymbol = (MethodSymbol) symbol;
-        List<org.sonar.java.resolve.Type> parametersTypes = methodSymbol.getParametersTypes();
+        List<Type> parametersTypes = ((Symbol.MethodSymbolSemantic) symbol).parameterTypes();
         checkMethodInvocationArguments(methodInvocationTree, parametersTypes);
       }
     }
@@ -142,8 +137,8 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
 
   private void checkForBoxing(ExpressionTree expression) {
     if (expression.is(Tree.Kind.NEW_CLASS)) {
-      NewClassTreeImpl newClassTree = (NewClassTreeImpl) expression;
-      TypeSymbol classSymbol = wrapperClassSymbol(newClassTree);
+      NewClassTree newClassTree = (NewClassTree) expression;
+      Symbol.TypeSymbolSemantic classSymbol = wrapperClassSymbol(newClassTree);
       if (classSymbol != null) {
         ExpressionTree boxingArg = newClassTree.arguments().get(0);
         if (boxingArg.symbolType().isPrimitive()) {
@@ -159,8 +154,8 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private TypeSymbol wrapperClassSymbol(NewClassTreeImpl newClassTree) {
-    TypeSymbol classSymbol = newClassTree.getSymbolType().getSymbol();
+  private Symbol.TypeSymbolSemantic wrapperClassSymbol(NewClassTree newClassTree) {
+    Symbol.TypeSymbolSemantic classSymbol = newClassTree.symbolType().symbol();
     if (PRIMITIVE_TYPES_BY_WRAPPER.containsKey(newClassTree.symbolType().fullyQualifiedName())) {
       return classSymbol;
     }
@@ -180,12 +175,12 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     if (!expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
       return;
     }
-    MethodInvocationTreeImpl methodInvocationTree = (MethodInvocationTreeImpl) expressionTree;
+    MethodInvocationTree methodInvocationTree = (MethodInvocationTree) expressionTree;
     if (isUnboxingMethodInvocation(methodInvocationTree)) {
       ExpressionTree methodSelect = methodInvocationTree.methodSelect();
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodSelect;
-        AbstractTypedTree unboxedExpression = (AbstractTypedTree) memberSelectExpressionTree.expression();
+        ExpressionTree unboxedExpression = memberSelectExpressionTree.expression();
         String unboxingResultTypeName = methodInvocationTree.symbolType().fullyQualifiedName();
         if (unboxingResultTypeName.equals(PRIMITIVE_TYPES_BY_WRAPPER.get(unboxedExpression.symbolType().fullyQualifiedName()))) {
           addUnboxingIssue(expressionTree, unboxedExpression);
@@ -194,7 +189,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private void addUnboxingIssue(ExpressionTree expressionTree, AbstractTypedTree expression) {
+  private void addUnboxingIssue(ExpressionTree expressionTree, ExpressionTree expression) {
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) expression;
       addIssue(expressionTree, "Remove the unboxing of \"" + identifier.name() + "\".");

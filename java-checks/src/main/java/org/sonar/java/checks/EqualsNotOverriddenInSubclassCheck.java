@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -105,8 +104,8 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
 
   private boolean isEqualsMethod(Symbol symbol) {
     if (symbol.isMethodSymbol()) {
-      MethodSymbol methodSymbol = (MethodSymbol) symbol;
-      return !methodSymbol.getParametersTypes().isEmpty() && methodSymbol.getParametersTypes().get(0).is("java.lang.Object");
+      List<Type> parameterTypes = ((Symbol.MethodSymbolSemantic) symbol).parameterTypes();
+      return !parameterTypes.isEmpty() && parameterTypes.get(0).is("java.lang.Object");
     }
     return false;
   }

@@ -391,7 +391,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
       return thrown;
     }
 
-    public List<Type> getParametersTypes() {
+    private List<Type> getParametersTypes() {
       Preconditions.checkState(super.type != null);
       return ((Type.MethodType) super.type).argTypes;
     }
@@ -489,6 +489,11 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     @Override
     public List<org.sonar.plugins.java.api.semantic.Type> parameterTypes() {
       return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(getParametersTypes());
+    }
+
+    @Override
+    public TypeSymbolSemantic returnType() {
+      return returnType;
     }
   }
 

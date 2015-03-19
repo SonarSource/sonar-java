@@ -132,7 +132,7 @@ public class MethodInvocationMatcher {
     if (parameterTypes == null) {
       return true;
     }
-    List<org.sonar.java.resolve.Type> parametersTypes = methodSymbol.getParametersTypes();
+    List<Type> parametersTypes = methodSymbol.parameterTypes();
     List<String> arguments = parameterTypes;
     if (parametersTypes.size() == arguments.size()) {
       int i = 0;

@@ -64,7 +64,7 @@ public class ThreadOverridesRunCheck extends SubscriptionBaseVisitor {
     for (Symbol run : runSymbols) {
       if (run.isMethodSymbol()) {
         MethodSymbol methodSymbol = (MethodSymbol) run;
-        if (methodSymbol.getParametersTypes().isEmpty()) {
+        if (methodSymbol.parameterTypes().isEmpty()) {
           overridesRunMethod = true;
           break;
         }

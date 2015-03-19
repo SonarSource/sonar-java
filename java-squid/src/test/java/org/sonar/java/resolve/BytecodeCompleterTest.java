@@ -231,12 +231,12 @@ public class BytecodeCompleterTest {
 
     Symbol.MethodSymbol funMethod = (Symbol.MethodSymbol) typeParametersSymbol.members().lookup("fun").get(0);
     assertThat(funMethod.getReturnType().type).isSameAs(TtypeVariableType);
-    assertThat(funMethod.getParametersTypes().get(0)).isSameAs(TtypeVariableType);
+    assertThat(funMethod.parameterTypes().get(0)).isSameAs(TtypeVariableType);
 
     Symbol.MethodSymbol fooMethod = (Symbol.MethodSymbol) typeParametersSymbol.members().lookup("foo").get(0);
     Type.TypeVariableType WtypeVariableType = fooMethod.typeVariableTypes.get(0);
-    assertThat(fooMethod.getParametersTypes().get(0).isTagged(Type.ARRAY)).isTrue();
-    assertThat(((Type.ArrayType)fooMethod.getParametersTypes().get(0)).elementType()).isSameAs(WtypeVariableType);
+    assertThat(fooMethod.parameterTypes().get(0).isArray()).isTrue();
+    assertThat(((Type.ArrayType)fooMethod.parameterTypes().get(0)).elementType()).isSameAs(WtypeVariableType);
     Type resultType = ((Type.MethodType) fooMethod.type).resultType;
     assertThat(resultType).isInstanceOf(Type.ParametrizedTypeType.class);
     Type.ParametrizedTypeType actualResultType = (Type.ParametrizedTypeType) resultType;
@@ -244,8 +244,8 @@ public class BytecodeCompleterTest {
     assertThat(actualResultType.typeSubstitution.values().iterator().next()).isSameAs(WtypeVariableType);
 
     //primitive types
-    assertThat(fooMethod.getParametersTypes().get(1).isTagged(Type.INT)).isTrue();
-    assertThat(fooMethod.getParametersTypes().get(2).isTagged(Type.LONG)).isTrue();
+    assertThat(fooMethod.parameterTypes().get(1).isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.INT)).isTrue();
+    assertThat(fooMethod.parameterTypes().get(2).isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.LONG)).isTrue();
 
     //read field.
     Symbol.VariableSymbol field = (Symbol.VariableSymbol) typeParametersSymbol.members().lookup("field").get(0);

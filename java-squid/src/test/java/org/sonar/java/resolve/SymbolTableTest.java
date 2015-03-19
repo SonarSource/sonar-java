@@ -74,7 +74,7 @@ public class SymbolTableTest {
     Symbol.MethodSymbol method2 = (Symbol.MethodSymbol) typeSymbol.members().lookup("method2").get(0);
     Type.TypeVariableType PTypeVariableType = (Type.TypeVariableType) method2.typeParameters().lookup("P").get(0).type;
     assertThat(method2.getReturnType().type).isSameAs(PTypeVariableType);
-    assertThat(method2.getParametersTypes().get(0)).isSameAs(PTypeVariableType);
+    assertThat(method2.parameterTypes().get(0)).isSameAs(PTypeVariableType);
 
     //Type parameter defined in outer class
     Symbol.TypeSymbol classCSymbol = (Symbol.TypeSymbol) typeSymbol.members().lookup("C").get(0);
@@ -366,7 +366,7 @@ public class SymbolTableTest {
     assertThat(methodSymbol.owner()).isSameAs(result.symbol("ConstructorDeclaration"));
     assertThat(methodSymbol.flags()).isEqualTo(0);
     assertThat(methodSymbol.getReturnType()).isNull(); // TODO should it be result.symbol("ConstructorDeclaration")?
-    assertThat(methodSymbol.getParametersTypes()).hasSize(1);
+    assertThat(methodSymbol.parameterTypes()).hasSize(1);
     assertThat(methodSymbol.getThrownTypes()).containsExactly(
         result.symbol("FirstExceptionType"),
         result.symbol("SecondExceptionType"));

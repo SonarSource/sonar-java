@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -72,8 +71,8 @@ public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
     Collection<Symbol> constructors = type.symbol().lookupSymbols("<init>");
     for (Symbol member : constructors) {
       if (member.isMethodSymbol()) {
-        MethodSymbol method = (MethodSymbol) member;
-        if (method.getParametersTypes().isEmpty() && !method.isPrivate()) {
+        Symbol.MethodSymbolSemantic method = (Symbol.MethodSymbolSemantic) member;
+        if (method.parameterTypes().isEmpty() && !method.isPrivate()) {
           return true;
         }
       }
