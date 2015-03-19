@@ -109,6 +109,8 @@ public interface Symbol {
     List<Type> parameterTypes();
 
     TypeSymbolSemantic returnType();
+
+    List<Type> thrownTypes();
   }
 
 }

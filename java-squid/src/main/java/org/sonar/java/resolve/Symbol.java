@@ -364,7 +364,6 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     TypeSymbol returnType;
     OrderedScope parameters;
     Scope typeParameters;
-    List<TypeSymbol> thrown;
     List<Type.TypeVariableType> typeVariableTypes;
 
     public MethodSymbol(int flags, String name, Type type, Symbol owner) {
@@ -385,10 +384,6 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
 
     public OrderedScope getParameters() {
       return parameters;
-    }
-
-    public List<TypeSymbol> getThrownTypes() {
-      return thrown;
     }
 
     private List<Type> getParametersTypes() {
@@ -494,6 +489,11 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     @Override
     public TypeSymbolSemantic returnType() {
       return returnType;
+    }
+
+    @Override
+    public List<org.sonar.plugins.java.api.semantic.Type> thrownTypes() {
+      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(((Type.MethodType) super.type).thrown);
     }
   }
 

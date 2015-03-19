@@ -27,7 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -71,34 +71,33 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
   }
 
   private List<String> getThrownCheckedExceptions(MethodTree methodTree) {
-    List<Symbol.TypeSymbol> thrownClasses = ((Symbol.MethodSymbol) methodTree.symbol()).getThrownTypes();
     ImmutableList.Builder<String> builder = ImmutableList.builder();
-    for (Symbol.TypeSymbol thrownClass : thrownClasses) {
+    for (Type thrownClass : methodTree.symbol().thrownTypes()) {
       if (!isSubClassOfRuntimeException(thrownClass)) {
-        builder.add(thrownClass.owner().getName() + "." + thrownClass.getName());
+        builder.add(thrownClass.fullyQualifiedName());
       }
     }
     return builder.build();
   }
 
-  private static boolean isSubClassOfRuntimeException(Symbol.TypeSymbol thrownClass) {
-    Symbol.TypeSymbol typeSymbol = thrownClass;
+  private static boolean isSubClassOfRuntimeException(Type thrownClass) {
+    Symbol.TypeSymbolSemantic typeSymbol = thrownClass.symbol();
     while (typeSymbol != null) {
-      if (isRuntimeException(typeSymbol)) {
+      if (isRuntimeException(typeSymbol.type())) {
         return true;
       }
-      Type superType = typeSymbol.getSuperclass();
+      Type superType = typeSymbol.superClass();
       if (superType == null) {
         typeSymbol = null;
       } else {
-        typeSymbol = superType.getSymbol();
+        typeSymbol = superType.symbol();
       }
     }
     return false;
   }
 
-  private static boolean isRuntimeException(Symbol.TypeSymbolSemantic thrownClass) {
-    return thrownClass.type().is("java.lang.RuntimeException");
+  private static boolean isRuntimeException(Type thrownClass) {
+    return thrownClass.is("java.lang.RuntimeException");
   }
 
 }

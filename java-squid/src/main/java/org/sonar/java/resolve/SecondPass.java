@@ -154,16 +154,13 @@ public class SecondPass implements Symbol.Completer {
     MethodTree methodTree = (MethodTree) semanticModel.getTree(symbol);
     Resolve.Env env = semanticModel.getEnv(symbol);
     completeTypeParameters(methodTree.typeParameters(), env);
-    ImmutableList.Builder<Symbol.TypeSymbol> thrown = ImmutableList.builder();
     ImmutableList.Builder<Type> thrownTypes = ImmutableList.builder();
     for (TypeTree throwClause : methodTree.throwsClauses()) {
       Type thrownType = resolveType(env, throwClause);
       if (thrownType != null) {
         thrownTypes.add(thrownType);
-        thrown.add(thrownType.symbol);
       }
     }
-    symbol.thrown = thrown.build();
 
     Type returnType = null;
     // no return type for constructor

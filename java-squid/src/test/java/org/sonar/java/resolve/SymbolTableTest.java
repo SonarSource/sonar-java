@@ -353,9 +353,9 @@ public class SymbolTableTest {
     assertThat(methodSymbol.owner()).isSameAs(result.symbol("MethodDeclaration"));
     assertThat(methodSymbol.flags()).isEqualTo(Flags.PROTECTED);
     assertThat(methodSymbol.getReturnType()).isSameAs(result.symbol("ReturnType"));
-    assertThat(methodSymbol.getThrownTypes()).containsExactly(
-        result.symbol("FirstExceptionType"),
-        result.symbol("SecondExceptionType"));
+    assertThat(methodSymbol.thrownTypes()).containsExactly(
+        result.symbol("FirstExceptionType").type(),
+        result.symbol("SecondExceptionType").type());
   }
 
   @Test
@@ -367,9 +367,9 @@ public class SymbolTableTest {
     assertThat(methodSymbol.flags()).isEqualTo(0);
     assertThat(methodSymbol.getReturnType()).isNull(); // TODO should it be result.symbol("ConstructorDeclaration")?
     assertThat(methodSymbol.parameterTypes()).hasSize(1);
-    assertThat(methodSymbol.getThrownTypes()).containsExactly(
-        result.symbol("FirstExceptionType"),
-        result.symbol("SecondExceptionType"));
+    assertThat(methodSymbol.thrownTypes()).containsExactly(
+        result.symbol("FirstExceptionType").type(),
+        result.symbol("SecondExceptionType").type());
 
     assertThat(result.reference(21, 35)).isEqualTo(methodSymbol);
   }
