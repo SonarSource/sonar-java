@@ -303,7 +303,8 @@ public final class CheckList {
       SynchronizedFieldAssignmentCheck.class,
       NullPointerCheck.class,
       StaticFieldUpateCheck.class,
-      IgnoredStreamReturnValueCheck.class
+      IgnoredStreamReturnValueCheck.class,
+      DateUtilsTruncateCheck.class
       );
   }
 }
