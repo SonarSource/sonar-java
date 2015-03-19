@@ -39,6 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
@@ -92,7 +93,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
 
   private boolean superClassHasOnlyStaticMethods(Symbol.TypeSymbolSemantic newClassTypeSymbol) {
     Type superClass = newClassTypeSymbol.superClass();
-    if (!superClass.is("java.lang.Object")) {
+    if (superClass != null && !superClass.is("java.lang.Object")) {
       return hasOnlyStaticMethods(superClass.symbol());
     }
     return true;
