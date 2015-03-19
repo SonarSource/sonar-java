@@ -23,12 +23,12 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -60,7 +60,7 @@ public class IgnoredStreamReturnValueCheck extends SubscriptionBaseVisitor {
 
     ExpressionTree statement = ((ExpressionStatementTree) tree).expression();
     if (statement.is(Kind.METHOD_INVOCATION)) {
-      Symbol symbol = ((MethodInvocationTreeImpl) statement).getSymbol();
+      Symbol symbol = ((MethodInvocationTree) statement).symbol();
       if (symbol.isMethodSymbol()) {
         checkMethod(statement, (MethodSymbol) symbol);
       }
@@ -82,7 +82,7 @@ public class IgnoredStreamReturnValueCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isMethod(MethodSymbol method, String name, String returnType, String parameterType) {
-    List<Type> parameters = method.getParametersTypes();
+    List<Type> parameters = method.parameterTypes();
     return name.equals(method.name())
       && method.getReturnType().type().is(returnType)
       && parameters.size() == 1
