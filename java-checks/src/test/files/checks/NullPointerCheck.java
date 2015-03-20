@@ -70,7 +70,7 @@ class NullPointerTest {
     Object[] array1 = checkForNullField;
     i = array1.length; // Noncompliant
 
-    i = checkForNullField.length; // False negative
+    i = checkForNullField.length; // False negative, instance and static fields are not checked
 
     Object[] array2 = checkForNullMethod();
     i = array2.length; // Noncompliant
@@ -320,6 +320,11 @@ class NullPointerTest {
       }
     }
     a.hashCode(); // False negative
+  }
+
+  public void testInstanceField() {
+    nullableField = null;
+    nullableField.hashCode(); // False negative, instance fields are not checked
   }
 
   @interface CoverageAnnotation {

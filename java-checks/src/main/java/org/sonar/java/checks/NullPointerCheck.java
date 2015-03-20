@@ -213,8 +213,6 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     if (symbol.isMethodSymbol()) {
       MethodSymbol methodSymbol = (MethodSymbol) symbol;
       List<org.sonar.java.resolve.Symbol> parameters = methodSymbol.getParameters().scopeSymbols();
-      // FIXME(merciesa): in some cases (method overloading with parameterized methods) a method symbol without parameter can be called with
-      // arguments.
       if (parameters.size() != 0) {
         for (int i = 0; i < tree.arguments().size(); i += 1) {
           // in case of varargs, there could be more arguments than parameters. in that case, pick the last parameter.
@@ -303,7 +301,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   private void checkForIssue(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
-      if (symbol != null && symbol.isVariableSymbol() && currentState.getVariableValue((VariableSymbol) symbol) == AbstractValue.NULL) {
+      if (isSymbolLocalVariableOrMethodParameter(symbol) && isVariableNull((VariableSymbol) symbol)) {
         context.addIssue(tree, RULE_KEY, String.format("%s can be null.", symbol.name()));
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
@@ -314,6 +312,14 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
       context.addIssue(tree, RULE_KEY, "null is dereferenced or passed as argument.");
     }
+  }
+
+  private boolean isSymbolLocalVariableOrMethodParameter(Symbol symbol) {
+    return symbol != null && symbol.isVariableSymbol() && symbol.owner().isMethodSymbol();
+  }
+
+  private boolean isVariableNull(VariableSymbol symbol) {
+    return currentState.getVariableValue((VariableSymbol) symbol) == AbstractValue.NULL;
   }
 
   private void restorePreviousState() {
