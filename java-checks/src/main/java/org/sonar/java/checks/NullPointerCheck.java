@@ -48,6 +48,7 @@ import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -225,6 +226,14 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       }
     }
     super.visitMethodInvocation(tree);
+  }
+
+  @Override
+  public void visitSwitchStatement(SwitchStatementTree tree) {
+    checkForIssue(tree.expression());
+    scan(tree.expression());
+    // skip cases for now
+    currentState.invalidateValuesOfHierarchy();
   }
 
   @Override

@@ -327,6 +327,15 @@ class NullPointerTest {
     nullableField.hashCode(); // False negative, instance fields are not checked
   }
 
+  public void testSwitch() {
+    String str = null;
+    switch(str) { // Noncompliant
+    case "ONE":
+      str.length(); // False negative
+    }
+    str.length(); // False negative
+  }
+
   @interface CoverageAnnotation {
   }
 

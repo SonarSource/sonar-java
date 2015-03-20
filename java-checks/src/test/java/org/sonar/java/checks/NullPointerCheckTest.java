@@ -88,7 +88,8 @@ public class NullPointerCheckTest {
       .next().atLine(292).withMessage("set can be null.")
       .next().atLine(295).withMessage("value can be null.")
       .next().atLine(303).withMessage("object1 can be null.")
-      .next().atLine(306).withMessage("object2 can be null.");
+      .next().atLine(306).withMessage("object2 can be null.")
+      .next().atLine(332).withMessage("str can be null.");
   }
 
   @Test
