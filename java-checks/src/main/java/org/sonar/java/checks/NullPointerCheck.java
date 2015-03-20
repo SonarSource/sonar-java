@@ -148,7 +148,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     tree.trueExpression().accept(this);
     currentState = conditionalState.falseState;
     tree.falseExpression().accept(this);
-    currentState = currentState.parentState.merge(conditionalState.trueState, conditionalState.falseState);
+    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
   }
 
   @Override
@@ -160,7 +160,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     scan(tree.update());
     // restores the parent state and discards the constraints found in the condition.
     // e.g. if a == null before the loop, and a != null in the condition, then the merge will set a to UNKNOWN after the loop.
-    currentState = currentState.parentState.merge(conditionalState.trueState, conditionalState.falseState);
+    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
   }
 
   @Override
@@ -172,7 +172,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       currentState = conditionalState.falseState;
       tree.elseStatement().accept(this);
     }
-    currentState = currentState.parentState.merge(conditionalState.trueState, conditionalState.falseState);
+    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
   }
 
   @Override
@@ -218,14 +218,14 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     for (CatchTree catchTree : tree.catches()) {
       currentState = new State(blockState.parentState);
       scan(catchTree);
-      blockState.merge(currentState, null);
+      blockState.mergeValues(currentState, null);
     }
     if (tree.finallyBlock() != null) {
       currentState = new State(blockState.parentState);
       scan(tree.finallyBlock());
-      blockState.merge(currentState, null);
+      blockState.mergeValues(currentState, null);
     }
-    currentState = blockState.parentState.merge(blockState, null);
+    currentState = blockState.parentState.mergeValues(blockState, null);
   }
 
   @Override
@@ -244,7 +244,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     scan(tree.statement());
     // restores the parent state and discards the constraints found in the condition.
     // e.g. if a == null before the loop, and a != null in the condition, then the merge will set a to UNKNOWN after the loop.
-    currentState = currentState.parentState.merge(conditionalState.trueState, conditionalState.falseState);
+    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
   }
 
   private AbstractValue checkNullity(Symbol symbol) {
@@ -373,7 +373,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     }
   }
 
-  private static class ConditionalState {
+  @VisibleForTesting
+  static class ConditionalState {
     final State falseState;
     final State trueState;
 
@@ -383,29 +384,21 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     }
 
     void mergeConditionalAnd(ConditionalState leftConditionalState, ConditionalState rightConditionalState) {
-      // merges the information for the false state.
-      // the false state of the right operand also contains the information from the true state of the left operand.
-      // first, discards the information learned from the left operand.
-      leftConditionalState.falseState.merge(leftConditionalState.trueState, null);
-      leftConditionalState.falseState.merge(rightConditionalState.falseState, null);
-      // merges the information for the true state.
-      leftConditionalState.trueState.merge(rightConditionalState.trueState, null);
-      // applies changes in the parent state.
-      falseState.apply(leftConditionalState.falseState);
-      trueState.apply(leftConditionalState.trueState);
+      // copies the learned values to the parent.
+      trueState.copyValuesFrom(leftConditionalState.trueState);
+      trueState.copyValuesFrom(rightConditionalState.trueState);
+      // invalidates both false states and copies values to the parent
+      falseState.copyValuesFrom(leftConditionalState.falseState.invalidateValues());
+      falseState.copyValuesFrom(rightConditionalState.falseState.invalidateValues());
     }
 
     void mergeConditionalOr(ConditionalState leftConditionalState, ConditionalState rightConditionalState) {
-      // merges the information for the false state.
-      leftConditionalState.falseState.merge(rightConditionalState.falseState, null);
-      // merges the information for the true state.
-      // the true state of the right operand also contains the information from the false state of the left operand.
-      // first, discards the information learned from the left operand.
-      leftConditionalState.trueState.merge(leftConditionalState.falseState, null);
-      leftConditionalState.trueState.merge(rightConditionalState.trueState, null);
-      // applies changes in the parent state.
-      falseState.apply(leftConditionalState.falseState);
-      trueState.apply(leftConditionalState.trueState);
+      // invalidates both true states and copies value to the parent.
+      trueState.copyValuesFrom(leftConditionalState.trueState.invalidateValues());
+      trueState.copyValuesFrom(rightConditionalState.trueState.invalidateValues());
+      // copies the learned values to the parent.
+      falseState.copyValuesFrom(leftConditionalState.falseState);
+      falseState.copyValuesFrom(rightConditionalState.falseState);
     }
   }
 
@@ -441,16 +434,41 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       variables.put(variable, value);
     }
 
-    // copies the values from state to this.
-    public State apply(State state) {
-      for (VariableSymbol variable : state.variables.keySet()) {
-        this.setVariableValue(variable, state.getVariableValue(variable));
+    /**
+     * copies the value of each variables in fromState to this
+     *
+     * @param fromState state from which the values must be copied.
+     */
+    public void copyValuesFrom(State fromState) {
+      for (VariableSymbol variable : fromState.variables.keySet()) {
+        this.setVariableValue(variable, fromState.getVariableValue(variable));
+      }
+    }
+
+    /**
+     * sets all the variables registered in this state to UNKNOWN.
+     *
+     * @return this
+     */
+    public State invalidateValues() {
+      for (VariableSymbol variable : variables.keySet()) {
+        setVariableValue(variable, AbstractValue.UNKNOWN);
       }
       return this;
     }
 
-    // merges the values from state1 and state2 (or this if state2 is null) into this.
-    public State merge(State state1, @Nullable State state2) {
+    /**
+     * merges the values of the variables from state1 and state2 into this.
+     *
+     * the set of all variables in state1 union state2 is first built,
+     * then the variables in this set are queried in both states (their values fall back to the parent state if they are not found).
+     * their value are then set in the parent state (either to the corresponding value if they are equal, or to UNKNOWN).
+     *
+     * @param state1 first state to merge
+     * @param state2 second state to merge or null
+     * @return this
+     */
+    public State mergeValues(State state1, @Nullable State state2) {
       Set<VariableSymbol> variables = new HashSet<>();
       variables.addAll(state1.variables.keySet());
       if (state2 != null) {
