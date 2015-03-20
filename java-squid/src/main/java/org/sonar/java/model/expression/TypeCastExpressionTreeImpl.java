@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.Iterator;
 import java.util.List;
@@ -39,10 +40,10 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
   private InternalSyntaxToken openParenToken;
   private InternalSyntaxToken closeParenToken;
 
-  private final Tree type;
+  private final TypeTree type;
   private final ExpressionTree expression;
 
-  public TypeCastExpressionTreeImpl(Tree type, ExpressionTree expression, InternalSyntaxToken closeParenToken, List<AstNode> children) {
+  public TypeCastExpressionTreeImpl(TypeTree type, ExpressionTree expression, InternalSyntaxToken closeParenToken, List<AstNode> children) {
     super(Kind.TYPE_CAST);
     this.type = Preconditions.checkNotNull(type);
     this.expression = Preconditions.checkNotNull(expression);
@@ -52,12 +53,6 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
     for (AstNode child : children) {
       addChild(child);
     }
-  }
-
-  public TypeCastExpressionTreeImpl(AstNode astNode, Tree type, ExpressionTree expression) {
-    super(astNode);
-    this.type = Preconditions.checkNotNull(type);
-    this.expression = Preconditions.checkNotNull(expression);
   }
 
   public TypeCastExpressionTreeImpl complete(InternalSyntaxToken openParenToken) {
@@ -80,7 +75,7 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
   }
 
   @Override
-  public Tree type() {
+  public TypeTree type() {
     return type;
   }
 

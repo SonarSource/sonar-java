@@ -37,7 +37,7 @@ public interface TypeCastTree extends ExpressionTree {
 
   SyntaxToken openParenToken();
 
-  Tree type();
+  TypeTree type();
 
   SyntaxToken closeParenToken();
 

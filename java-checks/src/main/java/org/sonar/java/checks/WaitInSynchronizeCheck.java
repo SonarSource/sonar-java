@@ -24,7 +24,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -53,7 +52,7 @@ public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
       if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
         methodName = mse.identifier().name();
-        lockName = ((AbstractTypedTree) mse.expression()).getSymbolType().getSymbol().getName();
+        lockName = mse.expression().symbolType().name();
       } else {
         methodName = ((IdentifierTree) mit.methodSelect()).name();
         lockName = "this";

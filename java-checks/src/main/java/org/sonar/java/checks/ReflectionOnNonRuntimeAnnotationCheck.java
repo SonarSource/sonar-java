@@ -26,10 +26,9 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.AnnotationValue;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -62,7 +61,7 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
     ExpressionTree expressionTree = mit.arguments().get(0);
     //For now ignore everything that is not a .class expression
     if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
-      Type symbolType = ((AbstractTypedTree) ((MemberSelectExpressionTree) expressionTree).expression()).getSymbolType();
+      Type symbolType = (Type) ((MemberSelectExpressionTree) expressionTree).expression().symbolType();
       if (isNotRuntimeAnnotation(symbolType)) {
         addIssue(mit, "\"@" + symbolType.getSymbol().getName() + "\" is not available at runtime and cannot be seen with reflection.");
       }

@@ -56,7 +56,7 @@ public class MathOnFloatCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     if (tree.is(Tree.Kind.PLUS, Tree.Kind.MINUS, Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE)) {
       BinaryExpressionTreeImpl expressionTree = (BinaryExpressionTreeImpl) tree;
-      if (expressionTree.getSymbolType().is("float")) {
+      if (expressionTree.symbolType().is("float")) {
         context.addIssue(tree, ruleKey, "Use a \"double\" or \"BigDecimal\" instead.");
         // do not look for other issues in sub-tree
         return;

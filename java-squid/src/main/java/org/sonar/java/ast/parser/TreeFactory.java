@@ -1589,7 +1589,7 @@ public class TreeFactory {
       children);
   }
 
-  public TypeCastExpressionTreeImpl newClassCastExpression(Tree type, Optional<List<AstNode>> classTypes, AstNode closeParenTokenAstNode, ExpressionTree expression) {
+  public TypeCastExpressionTreeImpl newClassCastExpression(TypeTree type, Optional<List<AstNode>> classTypes, AstNode closeParenTokenAstNode, ExpressionTree expression) {
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
 
     List<AstNode> children = Lists.newArrayList();

@@ -23,7 +23,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -64,7 +63,7 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
   }
 
   private void checkDirContextArg(ExpressionTree arg1, MethodInvocationTree mit) {
-    if (((AbstractTypedTree) arg1).getSymbolType().is("java.lang.String") && isDynamicString(mit, arg1, null)) {
+    if (arg1.symbolType().is("java.lang.String") && isDynamicString(mit, arg1, null)) {
       createIssue(arg1);
     }
   }
