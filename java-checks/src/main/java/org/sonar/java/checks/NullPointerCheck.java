@@ -40,7 +40,9 @@ import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -54,6 +56,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -150,15 +153,32 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   @Override
+  public void visitDoWhileStatement(DoWhileStatementTree tree) {
+    currentState.invalidateAllValues();
+    currentState = new State(currentState);
+    scan(tree.statement());
+    visitCondition(tree.condition());
+    restorePreviousState();
+  }
+
+  @Override
   public void visitForStatement(ForStatementTree tree) {
     scan(tree.initializer());
     ConditionalState conditionalState = visitCondition(tree.condition());
+    currentState.invalidateAllValues();
     currentState = conditionalState.trueState;
     scan(tree.statement());
     scan(tree.update());
-    // restores the parent state and discards the constraints found in the condition.
-    // e.g. if a == null before the loop, and a != null in the condition, then the merge will set a to UNKNOWN after the loop.
-    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
+    restorePreviousState();
+  }
+
+  @Override
+  public void visitForEachStatement(ForEachStatement tree) {
+    scan(tree.expression());
+    currentState.invalidateAllValues();
+    currentState = new State(currentState);
+    scan(tree.statement());
+    restorePreviousState();
   }
 
   @Override
@@ -238,11 +258,10 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
     ConditionalState conditionalState = visitCondition(tree.condition());
+    currentState.invalidateAllValues();
     currentState = conditionalState.trueState;
     scan(tree.statement());
-    // restores the parent state and discards the constraints found in the condition.
-    // e.g. if a == null before the loop, and a != null in the condition, then the merge will set a to UNKNOWN after the loop.
-    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
+    restorePreviousState();
   }
 
   private AbstractValue checkNullity(Symbol symbol) {
@@ -295,6 +314,10 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
       context.addIssue(tree, RULE_KEY, "null is dereferenced or passed as argument.");
     }
+  }
+
+  private void restorePreviousState() {
+    currentState = currentState.parentState;
   }
 
   public enum AbstractValue {
@@ -441,6 +464,19 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       for (VariableSymbol variable : fromState.variables.keySet()) {
         this.setVariableValue(variable, fromState.getVariableValue(variable));
       }
+    }
+
+    /**
+     * sets all the variables registered in this state and all the previous states to UNKNOWN.
+     *
+     * @return this
+     */
+    public State invalidateAllValues() {
+      for (State state = this; state != null; state = state.parentState)
+        for (VariableSymbol variable : state.variables.keySet()) {
+          setVariableValue(variable, AbstractValue.UNKNOWN);
+        }
+      return this;
     }
 
     /**
