@@ -271,6 +271,20 @@ public class BytecodeCompleterTest {
     assertThat(field.metadata().getValuesFor("javax.annotation.Nullable")).isNotNull();
     assertThat(method.metadata().getValuesFor("javax.annotation.CheckForNull")).isNotNull();
     assertThat(parameter.metadata().getValuesFor("javax.annotation.Nullable")).isNotNull();
+
   }
 
+  @Test
+  public void annotated_enum_constructor() {
+    //Test to handle difference between signature and descriptor for enum:
+    //see : https://bugs.openjdk.java.net/browse/JDK-8071444 and https://bugs.openjdk.java.net/browse/JDK-8024694
+    org.sonar.plugins.java.api.semantic.Symbol.TypeSymbolSemantic clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.AnnotatedEnumConstructor");
+    Symbol.MethodSymbol constructor = (Symbol.MethodSymbol) clazz.lookupSymbols("<init>").iterator().next();
+    assertThat(constructor.getParameters().scopeSymbols()).hasSize(1);
+    for (Symbol arg : constructor.getParameters().scopeSymbols()) {
+      assertThat(arg.metadata().annotations()).hasSize(1);
+      assertThat(arg.metadata().annotations().get(0).isTyped("javax.annotation.Nullable"));
+    }
+
+  }
 }
