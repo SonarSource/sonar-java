@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -56,13 +56,13 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
       Symbol symbolReference = null;
-      org.sonar.java.resolve.Symbol.MethodSymbol method = null;
+      Symbol.MethodSymbolSemantic method = null;
       String reportedName = "";
       if (methodInvocationTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
         IdentifierTree identifier = mse.identifier();
         reportedName = identifier.name();
-        method = (org.sonar.java.resolve.Symbol.MethodSymbol) getSemanticModel().getReference(identifier);
+        method = (Symbol.MethodSymbolSemantic) getSemanticModel().getReference(identifier);
         if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
           symbolReference = getSemanticModel().getReference((IdentifierTree) mse.expression());
         }
@@ -84,14 +84,9 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isMethodFromCollection(org.sonar.java.resolve.Symbol.MethodSymbol methodSymbol) {
-    org.sonar.java.resolve.Symbol.TypeSymbol owner = (org.sonar.java.resolve.Symbol.TypeSymbol) methodSymbol.owner();
-    for (Type.ClassType classType : owner.superTypes()) {
-      if (classType.is("java.util.Collection")) {
-        return true;
-      }
-    }
-    return false;
+  private boolean isMethodFromCollection(Symbol.MethodSymbolSemantic methodSymbol) {
+    Type ownerType = methodSymbol.owner().type();
+    return !ownerType.is("java.util.Collection") && ownerType.isSubtypeOf("java.util.Collection");
   }
 
 }

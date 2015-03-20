@@ -24,10 +24,9 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -72,7 +71,7 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) tree;
-        Type type = ((AbstractTypedTree) variableTree.type()).getSymbolType();
+        Type type = variableTree.type().symbolType();
         if (type.is("javax.servlet.http.Cookie") && isConstructorInitialized(variableTree)) {
           Symbol variableSymbol = getSemanticModel().getSymbol(variableTree);
           //Ignore field variables

@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -48,13 +47,13 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
     if (isInnerClass(symbol) && directlyImplementsSerializable(symbol)) {
       Symbol owner = symbol.owner();
       if (owner.isTypeSymbol()) {
-        TypeSymbol ownerType = (TypeSymbol) owner;
-        if (isMatchingOuterClass(ownerType.getType()) && !symbol.isStatic()) {
+        Symbol.TypeSymbolSemantic ownerType = (Symbol.TypeSymbolSemantic) owner;
+        if (isMatchingOuterClass(ownerType.type()) && !symbol.isStatic()) {
           addIssue(classTree, "Make this inner class static");
         }
       } else if (owner.isMethodSymbol()) {
-        TypeSymbol methodOwner = (TypeSymbol) owner.owner();
-        if (isMatchingOuterClass(methodOwner.getType()) && !owner.isStatic()) {
+        Symbol.TypeSymbolSemantic methodOwner = (Symbol.TypeSymbolSemantic) owner.owner();
+        if (isMatchingOuterClass(methodOwner.type()) && !owner.isStatic()) {
           String methodName = owner.name();
           addIssue(classTree, "Make \"" + methodName + "\" static");
         }
@@ -63,7 +62,7 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
   }
 
   private boolean isInnerClass(Symbol.TypeSymbolSemantic typeSymbol) {
-    return !typeSymbol.equals(((TypeSymbol) typeSymbol).outermostClass());
+    return !typeSymbol.equals(((org.sonar.java.resolve.Symbol.TypeSymbol) typeSymbol).outermostClass());
   }
 
   protected boolean isSerializable(Type type) {

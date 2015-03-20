@@ -24,11 +24,10 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
-import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -120,7 +119,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
   }
 
   private boolean isStringConcatenation(AssignmentExpressionTree tree) {
-    return isString(((AssignmentExpressionTreeImpl) tree).getSymbolType()) && isConcatenation(tree);
+    return isString(tree.symbolType()) && isConcatenation(tree);
   }
 
   private boolean isConcatenation(AssignmentExpressionTree tree) {

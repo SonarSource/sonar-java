@@ -25,8 +25,8 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -70,7 +70,7 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
 
     if (isPublic(methodTree) && blockTree != null && !booleanParameterSymbols.isEmpty()) {
       for (Symbol variable : booleanParameterSymbols) {
-        Collection<IdentifierTree> usages = getSemanticModel().getUsages((org.sonar.java.resolve.Symbol) variable);
+        Collection<IdentifierTree> usages = getSemanticModel().getUsages(variable);
         if (usages.size() == 1) {
           blockTree.accept(new ConditionalStatementVisitor(variable.name(), Iterables.get(usages, 0), tree));
         }

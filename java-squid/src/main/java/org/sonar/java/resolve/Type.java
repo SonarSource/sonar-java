@@ -148,6 +148,11 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     return tag == primitive.ordinal() + 1;
   }
 
+  @Override
+  public boolean isUnknown() {
+    return isTagged(UNKNOWN);
+  }
+
   public boolean isPrimitiveWrapper() {
     if (!isTagged(CLASS)) {
       return false;
@@ -185,6 +190,11 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
   @Override
   public boolean isClass() {
     return isTagged(CLASS);
+  }
+
+  @Override
+  public boolean isVoid() {
+    return isTagged(VOID);
   }
 
   @Override

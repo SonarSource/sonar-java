@@ -94,12 +94,25 @@ public interface Type {
   boolean isClass();
 
   /**
+   * Check if type is Void type. This is used to check type of method invocation expressions.
+   * @return true if the type is void.
+   */
+  boolean isVoid();
+
+  /**
    * Check if this type is a primitive.
    * @return true if this is a primitive type.
    */
   boolean isPrimitive();
 
   boolean isPrimitive(Primitives primitive);
+
+  /**
+   * Check if this type has been resolved.
+   * Type can be unknown in incomplete part of Semantic Analysis or when bytecode for a type is not provided and a method cannot be resolved.
+   * @return true if type has not been resolved by semantic analysis.
+   */
+  boolean isUnknown();
 
   /**
    * Check if this type is a primitive numerical type.

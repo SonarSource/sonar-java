@@ -71,6 +71,9 @@ public interface Symbol {
 
   boolean isVolatile();
 
+  /**
+   * The closest enclosing class.
+   */
   TypeSymbolSemantic enclosingClass();
 
   interface TypeSymbolSemantic extends Symbol {

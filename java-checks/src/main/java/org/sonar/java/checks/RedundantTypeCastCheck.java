@@ -95,7 +95,7 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isExcluded(Type cast, Type expressionType) {
-    return cast.isTagged(Type.UNKNOWN);
+    return cast.isUnknown();
   }
 
   private boolean isRedundantCast(Type cast, Type expressionType, Types types) {

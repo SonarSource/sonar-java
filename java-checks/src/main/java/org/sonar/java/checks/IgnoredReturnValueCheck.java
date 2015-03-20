@@ -23,9 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -67,7 +66,7 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
     ExpressionStatementTree est = (ExpressionStatementTree) tree;
     if (est.expression().is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) est.expression();
-      Type methodType = ((AbstractTypedTree) mit).getSymbolType();
+      Type methodType = mit.symbolType();
       if (!returnsVoid(methodType) && isCheckedType(mit)) {
         addIssue(tree, "The return value of \"" + methodName(mit) + "\" must be used.");
       }
@@ -85,7 +84,7 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean returnsVoid(Type methodType) {
-    return methodType.isTagged(Type.VOID) || methodType.isTagged(Type.UNKNOWN);
+    return methodType.isVoid() || methodType.isUnknown();
   }
 
   private String methodName(MethodInvocationTree mit) {

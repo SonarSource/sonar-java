@@ -23,8 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type.ClassType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -43,7 +41,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Rule(
   key = "S2200",
@@ -88,13 +85,7 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
   private boolean isCompareToInvocation(MethodInvocationTree invocation) {
     Symbol method = invocation.symbol();
     if ("compareTo".equals(method.name()) && invocation.arguments().size() == 1) {
-      TypeSymbol methodOwner = (TypeSymbol) method.owner().enclosingClass();
-      Set<ClassType> superTypes = methodOwner.superTypes();
-      for (ClassType classType : superTypes) {
-        if (classType.is("java.lang.Comparable")) {
-          return true;
-        }
-      }
+      return method.owner().enclosingClass().type().isSubtypeOf("java.lang.Comparable");
     }
     return false;
   }

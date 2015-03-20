@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -71,8 +71,8 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     super.visitBinaryExpression(tree);
     if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
-      Type leftOpType = (Type) tree.leftOperand().symbolType();
-      Type rightOpType = (Type) tree.rightOperand().symbolType();
+      Type leftOpType = tree.leftOperand().symbolType();
+      Type rightOpType = tree.rightOperand().symbolType();
       if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType)) {
         context.addIssue(tree, ruleKey, "Change this comparison to use the equals method.");
       }
@@ -88,11 +88,11 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   }
 
   private boolean isObject(Type operandType) {
-    return operandType.erasure().isTagged(Type.CLASS) && !operandType.getSymbol().isEnum();
+    return ((org.sonar.java.resolve.Type)operandType).erasure().isClass() && !operandType.symbol().isEnum();
   }
 
   private boolean isNullComparison(Type leftOpType, Type rightOpType) {
-    return leftOpType.isTagged(Type.BOT) || rightOpType.isTagged(Type.BOT);
+    return isBot(leftOpType) || isBot(rightOpType);
   }
 
   private boolean isNumericalComparison(Type leftOperandType, Type rightOperandType) {
@@ -101,5 +101,10 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
 
   private boolean isJavaLangClassComparison(Type leftOpType, Type rightOpType) {
     return leftOpType.is("java.lang.Class") || rightOpType.is("java.lang.Class");
+  }
+
+  private boolean isBot(Type type) {
+    return ((org.sonar.java.resolve.Type) type).isTagged(org.sonar.java.resolve.Type.BOT);
+
   }
 }

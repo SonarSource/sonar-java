@@ -25,8 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -53,7 +52,7 @@ public class LongBitsToDoubleOnIntCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
-    Type symbolType = ((AbstractTypedTree) mit.arguments().get(0)).getSymbolType();
+    Type symbolType = mit.arguments().get(0).symbolType();
     if (!(symbolType.is("long") || symbolType.is("java.lang.Long"))) {
       addIssue(mit, "Remove this \"Double.longBitsToDouble\" call.");
     }

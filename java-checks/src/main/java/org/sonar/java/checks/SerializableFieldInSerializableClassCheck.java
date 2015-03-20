@@ -104,7 +104,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
 
   private boolean implementsSerializable(@Nullable Type semanticType) {
     org.sonar.java.resolve.Type type = (org.sonar.java.resolve.Type) semanticType;
-    if (type == null || type.isTagged(org.sonar.java.resolve.Type.UNKNOWN)) {
+    if (type == null || type.isUnknown()) {
       return false;
     }
     if (type.isPrimitive()) {

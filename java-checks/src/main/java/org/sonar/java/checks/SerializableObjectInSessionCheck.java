@@ -25,8 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -55,7 +54,7 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
     ExpressionTree argument = mit.arguments().get(1);
-    Type type = ((AbstractTypedTree) argument).getSymbolType();
+    Type type = argument.symbolType();
     if(!type.isSubtypeOf("java.io.Serializable")) {
       addIssue(argument, "Make \""+type+"\" serializable or don't store it in the session.");
     }

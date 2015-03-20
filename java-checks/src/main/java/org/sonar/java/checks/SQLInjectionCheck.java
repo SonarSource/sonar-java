@@ -22,8 +22,8 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -84,17 +84,16 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
   }
 
   private boolean isInvokedOnType(String type, ExpressionTree expressionTree) {
-    org.sonar.plugins.java.api.semantic.Type selectorType = expressionTree.symbolType();
+    Type selectorType = expressionTree.symbolType();
     if (selectorType.isClass()) {
-      return type.equals(selectorType.fullyQualifiedName()) || checkInterfaces(type, ((Type) selectorType).getSymbol());
+      return type.equals(selectorType.fullyQualifiedName()) || checkInterfaces(type, selectorType.symbol());
     }
     return false;
   }
 
-  private boolean checkInterfaces(String type, org.sonar.java.resolve.Symbol.TypeSymbol symbol) {
-    for (Type interfaceType : symbol.getInterfaces()) {
-      Symbol interfaceSymbol = interfaceType.getSymbol();
-      if (type.equals(interfaceSymbol.type().fullyQualifiedName()) || checkInterfaces(type, (org.sonar.java.resolve.Symbol.TypeSymbol) interfaceSymbol)) {
+  private boolean checkInterfaces(String type, Symbol.TypeSymbolSemantic symbol) {
+    for (Type interfaceType : symbol.interfaces()) {
+      if (type.equals(interfaceType.fullyQualifiedName()) || checkInterfaces(type, interfaceType.symbol())) {
         return true;
       }
     }

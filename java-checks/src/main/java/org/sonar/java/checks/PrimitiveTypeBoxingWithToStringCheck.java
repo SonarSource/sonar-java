@@ -26,8 +26,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -72,22 +72,22 @@ public class PrimitiveTypeBoxingWithToStringCheck extends AbstractMethodDetectio
 
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
-    AbstractTypedTree abstractTypedTree = (AbstractTypedTree) ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+    ExpressionTree abstractTypedTree = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
     if (abstractTypedTree.is(Kind.NEW_CLASS) || isValueOfInvocation(abstractTypedTree)) {
-      String typeName = abstractTypedTree.getSymbolType().toString();
+      String typeName = abstractTypedTree.symbolType().toString();
       addIssue(mit, "Use \"" + typeName + ".toString\" instead.");
     }
   }
 
-  private boolean isValueOfInvocation(AbstractTypedTree abstractTypedTree) {
+  private boolean isValueOfInvocation(ExpressionTree abstractTypedTree) {
     if (!abstractTypedTree.is(Kind.METHOD_INVOCATION)) {
       return false;
     }
-    Type type = abstractTypedTree.getSymbolType();
+    Type type = abstractTypedTree.symbolType();
     MethodInvocationMatcher valueOfMatcher = MethodInvocationMatcher.create()
-      .typeDefinition(type.getSymbol().getFullyQualifiedName())
+      .typeDefinition(type.fullyQualifiedName())
       .name("valueOf")
-      .addParameter(type.primitiveType().getSymbol().getFullyQualifiedName());
+      .addParameter(((org.sonar.java.resolve.Type) type).primitiveType().fullyQualifiedName());
     return valueOfMatcher.matches((MethodInvocationTree) abstractTypedTree, getSemanticModel());
   }
 }
