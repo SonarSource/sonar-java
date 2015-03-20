@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -42,6 +41,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -49,6 +49,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -71,6 +72,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public static final String KEY = "S2259";
   private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
+  @Nullable
+  private ConditionalState currentConditionalState;
   private JavaFileScannerContext context;
   private State currentState;
   private SemanticModel semanticModel;
@@ -103,6 +106,24 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   @Override
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    if (tree.is(Tree.Kind.CONDITIONAL_AND)) {
+      visitorConditionalAnd(tree);
+      return;
+    }
+    if (tree.is(Tree.Kind.CONDITIONAL_OR)) {
+      visitConditionalOr(tree);
+      return;
+    }
+    if (tree.is(Tree.Kind.EQUAL_TO)) {
+      visitRelationalEqualTo(tree);
+    } else if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
+      visitRelationalNotEqualTo(tree);
+    }
+    super.visitBinaryExpression(tree);
+  }
+
+  @Override
   public void visitClass(ClassTree tree) {
     // state required for assignments in class body (e.g. static initializers, and int a, b, c = b = 0;)
     State oldState = currentState;
@@ -120,28 +141,36 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitConditionalExpression(ConditionalExpressionTree tree) {
-    State trueState = new State(currentState);
-    State falseState = new State(currentState);
-    visitCondition(tree.condition(), trueState, falseState);
-    currentState = trueState;
+    ConditionalState conditionalState = visitCondition(tree.condition());
+    currentState = conditionalState.trueState;
     tree.trueExpression().accept(this);
-    currentState = falseState;
+    currentState = conditionalState.falseState;
     tree.falseExpression().accept(this);
-    currentState = currentState.parentState.merge(trueState, falseState);
+    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
+  }
+
+  @Override
+  public void visitForStatement(ForStatementTree tree) {
+    scan(tree.initializer());
+    ConditionalState conditionalState = visitCondition(tree.condition());
+    currentState = conditionalState.trueState;
+    scan(tree.statement());
+    scan(tree.update());
+    // restores the parent state and discards the constraints found in the condition.
+    // e.g. if a == null before the loop, and a != null in the condition, then the merge will set a to UNKNOWN after the loop.
+    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
   }
 
   @Override
   public void visitIfStatement(IfStatementTree tree) {
-    State trueState = new State(currentState);
-    State falseState = tree.elseStatement() != null ? new State(currentState) : null;
-    visitCondition(tree.condition(), trueState, falseState);
-    currentState = trueState;
+    ConditionalState conditionalState = visitCondition(tree.condition());
+    currentState = conditionalState.trueState;
     tree.thenStatement().accept(this);
     if (tree.elseStatement() != null) {
-      currentState = falseState;
+      currentState = conditionalState.falseState;
       tree.elseStatement().accept(this);
     }
-    currentState = currentState.parentState.merge(trueState, falseState);
+    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
   }
 
   @Override
@@ -187,14 +216,14 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     for (CatchTree catchTree : tree.catches()) {
       currentState = new State(blockState.parentState);
       scan(catchTree);
-      blockState.merge(currentState, null);
+      blockState.mergeValues(currentState, null);
     }
     if (tree.finallyBlock() != null) {
       currentState = new State(blockState.parentState);
       scan(tree.finallyBlock());
-      blockState.merge(currentState, null);
+      blockState.mergeValues(currentState, null);
     }
-    currentState = blockState.parentState.merge(blockState, null);
+    currentState = blockState.parentState.mergeValues(blockState, null);
   }
 
   @Override
@@ -204,6 +233,16 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       currentState.setVariableValue((VariableSymbol) tree.symbol(), checkNullity(tree.initializer()));
       scan(tree.initializer());
     }
+  }
+
+  @Override
+  public void visitWhileStatement(WhileStatementTree tree) {
+    ConditionalState conditionalState = visitCondition(tree.condition());
+    currentState = conditionalState.trueState;
+    scan(tree.statement());
+    // restores the parent state and discards the constraints found in the condition.
+    // e.g. if a == null before the loop, and a != null in the condition, then the merge will set a to UNKNOWN after the loop.
+    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
   }
 
   private AbstractValue checkNullity(Symbol symbol) {
@@ -267,34 +306,98 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     UNKNOWN
   }
 
-  private void visitCondition(ExpressionTree tree, State trueState, @Nullable State falseState) {
-    if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
-      BinaryExpressionTree binaryTree = (BinaryExpressionTree) tree;
-      VariableSymbol identifierSymbol;
-      // currently only ident == null, ident != null, null == ident and null != ident are covered.
-      // constraints nested in logical and/or operators are not covered.
-      if (binaryTree.leftOperand().is(Tree.Kind.NULL_LITERAL) && binaryTree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
-        identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) binaryTree.rightOperand());
-      } else if (binaryTree.leftOperand().is(Tree.Kind.IDENTIFIER) && binaryTree.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
-        identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) binaryTree.leftOperand());
-      } else {
-        super.visitBinaryExpression(binaryTree);
-        return;
-      }
-      if (binaryTree.is(Tree.Kind.EQUAL_TO)) {
-        trueState.setVariableValue(identifierSymbol, AbstractValue.NULL);
-        if (falseState != null) {
-          falseState.setVariableValue(identifierSymbol, AbstractValue.NOTNULL);
-        }
-      } else {
-        Preconditions.checkState(binaryTree.is(Tree.Kind.NOT_EQUAL_TO));
-        trueState.setVariableValue(identifierSymbol, AbstractValue.NOTNULL);
-        if (falseState != null) {
-          falseState.setVariableValue(identifierSymbol, AbstractValue.NULL);
-        }
-      }
-    }
+  private ConditionalState visitCondition(ExpressionTree tree) {
+    ConditionalState oldConditionalState = currentConditionalState;
+    ConditionalState conditionalState = new ConditionalState(currentState);
+    currentConditionalState = conditionalState;
     scan(tree);
+    currentConditionalState = oldConditionalState;
+    return conditionalState;
+  }
+
+  private ConditionalState visitCondition(ExpressionTree tree, State newState) {
+    State oldState = currentState;
+    currentState = newState;
+    ConditionalState result = visitCondition(tree);
+    currentState = oldState;
+    return result;
+  }
+
+  private void visitorConditionalAnd(BinaryExpressionTree tree) {
+    ConditionalState leftConditionalState = visitCondition(tree.leftOperand());
+    // in case of a conditional and, the current state for the right operand is the true state of the left one,
+    // because the right operand is evaluated only if the left operand was true.
+    ConditionalState rightConditionalState = visitCondition(tree.rightOperand(), leftConditionalState.trueState);
+    if (currentConditionalState != null) {
+      currentConditionalState.mergeConditionalAnd(leftConditionalState, rightConditionalState);
+    }
+  }
+
+  private void visitConditionalOr(BinaryExpressionTree tree) {
+    ConditionalState leftConditionalState = visitCondition(tree.leftOperand());
+    // in case of a conditional or, the current state for the right operand is the false state of the left one,
+    // because of the right operand is evaluated only if the left operand was false.
+    ConditionalState rightConditionalState = visitCondition(tree.rightOperand(), leftConditionalState.falseState);
+    if (currentConditionalState != null) {
+      currentConditionalState.mergeConditionalOr(leftConditionalState, rightConditionalState);
+    }
+  }
+
+  // extracts the symbol in case of ident <op> null, or null <op> ident.
+  @Nullable
+  private VariableSymbol extractRelationalSymbol(BinaryExpressionTree tree) {
+    if (tree.leftOperand().is(Tree.Kind.NULL_LITERAL) && tree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
+      return (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.rightOperand());
+    } else if (tree.leftOperand().is(Tree.Kind.IDENTIFIER) && tree.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
+      return (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.leftOperand());
+    } else {
+      return null;
+    }
+  }
+
+  private void visitRelationalEqualTo(BinaryExpressionTree tree) {
+    VariableSymbol symbol = extractRelationalSymbol(tree);
+    if (symbol != null && currentConditionalState != null) {
+      currentConditionalState.trueState.setVariableValue(symbol, AbstractValue.NULL);
+      currentConditionalState.falseState.setVariableValue(symbol, AbstractValue.NOTNULL);
+    }
+  }
+
+  private void visitRelationalNotEqualTo(BinaryExpressionTree tree) {
+    VariableSymbol symbol = extractRelationalSymbol(tree);
+    if (symbol != null && currentConditionalState != null) {
+      currentConditionalState.trueState.setVariableValue(symbol, AbstractValue.NOTNULL);
+      currentConditionalState.falseState.setVariableValue(symbol, AbstractValue.NULL);
+    }
+  }
+
+  @VisibleForTesting
+  static class ConditionalState {
+    final State falseState;
+    final State trueState;
+
+    ConditionalState(State currentState) {
+      falseState = new State(currentState);
+      trueState = new State(currentState);
+    }
+
+    void mergeConditionalAnd(ConditionalState leftConditionalState, ConditionalState rightConditionalState) {
+      // copies the learned values to the parent.
+      trueState.copyValuesFrom(leftConditionalState.trueState);
+      trueState.copyValuesFrom(rightConditionalState.trueState);
+      // invalidates both false states and copies values to the parent
+      falseState.copyValuesFrom(leftConditionalState.falseState.invalidateValues());
+      falseState.copyValuesFrom(rightConditionalState.falseState.invalidateValues());
+    }
+
+    void mergeConditionalOr(ConditionalState leftConditionalState, ConditionalState rightConditionalState) {
+      // invalidates both true states and copies value to the parent.
+      trueState.copyValuesFrom(leftConditionalState.trueState.invalidateValues());
+      trueState.copyValuesFrom(rightConditionalState.trueState.invalidateValues());
+      // copies the learned values to the parent.
+      falseState.copyValuesFrom(leftConditionalState.falseState);
+      falseState.copyValuesFrom(rightConditionalState.falseState);
+    }
   }
 
   @VisibleForTesting
@@ -329,29 +432,58 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       variables.put(variable, value);
     }
 
-    public State merge(State trueState, @Nullable State falseState) {
+    /**
+     * copies the value of each variables in fromState to this
+     *
+     * @param fromState state from which the values must be copied.
+     */
+    public void copyValuesFrom(State fromState) {
+      for (VariableSymbol variable : fromState.variables.keySet()) {
+        this.setVariableValue(variable, fromState.getVariableValue(variable));
+      }
+    }
+
+    /**
+     * sets all the variables registered in this state to UNKNOWN.
+     *
+     * @return this
+     */
+    public State invalidateValues() {
+      for (VariableSymbol variable : variables.keySet()) {
+        setVariableValue(variable, AbstractValue.UNKNOWN);
+      }
+      return this;
+    }
+
+    /**
+     * merges the values of the variables from state1 and state2 into this.
+     *
+     * the set of all variables in state1 union state2 is first built,
+     * then the variables in this set are queried in both states (their values fall back to the parent state if they are not found).
+     * their value are then set in the parent state (either to the corresponding value if they are equal, or to UNKNOWN).
+     *
+     * @param state1 first state to merge
+     * @param state2 second state to merge or null
+     * @return this
+     */
+    public State mergeValues(State state1, @Nullable State state2) {
       Set<VariableSymbol> variables = new HashSet<>();
-      variables.addAll(trueState.variables.keySet());
-      if (falseState != null) {
-        variables.addAll(falseState.variables.keySet());
+      variables.addAll(state1.variables.keySet());
+      if (state2 != null) {
+        variables.addAll(state2.variables.keySet());
       }
       for (VariableSymbol variable : variables) {
         AbstractValue currentValue = getVariableValue(variable);
-        AbstractValue trueValue = trueState.variables.get(variable);
+        AbstractValue trueValue = state1.variables.get(variable);
         if (trueValue == null) {
           trueValue = currentValue;
         }
-        AbstractValue falseValue = falseState != null ? falseState.variables.get(variable) : currentValue;
+        AbstractValue falseValue = state2 != null ? state2.variables.get(variable) : currentValue;
         if (falseValue == null) {
           falseValue = currentValue;
         }
-        if (trueValue == AbstractValue.NOTNULL && falseValue == AbstractValue.NOTNULL) {
-          setVariableValue(variable, AbstractValue.NOTNULL);
-        } else if (trueValue == AbstractValue.NULL && falseValue == AbstractValue.NULL) {
-          setVariableValue(variable, AbstractValue.NULL);
-        } else {
-          setVariableValue(variable, AbstractValue.UNKNOWN);
-        }
+        // both null -> null; both notnull -> notnull; else unknown
+        setVariableValue(variable, trueValue == falseValue ? trueValue : AbstractValue.UNKNOWN);
       }
       return this;
     }
