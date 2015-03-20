@@ -48,6 +48,7 @@ import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -228,6 +229,14 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   @Override
+  public void visitSwitchStatement(SwitchStatementTree tree) {
+    checkForIssue(tree.expression());
+    scan(tree.expression());
+    // skip cases for now
+    currentState.invalidateValuesOfHierarchy();
+  }
+
+  @Override
   public void visitTryStatement(TryStatementTree tree) {
     scan(tree.resources());
     State blockState = new State(currentState);
@@ -303,7 +312,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   private void checkForIssue(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
-      if (symbol != null && symbol.isVariableSymbol() && currentState.getVariableValue((VariableSymbol) symbol) == AbstractValue.NULL) {
+      if (symbol != null && symbol.isVariableSymbol() && symbol.owner().isMethodSymbol()
+        && currentState.getVariableValue((VariableSymbol) symbol) == AbstractValue.NULL) {
         context.addIssue(tree, RULE_KEY, String.format("%s can be null.", symbol.name()));
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
