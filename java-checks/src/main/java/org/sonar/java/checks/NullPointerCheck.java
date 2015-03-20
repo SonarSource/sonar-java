@@ -303,7 +303,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   private void checkForIssue(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
-      if (symbol != null && symbol.isVariableSymbol() && currentState.getVariableValue((VariableSymbol) symbol) == AbstractValue.NULL) {
+      if (symbol != null && symbol.isVariableSymbol() && symbol.owner().isMethodSymbol()
+        && currentState.getVariableValue((VariableSymbol) symbol) == AbstractValue.NULL) {
         context.addIssue(tree, RULE_KEY, String.format("%s can be null.", symbol.name()));
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
