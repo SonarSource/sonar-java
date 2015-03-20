@@ -258,18 +258,68 @@ class NullPointerTest {
     boolean b2 = str != null || str.length() == 0; // Noncompliant
   }
 
+  public void testDoWhileLoop(boolean condition) {
+    Object object1 = null, object2 = null, object3 = null;
+    do {
+      object1.hashCode(); // False negative
+      if (condition) {
+        object2 = new Object();
+      }
+      object1 = null;
+      object3 = new Object();
+    } while (object1.hashCode()); // Noncompliant
+    object1.hashCode(); // False negative
+    object2.hashCode(); // Compliant
+    object3.hashCode(); // Compliant
+  }
+
   public void testForLoop() {
-    for(Object object = null; object != null; object.hashCode()) { // Compliant
-      object.hashCode(); // Compliant
+    Object object = null;
+    for(; object.hashCode() != 0; object.hashCode()) { // Noncompliant
+      object.hashCode(); // False negative
+      object = null;
+    }
+    object.hashCode(); // False negative
+    for(Object object = null; true; object.hashCode()) { // False negative
+      object.hashCode(); // False negative
     }
   }
 
-  public void testWhileLoop() {
-    Object object = null;
-    while(object != null) {
-      object.hashCode(); // Compliant
+  public void testForEachLoop() {
+    Object value;
+    Set<Object> set = null;
+    Entry head = null;
+    for(Object entry : set.values()) { // Noncompliant
+      head.hashCode(); // False negative
+      value = null;
+      value.hashCode(); // Noncompliant
     }
-    object.hashCode(); // Compliant
+    head.hashCode(); // False negative
+    value.hashCode(); // False negative
+  }
+
+  public void testWhileLoop() {
+    Object object1 = null, object2 = null, object3 = null;
+    while(object1.hashCode()) { // Noncompliant
+      object1.hashCode(); // False negative
+      object2 = null;
+      object2.hashCode(); // Noncompliant
+     }
+    object1.hashCode(); // False negative
+    object2.hashCode(); // Compliant
+    object2.hashCode(); // Compliant
+  }
+
+  public void testHoistedLoop(boolean condition) {
+    Object a = null;
+    if (condition) {
+      if (condition) {
+        while(condition) {
+          a.hashCode(); // False negative
+        }
+      }
+    }
+    a.hashCode(); // False negative
   }
 
   @interface CoverageAnnotation {
