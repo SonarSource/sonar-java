@@ -31,6 +31,7 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -120,9 +121,9 @@ public class TypeAndReferenceSolverTest {
     ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
     ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(1);
     MethodTreeImpl method = (MethodTreeImpl) clazz.members().get(0);
-    List<AnnotationInstance> annotations = method.getSymbol().metadata().annotations();
+    List<AnnotationInstance> annotations = ((Symbol.MethodSymbol) method.symbol()).metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
-    assertThat(annotations.get(0).isTyped(annotation.getSymbol().getName())).isTrue();
+    assertThat(annotations.get(0).isTyped(annotation.symbol().name())).isTrue();
   }
 
   @Test
@@ -134,7 +135,7 @@ public class TypeAndReferenceSolverTest {
     VariableTreeImpl  parameter = (VariableTreeImpl)method.parameters().get(0);
     List<AnnotationInstance> annotations = parameter.getSymbol().metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
-    assertThat(annotations.get(0).isTyped(annotation.getSymbol().getName())).isTrue();
+    assertThat(annotations.get(0).isTyped(annotation.symbol().name())).isTrue();
   }
 
   @Test
@@ -142,9 +143,9 @@ public class TypeAndReferenceSolverTest {
     CompilationUnitTree compilationUnit = treeOf("@interface MyAnnotation { } @MyAnnotation class Class { }");
     ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
     ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(1);
-    List<AnnotationInstance> annotations = clazz.getSymbol().metadata().annotations();
+    List<AnnotationInstance> annotations = ((Symbol.TypeSymbol) clazz.symbol()).metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
-    assertThat(annotations.get(0).isTyped(annotation.getSymbol().getName())).isTrue();
+    assertThat(annotations.get(0).isTyped(annotation.symbol().name())).isTrue();
   }
 
   @Test
@@ -155,7 +156,7 @@ public class TypeAndReferenceSolverTest {
     VariableTreeImpl variable = (VariableTreeImpl) clazz.members().get(0);
     List<AnnotationInstance> annotations = variable.getSymbol().metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
-    assertThat(annotations.get(0).isTyped(annotation.getSymbol().getName())).isTrue();
+    assertThat(annotations.get(0).isTyped(annotation.symbol().name())).isTrue();
   }
 
   @Test
@@ -182,7 +183,8 @@ public class TypeAndReferenceSolverTest {
   }
 
   private AnnotationInstance extractFirstAnnotationInstance(String source) {
-    return ((ClassTreeImpl) treeOf(source).types().get(1)).getSymbol().metadata().annotations().get(0);
+    ClassTree tree = (ClassTree) treeOf(source).types().get(1);
+    return ((Symbol.TypeSymbol) tree.symbol()).metadata().annotations().get(0);
   }
 
   @Test

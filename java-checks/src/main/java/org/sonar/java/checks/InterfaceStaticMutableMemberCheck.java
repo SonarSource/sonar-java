@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -56,7 +55,7 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     for (Tree member : ((ClassTree) tree).members()) {
       if (member.is(Kind.VARIABLE)) {
-        VariableTreeImpl variableTree = (VariableTreeImpl) member;
+        VariableTree variableTree = (VariableTree) member;
         if (isStaticMember(variableTree) && isMutableMember(variableTree)) {
           addIssue(variableTree, MessageFormat.format("Move \"{0}\" to a class and lower its visibility", variableTree.simpleName().name()));
         }
@@ -68,8 +67,8 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
     return variableTree.modifiers().modifiers().contains(Modifier.STATIC);
   }
 
-  private boolean isMutableMember(VariableTreeImpl variableTree) {
-    return isArray(variableTree.type()) || isDateOrCollection(variableTree.getSymbol().getType());
+  private boolean isMutableMember(VariableTree variableTree) {
+    return isArray(variableTree.type()) || isDateOrCollection(variableTree.type().symbolType());
   }
 
   private boolean isArray(Tree typeTree) {

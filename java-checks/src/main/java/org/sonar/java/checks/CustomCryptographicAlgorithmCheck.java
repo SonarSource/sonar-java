@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -50,15 +50,15 @@ public class CustomCryptographicAlgorithmCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic() && isJavaSecurityMessageDigestSubClass((ClassTreeImpl) tree)) {
+    if (hasSemantic() && isJavaSecurityMessageDigestSubClass((ClassTree) tree)) {
       addIssue(tree, "Use a standard algorithm instead of creating a custom one.");
     }
   }
 
-  private boolean isJavaSecurityMessageDigestSubClass(ClassTreeImpl tree) {
-    TypeSymbol classSymbol = tree.getSymbol();
+  private boolean isJavaSecurityMessageDigestSubClass(ClassTree tree) {
+    Symbol.TypeSymbolSemantic classSymbol = tree.symbol();
     // Corner case: A type is a subtype of itself
-    return classSymbol != null && !classSymbol.getType().is(MESSAGE_DIGEST_QUALIFIED_NAME) &&
-      classSymbol.getType().isSubtypeOf(MESSAGE_DIGEST_QUALIFIED_NAME);
+    return classSymbol != null && !classSymbol.type().is(MESSAGE_DIGEST_QUALIFIED_NAME) &&
+      classSymbol.type().isSubtypeOf(MESSAGE_DIGEST_QUALIFIED_NAME);
   }
 }

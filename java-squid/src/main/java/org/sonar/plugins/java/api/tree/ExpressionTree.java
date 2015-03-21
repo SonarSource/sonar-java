@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Type;
 
 /**
  * Common interface for all types of expressions.
@@ -28,4 +29,5 @@ import com.google.common.annotations.Beta;
  */
 @Beta
 public interface ExpressionTree extends Tree {
+  Type symbolType();
 }

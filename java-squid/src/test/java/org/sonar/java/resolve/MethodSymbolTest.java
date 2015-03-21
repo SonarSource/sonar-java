@@ -28,7 +28,7 @@ import org.sonar.java.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
@@ -60,7 +60,7 @@ public class MethodSymbolTest {
     @Override
     public void visitNode(Tree tree) {
       int line = ((JavaTree) tree).getLine();
-      Symbol.MethodSymbol symbol = ((MethodTreeImpl) tree).getSymbol();
+      Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) ((MethodTree) tree).symbol();
       BooleanAssert assertion = assertThat(symbol.isOverriden()).as("Method at line "+line);
       if (overriden.contains(line)) {
         assertion.isTrue();

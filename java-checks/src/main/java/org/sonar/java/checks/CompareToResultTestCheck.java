@@ -23,16 +23,14 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -43,7 +41,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Rule(
   key = "S2200",
@@ -76,7 +73,7 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
   private boolean isCompareToResult(ExpressionTree expression) {
     if (hasSemantic()) {
       if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-        return isCompareToInvocation((MethodInvocationTreeImpl) expression);
+        return isCompareToInvocation((MethodInvocationTree) expression);
       }
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         return isIdentifierContainingCompareToResult((IdentifierTree) expression);
@@ -85,16 +82,10 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isCompareToInvocation(MethodInvocationTreeImpl invocation) {
-    Symbol method = invocation.getSymbol();
-    if ("compareTo".equals(method.getName()) && invocation.arguments().size() == 1) {
-      TypeSymbol methodOwner = method.owner().enclosingClass();
-      Set<ClassType> superTypes = methodOwner.superTypes();
-      for (ClassType classType : superTypes) {
-        if (classType.is("java.lang.Comparable")) {
-          return true;
-        }
-      }
+  private boolean isCompareToInvocation(MethodInvocationTree invocation) {
+    Symbol method = invocation.symbol();
+    if ("compareTo".equals(method.name()) && invocation.arguments().size() == 1) {
+      return method.owner().enclosingClass().type().isSubtypeOf("java.lang.Comparable");
     }
     return false;
   }
@@ -107,9 +98,9 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
     VariableTree variableDefinition = (VariableTree) getSemanticModel().getTree(variableSymbol);
     if (variableDefinition != null) {
       ExpressionTree initializer = variableDefinition.initializer();
-      if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) && variableSymbol.owner().isKind(Symbol.MTH)) {
+      if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) && variableSymbol.owner().isMethodSymbol()) {
         Tree method = getSemanticModel().getTree(variableSymbol.owner());
-        return isCompareToInvocation((MethodInvocationTreeImpl) initializer) && !isReassigned(variableSymbol, method);
+        return isCompareToInvocation((MethodInvocationTree) initializer) && !isReassigned(variableSymbol, method);
       }
     }
     return false;

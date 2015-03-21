@@ -29,7 +29,7 @@ import com.google.common.annotations.Beta;
  * @since Java 1.3
  */
 @Beta
-public interface PrimitiveTypeTree extends ExpressionTree {
+public interface PrimitiveTypeTree extends TypeTree, ExpressionTree {
 
   SyntaxToken keyword();
 

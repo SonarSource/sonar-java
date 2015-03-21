@@ -48,6 +48,6 @@ import javax.annotation.Nullable;
 public interface WildcardTree extends Tree {
 
   @Nullable
-  Tree bound();
+  TypeTree bound();
 
 }

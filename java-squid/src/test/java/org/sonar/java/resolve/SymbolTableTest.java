@@ -74,7 +74,7 @@ public class SymbolTableTest {
     Symbol.MethodSymbol method2 = (Symbol.MethodSymbol) typeSymbol.members().lookup("method2").get(0);
     Type.TypeVariableType PTypeVariableType = (Type.TypeVariableType) method2.typeParameters().lookup("P").get(0).type;
     assertThat(method2.getReturnType().type).isSameAs(PTypeVariableType);
-    assertThat(method2.getParametersTypes().get(0)).isSameAs(PTypeVariableType);
+    assertThat(method2.parameterTypes().get(0)).isSameAs(PTypeVariableType);
 
     //Type parameter defined in outer class
     Symbol.TypeSymbol classCSymbol = (Symbol.TypeSymbol) typeSymbol.members().lookup("C").get(0);
@@ -119,7 +119,6 @@ public class SymbolTableTest {
     Result result = Result.createFor("declarations/ClassDeclaration");
     Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) result.symbol("Declaration");
     Symbol classDeclaration = result.symbol("ClassDeclaration");
-    assertThat(classDeclaration.isParametrized).isTrue();
     List<Symbol> parameters = classDeclaration.type.symbol.typeParameters.lookup("T");
     assertThat(parameters).hasSize(1);
     assertThat(parameters.get(0).getName()).isEqualTo("T");
@@ -354,10 +353,9 @@ public class SymbolTableTest {
     assertThat(methodSymbol.owner()).isSameAs(result.symbol("MethodDeclaration"));
     assertThat(methodSymbol.flags()).isEqualTo(Flags.PROTECTED);
     assertThat(methodSymbol.getReturnType()).isSameAs(result.symbol("ReturnType"));
-    assertThat(methodSymbol.getThrownTypes()).containsExactly(
-        result.symbol("FirstExceptionType"),
-        result.symbol("SecondExceptionType"));
-    assertThat(methodSymbol.isParametrized).isTrue();
+    assertThat(methodSymbol.thrownTypes()).containsExactly(
+        result.symbol("FirstExceptionType").type(),
+        result.symbol("SecondExceptionType").type());
   }
 
   @Test
@@ -368,10 +366,10 @@ public class SymbolTableTest {
     assertThat(methodSymbol.owner()).isSameAs(result.symbol("ConstructorDeclaration"));
     assertThat(methodSymbol.flags()).isEqualTo(0);
     assertThat(methodSymbol.getReturnType()).isNull(); // TODO should it be result.symbol("ConstructorDeclaration")?
-    assertThat(methodSymbol.getParametersTypes()).hasSize(1);
-    assertThat(methodSymbol.getThrownTypes()).containsExactly(
-        result.symbol("FirstExceptionType"),
-        result.symbol("SecondExceptionType"));
+    assertThat(methodSymbol.parameterTypes()).hasSize(1);
+    assertThat(methodSymbol.thrownTypes()).containsExactly(
+        result.symbol("FirstExceptionType").type(),
+        result.symbol("SecondExceptionType").type());
 
     assertThat(result.reference(21, 35)).isEqualTo(methodSymbol);
   }

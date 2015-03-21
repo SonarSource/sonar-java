@@ -23,10 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -51,6 +50,28 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
    * symetric operators : a OP b is equivalent to b OP a
    */
   private static final List<Tree.Kind> SYMETRIC_OPERATORS = ImmutableList.<Tree.Kind>builder()
+    .add(Tree.Kind.EQUAL_TO)
+    .add(Tree.Kind.NOT_EQUAL_TO)
+    .add(Tree.Kind.AND)
+    .add(Tree.Kind.XOR)
+    .add(Tree.Kind.OR)
+    .add(Tree.Kind.CONDITIONAL_AND)
+    .add(Tree.Kind.CONDITIONAL_OR)
+    .build();
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.<Tree.Kind>builder()
+      .add(Tree.Kind.DIVIDE)
+      .add(Tree.Kind.REMAINDER)
+      .add(Tree.Kind.MINUS)
+      .add(Tree.Kind.LEFT_SHIFT)
+      .add(Tree.Kind.RIGHT_SHIFT)
+      .add(Tree.Kind.UNSIGNED_RIGHT_SHIFT)
+      .add(Tree.Kind.LESS_THAN)
+      .add(Tree.Kind.GREATER_THAN)
+      .add(Tree.Kind.LESS_THAN_OR_EQUAL_TO)
+      .add(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
       .add(Tree.Kind.EQUAL_TO)
       .add(Tree.Kind.NOT_EQUAL_TO)
       .add(Tree.Kind.AND)
@@ -59,28 +80,6 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
       .add(Tree.Kind.CONDITIONAL_AND)
       .add(Tree.Kind.CONDITIONAL_OR)
       .build();
-
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.<Tree.Kind>builder()
-        .add(Tree.Kind.DIVIDE)
-        .add(Tree.Kind.REMAINDER)
-        .add(Tree.Kind.MINUS)
-        .add(Tree.Kind.LEFT_SHIFT)
-        .add(Tree.Kind.RIGHT_SHIFT)
-        .add(Tree.Kind.UNSIGNED_RIGHT_SHIFT)
-        .add(Tree.Kind.LESS_THAN)
-        .add(Tree.Kind.GREATER_THAN)
-        .add(Tree.Kind.LESS_THAN_OR_EQUAL_TO)
-        .add(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
-        .add(Tree.Kind.EQUAL_TO)
-        .add(Tree.Kind.NOT_EQUAL_TO)
-        .add(Tree.Kind.AND)
-        .add(Tree.Kind.XOR)
-        .add(Tree.Kind.OR)
-        .add(Tree.Kind.CONDITIONAL_AND)
-        .add(Tree.Kind.CONDITIONAL_OR)
-        .build();
   }
 
   @Override
@@ -103,26 +102,24 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
     if (SyntacticEquivalence.areEquivalent(left, right)) {
       return true;
     }
-    //Check other operands if operator is symetric.
+    // Check other operands if operator is symetric.
     if (SYMETRIC_OPERATORS.contains(binaryKind) && left.is(binaryKind)) {
       return areOperandEquivalent(((BinaryExpressionTree) left).leftOperand(), right, binaryKind)
-          || areOperandEquivalent(((BinaryExpressionTree) left).rightOperand(), right, binaryKind);
+        || areOperandEquivalent(((BinaryExpressionTree) left).rightOperand(), right, binaryKind);
     }
     return false;
   }
 
   private boolean isNanTest(BinaryExpressionTree tree) {
-    if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
-      Type symbolType = ((AbstractTypedTree) tree.leftOperand()).getSymbolType();
-      if (symbolType.isTagged(Type.FLOAT) || symbolType.isTagged(Type.DOUBLE)) {
-        return true;
-      }
+    Type leftOperandType = tree.leftOperand().symbolType();
+    if (tree.is(Tree.Kind.NOT_EQUAL_TO) && (leftOperandType.isPrimitive(Type.Primitives.FLOAT) || leftOperandType.isPrimitive(Type.Primitives.DOUBLE))) {
+      return true;
     }
     return false;
   }
 
   private boolean isLeftShiftOnOne(BinaryExpressionTree tree) {
-    //1 << 1 is used for bit masks construction and should be excluded.
+    // 1 << 1 is used for bit masks construction and should be excluded.
     if (tree.is(Tree.Kind.LEFT_SHIFT) && tree.leftOperand().is(Tree.Kind.INT_LITERAL) && tree.rightOperand().is(Tree.Kind.INT_LITERAL)) {
       String left = ((LiteralTree) tree.leftOperand()).value();
       String right = ((LiteralTree) tree.rightOperand()).value();

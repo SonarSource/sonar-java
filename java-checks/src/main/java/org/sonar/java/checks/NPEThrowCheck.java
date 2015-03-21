@@ -23,17 +23,16 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -61,33 +60,26 @@ public class NPEThrowCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
-    raiseIssueOnNpe((AbstractTypedTree) tree.expression());
+    raiseIssueOnNpe(tree.expression(), tree.expression().symbolType());
     super.visitThrowStatement(tree);
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
-    for (ExpressionTree throwClause : tree.throwsClauses()) {
-      raiseIssueOnNpe((AbstractTypedTree) throwClause);
+    for (TypeTree throwClause : tree.throwsClauses()) {
+      raiseIssueOnNpe(throwClause, throwClause.symbolType());
     }
     super.visitMethod(tree);
   }
 
-  private void raiseIssueOnNpe(AbstractTypedTree tree) {
-    if (isNPE(tree)) {
+  private void raiseIssueOnNpe(Tree tree, Type type) {
+    if (type.is("java.lang.NullPointerException")) {
       context.addIssue(treeAtFault(tree), ruleKey, "Throw some other exception here, such as \"IllegalArgumentException\".");
     }
   }
 
-  private Tree treeAtFault(AbstractTypedTree tree) {
+  private Tree treeAtFault(Tree tree) {
     return tree.is(Kind.NEW_CLASS) ? ((NewClassTree) tree).identifier() : tree;
   }
 
-  private boolean isNPE(AbstractTypedTree tree) {
-    if (tree.getSymbolType().isTagged(Type.CLASS)) {
-      Type.ClassType type = (Type.ClassType) tree.getSymbolType();
-      return "NullPointerException".equals(type.getSymbol().getName());
-    }
-    return false;
-  }
 }

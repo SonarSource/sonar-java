@@ -23,15 +23,14 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.java.resolve.Type.ArrayType;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -68,24 +67,24 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
       methodSymbol = getSemanticModel().getReference(nct.getConstructorIdentifier());
       arguments = nct.arguments();
     } else {
-      MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
-      methodSymbol = mit.getSymbol();
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      methodSymbol = mit.symbol();
       arguments = mit.arguments();
     }
     // FIXME SONARJAVA-919
-    if (!arguments.isEmpty() && methodSymbol != null && methodSymbol.isKind(Symbol.MTH)) {
+    if (!arguments.isEmpty() && methodSymbol != null && methodSymbol.isMethodSymbol()) {
       checkArgumentsTypes(arguments, (MethodSymbol) methodSymbol);
     }
   }
 
   private void checkArgumentsTypes(List<ExpressionTree> arguments, MethodSymbol methodSymbol) {
-    List<Type> parametersTypes = methodSymbol.getParametersTypes();
+    List<Type> parametersTypes = methodSymbol.parameterTypes();
     // FIXME static imports.
     // FIXME As arguments are not handled for method resolution using static imports, the provided methodSymbol may not match.
     if (!parametersTypes.isEmpty()) {
       for (int index = 0; index < arguments.size(); index++) {
-        AbstractTypedTree argument = (AbstractTypedTree) arguments.get(index);
-        Type providedType = argument.getSymbolType();
+        ExpressionTree argument = arguments.get(index);
+        Type providedType = argument.symbolType();
         Type expectedType = getExpectedType(providedType, parametersTypes, index, methodSymbol.isVarArgs());
         if (expectedType.is("java.lang.Runnable") && providedType.isSubtypeOf("java.lang.Thread")
           || (expectedType.is("java.lang.Runnable[]") && (providedType.isSubtypeOf("java.lang.Thread[]")))) {
@@ -99,18 +98,18 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
     int lastParameterIndex = parametersTypes.size() - 1;
     Type lastParameterType = parametersTypes.get(lastParameterIndex);
     Type lastExpectedType = varargs ? ((ArrayType) lastParameterType).elementType() : lastParameterType;
-    if (index > lastParameterIndex || (index == lastParameterIndex && varargs && !providedType.isTagged(Type.ARRAY))) {
+    if (index > lastParameterIndex || (index == lastParameterIndex && varargs && !providedType.isArray())) {
       return lastExpectedType;
     }
     return parametersTypes.get(index);
   }
 
-  private String getMessage(AbstractTypedTree argument, Type providedType, int index) {
-    String array = providedType.isTagged(Type.ARRAY) ? "[]" : "";
+  private String getMessage(ExpressionTree argument, Type providedType, int index) {
+    String array = providedType.isArray() ? "[]" : "";
     return MessageFormat.format("\"{0}\" is a \"Thread{1}\".", getArgName(argument, index), array);
   }
 
-  private String getArgName(AbstractTypedTree tree, int index) {
+  private String getArgName(ExpressionTree tree, int index) {
     if (tree.is(Kind.IDENTIFIER)) {
       return ((IdentifierTree) tree).name();
     }

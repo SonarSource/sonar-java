@@ -27,11 +27,11 @@ import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
@@ -135,7 +135,7 @@ public class SecondPass implements Symbol.Completer {
           bounds.add(resolveType(env, boundTree));
         }
       }
-      ((Type.TypeVariableType) semanticModel.getSymbol(typeParameterTree).type).bounds = bounds;
+      ((Type.TypeVariableType) semanticModel.getSymbol(typeParameterTree).type()).bounds = bounds;
     }
   }
 
@@ -154,16 +154,13 @@ public class SecondPass implements Symbol.Completer {
     MethodTree methodTree = (MethodTree) semanticModel.getTree(symbol);
     Resolve.Env env = semanticModel.getEnv(symbol);
     completeTypeParameters(methodTree.typeParameters(), env);
-    ImmutableList.Builder<Symbol.TypeSymbol> thrown = ImmutableList.builder();
     ImmutableList.Builder<Type> thrownTypes = ImmutableList.builder();
-    for (ExpressionTree throwClause : methodTree.throwsClauses()) {
+    for (TypeTree throwClause : methodTree.throwsClauses()) {
       Type thrownType = resolveType(env, throwClause);
       if (thrownType != null) {
         thrownTypes.add(thrownType);
-        thrown.add(thrownType.symbol);
       }
     }
-    symbol.thrown = thrown.build();
 
     Type returnType = null;
     // no return type for constructor

@@ -29,12 +29,12 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -67,7 +67,7 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
   @Override
   public void visitMethod(MethodTree tree) {
     if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverriden(tree)) && !((MethodTreeImpl) tree).isMainMethod()) {
-      for (ExpressionTree throwClause : tree.throwsClauses()) {
+      for (TypeTree throwClause : tree.throwsClauses()) {
         checkExceptionAndRaiseIssue(throwClause);
       }
     }

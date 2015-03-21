@@ -26,8 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.Type;
 import org.sonar.java.resolve.Type.ParametrizedTypeType;
 import org.sonar.java.resolve.Type.TypeVariableType;
@@ -41,7 +39,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -77,20 +74,20 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
     // can be null when using raw types
     Type collectionParameterType = getTypeParameter(collectionType);
 
-    if (collectionParameterType != null && !collectionParameterType.isTagged(Type.UNKNOWN) && !isArgumentCompatible(argumentType, collectionParameterType)) {
+    if (collectionParameterType != null && !collectionParameterType.isUnknown() && !isArgumentCompatible(argumentType, collectionParameterType)) {
       addIssue(tree, MessageFormat.format("A \"{0}<{1}>\" cannot contain a \"{2}\"", collectionType, collectionParameterType, argumentType));
     }
   }
 
   private Type getType(ExpressionTree tree) {
-    return ((AbstractTypedTree) tree).getSymbolType();
+    return (Type) tree.symbolType();
   }
 
   private Type getMethodOwner(MethodInvocationTree mit) {
     if (mit.methodSelect().is(Kind.MEMBER_SELECT)) {
       return getType(((MemberSelectExpressionTree) mit.methodSelect()).expression());
     }
-    return ((MethodInvocationTreeImpl) mit).getSymbol().owner().getType();
+    return (Type) mit.symbol().owner().type();
   }
 
   @Nullable

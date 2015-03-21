@@ -23,12 +23,11 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.java.resolve.Types;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -55,48 +54,47 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTreeImpl classTree = (ClassTreeImpl) tree;
-    Symbol.TypeSymbol classSymbol = classTree.getSymbol();
+    ClassTree classTree = (ClassTree) tree;
+    Symbol.TypeSymbolSemantic classSymbol = classTree.symbol();
     if (classSymbol != null && isInnerClass(classSymbol) && !extendsOuterClass(classSymbol)) {
       classTree.accept(new MethodInvocationVisitor(classSymbol));
     }
   }
 
-  private boolean isInnerClass(Symbol.TypeSymbol symbol) {
-    return symbol.owner().isKind(Symbol.TYP);
+  private boolean isInnerClass(Symbol symbol) {
+    return symbol.owner().isTypeSymbol();
   }
 
-  private boolean extendsOuterClass(Symbol.TypeSymbol classSymbol) {
-    return classSymbol.getSuperclass() != null && classSymbol.getSuperclass().equals(classSymbol.owner().getType());
+  private boolean extendsOuterClass(Symbol.TypeSymbolSemantic classSymbol) {
+    return classSymbol.superClass() != null && classSymbol.superClass().equals(classSymbol.owner().type());
   }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
-    private final Symbol.TypeSymbol classSymbol;
+    private final Symbol.TypeSymbolSemantic classSymbol;
 
-    public MethodInvocationVisitor(Symbol.TypeSymbol classSymbol) {
+    public MethodInvocationVisitor(Symbol.TypeSymbolSemantic classSymbol) {
       this.classSymbol = classSymbol;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
-      Symbol symbol = mit.getSymbol();
-      if (symbol.isKind(Symbol.MTH) && mit.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol) && outerClassHasMethodWithSameName(symbol)) {
-        String methodName = ((IdentifierTree) mit.methodSelect()).name();
+      Symbol symbol = tree.symbol();
+      if (symbol.isMethodSymbol() && tree.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol) && outerClassHasMethodWithSameName(symbol)) {
+        String methodName = ((IdentifierTree) tree.methodSelect()).name();
         addIssue(tree, "Prefix this call to \"" + methodName + "\" with \"super.\".");
       }
       super.visitMethodInvocation(tree);
     }
 
     private boolean isInherited(Symbol symbol) {
-      Type methodOwnerType = symbol.owner().getType();
-      Type innerType = classSymbol.getType();
-      return !symbol.isStatic() && new Types().isSubtype(innerType, methodOwnerType)
-        && !classSymbol.owner().getType().equals(methodOwnerType) && !innerType.equals(methodOwnerType);
+      Type methodOwnerType = symbol.owner().type();
+      Type innerType = classSymbol.type();
+      return !symbol.isStatic() && new Types().isSubtype((org.sonar.java.resolve.Type) innerType, (org.sonar.java.resolve.Type) methodOwnerType)
+        && !classSymbol.owner().type().equals(methodOwnerType) && !innerType.equals(methodOwnerType);
     }
 
     private boolean outerClassHasMethodWithSameName(Symbol symbol) {
-      return !((Symbol.TypeSymbol) classSymbol.owner()).members().lookup(symbol.getName()).isEmpty();
+      return !((Symbol.TypeSymbolSemantic)classSymbol.owner()).lookupSymbols(symbol.name()).isEmpty();
     }
 
   }

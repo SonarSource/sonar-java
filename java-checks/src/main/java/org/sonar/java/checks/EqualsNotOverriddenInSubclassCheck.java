@@ -23,16 +23,13 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -77,28 +74,27 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean implementsEquals(ClassTree classTree) {
-    return hasNotFinalEqualsMethod(((ClassTreeImpl) classTree).getSymbol());
+    return hasNotFinalEqualsMethod(classTree.symbol());
   }
 
   private boolean parentClassImplementsEquals(ClassTree tree) {
-    Tree superClass = tree.superClass();
+    TypeTree superClass = tree.superClass();
     if (superClass != null) {
-      Type superClassType = ((AbstractTypedTree) superClass).getSymbolType();
+      Type superClassType = superClass.symbolType();
       // FIXME Workaround until SONARJAVA-901 is resolved
-      while (!superClassType.getSymbol().getType().isTagged(Type.UNKNOWN) && !superClassType.is("java.lang.Object")) {
-        TypeSymbol superClassSymbol = superClassType.getSymbol();
+      while (superClassType.symbol().type().isClass() && !superClassType.is("java.lang.Object")) {
+        Symbol.TypeSymbolSemantic superClassSymbol = superClassType.symbol();
         if (hasNotFinalEqualsMethod(superClassSymbol)) {
           return true;
         }
-        superClassType = superClassSymbol.getSuperclass();
+        superClassType = superClassSymbol.superClass();
       }
     }
     return false;
   }
 
-  private boolean hasNotFinalEqualsMethod(TypeSymbol superClassSymbol) {
-    List<Symbol> equalsMembers = superClassSymbol.members().lookup("equals");
-    for (Symbol symbol : equalsMembers) {
+  private boolean hasNotFinalEqualsMethod(Symbol.TypeSymbolSemantic superClassSymbol) {
+    for (Symbol symbol : superClassSymbol.lookupSymbols("equals")) {
       if (isEqualsMethod(symbol) && !symbol.isFinal()) {
         return true;
       }
@@ -107,9 +103,9 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean isEqualsMethod(Symbol symbol) {
-    if (symbol.isKind(Symbol.MTH)) {
-      MethodSymbol methodSymbol = (MethodSymbol) symbol;
-      return !methodSymbol.getParametersTypes().isEmpty() && methodSymbol.getParametersTypes().get(0).is("java.lang.Object");
+    if (symbol.isMethodSymbol()) {
+      List<Type> parameterTypes = ((Symbol.MethodSymbolSemantic) symbol).parameterTypes();
+      return !parameterTypes.isEmpty() && parameterTypes.get(0).is("java.lang.Object");
     }
     return false;
   }

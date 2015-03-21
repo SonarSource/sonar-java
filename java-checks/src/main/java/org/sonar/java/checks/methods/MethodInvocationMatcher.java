@@ -21,11 +21,10 @@ package org.sonar.java.checks.methods;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -98,8 +97,8 @@ public class MethodInvocationMatcher {
 
   private boolean matches(IdentifierTree id, Type callSiteType, SemanticModel semanticModel) {
     Symbol symbol = semanticModel.getReference(id);
-    if (symbol != null && symbol.isKind(Symbol.MTH)) {
-      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+    if (symbol != null && symbol.isMethodSymbol()) {
+      Symbol.MethodSymbolSemantic methodSymbol = (Symbol.MethodSymbolSemantic) symbol;
       if (isSearchedMethod(methodSymbol, callSiteType)) {
         return true;
       }
@@ -109,18 +108,18 @@ public class MethodInvocationMatcher {
 
   private Type getCallSiteType(MethodInvocationTree mit, SemanticModel semanticModel) {
     if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
-      return semanticModel.getEnclosingClass(mit).getType();
+      return semanticModel.getEnclosingClass(mit).type();
     } else if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTree) mit.methodSelect();
-      return ((AbstractTypedTree) methodSelect.expression()).getSymbolType();
+      return methodSelect.expression().symbolType();
     }
     return null;
   }
 
-  private boolean isSearchedMethod(Symbol.MethodSymbol symbol, Type callSiteType) {
-    boolean result = symbol.getName().equals(methodName) && parametersAcceptable(symbol);
+  private boolean isSearchedMethod(Symbol.MethodSymbolSemantic symbol, Type callSiteType) {
+    boolean result = symbol.name().equals(methodName) && parametersAcceptable(symbol);
     if (typeDefinition != null) {
-      result &= typeDefinition.matches(symbol.owner().getType());
+      result &= typeDefinition.matches(symbol.owner().type());
     }
     if (callSite != null) {
       result &= callSiteType != null && callSite.matches(callSiteType);
@@ -128,11 +127,11 @@ public class MethodInvocationMatcher {
     return result;
   }
 
-  private boolean parametersAcceptable(Symbol.MethodSymbol methodSymbol) {
+  private boolean parametersAcceptable(Symbol.MethodSymbolSemantic methodSymbol) {
     if (parameterTypes == null) {
       return true;
     }
-    List<Type> parametersTypes = methodSymbol.getParametersTypes();
+    List<Type> parametersTypes = methodSymbol.parameterTypes();
     List<String> arguments = parameterTypes;
     if (parametersTypes.size() == arguments.size()) {
       int i = 0;

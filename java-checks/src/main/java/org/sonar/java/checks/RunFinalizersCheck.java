@@ -25,7 +25,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -53,7 +52,6 @@ public class RunFinalizersCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
-    MethodInvocationTreeImpl miti = (MethodInvocationTreeImpl) mit;
-    addIssue(mit, "Remove this call to \"" + miti.getSymbol().owner().getName() + ".runFinalizersOnExit()\".");
+    addIssue(mit, "Remove this call to \"" + mit.symbol().owner().name() + ".runFinalizersOnExit()\".");
   }
 }

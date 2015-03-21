@@ -23,7 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -85,6 +86,11 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   }
 
   @Override
+  public Symbol symbol() {
+    return symbol;
+  }
+
+  @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitMethodInvocation(this);
   }
@@ -96,13 +102,6 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
       Iterators.singletonIterator(typeArguments),
       arguments.iterator()
       );
-  }
-
-  public Symbol getSymbol() {
-    if(symbol==null) {
-      throw new IllegalStateException("Symbol method should not be null");
-    }
-    return symbol;
   }
 
   public void setSymbol(Symbol symbol) {

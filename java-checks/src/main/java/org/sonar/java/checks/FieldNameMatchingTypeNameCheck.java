@@ -24,11 +24,10 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -71,10 +70,10 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.simpleName() != null) {
-      Symbol.TypeSymbol classSymbol = ((ClassTreeImpl) tree).getSymbol();
-      Collection<Symbol> members = classSymbol.members().scopeSymbols();
+      Symbol.TypeSymbolSemantic classSymbol = tree.symbol();
+      Collection<Symbol> members = classSymbol.memberSymbols();
       for (Symbol sym : members) {
-        if (sym.isKind(Symbol.VAR) && !staticFieldSameType(classSymbol, sym)) {
+        if (sym.isVariableSymbol() && !staticFieldSameType(classSymbol, sym)) {
           //Exclude static fields of the same type.
           fields.add(semanticModel.getTree(sym));
         }
@@ -86,8 +85,8 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
     fields.clear();
   }
 
-  private boolean staticFieldSameType(Symbol.TypeSymbol classSymbol, Symbol sym) {
-    return sym.getType() != null && sym.getType().equals(classSymbol.getType()) && sym.isStatic();
+  private boolean staticFieldSameType(Symbol classSymbol, Symbol sym) {
+    return sym.type() != null && sym.type().equals(classSymbol.type()) && sym.isStatic();
   }
 
   @Override

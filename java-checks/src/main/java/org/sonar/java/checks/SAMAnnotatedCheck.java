@@ -27,12 +27,10 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbolSemantic;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -102,12 +100,11 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
   }
 
   private boolean hasOneAbstractMethod(ClassTree classTree) {
-
-    Symbol.TypeSymbol symbol = ((ClassTreeImpl) classTree).getSymbol();
+    TypeSymbolSemantic symbol = classTree.symbol();
     if (symbol != null) {
-      List<Type> types = symbol.getInterfaces();
+      List<Type> types = symbol.interfaces();
       for (Type type : types) {
-        if (!((Type.ClassType) type).getSymbol().members().scopeSymbols().isEmpty()) {
+        if (!type.symbol().memberSymbols().isEmpty()) {
           return false;
         }
       }
@@ -132,11 +129,7 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
         List<String> args = Lists.newArrayList(arguments);
         if (method.parameters().size() == args.size()) {
           for (VariableTree var : method.parameters()) {
-            Symbol.VariableSymbol symbol = ((VariableTreeImpl) var).getSymbol();
-            // TODO(Godin): get rid of null check
-            if (symbol != null) {
-              args.remove(symbol.type());
-            }
+            args.remove(var.type().symbolType().name());
           }
           if (args.isEmpty()) {
             return false;

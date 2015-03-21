@@ -27,11 +27,12 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.java.resolve.Scope.OrderedScope;
 
 import javax.annotation.Nullable;
-
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class Symbol {
+//FIXME rename this class to avoid clash of name with interface.
+public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
 
   public static final int PCK = 1 << 0;
   public static final int TYP = 1 << 1;
@@ -55,8 +56,6 @@ public class Symbol {
 
   Type type;
 
-  boolean isParametrized = false;
-
   public Symbol(int kind, int flags, @Nullable String name, @Nullable Symbol owner) {
     this.kind = kind;
     this.flags = flags;
@@ -72,9 +71,7 @@ public class Symbol {
     return flags;
   }
 
-  /**
-   * The owner of this symbol.
-   */
+  @Override
   public Symbol owner() {
     return owner;
   }
@@ -86,10 +83,6 @@ public class Symbol {
   public SymbolMetadata metadata() {
     complete();
     return symbolMetadata;
-  }
-
-  interface Completer {
-    void complete(Symbol symbol);
   }
 
   public void complete() {
@@ -127,6 +120,7 @@ public class Symbol {
   /**
    * The closest enclosing class.
    */
+  @Override
   public TypeSymbol enclosingClass() {
     Symbol result = this;
     while (result != null && result.kind != TYP) {
@@ -135,12 +129,97 @@ public class Symbol {
     return (TypeSymbol) result;
   }
 
-  public boolean isKind(int kind) {
+  boolean isKind(int kind) {
     return (this.kind & kind) != 0;
   }
 
   public Type getType() {
     return type;
+  }
+
+  @Override
+  public org.sonar.plugins.java.api.semantic.Type type() {
+    return type;
+  }
+
+  @Override
+  public boolean isVariableSymbol() {
+    return isKind(VAR);
+  }
+
+  @Override
+  public boolean isTypeSymbol() {
+    return isKind(TYP);
+  }
+
+  @Override
+  public boolean isMethodSymbol() {
+    return isKind(MTH);
+  }
+
+  @Override
+  public boolean isStatic() {
+    return isFlag(Flags.STATIC);
+  }
+
+  @Override
+  public boolean isFinal() {
+    return isFlag(Flags.FINAL);
+  }
+
+  @Override
+  public boolean isEnum() {
+    return isFlag(Flags.ENUM);
+  }
+
+  @Override
+  public boolean isAbstract() {
+    return isFlag(Flags.ABSTRACT);
+  }
+
+  @Override
+  public boolean isPublic() {
+    return isFlag(Flags.PUBLIC);
+  }
+
+  @Override
+  public boolean isPrivate() {
+    return isFlag(Flags.PRIVATE);
+  }
+
+  @Override
+  public boolean isProtected() {
+    return isFlag(Flags.PROTECTED);
+  }
+
+  @Override
+  public boolean isDeprecated() {
+    return isFlag(Flags.DEPRECATED);
+  }
+
+  @Override
+  public boolean isVolatile() {
+    return isFlag(Flags.VOLATILE);
+  }
+
+  @Override
+  public String name() {
+    return name;
+  }
+
+  protected boolean isFlag(int flag) {
+    complete();
+    return (flags & flag) != 0;
+  }
+
+  @Override
+  public boolean isPackageVisibility() {
+    complete();
+    return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
+  }
+
+  interface Completer {
+    void complete(Symbol symbol);
   }
 
   /**
@@ -164,7 +243,7 @@ public class Symbol {
   /**
    * Represents a class, interface, enum or annotation type.
    */
-  public static class TypeSymbol extends Symbol {
+  public static class TypeSymbol extends Symbol implements TypeSymbolSemantic {
 
     Scope members;
     Scope typeParameters;
@@ -202,7 +281,7 @@ public class Symbol {
 
     public String getFullyQualifiedName() {
       String ownerName = "";
-      if(!owner.name.isEmpty()) {
+      if (!owner.name.isEmpty()) {
         ownerName = owner.name + ".";
       }
       return ownerName + name;
@@ -239,12 +318,32 @@ public class Symbol {
     public String toString() {
       return name;
     }
+
+    @Override
+    public org.sonar.plugins.java.api.semantic.Type superClass() {
+      return getSuperclass();
+    }
+
+    @Override
+    public List<org.sonar.plugins.java.api.semantic.Type> interfaces() {
+      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(getInterfaces());
+    }
+
+    @Override
+    public Collection<org.sonar.plugins.java.api.semantic.Symbol> memberSymbols() {
+      return Lists.<org.sonar.plugins.java.api.semantic.Symbol>newArrayList(members().scopeSymbols());
+    }
+
+    @Override
+    public Collection<org.sonar.plugins.java.api.semantic.Symbol> lookupSymbols(String name) {
+      return Lists.<org.sonar.plugins.java.api.semantic.Symbol>newArrayList(members().lookup(name));
+    }
   }
 
   /**
    * Represents a field, enum constant, method or constructor parameter, local variable, resource variable or exception parameter.
    */
-  public static class VariableSymbol extends Symbol {
+  public static class VariableSymbol extends Symbol implements VariableSymbolSemantic {
 
     public VariableSymbol(int flags, String name, Symbol owner) {
       super(VAR, flags, name, owner);
@@ -255,29 +354,22 @@ public class Symbol {
       this.type = type;
     }
 
-    // FIXME(Godin): method "type", which returns a String, looks very strange here:
-    public String type() {
-      return type.symbol.name;
-    }
-
   }
 
   /**
    * Represents a method, constructor or initializer (static or instance).
    */
-  public static class MethodSymbol extends Symbol {
+  public static class MethodSymbol extends Symbol implements MethodSymbolSemantic {
 
     TypeSymbol returnType;
     OrderedScope parameters;
     Scope typeParameters;
-    List<TypeSymbol> thrown;
     List<Type.TypeVariableType> typeVariableTypes;
-
 
     public MethodSymbol(int flags, String name, Type type, Symbol owner) {
       super(MTH, flags, name, owner);
       super.type = type;
-      this.returnType = ((Type.MethodType)type).resultType.symbol;
+      this.returnType = ((Type.MethodType) type).resultType.symbol;
       this.typeVariableTypes = Lists.newArrayList();
     }
 
@@ -294,11 +386,7 @@ public class Symbol {
       return parameters;
     }
 
-    public List<TypeSymbol> getThrownTypes() {
-      return thrown;
-    }
-
-    public List<Type> getParametersTypes() {
+    private List<Type> getParametersTypes() {
       Preconditions.checkState(super.type != null);
       return ((Type.MethodType) super.type).argTypes;
     }
@@ -309,7 +397,7 @@ public class Symbol {
 
     public void setMethodType(Type.MethodType methodType) {
       super.type = methodType;
-      if(methodType.resultType != null) {
+      if (methodType.resultType != null) {
         this.returnType = methodType.resultType.symbol;
       }
     }
@@ -358,22 +446,22 @@ public class Symbol {
     }
 
     private Boolean isOverriding(Symbol.MethodSymbol overridee, Type.ClassType classType) {
-      //same number and type of formal parameters
+      // same number and type of formal parameters
       if (getParametersTypes().size() != overridee.getParametersTypes().size()) {
         return false;
       }
       for (int i = 0; i < getParametersTypes().size(); i++) {
         Type paramOverrider = getParametersTypes().get(i);
         if (paramOverrider.isTagged(Type.UNKNOWN)) {
-          //FIXME : complete symbol table should not have unknown types and generics should be handled properly for this.
+          // FIXME : complete symbol table should not have unknown types and generics should be handled properly for this.
           return null;
         }
-        //Generics type should have same erasure see JLS8 8.4.2
+        // Generics type should have same erasure see JLS8 8.4.2
 
         Type overrideeType = overridee.getParametersTypes().get(i);
-        if(classType instanceof Type.ParametrizedTypeType) {
+        if (classType instanceof Type.ParametrizedTypeType) {
           overrideeType = ((Type.ParametrizedTypeType) classType).typeSubstitution.get(overrideeType);
-          if(overrideeType == null) {
+          if (overrideeType == null) {
             overrideeType = overridee.getParametersTypes().get(i);
           }
         }
@@ -381,7 +469,7 @@ public class Symbol {
           return false;
         }
       }
-      //we assume code is compiling so no need to check return type at this point.
+      // we assume code is compiling so no need to check return type at this point.
       return true;
     }
 
@@ -393,6 +481,20 @@ public class Symbol {
       typeVariableTypes.add(typeVariableType);
     }
 
+    @Override
+    public List<org.sonar.plugins.java.api.semantic.Type> parameterTypes() {
+      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(getParametersTypes());
+    }
+
+    @Override
+    public TypeSymbolSemantic returnType() {
+      return returnType;
+    }
+
+    @Override
+    public List<org.sonar.plugins.java.api.semantic.Type> thrownTypes() {
+      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(((Type.MethodType) super.type).thrown);
+    }
   }
 
   /**
@@ -407,58 +509,15 @@ public class Symbol {
 
     @Override
     public Type getSuperclass() {
-      //FIXME : should return upper bound or Object if no bound defined.
+      // FIXME : should return upper bound or Object if no bound defined.
       return null;
     }
 
     @Override
     public List<Type> getInterfaces() {
-      //FIXME : should return upperbound
+      // FIXME : should return upperbound
       return ImmutableList.of();
     }
   }
-
-  public boolean isStatic() {
-    return isFlag(Flags.STATIC);
-  }
-
-  public boolean isFinal() {
-    return isFlag(Flags.FINAL);
-  }
-
-  public boolean isEnum() {
-    return isFlag(Flags.ENUM);
-  }
-
-  public boolean isAbstract() {
-    return isFlag(Flags.ABSTRACT);
-  }
-
-  public boolean isPublic() {
-    return isFlag(Flags.PUBLIC);
-  }
-
-  public boolean isPrivate() {
-    return isFlag(Flags.PRIVATE);
-  }
-
-  public boolean isDeprecated() {
-    return isFlag(Flags.DEPRECATED);
-  }
-
-  public boolean isVolatile() {
-    return isFlag(Flags.VOLATILE);
-  }
-
-  protected boolean isFlag(int flag) {
-    complete();
-    return (flags & flag) != 0;
-  }
-
-  public boolean isPackageVisibility() {
-    complete();
-    return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
-  }
-
 
 }

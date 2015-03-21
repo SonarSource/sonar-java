@@ -23,11 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -39,7 +36,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
-import java.util.Set;
 
 @Rule(
   key = "S1849",
@@ -67,28 +63,20 @@ public class HasNextCallingNextCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isHasNextMethod(MethodTree methodTree) {
-    MethodTreeImpl method = (MethodTreeImpl) methodTree;
-    return "hasNext".equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty() && isIteratorMethod(method.getSymbol());
+    return "hasNext".equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty() && isIteratorMethod(methodTree.symbol());
   }
 
   private boolean isIteratorMethod(Symbol method) {
-    TypeSymbol methodOwner = method.owner().enclosingClass();
-    Set<ClassType> superTypes = methodOwner.superTypes();
-    for (ClassType classType : superTypes) {
-      if (classType.is("java.util.Iterator")) {
-        return true;
-      }
-    }
-    return false;
+    Type type = method.owner().enclosingClass().type();
+    return !type.is("java.util.Iterator") && type.isSubtypeOf("java.util.Iterator");
   }
 
   private class HasNextBodyVisitor extends BaseTreeVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      MethodInvocationTreeImpl invocation = (MethodInvocationTreeImpl) tree;
-      Symbol method = invocation.getSymbol();
-      if ("next".equals(method.getName()) && invocation.arguments().isEmpty() && isIteratorMethod(method)) {
+      Symbol method = tree.symbol();
+      if ("next".equals(method.name()) && tree.arguments().isEmpty() && isIteratorMethod(method)) {
         addIssue(tree, "Refactor the implementation of this \"Iterator.hasNext()\" method to not call \"Iterator.next()\".");
       }
       super.visitMethodInvocation(tree);

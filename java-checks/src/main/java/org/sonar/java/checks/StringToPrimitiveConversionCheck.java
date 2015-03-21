@@ -25,11 +25,9 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -66,7 +64,7 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.VARIABLE)) {
         VariableTreeImpl variableTree = (VariableTreeImpl) tree;
-        Type variableType = variableTree.getSymbol().getType();
+        Type variableType = variableTree.type().symbolType();
         PrimitiveCheck primitiveCheck = getPrimitiveCheck(variableType);
         ExpressionTree initializer = variableTree.initializer();
         if (primitiveCheck != null && initializer != null) {
@@ -86,7 +84,7 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
       return null;
     }
     for (PrimitiveCheck primitiveCheck : primitiveChecks) {
-      if (type.isTagged(primitiveCheck.tag)) {
+      if (type.isPrimitive(primitiveCheck.tag)) {
         return primitiveCheck;
       }
     }
@@ -95,24 +93,24 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
 
   private List<PrimitiveCheck> buildPrimitiveChecks() {
     return ImmutableList.of(
-      new PrimitiveCheck("int", "Integer", Type.INT),
-      new PrimitiveCheck("boolean", "Boolean", Type.BOOLEAN),
-      new PrimitiveCheck("byte", "Byte", Type.BYTE),
-      new PrimitiveCheck("double", "Double", Type.DOUBLE),
-      new PrimitiveCheck("float", "Float", Type.FLOAT),
-      new PrimitiveCheck("long", "Long", Type.LONG),
-      new PrimitiveCheck("short", "Short", Type.SHORT));
+      new PrimitiveCheck("int", "Integer", Type.Primitives.INT),
+      new PrimitiveCheck("boolean", "Boolean", Type.Primitives.BOOLEAN),
+      new PrimitiveCheck("byte", "Byte", Type.Primitives.BYTE),
+      new PrimitiveCheck("double", "Double", Type.Primitives.DOUBLE),
+      new PrimitiveCheck("float", "Float", Type.Primitives.FLOAT),
+      new PrimitiveCheck("long", "Long", Type.Primitives.LONG),
+      new PrimitiveCheck("short", "Short", Type.Primitives.SHORT));
   }
 
   private class PrimitiveCheck {
     private final String primitiveName;
     private final String className;
-    private final int tag;
+    private final Type.Primitives tag;
     private final String message;
     private final MethodInvocationMatcher unboxingInvocationMatcher;
     private final MethodInvocationMatcher valueOfInvocationMatcher;
 
-    private PrimitiveCheck(String primitiveName, String className, int tag) {
+    private PrimitiveCheck(String primitiveName, String className, Type.Primitives tag) {
       this.primitiveName = primitiveName;
       this.className = className;
       this.tag = tag;
@@ -148,15 +146,15 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
       } else if (expression.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) expression;
         Symbol reference = getSemanticModel().getReference(identifier);
-        if (reference != null && reference.isKind(Symbol.VAR) && getSemanticModel().getUsages(reference).size() == 1) {
-          VariableSymbol variableSymbol = (VariableSymbol) reference;
+        if (reference != null && reference.isVariableSymbol() && getSemanticModel().getUsages(reference).size() == 1) {
+          org.sonar.plugins.java.api.semantic.Symbol.VariableSymbolSemantic variableSymbol = (org.sonar.plugins.java.api.semantic.Symbol.VariableSymbolSemantic) reference;
           result = isBadlyInstanciatedVariable(variableSymbol);
         }
       }
       return result;
     }
 
-    private boolean isBadlyInstanciatedVariable(VariableSymbol variableSymbol) {
+    private boolean isBadlyInstanciatedVariable(org.sonar.plugins.java.api.semantic.Symbol.VariableSymbolSemantic variableSymbol) {
       Tree tree = getSemanticModel().getTree(variableSymbol);
       if (tree != null && tree.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) tree;
@@ -170,7 +168,7 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
 
     private boolean isStringBasedConstructor(NewClassTree newClassTree) {
       List<ExpressionTree> arguments = newClassTree.arguments();
-      return ((AbstractTypedTree) arguments.get(0)).getSymbolType().is("java.lang.String");
+      return arguments.get(0).symbolType().is("java.lang.String");
     }
 
     private String parseMethodName() {

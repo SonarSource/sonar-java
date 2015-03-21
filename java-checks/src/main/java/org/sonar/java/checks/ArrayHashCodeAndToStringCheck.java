@@ -26,8 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -62,8 +61,7 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
-    MethodInvocationTreeImpl methodInvocationTreeImpl = (MethodInvocationTreeImpl) mit;
-    String methodName = methodInvocationTreeImpl.getSymbol().getName();
+    String methodName = mit.symbol().name();
     addIssue(mit, "Use \"Arrays." + methodName + "(array)\" instead.");
   }
 
@@ -71,7 +69,7 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
 
     @Override
     public boolean matches(Type type) {
-      return type.isTagged(Type.ARRAY);
+      return type.isArray();
     }
 
   }

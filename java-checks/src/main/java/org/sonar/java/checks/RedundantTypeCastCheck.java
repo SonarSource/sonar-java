@@ -24,7 +24,6 @@ import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Type;
 import org.sonar.java.resolve.Types;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -69,8 +68,8 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
       addArgsToExclusion(tree);
     } else if (!excluded.contains(tree)) {
       TypeCastTree typeCastTree = (TypeCastTree) tree;
-      Type cast = ((AbstractTypedTree) typeCastTree.type()).getSymbolType();
-      Type expressionType = ((AbstractTypedTree) typeCastTree.expression()).getSymbolType();
+      Type cast = (Type) typeCastTree.type().symbolType();
+      Type expressionType = (Type) typeCastTree.expression().symbolType();
       Types types = new Types();
       if (!isExcluded(cast, expressionType) && (isRedundantNumericalCast(cast, expressionType) || isRedundantCast(cast, expressionType, types))) {
         addIssue(tree, "Remove this unnecessary cast to \"" + cast + "\".");
@@ -95,7 +94,7 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isExcluded(Type cast, Type expressionType) {
-    return cast.isTagged(Type.UNKNOWN);
+    return cast.isUnknown();
   }
 
   private boolean isRedundantCast(Type cast, Type expressionType, Types types) {

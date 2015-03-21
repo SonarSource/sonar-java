@@ -23,13 +23,14 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.Collection;
 import java.util.List;
 
 @Rule(
@@ -49,20 +50,20 @@ public class ThreadOverridesRunCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTreeImpl classTree = (ClassTreeImpl) tree;
-    Symbol.TypeSymbol classSymbol = classTree.getSymbol();
-    if (classSymbol != null && classSymbol.getSuperclass().is("java.lang.Thread") && !overridesRunMethod(classSymbol)) {
+    ClassTree classTree = (ClassTree) tree;
+    Symbol.TypeSymbolSemantic classSymbol = classTree.symbol();
+    if (classSymbol != null && classSymbol.superClass().is("java.lang.Thread") && !overridesRunMethod(classSymbol)) {
       addIssue(tree, "Stop extending the Thread class as the \"run\" method is not overridden");
     }
   }
 
-  private boolean overridesRunMethod(Symbol.TypeSymbol classSymbol) {
-    List<Symbol> runSymbols = classSymbol.members().lookup("run");
+  private boolean overridesRunMethod(Symbol.TypeSymbolSemantic classSymbol) {
+    Collection<Symbol> runSymbols = classSymbol.lookupSymbols("run");
     boolean overridesRunMethod = false;
     for (Symbol run : runSymbols) {
-      if (run.isKind(Symbol.MTH)) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) run;
-        if (methodSymbol.getParametersTypes().isEmpty()) {
+      if (run.isMethodSymbol()) {
+        Symbol.MethodSymbolSemantic methodSymbol = (Symbol.MethodSymbolSemantic) run;
+        if (methodSymbol.parameterTypes().isEmpty()) {
           overridesRunMethod = true;
           break;
         }

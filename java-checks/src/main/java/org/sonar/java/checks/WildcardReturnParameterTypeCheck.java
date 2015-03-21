@@ -24,7 +24,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -70,7 +69,7 @@ public class WildcardReturnParameterTypeCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitParameterizedType(ParameterizedTypeTree tree) {
-      classType = ((AbstractTypedTree)tree.type()).getSymbolType().is("java.lang.Class");
+      classType = tree.type().symbolType().is("java.lang.Class");
       super.visitParameterizedType(tree);
       classType = false;
     }

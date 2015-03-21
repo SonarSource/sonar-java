@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
@@ -81,7 +81,7 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
   private String getSymbols(Collection<Symbol> updateSymbols) {
     List<String> names = Lists.newArrayList();
     for (Symbol updateSymbol : updateSymbols) {
-      names.add(updateSymbol.getName());
+      names.add(updateSymbol.name());
     }
     return Joiner.on(", ").join(names);
   }
@@ -154,7 +154,7 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     private void checkIdentifier(IdentifierTree tree) {
       Symbol reference = getSemanticModel().getReference(tree);
       String name = tree.name();
-      if (reference != null && reference.isKind(Symbol.MTH)) {
+      if (reference != null && reference.isMethodSymbol()) {
         name += "()";
       }
       conditionNames.add(name);

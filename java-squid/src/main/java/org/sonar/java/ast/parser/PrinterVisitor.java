@@ -27,14 +27,16 @@ import com.sonar.sslr.impl.Parser;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -50,7 +52,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
 
   private final StringBuilder sb;
   private final SemanticModel semanticModel;
-  private final Map<IdentifierTree, Symbol> idents = new HashMap<IdentifierTree, Symbol>();
+  private final Map<IdentifierTree, Symbol> idents = new HashMap<>();
   private int indentLevel;
 
   public PrinterVisitor(@Nullable SemanticModel semanticModel) {
@@ -125,8 +127,15 @@ public class PrinterVisitor extends BaseTreeVisitor {
         Preconditions.checkState(sym == null);
         sym = idents.get(tree);
       }
-      if (tree instanceof AbstractTypedTree) {
-        sb.append(" ").append(((AbstractTypedTree) tree).getSymbolType());
+      Type type = null;
+      if (tree instanceof ExpressionTree) {
+        type = ((ExpressionTree) tree).symbolType();
+
+      } else if (tree instanceof TypeTree) {
+        type = ((TypeTree) tree).symbolType();
+      }
+      if(type != null) {
+        sb.append(" ").append(type.fullyQualifiedName());
       }
 
       if (sym != null && semanticModel != null) {

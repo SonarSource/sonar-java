@@ -24,11 +24,9 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -73,16 +71,16 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) tree;
-        Type type = ((AbstractTypedTree) variableTree.type()).getSymbolType();
+        Type type = variableTree.type().symbolType();
         if (type.is("javax.servlet.http.Cookie") && isConstructorInitialized(variableTree)) {
           Symbol variableSymbol = getSemanticModel().getSymbol(variableTree);
           //Ignore field variables
-          if (variableSymbol.owner().getType().isTagged(Type.METHOD)) {
+          if (variableSymbol.owner().isMethodSymbol()) {
             unsecuredCookies.add(variableSymbol);
           }
         }
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
+        MethodInvocationTree mit = (MethodInvocationTree) tree;
         if (isSetSecureCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
           MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
           if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
@@ -98,8 +96,8 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
     return variableTree.initializer() != null && variableTree.initializer().is(Tree.Kind.NEW_CLASS);
   }
 
-  private boolean isSetSecureCall(MethodInvocationTreeImpl mit) {
-    Symbol methodSymbol = mit.getSymbol();
+  private boolean isSetSecureCall(MethodInvocationTree mit) {
+    Symbol methodSymbol = mit.symbol();
     boolean hasArityOne = mit.arguments().size() == 1;
     if (hasArityOne && isCallSiteCookie(methodSymbol)) {
       ExpressionTree expressionTree = mit.arguments().get(0);
@@ -112,7 +110,7 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isCallSiteCookie(Symbol methodSymbol) {
-    return !methodSymbol.isKind(Symbol.ERRONEOUS) && methodSymbol.owner().getType().is("javax.servlet.http.Cookie");
+    return methodSymbol.isMethodSymbol() && methodSymbol.owner().type().is("javax.servlet.http.Cookie");
   }
 
   private IdentifierTree getIdentifier(MethodInvocationTree mit) {

@@ -26,8 +26,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -67,38 +67,37 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean isPublic(MethodTree methodTree) {
-    return ((MethodTreeImpl) methodTree).getSymbol().isPublic();
+    return methodTree.symbol().isPublic();
   }
 
   private List<String> getThrownCheckedExceptions(MethodTree methodTree) {
-    List<Symbol.TypeSymbol> thrownClasses = ((MethodTreeImpl) methodTree).getSymbol().getThrownTypes();
     ImmutableList.Builder<String> builder = ImmutableList.builder();
-    for (Symbol.TypeSymbol thrownClass : thrownClasses) {
+    for (Type thrownClass : methodTree.symbol().thrownTypes()) {
       if (!isSubClassOfRuntimeException(thrownClass)) {
-        builder.add(thrownClass.owner().getName() + "." + thrownClass.getName());
+        builder.add(thrownClass.fullyQualifiedName());
       }
     }
     return builder.build();
   }
 
-  private static boolean isSubClassOfRuntimeException(Symbol.TypeSymbol thrownClass) {
-    Symbol.TypeSymbol typeSymbol = thrownClass;
+  private static boolean isSubClassOfRuntimeException(Type thrownClass) {
+    Symbol.TypeSymbolSemantic typeSymbol = thrownClass.symbol();
     while (typeSymbol != null) {
-      if (isRuntimeException(typeSymbol)) {
+      if (isRuntimeException(typeSymbol.type())) {
         return true;
       }
-      Type superType = typeSymbol.getSuperclass();
+      Type superType = typeSymbol.superClass();
       if (superType == null) {
         typeSymbol = null;
       } else {
-        typeSymbol = ((Type.ClassType) superType).getSymbol();
+        typeSymbol = superType.symbol();
       }
     }
     return false;
   }
 
-  private static boolean isRuntimeException(Symbol.TypeSymbol thrownClass) {
-    return "RuntimeException".equals(thrownClass.getName()) && "java.lang".equals(thrownClass.owner().getName());
+  private static boolean isRuntimeException(Type thrownClass) {
+    return thrownClass.is("java.lang.RuntimeException");
   }
 
 }

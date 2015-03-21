@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -98,7 +98,7 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
       }
       if (variable.is(Kind.IDENTIFIER)) {
         Symbol variableSymbol = getSemanticModel().getReference((IdentifierTree) variable);
-        return variableSymbol != null && variableSymbol.owner().isKind(Symbol.TYP);
+        return variableSymbol != null && variableSymbol.owner().isTypeSymbol();
       }
       return false;
     }

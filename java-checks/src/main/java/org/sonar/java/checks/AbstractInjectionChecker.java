@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -86,7 +87,7 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
     }
     //arg is not a local variable nor a constant, so it is a parameter or a field.
     parameterName = arg.name();
-    return symbol.owner().isKind(Symbol.MTH) && !firstLevel;
+    return symbol.owner().isMethodSymbol() && !firstLevel;
   }
 
   public boolean isConstant(Symbol symbol) {

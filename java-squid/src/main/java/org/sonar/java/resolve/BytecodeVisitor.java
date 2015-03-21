@@ -191,7 +191,6 @@ public class BytecodeVisitor extends ClassVisitor {
         ReadType typeReader = new ReadType();
         new SignatureReader(signature).accept(typeReader);
         symbol.type = typeReader.typeRead;
-        symbol.isParametrized = symbol.type instanceof Type.TypeVariableType;
       }
       // checks for annotations on the field
       return new BytecodeFieldVisitor(symbol, this);
@@ -326,7 +325,6 @@ public class BytecodeVisitor extends ClassVisitor {
       classSymbol.addTypeParameter((Type.TypeVariableType) typeVariableSymbol.type);
       bounds = Lists.newArrayList();
       ((Type.TypeVariableType) typeVariableSymbol.type).bounds = bounds;
-      classSymbol.isParametrized = true;
     }
 
     @Override
@@ -396,7 +394,6 @@ public class BytecodeVisitor extends ClassVisitor {
       methodSymbol.addTypeParameter((Type.TypeVariableType) typeVariableSymbol.type);
       bounds = Lists.newArrayList();
       ((Type.TypeVariableType) typeVariableSymbol.type).bounds = bounds;
-      methodSymbol.isParametrized = true;
     }
 
     @Override

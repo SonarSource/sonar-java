@@ -23,10 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -92,8 +91,7 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean hasFloatingType(ExpressionTree expressionTree) {
-    Type symbolType = ((AbstractTypedTree) expressionTree).getSymbolType();
-    return symbolType.isTagged(Type.FLOAT) || symbolType.isTagged(Type.DOUBLE);
+    return expressionTree.symbolType().isPrimitive(Type.Primitives.FLOAT) || expressionTree.symbolType().isPrimitive(Type.Primitives.DOUBLE);
   }
 
 }

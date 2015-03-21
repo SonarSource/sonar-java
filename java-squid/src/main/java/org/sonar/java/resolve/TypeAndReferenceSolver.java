@@ -27,8 +27,6 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
@@ -109,7 +107,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitMethod(MethodTree tree) {
     //skip return type, and throw clauses : visited in second pass.
     scan(tree.modifiers());
-    completeMetadata(((MethodTreeImpl) tree).getSymbol(), tree.modifiers().annotations());
+    completeMetadata((Symbol.MethodSymbol) tree.symbol(), tree.modifiers().annotations());
     scan(tree.typeParameters());
     // revisits the parameters to resolve their annotations.
     scan(tree.parameters());
@@ -121,7 +119,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitClass(ClassTree tree) {
     //skip superclass and interfaces : visited in second pass.
     scan(tree.modifiers());
-    completeMetadata(((ClassTreeImpl) tree).getSymbol(), tree.modifiers().annotations());
+    completeMetadata((Symbol) tree.symbol(), tree.modifiers().annotations());
     scan(tree.typeParameters());
     scan(tree.members());
   }
@@ -448,7 +446,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (tree.classBody() != null) {
       Type.ClassType anonymousClassType = symbols.unknownType;
       Type type = ((AbstractTypedTree) tree.identifier()).getSymbolType();
-      Symbol.TypeSymbol symbol = ((ClassTreeImpl) tree.classBody()).getSymbol();
+      Symbol.TypeSymbol symbol = (Symbol.TypeSymbol) tree.classBody().symbol();
       if (symbol != null) {
         anonymousClassType = (Type.ClassType) symbol.type;
         if (type.getSymbol().isFlag(Flags.INTERFACE)) {
@@ -549,7 +547,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     scan(newClassTree.arguments());
     if(newClassTree.classBody() != null) {
       scan(newClassTree.classBody());
-      Symbol.TypeSymbol symbol = ((ClassTreeImpl) newClassTree.classBody()).getSymbol();
+      Symbol.TypeSymbol symbol = (Symbol.TypeSymbol) newClassTree.classBody().symbol();
       if(symbol != null) {
         ((Type.ClassType) symbol.type).supertype = getType(newClassTree.identifier());
       }

@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -52,5 +53,7 @@ public interface MethodInvocationTree extends ExpressionTree {
   List<ExpressionTree> arguments();
 
   SyntaxToken closeParenToken();
+
+  Symbol symbol();
 
 }

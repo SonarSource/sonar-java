@@ -29,6 +29,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import java.io.File;
 
@@ -51,10 +52,10 @@ class Result {
     return new Result(SemanticModel.createFor((CompilationUnitTree) astNode, Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
   }
 
-  public Symbol symbol(String name) {
+  public org.sonar.java.resolve.Symbol symbol(String name) {
     Symbol result = null;
     for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
-      if (name.equals(symbol.name)) {
+      if (name.equals(symbol.name())) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");
         }
@@ -64,13 +65,13 @@ class Result {
     if (result == null) {
       throw new IllegalArgumentException("Symbol not found");
     }
-    return result;
+    return (org.sonar.java.resolve.Symbol) result;
   }
 
-  public Symbol symbol(String name, int line) {
+  public org.sonar.java.resolve.Symbol symbol(String name, int line) {
     Symbol result = null;
     for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
-      if (name.equals(symbol.name) && ((JavaTree) semanticModel.getTree(symbol)).getAstNode().getTokenLine() == line) {
+      if (name.equals(symbol.name()) && ((JavaTree) semanticModel.getTree(symbol)).getAstNode().getTokenLine() == line) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");
         }
@@ -80,11 +81,11 @@ class Result {
     if (result == null) {
       throw new IllegalArgumentException("Symbol not found");
     }
-    return result;
+    return (org.sonar.java.resolve.Symbol) result;
   }
 
-  public Symbol reference(int line, int column) {
-    return (Symbol) referenceTree(line, column, true);
+  public org.sonar.java.resolve.Symbol reference(int line, int column) {
+    return (org.sonar.java.resolve.Symbol) referenceTree(line, column, true);
   }
 
   public IdentifierTree referenceTree(int line, int column) {
