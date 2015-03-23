@@ -86,13 +86,21 @@ public class NullPointerCheckTest {
       .next().atLine(270).withMessage("object1 can be null.")
       .next().atLine(278).withMessage("object can be null.")
       .next().atLine(278).withMessage("object can be null.")
+      .next().atLine(283).withMessage("object can be null.")
+      .next().atLine(284).withMessage("object can be null.")
       .next().atLine(292).withMessage("set can be null.")
+      .next().atLine(293).withMessage("head can be null.")
       .next().atLine(295).withMessage("value can be null.")
+      .next().atLine(297).withMessage("head can be null.")
       .next().atLine(303).withMessage("object1 can be null.")
+      .next().atLine(304).withMessage("object1 can be null.")
       .next().atLine(306).withMessage("object2 can be null.")
-      .next().atLine(332).withMessage("str can be null.")
-      .next().atLine(351).withMessage("object can be null.")
-      .next().atLine(353).withMessage("object can be null.");
+      .next().atLine(308).withMessage("object1 can be null.")
+      .next().atLine(333).withMessage("str can be null.")
+      .next().atLine(352).withMessage("object can be null.")
+      .next().atLine(354).withMessage("object can be null.")
+      .next().atLine(361).withMessage("object12 can be null.")
+      .next().atLine(376).withMessage("object22 can be null.");
   }
 
   @Test
