@@ -336,13 +336,21 @@ class NullPointerTest {
     str.length(); // False negative
   }
 
-  public void test(@Nullable Object o) {
+  public void testMergeOnParameter(@Nullable Object o) {
     if(o == null) {
       return;
     }
     o.hashCode(); // Compliant, constraint is lost
     Object a = o;
     a.hashCode(); // Compliant
+  }
+
+  public void testAssignNullableMethod() {
+    Object object;
+    object = nullableMethod();
+    if(object.hashCode()); // issue
+    object = null;
+    if(object.hashCode()); // issue
   }
 
   @interface CoverageAnnotation {
