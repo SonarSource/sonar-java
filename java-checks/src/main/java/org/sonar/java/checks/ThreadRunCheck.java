@@ -19,101 +19,39 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.bytecode.asm.AsmClass;
-import org.sonar.java.bytecode.asm.AsmEdge;
-import org.sonar.java.bytecode.asm.AsmMethod;
-import org.sonar.java.bytecode.asm.AsmResource;
-import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceFile;
+
+import java.util.List;
 
 @Rule(
-  key = ThreadRunCheck.RULE_KEY,
+  key = "S1217",
   name = "Thread.run() and Runnable.run() should not be called directly",
   tags = {"cert", "cwe", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("20min")
-public class ThreadRunCheck extends BytecodeVisitor {
-
-  public static final String RULE_KEY = "S1217";
-
-  private static final String THREAD_CLASS = "java/lang/Thread";
-  private static final String RUNNABLE_CLASS = "java/lang/Runnable";
-
-  private AsmClass asmClass;
+public class ThreadRunCheck extends AbstractMethodDetection {
 
   @Override
-  public void visitClass(AsmClass asmClass) {
-    this.asmClass = asmClass;
+  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(
+      MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Runnable")).name("run").withNoParameterConstraint());
   }
 
   @Override
-  public void visitEdge(AsmEdge edge) {
-    if (notSuperCall(edge) && isCallToRun(edge) && isThreadOrRunnable(edge.getTargetAsmClass())) {
-      SourceFile sourceFile = getSourceFile(asmClass);
-      CheckMessage message = new CheckMessage(this, "Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
-      message.setLine(edge.getSourceLineNumber());
-      sourceFile.log(message);
-    }
-  }
-
-  private boolean notSuperCall(AsmEdge edge) {
-    return !(isCallFromRun(edge) && isCallToRun(edge) && isParentFromEqualsTarget(edge));
-  }
-
-  private boolean isParentFromEqualsTarget(AsmEdge edge) {
-    boolean result = false;
-    AsmClass superclass = edge.getFrom().getParent().getSuperClass();
-    if (superclass != null) {
-      result = superclass.equals(edge.getTargetAsmClass());
-    }
-    return result;
-  }
-
-  private static boolean isCallFromRun(AsmEdge edge) {
-    return isCallRun(edge.getFrom());
-  }
-
-  private static boolean isCallToRun(AsmEdge edge) {
-    return isCallRun(edge.getTo());
-  }
-
-  private static boolean isCallRun(AsmResource resource) {
-    return resource instanceof AsmMethod && "run()V".equals(((AsmMethod) resource).getKey());
-  }
-
-
-  private static boolean isThreadOrRunnable(AsmClass asmClass) {
-    AsmClass currentClass = asmClass;
-    while (currentClass != null) {
-      if (THREAD_CLASS.equals(currentClass.getInternalName()) ||
-        RUNNABLE_CLASS.equals(currentClass.getInternalName())) {
-        return true;
-      }
-
-      for (AsmClass implementedInterface : currentClass.getImplementedInterfaces()) {
-        if (RUNNABLE_CLASS.equals(implementedInterface.getInternalName())) {
-          return true;
-        }
-      }
-
-      currentClass = currentClass.getSuperClass();
-    }
-
-    return false;
-  }
-
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
+  protected void onMethodFound(MethodInvocationTree mit) {
+    addIssue(mit, "Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
   }
 
 }
