@@ -25,7 +25,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Type.ArrayType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -97,7 +96,7 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
   private Type getExpectedType(Type providedType, List<Type> parametersTypes, int index, boolean varargs) {
     int lastParameterIndex = parametersTypes.size() - 1;
     Type lastParameterType = parametersTypes.get(lastParameterIndex);
-    Type lastExpectedType = varargs ? ((ArrayType) lastParameterType).elementType() : lastParameterType;
+    Type lastExpectedType = varargs ? ((Type.ArrayTypeSemantic) lastParameterType).elementType() : lastParameterType;
     if (index > lastParameterIndex || (index == lastParameterIndex && varargs && !providedType.isArray())) {
       return lastExpectedType;
     }

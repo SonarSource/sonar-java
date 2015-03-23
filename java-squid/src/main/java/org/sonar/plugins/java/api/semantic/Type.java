@@ -137,4 +137,12 @@ public interface Type {
    * @return the symbol declaring this type.
    */
   Symbol.TypeSymbolSemantic symbol();
+
+  interface ArrayTypeSemantic extends Type {
+
+    Type elementType();
+
+  }
+
+
 }

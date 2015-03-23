@@ -111,7 +111,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
       return true;
     }
     if (type.isArray()) {
-      return implementsSerializable(((org.sonar.java.resolve.Type.ArrayType) type).elementType());
+      return implementsSerializable(((Type.ArrayTypeSemantic) type).elementType());
     }
     if (type.isClass() || type.isTagged(org.sonar.java.resolve.Type.TYPEVAR)) {
       return type.erasure().isSubtypeOf("java.io.Serializable");
