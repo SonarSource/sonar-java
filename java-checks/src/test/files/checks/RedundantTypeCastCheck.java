@@ -1,9 +1,9 @@
+import java.util.Arrays;
 import java.util.List;
 class Outer {
   class A {
   }
-  class B extends A {
-  }
+  class B extends A { }
   List<String> foo() {
     Object obj;
     Object o1 = (List<String>) foo(); //NonCompliant
@@ -38,5 +38,17 @@ class Outer {
       Object o = (Object) fun().newInstance();
     }
     Class fun() { return null;}
+    public <T> T[] toArray(T[] a) {
+      Object[] elementData;
+      // Make a new array of a's runtime type, but my contents:
+      return (T[]) Arrays.copyOf(elementData, 12, a.getClass()); //NonCompliant
+    }
+    String[] fun2(){
+      return (String[]) null; // NonCompliant
+    }
+    void fun3() {
+      Object[] a = null;
+      java.util.Collection<C> c = (java.util.Collection<C>) Arrays.asList(a);
+    }
   }
 }

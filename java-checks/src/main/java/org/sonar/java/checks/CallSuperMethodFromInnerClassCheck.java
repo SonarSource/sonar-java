@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Types;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -89,7 +88,7 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     private boolean isInherited(Symbol symbol) {
       Type methodOwnerType = symbol.owner().type();
       Type innerType = classSymbol.type();
-      return !symbol.isStatic() && new Types().isSubtype((org.sonar.java.resolve.Type) innerType, (org.sonar.java.resolve.Type) methodOwnerType)
+      return !symbol.isStatic() && innerType.isSubtypeOf(methodOwnerType)
         && !classSymbol.owner().type().equals(methodOwnerType) && !innerType.equals(methodOwnerType);
     }
 

@@ -44,6 +44,8 @@ public class RedundantTypeCastCheckTest {
         .next().atLine(15).withMessage("Remove this unnecessary cast to \"A[][]\".")
         .next().atLine(24).withMessage("Remove this unnecessary cast to \"int\".")
         .next().atLine(38).withMessage("Remove this unnecessary cast to \"Object\".")
+        .next().atLine(44).withMessage("Remove this unnecessary cast to \"T[]\".")
+        .next().atLine(47).withMessage("Remove this unnecessary cast to \"String[]\".")
     ;
   }
 }

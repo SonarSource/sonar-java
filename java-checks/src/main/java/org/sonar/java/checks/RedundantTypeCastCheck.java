@@ -25,7 +25,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.Type;
-import org.sonar.java.resolve.Types;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -70,8 +69,7 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
       TypeCastTree typeCastTree = (TypeCastTree) tree;
       Type cast = (Type) typeCastTree.type().symbolType();
       Type expressionType = (Type) typeCastTree.expression().symbolType();
-      Types types = new Types();
-      if (!isExcluded(cast) && (isRedundantNumericalCast(cast, expressionType) || isRedundantCast(cast, expressionType, types))) {
+      if (!isExcluded(cast) && (isRedundantNumericalCast(cast, expressionType) || isRedundantCast(cast, expressionType))) {
         addIssue(tree, "Remove this unnecessary cast to \"" + cast + "\".");
       }
     }
@@ -97,12 +95,12 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
     return cast.isUnknown();
   }
 
-  private boolean isRedundantCast(Type cast, Type expressionType, Types types) {
+  private boolean isRedundantCast(Type cast, Type expressionType) {
     Type erasedExpressionType = expressionType;
     if(erasedExpressionType.isTagged(Type.TYPEVAR)) {
       erasedExpressionType = erasedExpressionType.erasure();
     }
-    return !cast.isNumerical() && types.isSubtype(erasedExpressionType, cast);
+    return erasedExpressionType.equals(cast) || (!(cast instanceof Type.ParametrizedTypeType) && !cast.isNumerical() && erasedExpressionType.isSubtypeOf(cast));
   }
 
   private boolean isRedundantNumericalCast(Type cast, Type expressionType) {

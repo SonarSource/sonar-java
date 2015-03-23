@@ -83,11 +83,13 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
     if (!parametersTypes.isEmpty()) {
       for (int index = 0; index < arguments.size(); index++) {
         ExpressionTree argument = arguments.get(index);
-        Type providedType = argument.symbolType();
-        Type expectedType = getExpectedType(providedType, parametersTypes, index, methodSymbol.isVarArgs());
-        if (expectedType.is("java.lang.Runnable") && providedType.isSubtypeOf("java.lang.Thread")
-          || (expectedType.is("java.lang.Runnable[]") && (providedType.isSubtypeOf("java.lang.Thread[]")))) {
-          addIssue(argument, getMessage(argument, providedType, index));
+        if (!argument.is(Kind.NULL_LITERAL)) {
+          Type providedType = argument.symbolType();
+          Type expectedType = getExpectedType(providedType, parametersTypes, index, methodSymbol.isVarArgs());
+          if (expectedType.is("java.lang.Runnable") && providedType.isSubtypeOf("java.lang.Thread")
+            || (expectedType.is("java.lang.Runnable[]") && (providedType.isSubtypeOf("java.lang.Thread[]")))) {
+            addIssue(argument, getMessage(argument, providedType, index));
+          }
         }
       }
     }

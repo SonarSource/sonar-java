@@ -62,3 +62,15 @@ class OuterClass3 {
     }
   }
 }
+
+class GenericParent<T> {
+  T foo(){}
+}
+class OuterClass4 {
+  Object foo();
+  class innerClass<T> extends GenericParent<T> {
+    void bar() {
+      foo(); // NonCompliant
+    }
+  }
+}

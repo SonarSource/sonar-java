@@ -150,6 +150,17 @@ public class TypeTest {
     assertThat(arrayType.isSubtypeOf("java.lang.Object[]")).isTrue();
     assertThat(arrayType.isSubtypeOf(new Type.ArrayType(symbols.objectType, symbols.arrayClass))).isTrue();
 
+    assertThat(arrayType.isSubtypeOf("java.lang.Object")).isTrue();
+    assertThat(arrayType.isSubtypeOf(symbols.objectType)).isTrue();
+
+    assertThat(symbols.nullType.isSubtypeOf(symbols.objectType)).isTrue();
+    assertThat(symbols.nullType.isSubtypeOf("java.lang.Object")).isTrue();
+    assertThat(symbols.objectType.isSubtypeOf(symbols.nullType)).isFalse();
+
+    assertThat(symbols.nullType.isSubtypeOf(arrayType)).isTrue();
+    assertThat(arrayType.isSubtypeOf(symbols.nullType)).isFalse();
+    assertThat(symbols.nullType.isSubtypeOf(symbols.nullType)).isTrue();
+
     assertThat(arrayType.isSubtypeOf("org.foo.bar.SomeClass[]")).isFalse();
 
     assertThat(typeVariableType.isSubtypeOf("java.lang.Object")).isTrue();

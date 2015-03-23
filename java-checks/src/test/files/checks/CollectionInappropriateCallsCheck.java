@@ -128,3 +128,11 @@ class mySet<E> extends AbstractSet<E> {
     dejaVu.remove(a);
   }
 }
+
+class F<T> {
+  java.util.Vector<F<String>> vectors;
+  void f() {
+    F f;
+    vectors.contains(f);
+  }
+}

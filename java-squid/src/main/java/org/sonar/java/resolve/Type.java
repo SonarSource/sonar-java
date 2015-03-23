@@ -101,9 +101,12 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
         return true;
       }
     } else if (isTagged(ARRAY)) {
-      return fullyQualifiedName.endsWith("[]") && ((ArrayType) this).elementType.isSubtypeOf(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2));
+      return fullyQualifiedName.equals("java.lang.Object") ||
+          (fullyQualifiedName.endsWith("[]") && ((ArrayType) this).elementType.isSubtypeOf(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2)));
     } else if (isTagged(TYPEVAR)) {
       return erasure().isSubtypeOf(fullyQualifiedName);
+    } else if (isTagged(BOT)) {
+      return true;
     }
     return false;
   }
@@ -111,13 +114,20 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
   @Override
   public boolean isSubtypeOf(org.sonar.plugins.java.api.semantic.Type superType) {
     Type supType = (Type) superType;
-    if (this.isTagged(Type.ARRAY) && supType.isTagged(Type.ARRAY)) {
+    if (this.isTagged(Type.ARRAY)) {
       //Handle covariance of arrays.
-      return ((Type.ArrayType) this).elementType().isSubtypeOf(((Type.ArrayType) supType).elementType());
+      if(supType.isTagged(Type.ARRAY)) {
+        return ((Type.ArrayType) this).elementType().isSubtypeOf(((Type.ArrayType) supType).elementType());
+      }
+      //Only possibility to be supertype of array without being an array is to be Object.
+      return supType.fullyQualifiedName().equals("java.lang.Object");
     } else if (this.isTagged(Type.CLASS) && supType.isTagged(Type.CLASS)) {
-      Type.ClassType expressionType = (Type.ClassType) this;
-      Type.ClassType instanceOfType = (Type.ClassType) supType;
-      return expressionType == instanceOfType || expressionType.getSymbol().superTypes().contains(instanceOfType);
+      Type.ClassType superClassType = (Type.ClassType) supType;
+      return this.equals(superClassType) || this.superTypeContains(superClassType.fullyQualifiedName());
+    } else if(isTagged(TYPEVAR)) {
+      return this.equals(superType) || erasure().isSubtypeOf(superType.erasure());
+    } else if(isTagged(BOT)) {
+      return supType.isTagged(BOT) || superType.isClass() || superType.isArray();
     }
     return false;
   }
