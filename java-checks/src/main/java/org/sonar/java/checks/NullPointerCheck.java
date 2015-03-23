@@ -103,8 +103,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     // TODO(merciesa): array[expr] = and mse.identifier = requires advanced tracking and are left outside of the scope
     if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
       VariableSymbol identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.variable());
-      AbstractValue value = tree.expression().is(Tree.Kind.NULL_LITERAL) ? AbstractValue.NULL : AbstractValue.UNKNOWN;
-      currentState.setVariableValue(identifierSymbol, value);
+      currentState.setVariableValue(identifierSymbol, checkNullity(tree.expression()));
     }
     super.visitAssignmentExpression(tree);
   }
