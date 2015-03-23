@@ -289,7 +289,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
       if (symbol != null && symbol.isVariableSymbol()) {
         AbstractValue value = currentState.getVariableValue((VariableSymbol) symbol);
-        if (value != AbstractValue.UNKNOWN) {
+        if (value != AbstractValue.UNSET) {
           return value;
         }
         return checkNullity(symbol);
@@ -336,6 +336,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   public enum AbstractValue {
+    UNSET,
     // value is known to be not null.
     NOTNULL,
     // value is known to be null.
@@ -462,7 +463,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
           return result;
         }
       }
-      return AbstractValue.UNKNOWN;
+      return AbstractValue.UNSET;
     }
 
     // sets the value of the variable in the current state.

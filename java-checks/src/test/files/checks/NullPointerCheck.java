@@ -336,6 +336,15 @@ class NullPointerTest {
     str.length(); // False negative
   }
 
+  public void test(@Nullable Object o) {
+    if(o == null) {
+      return;
+    }
+    o.hashCode(); // Compliant, constraint is lost
+    Object a = o;
+    a.hashCode(); // Compliant
+  }
+
   @interface CoverageAnnotation {
   }
 
