@@ -102,8 +102,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     return implementsSerializable(((TypeTree) tree).symbolType());
   }
 
-  private boolean implementsSerializable(@Nullable Type semanticType) {
-    org.sonar.java.resolve.Type type = (org.sonar.java.resolve.Type) semanticType;
+  private boolean implementsSerializable(@Nullable Type type) {
     if (type == null || type.isUnknown()) {
       return false;
     }
@@ -113,7 +112,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     if (type.isArray()) {
       return implementsSerializable(((Type.ArrayTypeSemantic) type).elementType());
     }
-    if (type.isClass() || type.isTagged(org.sonar.java.resolve.Type.TYPEVAR)) {
+    if (type.isClass() || ((org.sonar.java.resolve.Type) type).isTagged(org.sonar.java.resolve.Type.TYPEVAR)) {
       return type.erasure().isSubtypeOf("java.io.Serializable");
     }
     return false;

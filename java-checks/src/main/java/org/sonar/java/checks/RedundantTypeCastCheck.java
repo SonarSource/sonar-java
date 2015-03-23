@@ -71,7 +71,7 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
       Type cast = (Type) typeCastTree.type().symbolType();
       Type expressionType = (Type) typeCastTree.expression().symbolType();
       Types types = new Types();
-      if (!isExcluded(cast, expressionType) && (isRedundantNumericalCast(cast, expressionType) || isRedundantCast(cast, expressionType, types))) {
+      if (!isExcluded(cast) && (isRedundantNumericalCast(cast, expressionType) || isRedundantCast(cast, expressionType, types))) {
         addIssue(tree, "Remove this unnecessary cast to \"" + cast + "\".");
       }
     }
@@ -93,7 +93,7 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isExcluded(Type cast, Type expressionType) {
+  private boolean isExcluded(Type cast) {
     return cast.isUnknown();
   }
 
@@ -106,6 +106,6 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isRedundantNumericalCast(Type cast, Type expressionType) {
-    return cast.isNumerical() && cast == expressionType;
+    return cast.isNumerical() && cast.equals(expressionType);
   }
 }

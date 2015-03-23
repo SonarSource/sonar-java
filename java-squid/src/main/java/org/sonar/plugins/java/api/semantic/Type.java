@@ -138,6 +138,11 @@ public interface Type {
    */
   Symbol.TypeSymbolSemantic symbol();
 
+  /**
+   *Erasure of this type.
+   */
+  Type erasure();
+
   interface ArrayTypeSemantic extends Type {
 
     Type elementType();

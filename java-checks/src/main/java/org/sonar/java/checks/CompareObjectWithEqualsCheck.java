@@ -88,7 +88,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   }
 
   private boolean isObject(Type operandType) {
-    return ((org.sonar.java.resolve.Type)operandType).erasure().isClass() && !operandType.symbol().isEnum();
+    return operandType.erasure().isClass() && !operandType.symbol().isEnum();
   }
 
   private boolean isNullComparison(Type leftOpType, Type rightOpType) {
