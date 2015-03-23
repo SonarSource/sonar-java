@@ -19,12 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
-import static org.fest.assertions.Assertions.assertThat;
+import java.io.File;
 
 public class ThreadRunCheckTest {
 
@@ -35,19 +37,16 @@ public class ThreadRunCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = BytecodeFixture.scan("ThreadRunCheck", check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThreadRunCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier
       .verify(file.getCheckMessages())
-      .next().atLine(29).withMessage("Call the method Thread.start() to execute the content of the run() method in a dedicated thread.")
-      .next().atLine(39)
-      .next().atLine(42)
-      .next().atLine(45)
-      .next().atLine(53);
+      .next().atLine(8).withMessage("Call the method Thread.start() to execute the content of the run() method in a dedicated thread.")
+      .next().atLine(18)
+      .next().atLine(21)
+      .next().atLine(24)
+      .next().atLine(32)
+      .next().atLine(53)
+      .next().atLine(54)
+      .noMore();
   }
-
-  @Test
-  public void test_toString() {
-    assertThat(check.toString()).isEqualTo("S1217 rule");
-  }
-
 }
