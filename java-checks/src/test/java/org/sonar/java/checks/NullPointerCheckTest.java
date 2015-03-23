@@ -23,10 +23,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.checks.NullPointerCheck.AbstractValue;
+import org.sonar.java.checks.NullPointerCheck.AssignmentVisitor;
 import org.sonar.java.checks.NullPointerCheck.ConditionalState;
 import org.sonar.java.checks.NullPointerCheck.State;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.resolve.Symbol.VariableSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
@@ -34,6 +36,7 @@ import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.sonar.java.checks.NullPointerCheck.AbstractValue.NOTNULL;
 import static org.sonar.java.checks.NullPointerCheck.AbstractValue.NULL;
 import static org.sonar.java.checks.NullPointerCheck.AbstractValue.UNKNOWN;
@@ -86,13 +89,21 @@ public class NullPointerCheckTest {
       .next().atLine(270).withMessage("object1 can be null.")
       .next().atLine(278).withMessage("object can be null.")
       .next().atLine(278).withMessage("object can be null.")
+      .next().atLine(283).withMessage("object can be null.")
+      .next().atLine(284).withMessage("object can be null.")
       .next().atLine(292).withMessage("set can be null.")
+      .next().atLine(293).withMessage("head can be null.")
       .next().atLine(295).withMessage("value can be null.")
+      .next().atLine(297).withMessage("head can be null.")
       .next().atLine(303).withMessage("object1 can be null.")
+      .next().atLine(304).withMessage("object1 can be null.")
       .next().atLine(306).withMessage("object2 can be null.")
-      .next().atLine(332).withMessage("str can be null.")
-      .next().atLine(351).withMessage("object can be null.")
-      .next().atLine(353).withMessage("object can be null.");
+      .next().atLine(308).withMessage("object1 can be null.")
+      .next().atLine(333).withMessage("str can be null.")
+      .next().atLine(352).withMessage("object can be null.")
+      .next().atLine(354).withMessage("object can be null.")
+      .next().atLine(361).withMessage("object12 can be null.")
+      .next().atLine(376).withMessage("object22 can be null.");
   }
 
   @Test
@@ -273,6 +284,23 @@ public class NullPointerCheckTest {
     // variables not checked in conditions must remain unchanged.
     assertThat(conditionalState.trueState.getVariableValue(variable3)).isSameAs(NOTNULL);
     assertThat(conditionalState.falseState.getVariableValue(variable3)).isSameAs(NOTNULL);
+  }
+
+  @Test
+  public void test_assignment_visitor() {
+    AssignmentVisitor visitor = new NullPointerCheck().new AssignmentVisitor();
+    visitor.registerAssignedSymbol(null);
+    assertThat(visitor.assignedSymbols).isEmpty();
+
+    Symbol methodSymbol = mock(Symbol.class);
+    when(methodSymbol.isVariableSymbol()).thenReturn(false);
+    visitor.registerAssignedSymbol(methodSymbol);
+    assertThat(visitor.assignedSymbols).isEmpty();
+
+    VariableSymbol variableSymbol = mock(VariableSymbol.class);
+    when(variableSymbol.isVariableSymbol()).thenReturn(true);
+    visitor.registerAssignedSymbol(variableSymbol);
+    assertThat(visitor.assignedSymbols.size()).isEqualTo(1);
   }
 
 }

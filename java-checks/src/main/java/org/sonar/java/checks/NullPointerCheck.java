@@ -99,8 +99,6 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    // currently we only handle assignment of the form: identifier =
-    // TODO(merciesa): array[expr] = and mse.identifier = requires advanced tracking and are left outside of the scope
     if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
       VariableSymbol identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.variable());
       currentState.setVariableValue(identifierSymbol, checkNullity(tree.expression()));
@@ -154,10 +152,10 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitDoWhileStatement(DoWhileStatementTree tree) {
-    currentState.invalidateValuesOfHierarchy();
+    currentState.invalidateVariables(new AssignmentVisitor().findAssignedVariables(tree.statement()));
     currentState = new State(currentState);
     scan(tree.statement());
-    visitCondition(tree.condition());
+    scan(tree.condition());
     restorePreviousState();
   }
 
@@ -165,17 +163,20 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitForStatement(ForStatementTree tree) {
     scan(tree.initializer());
     ConditionalState conditionalState = visitCondition(tree.condition());
-    currentState.invalidateValuesOfHierarchy();
+    Set<VariableSymbol> assignedVariables = new AssignmentVisitor().findAssignedVariables(tree.statement());
+    assignedVariables.addAll(new AssignmentVisitor().findAssignedVariables(tree.update()));
     currentState = conditionalState.trueState;
+    currentState.invalidateVariables(assignedVariables);
     scan(tree.statement());
     scan(tree.update());
     restorePreviousState();
+    currentState.invalidateVariables(assignedVariables);
   }
 
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
     scan(tree.expression());
-    currentState.invalidateValuesOfHierarchy();
+    currentState.invalidateVariables(new AssignmentVisitor().findAssignedVariables(tree.statement()));
     currentState = new State(currentState);
     scan(tree.statement());
     restorePreviousState();
@@ -264,10 +265,12 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
     ConditionalState conditionalState = visitCondition(tree.condition());
-    currentState.invalidateValuesOfHierarchy();
+    Set<VariableSymbol> assignedVariables = new AssignmentVisitor().findAssignedVariables(tree.statement());
     currentState = conditionalState.trueState;
+    currentState.invalidateVariables(assignedVariables);
     scan(tree.statement());
     restorePreviousState();
+    currentState.invalidateVariables(assignedVariables);
   }
 
   private AbstractValue checkNullity(Symbol symbol) {
@@ -410,6 +413,39 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   @VisibleForTesting
+  class AssignmentVisitor extends BaseTreeVisitor {
+    @VisibleForTesting
+    Set<VariableSymbol> assignedSymbols = new HashSet<>();
+
+    public Set<VariableSymbol> findAssignedVariables(Tree tree) {
+      tree.accept(this);
+      return assignedSymbols;
+    }
+
+    public Set<VariableSymbol> findAssignedVariables(List<? extends Tree> trees) {
+      for (Tree tree : trees) {
+        tree.accept(this);
+      }
+      return assignedSymbols;
+    }
+
+    @Override
+    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+      if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
+        registerAssignedSymbol((VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.variable()));
+      }
+      super.visitAssignmentExpression(tree);
+    }
+
+    @VisibleForTesting
+    void registerAssignedSymbol(Symbol symbol) {
+      if (symbol != null && symbol.isVariableSymbol()) {
+        assignedSymbols.add((VariableSymbol) symbol);
+      }
+    }
+  }
+
+  @VisibleForTesting
   static class ConditionalState {
     final State falseState;
     final State trueState;
@@ -501,6 +537,13 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
      */
     public State invalidateValues() {
       for (VariableSymbol variable : variables.keySet()) {
+        setVariableValue(variable, AbstractValue.UNKNOWN);
+      }
+      return this;
+    }
+
+    public State invalidateVariables(Set<VariableSymbol> variables) {
+      for (VariableSymbol variable : variables) {
         setVariableValue(variable, AbstractValue.UNKNOWN);
       }
       return this;
