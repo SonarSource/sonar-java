@@ -30,7 +30,7 @@ import java.util.Arrays;
  */
 public class Symbols {
 
-  final JavaSymbol.PackageJavaSymbol rootPackage;
+  static final JavaSymbol.PackageJavaSymbol rootPackage;
   final JavaSymbol.PackageJavaSymbol defaultPackage;
 
   /**
@@ -41,8 +41,8 @@ public class Symbols {
   /**
    * Type, which can't be modelled for the moment.
    */
-  final JavaType.ClassJavaType unknownType;
-  final JavaSymbol.TypeJavaSymbol unknownSymbol;
+  static final JavaType.ClassJavaType unknownType;
+  public static final JavaSymbol.TypeJavaSymbol unknownSymbol;
 
   final JavaSymbol.TypeJavaSymbol arrayClass;
 
@@ -85,14 +85,8 @@ public class Symbols {
    */
   final JavaType enumType;
 
-  public Symbols(BytecodeCompleter bytecodeCompleter) {
+  static {
     rootPackage = new JavaSymbol.PackageJavaSymbol("", null);
-    defaultPackage = new JavaSymbol.PackageJavaSymbol("", rootPackage);
-
-    predefClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "", rootPackage);
-    predefClass.members = new Scope(predefClass);
-    ((JavaType.ClassJavaType) predefClass.type).interfaces = ImmutableList.of();
-
     unknownSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, /* TODO name */"", rootPackage);
     unknownSymbol.members = new Scope(unknownSymbol);
     unknownType = new JavaType.ClassJavaType(unknownSymbol) {
@@ -102,8 +96,17 @@ public class Symbols {
       }
     };
     unknownType.tag = JavaType.UNKNOWN;
+    unknownType.supertype = null;
     unknownType.interfaces = ImmutableList.of();
     unknownSymbol.type = unknownType;
+  }
+
+  public Symbols(BytecodeCompleter bytecodeCompleter) {
+    defaultPackage = new JavaSymbol.PackageJavaSymbol("", rootPackage);
+
+    predefClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "", rootPackage);
+    predefClass.members = new Scope(predefClass);
+    ((JavaType.ClassJavaType) predefClass.type).interfaces = ImmutableList.of();
 
     // TODO should have type "noType":
     noSymbol = new JavaSymbol.TypeJavaSymbol(0, "", rootPackage);

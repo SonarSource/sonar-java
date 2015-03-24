@@ -72,7 +72,7 @@ public class TypeAndReferenceSolverTest {
     // class MyClass
     classSymbol = new JavaSymbol.TypeJavaSymbol(0, "MyClass", p);
     classType = (JavaType.ClassJavaType) classSymbol.type;
-    classType.supertype = symbols.unknownType; // TODO extend some superclass
+    classType.supertype = symbols.objectType;
     classType.interfaces = ImmutableList.of();
     classSymbol.members = new Scope(classSymbol);
     p.members.enter(classSymbol);
@@ -218,7 +218,7 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOf("super.method(1)")).isSameAs(symbols.unknownType);
 
     // field access
-    assertThat(typeOfExpression("super.field")).isSameAs(classType.supertype);
+    assertThat(typeOfExpression("super.clone()")).isSameAs(classType.supertype);
   }
 
   @Test
