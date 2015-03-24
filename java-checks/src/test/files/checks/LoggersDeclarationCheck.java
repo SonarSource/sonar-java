@@ -23,5 +23,7 @@ class A {
     final Logger LOG; // Noncompliant
     int a = 0; // Compliant
   }
-
+  
+  private void logExclusions(String[] exclusions, Logger logger) { // Compliant
+  }
 }

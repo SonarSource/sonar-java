@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -89,6 +90,12 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
 
   private boolean isValidLoggerName(String name) {
     return pattern.matcher(name).matches();
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    // only scan body of the method and avoid looking at parameters
+    scan(tree.block());
   }
 
   @Override
