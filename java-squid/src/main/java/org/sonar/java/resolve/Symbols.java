@@ -30,102 +30,102 @@ import java.util.Arrays;
  */
 public class Symbols {
 
-  final Symbol.PackageSymbol rootPackage;
-  final Symbol.PackageSymbol defaultPackage;
+  final JavaSymbol.PackageJavaSymbol rootPackage;
+  final JavaSymbol.PackageJavaSymbol defaultPackage;
 
   /**
    * Owns all predefined symbols (builtin types, operators).
    */
-  final Symbol.TypeSymbol predefClass;
+  final JavaSymbol.TypeJavaSymbol predefClass;
 
   /**
    * Type, which can't be modelled for the moment.
    */
-  final Type.ClassType unknownType;
-  final Symbol.TypeSymbol unknownSymbol;
+  final JavaType.ClassJavaType unknownType;
+  final JavaSymbol.TypeJavaSymbol unknownSymbol;
 
-  final Symbol.TypeSymbol arrayClass;
+  final JavaSymbol.TypeJavaSymbol arrayClass;
 
-  final Symbol.TypeSymbol methodClass;
-  final Symbol.TypeSymbol noSymbol;
+  final JavaSymbol.TypeJavaSymbol methodClass;
+  final JavaSymbol.TypeJavaSymbol noSymbol;
 
   // builtin types
-  final Type byteType;
-  final Type charType;
-  final Type shortType;
-  final Type intType;
-  final Type longType;
-  final Type floatType;
-  final Type doubleType;
-  final Type booleanType;
-  final Type nullType;
-  final Type voidType;
+  final JavaType byteType;
+  final JavaType charType;
+  final JavaType shortType;
+  final JavaType intType;
+  final JavaType longType;
+  final JavaType floatType;
+  final JavaType doubleType;
+  final JavaType booleanType;
+  final JavaType nullType;
+  final JavaType voidType;
 
-  final BiMap<Type, Type> boxedTypes;
+  final BiMap<JavaType, JavaType> boxedTypes;
 
   // predefined types
 
   /**
    * {@link java.lang.Object}
    */
-  final Type objectType;
+  final JavaType objectType;
 
-  final Type cloneableType;
-  final Type serializableType;
-  final Type classType;
-  final Type stringType;
+  final JavaType cloneableType;
+  final JavaType serializableType;
+  final JavaType classType;
+  final JavaType stringType;
 
   /**
    * {@link java.lang.annotation.Annotation}
    */
-  final Type annotationType;
+  final JavaType annotationType;
 
   /**
    * {@link java.lang.Enum}
    */
-  final Type enumType;
+  final JavaType enumType;
 
   public Symbols(BytecodeCompleter bytecodeCompleter) {
-    rootPackage = new Symbol.PackageSymbol("", null);
-    defaultPackage = new Symbol.PackageSymbol("", rootPackage);
+    rootPackage = new JavaSymbol.PackageJavaSymbol("", null);
+    defaultPackage = new JavaSymbol.PackageJavaSymbol("", rootPackage);
 
-    predefClass = new Symbol.TypeSymbol(Flags.PUBLIC, "", rootPackage);
+    predefClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "", rootPackage);
     predefClass.members = new Scope(predefClass);
-    ((Type.ClassType) predefClass.type).interfaces = ImmutableList.of();
+    ((JavaType.ClassJavaType) predefClass.type).interfaces = ImmutableList.of();
 
-    unknownSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, /* TODO name */"", rootPackage);
+    unknownSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, /* TODO name */"", rootPackage);
     unknownSymbol.members = new Scope(unknownSymbol);
-    unknownType = new Type.ClassType(unknownSymbol) {
+    unknownType = new JavaType.ClassJavaType(unknownSymbol) {
       @Override
       public String toString() {
         return "!unknown!";
       }
     };
-    unknownType.tag = Type.UNKNOWN;
+    unknownType.tag = JavaType.UNKNOWN;
     unknownType.interfaces = ImmutableList.of();
     unknownSymbol.type = unknownType;
 
     // TODO should have type "noType":
-    noSymbol = new Symbol.TypeSymbol(0, "", rootPackage);
+    noSymbol = new JavaSymbol.TypeJavaSymbol(0, "", rootPackage);
 
-    methodClass = new Symbol.TypeSymbol(Flags.PUBLIC, "", noSymbol);
+    methodClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "", noSymbol);
 
     // builtin types
-    byteType = initType(Type.BYTE, "byte");
-    charType = initType(Type.CHAR, "char");
-    shortType = initType(Type.SHORT, "short");
-    intType = initType(Type.INT, "int");
-    longType = initType(Type.LONG, "long");
-    floatType = initType(Type.FLOAT, "float");
-    doubleType = initType(Type.DOUBLE, "double");
-    booleanType = initType(Type.BOOLEAN, "boolean");
-    nullType = initType(Type.BOT, "<nulltype>");
-    voidType = initType(Type.VOID, "void");
+    byteType = initType(JavaType.BYTE, "byte");
+    charType = initType(JavaType.CHAR, "char");
+    shortType = initType(JavaType.SHORT, "short");
+    intType = initType(JavaType.INT, "int");
+    longType = initType(JavaType.LONG, "long");
+    floatType = initType(JavaType.FLOAT, "float");
+    doubleType = initType(JavaType.DOUBLE, "double");
+    booleanType = initType(JavaType.BOOLEAN, "boolean");
+    nullType = initType(JavaType.BOT, "<nulltype>");
+    voidType = initType(JavaType.VOID, "void");
 
     bytecodeCompleter.init(this);
 
     // predefined types for java lang
-    Symbol.PackageSymbol javalang = bytecodeCompleter.enterPackage("java.lang");
+    JavaSymbol.PackageJavaSymbol javalang = bytecodeCompleter.enterPackage("java.lang");
     // define a star import scope to let resolve types to java.lang when needed.
     javalang.members = new Scope.StarImportScope(javalang, bytecodeCompleter);
     javalang.members.enter(javalang);
@@ -149,18 +149,18 @@ public class Symbols {
     boxedTypes.put(doubleType, bytecodeCompleter.loadClass("java.lang.Double").type);
     boxedTypes.put(booleanType, bytecodeCompleter.loadClass("java.lang.Boolean").type);
 
-    for (Type boxedType : boxedTypes.keySet()) {
+    for (JavaType boxedType : boxedTypes.keySet()) {
       boxedType.primitiveWrapperType = boxedTypes.get(boxedType);
       boxedTypes.get(boxedType).primitiveType = boxedType;
     }
 
     // TODO comment me
-    arrayClass = new Symbol.TypeSymbol(Flags.PUBLIC, "Array", noSymbol);
-    Type.ClassType arrayClassType = (Type.ClassType) arrayClass.type;
+    arrayClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "Array", noSymbol);
+    JavaType.ClassJavaType arrayClassType = (JavaType.ClassJavaType) arrayClass.type;
     arrayClassType.supertype = objectType;
     arrayClassType.interfaces = ImmutableList.of(cloneableType, serializableType);
     arrayClass.members = new Scope(arrayClass);
-    arrayClass.members().enter(new Symbol.VariableSymbol(Flags.PUBLIC | Flags.FINAL, "length", intType, arrayClass));
+    arrayClass.members().enter(new JavaSymbol.VariableJavaSymbol(Flags.PUBLIC | Flags.FINAL, "length", intType, arrayClass));
     // TODO arrayClass implements clone() method
 
     enterOperators();
@@ -169,11 +169,11 @@ public class Symbols {
   /**
    * Registers builtin types as symbols, so that they can be found as an usual identifiers.
    */
-  private Type initType(int tag, String name) {
-    Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(Flags.PUBLIC, name, rootPackage);
+  private JavaType initType(int tag, String name) {
+    JavaSymbol.TypeJavaSymbol symbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, name, rootPackage);
     symbol.members = new Scope(symbol);
     predefClass.members.enter(symbol);
-    ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
+    ((JavaType.ClassJavaType) symbol.type).interfaces = ImmutableList.of();
     symbol.type.tag = tag;
     return symbol.type;
   }
@@ -183,12 +183,12 @@ public class Symbols {
    */
   private void enterOperators() {
     for (String op : new String[] {"+", "-", "*", "/", "%"}) {
-      for (Type type : Arrays.asList(doubleType, floatType, longType, intType)) {
+      for (JavaType type : Arrays.asList(doubleType, floatType, longType, intType)) {
         enterBinop(op, type, type, type);
       }
     }
     for (String op : new String[] {"&", "|", "^"}) {
-      for (Type type : Arrays.asList(booleanType, longType, intType)) {
+      for (JavaType type : Arrays.asList(booleanType, longType, intType)) {
         enterBinop(op, type, type, type);
       }
     }
@@ -199,12 +199,12 @@ public class Symbols {
       enterBinop(op, intType, intType, intType);
     }
     for (String op : new String[] {"<", ">", ">=", "<="}) {
-      for (Type type : Arrays.asList(doubleType, floatType, longType, intType)) {
+      for (JavaType type : Arrays.asList(doubleType, floatType, longType, intType)) {
         enterBinop(op, type, type, booleanType);
       }
     }
     for (String op : new String[] {"==", "!="}) {
-      for (Type type : Arrays.asList(objectType, booleanType, doubleType, floatType, longType, intType)) {
+      for (JavaType type : Arrays.asList(objectType, booleanType, doubleType, floatType, longType, intType)) {
         enterBinop(op, type, type, booleanType);
       }
     }
@@ -212,20 +212,20 @@ public class Symbols {
     enterBinop("||", booleanType, booleanType, booleanType);
 
     // string concatenation
-    for (Type type : Arrays.asList(nullType, objectType, booleanType, doubleType, floatType, longType, intType)) {
+    for (JavaType type : Arrays.asList(nullType, objectType, booleanType, doubleType, floatType, longType, intType)) {
       enterBinop("+", stringType, type, stringType);
       enterBinop("+", type, stringType, stringType);
     }
     enterBinop("+", stringType, stringType, stringType);
   }
 
-  private void enterBinop(String name, Type left, Type right, Type result) {
-    Type type = new Type.MethodType(ImmutableList.of(left, right), result, ImmutableList.<Type>of(), methodClass);
-    Symbol symbol = new Symbol.MethodSymbol(Flags.PUBLIC | Flags.STATIC, name, type, predefClass);
+  private void enterBinop(String name, JavaType left, JavaType right, JavaType result) {
+    JavaType type = new JavaType.MethodJavaType(ImmutableList.of(left, right), result, ImmutableList.<JavaType>of(), methodClass);
+    JavaSymbol symbol = new JavaSymbol.MethodJavaSymbol(Flags.PUBLIC | Flags.STATIC, name, type, predefClass);
     predefClass.members.enter(symbol);
   }
 
-  public Type getPrimitiveFromDescriptor(char descriptor) {
+  public JavaType getPrimitiveFromDescriptor(char descriptor) {
     switch (descriptor) {
       case 'S':
         return shortType;

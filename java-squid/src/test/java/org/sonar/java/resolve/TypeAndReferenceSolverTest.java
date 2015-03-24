@@ -55,51 +55,51 @@ public class TypeAndReferenceSolverTest {
 
   private Resolve.Env env;
 
-  private Symbol.TypeSymbol classSymbol;
-  private Type.ClassType classType;
+  private JavaSymbol.TypeJavaSymbol classSymbol;
+  private JavaType.ClassJavaType classType;
 
-  private Symbol variableSymbol;
-  private Symbol methodSymbol;
-  private Symbol argMethodSymbol;
+  private JavaSymbol variableSymbol;
+  private JavaSymbol methodSymbol;
+  private JavaSymbol argMethodSymbol;
 
   /**
    * Simulates creation of symbols and types.
    */
   @Before
   public void setUp() {
-    Symbol.PackageSymbol p = symbols.defaultPackage;
+    JavaSymbol.PackageJavaSymbol p = symbols.defaultPackage;
     p.members = new Scope(p);
     // class MyClass
-    classSymbol = new Symbol.TypeSymbol(0, "MyClass", p);
-    classType = (Type.ClassType) classSymbol.type;
+    classSymbol = new JavaSymbol.TypeJavaSymbol(0, "MyClass", p);
+    classType = (JavaType.ClassJavaType) classSymbol.type;
     classType.supertype = symbols.unknownType; // TODO extend some superclass
     classType.interfaces = ImmutableList.of();
     classSymbol.members = new Scope(classSymbol);
     p.members.enter(classSymbol);
     // int[][] var;
-    variableSymbol = new Symbol.VariableSymbol(0, "var", classSymbol);
-    variableSymbol.type = new Type.ArrayType(new Type.ArrayType(symbols.intType, symbols.arrayClass), symbols.arrayClass);
+    variableSymbol = new JavaSymbol.VariableJavaSymbol(0, "var", classSymbol);
+    variableSymbol.type = new JavaType.ArrayJavaType(new JavaType.ArrayJavaType(symbols.intType, symbols.arrayClass), symbols.arrayClass);
     classSymbol.members.enter(variableSymbol);
 
     // MyClass var2;
-    classSymbol.members.enter(new Symbol.VariableSymbol(0, "var2", classType, classSymbol));
+    classSymbol.members.enter(new JavaSymbol.VariableJavaSymbol(0, "var2", classType, classSymbol));
 
     // int method()
-    methodSymbol = new Symbol.MethodSymbol(0, "method", classSymbol);
-    ((Symbol.MethodSymbol)methodSymbol).setMethodType(new Type.MethodType(ImmutableList.<Type>of(), symbols.intType, ImmutableList.<Type>of(), classSymbol));
+    methodSymbol = new JavaSymbol.MethodJavaSymbol(0, "method", classSymbol);
+    ((JavaSymbol.MethodJavaSymbol)methodSymbol).setMethodType(new JavaType.MethodJavaType(ImmutableList.<JavaType>of(), symbols.intType, ImmutableList.<JavaType>of(), classSymbol));
     classSymbol.members.enter(methodSymbol);
 
     // int method()
-    argMethodSymbol = new Symbol.MethodSymbol(0, "argMethod", classSymbol);
-    ((Symbol.MethodSymbol)argMethodSymbol).setMethodType(new Type.MethodType(ImmutableList.of(symbols.intType), symbols.intType, ImmutableList.<Type>of(), classSymbol));
+    argMethodSymbol = new JavaSymbol.MethodJavaSymbol(0, "argMethod", classSymbol);
+    ((JavaSymbol.MethodJavaSymbol)argMethodSymbol).setMethodType(new JavaType.MethodJavaType(ImmutableList.of(symbols.intType), symbols.intType, ImmutableList.<JavaType>of(), classSymbol));
     classSymbol.members.enter(argMethodSymbol);
 
-    classSymbol.members.enter(new Symbol.VariableSymbol(0, "this", classType, classSymbol));
-    classSymbol.members.enter(new Symbol.VariableSymbol(0, "super", classType.supertype, classSymbol));
+    classSymbol.members.enter(new JavaSymbol.VariableJavaSymbol(0, "this", classType, classSymbol));
+    classSymbol.members.enter(new JavaSymbol.VariableJavaSymbol(0, "super", classType.supertype, classSymbol));
 
     // FIXME figure out why top is mandatory
     Resolve.Env top = new Resolve.Env();
-    top.scope = new Scope((Symbol) null);
+    top.scope = new Scope((JavaSymbol) null);
 
     Resolve.Env compilationUnitEnv = new Resolve.Env();
     compilationUnitEnv.outer = top;
@@ -122,7 +122,7 @@ public class TypeAndReferenceSolverTest {
     ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
     ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(1);
     MethodTreeImpl method = (MethodTreeImpl) clazz.members().get(0);
-    List<AnnotationInstance> annotations = ((Symbol.MethodSymbol) method.symbol()).metadata().annotations();
+    List<AnnotationInstance> annotations = ((JavaSymbol.MethodJavaSymbol) method.symbol()).metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
     assertThat(annotations.get(0).symbol().type().is(annotation.symbol().name())).isTrue();
   }
@@ -144,7 +144,7 @@ public class TypeAndReferenceSolverTest {
     CompilationUnitTree compilationUnit = treeOf("@interface MyAnnotation { } @MyAnnotation class Class { }");
     ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
     ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(1);
-    List<AnnotationInstance> annotations = ((Symbol.TypeSymbol) clazz.symbol()).metadata().annotations();
+    List<AnnotationInstance> annotations = ((JavaSymbol.TypeJavaSymbol) clazz.symbol()).metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
     assertThat(annotations.get(0).symbol().type().is(annotation.symbol().name())).isTrue();
   }
@@ -185,7 +185,7 @@ public class TypeAndReferenceSolverTest {
 
   private AnnotationInstance extractFirstAnnotationInstance(String source) {
     ClassTree tree = (ClassTree) treeOf(source).types().get(1);
-    return ((Symbol.TypeSymbol) tree.symbol()).metadata().annotations().get(0);
+    return ((JavaSymbol.TypeJavaSymbol) tree.symbol()).metadata().annotations().get(0);
   }
 
   @Test
@@ -233,9 +233,9 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOf("new MyClass() {}")).isSameAs(symbols.unknownType);
 
     // TODO proper implementation of this test requires definition of equality for types
-    assertThat(typeOf("new MyClass[]{}")).isInstanceOf(Type.ArrayType.class);
-    assertThat(typeOf("new int[]{}")).isInstanceOf(Type.ArrayType.class);
-    assertThat(typeOf("new int[][]{}")).isInstanceOf(Type.ArrayType.class);
+    assertThat(typeOf("new MyClass[]{}")).isInstanceOf(JavaType.ArrayJavaType.class);
+    assertThat(typeOf("new int[]{}")).isInstanceOf(JavaType.ArrayJavaType.class);
+    assertThat(typeOf("new int[][]{}")).isInstanceOf(JavaType.ArrayJavaType.class);
   }
 
   @Test
@@ -247,8 +247,8 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOfExpression("MyClass.var")).isSameAs(variableSymbol.type);
 
     // qualified_identifier[expression]
-    assertThat(typeOf("var[42] = 12")).isSameAs(((Type.ArrayType) variableSymbol.type).elementType);
-    assertThat(typeOfExpression("var[42]")).isSameAs(((Type.ArrayType) variableSymbol.type).elementType);
+    assertThat(typeOf("var[42] = 12")).isSameAs(((JavaType.ArrayJavaType) variableSymbol.type).elementType);
+    assertThat(typeOfExpression("var[42]")).isSameAs(((JavaType.ArrayJavaType) variableSymbol.type).elementType);
 
     // qualified_identifier[].class
     assertThat(typeOfExpression("id[].class")).isSameAs(symbols.classType);
@@ -313,8 +313,8 @@ public class TypeAndReferenceSolverTest {
   @Test
   public void selector() {
     // method call
-    assertThat(typeOf("this.method()").isTagged(Type.INT)).isTrue();
-    assertThat(typeOf("this.argMethod(12)").isTagged(Type.INT)).isTrue();
+    assertThat(typeOf("this.method()").isTagged(JavaType.INT)).isTrue();
+    assertThat(typeOf("this.argMethod(12)").isTagged(JavaType.INT)).isTrue();
     assertThat(typeOf("var[42].clone()")).isSameAs(symbols.objectType);
 
     // field access
@@ -322,7 +322,7 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOfExpression("var[42].length")).isSameAs(symbols.intType);
 
     // array access
-    assertThat(typeOfExpression("var[42][42]")).isSameAs(((Type.ArrayType) ((Type.ArrayType) variableSymbol.type).elementType).elementType);
+    assertThat(typeOfExpression("var[42][42]")).isSameAs(((JavaType.ArrayJavaType) ((JavaType.ArrayJavaType) variableSymbol.type).elementType).elementType);
   }
 
   @Test
@@ -475,7 +475,7 @@ public class TypeAndReferenceSolverTest {
     return tree;
   }
 
-  private Type typeOf(String input) {
+  private JavaType typeOf(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
     when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
     TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache), parametrizedTypeCache);
@@ -489,7 +489,7 @@ public class TypeAndReferenceSolverTest {
     testedNodeExtractor.visitCompilationUnit(tree);
     return visitor.getType(testedNodeExtractor.testedNode);
   }
-  private Type typeOfExpression(String input) {
+  private JavaType typeOfExpression(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
     when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
     TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache), parametrizedTypeCache);

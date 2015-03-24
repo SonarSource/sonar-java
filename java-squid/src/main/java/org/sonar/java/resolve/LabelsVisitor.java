@@ -42,7 +42,7 @@ public class LabelsVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitLabeledStatement(LabeledStatementTree tree) {
-    semanticModel.associateSymbol(tree, new Symbol(0, 0, tree.label().name(), null));
+    semanticModel.associateSymbol(tree, new JavaSymbol(0, 0, tree.label().name(), null));
     labelTrees.put(tree.label().name(), tree);
     super.visitLabeledStatement(tree);
   }

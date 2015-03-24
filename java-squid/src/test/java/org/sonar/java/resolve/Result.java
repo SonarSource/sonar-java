@@ -52,7 +52,7 @@ class Result {
     return new Result(SemanticModel.createFor((CompilationUnitTree) astNode, Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
   }
 
-  public org.sonar.java.resolve.Symbol symbol(String name) {
+  public JavaSymbol symbol(String name) {
     Symbol result = null;
     for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
       if (name.equals(symbol.name())) {
@@ -65,10 +65,10 @@ class Result {
     if (result == null) {
       throw new IllegalArgumentException("Symbol not found");
     }
-    return (org.sonar.java.resolve.Symbol) result;
+    return (JavaSymbol) result;
   }
 
-  public org.sonar.java.resolve.Symbol symbol(String name, int line) {
+  public JavaSymbol symbol(String name, int line) {
     Symbol result = null;
     for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
       if (name.equals(symbol.name()) && ((JavaTree) semanticModel.getTree(symbol)).getAstNode().getTokenLine() == line) {
@@ -81,11 +81,11 @@ class Result {
     if (result == null) {
       throw new IllegalArgumentException("Symbol not found");
     }
-    return (org.sonar.java.resolve.Symbol) result;
+    return (JavaSymbol) result;
   }
 
-  public org.sonar.java.resolve.Symbol reference(int line, int column) {
-    return (org.sonar.java.resolve.Symbol) referenceTree(line, column, true);
+  public JavaSymbol reference(int line, int column) {
+    return (JavaSymbol) referenceTree(line, column, true);
   }
 
   public IdentifierTree referenceTree(int line, int column) {

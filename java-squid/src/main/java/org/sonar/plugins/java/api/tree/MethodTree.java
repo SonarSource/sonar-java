@@ -78,6 +78,6 @@ public interface MethodTree extends Tree {
   @Nullable
   ExpressionTree defaultValue();
 
-  Symbol.MethodSymbolSemantic symbol();
+  Symbol.MethodSymbol symbol();
 
 }

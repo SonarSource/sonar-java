@@ -63,28 +63,28 @@ public class TypesTest {
     // TODO test void
 
     // null
-    Type.ArrayType arrayTypeInt = new Type.ArrayType(symbols.intType, symbols.arrayClass);
-    Type.ArrayType arrayTypeShort = new Type.ArrayType(symbols.shortType, symbols.arrayClass);
-    shouldBeSubtype(arrayTypeShort, Arrays.<Type>asList(arrayTypeShort, arrayTypeInt));
+    JavaType.ArrayJavaType arrayTypeInt = new JavaType.ArrayJavaType(symbols.intType, symbols.arrayClass);
+    JavaType.ArrayJavaType arrayTypeShort = new JavaType.ArrayJavaType(symbols.shortType, symbols.arrayClass);
+    shouldBeSubtype(arrayTypeShort, Arrays.<JavaType>asList(arrayTypeShort, arrayTypeInt));
     shouldNotBeSubtype(symbols.nullType, Arrays.asList(symbols.booleanType, symbols.byteType, symbols.charType, symbols.shortType, symbols.intType, symbols.longType, symbols.floatType, symbols.doubleType));
     shouldBeSubtype(symbols.nullType, Arrays.asList(symbols.nullType, arrayTypeInt, symbols.objectType));
     shouldBeSubtype(arrayTypeInt, Arrays.asList(symbols.objectType));
-    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", symbols.defaultPackage);
-    Type.ClassType classType = (Type.ClassType) typeSymbol.type;
+    JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", symbols.defaultPackage);
+    JavaType.ClassJavaType classType = (JavaType.ClassJavaType) typeSymbol.type;
     classType.interfaces = Lists.newArrayList();
-    Symbol.TypeSymbol subtypeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MySubtype", symbols.defaultPackage);
-    Type.ClassType subClassType = (Type.ClassType) subtypeSymbol.type;
+    JavaSymbol.TypeJavaSymbol subtypeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MySubtype", symbols.defaultPackage);
+    JavaType.ClassJavaType subClassType = (JavaType.ClassJavaType) subtypeSymbol.type;
     subClassType.supertype = classType;
     subClassType.interfaces = Lists.newArrayList();
-    shouldBeSubtype(subClassType, Arrays.<Type>asList(classType, subClassType));
+    shouldBeSubtype(subClassType, Arrays.<JavaType>asList(classType, subClassType));
 
   }
 
   @Test
   public void array_types_equality() throws Exception {
-    Type.ArrayType arrayInt= new Type.ArrayType(symbols.intType, symbols.arrayClass);
-    Type.ArrayType arrayInt2= new Type.ArrayType(symbols.intType, symbols.arrayClass);
-    Type.ArrayType arrayBoolean = new Type.ArrayType(symbols.booleanType, symbols.arrayClass);
+    JavaType.ArrayJavaType arrayInt= new JavaType.ArrayJavaType(symbols.intType, symbols.arrayClass);
+    JavaType.ArrayJavaType arrayInt2= new JavaType.ArrayJavaType(symbols.intType, symbols.arrayClass);
+    JavaType.ArrayJavaType arrayBoolean = new JavaType.ArrayJavaType(symbols.booleanType, symbols.arrayClass);
     assertThat(arrayInt.equals(arrayInt2)).isTrue();
     assertThat(arrayInt2.equals(arrayInt)).isTrue();
     assertThat(arrayInt2.equals(arrayBoolean)).isFalse();
@@ -94,14 +94,14 @@ public class TypesTest {
 
   }
 
-  private void shouldNotBeSubtype(Type t, List<Type> s) {
-    for (Type type : s) {
+  private void shouldNotBeSubtype(JavaType t, List<JavaType> s) {
+    for (JavaType type : s) {
       assertThat(types.isSubtype(t, type)).as(t + " is subtype of " + type).isFalse();
     }
   }
 
-  private void shouldBeSubtype(Type t, List<Type> s) {
-    for (Type type : s) {
+  private void shouldBeSubtype(JavaType t, List<JavaType> s) {
+    for (JavaType type : s) {
       assertThat(types.isSubtype(t, type)).as(t + " is subtype of " + type).isTrue();
     }
   }

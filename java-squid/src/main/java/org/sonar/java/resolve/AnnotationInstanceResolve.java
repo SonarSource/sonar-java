@@ -27,10 +27,10 @@ import java.util.List;
 
 public class AnnotationInstanceResolve implements SymbolMetadata.AnnotationInstance {
 
-  private Symbol.TypeSymbol typeSymbol;
+  private JavaSymbol.TypeJavaSymbol typeSymbol;
   private List<AnnotationValue> values;
 
-  AnnotationInstanceResolve(Symbol.TypeSymbol symbol) {
+  AnnotationInstanceResolve(JavaSymbol.TypeJavaSymbol symbol) {
     this.typeSymbol = symbol;
     this.values = Lists.newArrayList();
   }
@@ -40,7 +40,7 @@ public class AnnotationInstanceResolve implements SymbolMetadata.AnnotationInsta
   }
 
   @Override
-  public Symbol symbol() {
+  public JavaSymbol symbol() {
     return typeSymbol;
   }
 

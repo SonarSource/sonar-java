@@ -52,7 +52,7 @@ public class CustomSerializationMethodCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    Symbol.MethodSymbolSemantic methodSymbol = methodTree.symbol();
+    Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     if (hasSemantic() && isOwnedBySerializable(methodSymbol)) {
       if (hasSignature(methodSymbol, "writeObject", "java.io.ObjectOutputStream")) {
         checkPrivate(methodTree);
@@ -73,40 +73,40 @@ public class CustomSerializationMethodCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isOwnedBySerializable(Symbol.MethodSymbolSemantic methodSymbol) {
-    Symbol.TypeSymbolSemantic owner = (Symbol.TypeSymbolSemantic) methodSymbol.owner();
+  private boolean isOwnedBySerializable(Symbol.MethodSymbol methodSymbol) {
+    Symbol.TypeSymbol owner = (Symbol.TypeSymbol) methodSymbol.owner();
     return owner.type().isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean hasSignature(Symbol.MethodSymbolSemantic methodSymbol, String name, String paramType) {
+  private boolean hasSignature(Symbol.MethodSymbol methodSymbol, String name, String paramType) {
     return name.equals(methodSymbol.name()) && hasSingleParam(methodSymbol, paramType);
   }
 
-  private boolean hasSignature(Symbol.MethodSymbolSemantic methodSymbol, String name) {
+  private boolean hasSignature(Symbol.MethodSymbol methodSymbol, String name) {
     return name.equals(methodSymbol.name()) && methodSymbol.parameterTypes().isEmpty();
   }
 
-  private boolean hasSingleParam(Symbol.MethodSymbolSemantic methodSymbol, String searchedParamType) {
+  private boolean hasSingleParam(Symbol.MethodSymbol methodSymbol, String searchedParamType) {
     List<Type> parametersTypes = methodSymbol.parameterTypes();
     return parametersTypes.size() == 1 && parametersTypes.get(0).is(searchedParamType);
   }
 
   private void checkNotStatic(MethodTree methodTree) {
-    Symbol.MethodSymbolSemantic methodSymbol = methodTree.symbol();
+    Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     if (methodSymbol.isStatic()) {
       addIssue(methodTree, "The \"static\" modifier should not be applied to \"" + methodSymbol.name() + "\".");
     }
   }
 
   private void checkPrivate(MethodTree methodTree) {
-    Symbol.MethodSymbolSemantic methodSymbol = methodTree.symbol();
+    Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     if (!methodSymbol.isPrivate()) {
       addIssue(methodTree, "Make \"" + methodSymbol.name() + "\" \"private\".");
     }
   }
 
   private void checkReturnType(MethodTree methodTree, String requiredReturnType) {
-    Symbol.MethodSymbolSemantic methodSymbol = methodTree.symbol();
+    Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     if (!methodSymbol.returnType().type().is(requiredReturnType)) {
       addIssue(methodTree, "\"" + methodSymbol.name() + "\" should return \"" + requiredReturnType + "\".");
     }

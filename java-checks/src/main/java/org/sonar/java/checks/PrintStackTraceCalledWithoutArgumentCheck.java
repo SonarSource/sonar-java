@@ -51,7 +51,7 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
 
   public static final String RULE_KEY = "S1148";
   private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-  private final Deque<Symbol.TypeSymbolSemantic> enclosingClass = new LinkedList<>();
+  private final Deque<Symbol.TypeSymbol> enclosingClass = new LinkedList<>();
   private JavaFileScannerContext context;
 
   @Override
@@ -62,7 +62,7 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
 
   @Override
   public void visitClass(ClassTree tree) {
-    Symbol.TypeSymbolSemantic enclosingSymbol = tree.symbol();
+    Symbol.TypeSymbol enclosingSymbol = tree.symbol();
     enclosingClass.push(enclosingSymbol);
     super.visitClass(tree);
     enclosingClass.pop();

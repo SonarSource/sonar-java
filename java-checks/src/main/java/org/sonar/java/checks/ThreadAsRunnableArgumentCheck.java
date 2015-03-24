@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.expression.NewClassTreeImpl;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
+import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -72,11 +72,11 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
     }
     // FIXME SONARJAVA-919
     if (!arguments.isEmpty() && methodSymbol != null && methodSymbol.isMethodSymbol()) {
-      checkArgumentsTypes(arguments, (MethodSymbol) methodSymbol);
+      checkArgumentsTypes(arguments, (MethodJavaSymbol) methodSymbol);
     }
   }
 
-  private void checkArgumentsTypes(List<ExpressionTree> arguments, MethodSymbol methodSymbol) {
+  private void checkArgumentsTypes(List<ExpressionTree> arguments, MethodJavaSymbol methodSymbol) {
     List<Type> parametersTypes = methodSymbol.parameterTypes();
     // FIXME static imports.
     // FIXME As arguments are not handled for method resolution using static imports, the provided methodSymbol may not match.

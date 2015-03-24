@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -52,7 +52,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
 
   private final StringBuilder sb;
   private final SemanticModel semanticModel;
-  private final Map<IdentifierTree, Symbol> idents = new HashMap<>();
+  private final Map<IdentifierTree, JavaSymbol> idents = new HashMap<>();
   private int indentLevel;
 
   public PrinterVisitor(@Nullable SemanticModel semanticModel) {
@@ -96,7 +96,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
   @Override
   protected void scan(@Nullable Tree tree) {
     if (tree != null) {
-      Symbol sym = null;
+      JavaSymbol sym = null;
       try {
         Method getSymbol = null;
         for (Method method : tree.getClass().getMethods()) {
@@ -105,7 +105,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
           }
         }
         if (getSymbol != null) {
-          sym = (Symbol) getSymbol.invoke(tree);
+          sym = (JavaSymbol) getSymbol.invoke(tree);
         }
       } catch (Exception e) {
         LOG.error("An error occured while retrieving symbol ", e);

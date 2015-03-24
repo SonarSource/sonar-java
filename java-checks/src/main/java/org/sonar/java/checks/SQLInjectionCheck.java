@@ -91,7 +91,7 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     return false;
   }
 
-  private boolean checkInterfaces(String type, Symbol.TypeSymbolSemantic symbol) {
+  private boolean checkInterfaces(String type, Symbol.TypeSymbol symbol) {
     for (Type interfaceType : symbol.interfaces()) {
       if (type.equals(interfaceType.fullyQualifiedName()) || checkInterfaces(type, interfaceType.symbol())) {
         return true;

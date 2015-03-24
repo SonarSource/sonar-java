@@ -53,7 +53,7 @@ public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      Symbol.TypeSymbolSemantic classSymbol = ((ClassTree) tree).symbol();
+      Symbol.TypeSymbol classSymbol = ((ClassTree) tree).symbol();
       if (isSerializable(classSymbol.type()) && !isSerializable(classSymbol.superClass())) {
         Type superclass = classSymbol.superClass();
         if (!hasNonPrivateNoArgConstructor(superclass)) {
@@ -71,7 +71,7 @@ public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
     Collection<Symbol> constructors = type.symbol().lookupSymbols("<init>");
     for (Symbol member : constructors) {
       if (member.isMethodSymbol()) {
-        Symbol.MethodSymbolSemantic method = (Symbol.MethodSymbolSemantic) member;
+        Symbol.MethodSymbol method = (Symbol.MethodSymbol) member;
         if (method.parameterTypes().isEmpty() && !method.isPrivate()) {
           return true;
         }

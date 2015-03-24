@@ -29,58 +29,58 @@ import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class TypeTest {
+public class JavaTypeTest {
 
   private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache()));
 
   @Test
   public void test_order_of_tags() {
-    assertThat(Type.BYTE).isLessThan(Type.CHAR);
-    assertThat(Type.CHAR).isLessThan(Type.SHORT);
-    assertThat(Type.SHORT).isLessThan(Type.INT);
-    assertThat(Type.INT).isLessThan(Type.LONG);
-    assertThat(Type.LONG).isLessThan(Type.FLOAT);
-    assertThat(Type.FLOAT).isLessThan(Type.DOUBLE);
-    assertThat(Type.DOUBLE).isLessThan(Type.BOOLEAN);
-    assertThat(Type.BOOLEAN).isLessThan(Type.VOID);
-    assertThat(Type.VOID).isLessThan(Type.CLASS);
-    assertThat(Type.CLASS).isLessThan(Type.ARRAY);
+    assertThat(JavaType.BYTE).isLessThan(JavaType.CHAR);
+    assertThat(JavaType.CHAR).isLessThan(JavaType.SHORT);
+    assertThat(JavaType.SHORT).isLessThan(JavaType.INT);
+    assertThat(JavaType.INT).isLessThan(JavaType.LONG);
+    assertThat(JavaType.LONG).isLessThan(JavaType.FLOAT);
+    assertThat(JavaType.FLOAT).isLessThan(JavaType.DOUBLE);
+    assertThat(JavaType.DOUBLE).isLessThan(JavaType.BOOLEAN);
+    assertThat(JavaType.BOOLEAN).isLessThan(JavaType.VOID);
+    assertThat(JavaType.VOID).isLessThan(JavaType.CLASS);
+    assertThat(JavaType.CLASS).isLessThan(JavaType.ARRAY);
   }
 
   @Test
   public void checkTagging() {
-    assertThat(new Type(Type.VOID, null).isTagged(Type.VOID)).isTrue();
+    assertThat(new JavaType(JavaType.VOID, null).isTagged(JavaType.VOID)).isTrue();
   }
 
   @Test
   public void isNumerical_should_return_true_for_numerical_types() {
-    assertThat(new Type(Type.BYTE, null).isNumerical()).isTrue();
-    assertThat(new Type(Type.CHAR, null).isNumerical()).isTrue();
-    assertThat(new Type(Type.SHORT, null).isNumerical()).isTrue();
-    assertThat(new Type(Type.INT, null).isNumerical()).isTrue();
-    assertThat(new Type(Type.LONG, null).isNumerical()).isTrue();
-    assertThat(new Type(Type.FLOAT, null).isNumerical()).isTrue();
-    assertThat(new Type(Type.DOUBLE, null).isNumerical()).isTrue();
-    assertThat(new Type(Type.BOOLEAN, null).isNumerical()).isFalse();
-    assertThat(new Type(Type.VOID, null).isNumerical()).isFalse();
-    assertThat(new Type(Type.CLASS, null).isNumerical()).isFalse();
+    assertThat(new JavaType(JavaType.BYTE, null).isNumerical()).isTrue();
+    assertThat(new JavaType(JavaType.CHAR, null).isNumerical()).isTrue();
+    assertThat(new JavaType(JavaType.SHORT, null).isNumerical()).isTrue();
+    assertThat(new JavaType(JavaType.INT, null).isNumerical()).isTrue();
+    assertThat(new JavaType(JavaType.LONG, null).isNumerical()).isTrue();
+    assertThat(new JavaType(JavaType.FLOAT, null).isNumerical()).isTrue();
+    assertThat(new JavaType(JavaType.DOUBLE, null).isNumerical()).isTrue();
+    assertThat(new JavaType(JavaType.BOOLEAN, null).isNumerical()).isFalse();
+    assertThat(new JavaType(JavaType.VOID, null).isNumerical()).isFalse();
+    assertThat(new JavaType(JavaType.CLASS, null).isNumerical()).isFalse();
   }
 
   @Test
   public void to_string_on_type() throws Exception {
-    assertThat(new Type(Type.VOID, null).toString()).isEmpty();
-    String methodToString = new Type.MethodType(ImmutableList.<Type>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType,
-      ImmutableList.<Type>of(), null).toString();
+    assertThat(new JavaType(JavaType.VOID, null).toString()).isEmpty();
+    String methodToString = new JavaType.MethodJavaType(ImmutableList.<JavaType>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType,
+      ImmutableList.<JavaType>of(), null).toString();
     assertThat(methodToString).isEqualTo("returns int");
   }
 
   @Test
   public void type_is_fully_qualified_name() {
-    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
-    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
-    Symbol.TypeSymbol typeSymbol2 = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", symbols.rootPackage);
-    Type.ArrayType arrayType = new Type.ArrayType(typeSymbol.type, symbols.arrayClass);
-    Type.ClassType classType = (Type.ClassType) typeSymbol.type;
+    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
+    JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    JavaSymbol.TypeJavaSymbol typeSymbol2 = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", symbols.rootPackage);
+    JavaType.ArrayJavaType arrayType = new JavaType.ArrayJavaType(typeSymbol.type, symbols.arrayClass);
+    JavaType.ClassJavaType classType = (JavaType.ClassJavaType) typeSymbol.type;
     classType.interfaces = Lists.newArrayList();
     assertThat(symbols.byteType.is("byte")).isTrue();
     assertThat(symbols.byteType.is("int")).isFalse();
@@ -96,17 +96,17 @@ public class TypeTest {
 
   @Test
   public void isPrimitive() {
-    assertThat(new Type(Type.BYTE, null).isPrimitive()).isTrue();
-    assertThat(new Type(Type.CHAR, null).isPrimitive()).isTrue();
-    assertThat(new Type(Type.SHORT, null).isPrimitive()).isTrue();
-    assertThat(new Type(Type.INT, null).isPrimitive()).isTrue();
-    assertThat(new Type(Type.LONG, null).isPrimitive()).isTrue();
-    assertThat(new Type(Type.FLOAT, null).isPrimitive()).isTrue();
-    assertThat(new Type(Type.DOUBLE, null).isPrimitive()).isTrue();
-    assertThat(new Type(Type.BOOLEAN, null).isPrimitive()).isTrue();
-    assertThat(new Type(Type.VOID, null).isPrimitive()).isFalse();
-    assertThat(new Type(Type.ARRAY, null).isPrimitive()).isFalse();
-    assertThat(new Type(Type.CLASS, null).isPrimitive()).isFalse();
+    assertThat(new JavaType(JavaType.BYTE, null).isPrimitive()).isTrue();
+    assertThat(new JavaType(JavaType.CHAR, null).isPrimitive()).isTrue();
+    assertThat(new JavaType(JavaType.SHORT, null).isPrimitive()).isTrue();
+    assertThat(new JavaType(JavaType.INT, null).isPrimitive()).isTrue();
+    assertThat(new JavaType(JavaType.LONG, null).isPrimitive()).isTrue();
+    assertThat(new JavaType(JavaType.FLOAT, null).isPrimitive()).isTrue();
+    assertThat(new JavaType(JavaType.DOUBLE, null).isPrimitive()).isTrue();
+    assertThat(new JavaType(JavaType.BOOLEAN, null).isPrimitive()).isTrue();
+    assertThat(new JavaType(JavaType.VOID, null).isPrimitive()).isFalse();
+    assertThat(new JavaType(JavaType.ARRAY, null).isPrimitive()).isFalse();
+    assertThat(new JavaType(JavaType.CLASS, null).isPrimitive()).isFalse();
 
 
     //Test primitive type
@@ -118,12 +118,12 @@ public class TypeTest {
 
   @Test
   public void isSubtypeOf() throws Exception {
-    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
-    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
-    Symbol.TypeVariableSymbol typeVariableSymbol = new Symbol.TypeVariableSymbol("T", typeSymbol);
-    Type.ClassType classType = (Type.ClassType) typeSymbol.type;
-    Type.TypeVariableType typeVariableType = (Type.TypeVariableType) typeVariableSymbol.type;
-    Type.ArrayType arrayType = new Type.ArrayType(typeSymbol.type, symbols.arrayClass);
+    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
+    JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol("T", typeSymbol);
+    JavaType.ClassJavaType classType = (JavaType.ClassJavaType) typeSymbol.type;
+    JavaType.TypeVariableJavaType typeVariableType = (JavaType.TypeVariableJavaType) typeVariableSymbol.type;
+    JavaType.ArrayJavaType arrayType = new JavaType.ArrayJavaType(typeSymbol.type, symbols.arrayClass);
     typeVariableType.bounds = Lists.newArrayList(symbols.objectType);
 
     classType.supertype = symbols.objectType;
@@ -139,16 +139,16 @@ public class TypeTest {
 
     assertThat(classType.isSubtypeOf("java.lang.Cloneable")).isTrue();
     assertThat(classType.isSubtypeOf(symbols.cloneableType)).isTrue();
-    assertThat(new Type(Type.BYTE, null).isSubtypeOf("java.lang.Object")).isFalse();
+    assertThat(new JavaType(JavaType.BYTE, null).isSubtypeOf("java.lang.Object")).isFalse();
 
     assertThat(arrayType.isSubtypeOf("org.foo.bar.MyType[]")).isTrue();
-    assertThat(arrayType.isSubtypeOf(new Type.ArrayType(typeSymbol.type, symbols.arrayClass))).isTrue();
+    assertThat(arrayType.isSubtypeOf(new JavaType.ArrayJavaType(typeSymbol.type, symbols.arrayClass))).isTrue();
 
     assertThat(arrayType.isSubtypeOf("org.foo.bar.MyType")).isFalse();
     assertThat(arrayType.isSubtypeOf(typeSymbol.type)).isFalse();
 
     assertThat(arrayType.isSubtypeOf("java.lang.Object[]")).isTrue();
-    assertThat(arrayType.isSubtypeOf(new Type.ArrayType(symbols.objectType, symbols.arrayClass))).isTrue();
+    assertThat(arrayType.isSubtypeOf(new JavaType.ArrayJavaType(symbols.objectType, symbols.arrayClass))).isTrue();
 
     assertThat(arrayType.isSubtypeOf("java.lang.Object")).isTrue();
     assertThat(arrayType.isSubtypeOf(symbols.objectType)).isTrue();
@@ -170,7 +170,7 @@ public class TypeTest {
 
   @Test
   public void is_primitive_wrapper() {
-    for (Type wrapper : symbols.boxedTypes.values()) {
+    for (JavaType wrapper : symbols.boxedTypes.values()) {
       assertThat(wrapper.isPrimitiveWrapper()).isTrue();
     }
     assertThat(symbols.objectType.isPrimitiveWrapper()).isFalse();
@@ -179,11 +179,11 @@ public class TypeTest {
 
   @Test
   public void mapping_wrapper_primitive() {
-    for (Type wrapper : symbols.boxedTypes.values()) {
+    for (JavaType wrapper : symbols.boxedTypes.values()) {
       assertThat(wrapper.primitiveType()).isNotNull();
       assertThat(wrapper.primitiveWrapperType()).isNull();
     }
-    for (Type primitive : symbols.boxedTypes.keySet()) {
+    for (JavaType primitive : symbols.boxedTypes.keySet()) {
       assertThat(primitive.primitiveType()).isNull();
       assertThat(primitive.primitiveWrapperType()).isNotNull();
     }
@@ -193,39 +193,39 @@ public class TypeTest {
 
   @Test
   public void parametrizedTypeType_methods_tests() {
-    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
-    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
-    Symbol.TypeVariableSymbol typeVariableSymbol = new Symbol.TypeVariableSymbol("E", typeSymbol);
-    Type.ClassType classType = (Type.ClassType) typeSymbol.type;
-    Type.TypeVariableType typeVariableType = (Type.TypeVariableType) typeVariableSymbol.type;
-    Map<Type.TypeVariableType, Type> typeSubstitution = Maps.newHashMap();
+    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
+    JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol("E", typeSymbol);
+    JavaType.ClassJavaType classType = (JavaType.ClassJavaType) typeSymbol.type;
+    JavaType.TypeVariableJavaType typeVariableType = (JavaType.TypeVariableJavaType) typeVariableSymbol.type;
+    Map<JavaType.TypeVariableJavaType, JavaType> typeSubstitution = Maps.newHashMap();
     typeSubstitution.put(typeVariableType, classType);
 
-    Type.ParametrizedTypeType ptt = new Type.ParametrizedTypeType(typeSymbol, typeSubstitution);
+    JavaType.ParametrizedTypeJavaType ptt = new JavaType.ParametrizedTypeJavaType(typeSymbol, typeSubstitution);
     assertThat(ptt.substitution(typeVariableType)).isEqualTo(classType);
-    assertThat(ptt.substitution(new Type.TypeVariableType(new Symbol.TypeVariableSymbol("F", typeSymbol)))).isNull();
+    assertThat(ptt.substitution(new JavaType.TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("F", typeSymbol)))).isNull();
     assertThat(ptt.typeParameters()).hasSize(1);
     assertThat(ptt.typeParameters()).contains(typeVariableType);
 
-    ptt = new Type.ParametrizedTypeType(typeSymbol, null);
+    ptt = new JavaType.ParametrizedTypeJavaType(typeSymbol, null);
     assertThat(ptt.substitution(typeVariableType)).isNull();
     assertThat(ptt.typeParameters()).isEmpty();
   }
 
   @Test
   public void fully_qualified_name() throws Exception {
-    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
-    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
-    Symbol.TypeSymbol rootPackageTypeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType2", symbols.defaultPackage);
+    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
+    JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    JavaSymbol.TypeJavaSymbol rootPackageTypeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType2", symbols.defaultPackage);
     assertThat(typeSymbol.type.fullyQualifiedName()).isEqualTo("org.foo.bar.MyType");
     assertThat(rootPackageTypeSymbol.type.fullyQualifiedName()).isEqualTo("MyType2");
   }
 
   @Test
   public void is_class_is_array() throws Exception {
-    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("org.foo.bar", null);
-    Symbol.TypeSymbol typeSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "MyType", packageSymbol);
-    Type.ArrayType arrayType = new Type.ArrayType(typeSymbol.type, symbols.arrayClass);
+    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
+    JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", packageSymbol);
+    JavaType.ArrayJavaType arrayType = new JavaType.ArrayJavaType(typeSymbol.type, symbols.arrayClass);
 
     assertThat(typeSymbol.type.isClass()).isTrue();
     assertThat(typeSymbol.type.isArray()).isFalse();

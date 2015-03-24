@@ -99,7 +99,7 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
     return name;
   }
 
-  private String getAnonymousClassTypeName(Symbol.TypeSymbolSemantic symbol) {
+  private String getAnonymousClassTypeName(Symbol.TypeSymbol symbol) {
     String name = "";
     if (symbol.interfaces().isEmpty()) {
       name = getTypeName(symbol.superClass());

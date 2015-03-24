@@ -25,14 +25,15 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.java.resolve.Scope.OrderedScope;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-//FIXME rename this class to avoid clash of name with interface.
-public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
+public class JavaSymbol implements Symbol {
 
   public static final int PCK = 1 << 0;
   public static final int TYP = 1 << 1;
@@ -50,13 +51,13 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
 
   String name;
 
-  Symbol owner;
+  JavaSymbol owner;
 
   Completer completer;
 
-  Type type;
+  JavaType type;
 
-  public Symbol(int kind, int flags, @Nullable String name, @Nullable Symbol owner) {
+  public JavaSymbol(int kind, int flags, @Nullable String name, @Nullable JavaSymbol owner) {
     this.kind = kind;
     this.flags = flags;
     this.name = name;
@@ -72,7 +73,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   }
 
   @Override
-  public Symbol owner() {
+  public JavaSymbol owner() {
     return owner;
   }
 
@@ -96,44 +97,44 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   /**
    * The outermost class which indirectly owns this symbol.
    */
-  public TypeSymbol outermostClass() {
-    Symbol symbol = this;
-    Symbol result = null;
+  public TypeJavaSymbol outermostClass() {
+    JavaSymbol symbol = this;
+    JavaSymbol result = null;
     while (symbol.kind != PCK) {
       result = symbol;
       symbol = symbol.owner();
     }
-    return (TypeSymbol) result;
+    return (TypeJavaSymbol) result;
   }
 
   /**
    * The package which indirectly owns this symbol.
    */
-  public PackageSymbol packge() {
-    Symbol result = this;
+  public PackageJavaSymbol packge() {
+    JavaSymbol result = this;
     while (result.kind != PCK) {
       result = result.owner();
     }
-    return (PackageSymbol) result;
+    return (PackageJavaSymbol) result;
   }
 
   /**
    * The closest enclosing class.
    */
   @Override
-  public TypeSymbol enclosingClass() {
-    Symbol result = this;
+  public TypeJavaSymbol enclosingClass() {
+    JavaSymbol result = this;
     while (result != null && result.kind != TYP) {
       result = result.owner;
     }
-    return (TypeSymbol) result;
+    return (TypeJavaSymbol) result;
   }
 
   boolean isKind(int kind) {
     return (this.kind & kind) != 0;
   }
 
-  public Type getType() {
+  public JavaType getType() {
     return type;
   }
 
@@ -219,17 +220,17 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   }
 
   interface Completer {
-    void complete(Symbol symbol);
+    void complete(JavaSymbol symbol);
   }
 
   /**
    * Represents package.
    */
-  public static class PackageSymbol extends Symbol {
+  public static class PackageJavaSymbol extends JavaSymbol {
 
     Scope members;
 
-    public PackageSymbol(@Nullable String name, @Nullable Symbol owner) {
+    public PackageJavaSymbol(@Nullable String name, @Nullable JavaSymbol owner) {
       super(PCK, 0, name, owner);
     }
 
@@ -243,30 +244,30 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   /**
    * Represents a class, interface, enum or annotation type.
    */
-  public static class TypeSymbol extends Symbol implements TypeSymbolSemantic {
+  public static class TypeJavaSymbol extends JavaSymbol implements TypeSymbol {
 
     Scope members;
     Scope typeParameters;
-    List<Type.TypeVariableType> typeVariableTypes;
+    List<JavaType.TypeVariableJavaType> typeVariableTypes;
 
-    public TypeSymbol(int flags, String name, Symbol owner) {
+    public TypeJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(TYP, flags, name, owner);
-      this.type = new Type.ClassType(this);
+      this.type = new JavaType.ClassJavaType(this);
       this.typeVariableTypes = Lists.newArrayList();
     }
 
-    public void addTypeParameter(Type.TypeVariableType typeVariableType) {
+    public void addTypeParameter(JavaType.TypeVariableJavaType typeVariableType) {
       typeVariableTypes.add(typeVariableType);
     }
 
-    public Type getSuperclass() {
+    public JavaType getSuperclass() {
       complete();
-      return ((Type.ClassType) type).supertype;
+      return ((JavaType.ClassJavaType) type).supertype;
     }
 
-    public List<Type> getInterfaces() {
+    public List<JavaType> getInterfaces() {
       complete();
-      return ((Type.ClassType) type).interfaces;
+      return ((JavaType.ClassJavaType) type).interfaces;
     }
 
     public Scope members() {
@@ -291,23 +292,23 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
      * Includes superclass and super interface hierarchy.
      * @return list of classTypes.
      */
-    public Set<Type.ClassType> superTypes() {
-      ImmutableSet.Builder<Type.ClassType> types = ImmutableSet.builder();
-      Type.ClassType superClassType = (Type.ClassType) this.getSuperclass();
+    public Set<JavaType.ClassJavaType> superTypes() {
+      ImmutableSet.Builder<JavaType.ClassJavaType> types = ImmutableSet.builder();
+      JavaType.ClassJavaType superClassType = (JavaType.ClassJavaType) this.getSuperclass();
       types.addAll(this.interfacesOfType());
       while (superClassType != null) {
         types.add(superClassType);
-        Symbol.TypeSymbol superClassSymbol = superClassType.getSymbol();
+        TypeJavaSymbol superClassSymbol = superClassType.getSymbol();
         types.addAll(superClassSymbol.interfacesOfType());
-        superClassType = (Type.ClassType) superClassSymbol.getSuperclass();
+        superClassType = (JavaType.ClassJavaType) superClassSymbol.getSuperclass();
       }
       return types.build();
     }
 
-    private Set<Type.ClassType> interfacesOfType() {
-      ImmutableSet.Builder<Type.ClassType> builder = ImmutableSet.builder();
-      for (Type interfaceType : getInterfaces()) {
-        Type.ClassType classType = (Type.ClassType) interfaceType;
+    private Set<JavaType.ClassJavaType> interfacesOfType() {
+      ImmutableSet.Builder<JavaType.ClassJavaType> builder = ImmutableSet.builder();
+      for (JavaType interfaceType : getInterfaces()) {
+        JavaType.ClassJavaType classType = (JavaType.ClassJavaType) interfaceType;
         builder.add(classType);
         builder.addAll(classType.getSymbol().interfacesOfType());
       }
@@ -343,13 +344,13 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   /**
    * Represents a field, enum constant, method or constructor parameter, local variable, resource variable or exception parameter.
    */
-  public static class VariableSymbol extends Symbol implements VariableSymbolSemantic {
+  public static class VariableJavaSymbol extends JavaSymbol implements VariableSymbol {
 
-    public VariableSymbol(int flags, String name, Symbol owner) {
+    public VariableJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(VAR, flags, name, owner);
     }
 
-    public VariableSymbol(int flags, String name, Type type, Symbol owner) {
+    public VariableJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner) {
       super(VAR, flags, name, owner);
       this.type = type;
     }
@@ -359,26 +360,26 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   /**
    * Represents a method, constructor or initializer (static or instance).
    */
-  public static class MethodSymbol extends Symbol implements MethodSymbolSemantic {
+  public static class MethodJavaSymbol extends JavaSymbol implements MethodSymbol {
 
-    TypeSymbol returnType;
+    TypeJavaSymbol returnType;
     OrderedScope parameters;
     Scope typeParameters;
-    List<Type.TypeVariableType> typeVariableTypes;
+    List<JavaType.TypeVariableJavaType> typeVariableTypes;
 
-    public MethodSymbol(int flags, String name, Type type, Symbol owner) {
+    public MethodJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner) {
       super(MTH, flags, name, owner);
       super.type = type;
-      this.returnType = ((Type.MethodType) type).resultType.symbol;
+      this.returnType = ((JavaType.MethodJavaType) type).resultType.symbol;
       this.typeVariableTypes = Lists.newArrayList();
     }
 
-    public MethodSymbol(int flags, String name, Symbol owner) {
+    public MethodJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(MTH, flags, name, owner);
       this.typeVariableTypes = Lists.newArrayList();
     }
 
-    public TypeSymbol getReturnType() {
+    public TypeJavaSymbol getReturnType() {
       return returnType;
     }
 
@@ -386,16 +387,16 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
       return parameters;
     }
 
-    private List<Type> getParametersTypes() {
+    private List<JavaType> getParametersTypes() {
       Preconditions.checkState(super.type != null);
-      return ((Type.MethodType) super.type).argTypes;
+      return ((JavaType.MethodJavaType) super.type).argTypes;
     }
 
     public Scope typeParameters() {
       return typeParameters;
     }
 
-    public void setMethodType(Type.MethodType methodType) {
+    public void setMethodType(JavaType.MethodJavaType methodType) {
       super.type = methodType;
       if (methodType.resultType != null) {
         this.returnType = methodType.resultType.symbol;
@@ -404,8 +405,8 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
 
     public Boolean isOverriden() {
       Boolean result = false;
-      Symbol.TypeSymbol enclosingClass = enclosingClass();
-      for (Type.ClassType superType : enclosingClass.superTypes()) {
+      TypeJavaSymbol enclosingClass = enclosingClass();
+      for (JavaType.ClassJavaType superType : enclosingClass.superTypes()) {
         Boolean overrideFromType = overridesFromSymbol(superType);
         if (overrideFromType == null) {
           result = null;
@@ -416,15 +417,15 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
       return result;
     }
 
-    private Boolean overridesFromSymbol(Type.ClassType classType) {
+    private Boolean overridesFromSymbol(JavaType.ClassJavaType classType) {
       Boolean result = false;
-      if (classType.isTagged(Type.UNKNOWN)) {
+      if (classType.isTagged(JavaType.UNKNOWN)) {
         return null;
       }
-      List<Symbol> symbols = classType.getSymbol().members().lookup(name);
-      for (Symbol overrideSymbol : symbols) {
-        if (overrideSymbol.isKind(Symbol.MTH) && canOverride((Symbol.MethodSymbol) overrideSymbol)) {
-          Boolean isOverriding = isOverriding((Symbol.MethodSymbol) overrideSymbol, classType);
+      List<JavaSymbol> symbols = classType.getSymbol().members().lookup(name);
+      for (JavaSymbol overrideSymbol : symbols) {
+        if (overrideSymbol.isKind(JavaSymbol.MTH) && canOverride((MethodJavaSymbol) overrideSymbol)) {
+          Boolean isOverriding = isOverriding((MethodJavaSymbol) overrideSymbol, classType);
           if (isOverriding == null) {
             result = null;
           } else if (BooleanUtils.isTrue(isOverriding)) {
@@ -438,29 +439,29 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     /**
      * Check accessibility of parent method.
      */
-    private boolean canOverride(Symbol.MethodSymbol overridee) {
+    private boolean canOverride(MethodJavaSymbol overridee) {
       if (overridee.isPackageVisibility()) {
         return overridee.outermostClass().owner().equals(outermostClass().owner());
       }
       return !overridee.isPrivate();
     }
 
-    private Boolean isOverriding(Symbol.MethodSymbol overridee, Type.ClassType classType) {
+    private Boolean isOverriding(MethodJavaSymbol overridee, JavaType.ClassJavaType classType) {
       // same number and type of formal parameters
       if (getParametersTypes().size() != overridee.getParametersTypes().size()) {
         return false;
       }
       for (int i = 0; i < getParametersTypes().size(); i++) {
-        Type paramOverrider = getParametersTypes().get(i);
-        if (paramOverrider.isTagged(Type.UNKNOWN)) {
+        JavaType paramOverrider = getParametersTypes().get(i);
+        if (paramOverrider.isTagged(JavaType.UNKNOWN)) {
           // FIXME : complete symbol table should not have unknown types and generics should be handled properly for this.
           return null;
         }
         // Generics type should have same erasure see JLS8 8.4.2
 
-        Type overrideeType = overridee.getParametersTypes().get(i);
-        if (classType instanceof Type.ParametrizedTypeType) {
-          overrideeType = ((Type.ParametrizedTypeType) classType).typeSubstitution.get(overrideeType);
+        JavaType overrideeType = overridee.getParametersTypes().get(i);
+        if (classType instanceof JavaType.ParametrizedTypeJavaType) {
+          overrideeType = ((JavaType.ParametrizedTypeJavaType) classType).typeSubstitution.get(overrideeType);
           if (overrideeType == null) {
             overrideeType = overridee.getParametersTypes().get(i);
           }
@@ -477,7 +478,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
       return isFlag(Flags.VARARGS);
     }
 
-    public void addTypeParameter(Type.TypeVariableType typeVariableType) {
+    public void addTypeParameter(JavaType.TypeVariableJavaType typeVariableType) {
       typeVariableTypes.add(typeVariableType);
     }
 
@@ -487,34 +488,34 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     }
 
     @Override
-    public TypeSymbolSemantic returnType() {
+    public TypeSymbol returnType() {
       return returnType;
     }
 
     @Override
     public List<org.sonar.plugins.java.api.semantic.Type> thrownTypes() {
-      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(((Type.MethodType) super.type).thrown);
+      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(((JavaType.MethodJavaType) super.type).thrown);
     }
   }
 
   /**
    * Represents type variable of a parametrized type ie: T in class Foo<T>{}
    */
-  public static class TypeVariableSymbol extends TypeSymbol {
-    public TypeVariableSymbol(String name, Symbol owner) {
+  public static class TypeVariableJavaSymbol extends TypeJavaSymbol {
+    public TypeVariableJavaSymbol(String name, JavaSymbol owner) {
       super(0, name, owner);
-      this.type = new Type.TypeVariableType(this);
+      this.type = new JavaType.TypeVariableJavaType(this);
       this.members = new Scope(this);
     }
 
     @Override
-    public Type getSuperclass() {
+    public JavaType getSuperclass() {
       // FIXME : should return upper bound or Object if no bound defined.
       return null;
     }
 
     @Override
-    public List<Type> getInterfaces() {
+    public List<JavaType> getInterfaces() {
       // FIXME : should return upperbound
       return ImmutableList.of();
     }

@@ -56,13 +56,13 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
       Symbol symbolReference = null;
-      Symbol.MethodSymbolSemantic method = null;
+      Symbol.MethodSymbol method = null;
       String reportedName = "";
       if (methodInvocationTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
         IdentifierTree identifier = mse.identifier();
         reportedName = identifier.name();
-        method = (Symbol.MethodSymbolSemantic) getSemanticModel().getReference(identifier);
+        method = (Symbol.MethodSymbol) getSemanticModel().getReference(identifier);
         if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
           symbolReference = getSemanticModel().getReference((IdentifierTree) mse.expression());
         }
@@ -84,7 +84,7 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isMethodFromCollection(Symbol.MethodSymbolSemantic methodSymbol) {
+  private boolean isMethodFromCollection(Symbol.MethodSymbol methodSymbol) {
     Type ownerType = methodSymbol.owner().type();
     return !ownerType.is("java.util.Collection") && ownerType.isSubtypeOf("java.util.Collection");
   }

@@ -29,7 +29,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbolSemantic;
+import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -100,7 +100,7 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
   }
 
   private boolean hasOneAbstractMethod(ClassTree classTree) {
-    TypeSymbolSemantic symbol = classTree.symbol();
+    TypeSymbol symbol = classTree.symbol();
     if (symbol != null) {
       List<Type> types = symbol.interfaces();
       for (Type type : types) {

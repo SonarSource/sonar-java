@@ -83,7 +83,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
       Type superClassType = superClass.symbolType();
       // FIXME Workaround until SONARJAVA-901 is resolved
       while (superClassType.symbol().type().isClass() && !superClassType.is("java.lang.Object")) {
-        Symbol.TypeSymbolSemantic superClassSymbol = superClassType.symbol();
+        Symbol.TypeSymbol superClassSymbol = superClassType.symbol();
         if (hasNotFinalEqualsMethod(superClassSymbol)) {
           return true;
         }
@@ -93,7 +93,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
     return false;
   }
 
-  private boolean hasNotFinalEqualsMethod(Symbol.TypeSymbolSemantic superClassSymbol) {
+  private boolean hasNotFinalEqualsMethod(Symbol.TypeSymbol superClassSymbol) {
     for (Symbol symbol : superClassSymbol.lookupSymbols("equals")) {
       if (isEqualsMethod(symbol) && !symbol.isFinal()) {
         return true;
@@ -104,7 +104,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
 
   private boolean isEqualsMethod(Symbol symbol) {
     if (symbol.isMethodSymbol()) {
-      List<Type> parameterTypes = ((Symbol.MethodSymbolSemantic) symbol).parameterTypes();
+      List<Type> parameterTypes = ((Symbol.MethodSymbol) symbol).parameterTypes();
       return !parameterTypes.isEmpty() && parameterTypes.get(0).is("java.lang.Object");
     }
     return false;

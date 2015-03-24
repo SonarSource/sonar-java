@@ -25,7 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbolSemantic;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -62,7 +62,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
   @Override
   public void visitNode(Tree tree) {
     TypeTree identifier = ((NewClassTree) tree).identifier();
-    Symbol.TypeSymbolSemantic newClassTypeSymbol = identifier.symbolType().symbol();
+    Symbol.TypeSymbol newClassTypeSymbol = identifier.symbolType().symbol();
     if (!newClassTypeSymbol.isEnum() && hasOnlyStaticMethods(newClassTypeSymbol) && !instantiateOwnClass(identifier, newClassTypeSymbol)) {
       String message = "Remove this instantiation.";
       String name = getNewClassName(identifier);
@@ -73,17 +73,17 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     }
   }
 
-  private boolean instantiateOwnClass(Tree identifier, Symbol.TypeSymbolSemantic newClassTypeSymbol) {
+  private boolean instantiateOwnClass(Tree identifier, Symbol.TypeSymbol newClassTypeSymbol) {
     Type enclosingClassType = getSemanticModel().getEnclosingClass(identifier).type();
     return enclosingClassType.equals(newClassTypeSymbol.type());
   }
 
-  private boolean hasOnlyStaticMethods(Symbol.TypeSymbolSemantic newClassTypeSymbol) {
-    Collection<MethodSymbolSemantic> methods = filterMethods(newClassTypeSymbol.memberSymbols());
+  private boolean hasOnlyStaticMethods(Symbol.TypeSymbol newClassTypeSymbol) {
+    Collection<MethodSymbol> methods = filterMethods(newClassTypeSymbol.memberSymbols());
     if (methods.isEmpty()) {
       return false;
     }
-    for (MethodSymbolSemantic method : methods) {
+    for (MethodSymbol method : methods) {
       if (!method.isStatic()) {
         return false;
       }
@@ -91,7 +91,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     return superClassHasOnlyStaticMethods(newClassTypeSymbol);
   }
 
-  private boolean superClassHasOnlyStaticMethods(Symbol.TypeSymbolSemantic newClassTypeSymbol) {
+  private boolean superClassHasOnlyStaticMethods(Symbol.TypeSymbol newClassTypeSymbol) {
     Type superClass = newClassTypeSymbol.superClass();
     if (superClass != null && !superClass.is("java.lang.Object")) {
       return hasOnlyStaticMethods(superClass.symbol());
@@ -99,11 +99,11 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     return true;
   }
 
-  private Collection<MethodSymbolSemantic> filterMethods(Collection<Symbol> symbols) {
-    List<MethodSymbolSemantic> methods = Lists.newArrayList();
+  private Collection<MethodSymbol> filterMethods(Collection<Symbol> symbols) {
+    List<MethodSymbol> methods = Lists.newArrayList();
     for (Symbol symbol : symbols) {
       if (symbol.isMethodSymbol() && !isConstructor(symbol)) {
-        methods.add((MethodSymbolSemantic) symbol);
+        methods.add((MethodSymbol) symbol);
       }
     }
     return methods;

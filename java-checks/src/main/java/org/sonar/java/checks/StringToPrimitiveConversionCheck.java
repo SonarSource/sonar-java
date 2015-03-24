@@ -147,14 +147,14 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
         IdentifierTree identifier = (IdentifierTree) expression;
         Symbol reference = getSemanticModel().getReference(identifier);
         if (reference != null && reference.isVariableSymbol() && getSemanticModel().getUsages(reference).size() == 1) {
-          org.sonar.plugins.java.api.semantic.Symbol.VariableSymbolSemantic variableSymbol = (org.sonar.plugins.java.api.semantic.Symbol.VariableSymbolSemantic) reference;
+          Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) reference;
           result = isBadlyInstanciatedVariable(variableSymbol);
         }
       }
       return result;
     }
 
-    private boolean isBadlyInstanciatedVariable(org.sonar.plugins.java.api.semantic.Symbol.VariableSymbolSemantic variableSymbol) {
+    private boolean isBadlyInstanciatedVariable(Symbol.VariableSymbol variableSymbol) {
       Tree tree = getSemanticModel().getTree(variableSymbol);
       if (tree != null && tree.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) tree;

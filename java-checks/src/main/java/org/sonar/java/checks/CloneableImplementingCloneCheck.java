@@ -52,16 +52,16 @@ public class CloneableImplementingCloneCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    Symbol.TypeSymbolSemantic classSymbol = classTree.symbol();
+    Symbol.TypeSymbol classSymbol = classTree.symbol();
     if (isCloneable(classTree) && !classSymbol.isAbstract() && !declaresCloneMethod(classSymbol)) {
       addIssue(tree, "Add a \"clone()\" method to this class.");
     }
   }
 
-  private boolean declaresCloneMethod(Symbol.TypeSymbolSemantic classSymbol) {
+  private boolean declaresCloneMethod(Symbol.TypeSymbol classSymbol) {
     for (Symbol memberSymbol : classSymbol.lookupSymbols("clone")) {
       if (memberSymbol.isMethodSymbol()) {
-        Symbol.MethodSymbolSemantic methodSymbol = (Symbol.MethodSymbolSemantic) memberSymbol;
+        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) memberSymbol;
         if (methodSymbol.parameterTypes().isEmpty()) {
           return true;
         }

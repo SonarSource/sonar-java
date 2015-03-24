@@ -98,7 +98,7 @@ public class MethodInvocationMatcher {
   private boolean matches(IdentifierTree id, Type callSiteType, SemanticModel semanticModel) {
     Symbol symbol = semanticModel.getReference(id);
     if (symbol != null && symbol.isMethodSymbol()) {
-      Symbol.MethodSymbolSemantic methodSymbol = (Symbol.MethodSymbolSemantic) symbol;
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
       if (isSearchedMethod(methodSymbol, callSiteType)) {
         return true;
       }
@@ -116,7 +116,7 @@ public class MethodInvocationMatcher {
     return null;
   }
 
-  private boolean isSearchedMethod(Symbol.MethodSymbolSemantic symbol, Type callSiteType) {
+  private boolean isSearchedMethod(Symbol.MethodSymbol symbol, Type callSiteType) {
     boolean result = symbol.name().equals(methodName) && parametersAcceptable(symbol);
     if (typeDefinition != null) {
       result &= typeDefinition.matches(symbol.owner().type());
@@ -127,7 +127,7 @@ public class MethodInvocationMatcher {
     return result;
   }
 
-  private boolean parametersAcceptable(Symbol.MethodSymbolSemantic methodSymbol) {
+  private boolean parametersAcceptable(Symbol.MethodSymbol methodSymbol) {
     if (parameterTypes == null) {
       return true;
     }

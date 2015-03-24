@@ -86,7 +86,7 @@ public class EqualsNotOverridenWithCompareToCheck extends SubscriptionBaseVisito
   }
 
   private boolean isComparable(ClassTree tree) {
-    Symbol.TypeSymbolSemantic typeSymbol = tree.symbol();
+    Symbol.TypeSymbol typeSymbol = tree.symbol();
     if (typeSymbol == null) {
       return false;
     }

@@ -81,7 +81,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
   }
 
   private static boolean isSubClassOfRuntimeException(Type thrownClass) {
-    Symbol.TypeSymbolSemantic typeSymbol = thrownClass.symbol();
+    Symbol.TypeSymbol typeSymbol = thrownClass.symbol();
     while (typeSymbol != null) {
       if (isRuntimeException(typeSymbol.type())) {
         return true;

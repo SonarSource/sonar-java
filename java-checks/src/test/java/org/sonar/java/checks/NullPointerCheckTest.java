@@ -27,7 +27,7 @@ import org.sonar.java.checks.NullPointerCheck.AssignmentVisitor;
 import org.sonar.java.checks.NullPointerCheck.ConditionalState;
 import org.sonar.java.checks.NullPointerCheck.State;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
+import org.sonar.java.resolve.JavaSymbol.VariableJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
@@ -117,7 +117,7 @@ public class NullPointerCheckTest {
 
   @Test
   public void test_state_get_variable_value() {
-    VariableSymbol variable = mock(VariableSymbol.class);
+    VariableJavaSymbol variable = mock(VariableJavaSymbol.class);
 
     State parentState = new State();
     State currentState = new State(parentState);
@@ -137,7 +137,7 @@ public class NullPointerCheckTest {
   }
 
   private AbstractValue testMerge(AbstractValue parentValue, AbstractValue trueValue, AbstractValue falseValue) {
-    VariableSymbol variable = mock(VariableSymbol.class);
+    VariableJavaSymbol variable = mock(VariableJavaSymbol.class);
     State parentState = new State();
     if (parentValue != null) {
       parentState.setVariableValue(variable, parentValue);
@@ -185,8 +185,8 @@ public class NullPointerCheckTest {
   public void test_state_invalidate_values() {
     State parentState = new State();
     State currentState = new State(parentState);
-    VariableSymbol parentVariable = mock(VariableSymbol.class);
-    VariableSymbol childVariable = mock(VariableSymbol.class);
+    VariableJavaSymbol parentVariable = mock(VariableJavaSymbol.class);
+    VariableJavaSymbol childVariable = mock(VariableJavaSymbol.class);
     parentState.setVariableValue(parentVariable, NULL);
     currentState.setVariableValue(childVariable, NULL);
 
@@ -198,9 +198,9 @@ public class NullPointerCheckTest {
 
   @Test
   public void test_state_copy_values_from() {
-    VariableSymbol parentVariable = mock(VariableSymbol.class);
-    VariableSymbol childVariable = mock(VariableSymbol.class);
-    VariableSymbol bothVariable = mock(VariableSymbol.class);
+    VariableJavaSymbol parentVariable = mock(VariableJavaSymbol.class);
+    VariableJavaSymbol childVariable = mock(VariableJavaSymbol.class);
+    VariableJavaSymbol bothVariable = mock(VariableJavaSymbol.class);
     State parentState = new State();
     parentState.setVariableValue(parentVariable, NULL);
     parentState.setVariableValue(bothVariable, NULL);
@@ -217,9 +217,9 @@ public class NullPointerCheckTest {
 
   @Test
   public void test_state_merge_conditional_and() {
-    VariableSymbol variable1 = mock(VariableSymbol.class);
-    VariableSymbol variable2 = mock(VariableSymbol.class);
-    VariableSymbol variable3 = mock(VariableSymbol.class);
+    VariableJavaSymbol variable1 = mock(VariableJavaSymbol.class);
+    VariableJavaSymbol variable2 = mock(VariableJavaSymbol.class);
+    VariableJavaSymbol variable3 = mock(VariableJavaSymbol.class);
 
     // initial state with variables set to null.
     State currentState = new State();
@@ -253,9 +253,9 @@ public class NullPointerCheckTest {
 
   @Test
   public void test_state_merge_conditional_or() {
-    VariableSymbol variable1 = mock(VariableSymbol.class);
-    VariableSymbol variable2 = mock(VariableSymbol.class);
-    VariableSymbol variable3 = mock(VariableSymbol.class);
+    VariableJavaSymbol variable1 = mock(VariableJavaSymbol.class);
+    VariableJavaSymbol variable2 = mock(VariableJavaSymbol.class);
+    VariableJavaSymbol variable3 = mock(VariableJavaSymbol.class);
 
     // initial state with variables set to not null.
     State currentState = new State();
@@ -298,7 +298,7 @@ public class NullPointerCheckTest {
     visitor.registerAssignedSymbol(methodSymbol);
     assertThat(visitor.assignedSymbols).isEmpty();
 
-    VariableSymbol variableSymbol = mock(VariableSymbol.class);
+    VariableJavaSymbol variableSymbol = mock(VariableJavaSymbol.class);
     when(variableSymbol.isVariableSymbol()).thenReturn(true);
     visitor.registerAssignedSymbol(variableSymbol);
     assertThat(visitor.assignedSymbols.size()).isEqualTo(1);

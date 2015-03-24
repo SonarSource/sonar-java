@@ -27,16 +27,16 @@ import static org.mockito.Mockito.mock;
 
 public class ScopeTest {
 
-  private Symbol owner = mock(Symbol.class);
+  private JavaSymbol owner = mock(JavaSymbol.class);
 
   @Test
   public void overloading() {
     Scope scope = new Scope(owner);
 
-    Symbol first = new Symbol(0, 0, "overloaded", null);
+    JavaSymbol first = new JavaSymbol(0, 0, "overloaded", null);
     scope.enter(first);
 
-    Symbol second = new Symbol(0, 0, "overloaded", null);
+    JavaSymbol second = new JavaSymbol(0, 0, "overloaded", null);
     scope.enter(second);
 
     assertThat(scope.lookup("overloaded")).containsOnly(first, second);
@@ -47,13 +47,13 @@ public class ScopeTest {
     Scope outerScope = new Scope(owner);
     Scope scope = new Scope(outerScope);
 
-    Symbol first = new Symbol(0, 0, "shadowed", null);
+    JavaSymbol first = new JavaSymbol(0, 0, "shadowed", null);
     outerScope.enter(first);
 
-    Symbol second = new Symbol(0, 0, "name", null);
+    JavaSymbol second = new JavaSymbol(0, 0, "name", null);
     outerScope.enter(second);
 
-    Symbol third = new Symbol(0, 0, "shadowed", null);
+    JavaSymbol third = new JavaSymbol(0, 0, "shadowed", null);
     scope.enter(third);
 
     assertThat(scope.lookup("shadowed")).containsOnly(third);
@@ -65,13 +65,13 @@ public class ScopeTest {
   public void ordered() {
     OrderedScope scope = new OrderedScope(owner);
 
-    Symbol first = new Symbol(0, 0, "first", null);
+    JavaSymbol first = new JavaSymbol(0, 0, "first", null);
     scope.enter(first);
 
-    Symbol second = new Symbol(0, 0, "second", null);
+    JavaSymbol second = new JavaSymbol(0, 0, "second", null);
     scope.enter(second);
 
-    Symbol third = new Symbol(0, 0, "third", null);
+    JavaSymbol third = new JavaSymbol(0, 0, "third", null);
     scope.enter(third);
 
     assertThat(scope.scopeSymbols()).containsExactly(first, second, third);

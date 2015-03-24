@@ -70,7 +70,7 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.simpleName() != null) {
-      Symbol.TypeSymbolSemantic classSymbol = tree.symbol();
+      Symbol.TypeSymbol classSymbol = tree.symbol();
       Collection<Symbol> members = classSymbol.memberSymbols();
       for (Symbol sym : members) {
         if (sym.isVariableSymbol() && !staticFieldSameType(classSymbol, sym)) {

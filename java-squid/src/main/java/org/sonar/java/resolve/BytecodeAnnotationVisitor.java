@@ -47,15 +47,15 @@ public class BytecodeAnnotationVisitor extends AnnotationVisitor {
 
   @Override
   public AnnotationVisitor visitAnnotation(String name, String desc) {
-    Symbol.TypeSymbol annotationSymbol = getSymbol(desc);
+    JavaSymbol.TypeJavaSymbol annotationSymbol = getSymbol(desc);
     return new BytecodeAnnotationVisitor(new AnnotationInstanceResolve(annotationSymbol), bytecodeVisitor);
   }
 
   @Override
   public void visitEnum(String name, String desc, String value) {
-    List<Symbol> lookup = getSymbol(desc).members().lookup(value);
-    for (Symbol symbol : lookup) {
-      if (symbol.isKind(Symbol.VAR)) {
+    List<JavaSymbol> lookup = getSymbol(desc).members().lookup(value);
+    for (JavaSymbol symbol : lookup) {
+      if (symbol.isKind(JavaSymbol.VAR)) {
         addValue(name, symbol);
       }
     }
@@ -78,7 +78,7 @@ public class BytecodeAnnotationVisitor extends AnnotationVisitor {
     };
   }
 
-  private Symbol.TypeSymbol getSymbol(String desc) {
+  private JavaSymbol.TypeJavaSymbol getSymbol(String desc) {
     return bytecodeVisitor.convertAsmType(Type.getType(desc)).getSymbol();
   }
 }

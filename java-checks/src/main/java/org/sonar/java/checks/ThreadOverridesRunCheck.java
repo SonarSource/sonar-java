@@ -51,18 +51,18 @@ public class ThreadOverridesRunCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    Symbol.TypeSymbolSemantic classSymbol = classTree.symbol();
+    Symbol.TypeSymbol classSymbol = classTree.symbol();
     if (classSymbol != null && classSymbol.superClass().is("java.lang.Thread") && !overridesRunMethod(classSymbol)) {
       addIssue(tree, "Stop extending the Thread class as the \"run\" method is not overridden");
     }
   }
 
-  private boolean overridesRunMethod(Symbol.TypeSymbolSemantic classSymbol) {
+  private boolean overridesRunMethod(Symbol.TypeSymbol classSymbol) {
     Collection<Symbol> runSymbols = classSymbol.lookupSymbols("run");
     boolean overridesRunMethod = false;
     for (Symbol run : runSymbols) {
       if (run.isMethodSymbol()) {
-        Symbol.MethodSymbolSemantic methodSymbol = (Symbol.MethodSymbolSemantic) run;
+        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) run;
         if (methodSymbol.parameterTypes().isEmpty()) {
           overridesRunMethod = true;
           break;

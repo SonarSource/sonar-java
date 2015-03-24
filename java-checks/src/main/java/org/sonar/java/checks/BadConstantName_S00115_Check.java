@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -86,7 +87,7 @@ public class BadConstantName_S00115_Check extends SubscriptionBaseVisitor {
   }
 
   private boolean isConstantType(Type symbolType) {
-    return symbolType.isPrimitive() || symbolType.is("java.lang.String") || ((org.sonar.java.resolve.Type) symbolType).isPrimitiveWrapper();
+    return symbolType.isPrimitive() || symbolType.is("java.lang.String") || ((JavaType) symbolType).isPrimitiveWrapper();
   }
 
   private void checkName(VariableTree variableTree) {

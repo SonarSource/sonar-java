@@ -25,9 +25,9 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -63,6 +63,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.sonar.plugins.java.api.semantic.Symbol.*;
 
 @Rule(
   key = "S2259",
@@ -212,8 +214,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitMethodInvocation(MethodInvocationTree tree) {
     Symbol symbol = tree.symbol();
     if (symbol.isMethodSymbol()) {
-      MethodSymbol methodSymbol = (MethodSymbol) symbol;
-      List<org.sonar.java.resolve.Symbol> parameters = methodSymbol.getParameters().scopeSymbols();
+      MethodJavaSymbol methodSymbol = (MethodJavaSymbol) symbol;
+      List<JavaSymbol> parameters = methodSymbol.getParameters().scopeSymbols();
       if (parameters.size() != 0) {
         for (int i = 0; i < tree.arguments().size(); i += 1) {
           // in case of varargs, there could be more arguments than parameters. in that case, pick the last parameter.
@@ -332,7 +334,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   private boolean isVariableNull(VariableSymbol symbol) {
-    return currentState.getVariableValue((VariableSymbol) symbol) == AbstractValue.NULL;
+    return currentState.getVariableValue(symbol) == AbstractValue.NULL;
   }
 
   private void restorePreviousState() {
@@ -424,7 +426,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
-        registerAssignedSymbol((VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.variable()));
+        registerAssignedSymbol(semanticModel.getReference((IdentifierTreeImpl) tree.variable()));
       }
       super.visitAssignmentExpression(tree);
     }

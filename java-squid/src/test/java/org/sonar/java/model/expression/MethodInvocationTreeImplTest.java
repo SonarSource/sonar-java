@@ -45,7 +45,7 @@ public class MethodInvocationTreeImplTest {
   public void symbol_should_be_set() {
     CompilationUnitTree cut = createTree("class A { void foo(){} void bar(){foo();} }");
     ClassTree classTree = (ClassTree) cut.types().get(0);
-    Symbol.MethodSymbolSemantic declaration = ((MethodTree) classTree.members().get(0)).symbol();
+    Symbol.MethodSymbol declaration = ((MethodTree) classTree.members().get(0)).symbol();
     StatementTree statementTree = ((MethodTree) classTree.members().get(1)).block().body().get(0);
     MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree)statementTree).expression();
     Assertions.assertThat(mit.symbol()).isSameAs(declaration);

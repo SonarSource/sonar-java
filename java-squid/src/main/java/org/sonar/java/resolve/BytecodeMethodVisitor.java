@@ -22,11 +22,11 @@ package org.sonar.java.resolve;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
+import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 
 public class BytecodeMethodVisitor extends MethodVisitor {
 
-  private final MethodSymbol methodSymbol;
+  private final MethodJavaSymbol methodSymbol;
   private final BytecodeVisitor bytecodeVisitor;
   /**
    * This counter counts the number of argument annotated with java.lang.Synthetic.
@@ -37,7 +37,7 @@ public class BytecodeMethodVisitor extends MethodVisitor {
    */
   private int syntheticArgs;
 
-  BytecodeMethodVisitor(MethodSymbol methodSymbol, BytecodeVisitor bytecodeVisitor) {
+  BytecodeMethodVisitor(MethodJavaSymbol methodSymbol, BytecodeVisitor bytecodeVisitor) {
     super(Opcodes.ASM5);
     this.methodSymbol = methodSymbol;
     this.bytecodeVisitor = bytecodeVisitor;
@@ -46,7 +46,7 @@ public class BytecodeMethodVisitor extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-    Type annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
+    JavaType annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
     AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve(annotationType.getSymbol());
     methodSymbol.metadata().addAnnotation(annotationInstance);
     return new BytecodeAnnotationVisitor(annotationInstance, bytecodeVisitor);
@@ -54,7 +54,7 @@ public class BytecodeMethodVisitor extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitParameterAnnotation(int parameter, String desc, boolean visible) {
-    Type annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
+    JavaType annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
     if (annotationType.is("java.lang.Synthetic")) {
       syntheticArgs++;
     } else {

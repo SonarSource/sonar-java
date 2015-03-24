@@ -54,7 +54,7 @@ public class FieldMatchMethodNameCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    Symbol.TypeSymbolSemantic classSymbol = ((ClassTree) tree).symbol();
+    Symbol.TypeSymbol classSymbol = ((ClassTree) tree).symbol();
     if (classSymbol != null) {
       Map<String, Symbol> indexSymbol = Maps.newHashMap();
       Multiset<String> fields = HashMultiset.create();

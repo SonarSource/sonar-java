@@ -42,13 +42,13 @@ public class ImportResolutionTest {
 
   @Test
   public void extends_should_point_to_correct_symbol() {
-    assertThat(result.symbol("Class2").kind == Symbol.TYP);
-    Symbol.TypeSymbol class1 = (Symbol.TypeSymbol) result.symbol("Class1");
-    Symbol.TypeSymbol class2 = (Symbol.TypeSymbol) result.symbol("Class2");
+    assertThat(result.symbol("Class2").kind == JavaSymbol.TYP);
+    JavaSymbol.TypeJavaSymbol class1 = (JavaSymbol.TypeJavaSymbol) result.symbol("Class1");
+    JavaSymbol.TypeJavaSymbol class2 = (JavaSymbol.TypeJavaSymbol) result.symbol("Class2");
     assertThat(class2.getSuperclass().symbol).isEqualTo(class1);
     assertThat(class1.getSuperclass()).isNotNull();
     assertThat(class1.getSuperclass().symbol.name).isEqualTo("Collection");
-    Symbol.TypeSymbol interface1 = (Symbol.TypeSymbol) result.symbol("Interface1");
+    JavaSymbol.TypeJavaSymbol interface1 = (JavaSymbol.TypeJavaSymbol) result.symbol("Interface1");
     assertThat(interface1.getInterfaces()).isNotEmpty();
     assertThat(interface1.getInterfaces().get(0).symbol.name).isEqualTo("List");
   }
@@ -61,28 +61,28 @@ public class ImportResolutionTest {
 
   @Test
   public void import_static_var_should_be_resolved() throws Exception {
-    Symbol http_ok = result.symbol("HTTP_OK");
+    JavaSymbol http_ok = result.symbol("HTTP_OK");
     assertThat(http_ok.owner().name).isEqualTo("HttpURLConnection");
     assertThat(http_ok.owner().type.symbol.name).isEqualTo("HttpURLConnection");
-    assertThat(http_ok.kind).isEqualTo(Symbol.VAR);
-    assertThat(http_ok.type.tag).isEqualTo(Type.INT);
+    assertThat(http_ok.kind).isEqualTo(JavaSymbol.VAR);
+    assertThat(http_ok.type.tag).isEqualTo(JavaType.INT);
   }
 
   @Test
   public void import_static_method_should_be_resolved() throws Exception {
-    Symbol reverse = result.symbol("reverse");
+    JavaSymbol reverse = result.symbol("reverse");
     assertThat(reverse.owner().name).isEqualTo("Collections");
     assertThat(reverse.owner().type.symbol.name).isEqualTo("Collections");
-    assertThat(reverse.kind).isEqualTo(Symbol.MTH);
+    assertThat(reverse.kind).isEqualTo(JavaSymbol.MTH);
   }
 
   @Test
   public void import_static_method_should_be_resolved_when_refering_to_multiple_symbols() throws Exception {
-    Symbol sort = result.symbol("sort");
+    JavaSymbol sort = result.symbol("sort");
     assertThat(sort.owner().name).isEqualTo("Collections");
     assertThat(sort.owner().type.symbol.name).isEqualTo("Collections");
-    assertThat(sort.kind).isEqualTo(Symbol.MTH);
-    assertThat(sort.type.tag).isEqualTo(Type.METHOD);
+    assertThat(sort.kind).isEqualTo(JavaSymbol.MTH);
+    assertThat(sort.type.tag).isEqualTo(JavaType.METHOD);
     assertThat(result.reference(45, 7).name).isEqualTo("sort");
     assertThat(result.reference(45, 7)).isEqualTo(sort);
     assertThat(result.reference(46, 7).name).isEqualTo("sort");
@@ -92,8 +92,8 @@ public class ImportResolutionTest {
   @Test
   public void package_should_be_resolved() {
     assertThat(result.symbol("sym")).isNotNull();
-    assertThat(result.symbol("sym").kind).isEqualTo(Symbol.PCK);
-    assertThat(result.symbol("sym").owner().kind).isEqualTo(Symbol.PCK);
+    assertThat(result.symbol("sym").kind).isEqualTo(JavaSymbol.PCK);
+    assertThat(result.symbol("sym").owner().kind).isEqualTo(JavaSymbol.PCK);
     //default package name is empty
     assertThat(result.symbol("sym").owner().name).isEmpty();
   }
@@ -101,17 +101,17 @@ public class ImportResolutionTest {
   @Test
   public void types_from_same_package_should_be_resolved() {
     Result result1 = Result.createForJavaFile("src/test/java/org/sonar/java/resolve/BytecodeCompleterTest");
-    Symbol.TypeSymbol thisTest = (Symbol.TypeSymbol) result1.symbol("BytecodeCompleterTest");
-    List<Symbol> symbols = thisTest.members().lookup("bytecodeCompleterPackageVisibility");
+    JavaSymbol.TypeJavaSymbol thisTest = (JavaSymbol.TypeJavaSymbol) result1.symbol("BytecodeCompleterTest");
+    List<JavaSymbol> symbols = thisTest.members().lookup("bytecodeCompleterPackageVisibility");
     assertThat(symbols).hasSize(1);
-    Symbol.VariableSymbol symbol = (Symbol.VariableSymbol) symbols.get(0);
+    JavaSymbol.VariableJavaSymbol symbol = (JavaSymbol.VariableJavaSymbol) symbols.get(0);
     assertThat(symbol.type.symbol.name).isEqualTo("BytecodeCompleterPackageVisibility");
     assertThat(symbol.type.symbol.owner().name).isEqualTo(thisTest.owner().name);
   }
 
   @Test
   public void star_imports_should_be_resolved() {
-    Symbol sort = result.symbol("file");
+    JavaSymbol sort = result.symbol("file");
     assertThat(sort.type.symbol.name).isEqualTo("File");
     assertThat(sort.type.symbol.owner().name).isEqualTo("java.io");
   }
@@ -119,7 +119,7 @@ public class ImportResolutionTest {
   @Test
   public void star_imports_on_type_should_be_resolved() {
     Result result1 = Result.createForJavaFile("src/test/java/org/sonar/java/resolve/ImportResolutionTest");
-    Symbol importInnerClassSymbol = result1.symbol("importInnerClass");
+    JavaSymbol importInnerClassSymbol = result1.symbol("importInnerClass");
     assertThat(importInnerClassSymbol.type.symbol.name).isEqualTo("ImportInnerClass");
     assertThat(importInnerClassSymbol.type.symbol.owner().name).isEqualTo("ImportsResolutionCases");
     assertThat(importInnerClassSymbol.type.symbol.owner().owner().name).isEqualTo("org.sonar.java.test");
@@ -127,17 +127,17 @@ public class ImportResolutionTest {
 
   @Test
   public void import_static_on_demand_should_be_resolved() throws Exception {
-    Symbol http_accepted = result.reference(41, 10);
+    JavaSymbol http_accepted = result.reference(41, 10);
     assertThat(http_accepted.name).isEqualTo("HTTP_ACCEPTED");
     assertThat(http_accepted.owner().name).isEqualTo("HttpURLConnection");
     assertThat(http_accepted.owner().type.symbol.name).isEqualTo("HttpURLConnection");
-    assertThat(http_accepted.kind).isEqualTo(Symbol.VAR);
-    assertThat(http_accepted.type.tag).isEqualTo(Type.INT);
+    assertThat(http_accepted.kind).isEqualTo(JavaSymbol.VAR);
+    assertThat(http_accepted.type.tag).isEqualTo(JavaType.INT);
   }
 
   @Test
   public void imports_from_java_lang() {
-    Symbol iterable = result.symbol("iterable");
+    JavaSymbol iterable = result.symbol("iterable");
     assertThat(iterable.type.symbol.name).isEqualTo("Iterable");
     assertThat(iterable.type.symbol.owner().name).isEqualTo("java.lang");
   }
@@ -145,13 +145,13 @@ public class ImportResolutionTest {
   @Test
   public void only_one_symbol_per_class_should_be_created() {
     Result result1 = Result.createForJavaFile("src/test/java/org/sonar/java/resolve/BytecodeCompleterTest");
-    Symbol.TypeSymbol thisTest = (Symbol.TypeSymbol) result1.symbol("BytecodeCompleterTest");
-    List<Symbol> symbols = thisTest.members().lookup("bytecodeCompleterPackageVisibility");
+    JavaSymbol.TypeJavaSymbol thisTest = (JavaSymbol.TypeJavaSymbol) result1.symbol("BytecodeCompleterTest");
+    List<JavaSymbol> symbols = thisTest.members().lookup("bytecodeCompleterPackageVisibility");
     assertThat(symbols).hasSize(1);
-    Symbol.TypeSymbol symbol = ((Symbol.VariableSymbol) symbols.get(0)).type.symbol;
+    JavaSymbol.TypeJavaSymbol symbol = ((JavaSymbol.VariableJavaSymbol) symbols.get(0)).type.symbol;
     symbols = symbol.members().lookup("bytecodeCompleterTest");
     assertThat(symbols).hasSize(1);
-    Symbol.TypeSymbol test = ((Symbol.VariableSymbol) symbols.get(0)).type.symbol;
+    JavaSymbol.TypeJavaSymbol test = ((JavaSymbol.VariableJavaSymbol) symbols.get(0)).type.symbol;
     assertThat(test).isEqualTo(thisTest);
   }
 

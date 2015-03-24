@@ -57,7 +57,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.is(Tree.Kind.CLASS)) {
-      Symbol.TypeSymbolSemantic typeSymbol = tree.symbol();
+      Symbol.TypeSymbol typeSymbol = tree.symbol();
       if (typeSymbol != null && typeSymbol.isAbstract()) {
         Collection<Symbol> symbols = typeSymbol.memberSymbols();
         int abstractMethod = countAbstractMethods(symbols);

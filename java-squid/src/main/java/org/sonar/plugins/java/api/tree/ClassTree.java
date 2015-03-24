@@ -79,5 +79,5 @@ public interface ClassTree extends StatementTree {
   @Nullable
   SyntaxToken closeBraceToken();
 
-  Symbol.TypeSymbolSemantic symbol();
+  Symbol.TypeSymbol symbol();
 }

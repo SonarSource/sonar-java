@@ -66,7 +66,7 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitClass(ClassTree tree) {
-    Symbol.TypeSymbolSemantic typeSymbol = tree.symbol();
+    Symbol.TypeSymbol typeSymbol = tree.symbol();
     int dit = 0;
     while(typeSymbol.superClass() != null ){
       dit++;

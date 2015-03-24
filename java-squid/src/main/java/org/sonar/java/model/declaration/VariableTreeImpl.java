@@ -26,7 +26,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InferedTypeTree;
@@ -49,7 +49,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ExpressionTree initializer;
 
   // FIXME(Godin): never should be null, i.e. should have default value
-  private Symbol.VariableSymbol symbol;
+  private JavaSymbol.VariableJavaSymbol symbol;
 
   // Syntax tree holders
   private int dims;
@@ -187,11 +187,11 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     visitor.visitVariable(this);
   }
 
-  public Symbol.VariableSymbol getSymbol() {
+  public JavaSymbol.VariableJavaSymbol getSymbol() {
     return symbol;
   }
 
-  public void setSymbol(Symbol.VariableSymbol symbol) {
+  public void setSymbol(JavaSymbol.VariableJavaSymbol symbol) {
     Preconditions.checkState(this.symbol == null);
     this.symbol = symbol;
   }

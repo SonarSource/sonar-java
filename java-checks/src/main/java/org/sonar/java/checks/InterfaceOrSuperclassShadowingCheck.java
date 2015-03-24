@@ -53,7 +53,7 @@ public class InterfaceOrSuperclassShadowingCheck extends SubscriptionBaseVisitor
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (hasSemantic()) {
-      Symbol.TypeSymbolSemantic classSymbol = classTree.symbol();
+      Symbol.TypeSymbol classSymbol = classTree.symbol();
       checkSuperType(classTree, classSymbol.superClass());
       for (Type interfaceType : classSymbol.interfaces()) {
         checkSuperType(classTree, interfaceType);

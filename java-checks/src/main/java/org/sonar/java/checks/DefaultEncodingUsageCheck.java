@@ -170,7 +170,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   protected void onConstructorFound(NewClassTree newClassTree) {
     NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) newClassTree;
     IdentifierTree constructorIdentifier = newClassTreeImpl.getConstructorIdentifier();
-    Symbol.MethodSymbolSemantic constructor = (Symbol.MethodSymbolSemantic) getSemanticModel().getReference(constructorIdentifier);
+    Symbol.MethodSymbol constructor = (Symbol.MethodSymbol) getSemanticModel().getReference(constructorIdentifier);
     String signature = constructor.owner().name() + "(" + Joiner.on(',').join(constructor.parameterTypes()) + ")";
     addIssue(newClassTree, "Remove this use of constructor \"" + signature + "\"");
   }

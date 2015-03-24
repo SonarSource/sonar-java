@@ -22,14 +22,14 @@ package org.sonar.java.resolve;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
+import org.sonar.java.resolve.JavaSymbol.VariableJavaSymbol;
 
 public class BytecodeFieldVisitor extends FieldVisitor {
 
-  private final VariableSymbol fieldSymbol;
+  private final VariableJavaSymbol fieldSymbol;
   private final BytecodeVisitor bytecodeVisitor;
 
-  BytecodeFieldVisitor(VariableSymbol fieldSymbol, BytecodeVisitor bytecodeVisitor) {
+  BytecodeFieldVisitor(VariableJavaSymbol fieldSymbol, BytecodeVisitor bytecodeVisitor) {
     super(Opcodes.ASM5);
     this.fieldSymbol = fieldSymbol;
     this.bytecodeVisitor = bytecodeVisitor;
@@ -37,7 +37,7 @@ public class BytecodeFieldVisitor extends FieldVisitor {
 
   @Override
   public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-    Type annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
+    JavaType annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
     AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve(annotationType.getSymbol());
     fieldSymbol.metadata().addAnnotation(annotationInstance);
     return new BytecodeAnnotationVisitor(annotationInstance, bytecodeVisitor);

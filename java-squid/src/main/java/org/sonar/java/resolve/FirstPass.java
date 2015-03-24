@@ -56,7 +56,7 @@ public class FirstPass extends BaseTreeVisitor {
 
   private final SemanticModel semanticModel;
 
-  private final List<Symbol> uncompleted = Lists.newArrayList();
+  private final List<JavaSymbol> uncompleted = Lists.newArrayList();
   private final SecondPass completer;
   private final Symbols symbols;
   private Resolve resolve;
@@ -84,7 +84,7 @@ public class FirstPass extends BaseTreeVisitor {
   }
 
   public void completeSymbols() {
-    for (Symbol symbol : uncompleted) {
+    for (JavaSymbol symbol : uncompleted) {
       symbol.complete();
     }
     uncompleted.clear();
@@ -93,13 +93,13 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    Symbol.PackageSymbol compilationUnitPackage = symbols.defaultPackage;
+    JavaSymbol.PackageJavaSymbol compilationUnitPackage = symbols.defaultPackage;
 
     ExpressionTree packageName = tree.packageName();
     if (packageName != null) {
       PackageResolverVisitor packageResolver = new PackageResolverVisitor();
       packageName.accept(packageResolver);
-      compilationUnitPackage = (Symbol.PackageSymbol) resolve.findIdentInPackage(compilationUnitPackage, packageResolver.packageName, Symbol.PCK);
+      compilationUnitPackage = (JavaSymbol.PackageJavaSymbol) resolve.findIdentInPackage(compilationUnitPackage, packageResolver.packageName, JavaSymbol.PCK);
       semanticModel.associateSymbol(packageName, compilationUnitPackage);
     }
     compilationUnitPackage.members = new Scope(compilationUnitPackage);
@@ -142,8 +142,8 @@ public class FirstPass extends BaseTreeVisitor {
   }
 
   private class ImportResolverVisitor extends BaseTreeVisitor {
-    private Symbol currentSymbol;
-    private List<Symbol> resolved;
+    private JavaSymbol currentSymbol;
+    private List<JavaSymbol> resolved;
     private boolean isStatic;
 
     @Override
@@ -153,11 +153,11 @@ public class FirstPass extends BaseTreeVisitor {
       isStatic = tree.isStatic();
       super.visitImport(tree);
       //Associate symbol only if found.
-      if (currentSymbol.kind < Symbol.ERRONEOUS) {
+      if (currentSymbol.kind < JavaSymbol.ERRONEOUS) {
         enterSymbol(currentSymbol, tree);
       } else {
         if (isStatic) {
-          for (Symbol symbol : resolved) {
+          for (JavaSymbol symbol : resolved) {
             //add only static fields
             //TODO accessibility should be checked : package/public
             if ((symbol.flags & Flags.STATIC) != 0) {
@@ -169,7 +169,7 @@ public class FirstPass extends BaseTreeVisitor {
       }
     }
 
-    private void enterSymbol(Symbol symbol, ImportTree tree) {
+    private void enterSymbol(JavaSymbol symbol, ImportTree tree) {
       env.namedImports.enter(symbol);
       //FIXME We add all symbols to named Imports for static methods, but only the first one will be resolved as we don't handle arguments.
       //FIXME That is why we only add the first symbol so we resolve references at best for now.
@@ -190,17 +190,17 @@ public class FirstPass extends BaseTreeVisitor {
           env.starImports().enter(currentSymbol);
         }
         //we set current symbol to not found to do not put it in named import scope.
-        currentSymbol = new Resolve.SymbolNotFound();
+        currentSymbol = new Resolve.JavaSymbolNotFound();
       } else {
-        if (currentSymbol.kind == Symbol.PCK) {
-          currentSymbol = resolve.findIdentInPackage(currentSymbol, tree.name(), Symbol.PCK | Symbol.TYP);
+        if (currentSymbol.kind == JavaSymbol.PCK) {
+          currentSymbol = resolve.findIdentInPackage(currentSymbol, tree.name(), JavaSymbol.PCK | JavaSymbol.TYP);
           resolved = Collections.emptyList();
-        } else if (currentSymbol.kind == Symbol.TYP) {
-          resolved = ((Symbol.TypeSymbol) currentSymbol).members().lookup(tree.name());
-          currentSymbol = resolve.findIdentInType(env, (Symbol.TypeSymbol) currentSymbol, tree.name(), Symbol.TYP | Symbol.VAR);
+        } else if (currentSymbol.kind == JavaSymbol.TYP) {
+          resolved = ((JavaSymbol.TypeJavaSymbol) currentSymbol).members().lookup(tree.name());
+          currentSymbol = resolve.findIdentInType(env, (JavaSymbol.TypeJavaSymbol) currentSymbol, tree.name(), JavaSymbol.TYP | JavaSymbol.VAR);
         } else {
           //Site symbol is not found so we won't be able to resolve the import.
-          currentSymbol = new Resolve.SymbolNotFound();
+          currentSymbol = new Resolve.JavaSymbolNotFound();
           resolved = Collections.emptyList();
         }
       }
@@ -217,13 +217,13 @@ public class FirstPass extends BaseTreeVisitor {
       name = tree.simpleName().name();
       flag = computeClassFlags(tree);
     }
-    Symbol.TypeSymbol symbol = new Symbol.TypeSymbol(flag, name, env.scope.owner);
+    JavaSymbol.TypeJavaSymbol symbol = new JavaSymbol.TypeJavaSymbol(flag, name, env.scope.owner);
 
     ((ClassTreeImpl) tree).setSymbol(symbol);
     //Only register classes that can be accessible, so classes owned by a method are not registered.
     //TODO : register also based on flags ?
     if (!anonymousClass) {
-      if (env.scope.owner.kind == Symbol.TYP || env.scope.owner.kind == Symbol.PCK) {
+      if (env.scope.owner.kind == JavaSymbol.TYP || env.scope.owner.kind == JavaSymbol.PCK) {
         resolve.registerClass(symbol);
       }
       enterSymbol(tree, symbol);
@@ -237,8 +237,8 @@ public class FirstPass extends BaseTreeVisitor {
     // Save current environment to be able to complete class later
     semanticModel.saveEnv(symbol, env);
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-      Symbol.TypeVariableSymbol typeVariableSymbol = new Symbol.TypeVariableSymbol(typeParameterTree.identifier().name(), symbol);
-      symbol.addTypeParameter((Type.TypeVariableType) typeVariableSymbol.type);
+      JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(typeParameterTree.identifier().name(), symbol);
+      symbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
       enterSymbol(typeParameterTree, typeVariableSymbol);
     }
     symbol.typeParameters = env.scope;
@@ -266,7 +266,7 @@ public class FirstPass extends BaseTreeVisitor {
     }else if (tree.is(Tree.Kind.ANNOTATION_TYPE)) {
       flags |= Flags.INTERFACE | Flags.ANNOTATION;
     }
-    if (env.scope.owner instanceof Symbol.TypeSymbol && ((env.enclosingClass.flags() & Flags.INTERFACE) != 0)) {
+    if (env.scope.owner instanceof JavaSymbol.TypeJavaSymbol && ((env.enclosingClass.flags() & Flags.INTERFACE) != 0)) {
       // JLS7 6.6.1: All members of interfaces are implicitly public.
       flags |= Flags.PUBLIC;
     }
@@ -276,7 +276,7 @@ public class FirstPass extends BaseTreeVisitor {
   @Override
   public void visitMethod(MethodTree tree) {
     String name = tree.returnType() == null ? "<init>" : tree.simpleName().name();
-    Symbol.MethodSymbol symbol = new Symbol.MethodSymbol(computeFlags(tree.modifiers()), name, env.scope.owner);
+    JavaSymbol.MethodJavaSymbol symbol = new JavaSymbol.MethodJavaSymbol(computeFlags(tree.modifiers()), name, env.scope.owner);
     if((env.scope.owner.flags & Flags.ENUM) !=0 && tree.returnType()==null ) {
       //enum constructors are private.
       symbol.flags |= Flags.PRIVATE;
@@ -289,8 +289,8 @@ public class FirstPass extends BaseTreeVisitor {
     ((MethodTreeImpl) tree).setSymbol(symbol);
     createNewEnvironment(tree.typeParameters());
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-      Symbol.TypeVariableSymbol typeVariableSymbol = new Symbol.TypeVariableSymbol(typeParameterTree.identifier().name(), symbol);
-      symbol.addTypeParameter((Type.TypeVariableType) typeVariableSymbol.type);
+      JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(typeParameterTree.identifier().name(), symbol);
+      symbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
       enterSymbol(typeParameterTree, typeVariableSymbol);
     }
     // Save current environment to be able to complete method later
@@ -355,7 +355,7 @@ public class FirstPass extends BaseTreeVisitor {
   }
 
   private void declareVariable(int flags, IdentifierTree identifierTree, VariableTreeImpl tree) {
-    Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(flags, identifierTree.name(), env.scope.owner);
+    JavaSymbol.VariableJavaSymbol symbol = new JavaSymbol.VariableJavaSymbol(flags, identifierTree.name(), env.scope.owner);
     enterSymbol(tree, symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);
@@ -414,7 +414,7 @@ public class FirstPass extends BaseTreeVisitor {
     semanticModel.associateEnv(tree, env);
   }
 
-  private void enterSymbol(Tree tree, Symbol symbol) {
+  private void enterSymbol(Tree tree, JavaSymbol symbol) {
     env.scope.enter(symbol);
     semanticModel.associateSymbol(tree, symbol);
   }

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -63,7 +64,7 @@ public class PrimitiveWrappersInTernaryOperatorCheck extends SubscriptionBaseVis
   }
 
   private boolean isPrimitiveWrapper(Type type) {
-    return ((org.sonar.java.resolve.Type) type).isPrimitiveWrapper();
+    return ((JavaType) type).isPrimitiveWrapper();
   }
 
 }

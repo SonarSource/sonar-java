@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -43,16 +44,16 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
   }
 
   private void visitClassTree(ClassTree classTree) {
-    Symbol.TypeSymbolSemantic symbol = classTree.symbol();
+    Symbol.TypeSymbol symbol = classTree.symbol();
     if (isInnerClass(symbol) && directlyImplementsSerializable(symbol)) {
       Symbol owner = symbol.owner();
       if (owner.isTypeSymbol()) {
-        Symbol.TypeSymbolSemantic ownerType = (Symbol.TypeSymbolSemantic) owner;
+        Symbol.TypeSymbol ownerType = (Symbol.TypeSymbol) owner;
         if (isMatchingOuterClass(ownerType.type()) && !symbol.isStatic()) {
           addIssue(classTree, "Make this inner class static");
         }
       } else if (owner.isMethodSymbol()) {
-        Symbol.TypeSymbolSemantic methodOwner = (Symbol.TypeSymbolSemantic) owner.owner();
+        Symbol.TypeSymbol methodOwner = (Symbol.TypeSymbol) owner.owner();
         if (isMatchingOuterClass(methodOwner.type()) && !owner.isStatic()) {
           String methodName = owner.name();
           addIssue(classTree, "Make \"" + methodName + "\" static");
@@ -61,15 +62,15 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
     }
   }
 
-  private boolean isInnerClass(Symbol.TypeSymbolSemantic typeSymbol) {
-    return !typeSymbol.equals(((org.sonar.java.resolve.Symbol.TypeSymbol) typeSymbol).outermostClass());
+  private boolean isInnerClass(Symbol.TypeSymbol typeSymbol) {
+    return !typeSymbol.equals(((JavaSymbol.TypeJavaSymbol) typeSymbol).outermostClass());
   }
 
   protected boolean isSerializable(Type type) {
     return type.isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean directlyImplementsSerializable(Symbol.TypeSymbolSemantic symbol) {
+  private boolean directlyImplementsSerializable(Symbol.TypeSymbol symbol) {
     for (org.sonar.plugins.java.api.semantic.Type type : symbol.interfaces()) {
       if (type.is("java.io.Serializable")) {
         return true;

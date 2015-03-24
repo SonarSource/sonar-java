@@ -79,9 +79,9 @@ public interface Symbol {
   /**
    * The closest enclosing class.
    */
-  TypeSymbolSemantic enclosingClass();
+  TypeSymbol enclosingClass();
 
-  interface TypeSymbolSemantic extends Symbol {
+  interface TypeSymbol extends Symbol {
 
     /**
      * Returns the superclass of this type symbol.
@@ -108,15 +108,15 @@ public interface Symbol {
 
   }
 
-  interface VariableSymbolSemantic extends Symbol {
+  interface VariableSymbol extends Symbol {
 
   }
 
-  interface MethodSymbolSemantic extends Symbol {
+  interface MethodSymbol extends Symbol {
 
     List<Type> parameterTypes();
 
-    TypeSymbolSemantic returnType();
+    TypeSymbol returnType();
 
     List<Type> thrownTypes();
   }

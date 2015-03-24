@@ -40,7 +40,7 @@ import java.util.Set;
 /**
  * Completes hierarchy of types.
  */
-public class SecondPass implements Symbol.Completer {
+public class SecondPass implements JavaSymbol.Completer {
 
   private final SemanticModel semanticModel;
   private final Symbols symbols;
@@ -53,25 +53,25 @@ public class SecondPass implements Symbol.Completer {
   }
 
   @Override
-  public void complete(Symbol symbol) {
-    if (symbol.kind == Symbol.TYP) {
-      complete((Symbol.TypeSymbol) symbol);
-    } else if (symbol.kind == Symbol.MTH) {
-      complete((Symbol.MethodSymbol) symbol);
-    } else if (symbol.kind == Symbol.VAR) {
-      complete((Symbol.VariableSymbol) symbol);
+  public void complete(JavaSymbol symbol) {
+    if (symbol.kind == JavaSymbol.TYP) {
+      complete((JavaSymbol.TypeJavaSymbol) symbol);
+    } else if (symbol.kind == JavaSymbol.MTH) {
+      complete((JavaSymbol.MethodJavaSymbol) symbol);
+    } else if (symbol.kind == JavaSymbol.VAR) {
+      complete((JavaSymbol.VariableJavaSymbol) symbol);
     } else {
       throw new IllegalArgumentException();
     }
   }
 
-  private void complete(Symbol.TypeSymbol symbol) {
+  private void complete(JavaSymbol.TypeJavaSymbol symbol) {
     Resolve.Env env = semanticModel.getEnv(symbol);
-    Type.ClassType type = (Type.ClassType) symbol.type;
+    JavaType.ClassJavaType type = (JavaType.ClassJavaType) symbol.type;
 
     if ((symbol.flags() & Flags.INTERFACE) == 0) {
       // If this is a class, enter symbol for "this"
-      symbol.members.enter(new Symbol.VariableSymbol(Flags.FINAL, "this", symbol.type, symbol));
+      symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "this", symbol.type, symbol));
     }
 
     if ("".equals(symbol.name)) {
@@ -90,7 +90,7 @@ public class SecondPass implements Symbol.Completer {
       type.supertype = resolveType(env, superClassTree);
       checkHierarchyCycles(symbol.type);
       //enter symbol for super for superclass.
-      symbol.members.enter(new Symbol.VariableSymbol(Flags.FINAL, "super", ((Type.ClassType) symbol.type).supertype, symbol));
+      symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", ((JavaType.ClassJavaType) symbol.type).supertype, symbol));
     } else {
       if (tree.is(Tree.Kind.ENUM)) {
         // JLS8 8.9: The direct superclass of an enum type E is Enum<E>.
@@ -108,9 +108,9 @@ public class SecondPass implements Symbol.Completer {
     }
 
     //Interfaces
-    ImmutableList.Builder<Type> interfaces = ImmutableList.builder();
+    ImmutableList.Builder<JavaType> interfaces = ImmutableList.builder();
     for (Tree interfaceTree : tree.superInterfaces()) {
-      Type interfaceType = resolveType(env, interfaceTree);
+      JavaType interfaceType = resolveType(env, interfaceTree);
       if (interfaceType != null) {
         interfaces.add(interfaceType);
       }
@@ -127,7 +127,7 @@ public class SecondPass implements Symbol.Completer {
 
   private void completeTypeParameters(TypeParameters typeParameters, Resolve.Env env) {
     for (TypeParameterTree typeParameterTree : typeParameters) {
-      List<Type> bounds = Lists.newArrayList();
+      List<JavaType> bounds = Lists.newArrayList();
       if(typeParameterTree.bounds().isEmpty()) {
         bounds.add(symbols.objectType);
       } else {
@@ -135,34 +135,34 @@ public class SecondPass implements Symbol.Completer {
           bounds.add(resolveType(env, boundTree));
         }
       }
-      ((Type.TypeVariableType) semanticModel.getSymbol(typeParameterTree).type()).bounds = bounds;
+      ((JavaType.TypeVariableJavaType) semanticModel.getSymbol(typeParameterTree).type()).bounds = bounds;
     }
   }
 
-  private void checkHierarchyCycles(Type baseType) {
-    Set<Type.ClassType> types = Sets.newHashSet();
-    Type.ClassType type = (Type.ClassType) baseType;
+  private void checkHierarchyCycles(JavaType baseType) {
+    Set<JavaType.ClassJavaType> types = Sets.newHashSet();
+    JavaType.ClassJavaType type = (JavaType.ClassJavaType) baseType;
     while (type != null) {
       if (!types.add(type)) {
         throw new IllegalStateException("Cycling class hierarchy detected with symbol : " + baseType.symbol.name + ".");
       }
-      type = (Type.ClassType) type.symbol.getSuperclass();
+      type = (JavaType.ClassJavaType) type.symbol.getSuperclass();
     }
   }
 
-  private void complete(Symbol.MethodSymbol symbol) {
+  private void complete(JavaSymbol.MethodJavaSymbol symbol) {
     MethodTree methodTree = (MethodTree) semanticModel.getTree(symbol);
     Resolve.Env env = semanticModel.getEnv(symbol);
     completeTypeParameters(methodTree.typeParameters(), env);
-    ImmutableList.Builder<Type> thrownTypes = ImmutableList.builder();
+    ImmutableList.Builder<JavaType> thrownTypes = ImmutableList.builder();
     for (TypeTree throwClause : methodTree.throwsClauses()) {
-      Type thrownType = resolveType(env, throwClause);
+      JavaType thrownType = resolveType(env, throwClause);
       if (thrownType != null) {
         thrownTypes.add(thrownType);
       }
     }
 
-    Type returnType = null;
+    JavaType returnType = null;
     // no return type for constructor
     if (!"<init>".equals(symbol.name)) {
       returnType = resolveType(env, methodTree.returnType());
@@ -171,11 +171,11 @@ public class SecondPass implements Symbol.Completer {
       }
     }
     List<VariableTree> parametersTree = methodTree.parameters();
-    List<Type> argTypes = Lists.newArrayList();
-    List<Symbol> scopeSymbols = symbol.parameters.scopeSymbols();
+    List<JavaType> argTypes = Lists.newArrayList();
+    List<JavaSymbol> scopeSymbols = symbol.parameters.scopeSymbols();
     for(int i = 0; i < parametersTree.size(); i += 1) {
       VariableTree variableTree = parametersTree.get(i);
-      Symbol param = scopeSymbols.get(i);
+      JavaSymbol param = scopeSymbols.get(i);
       if (variableTree.simpleName().name().equals(param.getName())) {
         param.complete();
         argTypes.add(param.getType());
@@ -184,11 +184,11 @@ public class SecondPass implements Symbol.Completer {
         symbol.flags |= Flags.VARARGS;
       }
     }
-    Type.MethodType methodType = new Type.MethodType(argTypes, returnType, thrownTypes.build(), (Symbol.TypeSymbol) symbol.owner);
+    JavaType.MethodJavaType methodType = new JavaType.MethodJavaType(argTypes, returnType, thrownTypes.build(), (JavaSymbol.TypeJavaSymbol) symbol.owner);
     symbol.setMethodType(methodType);
   }
 
-  private void complete(Symbol.VariableSymbol symbol) {
+  private void complete(JavaSymbol.VariableJavaSymbol symbol) {
     VariableTree variableTree = (VariableTree) semanticModel.getTree(symbol);
     Resolve.Env env = semanticModel.getEnv(symbol);
     if (variableTree.is(Tree.Kind.ENUM_CONSTANT)) {
@@ -198,15 +198,15 @@ public class SecondPass implements Symbol.Completer {
     }
   }
 
-  private Type resolveType(Resolve.Env env, Tree tree) {
+  private JavaType resolveType(Resolve.Env env, Tree tree) {
     Preconditions.checkArgument(checkTypeOfTree(tree), "Kind of tree unexpected " + ((JavaTree) tree).getKind());
     //FIXME(benzonico) as long as Variables share the same node type, (int i,j; or worse : int i[], j[];) check nullity to respect invariance.
-    Type type = ((AbstractTypedTree) tree).getSymbolType();
+    JavaType type = ((AbstractTypedTree) tree).getSymbolType();
     if (type != null) {
       return type;
     }
     typeAndReferenceSolver.env = env;
-    typeAndReferenceSolver.resolveAs(tree, Symbol.TYP, env);
+    typeAndReferenceSolver.resolveAs(tree, JavaSymbol.TYP, env);
     typeAndReferenceSolver.env = null;
     return ((AbstractTypedTree) tree).getSymbolType();
   }

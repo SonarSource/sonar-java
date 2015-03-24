@@ -22,6 +22,8 @@ package org.sonar.java.resolve;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
 
@@ -29,8 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-//FIXME should be renamed to avoid having two classes named Type
-public class Type implements org.sonar.plugins.java.api.semantic.Type {
+public class JavaType implements Type {
 
   public static final int BYTE = 1;
   public static final int CHAR = 2;
@@ -50,16 +51,16 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
 
   int tag;
 
-  Type primitiveType = null;
+  JavaType primitiveType = null;
 
-  Type primitiveWrapperType = null;
+  JavaType primitiveWrapperType = null;
 
   /**
    * Symbol, which defines this type.
    */
-  Symbol.TypeSymbol symbol;
+  JavaSymbol.TypeJavaSymbol symbol;
 
-  public Type(int tag, Symbol.TypeSymbol symbol) {
+  public JavaType(int tag, JavaSymbol.TypeJavaSymbol symbol) {
     this.tag = tag;
     this.symbol = symbol;
   }
@@ -74,7 +75,7 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     return tag <= DOUBLE;
   }
 
-  public Symbol.TypeSymbol getSymbol() {
+  public JavaSymbol.TypeJavaSymbol getSymbol() {
     symbol.complete();
     return symbol;
   }
@@ -87,7 +88,7 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
       // primitive type
       return fullyQualifiedName.equals(symbol.name);
     } else if (isTagged(ARRAY)) {
-      return fullyQualifiedName.endsWith("[]") && ((ArrayType) this).elementType.is(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2));
+      return fullyQualifiedName.endsWith("[]") && ((ArrayJavaType) this).elementType.is(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2));
     } else if (isTagged(TYPEVAR)) {
       return false;
     }
@@ -102,7 +103,7 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
       }
     } else if (isTagged(ARRAY)) {
       return fullyQualifiedName.equals("java.lang.Object") ||
-          (fullyQualifiedName.endsWith("[]") && ((ArrayType) this).elementType.isSubtypeOf(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2)));
+          (fullyQualifiedName.endsWith("[]") && ((ArrayJavaType) this).elementType.isSubtypeOf(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2)));
     } else if (isTagged(TYPEVAR)) {
       return erasure().isSubtypeOf(fullyQualifiedName);
     } else if (isTagged(BOT)) {
@@ -113,16 +114,16 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
 
   @Override
   public boolean isSubtypeOf(org.sonar.plugins.java.api.semantic.Type superType) {
-    Type supType = (Type) superType;
-    if (this.isTagged(Type.ARRAY)) {
+    JavaType supType = (JavaType) superType;
+    if (this.isTagged(JavaType.ARRAY)) {
       //Handle covariance of arrays.
-      if(supType.isTagged(Type.ARRAY)) {
-        return ((Type.ArrayType) this).elementType().isSubtypeOf(((Type.ArrayType) supType).elementType());
+      if(supType.isTagged(JavaType.ARRAY)) {
+        return ((ArrayJavaType) this).elementType().isSubtypeOf(((ArrayJavaType) supType).elementType());
       }
       //Only possibility to be supertype of array without being an array is to be Object.
       return supType.fullyQualifiedName().equals("java.lang.Object");
-    } else if (this.isTagged(Type.CLASS) && supType.isTagged(Type.CLASS)) {
-      Type.ClassType superClassType = (Type.ClassType) supType;
+    } else if (this.isTagged(JavaType.CLASS) && supType.isTagged(JavaType.CLASS)) {
+      ClassJavaType superClassType = (ClassJavaType) supType;
       return this.equals(superClassType) || this.superTypeContains(superClassType.fullyQualifiedName());
     } else if(isTagged(TYPEVAR)) {
       return this.equals(superType) || erasure().isSubtypeOf(superType.erasure());
@@ -133,7 +134,7 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
   }
 
   private boolean superTypeContains(String fullyQualifiedName) {
-    for (ClassType classType : symbol.superTypes()) {
+    for (ClassJavaType classType : symbol.superTypes()) {
       if (classType.is(fullyQualifiedName)) {
         return true;
       }
@@ -144,7 +145,7 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
   /**
    * JLS8 4.6
    */
-  public Type erasure() {
+  public JavaType erasure() {
     return this;
   }
 
@@ -183,12 +184,12 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
   }
 
   @Nullable
-  public Type primitiveType() {
+  public JavaType primitiveType() {
     return primitiveType;
   }
 
   @Nullable
-  public Type primitiveWrapperType() {
+  public JavaType primitiveWrapperType() {
     return primitiveWrapperType;
   }
 
@@ -218,46 +219,46 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
   }
 
   @Override
-  public org.sonar.plugins.java.api.semantic.Symbol.TypeSymbolSemantic symbol() {
+  public Symbol.TypeSymbol symbol() {
     return getSymbol();
   }
 
-  public static class ClassType extends Type {
+  public static class ClassJavaType extends JavaType {
 
     /**
      * Supertype of this class.
      */
-    Type supertype;
+    JavaType supertype;
 
     /**
      * Interfaces of this class.
      */
-    List<Type> interfaces;
+    List<JavaType> interfaces;
 
-    public ClassType(Symbol.TypeSymbol symbol) {
+    public ClassJavaType(JavaSymbol.TypeJavaSymbol symbol) {
       super(CLASS, symbol);
     }
   }
 
-  public static class ArrayType extends Type implements org.sonar.plugins.java.api.semantic.Type.ArrayTypeSemantic {
+  public static class ArrayJavaType extends JavaType implements org.sonar.plugins.java.api.semantic.Type.ArrayTypeSemantic {
 
-    private final ArrayType erasure;
+    private final ArrayJavaType erasure;
     /**
      * Type of elements of this array.
      */
-    Type elementType;
+    JavaType elementType;
 
     /**
      * @param arrayClass {@link Symbols#arrayClass}
      */
-    public ArrayType(Type elementType, Symbol.TypeSymbol arrayClass) {
+    public ArrayJavaType(JavaType elementType, JavaSymbol.TypeJavaSymbol arrayClass) {
       super(ARRAY, arrayClass);
       this.elementType = elementType;
       // element
-      this.erasure = new ArrayType(arrayClass);
+      this.erasure = new ArrayJavaType(arrayClass);
     }
 
-    private ArrayType(Symbol.TypeSymbol arrayClass) {
+    private ArrayJavaType(JavaSymbol.TypeJavaSymbol arrayClass) {
       super(ARRAY, arrayClass);
       this.erasure = this;
     }
@@ -275,10 +276,10 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
       if (obj == this) {
         return true;
       }
-      if (!(obj instanceof ArrayType)) {
+      if (!(obj instanceof ArrayJavaType)) {
         return false;
       }
-      ArrayType rhs = (ArrayType) obj;
+      ArrayJavaType rhs = (ArrayJavaType) obj;
       return new EqualsBuilder()
         .append(elementType, rhs.elementType)
         .isEquals();
@@ -289,12 +290,12 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
       return elementType.toString() + "[]";
     }
 
-    public Type elementType() {
+    public JavaType elementType() {
       return elementType;
     }
 
     @Override
-    public Type erasure() {
+    public JavaType erasure() {
       if (erasure.elementType == null) {
         erasure.elementType = elementType.erasure();
       }
@@ -302,15 +303,15 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     }
   }
 
-  public static class MethodType extends Type {
+  public static class MethodJavaType extends JavaType {
 
-    List<Type> argTypes;
+    List<JavaType> argTypes;
     // Return type of constructor is null.
     @Nullable
-    Type resultType;
-    List<Type> thrown;
+    JavaType resultType;
+    List<JavaType> thrown;
 
-    public MethodType(List<Type> argTypes, @Nullable Type resultType, List<Type> thrown, Symbol.TypeSymbol symbol) {
+    public MethodJavaType(List<JavaType> argTypes, @Nullable JavaType resultType, List<JavaType> thrown, JavaSymbol.TypeJavaSymbol symbol) {
       super(METHOD, symbol);
       this.argTypes = argTypes;
       this.resultType = resultType;
@@ -323,11 +324,11 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
     }
   }
 
-  public static class TypeVariableType extends Type {
+  public static class TypeVariableJavaType extends JavaType {
 
-    List<Type> bounds;
+    List<JavaType> bounds;
 
-    public TypeVariableType(Symbol.TypeVariableSymbol symbol) {
+    public TypeVariableJavaType(JavaSymbol.TypeVariableJavaSymbol symbol) {
       super(TYPEVAR, symbol);
     }
 
@@ -335,37 +336,37 @@ public class Type implements org.sonar.plugins.java.api.semantic.Type {
      * Erasure of a type variable is the erasure of its leftmost bound.
      */
     @Override
-    public Type erasure() {
+    public JavaType erasure() {
       return bounds.get(0);
     }
   }
 
-  public static class ParametrizedTypeType extends ClassType {
+  public static class ParametrizedTypeJavaType extends ClassJavaType {
 
-    final Map<TypeVariableType, Type> typeSubstitution;
-    final Type rawType;
+    final Map<TypeVariableJavaType, JavaType> typeSubstitution;
+    final JavaType rawType;
 
-    ParametrizedTypeType(Symbol.TypeSymbol symbol, Map<TypeVariableType, Type> typeSubstitution) {
+    ParametrizedTypeJavaType(JavaSymbol.TypeJavaSymbol symbol, Map<TypeVariableJavaType, JavaType> typeSubstitution) {
       super(symbol);
       this.rawType = symbol.getType();
       this.typeSubstitution = typeSubstitution;
     }
 
     @Override
-    public Type erasure() {
+    public JavaType erasure() {
       return rawType.erasure();
     }
 
     @Nullable
-    public Type substitution(TypeVariableType typeVariableType) {
-      Type result = null;
+    public JavaType substitution(TypeVariableJavaType typeVariableType) {
+      JavaType result = null;
       if (typeSubstitution != null) {
         result = typeSubstitution.get(typeVariableType);
       }
       return result;
     }
 
-    public Set<TypeVariableType> typeParameters() {
+    public Set<TypeVariableJavaType> typeParameters() {
       if (typeSubstitution != null) {
         return typeSubstitution.keySet();
       }

@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
@@ -148,9 +148,9 @@ public class MethodTreeImplTest {
 
   @Test
   public void varargs_flag() {
-    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) getUniqueMethod("class A { public static void main(String[] args){} }").symbol();
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) getUniqueMethod("class A { public static void main(String[] args){} }").symbol();
     assertThat((methodSymbol.flags() & Flags.VARARGS) != 0).isFalse();
-    methodSymbol = (Symbol.MethodSymbol) getUniqueMethod("class A { public static void main(String... args){} }").symbol();
+    methodSymbol = (JavaSymbol.MethodJavaSymbol) getUniqueMethod("class A { public static void main(String... args){} }").symbol();
     assertThat((methodSymbol.flags() & Flags.VARARGS) != 0).isTrue();
   }
 

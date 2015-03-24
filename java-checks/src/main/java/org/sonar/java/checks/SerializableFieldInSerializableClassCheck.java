@@ -23,6 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.resolve.JavaType;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -93,7 +95,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     if (tree.is(Tree.Kind.ENUM, Tree.Kind.PRIMITIVE_TYPE)) {
       return true;
     } else if (tree.is(Tree.Kind.CLASS)) {
-      org.sonar.plugins.java.api.semantic.Symbol.TypeSymbolSemantic symbol = ((ClassTree) tree).symbol();
+      Symbol.TypeSymbol symbol = ((ClassTree) tree).symbol();
       if (symbol == null) {
         return false;
       }
@@ -112,7 +114,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     if (type.isArray()) {
       return implementsSerializable(((Type.ArrayTypeSemantic) type).elementType());
     }
-    if (type.isClass() || ((org.sonar.java.resolve.Type) type).isTagged(org.sonar.java.resolve.Type.TYPEVAR)) {
+    if (type.isClass() || ((JavaType) type).isTagged(JavaType.TYPEVAR)) {
       return type.erasure().isSubtypeOf("java.io.Serializable");
     }
     return false;

@@ -136,7 +136,7 @@ public interface Type {
    * Symbol of this type.
    * @return the symbol declaring this type.
    */
-  Symbol.TypeSymbolSemantic symbol();
+  Symbol.TypeSymbol symbol();
 
   /**
    *Erasure of this type.

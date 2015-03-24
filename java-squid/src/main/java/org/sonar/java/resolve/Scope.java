@@ -31,12 +31,12 @@ import java.util.List;
  */
 public class Scope {
 
-  final Symbol owner;
+  final JavaSymbol owner;
   final Scope next;
 
-  protected ArrayListMultimap<String, Symbol> symbols = ArrayListMultimap.create();
+  protected ArrayListMultimap<String, JavaSymbol> symbols = ArrayListMultimap.create();
 
-  public Scope(Symbol owner) {
+  public Scope(JavaSymbol owner) {
     this.owner = owner;
     this.next = null;
   }
@@ -46,32 +46,32 @@ public class Scope {
     this.next = next;
   }
 
-  public void enter(Symbol symbol) {
+  public void enter(JavaSymbol symbol) {
     symbols.put(symbol.name, symbol);
   }
 
-  public List<Symbol> lookup(String name) {
+  public List<JavaSymbol> lookup(String name) {
     Scope scope = this;
     while (scope != null && !scope.symbols.containsKey(name)) {
       scope = scope.next;
     }
-    return scope == null ? ImmutableList.<Symbol>of() : scope.symbols.get(name);
+    return scope == null ? ImmutableList.<JavaSymbol>of() : scope.symbols.get(name);
   }
 
-  public Collection<Symbol> scopeSymbols() {
+  public Collection<JavaSymbol> scopeSymbols() {
     return ImmutableList.copyOf(symbols.values());
   }
 
   public static class OrderedScope extends Scope {
-    private List<Symbol> orderedSymbols;
+    private List<JavaSymbol> orderedSymbols;
 
-    public OrderedScope(Symbol owner) {
+    public OrderedScope(JavaSymbol owner) {
       super(owner);
       this.orderedSymbols = Lists.newArrayList();
     }
 
     @Override
-    public void enter(Symbol symbol) {
+    public void enter(JavaSymbol symbol) {
       this.orderedSymbols.add(symbol);
       super.enter(symbol);
     }
@@ -82,7 +82,7 @@ public class Scope {
      * @return list of symbols, in declaration order
      */
     @Override
-    public List<Symbol> scopeSymbols() {
+    public List<JavaSymbol> scopeSymbols() {
       return ImmutableList.copyOf(orderedSymbols);
     }
   }
@@ -91,17 +91,17 @@ public class Scope {
 
     private final BytecodeCompleter bytecodeCompleter;
 
-    public StarImportScope(Symbol owner, BytecodeCompleter bytecodeCompleter) {
+    public StarImportScope(JavaSymbol owner, BytecodeCompleter bytecodeCompleter) {
       super(owner);
       this.bytecodeCompleter = bytecodeCompleter;
     }
 
     @Override
-    public List<Symbol> lookup(String name) {
-      List<Symbol> symbolsList = Lists.newArrayList();
-      for (Symbol site : symbols.values()) {
-        Symbol symbol = bytecodeCompleter.loadClass(bytecodeCompleter.formFullName(name, site));
-        if (symbol.kind < Symbol.ERRONEOUS) {
+    public List<JavaSymbol> lookup(String name) {
+      List<JavaSymbol> symbolsList = Lists.newArrayList();
+      for (JavaSymbol site : symbols.values()) {
+        JavaSymbol symbol = bytecodeCompleter.loadClass(bytecodeCompleter.formFullName(name, site));
+        if (symbol.kind < JavaSymbol.ERRONEOUS) {
           symbolsList.add(symbol);
         }
       }
@@ -114,30 +114,30 @@ public class Scope {
 
     private final BytecodeCompleter bytecodeCompleter;
 
-    public StaticStarImportScope(Symbol owner, BytecodeCompleter bytecodeCompleter) {
+    public StaticStarImportScope(JavaSymbol owner, BytecodeCompleter bytecodeCompleter) {
       super(owner);
       this.bytecodeCompleter = bytecodeCompleter;
     }
 
     @Override
-    public List<Symbol> lookup(String name) {
-      List<Symbol> symbolsList = Lists.newArrayList();
-      for (Symbol site : symbols.values()) {
+    public List<JavaSymbol> lookup(String name) {
+      List<JavaSymbol> symbolsList = Lists.newArrayList();
+      for (JavaSymbol site : symbols.values()) {
         //site is a package, try to load referenced type.
-        if ((site.kind & Symbol.PCK) != 0) {
-          Symbol symbol = bytecodeCompleter.loadClass(bytecodeCompleter.formFullName(name, site));
-          if (symbol.kind < Symbol.ERRONEOUS) {
+        if ((site.kind & JavaSymbol.PCK) != 0) {
+          JavaSymbol symbol = bytecodeCompleter.loadClass(bytecodeCompleter.formFullName(name, site));
+          if (symbol.kind < JavaSymbol.ERRONEOUS) {
             symbolsList.add(symbol);
           }
         }
 
         //site is a type, try to find a matching type or field
-        if ((site.kind & Symbol.TYP) != 0) {
-          List<Symbol> resolved = ((Symbol.TypeSymbol) site).members().lookup(name);
-          for (Symbol symbol : resolved) {
+        if ((site.kind & JavaSymbol.TYP) != 0) {
+          List<JavaSymbol> resolved = ((JavaSymbol.TypeJavaSymbol) site).members().lookup(name);
+          for (JavaSymbol symbol : resolved) {
             //TODO check accessibility
             //TODO factorize with static named import ?
-            if (symbol.kind < Symbol.ERRONEOUS && (symbol.flags & Flags.STATIC) != 0) {
+            if (symbol.kind < JavaSymbol.ERRONEOUS && (symbol.flags & Flags.STATIC) != 0) {
               symbolsList.add(symbol);
             }
           }

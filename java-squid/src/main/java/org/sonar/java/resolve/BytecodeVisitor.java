@@ -42,7 +42,7 @@ import java.util.Map;
 public class BytecodeVisitor extends ClassVisitor {
 
   private final Symbols symbols;
-  private final Symbol.TypeSymbol classSymbol;
+  private final JavaSymbol.TypeJavaSymbol classSymbol;
   private final ParametrizedTypeCache parametrizedTypeCache;
   private BytecodeCompleter bytecodeCompleter;
   /**
@@ -50,7 +50,7 @@ public class BytecodeVisitor extends ClassVisitor {
    */
   private String className;
 
-  BytecodeVisitor(BytecodeCompleter bytecodeCompleter, Symbols symbols, Symbol.TypeSymbol classSymbol, ParametrizedTypeCache parametrizedTypeCache) {
+  BytecodeVisitor(BytecodeCompleter bytecodeCompleter, Symbols symbols, JavaSymbol.TypeJavaSymbol classSymbol, ParametrizedTypeCache parametrizedTypeCache) {
     super(Opcodes.ASM5);
     this.bytecodeCompleter = bytecodeCompleter;
     this.symbols = symbols;
@@ -58,11 +58,11 @@ public class BytecodeVisitor extends ClassVisitor {
     this.parametrizedTypeCache = parametrizedTypeCache;
   }
 
-  private Symbol.TypeSymbol getClassSymbol(String bytecodeName) {
+  private JavaSymbol.TypeJavaSymbol getClassSymbol(String bytecodeName) {
     return bytecodeCompleter.getClassSymbol(Convert.flatName(bytecodeName));
   }
 
-  private Symbol.TypeSymbol getClassSymbol(String bytecodeName, int flags) {
+  private JavaSymbol.TypeJavaSymbol getClassSymbol(String bytecodeName, int flags) {
     return bytecodeCompleter.getClassSymbol(Convert.flatName(bytecodeName), flags);
   }
 
@@ -75,15 +75,15 @@ public class BytecodeVisitor extends ClassVisitor {
       SignatureReader signatureReader = new SignatureReader(signature);
       ReadGenericSignature readGenericSignature = new ReadGenericSignature();
       signatureReader.accept(readGenericSignature);
-      ((Type.ClassType) classSymbol.type).interfaces = readGenericSignature.interfaces();
+      ((JavaType.ClassJavaType) classSymbol.type).interfaces = readGenericSignature.interfaces();
     } else {
       if (superName == null) {
         Preconditions.checkState("java/lang/Object".equals(className), "superName must be null only for java/lang/Object, but not for " + className);
         // TODO(Godin): what about interfaces and annotations
       } else {
-        ((Type.ClassType) classSymbol.type).supertype = getClassSymbol(superName).type;
+        ((JavaType.ClassJavaType) classSymbol.type).supertype = getClassSymbol(superName).type;
       }
-      ((Type.ClassType) classSymbol.type).interfaces = getCompletedClassSymbolsType(interfaces);
+      ((JavaType.ClassJavaType) classSymbol.type).interfaces = getCompletedClassSymbolsType(interfaces);
 
     }
     //if class has already access flags set (inner class) then do not reset those.
@@ -117,7 +117,7 @@ public class BytecodeVisitor extends ClassVisitor {
 
   @Override
   public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-    Type annotationType = convertAsmType(org.objectweb.asm.Type.getType(desc));
+    JavaType annotationType = convertAsmType(org.objectweb.asm.Type.getType(desc));
     AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve(annotationType.getSymbol());
     classSymbol.metadata().addAnnotation(annotationInstance);
     return new BytecodeAnnotationVisitor(annotationInstance, this);
@@ -159,7 +159,7 @@ public class BytecodeVisitor extends ClassVisitor {
    * Adds inner class as member.
    */
   private void defineInnerClass(String bytecodeName, int flags) {
-    Symbol.TypeSymbol innerClass = getClassSymbol(bytecodeName, flags);
+    JavaSymbol.TypeJavaSymbol innerClass = getClassSymbol(bytecodeName, flags);
     innerClass.flags |= bytecodeCompleter.filterBytecodeFlags(flags);
     Preconditions.checkState(innerClass.owner == classSymbol, "Innerclass: " + innerClass.owner.getName() + " and classSymbol: " + classSymbol.getName() + " are not the same.");
     classSymbol.members.enter(innerClass);
@@ -172,7 +172,7 @@ public class BytecodeVisitor extends ClassVisitor {
    * either will be completed by {@link org.sonar.java.resolve.BytecodeCompleter}, and thus will have this inner class as member (see {@link #defineInnerClass(String, int)}).
    */
   private void defineOuterClass(String outerName, String innerName, int flags) {
-    Symbol.TypeSymbol outerClassSymbol = getClassSymbol(outerName, flags);
+    JavaSymbol.TypeJavaSymbol outerClassSymbol = getClassSymbol(outerName, flags);
     Preconditions.checkState(outerClassSymbol.completer == null || outerClassSymbol.completer instanceof BytecodeCompleter);
     classSymbol.name = innerName;
     classSymbol.owner = outerClassSymbol;
@@ -184,7 +184,7 @@ public class BytecodeVisitor extends ClassVisitor {
     Preconditions.checkNotNull(desc);
     if (!BytecodeCompleter.isSynthetic(flags)) {
       //Flags from asm lib are defined in Opcodes class and map to flags defined in Flags class
-      final Symbol.VariableSymbol symbol = new Symbol.VariableSymbol(bytecodeCompleter.filterBytecodeFlags(flags),
+      final JavaSymbol.VariableJavaSymbol symbol = new JavaSymbol.VariableJavaSymbol(bytecodeCompleter.filterBytecodeFlags(flags),
           name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
       classSymbol.members.enter(symbol);
       if (signature != null) {
@@ -205,20 +205,20 @@ public class BytecodeVisitor extends ClassVisitor {
     if (!BytecodeCompleter.isSynthetic(flags)) {
       Preconditions.checkState((flags & Opcodes.ACC_BRIDGE) == 0, "bridge method not marked as synthetic in class " + className);
       // TODO(Godin): according to JVMS 4.7.24 - parameter can be marked as synthetic
-      Type.MethodType type = new Type.MethodType(
+      JavaType.MethodJavaType type = new JavaType.MethodJavaType(
           convertAsmTypes(org.objectweb.asm.Type.getArgumentTypes(desc)),
           convertAsmType(org.objectweb.asm.Type.getReturnType(desc)),
           getCompletedClassSymbolsType(exceptions),
           classSymbol
       );
-      final Symbol.MethodSymbol methodSymbol = new Symbol.MethodSymbol(bytecodeCompleter.filterBytecodeFlags(flags), name, type, classSymbol);
+      final JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(bytecodeCompleter.filterBytecodeFlags(flags), name, type, classSymbol);
       classSymbol.members.enter(methodSymbol);
       if (signature != null) {
         new SignatureReader(signature).accept(new ReadMethodSignature(methodSymbol));
       }
       methodSymbol.parameters = new OrderedScope(methodSymbol);
       for (int i = 0; i < type.argTypes.size(); i += 1) {
-        methodSymbol.parameters.enter(new Symbol.VariableSymbol(0, "arg" + i, methodSymbol));
+        methodSymbol.parameters.enter(new JavaSymbol.VariableJavaSymbol(0, "arg" + i, methodSymbol));
       }
       // checks for annotations on the method and its parameters
       return new BytecodeMethodVisitor(methodSymbol, this);
@@ -226,16 +226,16 @@ public class BytecodeVisitor extends ClassVisitor {
     return null;
   }
 
-  private List<Type> convertAsmTypes(org.objectweb.asm.Type[] asmTypes) {
-    ImmutableList.Builder<Type> result = ImmutableList.builder();
+  private List<JavaType> convertAsmTypes(org.objectweb.asm.Type[] asmTypes) {
+    ImmutableList.Builder<JavaType> result = ImmutableList.builder();
     for (org.objectweb.asm.Type asmType : asmTypes) {
       result.add(convertAsmType(asmType));
     }
     return result.build();
   }
 
-  public Type convertAsmType(org.objectweb.asm.Type asmType) {
-    Type result;
+  public JavaType convertAsmType(org.objectweb.asm.Type asmType) {
+    JavaType result;
     switch (asmType.getSort()) {
       case org.objectweb.asm.Type.OBJECT:
         result = getClassSymbol(asmType.getInternalName()).type;
@@ -265,7 +265,7 @@ public class BytecodeVisitor extends ClassVisitor {
         result = symbols.booleanType;
         break;
       case org.objectweb.asm.Type.ARRAY:
-        result = new Type.ArrayType(convertAsmType(asmType.getElementType()), symbols.arrayClass);
+        result = new JavaType.ArrayJavaType(convertAsmType(asmType.getElementType()), symbols.arrayClass);
         break;
       case org.objectweb.asm.Type.VOID:
         result = symbols.voidType;
@@ -287,7 +287,7 @@ public class BytecodeVisitor extends ClassVisitor {
       String flatName = className.replace('/', '.');
       classSymbol.name = flatName.substring(flatName.lastIndexOf('.') + 1);
       classSymbol.owner = bytecodeCompleter.enterPackage(flatName);
-      Symbol.PackageSymbol owner = (Symbol.PackageSymbol) classSymbol.owner;
+      JavaSymbol.PackageJavaSymbol owner = (JavaSymbol.PackageJavaSymbol) classSymbol.owner;
       if (owner.members == null) {
         // package was without classes so far
         owner.members = new Scope(owner);
@@ -296,11 +296,11 @@ public class BytecodeVisitor extends ClassVisitor {
     }
   }
 
-  private List<Type> getCompletedClassSymbolsType(@Nullable String[] bytecodeNames) {
+  private List<JavaType> getCompletedClassSymbolsType(@Nullable String[] bytecodeNames) {
     if (bytecodeNames == null) {
       return ImmutableList.of();
     }
-    ImmutableList.Builder<Type> types = ImmutableList.builder();
+    ImmutableList.Builder<JavaType> types = ImmutableList.builder();
     for (String bytecodeName : bytecodeNames) {
       types.add(getClassSymbol(bytecodeName).type);
     }
@@ -309,9 +309,9 @@ public class BytecodeVisitor extends ClassVisitor {
 
   private class ReadGenericSignature extends SignatureVisitor {
 
-    Symbol.TypeVariableSymbol typeVariableSymbol;
-    List<Type> bounds;
-    ImmutableList.Builder<Type> interfaces;
+    JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol;
+    List<JavaType> bounds;
+    ImmutableList.Builder<JavaType> interfaces;
 
     public ReadGenericSignature() {
       super(Opcodes.ASM5);
@@ -320,11 +320,11 @@ public class BytecodeVisitor extends ClassVisitor {
 
     @Override
     public void visitFormalTypeParameter(String name) {
-      typeVariableSymbol = new Symbol.TypeVariableSymbol(name, classSymbol);
+      typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(name, classSymbol);
       classSymbol.typeParameters.enter(typeVariableSymbol);
-      classSymbol.addTypeParameter((Type.TypeVariableType) typeVariableSymbol.type);
+      classSymbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
       bounds = Lists.newArrayList();
-      ((Type.TypeVariableType) typeVariableSymbol.type).bounds = bounds;
+      ((JavaType.TypeVariableJavaType) typeVariableSymbol.type).bounds = bounds;
     }
 
     @Override
@@ -333,7 +333,7 @@ public class BytecodeVisitor extends ClassVisitor {
         @Override
         public void visitEnd() {
           super.visitEnd();
-          ((Type.ClassType) classSymbol.type).supertype = typeRead;
+          ((JavaType.ClassJavaType) classSymbol.type).supertype = typeRead;
         }
       };
     }
@@ -367,33 +367,33 @@ public class BytecodeVisitor extends ClassVisitor {
       }
     }
 
-    public List<Type> interfaces() {
+    public List<JavaType> interfaces() {
       return interfaces.build();
     }
   }
 
   private class ReadMethodSignature extends SignatureVisitor {
 
-    private final Symbol.MethodSymbol methodSymbol;
+    private final JavaSymbol.MethodJavaSymbol methodSymbol;
 
-    Symbol.TypeVariableSymbol typeVariableSymbol;
-    List<Type> bounds;
+    JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol;
+    List<JavaType> bounds;
 
-    public ReadMethodSignature(Symbol.MethodSymbol methodSymbol) {
+    public ReadMethodSignature(JavaSymbol.MethodJavaSymbol methodSymbol) {
       super(Opcodes.ASM5);
       this.methodSymbol = methodSymbol;
-      ((Type.MethodType) methodSymbol.type).argTypes = Lists.newArrayList();
-      ((Type.MethodType) methodSymbol.type).thrown = Lists.newArrayList();
+      ((JavaType.MethodJavaType) methodSymbol.type).argTypes = Lists.newArrayList();
+      ((JavaType.MethodJavaType) methodSymbol.type).thrown = Lists.newArrayList();
       methodSymbol.typeParameters = new Scope(methodSymbol);
     }
 
     @Override
     public void visitFormalTypeParameter(String name) {
-      typeVariableSymbol = new Symbol.TypeVariableSymbol(name, methodSymbol);
+      typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(name, methodSymbol);
       methodSymbol.typeParameters.enter(typeVariableSymbol);
-      methodSymbol.addTypeParameter((Type.TypeVariableType) typeVariableSymbol.type);
+      methodSymbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
       bounds = Lists.newArrayList();
-      ((Type.TypeVariableType) typeVariableSymbol.type).bounds = bounds;
+      ((JavaType.TypeVariableJavaType) typeVariableSymbol.type).bounds = bounds;
     }
 
     @Override
@@ -424,7 +424,7 @@ public class BytecodeVisitor extends ClassVisitor {
         @Override
         public void visitEnd() {
           super.visitEnd();
-          ((Type.MethodType)methodSymbol.type).argTypes.add(typeRead);
+          ((JavaType.MethodJavaType)methodSymbol.type).argTypes.add(typeRead);
         }
       };
     }
@@ -435,7 +435,7 @@ public class BytecodeVisitor extends ClassVisitor {
         @Override
         public void visitEnd() {
           super.visitEnd();
-          ((Type.MethodType)methodSymbol.type).resultType = typeRead;
+          ((JavaType.MethodJavaType)methodSymbol.type).resultType = typeRead;
           methodSymbol.returnType = typeRead.symbol;
         }
       };
@@ -447,7 +447,7 @@ public class BytecodeVisitor extends ClassVisitor {
         @Override
         public void visitEnd() {
           super.visitEnd();
-          ((Type.MethodType)methodSymbol.type).thrown.add(typeRead);
+          ((JavaType.MethodJavaType)methodSymbol.type).thrown.add(typeRead);
 
         }
       };
@@ -468,16 +468,16 @@ public class BytecodeVisitor extends ClassVisitor {
 
   private class ReadType extends SignatureVisitor {
     @Nullable
-    private final Symbol.MethodSymbol methodSymbol;
-    Type typeRead;
-    List<Type> typeArguments = Lists.newArrayList();
+    private final JavaSymbol.MethodJavaSymbol methodSymbol;
+    JavaType typeRead;
+    List<JavaType> typeArguments = Lists.newArrayList();
 
     public ReadType() {
       super(Opcodes.ASM5);
       this.methodSymbol = null;
     }
 
-    public ReadType(@Nullable Symbol.MethodSymbol methodSymbol) {
+    public ReadType(@Nullable JavaSymbol.MethodJavaSymbol methodSymbol) {
       super(Opcodes.ASM5);
       this.methodSymbol = methodSymbol;
     }
@@ -505,7 +505,7 @@ public class BytecodeVisitor extends ClassVisitor {
         @Override
         public void visitEnd() {
           super.visitEnd();
-          ReadType.this.typeRead = new Type.ArrayType(typeRead, symbols.arrayClass);
+          ReadType.this.typeRead = new JavaType.ArrayJavaType(typeRead, symbols.arrayClass);
           ReadType.this.visitEnd();
         }
       };
@@ -519,16 +519,16 @@ public class BytecodeVisitor extends ClassVisitor {
 
     @Override
     public void visitTypeVariable(String name) {
-      List<Symbol> lookup = Lists.newArrayList();
-      Symbol currentSymbol = classSymbol;
+      List<JavaSymbol> lookup = Lists.newArrayList();
+      JavaSymbol currentSymbol = classSymbol;
       if(methodSymbol != null) {
         currentSymbol = methodSymbol;
       }
-      while ((currentSymbol.isKind(Symbol.TYP) || currentSymbol.isKind(Symbol.MTH)) && lookup.isEmpty()) {
-        if(currentSymbol.isKind(Symbol.MTH)) {
-          lookup = ((Symbol.MethodSymbol)currentSymbol).typeParameters().lookup(name);
-        } else if (currentSymbol.isKind(Symbol.TYP)) {
-          lookup = ((Symbol.TypeSymbol)currentSymbol).typeParameters().lookup(name);
+      while ((currentSymbol.isKind(JavaSymbol.TYP) || currentSymbol.isKind(JavaSymbol.MTH)) && lookup.isEmpty()) {
+        if(currentSymbol.isKind(JavaSymbol.MTH)) {
+          lookup = ((JavaSymbol.MethodJavaSymbol)currentSymbol).typeParameters().lookup(name);
+        } else if (currentSymbol.isKind(JavaSymbol.TYP)) {
+          lookup = ((JavaSymbol.TypeJavaSymbol)currentSymbol).typeParameters().lookup(name);
         }
         currentSymbol = currentSymbol.owner();
       }
@@ -542,13 +542,13 @@ public class BytecodeVisitor extends ClassVisitor {
     @Override
     public void visitEnd() {
       if (!typeArguments.isEmpty()) {
-        Symbol.TypeSymbol readSymbol = typeRead.symbol;
+        JavaSymbol.TypeJavaSymbol readSymbol = typeRead.symbol;
         readSymbol.complete();
          //Mismatch between type variable and type arguments means we are lacking some pieces of bytecode to resolve substitution properly.
         if(typeArguments.size() == readSymbol.typeVariableTypes.size()) {
-          Map<Type.TypeVariableType, Type> substitution = Maps.newHashMap();
+          Map<JavaType.TypeVariableJavaType, JavaType> substitution = Maps.newHashMap();
           int i = 0;
-          for (Type typeArgument : typeArguments) {
+          for (JavaType typeArgument : typeArguments) {
             substitution.put(readSymbol.typeVariableTypes.get(i), typeArgument);
             i++;
           }

@@ -96,7 +96,7 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
   private void checkMethodInvocationArgument(MethodInvocationTree mit) {
     Symbol symbol = mit.symbol();
     if (symbol.isMethodSymbol()) {
-      List<Type> parametersTypes = ((Symbol.MethodSymbolSemantic) symbol).parameterTypes();
+      List<Type> parametersTypes = ((Symbol.MethodSymbol) symbol).parameterTypes();
       if (mit.arguments().size() == parametersTypes.size()) {
         int i = 0;
         for (Type argType : parametersTypes) {

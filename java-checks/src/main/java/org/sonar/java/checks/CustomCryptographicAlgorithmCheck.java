@@ -56,7 +56,7 @@ public class CustomCryptographicAlgorithmCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isJavaSecurityMessageDigestSubClass(ClassTree tree) {
-    Symbol.TypeSymbolSemantic classSymbol = tree.symbol();
+    Symbol.TypeSymbol classSymbol = tree.symbol();
     // Corner case: A type is a subtype of itself
     return classSymbol != null && !classSymbol.type().is(MESSAGE_DIGEST_QUALIFIED_NAME) &&
       classSymbol.type().isSubtypeOf(MESSAGE_DIGEST_QUALIFIED_NAME);

@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
+import org.sonar.java.resolve.JavaType.ClassJavaType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -57,7 +57,7 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       MethodTree methodTree = (MethodTree) tree;
-      TypeSymbol constructorType = (TypeSymbol) getSemanticModel().getEnclosingClass(tree);
+      TypeJavaSymbol constructorType = (TypeJavaSymbol) getSemanticModel().getEnclosingClass(tree);
       if (!constructorType.isFinal()) {
         ConstructorBodyVisitor constructorBodyVisitor = new ConstructorBodyVisitor(constructorType);
         methodTree.block().accept(constructorBodyVisitor);
@@ -67,9 +67,9 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
 
   private class ConstructorBodyVisitor extends BaseTreeVisitor {
 
-    private TypeSymbol constructorType;
+    private TypeJavaSymbol constructorType;
 
-    public ConstructorBodyVisitor(TypeSymbol constructorType) {
+    public ConstructorBodyVisitor(TypeJavaSymbol constructorType) {
       this.constructorType = constructorType;
     }
 
@@ -104,8 +104,8 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean isMethodDefinedOnConstructedType(Symbol symbol) {
-      TypeSymbol methodEnclosingClass = (TypeSymbol) symbol.enclosingClass();
-      for (ClassType superType : constructorType.superTypes()) {
+      TypeJavaSymbol methodEnclosingClass = (TypeJavaSymbol) symbol.enclosingClass();
+      for (ClassJavaType superType : constructorType.superTypes()) {
         if (superType.getSymbol().equals(methodEnclosingClass)) {
           return true;
         }

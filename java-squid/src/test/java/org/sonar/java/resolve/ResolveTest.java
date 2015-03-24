@@ -39,20 +39,20 @@ public class ResolveTest {
 
   @Test
   public void access_public_class() {
-    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol(null, null);
-    Symbol.TypeSymbol targetClassSymbol = new Symbol.TypeSymbol(Flags.PUBLIC, "TargetClass", packageSymbol);
+    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
+    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "TargetClass", packageSymbol);
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isTrue();
   }
 
   @Test
   public void access_protected_class() {
-    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol(null, null);
-    Symbol.TypeSymbol targetClassSymbol = new Symbol.TypeSymbol(Flags.PROTECTED, "TargetClass", packageSymbol);
+    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
+    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PROTECTED, "TargetClass", packageSymbol);
 
     when(env.packge()).thenReturn(packageSymbol);
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isTrue();
 
-    when(env.packge()).thenReturn(new Symbol.PackageSymbol("AnotherPackage", null));
+    when(env.packge()).thenReturn(new JavaSymbol.PackageJavaSymbol("AnotherPackage", null));
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isFalse();
   }
 
@@ -68,13 +68,13 @@ public class ResolveTest {
    */
   @Test
   public void access_package_local_class() {
-    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol(null, null);
-    Symbol.TypeSymbol targetClassSymbol = new Symbol.TypeSymbol(0, "TargetClass", packageSymbol);
+    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
+    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(0, "TargetClass", packageSymbol);
 
     when(env.packge()).thenReturn(packageSymbol);
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isTrue();
 
-    when(env.packge()).thenReturn(new Symbol.PackageSymbol("AnotherPackage", null));
+    when(env.packge()).thenReturn(new JavaSymbol.PackageJavaSymbol("AnotherPackage", null));
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isFalse();
   }
 
@@ -92,100 +92,100 @@ public class ResolveTest {
    */
   @Test
   public void access_private_class() {
-    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol(null, null);
-    Symbol.TypeSymbol outermostClassSymbol = new Symbol.TypeSymbol(0, "OutermostClass", packageSymbol);
-    Symbol.TypeSymbol targetClassSymbol = new Symbol.TypeSymbol(Flags.PRIVATE, "TargetClass", outermostClassSymbol);
+    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
+    JavaSymbol.TypeJavaSymbol outermostClassSymbol = new JavaSymbol.TypeJavaSymbol(0, "OutermostClass", packageSymbol);
+    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PRIVATE, "TargetClass", outermostClassSymbol);
 
     when(env.enclosingClass()).thenReturn(outermostClassSymbol);
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isTrue();
 
-    when(env.enclosingClass()).thenReturn(new Symbol.TypeSymbol(0, "AnotherOutermostClass", packageSymbol));
+    when(env.enclosingClass()).thenReturn(new JavaSymbol.TypeJavaSymbol(0, "AnotherOutermostClass", packageSymbol));
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isFalse();
   }
 
   @Test
   public void test_isSubClass() {
-    Symbol.TypeSymbol base = new Symbol.TypeSymbol(0, "class", null);
+    JavaSymbol.TypeJavaSymbol base = new JavaSymbol.TypeJavaSymbol(0, "class", null);
 
     // same class
-    Symbol.TypeSymbol c = base;
+    JavaSymbol.TypeJavaSymbol c = base;
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // base not extended by class
-    c = new Symbol.TypeSymbol(0, "class", null);
+    c = new JavaSymbol.TypeJavaSymbol(0, "class", null);
 
     // class extends base
     assertThat(resolve.isSubClass(c, base)).isFalse();
-    ((Type.ClassType) c.type).supertype = base.type;
+    ((JavaType.ClassJavaType) c.type).supertype = base.type;
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // class extends superclass
-    ((Type.ClassType) c.type).supertype = new Symbol.TypeSymbol(0, "superclass", null).type;
+    ((JavaType.ClassJavaType) c.type).supertype = new JavaSymbol.TypeJavaSymbol(0, "superclass", null).type;
     assertThat(resolve.isSubClass(c, base)).isFalse();
 
     // class extends superclass, which extends base
-    ((Type.ClassType) ((Type.ClassType) c.type).supertype).supertype = base.type;
+    ((JavaType.ClassJavaType) ((JavaType.ClassJavaType) c.type).supertype).supertype = base.type;
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // base - is an interface
-    base = new Symbol.TypeSymbol(Flags.INTERFACE, "class", null);
-    c = new Symbol.TypeSymbol(0, "class", null);
+    base = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "class", null);
+    c = new JavaSymbol.TypeJavaSymbol(0, "class", null);
 
     // base not implemented by class
-    ((Type.ClassType) c.type).interfaces = ImmutableList.of();
+    ((JavaType.ClassJavaType) c.type).interfaces = ImmutableList.of();
     assertThat(resolve.isSubClass(c, base)).isFalse();
 
     // class implements base interface
-    ((Type.ClassType) c.type).interfaces = ImmutableList.of(base.type);
+    ((JavaType.ClassJavaType) c.type).interfaces = ImmutableList.of(base.type);
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // class implements interface, but not base interface
-    Symbol.TypeSymbol i = new Symbol.TypeSymbol(Flags.INTERFACE, "class", null);
-    ((Type.ClassType) i.type).interfaces = ImmutableList.of();
-    ((Type.ClassType) c.type).interfaces = ImmutableList.of(i.type);
+    JavaSymbol.TypeJavaSymbol i = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "class", null);
+    ((JavaType.ClassJavaType) i.type).interfaces = ImmutableList.of();
+    ((JavaType.ClassJavaType) c.type).interfaces = ImmutableList.of(i.type);
     assertThat(resolve.isSubClass(c, base)).isFalse();
 
     // class implements interface, which implements base
-    ((Type.ClassType) c.type).interfaces = ImmutableList.of(base.type);
+    ((JavaType.ClassJavaType) c.type).interfaces = ImmutableList.of(base.type);
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // class extends superclass
-    ((Type.ClassType) c.type).interfaces = ImmutableList.of();
-    ((Type.ClassType) c.type).supertype = new Symbol.TypeSymbol(0, "superclass", null).type;
-    ((Type.ClassType) ((Type.ClassType) c.type).supertype).interfaces = ImmutableList.of();
+    ((JavaType.ClassJavaType) c.type).interfaces = ImmutableList.of();
+    ((JavaType.ClassJavaType) c.type).supertype = new JavaSymbol.TypeJavaSymbol(0, "superclass", null).type;
+    ((JavaType.ClassJavaType) ((JavaType.ClassJavaType) c.type).supertype).interfaces = ImmutableList.of();
     assertThat(resolve.isSubClass(c, base)).isFalse();
 
     // class extends superclass, which implements base
-    ((Type.ClassType) ((Type.ClassType) c.type).supertype).interfaces = ImmutableList.of(base.type);
+    ((JavaType.ClassJavaType) ((JavaType.ClassJavaType) c.type).supertype).interfaces = ImmutableList.of(base.type);
     assertThat(resolve.isSubClass(c, base)).isTrue();
   }
 
   @Test
   public void test_isInheritedIn() {
-    Symbol.PackageSymbol packageSymbol = new Symbol.PackageSymbol("package", null);
-    Symbol.TypeSymbol clazz = new Symbol.TypeSymbol(0, "class", packageSymbol);
+    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("package", null);
+    JavaSymbol.TypeJavaSymbol clazz = new JavaSymbol.TypeJavaSymbol(0, "class", packageSymbol);
 
     // public symbol is always inherited
-    Symbol symbol = new Symbol(0, Flags.PUBLIC, "name", null);
+    JavaSymbol symbol = new JavaSymbol(0, Flags.PUBLIC, "name", null);
     assertThat(resolve.isInheritedIn(symbol, clazz)).isTrue();
 
     // private symbol is inherited only if it's owned by class
-    symbol = new Symbol(0, Flags.PRIVATE, "name", null);
+    symbol = new JavaSymbol(0, Flags.PRIVATE, "name", null);
     assertThat(resolve.isInheritedIn(symbol, clazz)).isFalse();
 
-    symbol = new Symbol(0, Flags.PRIVATE, "name", clazz);
+    symbol = new JavaSymbol(0, Flags.PRIVATE, "name", clazz);
     assertThat(resolve.isInheritedIn(symbol, clazz)).isTrue();
 
     // protected symbol is always inherited
-    symbol = new Symbol(0, Flags.PROTECTED, "name", null);
+    symbol = new JavaSymbol(0, Flags.PROTECTED, "name", null);
     assertThat(resolve.isInheritedIn(symbol, clazz)).isTrue();
 
     // package local symbol is inherited only if TODO...
-    symbol = new Symbol(0, 0, "name", clazz);
+    symbol = new JavaSymbol(0, 0, "name", clazz);
     assertThat(resolve.isInheritedIn(symbol, clazz)).isTrue();
 
-    Symbol.PackageSymbol anotherPackageSymbol = new Symbol.PackageSymbol("package", null);
-    symbol = new Symbol(0, 0, "name", anotherPackageSymbol);
+    JavaSymbol.PackageJavaSymbol anotherPackageSymbol = new JavaSymbol.PackageJavaSymbol("package", null);
+    symbol = new JavaSymbol(0, 0, "name", anotherPackageSymbol);
     assertThat(resolve.isInheritedIn(symbol, clazz)).isFalse();
   }
 

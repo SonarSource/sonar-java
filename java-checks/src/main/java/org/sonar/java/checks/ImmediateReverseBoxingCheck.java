@@ -90,7 +90,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
         checkExpression(assignmentTree.expression(), assignmentTree.symbolType());
       } else {
         NewClassTree newClassTree = (NewClassTree) tree;
-        Symbol.TypeSymbolSemantic classSymbol = wrapperClassSymbol(newClassTree);
+        Symbol.TypeSymbol classSymbol = wrapperClassSymbol(newClassTree);
         if (classSymbol != null) {
           checkForUnboxing(newClassTree.arguments().get(0));
         }
@@ -118,7 +118,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     } else {
       Symbol symbol = methodInvocationTree.symbol();
       if (symbol.isMethodSymbol()) {
-        List<Type> parametersTypes = ((Symbol.MethodSymbolSemantic) symbol).parameterTypes();
+        List<Type> parametersTypes = ((Symbol.MethodSymbol) symbol).parameterTypes();
         checkMethodInvocationArguments(methodInvocationTree, parametersTypes);
       }
     }
@@ -138,7 +138,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
   private void checkForBoxing(ExpressionTree expression) {
     if (expression.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) expression;
-      Symbol.TypeSymbolSemantic classSymbol = wrapperClassSymbol(newClassTree);
+      Symbol.TypeSymbol classSymbol = wrapperClassSymbol(newClassTree);
       if (classSymbol != null) {
         ExpressionTree boxingArg = newClassTree.arguments().get(0);
         if (boxingArg.symbolType().isPrimitive()) {
@@ -154,8 +154,8 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private Symbol.TypeSymbolSemantic wrapperClassSymbol(NewClassTree newClassTree) {
-    Symbol.TypeSymbolSemantic classSymbol = newClassTree.symbolType().symbol();
+  private Symbol.TypeSymbol wrapperClassSymbol(NewClassTree newClassTree) {
+    Symbol.TypeSymbol classSymbol = newClassTree.symbolType().symbol();
     if (PRIMITIVE_TYPES_BY_WRAPPER.containsKey(newClassTree.symbolType().fullyQualifiedName())) {
       return classSymbol;
     }

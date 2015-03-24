@@ -37,7 +37,7 @@ import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class MethodSymbolTest {
+public class MethodJavaSymbolTest {
 
 
   @Test
@@ -60,7 +60,7 @@ public class MethodSymbolTest {
     @Override
     public void visitNode(Tree tree) {
       int line = ((JavaTree) tree).getLine();
-      Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) ((MethodTree) tree).symbol();
+      JavaSymbol.MethodJavaSymbol symbol = (JavaSymbol.MethodJavaSymbol) ((MethodTree) tree).symbol();
       BooleanAssert assertion = assertThat(symbol.isOverriden()).as("Method at line "+line);
       if (overriden.contains(line)) {
         assertion.isTrue();

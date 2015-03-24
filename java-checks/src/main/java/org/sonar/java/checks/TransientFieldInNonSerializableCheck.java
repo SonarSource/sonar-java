@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
+import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -64,8 +64,8 @@ public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisito
     }
   }
 
-  private boolean isNotSerializable(Symbol.TypeSymbolSemantic symbol) {
-    for (Type superType : ((TypeSymbol) symbol).superTypes()) {
+  private boolean isNotSerializable(Symbol.TypeSymbol symbol) {
+    for (Type superType : ((TypeJavaSymbol) symbol).superTypes()) {
       if (superType.isUnknown()) {
         return false;
       }
