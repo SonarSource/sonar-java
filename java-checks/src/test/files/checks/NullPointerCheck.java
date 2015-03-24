@@ -68,7 +68,7 @@ class NullPointerTest {
     Object o;
 
     Object[] array1 = checkForNullField;
-    i = array1.length; // Noncompliant
+    i = array1.length; // False negative
 
     i = checkForNullField.length; // False negative, instance and static fields are not checked
 
@@ -83,7 +83,7 @@ class NullPointerTest {
     Object o;
 
     Object[] array1 = nullableField;
-    if (array1.length != 0) { } // Noncompliant
+    if (array1.length != 0) { } // False negative
 
     i = nullableField.length; // False negative, instance and static fields are not checked
 
@@ -416,6 +416,19 @@ class NullPointerTest {
     case "SIX":
       object4.hashCode(); // False negative
     }
+  }
+
+  public static class LinkedListEntry {
+    @Nullable
+    LinkedList parent() {
+      return null;
+    }
+  }
+
+  public void testAssignSelfMember() {
+    LinkedListEntry entry1 = entry1.parent(); // Compliant
+    LinkedListEntry entry2;
+    entry2 = entry2.parent(); // Compliant
   }
 
   @interface CoverageAnnotation {

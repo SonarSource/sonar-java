@@ -99,11 +99,11 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    super.visitAssignmentExpression(tree);
     if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
       VariableSymbol identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.variable());
       currentState.setVariableValue(identifierSymbol, checkNullity(tree.expression()));
     }
-    super.visitAssignmentExpression(tree);
   }
 
   @Override
@@ -262,8 +262,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitVariable(VariableTree tree) {
     // skips modifiers (annotations) and type.
     if (tree.initializer() != null) {
-      currentState.setVariableValue((VariableSymbol) tree.symbol(), checkNullity(tree.initializer()));
       scan(tree.initializer());
+      currentState.setVariableValue((VariableSymbol) tree.symbol(), checkNullity(tree.initializer()));
     }
   }
 
@@ -291,7 +291,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public AbstractValue checkNullity(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
-      if (symbol != null && symbol.isVariableSymbol()) {
+      if (isSymbolLocalVariableOrMethodParameter(symbol)) {
         AbstractValue value = currentState.getVariableValue((VariableSymbol) symbol);
         if (value != AbstractValue.UNSET) {
           return value;
