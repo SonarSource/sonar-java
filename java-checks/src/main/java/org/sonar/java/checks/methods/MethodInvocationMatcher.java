@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -37,8 +38,8 @@ public class MethodInvocationMatcher {
 
   private TypeCriteria typeDefinition;
   private TypeCriteria callSite;
-  private String methodName;
-  private List<String> parameterTypes;
+  private NameCriteria methodName;
+  private List<TypeCriteria> parameterTypes;
 
   MethodInvocationMatcher() {
     parameterTypes = Lists.newArrayList();
@@ -49,6 +50,12 @@ public class MethodInvocationMatcher {
   }
 
   public MethodInvocationMatcher name(String methodName) {
+    this.methodName = NameCriteria.is(methodName);
+    return this;
+  }
+
+  public MethodInvocationMatcher name(NameCriteria methodName) {
+    Preconditions.checkState(this.methodName == null);
     this.methodName = methodName;
     return this;
   }
@@ -72,7 +79,13 @@ public class MethodInvocationMatcher {
 
   public MethodInvocationMatcher addParameter(String fullyQualifiedTypeParameterName) {
     Preconditions.checkState(parameterTypes != null);
-    parameterTypes.add(fullyQualifiedTypeParameterName);
+    parameterTypes.add(TypeCriteria.is(fullyQualifiedTypeParameterName));
+    return this;
+  }
+
+  public MethodInvocationMatcher addParameter(TypeCriteria parameterTypeCriteria) {
+    Preconditions.checkState(parameterTypes != null);
+    parameterTypes.add(parameterTypeCriteria);
     return this;
   }
 
@@ -116,8 +129,8 @@ public class MethodInvocationMatcher {
     return null;
   }
 
-  private boolean isSearchedMethod(Symbol.MethodSymbol symbol, Type callSiteType) {
-    boolean result = symbol.name().equals(methodName) && parametersAcceptable(symbol);
+  private boolean isSearchedMethod(MethodSymbol symbol, Type callSiteType) {
+    boolean result = nameAcceptable(symbol) && parametersAcceptable(symbol);
     if (typeDefinition != null) {
       result &= typeDefinition.matches(symbol.owner().type());
     }
@@ -127,16 +140,20 @@ public class MethodInvocationMatcher {
     return result;
   }
 
-  private boolean parametersAcceptable(Symbol.MethodSymbol methodSymbol) {
+  private boolean nameAcceptable(MethodSymbol symbol) {
+    return methodName != null && methodName.matches(symbol.name());
+  }
+
+  private boolean parametersAcceptable(MethodSymbol methodSymbol) {
     if (parameterTypes == null) {
       return true;
     }
     List<Type> parametersTypes = methodSymbol.parameterTypes();
-    List<String> arguments = parameterTypes;
+    List<TypeCriteria> arguments = parameterTypes;
     if (parametersTypes.size() == arguments.size()) {
       int i = 0;
       for (Type parameterType : parametersTypes) {
-        if (!parameterType.is(arguments.get(i))) {
+        if (!arguments.get(i).matches(parameterType)) {
           return false;
         }
         i++;
@@ -156,5 +173,4 @@ public class MethodInvocationMatcher {
     }
     return id;
   }
-
 }
