@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
@@ -62,6 +63,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   private final SyntaxToken defaultToken;
   private final ExpressionTree defaultValue;
 
+  //FIXME nullable if semantic analysis is not set. Should have a default value.
+  @Nullable
   private JavaSymbol.MethodJavaSymbol symbol;
 
   public MethodTreeImpl(FormalParametersListTreeImpl parameters, @Nullable SyntaxToken defaultToken, @Nullable ExpressionTree defaultValue) {
@@ -221,6 +224,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
    *
    * @return true if overriden, null if it cannot be decided (method symbol not resolved or lack of bytecode for super types).
    */
+  @CheckForNull
   public Boolean isOverriding() {
     if (isStatic() || isPrivate()) {
       return false;

@@ -19,4 +19,7 @@
  */
 
 @javax.annotation.ParametersAreNonnullByDefault
+@MethodsAreNonnullByDefault
 package org.sonar.java.model.declaration;
+
+import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;

@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.semantic;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
@@ -78,7 +79,9 @@ public interface Symbol {
 
   /**
    * The closest enclosing class.
+   * @return null for package symbols, themselves for type symbol and enclosing class of methods or variables.
    */
+  @Nullable
   TypeSymbol enclosingClass();
 
   interface TypeSymbol extends Symbol {
