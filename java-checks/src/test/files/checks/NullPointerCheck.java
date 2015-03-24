@@ -68,7 +68,7 @@ class NullPointerTest {
     Object o;
 
     Object[] array1 = checkForNullField;
-    i = array1.length; // Noncompliant
+    i = array1.length; // False negative
 
     i = checkForNullField.length; // False negative, instance and static fields are not checked
 
@@ -83,7 +83,7 @@ class NullPointerTest {
     Object o;
 
     Object[] array1 = nullableField;
-    if (array1.length != 0) { } // Noncompliant
+    if (array1.length != 0) { } // False negative
 
     i = nullableField.length; // False negative, instance and static fields are not checked
 

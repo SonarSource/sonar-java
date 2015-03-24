@@ -295,7 +295,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public AbstractValue checkNullity(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
-      if (symbol != null && symbol.isVariableSymbol()) {
+      if (isSymbolLocalVariableOrMethodParameter(symbol)) {
         AbstractValue value = currentState.getVariableValue((VariableSymbol) symbol);
         if (value != AbstractValue.UNSET) {
           return value;
