@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collection;
@@ -168,6 +169,7 @@ public class SemanticModel {
     refersTo.put(tree, symbol);
   }
 
+  @CheckForNull
   public Symbol getReference(IdentifierTree tree) {
     return refersTo.get(tree);
   }

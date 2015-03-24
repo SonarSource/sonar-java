@@ -65,7 +65,8 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
   }
 
   private boolean extendsOuterClass(Symbol.TypeSymbol classSymbol) {
-    return classSymbol.superClass() != null && classSymbol.superClass().equals(classSymbol.owner().type());
+    Type superType = classSymbol.superClass();
+    return superType != null && superType.equals(classSymbol.owner().type());
   }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {

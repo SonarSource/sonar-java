@@ -32,6 +32,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
@@ -54,13 +55,15 @@ public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       Symbol.TypeSymbol classSymbol = ((ClassTree) tree).symbol();
-      if (isSerializable(classSymbol.type()) && !isSerializable(classSymbol.superClass())) {
-        Type superclass = classSymbol.superClass();
-        if (!hasNonPrivateNoArgConstructor(superclass)) {
+      Type superclass = classSymbol.superClass();
+      if (isSerializable(classSymbol.type()) && isNotSerializableMissingNoArgConstructor(superclass)) {
           addIssue(tree, "Add a no-arg constructor to \"" + superclass + "\".");
-        }
       }
     }
+  }
+
+  private boolean isNotSerializableMissingNoArgConstructor(@Nullable Type superclass) {
+    return superclass != null && !isSerializable(superclass) && !hasNonPrivateNoArgConstructor(superclass);
   }
 
   private boolean isSerializable(Type type) {
