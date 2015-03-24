@@ -55,6 +55,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -71,8 +72,9 @@ import java.util.Set;
   name = "Null pointers should not be dereferenced",
   tags = {"bug", "cert", "cwe", "owasp-a1", "owasp-a2", "owasp-a6", "security"},
   priority = Priority.BLOCKER)
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ERRORS)
-@SqaleConstantRemediation("20min")
+@ActivatedByDefault
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("10min")
 public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String MESSAGE_NULLABLE_EXPRESSION = "NullPointerException might be thrown as '%s' is nullable here";
