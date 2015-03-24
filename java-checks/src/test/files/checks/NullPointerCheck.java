@@ -332,9 +332,9 @@ class NullPointerTest {
     String str = null;
     switch(str) { // Noncompliant
     case "ONE":
-      str.length(); // False negative
+      str.length(); // Noncompliant
     }
-    str.length(); // False negative
+    str.length(); // Noncompliant
   }
 
   public void testMergeOnParameter(@Nullable Object o) {
@@ -394,6 +394,28 @@ class NullPointerTest {
       }
     } while (condition);
     object3.hashCode(); // False negative
+  }
+
+  void testComplexSwitch(String str) {
+    Object object1 = null, object2 = null, object3 = null, object4 = new Object();
+    switch(str) {
+    case "ONE":
+      object1 = new Object();
+      break;
+    case "TWO":
+      object1.hashCode(); // False negative
+      break;
+    case "THREE":
+      object2 = new Object();
+    case "FOUR":
+      object2.hashCode(); // Compliant
+      break;
+    case "FIVE":
+      object3.hashCode(); // Noncompliant
+      object4 = null;
+    case "SIX":
+      object4.hashCode(); // False negative
+    }
   }
 
   @interface CoverageAnnotation {

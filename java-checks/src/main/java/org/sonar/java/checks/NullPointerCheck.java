@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -230,8 +231,13 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitSwitchStatement(SwitchStatementTree tree) {
     checkForIssue(tree.expression());
     scan(tree.expression());
-    // skip cases for now
-    currentState.invalidateValuesOfHierarchy();
+    Set<VariableSymbol> variables = new AssignmentVisitor().findAssignedVariables(tree.cases());
+    currentState.invalidateVariables(variables);
+    for (CaseGroupTree caseTree : tree.cases()) {
+      currentState = new State(currentState);
+      scan(caseTree);
+      restorePreviousState();
+    }
   }
 
   @Override
