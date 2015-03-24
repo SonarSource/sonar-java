@@ -280,8 +280,8 @@ class NullPointerTest {
       object = null;
     }
     object.hashCode(); // False negative
-    for(Object object = null; true; object.hashCode()) { // False negative
-      object.hashCode(); // False negative
+    for(Object object = null; true; object.hashCode()) { // Noncompliant
+      object.hashCode(); // Noncompliant
     }
   }
 
@@ -290,22 +290,22 @@ class NullPointerTest {
     Set<Object> set = null;
     Entry head = null;
     for(Object entry : set.values()) { // Noncompliant
-      head.hashCode(); // False negative
+      head.hashCode(); // Noncompliant
       value = null;
       value.hashCode(); // Noncompliant
     }
-    head.hashCode(); // False negative
+    head.hashCode(); // Noncompliant
     value.hashCode(); // False negative
   }
 
   public void testWhileLoop() {
     Object object1 = null, object2 = null, object3 = null;
     while(object1.hashCode()) { // Noncompliant
-      object1.hashCode(); // False negative
+      object1.hashCode(); // Noncompliant
       object2 = null;
       object2.hashCode(); // Noncompliant
      }
-    object1.hashCode(); // False negative
+    object1.hashCode(); // Noncompliant
     object2.hashCode(); // Compliant
     object2.hashCode(); // Compliant
   }
@@ -316,6 +316,7 @@ class NullPointerTest {
       if (condition) {
         while(condition) {
           a.hashCode(); // False negative
+          a = null;
         }
       }
     }
@@ -351,6 +352,48 @@ class NullPointerTest {
     if(object.hashCode()) { } // Noncompliant
     object = null;
     if(object.hashCode()) { } // Noncompliant
+  }
+
+  public void testComplexLoop(@Nullable Object nullableObject) {
+    Object object1 = null, object11 = null, object12 = null;
+    for(int i = 0; object11 == null; i += 1) {
+      object11.hashCode(); // False negative
+      object12.hashCode(); // Noncompliant
+      nullableObject.hashCode(); // Noncompliant
+      if(i == 1) {
+        object1.hashCode(); // Compliant
+      } else if(i == 0) {
+        object1 = new Object();
+      }
+      object11 = null;
+    }
+    object1.hashCode(); // False negative
+
+    Object object2 = null, object21 = null, object22 = null;
+    int i = 0;
+    while(object21 == null) {
+      object21.hashCode(); // False negative
+      object22.hashCode(); // Noncompliant
+      nullableObject.hashCode(); // Noncompliant
+      if(i == 1) {
+        object2.hashCode(); // Compliant
+      } else if(i == 0) {
+        object2 = new Object();
+      }
+      object21 = null;
+    }
+    object2.hashCode(); // False negative
+
+    Object object3 = null;
+    int i = 0;
+    do {
+      if(i == 1) {
+        object3.hashCode(); // False negative
+      } else if(i == 0) {
+        object3 = new Object();
+      }
+    } while (condition);
+    object3.hashCode(); // False negative
   }
 
   @interface CoverageAnnotation {
