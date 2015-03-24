@@ -305,7 +305,8 @@ public final class CheckList {
       NullPointerCheck.class,
       StaticFieldUpateCheck.class,
       IgnoredStreamReturnValueCheck.class,
-      DateUtilsTruncateCheck.class
+      DateUtilsTruncateCheck.class,
+      PreparedStatementAndResultSetCheck.class
       );
   }
 }
