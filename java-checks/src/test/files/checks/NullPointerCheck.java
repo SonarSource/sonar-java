@@ -418,6 +418,19 @@ class NullPointerTest {
     }
   }
 
+  public static class LinkedListEntry {
+    @Nullable
+    LinkedList parent() {
+      return null;
+    }
+  }
+
+  public void testAssignSelfMember() {
+    LinkedListEntry entry1 = entry1.parent(); // Compliant
+    LinkedListEntry entry2;
+    entry2 = entry2.parent(); // Compliant
+  }
+
   @interface CoverageAnnotation {
   }
 
