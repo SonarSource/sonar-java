@@ -31,6 +31,7 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.VariableSymbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -44,6 +45,7 @@ import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -63,8 +65,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.sonar.plugins.java.api.semantic.Symbol.*;
 
 @Rule(
   key = "S2259",
@@ -220,7 +220,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     if (symbol.isMethodSymbol()) {
       MethodJavaSymbol methodSymbol = (MethodJavaSymbol) symbol;
       List<JavaSymbol> parameters = methodSymbol.getParameters().scopeSymbols();
-      if (parameters.size() != 0) {
+      if (!parameters.isEmpty()) {
         for (int i = 0; i < tree.arguments().size(); i += 1) {
           // in case of varargs, there could be more arguments than parameters. in that case, pick the last parameter.
           if (checkNullity(parameters.get(i < parameters.size() ? i : parameters.size() - 1)) == AbstractValue.NOTNULL) {
@@ -292,20 +292,12 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     } else if (symbol.metadata().isAnnotatedWith("javax.annotation.CheckForNull") || symbol.metadata().isAnnotatedWith("javax.annotation.Nullable")) {
       return AbstractValue.NULL;
     }
-    // FIXME(merciesa): should use annotation on package and class
     return AbstractValue.UNKNOWN;
   }
 
   public AbstractValue checkNullity(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
-      if (isSymbolLocalVariableOrMethodParameter(symbol)) {
-        AbstractValue value = currentState.getVariableValue((VariableSymbol) symbol);
-        if (value != AbstractValue.UNSET) {
-          return value;
-        }
-        return checkNullity(symbol);
-      }
+      return checkNullity((IdentifierTree)tree);
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTree) tree).symbol();
       if (symbol.isMethodSymbol()) {
@@ -314,7 +306,18 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
       return AbstractValue.NULL;
     }
-    // FIXME(merciesa): should use annotation on package and class
+    return AbstractValue.UNKNOWN;
+  }
+
+  public AbstractValue checkNullity(IdentifierTree tree) {
+    Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
+    if (isSymbolLocalVariableOrMethodParameter(symbol)) {
+      AbstractValue value = currentState.getVariableValue((VariableSymbol) symbol);
+      if (value != AbstractValue.UNSET) {
+        return value;
+      }
+      return checkNullity(symbol);
+    }
     return AbstractValue.UNKNOWN;
   }
 
@@ -534,19 +537,6 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     }
 
     /**
-     * sets all the variables registered in this state and all the previous states to UNKNOWN.
-     *
-     * @return this
-     */
-    public State invalidateValuesOfHierarchy() {
-      for (State state = this; state != null; state = state.parentState)
-        for (VariableSymbol variable : state.variables.keySet()) {
-          setVariableValue(variable, AbstractValue.UNKNOWN);
-        }
-      return this;
-    }
-
-    /**
      * sets all the variables registered in this state to UNKNOWN.
      *
      * @return this
@@ -577,12 +567,12 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
      * @return this
      */
     public State mergeValues(State state1, @Nullable State state2) {
-      Set<VariableSymbol> variables = new HashSet<>();
-      variables.addAll(state1.variables.keySet());
+      Set<VariableSymbol> mergeVariables = new HashSet<>();
+      mergeVariables.addAll(state1.variables.keySet());
       if (state2 != null) {
-        variables.addAll(state2.variables.keySet());
+        mergeVariables.addAll(state2.variables.keySet());
       }
-      for (VariableSymbol variable : variables) {
+      for (VariableSymbol variable : mergeVariables) {
         AbstractValue currentValue = getVariableValue(variable);
         AbstractValue trueValue = state1.variables.get(variable);
         if (trueValue == null) {
