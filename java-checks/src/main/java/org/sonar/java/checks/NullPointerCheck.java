@@ -75,11 +75,9 @@ import static org.sonar.plugins.java.api.semantic.Symbol.*;
 @SqaleConstantRemediation("20min")
 public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  // message when a nullable expression is dereferenced.
-  private static final String MESSAGE_NULLABLE = "NullPointerException might be thrown as '%s' is nullable here";
+  private static final String MESSAGE_NULLABLE_EXPRESSION = "NullPointerException might be thrown as '%s' is nullable here";
 
-  // message when null is dereferenced.
-  private static final String MESSAGE_NULL = "null is dereferenced";
+  private static final String MESSAGE_NULL_LITERAL = "null is dereferenced";
 
   public static final String KEY = "S2259";
   private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
@@ -101,7 +99,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
-    checkForIssue(tree.expression(), MESSAGE_NULLABLE, MESSAGE_NULL);
+    checkForIssue(tree.expression(), MESSAGE_NULLABLE_EXPRESSION, MESSAGE_NULL_LITERAL);
     super.visitArrayAccessExpression(tree);
   }
 
@@ -204,7 +202,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-    checkForIssue(tree.expression(), MESSAGE_NULLABLE, MESSAGE_NULL);
+    checkForIssue(tree.expression(), MESSAGE_NULLABLE_EXPRESSION, MESSAGE_NULL_LITERAL);
     super.visitMemberSelectExpression(tree);
   }
 
@@ -238,7 +236,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
-    checkForIssue(tree.expression(), MESSAGE_NULLABLE, MESSAGE_NULL);
+    checkForIssue(tree.expression(), MESSAGE_NULLABLE_EXPRESSION, MESSAGE_NULL_LITERAL);
     scan(tree.expression());
     Set<VariableSymbol> variables = new AssignmentVisitor().findAssignedVariables(tree.cases());
     currentState.invalidateVariables(variables);
