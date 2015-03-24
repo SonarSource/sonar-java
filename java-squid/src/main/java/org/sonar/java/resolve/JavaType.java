@@ -102,7 +102,7 @@ public class JavaType implements Type {
         return true;
       }
     } else if (isTagged(ARRAY)) {
-      return fullyQualifiedName.equals("java.lang.Object") ||
+      return "java.lang.Object".equals(fullyQualifiedName) ||
           (fullyQualifiedName.endsWith("[]") && ((ArrayJavaType) this).elementType.isSubtypeOf(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2)));
     } else if (isTagged(TYPEVAR)) {
       return erasure().isSubtypeOf(fullyQualifiedName);
@@ -121,7 +121,7 @@ public class JavaType implements Type {
         return ((ArrayJavaType) this).elementType().isSubtypeOf(((ArrayJavaType) supType).elementType());
       }
       //Only possibility to be supertype of array without being an array is to be Object.
-      return supType.fullyQualifiedName().equals("java.lang.Object");
+      return "java.lang.Object".equals(supType.fullyQualifiedName());
     } else if (this.isTagged(JavaType.CLASS) && supType.isTagged(JavaType.CLASS)) {
       ClassJavaType superClassType = (ClassJavaType) supType;
       return this.equals(superClassType) || this.superTypeContains(superClassType.fullyQualifiedName());
@@ -145,6 +145,7 @@ public class JavaType implements Type {
   /**
    * JLS8 4.6
    */
+  @Override
   public JavaType erasure() {
     return this;
   }
@@ -290,6 +291,7 @@ public class JavaType implements Type {
       return elementType.toString() + "[]";
     }
 
+    @Override
     public JavaType elementType() {
       return elementType;
     }

@@ -106,7 +106,7 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   }
 
   public void setSymbol(Symbol symbol) {
-    Preconditions.checkState(this.symbol == Symbols.unknownSymbol);
+    Preconditions.checkState(this.symbol.equals(Symbols.unknownSymbol));
     this.symbol = symbol;
   }
 }

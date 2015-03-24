@@ -190,7 +190,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   public void setSymbol(JavaSymbol.TypeJavaSymbol symbol) {
-    Preconditions.checkState(this.symbol == Symbols.unknownSymbol);
+    Preconditions.checkState(this.symbol.equals(Symbols.unknownSymbol));
     this.symbol = symbol;
   }
 

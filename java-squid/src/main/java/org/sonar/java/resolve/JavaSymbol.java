@@ -81,6 +81,7 @@ public class JavaSymbol implements Symbol {
     return name;
   }
 
+  @Override
   public SymbolMetadataResolve metadata() {
     complete();
     return symbolMetadata;
