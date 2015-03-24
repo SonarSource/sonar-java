@@ -37,10 +37,11 @@ public class BadLocalVariableName_S00117_CheckTest {
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(3).withMessage("Rename this local variable name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.")
       .next().atLine(5)
-      .next().atLine(8)
-      .next().atLine(14)
+      .next().atLine(9)
       .next().atLine(15)
-      .next().atLine(21)
+      .next().atLine(16)
+      .next().atLine(22)
+      .next().atLine(28)
       .noMore();
   }
 

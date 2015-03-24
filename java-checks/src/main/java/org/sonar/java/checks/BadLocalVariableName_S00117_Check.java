@@ -28,6 +28,8 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -79,6 +81,16 @@ public class BadLocalVariableName_S00117_Check  extends BaseTreeVisitor implemen
         scan(member);
       }
     }
+  }
+
+  @Override
+  public void visitForStatement(ForStatementTree tree) {
+    scan(tree.statement());
+  }
+
+  @Override
+  public void visitForEachStatement(ForEachStatement tree) {
+    scan(tree.statement());
   }
 
   @Override
