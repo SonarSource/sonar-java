@@ -30,6 +30,7 @@ import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -135,18 +136,18 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         }
       } else {
         //Constant
-        addConstantValue(symbol, tree, annotationInstance);
+        addConstantValue(tree, annotationInstance);
       }
     }
   }
 
-  private void addConstantValue(JavaSymbol symbol, AnnotationTree tree, AnnotationInstanceResolve annotationInstance) {
-    Collection<JavaSymbol> scopeSymbols = ((AbstractTypedTree) tree.annotationType()).getSymbolType().getSymbol().members().scopeSymbols();
+  private void addConstantValue(AnnotationTree tree, AnnotationInstanceResolve annotationInstance) {
+    Collection<Symbol> scopeSymbols = tree.annotationType().symbolType().symbol().memberSymbols();
     for (ExpressionTree expressionTree : tree.arguments()) {
       String name = "";
-      for (JavaSymbol scopeSymbol : scopeSymbols) {
-        if(scopeSymbol.isKind(JavaSymbol.MTH)) {
-          name = scopeSymbol.getName();
+      for (Symbol scopeSymbol : scopeSymbols) {
+        if(scopeSymbol.isMethodSymbol()) {
+          name = scopeSymbol.name();
           break;
         }
       }
