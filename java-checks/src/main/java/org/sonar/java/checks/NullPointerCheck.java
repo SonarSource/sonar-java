@@ -99,8 +99,6 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    // currently we only handle assignment of the form: identifier =
-    // TODO(merciesa): array[expr] = and mse.identifier = requires advanced tracking and are left outside of the scope
     if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
       VariableSymbol identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.variable());
       currentState.setVariableValue(identifierSymbol, checkNullity(tree.expression()));
@@ -414,7 +412,9 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     }
   }
 
+  @VisibleForTesting
   class AssignmentVisitor extends BaseTreeVisitor {
+    @VisibleForTesting
     Set<VariableSymbol> assignedSymbols = new HashSet<>();
 
     public Set<VariableSymbol> findAssignedVariables(Tree tree) {
@@ -431,12 +431,17 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      // currently we only handle assignment of the form: identifier =
-      // TODO(merciesa): array[expr] = and mse.identifier = requires advanced tracking and are left outside of the scope
       if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
-        assignedSymbols.add((VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.variable()));
+        registerAssignedSymbol((VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.variable()));
       }
       super.visitAssignmentExpression(tree);
+    }
+
+    @VisibleForTesting
+    void registerAssignedSymbol(Symbol symbol) {
+      if (symbol != null && symbol.isVariableSymbol()) {
+        assignedSymbols.add((VariableSymbol) symbol);
+      }
     }
   }
 

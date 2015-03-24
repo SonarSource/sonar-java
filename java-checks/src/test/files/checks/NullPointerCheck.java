@@ -361,7 +361,7 @@ class NullPointerTest {
       object12.hashCode(); // Noncompliant
       nullableObject.hashCode(); // Noncompliant
       if(i == 1) {
-        object1.hashCode(); // False negative
+        object1.hashCode(); // Compliant
       } else if(i == 0) {
         object1 = new Object();
       }
@@ -376,7 +376,7 @@ class NullPointerTest {
       object22.hashCode(); // Noncompliant
       nullableObject.hashCode(); // Noncompliant
       if(i == 1) {
-        object2.hashCode(); // False negative
+        object2.hashCode(); // Compliant
       } else if(i == 0) {
         object2 = new Object();
       }
