@@ -100,10 +100,13 @@ public class NullPointerCheckTest {
       .next().atLine(306).withMessage("object2 can be null.")
       .next().atLine(308).withMessage("object1 can be null.")
       .next().atLine(333).withMessage("str can be null.")
+      .next().atLine(335).withMessage("str can be null.")
+      .next().atLine(337).withMessage("str can be null.")
       .next().atLine(352).withMessage("object can be null.")
       .next().atLine(354).withMessage("object can be null.")
       .next().atLine(361).withMessage("object12 can be null.")
-      .next().atLine(376).withMessage("object22 can be null.");
+      .next().atLine(376).withMessage("object22 can be null.")
+      .next().atLine(414).withMessage("object3 can be null.");
   }
 
   @Test
