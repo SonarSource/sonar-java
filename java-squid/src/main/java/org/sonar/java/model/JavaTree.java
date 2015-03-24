@@ -487,6 +487,7 @@ public abstract class JavaTree extends AstNode implements Tree {
       throw new UnsupportedOperationException();
     }
 
+    @Nullable
     private static AstNode getLastTokenAstNode(AstNode astNode) {
       if (!astNode.hasToken()) {
         return null;

@@ -28,7 +28,6 @@ import org.sonar.java.resolve.Scope.OrderedScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -261,6 +260,7 @@ public class JavaSymbol implements Symbol {
       typeVariableTypes.add(typeVariableType);
     }
 
+    @Nullable
     public JavaType getSuperclass() {
       complete();
       return ((JavaType.ClassJavaType) type).supertype;
@@ -295,13 +295,13 @@ public class JavaSymbol implements Symbol {
      */
     public Set<JavaType.ClassJavaType> superTypes() {
       ImmutableSet.Builder<JavaType.ClassJavaType> types = ImmutableSet.builder();
-      JavaType.ClassJavaType superClassType = (JavaType.ClassJavaType) this.getSuperclass();
+      JavaType.ClassJavaType superClassType = (JavaType.ClassJavaType) this.superClass();
       types.addAll(this.interfacesOfType());
       while (superClassType != null) {
         types.add(superClassType);
         TypeJavaSymbol superClassSymbol = superClassType.getSymbol();
         types.addAll(superClassSymbol.interfacesOfType());
-        superClassType = (JavaType.ClassJavaType) superClassSymbol.getSuperclass();
+        superClassType = (JavaType.ClassJavaType) superClassSymbol.superClass();
       }
       return types.build();
     }
@@ -418,6 +418,7 @@ public class JavaSymbol implements Symbol {
       return result;
     }
 
+    @Nullable
     private Boolean overridesFromSymbol(JavaType.ClassJavaType classType) {
       Boolean result = false;
       if (classType.isTagged(JavaType.UNKNOWN)) {
@@ -447,6 +448,7 @@ public class JavaSymbol implements Symbol {
       return !overridee.isPrivate();
     }
 
+    @Nullable
     private Boolean isOverriding(MethodJavaSymbol overridee, JavaType.ClassJavaType classType) {
       // same number and type of formal parameters
       if (getParametersTypes().size() != overridee.getParametersTypes().size()) {
@@ -510,6 +512,7 @@ public class JavaSymbol implements Symbol {
     }
 
     @Override
+    @Nullable
     public JavaType getSuperclass() {
       // FIXME : should return upper bound or Object if no bound defined.
       return null;

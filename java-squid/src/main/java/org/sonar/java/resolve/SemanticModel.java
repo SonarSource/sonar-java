@@ -29,13 +29,12 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.semantic.Symbol;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collection;
@@ -169,7 +168,7 @@ public class SemanticModel {
     refersTo.put(tree, symbol);
   }
 
-  @CheckForNull
+  @Nullable
   public Symbol getReference(IdentifierTree tree) {
     return refersTo.get(tree);
   }

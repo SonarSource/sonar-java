@@ -24,7 +24,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -86,11 +85,7 @@ public class EqualsNotOverridenWithCompareToCheck extends SubscriptionBaseVisito
   }
 
   private boolean isComparable(ClassTree tree) {
-    Symbol.TypeSymbol typeSymbol = tree.symbol();
-    if (typeSymbol == null) {
-      return false;
-    }
-    for (Type type : typeSymbol.interfaces()) {
+    for (Type type : tree.symbol().interfaces()) {
       if (type.is("java.lang.Comparable")) {
         return true;
       }

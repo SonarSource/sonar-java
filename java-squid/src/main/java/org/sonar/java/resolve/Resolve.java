@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +54,7 @@ public class Resolve {
     this.parametrizedTypeCache = parametrizedTypeCache;
   }
 
+  @Nullable
   private static JavaSymbol.TypeJavaSymbol superclassSymbol(JavaSymbol.TypeJavaSymbol c) {
     JavaType supertype = c.getSuperclass();
     return supertype == null ? null : supertype.symbol;
@@ -722,6 +724,7 @@ public class Resolve {
     Scope starImports;
     Scope staticStarImports;
 
+    @Nullable
     Env outer() {
       return outer;
     }

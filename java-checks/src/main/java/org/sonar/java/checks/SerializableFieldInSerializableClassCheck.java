@@ -96,9 +96,6 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
       return true;
     } else if (tree.is(Tree.Kind.CLASS)) {
       Symbol.TypeSymbol symbol = ((ClassTree) tree).symbol();
-      if (symbol == null) {
-        return false;
-      }
       return implementsSerializable(symbol.type());
     }
     return implementsSerializable(((TypeTree) tree).symbolType());

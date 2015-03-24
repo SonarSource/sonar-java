@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 
+import javax.annotation.Nullable;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -90,7 +91,9 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     ClassReader classReader = null;
     try {
       inputStream = inputStreamFor(bytecodeName);
-      classReader = new ClassReader(inputStream);
+      if(inputStream != null) {
+        classReader = new ClassReader(inputStream);
+      }
     } catch (IOException e) {
       throw Throwables.propagate(e);
     } finally {
@@ -103,6 +106,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     }
   }
 
+  @Nullable
   private InputStream inputStreamFor(String fullname) {
     return getClassLoader().getResourceAsStream(Convert.bytecodeName(fullname) + ".class");
   }
