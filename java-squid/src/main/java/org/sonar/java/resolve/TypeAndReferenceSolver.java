@@ -26,7 +26,6 @@ import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
@@ -126,14 +125,13 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   private void completeMetadata(Symbol symbol, List<AnnotationTree> annotations) {
     for (AnnotationTree tree : annotations) {
-      AnnotationTreeImpl treeImpl = (AnnotationTreeImpl) tree;
-      AnnotationInstance annotationInstance = new AnnotationInstance(treeImpl.getSymbolType().getSymbol());
+      AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve((Symbol.TypeSymbol) tree.symbolType().symbol());
       symbol.metadata().addAnnotation(annotationInstance);
       if (tree.arguments().size() > 1 || (!tree.arguments().isEmpty() && tree.arguments().get(0).is(Tree.Kind.ASSIGNMENT))) {
         for (ExpressionTree expressionTree : tree.arguments()) {
           AssignmentExpressionTree aet = (AssignmentExpressionTree) expressionTree;
           //TODO: Store more precise value than the expression (real value in case of literal, symbol for enums, array of values, solve constants?)
-          annotationInstance.addValue(new AnnotationValue(((IdentifierTree) aet.variable()).name(), aet.expression()));
+          annotationInstance.addValue(new AnnotationValueResolve(((IdentifierTree) aet.variable()).name(), aet.expression()));
         }
       } else {
         //Constant
@@ -142,7 +140,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
   }
 
-  private void addConstantValue(Symbol symbol, AnnotationTree tree, AnnotationInstance annotationInstance) {
+  private void addConstantValue(Symbol symbol, AnnotationTree tree, AnnotationInstanceResolve annotationInstance) {
     Collection<Symbol> scopeSymbols = ((AbstractTypedTree) tree.annotationType()).getSymbolType().getSymbol().members().scopeSymbols();
     for (ExpressionTree expressionTree : tree.arguments()) {
       String name = "";
@@ -152,7 +150,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           break;
         }
       }
-      annotationInstance.addValue(new AnnotationValue(name, expressionTree));
+      annotationInstance.addValue(new AnnotationValueResolve(name, expressionTree));
     }
   }
 

@@ -25,7 +25,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.resolve.AnnotationInstance;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbol.MethodSymbol;
 import org.sonar.java.resolve.Symbol.VariableSymbol;
@@ -280,13 +279,10 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   private AbstractValue checkNullity(Symbol symbol) {
-    for (AnnotationInstance annotation : ((org.sonar.java.resolve.Symbol) symbol).metadata().annotations()) {
-      if (annotation.isTyped("javax.annotation.Nonnull")) {
-        return AbstractValue.NOTNULL;
-      }
-      if (annotation.isTyped("javax.annotation.CheckForNull") || annotation.isTyped("javax.annotation.Nullable")) {
-        return AbstractValue.NULL;
-      }
+    if (symbol.metadata().isAnnotatedWith("javax.annotation.Nonnull")) {
+      return AbstractValue.NOTNULL;
+    } else if (symbol.metadata().isAnnotatedWith("javax.annotation.CheckForNull") || symbol.metadata().isAnnotatedWith("javax.annotation.Nullable")) {
+      return AbstractValue.NULL;
     }
     // FIXME(merciesa): should use annotation on package and class
     return AbstractValue.UNKNOWN;
@@ -341,16 +337,6 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   private void restorePreviousState() {
     currentState = currentState.parentState;
-  }
-
-  public enum AbstractValue {
-    UNSET,
-    // value is known to be not null.
-    NOTNULL,
-    // value is known to be null.
-    NULL,
-    // value is unknown (could be null or not null).
-    UNKNOWN
   }
 
   private ConditionalState visitCondition(ExpressionTree tree) {
@@ -449,6 +435,16 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
         assignedSymbols.add((VariableSymbol) symbol);
       }
     }
+  }
+
+  public enum AbstractValue {
+    UNSET,
+    // value is known to be not null.
+    NOTNULL,
+    // value is known to be null.
+    NULL,
+    // value is unknown (could be null or not null).
+    UNKNOWN
   }
 
   @VisibleForTesting

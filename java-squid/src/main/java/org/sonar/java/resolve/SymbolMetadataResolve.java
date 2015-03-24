@@ -20,19 +20,20 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import java.util.List;
 
-public class SymbolMetadata {
+public class SymbolMetadataResolve implements SymbolMetadata {
 
   private List<AnnotationInstance> annotations;
 
-  SymbolMetadata() {
+  SymbolMetadataResolve() {
     annotations = Lists.newArrayList();
   }
 
-
+  @Override
   public List<AnnotationInstance> annotations() {
     return annotations;
   }
@@ -41,15 +42,21 @@ public class SymbolMetadata {
     annotations.add(annotationInstance);
   }
 
-  /**
-   * Get the annotation values for the specified annotation.
-   * @param annotationQualifiedClassName
-   * @return null if the annotation is not present, a List otherwise
-   */
-  @Nullable
-  public List<AnnotationValue> getValuesFor(String annotationQualifiedClassName) {
+  @Override
+  public boolean isAnnotatedWith(String fullyQualifiedName) {
     for (AnnotationInstance annotationInstance : annotations) {
-      if(annotationInstance.isTyped(annotationQualifiedClassName)) {
+      if(annotationInstance.symbol().type().is(fullyQualifiedName)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  @CheckForNull
+  public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
+    for (AnnotationInstance annotationInstance : annotations) {
+      if(annotationInstance.symbol().type().is(fullyQualifiedNameOfAnnotation)) {
         return annotationInstance.values();
       }
     }

@@ -20,27 +20,31 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationValue;
 
 import java.util.List;
 
-public class AnnotationInstance {
+public class AnnotationInstanceResolve implements SymbolMetadata.AnnotationInstance {
 
   private Symbol.TypeSymbol typeSymbol;
   private List<AnnotationValue> values;
 
-  public AnnotationInstance(Symbol.TypeSymbol symbol) {
+  AnnotationInstanceResolve(Symbol.TypeSymbol symbol) {
     this.typeSymbol = symbol;
     this.values = Lists.newArrayList();
   }
 
-  public void addValue(AnnotationValue annotationValue) {
+  void addValue(AnnotationValue annotationValue) {
     values.add(annotationValue);
   }
 
-  public boolean isTyped(String annotationQualifiedClassName) {
-    return typeSymbol.type.is(annotationQualifiedClassName);
+  @Override
+  public Symbol symbol() {
+    return typeSymbol;
   }
 
+  @Override
   public List<AnnotationValue> values() {
     return values;
   }

@@ -27,6 +27,7 @@ import org.sonar.java.resolve.targets.AnonymousClass;
 import org.sonar.java.resolve.targets.HasInnerClass;
 import org.sonar.java.resolve.targets.InnerClassBeforeOuter;
 import org.sonar.java.resolve.targets.NamedClassWithinMethod;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 
 import java.io.File;
 import java.util.Iterator;
@@ -174,15 +175,15 @@ public class BytecodeCompleterTest {
   public void annotationOnSymbols() throws Exception {
     Symbol.TypeSymbol classSymbol = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.AnnotationSymbolMethod");
     assertThat(classSymbol.isPublic()).isTrue();
-    SymbolMetadata metadata = classSymbol.metadata();
+    SymbolMetadataResolve metadata = classSymbol.metadata();
     assertThat(metadata.annotations()).hasSize(3);
-    assertThat(metadata.getValuesFor("org.sonar.java.resolve.targets.Dummy")).isNull();
-    assertThat(metadata.getValuesFor("org.sonar.java.resolve.targets.ClassAnnotation")).isEmpty();
-    assertThat(metadata.getValuesFor("org.sonar.java.resolve.targets.RuntimeAnnotation1")).hasSize(1);
-    assertThat(metadata.getValuesFor("org.sonar.java.resolve.targets.RuntimeAnnotation1").iterator().next().value()).isEqualTo("plopfoo");
+    assertThat(metadata.valuesForAnnotation("org.sonar.java.resolve.targets.Dummy")).isNull();
+    assertThat(metadata.valuesForAnnotation("org.sonar.java.resolve.targets.ClassAnnotation")).isEmpty();
+    assertThat(metadata.valuesForAnnotation("org.sonar.java.resolve.targets.RuntimeAnnotation1")).hasSize(1);
+    assertThat(metadata.valuesForAnnotation("org.sonar.java.resolve.targets.RuntimeAnnotation1").iterator().next().value()).isEqualTo("plopfoo");
 
-    assertThat(metadata.getValuesFor("org.sonar.java.resolve.targets.RuntimeAnnotation2")).hasSize(2);
-    Iterator<AnnotationValue> iterator = metadata.getValuesFor("org.sonar.java.resolve.targets.RuntimeAnnotation2").iterator();
+    assertThat(metadata.valuesForAnnotation("org.sonar.java.resolve.targets.RuntimeAnnotation2")).hasSize(2);
+    Iterator<SymbolMetadata.AnnotationValue> iterator = metadata.valuesForAnnotation("org.sonar.java.resolve.targets.RuntimeAnnotation2").iterator();
     Object value = iterator.next().value();
     assertAnnotationValue(value);
     value = iterator.next().value();
@@ -268,9 +269,9 @@ public class BytecodeCompleterTest {
     Symbol.VariableSymbol field = (Symbol.VariableSymbol) clazz.members().lookup("field").get(0);
     Symbol.MethodSymbol method = (Symbol.MethodSymbol) clazz.members().lookup("method").get(0);
     Symbol.VariableSymbol parameter = (Symbol.VariableSymbol) method.getParameters().scopeSymbols().get(0);
-    assertThat(field.metadata().getValuesFor("javax.annotation.Nullable")).isNotNull();
-    assertThat(method.metadata().getValuesFor("javax.annotation.CheckForNull")).isNotNull();
-    assertThat(parameter.metadata().getValuesFor("javax.annotation.Nullable")).isNotNull();
+    assertThat(field.metadata().valuesForAnnotation("javax.annotation.Nullable")).isNotNull();
+    assertThat(method.metadata().valuesForAnnotation("javax.annotation.CheckForNull")).isNotNull();
+    assertThat(parameter.metadata().valuesForAnnotation("javax.annotation.Nullable")).isNotNull();
 
   }
 
@@ -283,7 +284,7 @@ public class BytecodeCompleterTest {
     assertThat(constructor.getParameters().scopeSymbols()).hasSize(1);
     for (Symbol arg : constructor.getParameters().scopeSymbols()) {
       assertThat(arg.metadata().annotations()).hasSize(1);
-      assertThat(arg.metadata().annotations().get(0).isTyped("javax.annotation.Nullable"));
+      assertThat(arg.metadata().annotations().get(0).symbol().type().is("javax.annotation.Nullable"));
     }
 
   }

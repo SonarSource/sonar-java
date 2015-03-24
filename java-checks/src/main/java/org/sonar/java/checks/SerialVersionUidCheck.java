@@ -26,10 +26,10 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.AnnotationValue;
 import org.sonar.java.resolve.Symbol.TypeSymbol;
 import org.sonar.java.resolve.Type.ClassType;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -132,9 +132,9 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean hasSuppressWarningAnnotation(TypeSymbol symbol) {
-    List<AnnotationValue> annotations = symbol.metadata().getValuesFor("java.lang.SuppressWarnings");
+    List<SymbolMetadata.AnnotationValue> annotations = symbol.metadata().valuesForAnnotation("java.lang.SuppressWarnings");
     if (annotations != null) {
-      for (AnnotationValue annotationValue : annotations) {
+      for (SymbolMetadata.AnnotationValue annotationValue : annotations) {
         if ("serial".equals(stringLiteralValue(annotationValue.value()))) {
           return true;
         }

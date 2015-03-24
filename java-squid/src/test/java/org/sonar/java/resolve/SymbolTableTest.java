@@ -150,10 +150,10 @@ public class SymbolTableTest {
 
     assertThat(result.reference(25,21)).isSameAs(result.symbol("method"));
 
-    SymbolMetadata metadata = classDeclaration.metadata();
+    SymbolMetadataResolve metadata = classDeclaration.metadata();
     assertThat(metadata.annotations()).hasSize(1);
-    assertThat(metadata.getValuesFor("java.lang.Override")).isNull();
-    assertThat(metadata.getValuesFor("java.lang.SuppressWarnings")).hasSize(1);
+    assertThat(metadata.valuesForAnnotation("java.lang.Override")).isNull();
+    assertThat(metadata.valuesForAnnotation("java.lang.SuppressWarnings")).hasSize(1);
   }
 
   @Test

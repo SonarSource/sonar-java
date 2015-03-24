@@ -19,20 +19,24 @@
  */
 package org.sonar.java.resolve;
 
-public class AnnotationValue {
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+
+public class AnnotationValueResolve implements SymbolMetadata.AnnotationValue {
 
   private final String name;
   private final Object value;
 
-  public AnnotationValue(String name, Object value) {
+  public AnnotationValueResolve(String name, Object value) {
     this.name = name;
     this.value = value;
   }
 
+  @Override
   public Object value() {
     return value;
   }
 
+  @Override
   public String name() {
     return name;
   }

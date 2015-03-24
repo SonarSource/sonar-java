@@ -23,8 +23,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.AnnotationInstance;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -71,13 +69,7 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
   }
 
   private boolean isAnnotationRepeatable(ExpressionTree expressionTree) {
-    List<AnnotationInstance> annotations = ((Symbol) expressionTree.symbolType().symbol()).metadata().annotations();
-    for (AnnotationInstance annotation : annotations) {
-      if(annotation.isTyped("java.lang.annotation.Repeatable")) {
-        return true;
-      }
-    }
-    return false;
+    return expressionTree.symbolType().symbol().metadata().isAnnotatedWith("java.lang.annotation.Repeatable");
   }
 
   private boolean isAllSameAnnotation(List<ExpressionTree> initializers) {

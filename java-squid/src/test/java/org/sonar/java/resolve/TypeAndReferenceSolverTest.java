@@ -30,6 +30,7 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -123,7 +124,7 @@ public class TypeAndReferenceSolverTest {
     MethodTreeImpl method = (MethodTreeImpl) clazz.members().get(0);
     List<AnnotationInstance> annotations = ((Symbol.MethodSymbol) method.symbol()).metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
-    assertThat(annotations.get(0).isTyped(annotation.symbol().name())).isTrue();
+    assertThat(annotations.get(0).symbol().type().is(annotation.symbol().name())).isTrue();
   }
 
   @Test
@@ -135,7 +136,7 @@ public class TypeAndReferenceSolverTest {
     VariableTreeImpl  parameter = (VariableTreeImpl)method.parameters().get(0);
     List<AnnotationInstance> annotations = parameter.getSymbol().metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
-    assertThat(annotations.get(0).isTyped(annotation.symbol().name())).isTrue();
+    assertThat(annotations.get(0).symbol().type().is(annotation.symbol().name())).isTrue();
   }
 
   @Test
@@ -145,7 +146,7 @@ public class TypeAndReferenceSolverTest {
     ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(1);
     List<AnnotationInstance> annotations = ((Symbol.TypeSymbol) clazz.symbol()).metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
-    assertThat(annotations.get(0).isTyped(annotation.symbol().name())).isTrue();
+    assertThat(annotations.get(0).symbol().type().is(annotation.symbol().name())).isTrue();
   }
 
   @Test
@@ -156,7 +157,7 @@ public class TypeAndReferenceSolverTest {
     VariableTreeImpl variable = (VariableTreeImpl) clazz.members().get(0);
     List<AnnotationInstance> annotations = variable.getSymbol().metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
-    assertThat(annotations.get(0).isTyped(annotation.symbol().name())).isTrue();
+    assertThat(annotations.get(0).symbol().type().is(annotation.symbol().name())).isTrue();
   }
 
   @Test

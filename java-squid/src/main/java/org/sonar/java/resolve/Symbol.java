@@ -44,7 +44,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
   public static final int ABSENT = ERRONEOUS + 2;
 
   final int kind;
-  final SymbolMetadata symbolMetadata;
+  final SymbolMetadataResolve symbolMetadata;
 
   int flags;
 
@@ -61,7 +61,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     this.flags = flags;
     this.name = name;
     this.owner = owner;
-    this.symbolMetadata = new SymbolMetadata();
+    this.symbolMetadata = new SymbolMetadataResolve();
   }
 
   /**
@@ -80,7 +80,7 @@ public class Symbol implements org.sonar.plugins.java.api.semantic.Symbol {
     return name;
   }
 
-  public SymbolMetadata metadata() {
+  public SymbolMetadataResolve metadata() {
     complete();
     return symbolMetadata;
   }

@@ -18,4 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
 @javax.annotation.ParametersAreNonnullByDefault
+@MethodsAreNonnullByDefault
 package org.sonar.java.resolve;
+
+import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
+

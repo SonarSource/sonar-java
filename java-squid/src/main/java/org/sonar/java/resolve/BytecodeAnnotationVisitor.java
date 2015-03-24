@@ -27,17 +27,17 @@ import org.objectweb.asm.Type;
 import java.util.List;
 
 public class BytecodeAnnotationVisitor extends AnnotationVisitor {
-  private final AnnotationInstance annotationInstance;
+  private final AnnotationInstanceResolve annotationInstance;
   private final BytecodeVisitor bytecodeVisitor;
 
-  public BytecodeAnnotationVisitor(AnnotationInstance annotationInstance, BytecodeVisitor bytecodeVisitor) {
+  public BytecodeAnnotationVisitor(AnnotationInstanceResolve annotationInstance, BytecodeVisitor bytecodeVisitor) {
     super(Opcodes.ASM5);
     this.annotationInstance = annotationInstance;
     this.bytecodeVisitor = bytecodeVisitor;
   }
 
   private void addValue(String name, Object value) {
-    annotationInstance.addValue(new AnnotationValue(name, value));
+    annotationInstance.addValue(new AnnotationValueResolve(name, value));
   }
 
   @Override
@@ -48,8 +48,7 @@ public class BytecodeAnnotationVisitor extends AnnotationVisitor {
   @Override
   public AnnotationVisitor visitAnnotation(String name, String desc) {
     Symbol.TypeSymbol annotationSymbol = getSymbol(desc);
-    AnnotationInstance paramAnnotation = new AnnotationInstance(annotationSymbol);
-    return new BytecodeAnnotationVisitor(paramAnnotation, bytecodeVisitor);
+    return new BytecodeAnnotationVisitor(new AnnotationInstanceResolve(annotationSymbol), bytecodeVisitor);
   }
 
   @Override

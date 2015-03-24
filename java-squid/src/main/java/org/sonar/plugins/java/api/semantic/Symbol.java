@@ -20,7 +20,6 @@
 package org.sonar.plugins.java.api.semantic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -70,6 +69,12 @@ public interface Symbol {
   boolean isDeprecated();
 
   boolean isVolatile();
+
+  /**
+   * Symbol metadata informations, annotations for instance.
+   * @return the metadata of this symbol.
+   */
+  SymbolMetadata metadata();
 
   /**
    * The closest enclosing class.

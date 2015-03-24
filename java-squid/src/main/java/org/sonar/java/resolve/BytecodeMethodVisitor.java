@@ -47,7 +47,7 @@ public class BytecodeMethodVisitor extends MethodVisitor {
   @Override
   public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
     Type annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
-    AnnotationInstance annotationInstance = new AnnotationInstance(annotationType.getSymbol());
+    AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve(annotationType.getSymbol());
     methodSymbol.metadata().addAnnotation(annotationInstance);
     return new BytecodeAnnotationVisitor(annotationInstance, bytecodeVisitor);
   }
@@ -58,7 +58,7 @@ public class BytecodeMethodVisitor extends MethodVisitor {
     if (annotationType.is("java.lang.Synthetic")) {
       syntheticArgs++;
     } else {
-      AnnotationInstance annotationInstance = new AnnotationInstance(annotationType.getSymbol());
+      AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve(annotationType.getSymbol());
       methodSymbol.getParameters().scopeSymbols().get(parameter - syntheticArgs).metadata().addAnnotation(annotationInstance);
       return new BytecodeAnnotationVisitor(annotationInstance, bytecodeVisitor);
     }

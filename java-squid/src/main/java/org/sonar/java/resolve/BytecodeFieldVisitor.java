@@ -38,7 +38,7 @@ public class BytecodeFieldVisitor extends FieldVisitor {
   @Override
   public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
     Type annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
-    AnnotationInstance annotationInstance = new AnnotationInstance(annotationType.getSymbol());
+    AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve(annotationType.getSymbol());
     fieldSymbol.metadata().addAnnotation(annotationInstance);
     return new BytecodeAnnotationVisitor(annotationInstance, bytecodeVisitor);
   }
