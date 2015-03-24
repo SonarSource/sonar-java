@@ -75,6 +75,12 @@ import static org.sonar.plugins.java.api.semantic.Symbol.*;
 @SqaleConstantRemediation("20min")
 public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  // message when a nullable expression is dereferenced.
+  private static final String MESSAGE_NULLABLE = "NullPointerException might be thrown as '%s' is nullable here";
+
+  // message when null is dereferenced.
+  private static final String MESSAGE_NULL = "null is dereferenced";
+
   public static final String KEY = "S2259";
   private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
@@ -95,7 +101,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
-    checkForIssue(tree.expression());
+    checkForIssue(tree.expression(), MESSAGE_NULLABLE, MESSAGE_NULL);
     super.visitArrayAccessExpression(tree);
   }
 
@@ -198,7 +204,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-    checkForIssue(tree.expression());
+    checkForIssue(tree.expression(), MESSAGE_NULLABLE, MESSAGE_NULL);
     super.visitMemberSelectExpression(tree);
   }
 
@@ -220,7 +226,9 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
         for (int i = 0; i < tree.arguments().size(); i += 1) {
           // in case of varargs, there could be more arguments than parameters. in that case, pick the last parameter.
           if (checkNullity(parameters.get(i < parameters.size() ? i : parameters.size() - 1)) == AbstractValue.NOTNULL) {
-            this.checkForIssue(tree.arguments().get(i));
+            this.checkForIssue(tree.arguments().get(i),
+              String.format("'%%s' is nullable here and method '%s' does not accept nullable argument", methodSymbol.name()),
+              String.format("method '%s' does not accept nullable argument", methodSymbol.name()));
           }
         }
       }
@@ -230,7 +238,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
-    checkForIssue(tree.expression());
+    checkForIssue(tree.expression(), MESSAGE_NULLABLE, MESSAGE_NULL);
     scan(tree.expression());
     Set<VariableSymbol> variables = new AssignmentVisitor().findAssignedVariables(tree.cases());
     currentState.invalidateVariables(variables);
@@ -312,20 +320,26 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     return AbstractValue.UNKNOWN;
   }
 
-  // raises an issue if the passed tree can be null.
-  private void checkForIssue(Tree tree) {
+  /**
+   * raises an issue if the passed tree can be null.
+   *
+   * @param tree tree that must be checked
+   * @param nullableMessage message to generate when the tree is an identifier or a method invocation
+   * @param nullMessage message to generate when the tree is the null literal
+   */
+  private void checkForIssue(Tree tree, String nullableMessage, String nullMessage) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
       if (isSymbolLocalVariableOrMethodParameter(symbol) && isVariableNull((VariableSymbol) symbol)) {
-        context.addIssue(tree, RULE_KEY, String.format("%s can be null.", symbol.name()));
+        context.addIssue(tree, RULE_KEY, String.format(nullableMessage, symbol.name()));
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTree) tree).symbol();
       if (symbol.isMethodSymbol() && checkNullity(symbol) == AbstractValue.NULL) {
-        context.addIssue(tree, RULE_KEY, String.format("Value returned by method '%s' can be null.", symbol.name()));
+        context.addIssue(tree, RULE_KEY, String.format(nullableMessage, symbol.name()));
       }
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
-      context.addIssue(tree, RULE_KEY, "null is dereferenced or passed as argument.");
+      context.addIssue(tree, RULE_KEY, nullMessage);
     }
   }
 
