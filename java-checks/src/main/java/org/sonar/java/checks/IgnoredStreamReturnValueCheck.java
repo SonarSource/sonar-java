@@ -24,8 +24,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -47,7 +47,7 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 public class IgnoredStreamReturnValueCheck extends SubscriptionBaseVisitor {
 
-  private static final List<MethodInvocationMatcher> MATCHERS = ImmutableList.of(
+  private static final MethodInvocationMatcherCollection MATCHERS = MethodInvocationMatcherCollection.create(
     inputStreamInvocationMatcher("skip", "long"),
     inputStreamInvocationMatcher("read", "byte[]"));
 
@@ -65,20 +65,10 @@ public class IgnoredStreamReturnValueCheck extends SubscriptionBaseVisitor {
     ExpressionTree statement = ((ExpressionStatementTree) tree).expression();
     if (statement.is(Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) statement;
-      if (matchesMethodInvocations(mit)) {
+      if (MATCHERS.anyMatch(mit)) {
         addIssue(mit, "Check the return value of the \"" + mit.symbol().name() + "\" call to see how many bytes were read.");
       }
     }
-  }
-
-  private boolean matchesMethodInvocations(MethodInvocationTree methodInvocationTree) {
-    SemanticModel semanticModel = getSemanticModel();
-    for (MethodInvocationMatcher matcher : MATCHERS) {
-      if (matcher.matches(methodInvocationTree, semanticModel)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private static MethodInvocationMatcher inputStreamInvocationMatcher(String methodName, String parameterType) {
