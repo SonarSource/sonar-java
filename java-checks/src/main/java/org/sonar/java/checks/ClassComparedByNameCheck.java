@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -54,7 +55,7 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
-    if(mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       ((MemberSelectExpressionTree) mit.methodSelect()).expression().accept(classGetNameDetector);
     }
     mit.arguments().get(0).accept(classGetNameDetector);
@@ -62,18 +63,14 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
 
   private class ClassGetNameDetector extends BaseTreeVisitor {
 
-    private final List<MethodInvocationMatcher> methodMatchers =  ImmutableList.of(
-          MethodInvocationMatcher.create().typeDefinition("java.lang.Class").name("getName"),
-          MethodInvocationMatcher.create().typeDefinition("java.lang.Class").name("getSimpleName")
-      );
-
+    private final MethodInvocationMatcherCollection methodMatchers = MethodInvocationMatcherCollection.create(
+      MethodInvocationMatcher.create().typeDefinition("java.lang.Class").name("getName"),
+      MethodInvocationMatcher.create().typeDefinition("java.lang.Class").name("getSimpleName"));
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      for (MethodInvocationMatcher methodMatcher : methodMatchers) {
-        if(methodMatcher.matches(tree, getSemanticModel())) {
-          addIssue(tree, "Use an \"instanceof\" comparison instead.");
-        }
+      if (methodMatchers.anyMatch(tree)) {
+        addIssue(tree, "Use an \"instanceof\" comparison instead.");
       }
       scan(tree.methodSelect());
     }
