@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -58,7 +57,7 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     if (superClass != null && superClass.symbolType().is("java.lang.Object")) {
       super.addIssue(superClass, "\"Object\" should not be explicitly extended.");
     }
-    Set<Type> interfaces = new HashSet<Type>();
+    Set<Type> interfaces = new HashSet<>();
     for (TypeTree superInterface : classTree.superInterfaces()) {
       Type interfaceType = superInterface.symbolType();
       String interfaceName = interfaceType.fullyQualifiedName();
@@ -74,7 +73,7 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
   private void checkExtending(ClassTree classTree, Type currentInterfaceType, String currentInterfaceName) {
     for (TypeTree superInterface : classTree.superInterfaces()) {
       if (!currentInterfaceType.equals(superInterface.symbolType()) && currentInterfaceType.isSubtypeOf(superInterface.symbolType())) {
-        String interfaceName = ((JavaSymbol.TypeJavaSymbol) superInterface.symbolType().symbol()).getFullyQualifiedName();
+        String interfaceName = superInterface.symbolType().fullyQualifiedName();
         super.addIssue(superInterface, String.format("\"%s\" is an \"%s\" so \"%s\" can be removed from the extension list.",
           currentInterfaceName, interfaceName, interfaceName));
       }
