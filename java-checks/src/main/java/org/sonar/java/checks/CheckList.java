@@ -306,7 +306,8 @@ public final class CheckList {
       StaticFieldUpateCheck.class,
       IgnoredStreamReturnValueCheck.class,
       DateUtilsTruncateCheck.class,
-      PreparedStatementAndResultSetCheck.class
+      PreparedStatementAndResultSetCheck.class,
+      URLHashCodeAndEqualsCheck.class
       );
   }
 }
