@@ -26,8 +26,12 @@ import com.sonar.sslr.api.Token;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
+/**
+ * This class is intended for internal use during semantic analysis and should not be used in checks.
+ */
 public abstract class AbstractTypedTree extends JavaTree {
 
   /**
@@ -52,6 +56,7 @@ public abstract class AbstractTypedTree extends JavaTree {
    * @deprecated should use symbolType() method
    */
   @Deprecated
+  @CheckForNull
   public JavaType getSymbolType() {
     return (JavaType) type;
   }

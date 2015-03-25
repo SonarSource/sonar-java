@@ -23,7 +23,7 @@ import com.google.common.collect.Iterables;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -61,7 +61,7 @@ public class SymbolTableTest {
     assertThat(((JavaType.ArrayJavaType)arrayErasure.erasure()).elementType().symbol.getName()).isEqualTo("CharSequence");
 
     IdentifierTree tree = result.referenceTree(20, 7);
-    JavaType symbolType = ((AbstractTypedTree) tree).getSymbolType();
+    JavaType symbolType = (JavaType) tree.symbolType();
     assertThat(symbolType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
     JavaType.ParametrizedTypeJavaType ptt = (JavaType.ParametrizedTypeJavaType) symbolType;
     assertThat(ptt.symbol.getName()).isEqualTo("C");
@@ -84,7 +84,7 @@ public class SymbolTableTest {
     //Unknown parametrized type should be tagged as unknown
     MethodTree methodTree = (MethodTree) result.getTree(result.symbol("unknownSymbol"));
     VariableTree variableTree = (VariableTree) methodTree.block().body().get(0);
-    assertThat(((AbstractTypedTree) variableTree.type()).getSymbolType().isTagged(JavaType.UNKNOWN)).isTrue();
+    assertThat(variableTree.type().symbolType().isUnknown()).isTrue();
 
   }
 
@@ -93,11 +93,11 @@ public class SymbolTableTest {
     Result result = Result.createFor("Generics");
     MethodTree method3 = (MethodTree) result.getTree(result.symbol("method3"));
     VariableTree variable = (VariableTree) method3.block().body().get(0);
-    assertThat(((AbstractTypedTree)variable.initializer()).getSymbolType().getSymbol().getName()).isEqualTo("String");
+    assertThat(variable.initializer().symbolType().symbol().name()).isEqualTo("String");
 
     MethodTree method4 = (MethodTree) result.getTree(result.symbol("method4"));
     variable = (VariableTree) method4.block().body().get(0);
-    JavaType symbolType = ((AbstractTypedTree) variable.initializer()).getSymbolType();
+    Type symbolType = variable.initializer().symbolType();
     assertThat(symbolType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
     JavaType.ParametrizedTypeJavaType ptt = (JavaType.ParametrizedTypeJavaType) symbolType;
     assertThat(ptt.typeSubstitution.values().iterator().next().getSymbol().getName()).isEqualTo("String");
@@ -110,8 +110,7 @@ public class SymbolTableTest {
     Result result = Result.createFor("Generics");
     MethodTree ddt_method = (MethodTree) result.getTree(result.symbol("ddt_method"));
     VariableTree variable = (VariableTree) ddt_method.block().body().get(0);
-    JavaType symbolType = ((AbstractTypedTree) variable.initializer()).getSymbolType();
-    assertThat(symbolType.getSymbol().getName()).isEqualTo("String");
+    assertThat(variable.initializer().symbolType().name()).isEqualTo("String");
   }
 
   @Test

@@ -208,7 +208,7 @@ public class SecondPass implements JavaSymbol.Completer {
     typeAndReferenceSolver.env = env;
     typeAndReferenceSolver.resolveAs(tree, JavaSymbol.TYP, env);
     typeAndReferenceSolver.env = null;
-    return ((AbstractTypedTree) tree).getSymbolType();
+    return (JavaType) ((AbstractTypedTree) tree).symbolType();
   }
 
   private boolean checkTypeOfTree(Tree tree) {

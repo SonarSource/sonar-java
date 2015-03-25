@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -37,7 +37,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -116,10 +115,10 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      checkSymbolAssignment((AbstractTypedTree) tree.variable());
+      checkSymbolAssignment(tree.variable());
     }
 
-    private void checkSymbolAssignment(AbstractTypedTree variable) {
+    private void checkSymbolAssignment(Tree variable) {
       if (variable.is(Kind.IDENTIFIER)) {
         Symbol variableSymbol = getSemanticModel().getReference((IdentifierTree) variable);
         if (field.equals(variableSymbol)) {
@@ -127,12 +126,12 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
         }
       } else if (variable.is(Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) variable;
-        checkSymbolAssignment((AbstractTypedTree) mse.identifier());
+        checkSymbolAssignment(mse.identifier());
       }
     }
 
-    private String getMessage(AbstractTypedTree variable) {
-      return MessageFormat.format("Don''t synchronize on \"{0}\" or remove its reassignment on line {1}.", field.name(), variable.getLine());
+    private String getMessage(Tree variable) {
+      return MessageFormat.format("Don''t synchronize on \"{0}\" or remove its reassignment on line {1}.", field.name(), ((JavaTree) variable).getLine());
     }
   }
 }
