@@ -79,17 +79,19 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   private Deque<Collection<IdentifierTree>> validUsagesStack;
   private Iterable<String> exceptions;
   private List<String> exceptionIdentifiers;
+  private SemanticModel semanticModel;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    validUsagesStack = new ArrayDeque<Collection<IdentifierTree>>();
+    validUsagesStack = new ArrayDeque<>();
     exceptions = Splitter.on(",").trimResults().split(exceptionsCommaSeparated);
     exceptionIdentifiers = Lists.newArrayList();
     for (String exception : exceptions) {
       exceptionIdentifiers.add(exception.substring(exception.lastIndexOf(".") + 1));
     }
-    if (context.getSemanticModel() != null) {
+    semanticModel = (SemanticModel) context.getSemanticModel();
+    if (semanticModel != null) {
       scan(context.getTree());
     }
   }
@@ -97,8 +99,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   @Override
   public void visitCatch(CatchTree tree) {
     if (!isExcludedType(tree.parameter().type())) {
-      SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
-      Symbol exception = semanticModel.getSymbol(tree.parameter());
+      Symbol exception = tree.parameter().symbol();
       validUsagesStack.addFirst(Lists.newArrayList(semanticModel.getUsages(exception)));
       super.visitCatch(tree);
       Collection<IdentifierTree> usages = validUsagesStack.pop();
@@ -141,7 +142,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     if (!tree.is(Kind.MEMBER_SELECT)) {
       return false;
     }
-    Deque<String> pieces = new LinkedList<String>();
+    Deque<String> pieces = new LinkedList<>();
     ExpressionTree expr = (MemberSelectExpressionTree) tree;
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
