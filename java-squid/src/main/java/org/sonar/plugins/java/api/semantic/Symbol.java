@@ -57,6 +57,8 @@ public interface Symbol {
 
   boolean isEnum();
 
+  boolean isInterface();
+
   boolean isAbstract();
 
   boolean isPublic();

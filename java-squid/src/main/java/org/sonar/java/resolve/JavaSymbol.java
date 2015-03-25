@@ -174,6 +174,11 @@ public class JavaSymbol implements Symbol {
   }
 
   @Override
+  public boolean isInterface() {
+    return isFlag(Flags.INTERFACE);
+  }
+
+  @Override
   public boolean isAbstract() {
     return isFlag(Flags.ABSTRACT);
   }

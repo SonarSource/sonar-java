@@ -206,7 +206,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     for (Tree expressionTree : args) {
       JavaType symbolType = ((AbstractTypedTree) expressionTree).getSymbolType();
       if (symbolType == null) {
-        symbolType = symbols.unknownType;
+        symbolType = Symbols.unknownType;
       }
       builder.add(symbolType);
     }
@@ -246,6 +246,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public JavaSymbol resolveAs(Tree tree, int kind, Resolve.Env resolveEnv) {
     return resolveAs(tree, kind, resolveEnv, true);
   }
+
   public JavaSymbol resolveAs(Tree tree, int kind, Resolve.Env resolveEnv, boolean associateReference) {
     if (tree.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
       JavaSymbol resolvedSymbol;
@@ -256,7 +257,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           resolveAs(mse.expression(), JavaSymbol.TYP, resolveEnv);
           // member select ending with .class
           registerType(tree, symbols.classType);
-          return null;
+          return symbols.classType.symbol;
         }
 
         identifierTree = mse.identifier();
@@ -278,7 +279,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     tree.accept(this);
     JavaType type = getType(tree);
     if (tree.is(Tree.Kind.INFERED_TYPE)) {
-      type = symbols.unknownType;
+      type = Symbols.unknownType;
       registerType(tree, type);
     }
     if (type == null) {
@@ -295,7 +296,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if ((kind & JavaSymbol.TYP) != 0) {
       expressionKind |= JavaSymbol.PCK;
     }
-
+    //TODO: resolveAs result is only used here, should probably be refactored
     JavaSymbol site = resolveAs(mse.expression(), expressionKind, resolveEnv);
     if (site.kind == JavaSymbol.VAR) {
       return resolve.findIdentInType(resolveEnv, getType(mse.expression()).symbol, mse.identifier().name(), JavaSymbol.VAR);
@@ -306,7 +307,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (site.kind == JavaSymbol.PCK) {
       return resolve.findIdentInPackage(site, mse.identifier().name(), kind);
     }
-    return symbols.unknownSymbol;
+    return Symbols.unknownSymbol;
   }
 
   private void resolveAs(List<? extends Tree> trees, int kind) {
@@ -442,21 +443,18 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     resolveAs(tree.arguments(), JavaSymbol.VAR);
     NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) tree;
     resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassEnv, getParameterTypes(tree.arguments()));
-    if (tree.classBody() != null) {
-      JavaType.ClassJavaType anonymousClassType = symbols.unknownType;
-      JavaType type = ((AbstractTypedTree) tree.identifier()).getSymbolType();
-      JavaSymbol.TypeJavaSymbol symbol = (JavaSymbol.TypeJavaSymbol) tree.classBody().symbol();
-      if (symbol != null) {
-        anonymousClassType = (JavaType.ClassJavaType) symbol.type;
-        if (type.getSymbol().isFlag(Flags.INTERFACE)) {
-          anonymousClassType.interfaces = ImmutableList.of(type);
-          anonymousClassType.supertype = symbols.objectType;
-        } else {
-          anonymousClassType.supertype = type;
-          anonymousClassType.interfaces = ImmutableList.of();
-        }
+    ClassTree classBody = tree.classBody();
+    if (classBody != null) {
+      JavaType type = (JavaType) tree.identifier().symbolType();
+      JavaType.ClassJavaType anonymousClassType = (JavaType.ClassJavaType) classBody.symbol().type();
+      if (type.getSymbol().isFlag(Flags.INTERFACE)) {
+        anonymousClassType.interfaces = ImmutableList.of(type);
+        anonymousClassType.supertype = symbols.objectType;
+      } else {
+        anonymousClassType.supertype = type;
+        anonymousClassType.interfaces = ImmutableList.of();
       }
-      scan(tree.classBody());
+      scan(classBody);
       registerType(tree, anonymousClassType);
     } else {
       registerType(tree, getType(tree.identifier()));
@@ -464,7 +462,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   private JavaSymbol resolveConstructorSymbol(IdentifierTree identifier, Resolve.Env methodEnv, List<JavaType> argTypes) {
-    JavaSymbol symbol = resolve.findMethod(methodEnv, ((AbstractTypedTree) identifier).getSymbolType(), "<init>", argTypes).symbol();
+    JavaSymbol symbol = resolve.findMethod(methodEnv, (JavaType) identifier.symbolType(), "<init>", argTypes).symbol();
     associateReference(identifier, symbol);
     return symbol;
   }
@@ -532,7 +530,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitUnionType(UnionTypeTree tree) {
     resolveAs(tree.typeAlternatives(), JavaSymbol.TYP);
     //TODO compute type of union type: lub(alternatives) cf JLS8 14.20
-    registerType(tree, symbols.unknownType);
+    registerType(tree, Symbols.unknownType);
   }
 
   @Override
@@ -544,12 +542,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     registerType(newClassTree.identifier(), ((VariableTreeImpl) tree).getSymbol().getType());
     scan(newClassTree.typeArguments());
     scan(newClassTree.arguments());
-    if(newClassTree.classBody() != null) {
-      scan(newClassTree.classBody());
-      JavaSymbol.TypeJavaSymbol symbol = (JavaSymbol.TypeJavaSymbol) newClassTree.classBody().symbol();
-      if(symbol != null) {
-        ((JavaType.ClassJavaType) symbol.type).supertype = getType(newClassTree.identifier());
-      }
+    ClassTree classBody = newClassTree.classBody();
+    if(classBody != null) {
+      scan(classBody);
+      ((JavaType.ClassJavaType) classBody.symbol().type()).supertype = getType(newClassTree.identifier());
     }
     resolveConstructorSymbol(tree.simpleName(), semanticModel.getEnv(tree), getParameterTypes(newClassTree.arguments()));
   }
