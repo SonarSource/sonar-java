@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.methods;
 
-
 import org.sonar.plugins.java.api.semantic.Type;
 
 public abstract class TypeCriteria {
@@ -29,6 +28,10 @@ public abstract class TypeCriteria {
 
   public static TypeCriteria is(String fullyQualifiedName) {
     return new FullyQualifiedNameTypeCriteria(fullyQualifiedName);
+  }
+
+  public static TypeCriteria anyType() {
+    return new AnyTypeCriteria();
   }
 
   public abstract boolean matches(Type type);
@@ -56,6 +59,14 @@ public abstract class TypeCriteria {
     @Override
     public boolean matches(Type type) {
       return type.isSubtypeOf(superTypeName);
+    }
+  }
+
+  private static class AnyTypeCriteria extends TypeCriteria {
+
+    @Override
+    public boolean matches(Type type) {
+      return true;
     }
   }
 }

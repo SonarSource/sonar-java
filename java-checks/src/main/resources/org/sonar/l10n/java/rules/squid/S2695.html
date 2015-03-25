@@ -1,0 +1,29 @@
+<p>The parameters in a <code>PreparedStatement</code> are numbered from 1, not 0, so using any set method of a <code>PreparedStatement</code> with a number less than 1 is a bug, as is using an index higher than the number of parameters. Similarly, <code>ResultSet</code> indices also start at 1, rather than 0.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+PreparedStatement ps = con.prepareStatement("SELECT fname, lname FROM employees where hireDate > ? and salary < ?");
+ps.setDate(0, date);  // Noncompliant
+ps.setDouble(3, salary);  // Noncompliant
+
+ResultSet rs = ps.executeQuery();
+while (rs.next()) {
+  String fname = rs.getString(0);  // Noncompliant
+  // ...
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+
+<pre>
+PreparedStatement ps = con.prepareStatement("SELECT fname, lname FROM employees where hireDate > ? and salary < ?");
+ps.setDate(1, date);
+ps.setDouble(2, salary);
+
+ResultSet rs = ps.executeQuery();
+while (rs.next()) {
+  String fname = rs.getString(1);
+  // ...
+}
+</pre>
