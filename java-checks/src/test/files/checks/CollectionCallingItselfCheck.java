@@ -11,5 +11,6 @@ class A {
     strings.removeAll(strings); // Noncompliant; confusing. Use clear() instead
     strings.retainAll(strings); // Noncompliant; NOOP
     strings.wait();
+    strings.foo();
   }
 }

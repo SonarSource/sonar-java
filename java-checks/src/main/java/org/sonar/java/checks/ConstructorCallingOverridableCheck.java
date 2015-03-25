@@ -87,8 +87,8 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
         isInvocationOnSelf = isThisOrSuper(memberSelect.expression());
       }
       if (isInvocationOnSelf) {
-        Symbol symbol = getSemanticModel().getReference(methodIdentifier);
-        if (symbol != null && isOverridableMethod(symbol) && isMethodDefinedOnConstructedType(symbol)) {
+        Symbol symbol = methodIdentifier.symbol();
+        if (isOverridableMethod(symbol) && isMethodDefinedOnConstructedType(symbol)) {
           addIssue(tree, "Remove this call from a constructor to the overridable \"" + methodIdentifier.name() + "\" method.");
         }
       }

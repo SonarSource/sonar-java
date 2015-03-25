@@ -135,15 +135,14 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
   }
 
   private void checkFieldModification(IdentifierTree identifier) {
-    Symbol variable = getSemanticModel().getReference(identifier);
+    Symbol variable = identifier.symbol();
     if (isStaticField(variable)) {
       addIssue(identifier, "Make the enclosing method \"static\" or remove this set.");
     }
   }
 
   private boolean isStaticField(Symbol symbol) {
-    return symbol != null
-      && symbol.isVariableSymbol()
+    return symbol.isVariableSymbol()
       && symbol.owner().isTypeSymbol()
       && symbol.isStatic();
   }

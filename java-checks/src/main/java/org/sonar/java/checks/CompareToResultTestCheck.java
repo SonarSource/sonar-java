@@ -91,8 +91,8 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isIdentifierContainingCompareToResult(IdentifierTree identifier) {
-    Symbol variableSymbol = getSemanticModel().getReference(identifier);
-    if (variableSymbol == null) {
+    Symbol variableSymbol = identifier.symbol();
+    if (variableSymbol.isUnknown()) {
       return false;
     }
     VariableTree variableDefinition = (VariableTree) getSemanticModel().getTree(variableSymbol);

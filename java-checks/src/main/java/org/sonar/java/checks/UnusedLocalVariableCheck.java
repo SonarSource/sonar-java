@@ -70,7 +70,7 @@ public class UnusedLocalVariableCheck extends SubscriptionBaseVisitor {
     Tree.Kind.XOR_ASSIGNMENT,
     Tree.Kind.OR_ASSIGNMENT
   };
-  
+
   private static final Tree.Kind[] INCREMENT_KINDS = {
     Tree.Kind.POSTFIX_DECREMENT,
     Tree.Kind.POSTFIX_INCREMENT,
@@ -153,8 +153,8 @@ public class UnusedLocalVariableCheck extends SubscriptionBaseVisitor {
   }
 
   private void addAssignment(IdentifierTree identifier) {
-    Symbol reference = getSemanticModel().getReference(identifier);
-    if (reference != null) {
+    Symbol reference = identifier.symbol();
+    if (!reference.isUnknown()) {
       assignments.put(reference, identifier);
     }
   }

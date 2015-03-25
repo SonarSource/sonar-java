@@ -130,7 +130,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   private String getReferencedCalendarName(ExpressionTree argument) {
     if (argument.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) argument;
-      Symbol reference = getSemanticModel().getReference(mse.identifier());
+      Symbol reference = mse.identifier().symbol();
       if (reference.owner().type().is(JAVA_UTIL_CALENDAR) && Threshold.getThreshold(reference.name()) != null) {
         return reference.name();
       }
@@ -211,7 +211,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     return ((IdentifierTree) methodSelect).name();
   }
 
-  private static enum Threshold {
+  private enum Threshold {
     MONTH(11, "setMonth", "getMonth", "MONTH", "month"),
     DATE(31, "setDate", "getDate", "DAY_OF_MONTH", "dayOfMonth"),
     HOURS(23, "setHours", "getHours", "HOUR_OF_DAY", "hourOfDay"),

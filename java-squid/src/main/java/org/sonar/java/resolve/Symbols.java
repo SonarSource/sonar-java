@@ -93,6 +93,11 @@ public class Symbols {
       public void addUsage(IdentifierTree tree) {
         //noop
       }
+
+      @Override
+      public boolean isUnknown() {
+        return true;
+      }
     };
     unknownSymbol.members = new Scope(unknownSymbol) {
       @Override

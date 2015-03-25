@@ -85,11 +85,11 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
   }
 
   private boolean isStaticNotVolatileObject(IdentifierTree variable) {
-    Symbol symbol = getSemanticModel().getReference(variable);
-    if (symbol != null) {
-      return isStaticNotFinalNotVolatile(symbol) && !symbol.type().isPrimitive();
+    Symbol symbol = variable.symbol();
+    if (symbol.isUnknown()) {
+      return false;
     }
-    return false;
+    return isStaticNotFinalNotVolatile(symbol) && !symbol.type().isPrimitive();
   }
 
   private boolean isStaticNotFinalNotVolatile(Symbol symbol) {

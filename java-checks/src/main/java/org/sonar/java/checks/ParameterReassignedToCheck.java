@@ -113,8 +113,8 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
   private void checkExpression(ExpressionTree tree) {
     if (hasSemanticModel() && tree.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) tree;
-      Symbol reference = semanticModel.getReference(identifier);
-      if (reference != null && reference.isVariableSymbol() && variables.contains(reference)) {
+      Symbol reference = identifier.symbol();
+      if (reference.isVariableSymbol() && variables.contains(reference)) {
         context.addIssue(identifier, ruleKey, "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".");
       }
     }

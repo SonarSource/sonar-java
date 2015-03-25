@@ -96,7 +96,7 @@ public class ModulusEqualityCheck extends SubscriptionBaseVisitor {
   private boolean isMethodParameter(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) expressionTree;
-      Symbol symbol = getSemanticModel().getReference(identifier);
+      Symbol symbol = identifier.symbol();
       return methodParams.contains(symbol);
     } else if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expressionTree;

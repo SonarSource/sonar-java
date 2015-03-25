@@ -64,7 +64,7 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
   }
 
   protected boolean isIdentifierDynamicString(Tree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
-    Symbol symbol = getSemanticModel().getReference(arg);
+    Symbol symbol = arg.symbol();
     if (symbol.equals(currentlyChecking) || isConstant(symbol)) {
       return false;
     }

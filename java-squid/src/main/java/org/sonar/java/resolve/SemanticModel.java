@@ -46,7 +46,6 @@ public class SemanticModel {
 
   private final BiMap<Tree, Symbol> symbolsTree = HashBiMap.create();
   private Multimap<Symbol, IdentifierTree> usagesTree = HashMultimap.create();
-  private Map<IdentifierTree,Symbol> refersTo = Maps.newHashMap();
 
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final BiMap<Tree, Resolve.Env> envs = HashBiMap.create();
@@ -157,12 +156,6 @@ public class SemanticModel {
 
   public void associateReference(IdentifierTree tree, Symbol symbol) {
     usagesTree.put(symbol, tree);
-    refersTo.put(tree, symbol);
-  }
-
-  @Nullable
-  public Symbol getReference(IdentifierTree tree) {
-    return refersTo.get(tree);
   }
 
   @VisibleForTesting

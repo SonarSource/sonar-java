@@ -155,8 +155,8 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
   }
 
   private void addAssignment(IdentifierTree identifier) {
-    Symbol reference = getSemanticModel().getReference(identifier);
-    if (reference != null) {
+    Symbol reference = identifier.symbol();
+    if (!reference.isUnknown()) {
       assignments.put(reference, identifier);
     }
   }

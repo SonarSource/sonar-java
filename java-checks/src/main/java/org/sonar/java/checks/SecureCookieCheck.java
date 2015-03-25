@@ -84,7 +84,7 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
         if (isSetSecureCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
           MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
           if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
-            Symbol reference = getSemanticModel().getReference((IdentifierTree) mse.expression());
+            Symbol reference = ((IdentifierTree) mse.expression()).symbol();
             unsecuredCookies.remove(reference);
           }
         }

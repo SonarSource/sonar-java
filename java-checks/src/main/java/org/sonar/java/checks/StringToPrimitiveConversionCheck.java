@@ -145,8 +145,8 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
         result = valueOfInvocationMatcher.matches((MethodInvocationTree) expression, getSemanticModel());
       } else if (expression.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) expression;
-        Symbol reference = getSemanticModel().getReference(identifier);
-        if (reference != null && reference.isVariableSymbol() && reference.usages().size() == 1) {
+        Symbol reference = identifier.symbol();
+        if (reference.isVariableSymbol() && reference.usages().size() == 1) {
           Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) reference;
           result = isBadlyInstanciatedVariable(variableSymbol);
         }

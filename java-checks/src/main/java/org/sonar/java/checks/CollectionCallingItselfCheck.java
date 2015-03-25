@@ -56,18 +56,18 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
       Symbol symbolReference = null;
-      Symbol.MethodSymbol method = null;
+      Symbol method = null;
       String reportedName = "";
       if (methodInvocationTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
         IdentifierTree identifier = mse.identifier();
         reportedName = identifier.name();
-        method = (Symbol.MethodSymbol) getSemanticModel().getReference(identifier);
+        method = identifier.symbol();
         if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
-          symbolReference = getSemanticModel().getReference((IdentifierTree) mse.expression());
+          symbolReference = ((IdentifierTree) mse.expression()).symbol();
         }
       }
-      if (symbolReference != null && method != null && isMethodFromCollection(method)) {
+      if (symbolReference != null && isMethodFromCollection(method)) {
         reportIssueForParameters(methodInvocationTree, symbolReference, reportedName);
       }
     }
@@ -76,7 +76,7 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
   private void reportIssueForParameters(MethodInvocationTree methodInvocationTree, Symbol symbolReference, String reportedName) {
     for (ExpressionTree arg : methodInvocationTree.arguments()) {
       if (arg.is(Tree.Kind.IDENTIFIER)) {
-        Symbol reference = getSemanticModel().getReference((IdentifierTree) arg);
+        Symbol reference = ((IdentifierTree) arg).symbol();
         if (reference == symbolReference) {
           addIssue(methodInvocationTree, "Remove or correct this \"" + reportedName + "\" call.");
         }
@@ -84,7 +84,10 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isMethodFromCollection(Symbol.MethodSymbol methodSymbol) {
+  private boolean isMethodFromCollection(Symbol methodSymbol) {
+    if(!methodSymbol.isMethodSymbol()) {
+      return false;
+    }
     Type ownerType = methodSymbol.owner().type();
     return !ownerType.is("java.util.Collection") && ownerType.isSubtypeOf("java.util.Collection");
   }

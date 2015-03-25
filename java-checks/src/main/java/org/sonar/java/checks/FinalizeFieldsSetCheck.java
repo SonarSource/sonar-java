@@ -97,8 +97,8 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
         variable = memberSelectExpressionTree.identifier();
       }
       if (variable.is(Kind.IDENTIFIER)) {
-        Symbol variableSymbol = getSemanticModel().getReference((IdentifierTree) variable);
-        return variableSymbol != null && variableSymbol.owner().isTypeSymbol();
+        Symbol variableSymbol = ((IdentifierTree) variable).symbol();
+        return variableSymbol.owner().isTypeSymbol();
       }
       return false;
     }

@@ -81,14 +81,14 @@ public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
   private void visitInstanceOf(InstanceOfTree instanceOfTree) {
     ExpressionTree expression = instanceOfTree.expression();
     if (expression.is(Tree.Kind.IDENTIFIER) && instanceOfTree.type().symbolType().is("java.io.Serializable")) {
-      testedSymbols.add(getSemanticModel().getReference((IdentifierTree) expression));
+      testedSymbols.add(((IdentifierTree) expression).symbol());
     }
   }
 
   // If we met a test such as "x instanceof Serializable", we suppose that symbol x is Serializable
   private boolean isTestedSymbol(ExpressionTree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = getSemanticModel().getReference((IdentifierTree) tree);
+      Symbol symbol = ((IdentifierTree) tree).symbol();
       return testedSymbols.contains(symbol);
     }
     return false;

@@ -213,6 +213,11 @@ public class JavaSymbol implements Symbol {
   }
 
   @Override
+  public boolean isUnknown() {
+    return false;
+  }
+
+  @Override
   public String name() {
     return name;
   }

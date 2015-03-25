@@ -83,7 +83,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
 
   private boolean isNotLoopLocalVar(AssignmentExpressionTree tree) {
     IdentifierTree idTree = getIdentifierTree(tree.variable());
-    Tree envTree = semanticModel.getTree(semanticModel.getEnv(semanticModel.getReference(idTree)));
+    Tree envTree = semanticModel.getTree(semanticModel.getEnv(idTree.symbol()));
     Tree loopTree = loopLevel.peek();
     if(envTree!= null && (envTree.equals(loopTree) || envTree.equals(loopStatement(loopTree)))) {
       return false;

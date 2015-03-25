@@ -69,7 +69,7 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
   }
 
   private ExpressionTree getInitializer(IdentifierTree tree) {
-    Symbol symbol = getSemanticModel().getReference(tree);
+    Symbol symbol = tree.symbol();
     return ((VariableTree) getSemanticModel().getTree(symbol)).initializer();
   }
 

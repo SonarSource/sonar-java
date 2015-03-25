@@ -111,8 +111,8 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     }
 
     private void addSymbol(IdentifierTree identifierTree) {
-      Symbol symbol = getSemanticModel().getReference(identifierTree);
-      if (symbol != null) {
+      Symbol symbol = identifierTree.symbol();
+      if (!symbol.isUnknown()) {
         symbols.add(symbol);
       }
     }
@@ -152,9 +152,9 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     }
 
     private void checkIdentifier(IdentifierTree tree) {
-      Symbol reference = getSemanticModel().getReference(tree);
+      Symbol reference = tree.symbol();
       String name = tree.name();
-      if (reference != null && reference.isMethodSymbol()) {
+      if (reference.isMethodSymbol()) {
         name += "()";
       }
       conditionNames.add(name);

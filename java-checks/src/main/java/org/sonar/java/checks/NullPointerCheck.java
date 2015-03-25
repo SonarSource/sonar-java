@@ -24,7 +24,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
@@ -60,7 +59,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -109,8 +107,10 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     super.visitAssignmentExpression(tree);
     if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
-      VariableSymbol identifierSymbol = (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.variable());
-      currentState.setVariableValue(identifierSymbol, checkNullity(tree.expression()));
+      Symbol identifierSymbol = ((IdentifierTree) tree.variable()).symbol();
+      if(identifierSymbol.isVariableSymbol()) {
+        currentState.setVariableValue((VariableSymbol) identifierSymbol, checkNullity(tree.expression()));
+      }
     }
   }
 
@@ -312,7 +312,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   public AbstractValue checkNullity(IdentifierTree tree) {
-    Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
+    Symbol symbol = tree.symbol();
     if (isSymbolLocalVariableOrMethodParameter(symbol)) {
       AbstractValue value = currentState.getVariableValue((VariableSymbol) symbol);
       if (value != AbstractValue.UNSET) {
@@ -332,7 +332,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
    */
   private void checkForIssue(Tree tree, String nullableMessage, String nullMessage) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = semanticModel.getReference((IdentifierTreeImpl) tree);
+      Symbol symbol = ((IdentifierTree) tree).symbol();
       if (isSymbolLocalVariableOrMethodParameter(symbol) && isVariableNull((VariableSymbol) symbol)) {
         context.addIssue(tree, RULE_KEY, String.format(nullableMessage, symbol.name()));
       }
@@ -347,7 +347,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   private boolean isSymbolLocalVariableOrMethodParameter(Symbol symbol) {
-    return symbol != null && symbol.isVariableSymbol() && symbol.owner().isMethodSymbol();
+    return symbol.isVariableSymbol() && symbol.owner().isMethodSymbol();
   }
 
   private boolean isVariableNull(VariableSymbol symbol) {
@@ -398,13 +398,16 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   // extracts the symbol in case of ident <op> null, or null <op> ident.
   @Nullable
   private VariableSymbol extractRelationalSymbol(BinaryExpressionTree tree) {
+    Symbol symbol = null;
     if (tree.leftOperand().is(Tree.Kind.NULL_LITERAL) && tree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
-      return (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.rightOperand());
+      symbol = ((IdentifierTree) tree.rightOperand()).symbol();
     } else if (tree.leftOperand().is(Tree.Kind.IDENTIFIER) && tree.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
-      return (VariableSymbol) semanticModel.getReference((IdentifierTreeImpl) tree.leftOperand());
-    } else {
+      symbol = ((IdentifierTree) tree.leftOperand()).symbol();
+    }
+    if(symbol == null || !symbol.isVariableSymbol()){
       return null;
     }
+    return (VariableSymbol) symbol;
   }
 
   private void visitRelationalEqualTo(BinaryExpressionTree tree) {
@@ -443,14 +446,14 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
-        registerAssignedSymbol(semanticModel.getReference((IdentifierTreeImpl) tree.variable()));
+        registerAssignedSymbol(((IdentifierTree) tree.variable()).symbol());
       }
       super.visitAssignmentExpression(tree);
     }
 
     @VisibleForTesting
     void registerAssignedSymbol(Symbol symbol) {
-      if (symbol != null && symbol.isVariableSymbol()) {
+      if (symbol.isVariableSymbol()) {
         assignedSymbols.add((VariableSymbol) symbol);
       }
     }

@@ -70,8 +70,8 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
   @CheckForNull
   private Symbol getField(ExpressionTree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
-      Symbol reference = getSemanticModel().getReference((IdentifierTree) tree);
-      if (reference != null && reference.owner().isTypeSymbol()) {
+      Symbol reference = ((IdentifierTree) tree).symbol();
+      if (!reference.isUnknown() && reference.owner().isTypeSymbol()) {
         return reference;
       }
     } else if (tree.is(Kind.MEMBER_SELECT)) {
@@ -85,8 +85,8 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
 
   private boolean isField(ExpressionTree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
-      Symbol reference = getSemanticModel().getReference((IdentifierTree) tree);
-      return reference != null && reference.owner().isTypeSymbol();
+      Symbol reference = ((IdentifierTree) tree).symbol();
+      return !reference.isUnknown() && reference.owner().isTypeSymbol();
     } else if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
       ExpressionTree mseExpression = mse.expression();
@@ -120,7 +120,7 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
 
     private void checkSymbolAssignment(Tree variable) {
       if (variable.is(Kind.IDENTIFIER)) {
-        Symbol variableSymbol = getSemanticModel().getReference((IdentifierTree) variable);
+        Symbol variableSymbol = ((IdentifierTree) variable).symbol();
         if (field.equals(variableSymbol)) {
           addIssue(synchronizedStatement, getMessage(variable));
         }

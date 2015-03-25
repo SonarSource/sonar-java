@@ -75,6 +75,8 @@ public interface Symbol {
 
   boolean isVolatile();
 
+  boolean isUnknown();
+
   /**
    * Symbol metadata informations, annotations for instance.
    * @return the metadata of this symbol.
@@ -89,6 +91,7 @@ public interface Symbol {
   TypeSymbol enclosingClass();
 
   List<IdentifierTree> usages();
+
 
   interface TypeSymbol extends Symbol {
 

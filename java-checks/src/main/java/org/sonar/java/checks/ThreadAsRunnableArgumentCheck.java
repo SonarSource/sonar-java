@@ -63,15 +63,14 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
     Symbol methodSymbol;
     if (tree.is(Kind.NEW_CLASS)) {
       NewClassTreeImpl nct = (NewClassTreeImpl) tree;
-      methodSymbol = getSemanticModel().getReference(nct.getConstructorIdentifier());
+      methodSymbol = (nct.getConstructorIdentifier()).symbol();
       arguments = nct.arguments();
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       methodSymbol = mit.symbol();
       arguments = mit.arguments();
     }
-    // FIXME SONARJAVA-919
-    if (!arguments.isEmpty() && methodSymbol != null && methodSymbol.isMethodSymbol()) {
+    if (!arguments.isEmpty() && methodSymbol.isMethodSymbol()) {
       checkArgumentsTypes(arguments, (MethodJavaSymbol) methodSymbol);
     }
   }
