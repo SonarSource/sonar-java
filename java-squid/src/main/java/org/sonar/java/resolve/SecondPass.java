@@ -201,9 +201,8 @@ public class SecondPass implements JavaSymbol.Completer {
   private JavaType resolveType(Resolve.Env env, Tree tree) {
     Preconditions.checkArgument(checkTypeOfTree(tree), "Kind of tree unexpected " + ((JavaTree) tree).getKind());
     //FIXME(benzonico) as long as Variables share the same node type, (int i,j; or worse : int i[], j[];) check nullity to respect invariance.
-    JavaType type = ((AbstractTypedTree) tree).getSymbolType();
-    if (type != null) {
-      return type;
+    if (((AbstractTypedTree) tree).isTypeSet()) {
+      return (JavaType) ((AbstractTypedTree) tree).symbolType();
     }
     typeAndReferenceSolver.env = env;
     typeAndReferenceSolver.resolveAs(tree, JavaSymbol.TYP, env);

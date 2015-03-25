@@ -204,9 +204,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   private List<JavaType> getParameterTypes(List<? extends Tree> args) {
     ImmutableList.Builder<JavaType> builder = ImmutableList.builder();
     for (Tree expressionTree : args) {
-      JavaType symbolType = ((AbstractTypedTree) expressionTree).getSymbolType();
-      if (symbolType == null) {
-        symbolType = Symbols.unknownType;
+      JavaType symbolType = Symbols.unknownType;
+      if (((AbstractTypedTree) expressionTree).isTypeSet()) {
+        symbolType = (JavaType) ((AbstractTypedTree) expressionTree).symbolType();
       }
       builder.add(symbolType);
     }
@@ -577,14 +577,14 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
-    if (((AbstractTypedTree) tree).getSymbolType() == null) {
+    if (!((AbstractTypedTree) tree).isTypeSet()) {
       resolveAs(tree, JavaSymbol.VAR);
     }
   }
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-    if (((AbstractTypedTree) tree).getSymbolType() == null) {
+    if (!((AbstractTypedTree) tree).isTypeSet()) {
       resolveAs(tree, JavaSymbol.VAR);
     }
   }

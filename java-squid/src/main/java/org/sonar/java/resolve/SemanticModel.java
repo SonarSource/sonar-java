@@ -24,7 +24,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import org.sonar.java.model.AbstractTypedTree;
@@ -68,7 +67,7 @@ public class SemanticModel {
       typeAndReferenceSolver.visitCompilationUnit(tree);
       new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
     } finally {
-      handleMissingTypes(symbols, tree);
+      handleMissingTypes(tree);
     }
     return semanticModel;
   }
@@ -77,25 +76,18 @@ public class SemanticModel {
     bytecodeCompleter.done();
   }
 
-
-  public static void handleMissingTypes(Tree tree) {
-    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(ImmutableList.<File>of(), new ParametrizedTypeCache());
-    Symbols symbols = new Symbols(bytecodeCompleter);
-    handleMissingTypes(symbols, tree);
-  }
-
   /**
    * Handles missing types in Syntax Tree to prevent NPE in subsequent steps of analysis.
    */
-  private static void handleMissingTypes(final Symbols symbols, Tree tree) {
+  public static void handleMissingTypes(Tree tree) {
     // (Godin): Another and probably better (safer) way to do the same - is to assign default value during creation of nodes, so that to guarantee that this step won't be skipped.
     tree.accept(new BaseTreeVisitor() {
       @Override
       protected void scan(@Nullable Tree tree) {
         if (tree instanceof AbstractTypedTree) {
           AbstractTypedTree typedNode = (AbstractTypedTree) tree;
-          if (typedNode.getSymbolType() == null) {
-            typedNode.setType(symbols.unknownType);
+          if (!typedNode.isTypeSet()) {
+            typedNode.setType(Symbols.unknownType);
           }
         }
         super.scan(tree);
