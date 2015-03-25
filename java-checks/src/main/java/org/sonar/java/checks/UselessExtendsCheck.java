@@ -23,7 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -31,7 +33,9 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Rule(
   key = "S1939",
@@ -52,7 +56,15 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     ClassTree classTree = (ClassTree) tree;
     TypeTree superClass = classTree.superClass();
     if (superClass != null && superClass.symbolType().is("java.lang.Object")) {
-      super.addIssue(classTree, "\"Object\" should not be explicitly extended.");
+      super.addIssue(superClass, "\"Object\" should not be explicitly extended.");
+    }
+    Set<Symbol.TypeSymbol> interfaces = new HashSet<Symbol.TypeSymbol>();
+    for (TypeTree superInterface : classTree.superInterfaces()) {
+      Symbol.TypeSymbol interfaceSymbol = superInterface.symbolType().symbol();
+      if (interfaces.contains(interfaceSymbol)) {
+        super.addIssue(superInterface, String.format("\"%s\" is listed multiple times.", ((JavaSymbol.TypeJavaSymbol) interfaceSymbol).getFullyQualifiedName()));
+      }
+      interfaces.add(interfaceSymbol);
     }
   }
 

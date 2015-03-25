@@ -39,8 +39,9 @@ public class UselessExtendsCheckTest {
       new File("src/test/files/checks/UselessExtendsCheck.java"),
       new VisitorsBridge(new UselessExtendsCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("\"Object\" should not be explicitly extended.")
-      .next().atLine(11);
+      .next().atLine(7).withMessage("\"Object\" should not be explicitly extended.")
+      .next().atLine(9).withMessage("\"I1\" is listed multiple times.")
+      .next().atLine(15).withMessage("\"Object\" should not be explicitly extended.");
   }
 
 }
