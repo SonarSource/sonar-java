@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.failure;
@@ -259,10 +260,19 @@ public class SymbolTableTest {
     assertThat(enumSymbol.owner()).isSameAs(result.symbol("EnumDeclaration"));
     assertThat(enumSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.ENUM);
 
-    JavaSymbol superclass = enumSymbol.getSuperclass().symbol;
+    JavaType.ParametrizedTypeJavaType superType = (JavaType.ParametrizedTypeJavaType)enumSymbol.getSuperclass();
+    JavaSymbol.TypeJavaSymbol superclass = superType.symbol;
     assertThat(superclass.getName()).isEqualTo("Enum");
     assertThat(superclass.owner).isInstanceOf(JavaSymbol.PackageJavaSymbol.class);
     assertThat(superclass.owner.getName()).isEqualTo("java.lang");
+    assertThat(superType.typeSubstitution).hasSize(1);
+    Map.Entry<JavaType.TypeVariableJavaType, JavaType> entry = superType.typeSubstitution.entrySet().iterator().next();
+    assertThat(entry.getKey()).isSameAs(superclass.typeParameters.lookup("E").get(0).type);
+    assertThat(entry.getValue()).isSameAs(enumSymbol.type);
+
+    assertThat(enumSymbol.members.lookup("super")).hasSize(1);
+    JavaSymbol.VariableJavaSymbol superSymbol = (JavaSymbol.VariableJavaSymbol) enumSymbol.members.lookup("super").get(0);
+    assertThat(superSymbol.type).isSameAs(superType);
 
     assertThat(enumSymbol.getInterfaces()).containsExactly(
         result.symbol("FirstInterface").type,

@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -62,11 +63,12 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
         Collection<Symbol> symbols = typeSymbol.memberSymbols();
         int abstractMethod = countAbstractMethods(symbols);
         //only count "this" in symbols and not "super" because abstract classes extending cannot be converted to interface
-        if (symbols.size() == 1 || abstractMethod == symbols.size() - 1) {
+        TypeTree superClass = tree.superClass();
+        if ((superClass == null || superClass.symbolType().is("java.lang.Object")) && symbols.size() == 2 || abstractMethod == symbols.size() - 2) {
           //emtpy abstract class or only abstract method
           context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to an interface");
         }
-        if (symbols.size() > 1 && abstractMethod == 0 && !isPartialImplementation(tree)) {
+        if (symbols.size() > 2 && abstractMethod == 0 && !isPartialImplementation(tree)) {
           //Not empty abstract class with no abstract method
           context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to a concrete class with a private constructor");
         }
