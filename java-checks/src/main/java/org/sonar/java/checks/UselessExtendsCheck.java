@@ -25,7 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -58,22 +58,22 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     if (superClass != null && superClass.symbolType().is("java.lang.Object")) {
       super.addIssue(superClass, "\"Object\" should not be explicitly extended.");
     }
-    Set<Symbol.TypeSymbol> interfaces = new HashSet<Symbol.TypeSymbol>();
+    Set<Type> interfaces = new HashSet<Type>();
     for (TypeTree superInterface : classTree.superInterfaces()) {
-      Symbol.TypeSymbol interfaceSymbol = superInterface.symbolType().symbol();
-      String interfaceName = ((JavaSymbol.TypeJavaSymbol) interfaceSymbol).getFullyQualifiedName();
-      if (interfaces.contains(interfaceSymbol)) {
+      Type interfaceType = superInterface.symbolType();
+      String interfaceName = interfaceType.fullyQualifiedName();
+      if (interfaces.contains(interfaceType)) {
         super.addIssue(superInterface, String.format("\"%s\" is listed multiple times.", interfaceName));
       } else {
-        checkExtending(classTree, interfaceSymbol, interfaceName);
+        checkExtending(classTree, interfaceType, interfaceName);
       }
-      interfaces.add(interfaceSymbol);
+      interfaces.add(interfaceType);
     }
   }
 
-  private void checkExtending(ClassTree classTree, Symbol.TypeSymbol currentInterfaceSymbol, String currentInterfaceName) {
+  private void checkExtending(ClassTree classTree, Type currentInterfaceType, String currentInterfaceName) {
     for (TypeTree superInterface : classTree.superInterfaces()) {
-      if (((JavaSymbol.TypeJavaSymbol) currentInterfaceSymbol).superTypes().contains(superInterface.symbolType())) {
+      if (!currentInterfaceType.equals(superInterface.symbolType()) && currentInterfaceType.isSubtypeOf(superInterface.symbolType())) {
         String interfaceName = ((JavaSymbol.TypeJavaSymbol) superInterface.symbolType().symbol()).getFullyQualifiedName();
         super.addIssue(superInterface, String.format("\"%s\" is an \"%s\" so \"%s\" can be removed from the extension list.",
           currentInterfaceName, interfaceName, interfaceName));
