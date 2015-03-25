@@ -136,7 +136,7 @@ public class SymbolTableTest {
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("Superclass");
     assertThat(superSymbol.type.symbol).isSameAs(typeSymbol);
-
+    assertThat(typeSymbol.symbolMetadata.isAnnotatedWith("java.lang.Override")).isFalse();
     JavaSymbol superclass = typeSymbol.getSuperclass().symbol;
     assertThat(superclass.getName()).isEqualTo("Object");
     assertThat(superclass.owner).isInstanceOf(JavaSymbol.PackageJavaSymbol.class);
@@ -152,7 +152,9 @@ public class SymbolTableTest {
     SymbolMetadataResolve metadata = classDeclaration.metadata();
     assertThat(metadata.annotations()).hasSize(1);
     assertThat(metadata.valuesForAnnotation("java.lang.Override")).isNull();
+    assertThat(metadata.isAnnotatedWith("java.lang.Override")).isFalse();
     assertThat(metadata.valuesForAnnotation("java.lang.SuppressWarnings")).hasSize(1);
+    assertThat(metadata.isAnnotatedWith("java.lang.SuppressWarnings")).isTrue();
   }
 
   @Test

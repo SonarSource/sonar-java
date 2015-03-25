@@ -28,14 +28,14 @@ import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 
-public class ReturnEmptyArrayyNotNullCheckTest {
+public class ReturnEmptyArrayNotNullCheckTest {
 
   @Rule
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ReturnEmptyArrayyNotNullCheck.java"), new VisitorsBridge(new ReturnEmptyArrayyNotNullCheck()));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ReturnEmptyArrayyNotNullCheck.java"), new VisitorsBridge(new ReturnEmptyArrayNotNullCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(16).withMessage("Return an empty array instead of null.")
       .next().atLine(25)

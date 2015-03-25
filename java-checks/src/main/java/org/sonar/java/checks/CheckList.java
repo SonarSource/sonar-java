@@ -98,7 +98,7 @@ public final class CheckList {
       CollectionIsEmptyCheck.class,
       SynchronizedClassUsageCheck.class,
       NonStaticClassInitializerCheck.class,
-      ReturnEmptyArrayyNotNullCheck.class,
+      ReturnEmptyArrayNotNullCheck.class,
       ConstantsShouldBeStaticFinalCheck.class,
       ThrowsFromFinallyCheck.class,
       SystemOutOrErrUsageCheck.class,

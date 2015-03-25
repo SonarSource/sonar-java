@@ -49,7 +49,7 @@ import java.util.Set;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("30min")
-public class ReturnEmptyArrayyNotNullCheck extends SubscriptionBaseVisitor {
+public class ReturnEmptyArrayNotNullCheck extends SubscriptionBaseVisitor {
 
   private static final Set<String> COLLECTION_TYPES = ImmutableSet.of(
     "Collection",

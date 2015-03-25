@@ -271,6 +271,7 @@ public class BytecodeCompleterTest {
     JavaSymbol.MethodJavaSymbol method = (JavaSymbol.MethodJavaSymbol) clazz.members().lookup("method").get(0);
     JavaSymbol.VariableJavaSymbol parameter = (JavaSymbol.VariableJavaSymbol) method.getParameters().scopeSymbols().get(0);
     assertThat(field.metadata().valuesForAnnotation("javax.annotation.Nullable")).isNotNull();
+    assertThat(field.metadata().isAnnotatedWith("javax.annotation.Nullable")).isTrue();
     assertThat(method.metadata().valuesForAnnotation("javax.annotation.CheckForNull")).isNotNull();
     assertThat(parameter.metadata().valuesForAnnotation("javax.annotation.Nullable")).isNotNull();
 
