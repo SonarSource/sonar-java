@@ -19,17 +19,19 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.List;
 
 @Rule(
   key = UselessExtendsCheck.RULE_KEY,
@@ -38,25 +40,22 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("1min")
-public class UselessExtendsCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class UselessExtendsCheck extends SubscriptionBaseVisitor implements JavaFileScanner {
 
   public static final String RULE_KEY = "S1939";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-  private JavaFileScannerContext context;
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Kind.CLASS);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    TypeTree superClass = tree.superClass();
-    if (superClass != null && "java.lang.Object".equals(superClass.symbolType().fullyQualifiedName())) {
-      context.addIssue(tree, ruleKey, "\"Object\" should not be explicitly extended.");
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    TypeTree superClass = classTree.superClass();
+    if (superClass != null && superClass.symbolType().is("java.lang.Object")) {
+      super.addIssue(classTree, "\"Object\" should not be explicitly extended.");
     }
-    super.visitClass(tree);
   }
 
 }

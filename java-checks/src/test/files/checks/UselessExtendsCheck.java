@@ -8,5 +8,8 @@ public class UselessExtendsCheck { // Compliant
 
 }
 
-public class Class3 extends java.lang.Object { // Noncompliant
+class Class3 extends java.lang.Object { // Noncompliant
+}
+
+class Class4 extends UnknownClass { // Compliant
 }
