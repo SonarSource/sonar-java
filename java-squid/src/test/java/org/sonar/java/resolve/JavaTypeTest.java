@@ -21,11 +21,9 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -198,8 +196,8 @@ public class JavaTypeTest {
     JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol("E", typeSymbol);
     JavaType.ClassJavaType classType = (JavaType.ClassJavaType) typeSymbol.type;
     JavaType.TypeVariableJavaType typeVariableType = (JavaType.TypeVariableJavaType) typeVariableSymbol.type;
-    Map<JavaType.TypeVariableJavaType, JavaType> typeSubstitution = Maps.newHashMap();
-    typeSubstitution.put(typeVariableType, classType);
+    TypeSubstitution typeSubstitution = new TypeSubstitution();
+    typeSubstitution.add(typeVariableType, classType);
 
     JavaType.ParametrizedTypeJavaType ptt = new JavaType.ParametrizedTypeJavaType(typeSymbol, typeSubstitution);
     assertThat(ptt.substitution(typeVariableType)).isEqualTo(classType);

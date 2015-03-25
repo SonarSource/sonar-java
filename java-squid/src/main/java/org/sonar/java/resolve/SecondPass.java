@@ -21,7 +21,6 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.sonar.java.model.AbstractTypedTree;
@@ -97,7 +96,7 @@ public class SecondPass implements JavaSymbol.Completer {
         // JLS8 8.9: The direct superclass of an enum type E is Enum<E>.
         Scope enumParameters = ((JavaSymbol.TypeJavaSymbol) symbols.enumType.symbol()).typeParameters();
         JavaType.TypeVariableJavaType enumParameter = (JavaType.TypeVariableJavaType) enumParameters.lookup("E").get(0).type();
-        JavaType superType = new JavaType.ParametrizedTypeJavaType(symbols.enumType.symbol, ImmutableMap.of(enumParameter, (JavaType) type));
+        JavaType superType = new JavaType.ParametrizedTypeJavaType(symbols.enumType.symbol, new TypeSubstitution().add(enumParameter, (JavaType) type));
         type.supertype = superType;
         symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", superType, symbol));
       } else if (tree.is(Tree.Kind.CLASS)) {

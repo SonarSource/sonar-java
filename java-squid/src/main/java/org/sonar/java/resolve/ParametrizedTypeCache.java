@@ -25,14 +25,14 @@ import java.util.Map;
 
 public class ParametrizedTypeCache {
 
-  private Map<JavaSymbol, Map<Map<JavaType.TypeVariableJavaType, JavaType>, JavaType.ParametrizedTypeJavaType>> typeCache = Maps.newHashMap();
+  private Map<JavaSymbol, Map<TypeSubstitution, JavaType.ParametrizedTypeJavaType>> typeCache = Maps.newHashMap();
 
-  public JavaType getParametrizedTypeType(JavaSymbol.TypeJavaSymbol symbol, Map<JavaType.TypeVariableJavaType, JavaType> typeSubstitution) {
+  public JavaType getParametrizedTypeType(JavaSymbol.TypeJavaSymbol symbol, TypeSubstitution typeSubstitution) {
     if (symbol.getType().isTagged(JavaType.UNKNOWN)) {
       return symbol.getType();
     }
     if (typeCache.get(symbol) == null) {
-      Map<Map<JavaType.TypeVariableJavaType, JavaType>, JavaType.ParametrizedTypeJavaType> map = Maps.newHashMap();
+      Map<TypeSubstitution, JavaType.ParametrizedTypeJavaType> map = Maps.newHashMap();
       typeCache.put(symbol, map);
     }
     if (typeCache.get(symbol).get(typeSubstitution) == null) {
