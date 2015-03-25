@@ -1,0 +1,21 @@
+<p>
+An extension is redundant if it is Object - all classes extend Object implicitly.
+</p>
+
+<p>Such redundant declarations should be removed because they needlessly clutter the code and can be confusing.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public class Foo extends Object { // Noncompliant
+  //...
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+
+<pre>
+public class Foo {
+  //...
+}
+</pre>
