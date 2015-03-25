@@ -113,8 +113,11 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
   private void createSymbol(Tree tree, IdentifierTree identifier) {
     Symbol symbol = symbolTableBuilder.newSymbol(startOffsetFor(identifier), endOffsetFor(identifier));
-    for (IdentifierTree usage : semanticModel.getUsages(semanticModel.getSymbol(tree))) {
-      symbolTableBuilder.newReference(symbol, startOffsetFor(usage));
+    org.sonar.plugins.java.api.semantic.Symbol semanticSymbol = semanticModel.getSymbol(tree);
+    if (semanticSymbol != null) {
+      for (IdentifierTree usage : semanticSymbol.usages()) {
+        symbolTableBuilder.newReference(symbol, startOffsetFor(usage));
+      }
     }
   }
 

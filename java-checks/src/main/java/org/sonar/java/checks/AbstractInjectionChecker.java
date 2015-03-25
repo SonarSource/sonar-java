@@ -80,7 +80,7 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
         return true;
       }
       //check usages by revisiting the enclosing tree.
-      Collection<IdentifierTree> usages = getSemanticModel().getUsages(symbol);
+      Collection<IdentifierTree> usages = symbol.usages();
       LocalVariableDynamicStringVisitor visitor = new LocalVariableDynamicStringVisitor(symbol, usages, methodTree);
       argEnclosingDeclarationTree.accept(visitor);
       return visitor.dynamicString;

@@ -70,7 +70,7 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
 
     if (isPublic(methodTree) && blockTree != null && !booleanParameterSymbols.isEmpty()) {
       for (Symbol variable : booleanParameterSymbols) {
-        Collection<IdentifierTree> usages = getSemanticModel().getUsages(variable);
+        Collection<IdentifierTree> usages = variable.usages();
         if (usages.size() == 1) {
           blockTree.accept(new ConditionalStatementVisitor(variable.name(), Iterables.get(usages, 0), tree));
         }

@@ -140,7 +140,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
 
       if (sym != null && semanticModel != null) {
         //No forward reference possible... Need another visitor to build this info ?
-        for (IdentifierTree identifierTree : semanticModel.getUsages(sym)) {
+        for (IdentifierTree identifierTree : sym.usages()) {
           idents.put(identifierTree, sym);
           sb.append(" ").append(sym.getName());
         }

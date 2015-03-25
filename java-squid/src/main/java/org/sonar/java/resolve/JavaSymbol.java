@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.java.resolve.Scope.OrderedScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -56,12 +57,15 @@ public class JavaSymbol implements Symbol {
 
   JavaType type;
 
+  private List<IdentifierTree> usages;
+
   public JavaSymbol(int kind, int flags, @Nullable String name, @Nullable JavaSymbol owner) {
     this.kind = kind;
     this.flags = flags;
     this.name = name;
     this.owner = owner;
     this.symbolMetadata = new SymbolMetadataResolve();
+    this.usages = Lists.newArrayList();
   }
 
   /**
@@ -222,6 +226,15 @@ public class JavaSymbol implements Symbol {
   public boolean isPackageVisibility() {
     complete();
     return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
+  }
+
+  public void addUsage(IdentifierTree tree) {
+    usages.add(tree);
+  }
+
+  @Override
+  public List<IdentifierTree> usages() {
+    return usages;
   }
 
   interface Completer {

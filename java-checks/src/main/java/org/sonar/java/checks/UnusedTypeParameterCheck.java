@@ -67,7 +67,7 @@ public class UnusedTypeParameterCheck extends SubscriptionBaseVisitor {
       }
       for (TypeParameterTree typeParameter : typeParameters) {
         Symbol symbol = getSemanticModel().getSymbol(typeParameter);
-        if (getSemanticModel().getUsages(symbol).isEmpty()) {
+        if (symbol.usages().isEmpty()) {
           String message = new StringBuilder(typeParameter.identifier().name())
               .append(" is not used in the ")
               .append(messageEnd).toString();

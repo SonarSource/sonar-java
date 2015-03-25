@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import java.util.Arrays;
 
@@ -87,8 +88,19 @@ public class Symbols {
 
   static {
     rootPackage = new JavaSymbol.PackageJavaSymbol("", null);
-    unknownSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, /* TODO name */"", rootPackage);
-    unknownSymbol.members = new Scope(unknownSymbol);
+    unknownSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, /* TODO name */"", rootPackage) {
+      @Override
+      public void addUsage(IdentifierTree tree) {
+        //noop
+      }
+    };
+    unknownSymbol.members = new Scope(unknownSymbol) {
+      @Override
+      public void enter(JavaSymbol symbol) {
+        //noop
+      }
+
+    };
     unknownType = new JavaType.ClassJavaType(unknownSymbol) {
       @Override
       public String toString() {

@@ -26,7 +26,6 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -126,9 +125,8 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
 
   public void checkIfUnused(VariableTree tree) {
     if (tree.modifiers().modifiers().contains(Modifier.PRIVATE) && !"serialVersionUID".equals(tree.simpleName().name())) {
-      SemanticModel semanticModel = getSemanticModel();
-      Symbol symbol = semanticModel.getSymbol(tree);
-      if (symbol != null && semanticModel.getUsages(symbol).size() == assignments.get(symbol).size() && !hasExcludedAnnotation(tree)) {
+      Symbol symbol = tree.symbol();
+      if (symbol.usages().size() == assignments.get(symbol).size() && !hasExcludedAnnotation(tree)) {
         addIssue(tree, "Remove this unused \"" + tree.simpleName() + "\" private field.");
       }
     }

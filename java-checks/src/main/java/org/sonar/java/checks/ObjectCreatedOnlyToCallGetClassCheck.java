@@ -77,8 +77,8 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
     if ("this".equals(tree.name()) || "super".equals(tree.name())) {
       return false;
     }
-    Symbol symbol = getSemanticModel().getReference(tree);
-    return getSemanticModel().getUsages(symbol).size() == 1 && hasBeenInitialized(symbol);
+    Symbol symbol = tree.symbol();
+    return symbol.usages().size() == 1 && hasBeenInitialized(symbol);
   }
 
   private boolean hasBeenInitialized(Symbol symbol) {

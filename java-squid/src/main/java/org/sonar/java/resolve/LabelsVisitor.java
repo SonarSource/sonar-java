@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Maps;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
@@ -65,7 +66,10 @@ public class LabelsVisitor extends BaseTreeVisitor {
     }
     LabeledStatementTree labelTree = labelTrees.get(label.name());
     if (labelTree != null) {
-      semanticModel.associateReference(label, semanticModel.getSymbol(labelTree));
+      JavaSymbol symbol = (JavaSymbol) semanticModel.getSymbol(labelTree);
+      semanticModel.associateReference(label, symbol);
+      ((IdentifierTreeImpl) label).setSymbol(symbol);
+      symbol.addUsage(label);
     }
   }
 }

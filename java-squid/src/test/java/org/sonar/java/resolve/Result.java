@@ -96,7 +96,7 @@ class Result {
     // In SSLR column starts at 0, but here we want consistency with IDE, so we start from 1:
     column -= 1;
     for (Symbol symbol : semanticModel.getSymbolUsed()) {
-      for (IdentifierTree usage : semanticModel.getUsages(symbol)) {
+      for (IdentifierTree usage : symbol.usages()) {
         Token token = ((JavaTree) usage.identifierToken()).getAstNode().getToken();
         if (token.getLine() == line && token.getColumn() == column) {
           if(searchSymbol) {

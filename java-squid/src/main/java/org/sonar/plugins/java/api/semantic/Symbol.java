@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.api.semantic;
 
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -85,6 +87,8 @@ public interface Symbol {
    */
   @Nullable
   TypeSymbol enclosingClass();
+
+  List<IdentifierTree> usages();
 
   interface TypeSymbol extends Symbol {
 

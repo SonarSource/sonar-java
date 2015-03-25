@@ -23,6 +23,8 @@ import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -34,6 +36,7 @@ import java.util.List;
 public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierTree {
 
   private final InternalSyntaxToken nameToken;
+  private Symbol symbol = Symbols.unknownSymbol;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
     super(Kind.IDENTIFIER, nameToken.getToken());
@@ -64,6 +67,15 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   @Override
   public String name() {
     return identifierToken().text();
+  }
+
+  public void setSymbol(Symbol symbol) {
+    this.symbol = symbol;
+  }
+
+  @Override
+  public Symbol symbol() {
+    return symbol;
   }
 
   @Override

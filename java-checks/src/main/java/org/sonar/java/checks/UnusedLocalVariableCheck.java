@@ -127,8 +127,8 @@ public class UnusedLocalVariableCheck extends SubscriptionBaseVisitor {
 
   private void checkVariableUsages() {
     for (VariableTree variableTree : variables) {
-      Symbol symbol = getSemanticModel().getSymbol(variableTree);
-      if (getSemanticModel().getUsages(symbol).size() == assignments.get(symbol).size()) {
+      Symbol symbol = variableTree.symbol();
+      if (symbol.usages().size() == assignments.get(symbol).size()) {
         addIssue(variableTree, "Remove this unused \"" + variableTree.simpleName() + "\" local variable.");
       }
     }

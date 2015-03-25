@@ -116,7 +116,7 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
   }
   
   private boolean isReassigned(Symbol variableSymbol, Tree method) {
-    Collection<IdentifierTree> usages = getSemanticModel().getUsages(variableSymbol);
+    Collection<IdentifierTree> usages = variableSymbol.usages();
     ReAssignmentFinder reAssignmentFinder = new ReAssignmentFinder(usages);
     method.accept(reAssignmentFinder);
     return reAssignmentFinder.foundReAssignment;

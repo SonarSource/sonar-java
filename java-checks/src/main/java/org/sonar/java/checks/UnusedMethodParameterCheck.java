@@ -60,8 +60,8 @@ public class UnusedMethodParameterCheck extends SubscriptionBaseVisitor {
     if (hasSemantic() && methodTree.block() != null && !isExcluded(methodTree)) {
       List<String> unused = Lists.newArrayList();
       for (VariableTree var : methodTree.parameters()) {
-        Symbol sym = getSemanticModel().getSymbol(var);
-        if (sym != null && getSemanticModel().getUsages(sym).isEmpty()) {
+        Symbol sym = var.symbol();
+        if (sym != null && /*getSemanticModel().getUsages(sym).isEmpty()*/sym.usages().isEmpty()) {
           unused.add(var.simpleName().name());
         }
       }

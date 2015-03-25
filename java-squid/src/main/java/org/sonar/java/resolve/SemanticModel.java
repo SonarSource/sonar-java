@@ -170,10 +170,6 @@ public class SemanticModel {
     return Collections.unmodifiableMap(symbolsTree);
   }
 
-  public Collection<IdentifierTree> getUsages(Symbol symbol) {
-    return Collections.unmodifiableCollection(usagesTree.get(symbol));
-  }
-
   @VisibleForTesting
   Collection<Symbol> getSymbolUsed() {
     return usagesTree.keySet();

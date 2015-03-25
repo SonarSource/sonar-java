@@ -27,6 +27,7 @@ import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
@@ -631,6 +632,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   private void associateReference(IdentifierTree tree, JavaSymbol symbol) {
     if (symbol.kind < JavaSymbol.ERRONEOUS) {
       semanticModel.associateReference(tree, symbol);
+      ((IdentifierTreeImpl) tree).setSymbol(symbol);
+      symbol.addUsage(tree);
     }
   }
 

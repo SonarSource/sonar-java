@@ -100,7 +100,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   public void visitCatch(CatchTree tree) {
     if (!isExcludedType(tree.parameter().type())) {
       Symbol exception = tree.parameter().symbol();
-      validUsagesStack.addFirst(Lists.newArrayList(semanticModel.getUsages(exception)));
+      validUsagesStack.addFirst(exception.usages());
       super.visitCatch(tree);
       Collection<IdentifierTree> usages = validUsagesStack.pop();
       if (usages.isEmpty()) {

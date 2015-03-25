@@ -73,7 +73,7 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
         VariableTree variableTree = (VariableTree) tree;
         Type type = variableTree.type().symbolType();
         if (type.is("javax.servlet.http.Cookie") && isConstructorInitialized(variableTree)) {
-          Symbol variableSymbol = getSemanticModel().getSymbol(variableTree);
+          Symbol variableSymbol = variableTree.symbol();
           //Ignore field variables
           if (variableSymbol.owner().isMethodSymbol()) {
             unsecuredCookies.add(variableSymbol);
