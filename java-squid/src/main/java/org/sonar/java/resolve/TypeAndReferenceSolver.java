@@ -341,10 +341,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
     JavaType type = getType(tree.type());
     //Type substitution for parametrized type.
-    Map<JavaType.TypeVariableJavaType, JavaType> typeSubstitution = Maps.newHashMap();
-    if(tree.typeArguments().size() <= type.getSymbol().typeVariableTypes.size()) {
+    TypeSubstitution typeSubstitution = new TypeSubstitution();
+    if (tree.typeArguments().size() <= type.getSymbol().typeVariableTypes.size()) {
       for (int i = 0; i < tree.typeArguments().size(); i++) {
-        typeSubstitution.put(type.getSymbol().typeVariableTypes.get(i), getType(tree.typeArguments().get(i)));
+        typeSubstitution.add(type.getSymbol().typeVariableTypes.get(i), getType(tree.typeArguments().get(i)));
       }
     }
     registerType(tree, parametrizedTypeCache.getParametrizedTypeType(type.getSymbol(), typeSubstitution));

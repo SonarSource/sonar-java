@@ -19,7 +19,7 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -28,8 +28,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import javax.annotation.Nullable;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class JavaType implements Type {
 
@@ -345,10 +343,10 @@ public class JavaType implements Type {
 
   public static class ParametrizedTypeJavaType extends ClassJavaType {
 
-    final Map<TypeVariableJavaType, JavaType> typeSubstitution;
+    final TypeSubstitution typeSubstitution;
     final JavaType rawType;
 
-    ParametrizedTypeJavaType(JavaSymbol.TypeJavaSymbol symbol, Map<TypeVariableJavaType, JavaType> typeSubstitution) {
+    ParametrizedTypeJavaType(JavaSymbol.TypeJavaSymbol symbol, TypeSubstitution typeSubstitution) {
       super(symbol);
       this.rawType = symbol.getType();
       this.typeSubstitution = typeSubstitution;
@@ -363,16 +361,16 @@ public class JavaType implements Type {
     public JavaType substitution(TypeVariableJavaType typeVariableType) {
       JavaType result = null;
       if (typeSubstitution != null) {
-        result = typeSubstitution.get(typeVariableType);
+        result = typeSubstitution.substitutedType(typeVariableType);
       }
       return result;
     }
 
-    public Set<TypeVariableJavaType> typeParameters() {
+    public List<TypeVariableJavaType> typeParameters() {
       if (typeSubstitution != null) {
-        return typeSubstitution.keySet();
+        return typeSubstitution.typeVariables();
       }
-      return Sets.newHashSet();
+      return Lists.newArrayList();
     }
   }
 }

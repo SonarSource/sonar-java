@@ -21,7 +21,6 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -79,15 +78,16 @@ public class Resolve {
     return type;
   }
 
-  private JavaType substituteTypeParameter(JavaType type, Map<JavaType.TypeVariableJavaType, JavaType> substitution) {
-    if(substitution.get(type) != null) {
-      return substitution.get(type);
+  private JavaType substituteTypeParameter(JavaType type, TypeSubstitution substitution) {
+    JavaType substitutedType = substitution.substitutedType(type);
+    if (substitutedType != null) {
+      return substitutedType;
     }
     if(type instanceof JavaType.ParametrizedTypeJavaType) {
       JavaType.ParametrizedTypeJavaType ptt = (JavaType.ParametrizedTypeJavaType) type;
-      Map<JavaType.TypeVariableJavaType, JavaType> newSubstitution = Maps.newHashMap();
-      for (Map.Entry<JavaType.TypeVariableJavaType, JavaType> entry : ptt.typeSubstitution.entrySet()) {
-        newSubstitution.put(entry.getKey(), substituteTypeParameter(entry.getValue(), substitution));
+      TypeSubstitution newSubstitution = new TypeSubstitution();
+      for (Map.Entry<JavaType.TypeVariableJavaType, JavaType> entry : ptt.typeSubstitution.substitutionEntries()) {
+        newSubstitution.add(entry.getKey(), substituteTypeParameter(entry.getValue(), substitution));
       }
       return parametrizedTypeCache.getParametrizedTypeType(ptt.rawType.getSymbol(), newSubstitution);
     }
@@ -415,14 +415,14 @@ public class Resolve {
   }
 
   private JavaType handleTypeArguments(List<JavaType> typeParams, JavaType type, JavaSymbol.MethodJavaSymbol methodSymbol) {
-    if(!typeParams.isEmpty() && methodSymbol.typeVariableTypes.size()==typeParams.size()) {
-      Map<JavaType.TypeVariableJavaType, JavaType> substitution = Maps.newHashMap();
+    if (!typeParams.isEmpty() && methodSymbol.typeVariableTypes.size() == typeParams.size()) {
+      TypeSubstitution typeSubstitution = new TypeSubstitution();
       int i = 0;
       for (JavaType.TypeVariableJavaType typeVariableType : methodSymbol.typeVariableTypes) {
-        substitution.put(typeVariableType, typeParams.get(i));
+        typeSubstitution.add(typeVariableType, typeParams.get(i));
         i++;
       }
-      return substituteTypeParameter(type, substitution);
+      return substituteTypeParameter(type, typeSubstitution);
     }
     return type;
   }

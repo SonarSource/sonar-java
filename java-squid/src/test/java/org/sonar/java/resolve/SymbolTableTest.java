@@ -66,8 +66,8 @@ public class SymbolTableTest {
     assertThat(symbolType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
     JavaType.ParametrizedTypeJavaType ptt = (JavaType.ParametrizedTypeJavaType) symbolType;
     assertThat(ptt.symbol.getName()).isEqualTo("C");
-    assertThat(ptt.typeSubstitution).hasSize(1);
-    assertThat(ptt.typeSubstitution.get(ptt.typeSubstitution.keySet().iterator().next()).symbol.getName()).isEqualTo("String");
+    assertThat(ptt.typeSubstitution.size()).isEqualTo(1);
+    assertThat(ptt.typeSubstitution.substitutedType(ptt.typeSubstitution.typeVariables().iterator().next()).symbol.getName()).isEqualTo("String");
 
     JavaSymbol.MethodJavaSymbol method1 = (JavaSymbol.MethodJavaSymbol) typeSymbol.members().lookup("method1").get(0);
     assertThat(((JavaType.MethodJavaType)method1.type).resultType).isSameAs(STypeVariableType);
@@ -101,7 +101,7 @@ public class SymbolTableTest {
     Type symbolType = variable.initializer().symbolType();
     assertThat(symbolType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
     JavaType.ParametrizedTypeJavaType ptt = (JavaType.ParametrizedTypeJavaType) symbolType;
-    assertThat(ptt.typeSubstitution.values().iterator().next().getSymbol().getName()).isEqualTo("String");
+    assertThat(ptt.typeSubstitution.substitutedTypes().iterator().next().getSymbol().getName()).isEqualTo("String");
 
     assertThat(result.reference(58, 25)).isSameAs(result.symbol("method_of_e"));
   }
@@ -267,8 +267,8 @@ public class SymbolTableTest {
     assertThat(superclass.getName()).isEqualTo("Enum");
     assertThat(superclass.owner).isInstanceOf(JavaSymbol.PackageJavaSymbol.class);
     assertThat(superclass.owner.getName()).isEqualTo("java.lang");
-    assertThat(superType.typeSubstitution).hasSize(1);
-    Map.Entry<JavaType.TypeVariableJavaType, JavaType> entry = superType.typeSubstitution.entrySet().iterator().next();
+    assertThat(superType.typeSubstitution.size()).isEqualTo(1);
+    Map.Entry<JavaType.TypeVariableJavaType, JavaType> entry = superType.typeSubstitution.substitutionEntries().iterator().next();
     assertThat(entry.getKey()).isSameAs(superclass.typeParameters.lookup("E").get(0).type);
     assertThat(entry.getValue()).isSameAs(enumSymbol.type);
 

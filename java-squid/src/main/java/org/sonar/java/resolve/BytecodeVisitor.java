@@ -22,7 +22,6 @@ package org.sonar.java.resolve;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassVisitor;
@@ -37,7 +36,6 @@ import org.sonar.java.resolve.Scope.OrderedScope;
 import javax.annotation.Nullable;
 
 import java.util.List;
-import java.util.Map;
 
 public class BytecodeVisitor extends ClassVisitor {
 
@@ -545,11 +543,11 @@ public class BytecodeVisitor extends ClassVisitor {
         JavaSymbol.TypeJavaSymbol readSymbol = typeRead.symbol;
         readSymbol.complete();
          //Mismatch between type variable and type arguments means we are lacking some pieces of bytecode to resolve substitution properly.
-        if(typeArguments.size() == readSymbol.typeVariableTypes.size()) {
-          Map<JavaType.TypeVariableJavaType, JavaType> substitution = Maps.newHashMap();
+        if (typeArguments.size() == readSymbol.typeVariableTypes.size()) {
+          TypeSubstitution substitution = new TypeSubstitution();
           int i = 0;
           for (JavaType typeArgument : typeArguments) {
-            substitution.put(readSymbol.typeVariableTypes.get(i), typeArgument);
+            substitution.add(readSymbol.typeVariableTypes.get(i), typeArgument);
             i++;
           }
           typeRead = parametrizedTypeCache.getParametrizedTypeType(readSymbol, substitution);
