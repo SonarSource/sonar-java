@@ -95,16 +95,18 @@ public class SecondPass implements JavaSymbol.Completer {
       if (tree.is(Tree.Kind.ENUM)) {
         // JLS8 8.9: The direct superclass of an enum type E is Enum<E>.
         type.supertype = symbols.enumType;
-      } else if (tree.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE)) {
+      } else if (tree.is(Tree.Kind.CLASS)) {
         // JLS8 8.1.4: the direct superclass of the class type C<F1,...,Fn> is
         // the type given in the extends clause of the declaration of C
         // if an extends clause is present, or Object otherwise.
+        type.supertype = symbols.objectType;
+        symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", symbols.objectType, symbols.objectType.getSymbol()));
+      } else if(tree.is(Tree.Kind.INTERFACE)) {
         // JLS8 9.1.3: While every class is an extension of class Object, there is no single interface of which all interfaces are
         // extensions.
         // but we can call object method on any interface type.
         type.supertype = symbols.objectType;
       }
-      // JLS8 9.1.3: While every class is an extension of class Object, there is no single interface of which all interfaces are extensions.
     }
 
     //Interfaces

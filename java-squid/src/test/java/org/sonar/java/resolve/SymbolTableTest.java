@@ -137,6 +137,9 @@ public class SymbolTableTest {
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("Superclass");
     assertThat(superSymbol.type.symbol).isSameAs(typeSymbol);
+    assertThat(typeSymbol.members.lookup("super")).hasSize(1);
+    superSymbol = typeSymbol.members.lookup("super").get(0);
+    assertThat(((JavaSymbol.VariableJavaSymbol) superSymbol).type.symbol).isSameAs(typeSymbol.getSuperclass().symbol);
 
     JavaSymbol superclass = typeSymbol.getSuperclass().symbol;
     assertThat(superclass.getName()).isEqualTo("Object");
