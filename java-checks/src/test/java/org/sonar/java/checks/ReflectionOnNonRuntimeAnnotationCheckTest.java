@@ -35,10 +35,11 @@ public class ReflectionOnNonRuntimeAnnotationCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ReflectionOnNonRuntimeAnnotationCheck.java"), new VisitorsBridge(new ReflectionOnNonRuntimeAnnotationCheck()));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ReflectionOnNonRuntimeAnnotationCheck.java"), new VisitorsBridge(
+      new ReflectionOnNonRuntimeAnnotationCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(7).withMessage("\"@Override\" is not available at runtime and cannot be seen with reflection.")
-        .next().atLine(9).withMessage("\"@Override\" is not available at runtime and cannot be seen with reflection.")
-    .noMore();
+      .next().atLine(7).withMessage("\"@Override\" is not available at runtime and cannot be seen with reflection.")
+      .next().atLine(8).withMessage("\"@Override\" is not available at runtime and cannot be seen with reflection.")
+      .noMore();
   }
 }

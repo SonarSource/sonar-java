@@ -62,7 +62,7 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
     //For now ignore everything that is not a .class expression
     if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
       Type symbolType = ((MemberSelectExpressionTree) expressionTree).expression().symbolType();
-      if (isNotRuntimeAnnotation(symbolType)) {
+      if (!symbolType.isUnknown() && isNotRuntimeAnnotation(symbolType)) {
         addIssue(mit, "\"@" + symbolType.name() + "\" is not available at runtime and cannot be seen with reflection.");
       }
     }
