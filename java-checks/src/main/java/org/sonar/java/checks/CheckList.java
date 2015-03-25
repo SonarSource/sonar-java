@@ -157,6 +157,7 @@ public final class CheckList {
       FileHeaderCheck.class,
       IncrementDecrementInSubExpressionCheck.class,
       CollectionsEmptyConstantsCheck.class,
+      UselessExtendsCheck.class,
       // Bytecode
       CycleBetweenPackagesCheck.class,
       DITCheck.class,
