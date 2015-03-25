@@ -62,9 +62,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
       if (typeSymbol != null && typeSymbol.isAbstract()) {
         Collection<Symbol> symbols = typeSymbol.memberSymbols();
         int abstractMethod = countAbstractMethods(symbols);
-        //only count "this" in symbols and not "super" because abstract classes extending cannot be converted to interface
-        TypeTree superClass = tree.superClass();
-        if ((superClass == null || superClass.symbolType().is("java.lang.Object")) && symbols.size() == 2 || abstractMethod == symbols.size() - 2) {
+        if (isExtendingObject(tree) && abstractMethod == symbols.size() - 2) {
           //emtpy abstract class or only abstract method
           context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to an interface");
         }
@@ -75,6 +73,11 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
       }
     }
     super.visitClass(tree);
+  }
+
+  private boolean isExtendingObject(ClassTree tree) {
+    TypeTree superClass = tree.superClass();
+    return superClass == null || superClass.symbolType().is("java.lang.Object");
   }
 
   private boolean isPartialImplementation(ClassTree tree) {
