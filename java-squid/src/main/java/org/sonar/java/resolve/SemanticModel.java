@@ -145,6 +145,7 @@ public class SemanticModel {
     symbolsTree.put(tree, symbol);
   }
 
+  @Nullable
   public Symbol getSymbol(Tree tree) {
     return symbolsTree.get(tree);
   }

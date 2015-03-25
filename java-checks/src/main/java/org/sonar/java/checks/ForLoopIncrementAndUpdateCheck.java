@@ -86,7 +86,7 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     return Joiner.on(", ").join(names);
   }
 
-  private class UpdateVisitor extends BaseTreeVisitor {
+  private static class UpdateVisitor extends BaseTreeVisitor {
     Collection<Symbol> symbols = Lists.newArrayList();
 
     @Override
@@ -118,7 +118,7 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private class ConditionVisitor extends BaseTreeVisitor {
+  private static class ConditionVisitor extends BaseTreeVisitor {
     private final Collection<Symbol> updateSymbols;
     private final Collection<String> conditionNames;
     private boolean shouldRaiseIssue;

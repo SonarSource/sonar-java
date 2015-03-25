@@ -289,7 +289,7 @@ public class NullPointerCheckTest {
 
   @Test
   public void test_assignment_visitor() {
-    AssignmentVisitor visitor = new NullPointerCheck().new AssignmentVisitor();
+    AssignmentVisitor visitor = new NullPointerCheck.AssignmentVisitor();
 
     Symbol methodSymbol = mock(Symbol.class);
     when(methodSymbol.isVariableSymbol()).thenReturn(false);

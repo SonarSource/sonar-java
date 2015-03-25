@@ -427,7 +427,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   @VisibleForTesting
-  class AssignmentVisitor extends BaseTreeVisitor {
+  static class AssignmentVisitor extends BaseTreeVisitor {
     @VisibleForTesting
     Set<VariableSymbol> assignedSymbols = new HashSet<>();
 
