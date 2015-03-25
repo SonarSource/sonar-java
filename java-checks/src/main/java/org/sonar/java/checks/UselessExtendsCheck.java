@@ -61,10 +61,23 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     Set<Symbol.TypeSymbol> interfaces = new HashSet<Symbol.TypeSymbol>();
     for (TypeTree superInterface : classTree.superInterfaces()) {
       Symbol.TypeSymbol interfaceSymbol = superInterface.symbolType().symbol();
+      String interfaceName = ((JavaSymbol.TypeJavaSymbol) interfaceSymbol).getFullyQualifiedName();
       if (interfaces.contains(interfaceSymbol)) {
-        super.addIssue(superInterface, String.format("\"%s\" is listed multiple times.", ((JavaSymbol.TypeJavaSymbol) interfaceSymbol).getFullyQualifiedName()));
+        super.addIssue(superInterface, String.format("\"%s\" is listed multiple times.", interfaceName));
+      } else {
+        checkExtending(classTree, interfaceSymbol, interfaceName);
       }
       interfaces.add(interfaceSymbol);
+    }
+  }
+
+  private void checkExtending(ClassTree classTree, Symbol.TypeSymbol currentInterfaceSymbol, String currentInterfaceName) {
+    for (TypeTree superInterface : classTree.superInterfaces()) {
+      if (((JavaSymbol.TypeJavaSymbol) currentInterfaceSymbol).superTypes().contains(superInterface.symbolType())) {
+        String interfaceName = ((JavaSymbol.TypeJavaSymbol) superInterface.symbolType().symbol()).getFullyQualifiedName();
+        super.addIssue(superInterface, String.format("\"%s\" is an \"%s\" so \"%s\" can be removed from the extension list.",
+          currentInterfaceName, interfaceName, interfaceName));
+      }
     }
   }
 

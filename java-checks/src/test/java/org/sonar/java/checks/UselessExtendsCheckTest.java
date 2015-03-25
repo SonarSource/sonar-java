@@ -40,8 +40,10 @@ public class UselessExtendsCheckTest {
       new VisitorsBridge(new UselessExtendsCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(7).withMessage("\"Object\" should not be explicitly extended.")
-      .next().atLine(9).withMessage("\"I1\" is listed multiple times.")
-      .next().atLine(15).withMessage("\"Object\" should not be explicitly extended.");
+      .next().atLine(12).withMessage("\"I1\" is listed multiple times.")
+      .next().atLine(16).withMessage("\"I3\" is an \"I1\" so \"I1\" can be removed from the extension list.")
+      .next().atLine(17).withMessage("\"I3\" is an \"I2\" so \"I2\" can be removed from the extension list.")
+      .next().atLine(24).withMessage("\"Object\" should not be explicitly extended.");
   }
 
 }
