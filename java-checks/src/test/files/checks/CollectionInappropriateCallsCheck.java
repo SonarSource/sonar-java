@@ -131,8 +131,12 @@ class mySet<E> extends AbstractSet<E> {
 
 class F<T> {
   java.util.Vector<F<String>> vectors;
+  Set<Class> set;
   void f() {
     F f;
     vectors.contains(f);
+    Class<?> clazz;
+    set.contains(clazz);
   }
+
 }

@@ -108,7 +108,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   }
 
   private boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
-    return isSubtypeOf(argumentType, collectionParameterType.erasure()) || isSubtypeOf(collectionParameterType, argumentType) || autoboxing(argumentType, collectionParameterType);
+    return isSubtypeOf(argumentType.erasure(), collectionParameterType.erasure()) || isSubtypeOf(collectionParameterType.erasure(), argumentType.erasure()) || autoboxing(argumentType, collectionParameterType);
   }
 
   private boolean isSubtypeOf(Type type, Type superType) {
