@@ -55,15 +55,15 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     ClassTree classTree = (ClassTree) tree;
     TypeTree superClass = classTree.superClass();
     if (superClass != null && superClass.symbolType().is("java.lang.Object")) {
-      super.addIssue(superClass, "\"Object\" should not be explicitly extended.");
+      addIssue(superClass, "\"Object\" should not be explicitly extended.");
     }
     Set<Type> interfaces = new HashSet<>();
     for (TypeTree superInterface : classTree.superInterfaces()) {
       Type interfaceType = superInterface.symbolType();
-      if (!interfaceType.isUnknown()) {
+      if (interfaceType.isClass()) {
         String interfaceName = interfaceType.fullyQualifiedName();
         if (interfaces.contains(interfaceType)) {
-          super.addIssue(superInterface, String.format("\"%s\" is listed multiple times.", interfaceName));
+          addIssue(superInterface, String.format("\"%s\" is listed multiple times.", interfaceName));
         } else {
           checkExtending(classTree, interfaceType, interfaceName);
         }
@@ -76,7 +76,7 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     for (TypeTree superInterface : classTree.superInterfaces()) {
       if (!currentInterfaceType.equals(superInterface.symbolType()) && currentInterfaceType.isSubtypeOf(superInterface.symbolType())) {
         String interfaceName = superInterface.symbolType().fullyQualifiedName();
-        super.addIssue(superInterface, String.format("\"%s\" is an \"%s\" so \"%s\" can be removed from the extension list.",
+        addIssue(superInterface, String.format("\"%s\" is an \"%s\" so \"%s\" can be removed from the extension list.",
           currentInterfaceName, interfaceName, interfaceName));
       }
     }

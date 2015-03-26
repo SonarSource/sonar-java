@@ -28,6 +28,9 @@ implements I2 {
 class Class4 extends UnknownClass1 implements UnknownInterface1, UnknownInterface2 { // Compliant
 }
 
+class Class5 extends UnknownClass1 implements UnknownInterface1, UnknownInterface1 { // False negative, unresolved symbols are not taken into account
+}
+
 interface I1 {
 }
 
