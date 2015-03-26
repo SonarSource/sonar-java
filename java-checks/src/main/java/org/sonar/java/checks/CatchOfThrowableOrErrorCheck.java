@@ -19,97 +19,109 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.List;
+
 @Rule(
-  key = CatchOfThrowableOrErrorCheck.RULE_KEY,
+  key = "S1181",
   name = "Throwable and Error should not be caught",
   tags = {"cert", "cwe", "error-handling"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("20min")
-public class CatchOfThrowableOrErrorCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private static final String ERROR = "Error";
-  private static final String THROWABLE = "Throwable";
-
-  public static final String RULE_KEY = "S1181";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
-  private JavaFileScannerContext context;
+public class CatchOfThrowableOrErrorCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CATCH);
   }
 
   @Override
-  public void visitCatch(CatchTree tree) {
-    super.visitCatch(tree);
+  public void visitNode(Tree tree) {
+    CatchTree catchTree = (CatchTree) tree;
+    TypeTree typeTree = catchTree.parameter().type();
 
-    Tree typeTree = tree.parameter().type();
-
-    if (typeTree.is(Kind.UNION_TYPE)) {
-      UnionTypeTree unionTypeTree = (UnionTypeTree) typeTree;
-      for (Tree typeAlternativeTree : unionTypeTree.typeAlternatives()) {
-        checkType(typeAlternativeTree);
+    if (typeTree.is(Tree.Kind.UNION_TYPE)) {
+      for (TypeTree alternativeTypeTree : ((UnionTypeTree) typeTree).typeAlternatives()) {
+        checkType(alternativeTypeTree, catchTree);
       }
     } else {
-      checkType(typeTree);
+      checkType(typeTree, catchTree);
     }
   }
 
-  private void checkType(Tree tree) {
-    if (tree.is(Kind.IDENTIFIER)) {
-      IdentifierTree identifierTree = (IdentifierTree) tree;
-
-      if (isErrorOrThrowable(identifierTree.name())) {
-        addIssue(tree, identifierTree.name());
+  private void checkType(TypeTree typeTree, CatchTree catchTree) {
+    Type type = typeTree.symbolType();
+    if (type.is("java.lang.Error")) {
+      insertIssue(typeTree, type);
+    } else if (type.is("java.lang.Throwable")) {
+      GuavaCloserRethrowVisitor visitor = new GuavaCloserRethrowVisitor(catchTree.parameter().symbol());
+      catchTree.block().accept(visitor);
+      if (!visitor.foundRethrow) {
+        insertIssue(typeTree, type);
       }
-    } else if (tree.is(Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) tree;
+    }
+  }
 
-      if (isErrorOrThrowable(memberSelectTree.identifier().name())) {
-        ExpressionTree tree2 = memberSelectTree.expression();
+  private void insertIssue(TypeTree typeTree, Type type) {
+    addIssue(typeTree, "Catch Exception instead of " + type.name() + ".");
+  }
 
-        if (tree2.is(Kind.MEMBER_SELECT)) {
-          MemberSelectExpressionTree memberSelectTree2 = (MemberSelectExpressionTree) tree2;
+  private static class GuavaCloserRethrowVisitor extends BaseTreeVisitor {
+    private static final String JAVA_LANG_CLASS = "java.lang.Class";
+    private static final MethodInvocationMatcherCollection MATCHERS = MethodInvocationMatcherCollection.create(
+      rethrowMethod(),
+      rethrowMethod().addParameter(JAVA_LANG_CLASS),
+      rethrowMethod().addParameter(JAVA_LANG_CLASS).addParameter(JAVA_LANG_CLASS));
 
-          if ("lang".equals(memberSelectTree2.identifier().name()) &&
-            memberSelectTree2.expression().is(Kind.IDENTIFIER) &&
-            "java".equals(((IdentifierTree) memberSelectTree2.expression()).name())) {
-            addIssue(tree, memberSelectTree.identifier().name());
-          }
+    private boolean foundRethrow = false;
+    private final Symbol exceptionSymbol;
+
+    public GuavaCloserRethrowVisitor(Symbol exceptionSymbol) {
+      this.exceptionSymbol = exceptionSymbol;
+    }
+
+    @Override
+    public void visitThrowStatement(ThrowStatementTree tree) {
+      if (isGuavaCloserRethrow(tree.expression())) {
+        foundRethrow = true;
+      }
+    }
+
+    private boolean isGuavaCloserRethrow(ExpressionTree expression) {
+      if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree mit = (MethodInvocationTree) expression;
+        if (MATCHERS.anyMatch(mit)) {
+          ExpressionTree firstArgument = mit.arguments().get(0);
+          return firstArgument.is(Tree.Kind.IDENTIFIER) && exceptionSymbol.equals(((IdentifierTree) firstArgument).symbol());
         }
       }
+      return false;
+    }
+
+    private static MethodInvocationMatcher rethrowMethod() {
+      return MethodInvocationMatcher.create().typeDefinition("com.google.common.io.Closer").name("rethrow").addParameter("java.lang.Throwable");
     }
   }
-
-  private static boolean isErrorOrThrowable(String name) {
-    return ERROR.equals(name) || THROWABLE.equals(name);
-  }
-
-  private void addIssue(Tree tree, String type) {
-    context.addIssue(tree, ruleKey, "Catch Exception instead of " + type + ".");
-  }
-
 }
