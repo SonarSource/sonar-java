@@ -80,7 +80,7 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
     return typeSymbol.type().isSubtypeOf("java.util.Iterator");
   }
 
-  private class NextMethodBodyVisitor extends BaseTreeVisitor {
+  private static class NextMethodBodyVisitor extends BaseTreeVisitor {
 
     private boolean foundThrow = false;
 
