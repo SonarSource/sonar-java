@@ -56,12 +56,15 @@ import java.util.List;
 @SqaleConstantRemediation("2min")
 public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection {
 
+  private static final String INT = "int";
+  private static final String JAVA_SQL_RESULTSET = "java.sql.ResultSet";
+
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-      MethodInvocationMatcher.create().typeDefinition("java.sql.PreparedStatement").name(NameCriteria.startsWith("set")).addParameter("int").addParameter(TypeCriteria.anyType()),
-      MethodInvocationMatcher.create().typeDefinition("java.sql.ResultSet").name(NameCriteria.startsWith("get")).addParameter("int"),
-      MethodInvocationMatcher.create().typeDefinition("java.sql.ResultSet").name(NameCriteria.startsWith("get")).addParameter("int").addParameter(TypeCriteria.anyType()));
+      MethodInvocationMatcher.create().typeDefinition("java.sql.PreparedStatement").name(NameCriteria.startsWith("set")).addParameter(INT).addParameter(TypeCriteria.anyType()),
+      MethodInvocationMatcher.create().typeDefinition(JAVA_SQL_RESULTSET).name(NameCriteria.startsWith("get")).addParameter(INT),
+      MethodInvocationMatcher.create().typeDefinition(JAVA_SQL_RESULTSET).name(NameCriteria.startsWith("get")).addParameter(INT).addParameter(TypeCriteria.anyType()));
   }
 
   @Override
@@ -72,7 +75,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
       return;
     }
 
-    boolean isMethodFromJavaSqlResultSet = mit.symbol().owner().type().is("java.sql.ResultSet");
+    boolean isMethodFromJavaSqlResultSet = mit.symbol().owner().type().is(JAVA_SQL_RESULTSET);
     int methodFirstArgumentValue = methodFirstArgumentAsInteger.intValue();
 
     if (isMethodFromJavaSqlResultSet && methodFirstArgumentValue == 0) {
