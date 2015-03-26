@@ -126,6 +126,7 @@ public interface Symbol {
     Collection<Symbol> lookupSymbols(String name);
 
     @Nullable
+    @Override
     ClassTree declaration();
 
   }
@@ -133,6 +134,7 @@ public interface Symbol {
   interface VariableSymbol extends Symbol {
 
     @Nullable
+    @Override
     VariableTree declaration();
 
   }
@@ -146,6 +148,7 @@ public interface Symbol {
     List<Type> thrownTypes();
 
     @Nullable
+    @Override
     MethodTree declaration();
 
   }

@@ -563,7 +563,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         associateReference(variable, identInType);
         JavaType type = identInType.type;
         if(type == null) {
-          type = symbols.unknownType;
+          type = Symbols.unknownType;
         }
         registerType(variable, type);
         resolveAs(aet.expression(), JavaSymbol.VAR);
