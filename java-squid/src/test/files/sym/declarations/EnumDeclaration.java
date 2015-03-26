@@ -39,4 +39,6 @@ class EnumDeclaration {
     ConstructorEnum(String i){}
   }
 
+  Enum<Declaration> parameterizedDeclaration;
+
 }

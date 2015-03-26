@@ -45,10 +45,12 @@ public class SecondPass implements JavaSymbol.Completer {
   private final SemanticModel semanticModel;
   private final Symbols symbols;
   private final TypeAndReferenceSolver typeAndReferenceSolver;
+  private final ParametrizedTypeCache parametrizedTypeCache;
 
-  public SecondPass(SemanticModel semanticModel, Symbols symbols, TypeAndReferenceSolver typeAndReferenceSolver) {
+  public SecondPass(SemanticModel semanticModel, Symbols symbols, ParametrizedTypeCache parametrizedTypeCache, TypeAndReferenceSolver typeAndReferenceSolver) {
     this.semanticModel = semanticModel;
     this.symbols = symbols;
+    this.parametrizedTypeCache = parametrizedTypeCache;
     this.typeAndReferenceSolver = typeAndReferenceSolver;
   }
 
@@ -96,9 +98,8 @@ public class SecondPass implements JavaSymbol.Completer {
         // JLS8 8.9: The direct superclass of an enum type E is Enum<E>.
         Scope enumParameters = ((JavaSymbol.TypeJavaSymbol) symbols.enumType.symbol()).typeParameters();
         JavaType.TypeVariableJavaType enumParameter = (JavaType.TypeVariableJavaType) enumParameters.lookup("E").get(0).type();
-        JavaType superType = new JavaType.ParametrizedTypeJavaType(symbols.enumType.symbol, new TypeSubstitution().add(enumParameter, (JavaType) type));
-        type.supertype = superType;
-        symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", superType, symbol));
+        type.supertype = parametrizedTypeCache.getParametrizedTypeType(symbols.enumType.symbol, new TypeSubstitution().add(enumParameter, type));
+        symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", type.supertype, symbol));
       } else if (tree.is(Tree.Kind.CLASS)) {
         // JLS8 8.1.4: the direct superclass of the class type C<F1,...,Fn> is
         // the type given in the extends clause of the declaration of C
