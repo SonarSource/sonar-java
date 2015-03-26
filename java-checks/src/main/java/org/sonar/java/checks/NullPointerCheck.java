@@ -108,7 +108,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     super.visitAssignmentExpression(tree);
     if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
       Symbol identifierSymbol = ((IdentifierTree) tree.variable()).symbol();
-      if(identifierSymbol.isVariableSymbol()) {
+      if (identifierSymbol.isVariableSymbol()) {
         currentState.setVariableValue((VariableSymbol) identifierSymbol, checkNullity(tree.expression()));
       }
     }
@@ -291,7 +291,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   private AbstractValue checkNullity(Symbol symbol) {
     if (symbol.metadata().isAnnotatedWith("javax.annotation.Nonnull")) {
       return AbstractValue.NOTNULL;
-    } else if (symbol.metadata().isAnnotatedWith("javax.annotation.CheckForNull") || symbol.metadata().isAnnotatedWith("javax.annotation.Nullable")) {
+    } else if (symbol.metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
       return AbstractValue.NULL;
     }
     return AbstractValue.UNKNOWN;
@@ -299,7 +299,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   public AbstractValue checkNullity(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
-      return checkNullity((IdentifierTree)tree);
+      return checkNullity((IdentifierTree) tree);
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTree) tree).symbol();
       if (symbol.isMethodSymbol()) {
@@ -404,7 +404,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     } else if (tree.leftOperand().is(Tree.Kind.IDENTIFIER) && tree.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
       symbol = ((IdentifierTree) tree.leftOperand()).symbol();
     }
-    if(symbol == null || !symbol.isVariableSymbol()){
+    if (symbol == null || !symbol.isVariableSymbol()) {
       return null;
     }
     return (VariableSymbol) symbol;
