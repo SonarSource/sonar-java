@@ -80,9 +80,7 @@ public class JavaType implements Type {
 
   @Override
   public boolean is(String fullyQualifiedName) {
-    if (isTagged(CLASS)) {
-      return fullyQualifiedName.equals(symbol.getFullyQualifiedName());
-    } else if (tag < CLASS) {
+    if (tag < CLASS) {
       // primitive type
       return fullyQualifiedName.equals(symbol.name);
     } else if (isTagged(ARRAY)) {
@@ -90,52 +88,32 @@ public class JavaType implements Type {
     } else if (isTagged(TYPEVAR)) {
       return false;
     }
-    return isTagged(BOT) || !isTagged(UNKNOWN);
+    return false;
   }
 
   @Override
   public boolean isSubtypeOf(String fullyQualifiedName) {
-    if (isTagged(CLASS)) {
-      if (is(fullyQualifiedName) || superTypeContains(fullyQualifiedName)) {
-        return true;
-      }
-    } else if (isTagged(ARRAY)) {
+    if (isTagged(ARRAY)) {
       return "java.lang.Object".equals(fullyQualifiedName) ||
           (fullyQualifiedName.endsWith("[]") && ((ArrayJavaType) this).elementType.isSubtypeOf(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2)));
     } else if (isTagged(TYPEVAR)) {
       return erasure().isSubtypeOf(fullyQualifiedName);
-    } else if (isTagged(BOT)) {
-      return true;
     }
     return false;
   }
 
   @Override
-  public boolean isSubtypeOf(org.sonar.plugins.java.api.semantic.Type superType) {
+  public boolean isSubtypeOf(Type superType) {
     JavaType supType = (JavaType) superType;
-    if (this.isTagged(JavaType.ARRAY)) {
+    if (isTagged(ARRAY)) {
       //Handle covariance of arrays.
-      if(supType.isTagged(JavaType.ARRAY)) {
-        return ((ArrayJavaType) this).elementType().isSubtypeOf(((ArrayJavaType) supType).elementType());
+      if(supType.isTagged(ARRAY)) {
+        return ((ArrayType) this).elementType().isSubtypeOf(((ArrayType) supType).elementType());
       }
       //Only possibility to be supertype of array without being an array is to be Object.
       return "java.lang.Object".equals(supType.fullyQualifiedName());
-    } else if (this.isTagged(JavaType.CLASS) && supType.isTagged(JavaType.CLASS)) {
-      ClassJavaType superClassType = (ClassJavaType) supType;
-      return this.equals(superClassType) || this.superTypeContains(superClassType.fullyQualifiedName());
     } else if(isTagged(TYPEVAR)) {
       return this.equals(superType) || erasure().isSubtypeOf(superType.erasure());
-    } else if(isTagged(BOT)) {
-      return supType.isTagged(BOT) || superType.isClass() || superType.isArray();
-    }
-    return false;
-  }
-
-  private boolean superTypeContains(String fullyQualifiedName) {
-    for (ClassJavaType classType : symbol.superTypes()) {
-      if (classType.is(fullyQualifiedName)) {
-        return true;
-      }
     }
     return false;
   }
@@ -236,6 +214,40 @@ public class JavaType implements Type {
 
     public ClassJavaType(JavaSymbol.TypeJavaSymbol symbol) {
       super(CLASS, symbol);
+    }
+
+    @Override
+    public boolean is(String fullyQualifiedName) {
+      return isTagged(BOT) || fullyQualifiedName.equals(symbol.getFullyQualifiedName());
+    }
+
+    @Override
+    public boolean isSubtypeOf(String fullyQualifiedName) {
+      return isTagged(BOT) || is(fullyQualifiedName) || superTypeContains(fullyQualifiedName);
+    }
+
+    @Override
+    public boolean isSubtypeOf(Type superType) {
+      if(isTagged(UNKNOWN)) {
+        return false;
+      }
+      if(isTagged(BOT)) {
+        return ((JavaType) superType).isTagged(BOT) || superType.isClass() || superType.isArray();
+      }
+      if (superType.isClass()) {
+        ClassJavaType superClassType = (ClassJavaType) superType;
+        return this.equals(superClassType) || superTypeContains(superClassType.fullyQualifiedName());
+      }
+      return false;
+    }
+
+    private boolean superTypeContains(String fullyQualifiedName) {
+      for (ClassJavaType classType : symbol.superTypes()) {
+        if (classType.is(fullyQualifiedName)) {
+          return true;
+        }
+      }
+      return false;
     }
   }
 

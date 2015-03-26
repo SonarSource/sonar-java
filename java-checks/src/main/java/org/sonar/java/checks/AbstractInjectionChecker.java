@@ -65,7 +65,7 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
 
   protected boolean isIdentifierDynamicString(Tree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
     Symbol symbol = arg.symbol();
-    if (!symbol.isVariableSymbol() || symbol.equals(currentlyChecking) || isConstant(symbol)) {
+    if (isExcluded(currentlyChecking, symbol)) {
       return false;
     }
 
@@ -76,7 +76,8 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
 
       //Check declaration
       VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
-      if (declaration.initializer() != null && isDynamicString(methodTree, declaration.initializer(), currentlyChecking)) {
+      ExpressionTree initializer = declaration.initializer();
+      if (initializer != null && isDynamicString(methodTree, initializer, currentlyChecking)) {
         return true;
       }
       //check usages by revisiting the enclosing tree.
@@ -88,6 +89,10 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
     //arg is not a local variable nor a constant, so it is a parameter or a field.
     parameterName = arg.name();
     return symbol.owner().isMethodSymbol() && !firstLevel;
+  }
+
+  private boolean isExcluded(@Nullable Symbol currentlyChecking, Symbol symbol) {
+    return !symbol.isVariableSymbol() || symbol.equals(currentlyChecking) || isConstant(symbol);
   }
 
   public boolean isConstant(Symbol symbol) {

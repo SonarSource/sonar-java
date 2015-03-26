@@ -164,6 +164,10 @@ public class JavaTypeTest {
     assertThat(typeVariableType.isSubtypeOf("java.lang.Object")).isTrue();
     assertThat(typeVariableType.is("java.lang.Object")).isFalse();
     assertThat(typeVariableType.isSubtypeOf("java.lang.CharSequence")).isFalse();
+
+    assertThat(Symbols.unknownType.is("java.lang.Object")).isFalse();
+    assertThat(Symbols.unknownType.isSubtypeOf("java.lang.CharSequence")).isFalse();
+    assertThat(Symbols.unknownType.isSubtypeOf(symbols.objectType)).isFalse();
   }
 
   @Test

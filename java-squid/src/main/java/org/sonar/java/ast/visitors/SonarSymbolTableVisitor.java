@@ -125,12 +125,10 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
   private void createSymbol(IdentifierTree declaration, List<IdentifierTree> usages) {
     Symbol symbol = symbolTableBuilder.newSymbol(startOffsetFor(declaration), endOffsetFor(declaration));
-      for (IdentifierTree usage : usages) {
-        symbolTableBuilder.newReference(symbol, startOffsetFor(usage));
+    for (IdentifierTree usage : usages) {
+      symbolTableBuilder.newReference(symbol, startOffsetFor(usage));
     }
   }
-
-
 
   private int startOffsetFor(IdentifierTree tree) {
     return ((InternalSyntaxToken) tree.identifierToken()).getFromIndex();

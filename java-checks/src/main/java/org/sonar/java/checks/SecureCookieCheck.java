@@ -71,23 +71,31 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) tree;
-        Type type = variableTree.type().symbolType();
-        if (type.is("javax.servlet.http.Cookie") && isConstructorInitialized(variableTree)) {
-          Symbol variableSymbol = variableTree.symbol();
-          //Ignore field variables
-          if (variableSymbol.isVariableSymbol() && variableSymbol.owner().isMethodSymbol()) {
-            unsecuredCookies.add((Symbol.VariableSymbol) variableSymbol);
-          }
-        }
+        addToUnsecuredCookies(variableTree);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
-        if (isSetSecureCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-          MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
-          if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
-            Symbol reference = ((IdentifierTree) mse.expression()).symbol();
-            unsecuredCookies.remove(reference);
-          }
-        }
+        checkSecureCall(mit);
+      }
+    }
+  }
+
+  private void addToUnsecuredCookies(VariableTree variableTree) {
+    Type type = variableTree.type().symbolType();
+    if (type.is("javax.servlet.http.Cookie") && isConstructorInitialized(variableTree)) {
+      Symbol variableSymbol = variableTree.symbol();
+      //Ignore field variables
+      if (variableSymbol.isVariableSymbol() && variableSymbol.owner().isMethodSymbol()) {
+        unsecuredCookies.add((Symbol.VariableSymbol) variableSymbol);
+      }
+    }
+  }
+
+  private void checkSecureCall(MethodInvocationTree mit) {
+    if (isSetSecureCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
+      if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
+        Symbol reference = ((IdentifierTree) mse.expression()).symbol();
+        unsecuredCookies.remove(reference);
       }
     }
   }
