@@ -65,7 +65,7 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
 
   protected boolean isIdentifierDynamicString(Tree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
     Symbol symbol = arg.symbol();
-    if (symbol.equals(currentlyChecking) || isConstant(symbol)) {
+    if (!symbol.isVariableSymbol() || symbol.equals(currentlyChecking) || isConstant(symbol)) {
       return false;
     }
 
@@ -75,7 +75,7 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
       //symbol is a local variable, check it is not a dynamic string.
 
       //Check declaration
-      VariableTree declaration = (VariableTree) getSemanticModel().getTree(symbol);
+      VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
       if (declaration.initializer() != null && isDynamicString(methodTree, declaration.initializer(), currentlyChecking)) {
         return true;
       }

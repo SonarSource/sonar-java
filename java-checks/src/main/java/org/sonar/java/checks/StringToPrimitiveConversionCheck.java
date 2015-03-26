@@ -155,12 +155,11 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
     }
 
     private boolean isBadlyInstanciatedVariable(Symbol.VariableSymbol variableSymbol) {
-      Tree tree = getSemanticModel().getTree(variableSymbol);
-      if (tree != null && tree.is(Tree.Kind.VARIABLE)) {
-        VariableTree variableTree = (VariableTree) tree;
+      VariableTree variableTree = variableSymbol.declaration();
+      if (variableTree != null) {
         ExpressionTree initializer = variableTree.initializer();
         if (initializer != null) {
-          return isBadlyInstanciated(variableTree.initializer());
+          return isBadlyInstanciated(initializer);
         }
       }
       return false;

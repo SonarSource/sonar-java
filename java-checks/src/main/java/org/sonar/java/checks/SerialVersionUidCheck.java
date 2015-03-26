@@ -90,8 +90,8 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     if (!serialVersionUidSymbol.type().is("long")) {
       missingModifiers.add("long");
     }
-    if (!missingModifiers.isEmpty()) {
-      Tree tree = getSemanticModel().getTree(serialVersionUidSymbol);
+    Tree tree = serialVersionUidSymbol.declaration();
+    if (tree != null && !missingModifiers.isEmpty()) {
       addIssue(tree, "Make this \"serialVersionUID\" field \"" + Joiner.on(' ').join(missingModifiers) + "\".");
     }
   }

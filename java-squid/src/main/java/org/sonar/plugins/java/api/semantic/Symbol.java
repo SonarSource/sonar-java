@@ -19,10 +19,15 @@
  */
 package org.sonar.plugins.java.api.semantic;
 
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -92,6 +97,8 @@ public interface Symbol {
 
   List<IdentifierTree> usages();
 
+  @Nullable
+  Tree declaration();
 
   interface TypeSymbol extends Symbol {
 
@@ -118,9 +125,15 @@ public interface Symbol {
      */
     Collection<Symbol> lookupSymbols(String name);
 
+    @Nullable
+    ClassTree declaration();
+
   }
 
   interface VariableSymbol extends Symbol {
+
+    @Nullable
+    VariableTree declaration();
 
   }
 
@@ -131,6 +144,10 @@ public interface Symbol {
     TypeSymbol returnType();
 
     List<Type> thrownTypes();
+
+    @Nullable
+    MethodTree declaration();
+
   }
 
 }

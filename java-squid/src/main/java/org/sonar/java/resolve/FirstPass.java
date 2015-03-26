@@ -218,7 +218,7 @@ public class FirstPass extends BaseTreeVisitor {
       flag = computeClassFlags(tree);
     }
     JavaSymbol.TypeJavaSymbol symbol = new JavaSymbol.TypeJavaSymbol(flag, name, env.scope.owner);
-
+    symbol.declaration = tree;
     ((ClassTreeImpl) tree).setSymbol(symbol);
     //Only register classes that can be accessible, so classes owned by a method are not registered.
     //TODO : register also based on flags ?
@@ -277,6 +277,7 @@ public class FirstPass extends BaseTreeVisitor {
   public void visitMethod(MethodTree tree) {
     String name = tree.returnType() == null ? "<init>" : tree.simpleName().name();
     JavaSymbol.MethodJavaSymbol symbol = new JavaSymbol.MethodJavaSymbol(computeFlags(tree.modifiers()), name, env.scope.owner);
+    symbol.declaration = tree;
     if((env.scope.owner.flags & Flags.ENUM) !=0 && tree.returnType()==null ) {
       //enum constructors are private.
       symbol.flags |= Flags.PRIVATE;
@@ -356,6 +357,7 @@ public class FirstPass extends BaseTreeVisitor {
 
   private void declareVariable(int flags, IdentifierTree identifierTree, VariableTreeImpl tree) {
     JavaSymbol.VariableJavaSymbol symbol = new JavaSymbol.VariableJavaSymbol(flags, identifierTree.name(), env.scope.owner);
+    symbol.declaration = tree;
     enterSymbol(tree, symbol);
     symbol.completer = completer;
     uncompleted.add(symbol);

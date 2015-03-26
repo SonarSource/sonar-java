@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -69,16 +70,17 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
 
   @Override
   public void visitClass(ClassTree tree) {
-    if (tree.simpleName() != null) {
+    IdentifierTree simpleName = tree.simpleName();
+    if (simpleName != null) {
       Symbol.TypeSymbol classSymbol = tree.symbol();
       Collection<Symbol> members = classSymbol.memberSymbols();
       for (Symbol sym : members) {
         if (sym.isVariableSymbol() && !staticFieldSameType(classSymbol, sym)) {
           //Exclude static fields of the same type.
-          fields.add(semanticModel.getTree(sym));
+          fields.add(((Symbol.VariableSymbol) sym).declaration());
         }
       }
-      currentClassName = tree.simpleName().name();
+      currentClassName = simpleName.name();
     }
     super.visitClass(tree);
     currentClassName = "";
@@ -86,7 +88,7 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
   }
 
   private boolean staticFieldSameType(Symbol classSymbol, Symbol sym) {
-    return sym.type() != null && sym.type().equals(classSymbol.type()) && sym.isStatic();
+    return sym.type().equals(classSymbol.type()) && sym.isStatic();
   }
 
   @Override

@@ -144,7 +144,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
           idents.put(identifierTree, sym);
           sb.append(" ").append(sym.getName());
         }
-        int refLine = ((JavaTree) semanticModel.getTree(sym)).getTokenLine();
+        int refLine = ((JavaTree) sym.declaration()).getTokenLine();
         if (refLine != line) {
           sb.append(" ref#").append(refLine);
         }

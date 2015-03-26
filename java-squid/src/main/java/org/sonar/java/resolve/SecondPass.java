@@ -82,7 +82,7 @@ public class SecondPass implements JavaSymbol.Completer {
       return;
     }
 
-    ClassTree tree = (ClassTree) semanticModel.getTree(symbol);
+    ClassTree tree = symbol.declaration;
     completeTypeParameters(tree.typeParameters(), env);
 
     //Superclass
@@ -158,7 +158,7 @@ public class SecondPass implements JavaSymbol.Completer {
   }
 
   private void complete(JavaSymbol.MethodJavaSymbol symbol) {
-    MethodTree methodTree = (MethodTree) semanticModel.getTree(symbol);
+    MethodTree methodTree = symbol.declaration;
     Resolve.Env env = semanticModel.getEnv(symbol);
     completeTypeParameters(methodTree.typeParameters(), env);
     ImmutableList.Builder<JavaType> thrownTypes = ImmutableList.builder();
@@ -196,7 +196,7 @@ public class SecondPass implements JavaSymbol.Completer {
   }
 
   private void complete(JavaSymbol.VariableJavaSymbol symbol) {
-    VariableTree variableTree = (VariableTree) semanticModel.getTree(symbol);
+    VariableTree variableTree = symbol.declaration;
     Resolve.Env env = semanticModel.getEnv(symbol);
     if (variableTree.is(Tree.Kind.ENUM_CONSTANT)) {
       symbol.type = env.enclosingClass().type;

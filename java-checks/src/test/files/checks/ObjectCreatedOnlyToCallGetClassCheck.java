@@ -1,5 +1,5 @@
-class A {
-  void foo() {
+import static java.lang.Boolean.*;
+class A { void foo() {
     A a1 = new A(); // Noncompliant
     a1.getClass();
     new B().getClass(); // Noncompliant
@@ -76,6 +76,7 @@ abstract class E {
 
 class F<T> {
   T foo() {
+    TRUE.getClass();
     return null;
   }
 }

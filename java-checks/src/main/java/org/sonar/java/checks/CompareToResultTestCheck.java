@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -92,15 +93,15 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
 
   private boolean isIdentifierContainingCompareToResult(IdentifierTree identifier) {
     Symbol variableSymbol = identifier.symbol();
-    if (variableSymbol.isUnknown()) {
+    if (!variableSymbol.isVariableSymbol()) {
       return false;
     }
-    VariableTree variableDefinition = (VariableTree) getSemanticModel().getTree(variableSymbol);
+    VariableTree variableDefinition = ((Symbol.VariableSymbol) variableSymbol).declaration();
     if (variableDefinition != null) {
       ExpressionTree initializer = variableDefinition.initializer();
       if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) && variableSymbol.owner().isMethodSymbol()) {
-        Tree method = getSemanticModel().getTree(variableSymbol.owner());
-        return isCompareToInvocation((MethodInvocationTree) initializer) && !isReassigned(variableSymbol, method);
+        MethodTree method = ((Symbol.MethodSymbol) variableSymbol.owner()).declaration();
+        return method != null && isCompareToInvocation((MethodInvocationTree) initializer) && !isReassigned(variableSymbol, method);
       }
     }
     return false;

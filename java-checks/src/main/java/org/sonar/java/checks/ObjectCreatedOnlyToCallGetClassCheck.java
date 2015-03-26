@@ -38,6 +38,8 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Rule(
@@ -68,9 +70,16 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
     }
   }
 
+  @CheckForNull
   private ExpressionTree getInitializer(IdentifierTree tree) {
     Symbol symbol = tree.symbol();
-    return ((VariableTree) getSemanticModel().getTree(symbol)).initializer();
+    if(symbol.isVariableSymbol()) {
+      VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
+      if(declaration != null) {
+        return declaration.initializer();
+      }
+    }
+    return null;
   }
 
   private boolean variableUsedOnlyToGetClass(IdentifierTree tree) {
@@ -78,16 +87,18 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
       return false;
     }
     Symbol symbol = tree.symbol();
-    return symbol.usages().size() == 1 && hasBeenInitialized(symbol);
+    return symbol.usages().size() == 1 && hasBeenInitialized(tree);
   }
 
-  private boolean hasBeenInitialized(Symbol symbol) {
-    ExpressionTree initializer = ((VariableTree) getSemanticModel().getTree(symbol)).initializer();
+  private boolean hasBeenInitialized(IdentifierTree tree) {
+    ExpressionTree initializer = getInitializer(tree);
     return initializer != null && initializer.is(Kind.NEW_CLASS);
   }
 
-  private void reportIssue(ExpressionTree expressionTree) {
-    addIssue(expressionTree, "Remove this object instantiation and use \"" + getTypeName(expressionTree) + ".class\" instead.");
+  private void reportIssue(@Nullable ExpressionTree expressionTree) {
+    if(expressionTree != null) {
+      addIssue(expressionTree, "Remove this object instantiation and use \"" + getTypeName(expressionTree) + ".class\" instead.");
+    }
   }
 
   private String getTypeName(ExpressionTree tree) {

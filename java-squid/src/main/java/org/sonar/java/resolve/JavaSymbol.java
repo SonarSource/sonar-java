@@ -26,8 +26,13 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.java.resolve.Scope.OrderedScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -242,6 +247,12 @@ public class JavaSymbol implements Symbol {
     return usages;
   }
 
+  @Nullable
+  @Override
+  public Tree declaration() {
+    return null;
+  }
+
   interface Completer {
     void complete(JavaSymbol symbol);
   }
@@ -272,6 +283,8 @@ public class JavaSymbol implements Symbol {
     Scope members;
     Scope typeParameters;
     List<JavaType.TypeVariableJavaType> typeVariableTypes;
+    @CheckForNull
+    ClassTree declaration;
 
     public TypeJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(TYP, flags, name, owner);
@@ -363,12 +376,20 @@ public class JavaSymbol implements Symbol {
     public Collection<org.sonar.plugins.java.api.semantic.Symbol> lookupSymbols(String name) {
       return Lists.<org.sonar.plugins.java.api.semantic.Symbol>newArrayList(members().lookup(name));
     }
+
+    @Override
+    public ClassTree declaration() {
+      return declaration;
+    }
   }
 
   /**
    * Represents a field, enum constant, method or constructor parameter, local variable, resource variable or exception parameter.
    */
   public static class VariableJavaSymbol extends JavaSymbol implements VariableSymbol {
+
+    @CheckForNull
+    VariableTree declaration;
 
     public VariableJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(VAR, flags, name, owner);
@@ -379,6 +400,10 @@ public class JavaSymbol implements Symbol {
       this.type = type;
     }
 
+    @Override
+    public VariableTree declaration() {
+      return declaration;
+    }
   }
 
   /**
@@ -390,6 +415,8 @@ public class JavaSymbol implements Symbol {
     OrderedScope parameters;
     Scope typeParameters;
     List<JavaType.TypeVariableJavaType> typeVariableTypes;
+    @CheckForNull
+    MethodTree declaration;
 
     public MethodJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner) {
       super(MTH, flags, name, owner);
@@ -522,6 +549,11 @@ public class JavaSymbol implements Symbol {
     public List<org.sonar.plugins.java.api.semantic.Type> thrownTypes() {
       return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(((JavaType.MethodJavaType) super.type).thrown);
     }
+
+    @Override
+    public MethodTree declaration() {
+      return declaration;
+    }
   }
 
   /**
@@ -545,6 +577,13 @@ public class JavaSymbol implements Symbol {
     public List<JavaType> getInterfaces() {
       // FIXME : should return upperbound
       return ImmutableList.of();
+    }
+
+    @Override
+    public ClassTree declaration() {
+      //FIXME: declaration should not be ClassTree: a type Variable is declared by an identifier with bounds
+      //This probably implies to refactor this class to not inherit form TypeJavaSymbol and/or to implement its dedicated interface
+      return null;
     }
   }
 

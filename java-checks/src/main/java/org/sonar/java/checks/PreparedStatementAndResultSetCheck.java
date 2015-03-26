@@ -101,7 +101,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
       ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
       if (expression.is(Kind.IDENTIFIER)) {
         Symbol referenceSymbol = ((IdentifierTree) expression).symbol();
-        return getSemanticModel().getTree(referenceSymbol);
+        return referenceSymbol.declaration();
       }
     }
     return null;
