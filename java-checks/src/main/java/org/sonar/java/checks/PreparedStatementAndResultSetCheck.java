@@ -43,6 +43,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -107,7 +108,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   }
 
   @CheckForNull
-  private Integer getNumberParametersFromPreparedStatement(Tree tree) {
+  private Integer getNumberParametersFromPreparedStatement(@Nullable Tree tree) {
     if (tree != null && tree.is(Kind.VARIABLE)) {
       ExpressionTree initializer = ((VariableTree) tree).initializer();
       if (initializer != null && initializer.is(Kind.METHOD_INVOCATION)) {
