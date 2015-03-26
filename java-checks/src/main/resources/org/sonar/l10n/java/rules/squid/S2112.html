@@ -1,0 +1,30 @@
+<p>The <code>equals</code> and <code>hashCode</code> methods of <code>java.net.URL</code> both make calls out to the Internet and are blocking operations. <code>URI</code> on the other hand makes no such calls and should be used instead unless the specific <code>URL</code> functionality is required.</p>
+
+<p>This rule checks for uses of <code>URL</code>'s in <code>Map</code> and <code>Set</code>, and for explicit calls to the <code>equals</code> and <code>hashCode</code> methods.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public void checkUrl(URL url) {
+  Set&lt;URL> sites = new HashSet&lt;URL&gt;();  // Noncompliant
+
+  URL homepage = new URL("http://sonarsource.com");  // Compliant
+  if (homepage.equals(url)) { // Noncompliant
+    // ...
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+
+<pre>
+public void checkUrl(URL url) {
+  Set&lt;URI&gt; sites = new HashSet&lt;URI&gt;();  // Compliant
+
+  URI homepage = new URI("http://sonarsource.com");  // Compliant
+  URI uri = url.toURI();
+  if (homepage.equals(uri)) {  // Compliant
+    // ...
+  }
+}
+</pre>

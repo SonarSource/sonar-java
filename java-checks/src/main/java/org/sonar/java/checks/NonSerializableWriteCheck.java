@@ -25,8 +25,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
@@ -95,7 +95,7 @@ public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
   }
 
   private void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-    if (WRITE_OBJECT_MATCHER.matches(methodInvocation, getSemanticModel())) {
+    if (WRITE_OBJECT_MATCHER.matches(methodInvocation)) {
       ExpressionTree argument = methodInvocation.arguments().get(0);
       if (!isAcceptableType(argument.symbolType()) && !isTestedSymbol(argument)) {
         addIssue(methodInvocation, "Make the \"" + argument.symbolType().fullyQualifiedName() + "\" class \"Serializable\" or don't write it.");

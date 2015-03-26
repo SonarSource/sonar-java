@@ -22,10 +22,10 @@ package org.sonar.java.checks.methods;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.sonar.java.model.expression.NewClassTreeImpl;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -95,20 +95,20 @@ public class MethodInvocationMatcher {
     return this;
   }
 
-  public boolean matches(NewClassTree newClassTree, SemanticModel semanticModel) {
+  public boolean matches(NewClassTree newClassTree) {
     NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) newClassTree;
-    return matches(newClassTreeImpl.getConstructorIdentifier(), null, semanticModel);
+    return matches(newClassTreeImpl.getConstructorIdentifier(), null);
   }
 
-  public boolean matches(MethodInvocationTree mit, SemanticModel semanticModel) {
+  public boolean matches(MethodInvocationTree mit) {
     IdentifierTree id = getIdentifier(mit);
     if (id != null) {
-      return matches(id, getCallSiteType(mit, semanticModel), semanticModel);
+      return matches(id, getCallSiteType(mit));
     }
     return false;
   }
 
-  private boolean matches(IdentifierTree id, Type callSiteType, SemanticModel semanticModel) {
+  private boolean matches(IdentifierTree id, Type callSiteType) {
     Symbol symbol = id.symbol();
     if (symbol.isMethodSymbol()) {
       Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
@@ -119,12 +119,16 @@ public class MethodInvocationMatcher {
     return false;
   }
 
-  private Type getCallSiteType(MethodInvocationTree mit, SemanticModel semanticModel) {
-    if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
-      return semanticModel.getEnclosingClass(mit).type();
-    } else if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTree) mit.methodSelect();
-      return methodSelect.expression().symbolType();
+  private Type getCallSiteType(MethodInvocationTree mit) {
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
+      Symbol.TypeSymbol enclosingClassSymbol = ((IdentifierTree) methodSelect).symbol().enclosingClass();
+      if (enclosingClassSymbol != null) {
+        return enclosingClassSymbol.type();
+      }
+    } else if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
+      return memberSelect.expression().symbolType();
     }
     return null;
   }

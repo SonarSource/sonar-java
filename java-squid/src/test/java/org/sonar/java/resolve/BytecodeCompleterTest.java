@@ -221,12 +221,12 @@ public class BytecodeCompleterTest {
     assertThat(typeParametersSymbol.typeVariableTypes.get(1).erasure().getSymbol().getName()).isEqualTo("CharSequence");
 
     assertThat(typeParametersSymbol.getSuperclass()).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
-    assertThat(((JavaType.ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.keySet()).hasSize(1);
-    JavaType.TypeVariableJavaType keyTypeVariable = ((JavaType.ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.keySet().iterator().next();
+    assertThat(((JavaType.ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.typeVariables()).hasSize(1);
+    JavaType.TypeVariableJavaType keyTypeVariable = ((JavaType.ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.typeVariables().iterator().next();
     assertThat(keyTypeVariable.symbol.getName()).isEqualTo("S");
-    JavaType actual = ((JavaType.ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.get(keyTypeVariable);
+    JavaType actual = ((JavaType.ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.substitutedType(keyTypeVariable);
     assertThat(actual).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
-    assertThat(((JavaType.ParametrizedTypeJavaType) actual).typeSubstitution.keySet()).hasSize(1);
+    assertThat(((JavaType.ParametrizedTypeJavaType) actual).typeSubstitution.typeVariables()).hasSize(1);
 
     assertThat(typeParametersSymbol.getInterfaces()).hasSize(2);
     assertThat(typeParametersSymbol.getInterfaces().get(0)).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
@@ -242,8 +242,8 @@ public class BytecodeCompleterTest {
     JavaType resultType = ((JavaType.MethodJavaType) fooMethod.type).resultType;
     assertThat(resultType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
     JavaType.ParametrizedTypeJavaType actualResultType = (JavaType.ParametrizedTypeJavaType) resultType;
-    assertThat(actualResultType.typeSubstitution.keySet()).hasSize(1);
-    assertThat(actualResultType.typeSubstitution.values().iterator().next()).isSameAs(WtypeVariableType);
+    assertThat(actualResultType.typeSubstitution.typeVariables()).hasSize(1);
+    assertThat(actualResultType.typeSubstitution.substitutedTypes().iterator().next()).isSameAs(WtypeVariableType);
 
     //primitive types
     assertThat(fooMethod.parameterTypes().get(1).isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.INT)).isTrue();

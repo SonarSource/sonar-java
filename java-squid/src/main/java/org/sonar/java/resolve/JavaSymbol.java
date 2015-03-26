@@ -514,7 +514,7 @@ public class JavaSymbol implements Symbol {
 
         JavaType overrideeType = overridee.getParametersTypes().get(i);
         if (classType instanceof JavaType.ParametrizedTypeJavaType) {
-          overrideeType = ((JavaType.ParametrizedTypeJavaType) classType).typeSubstitution.get(overrideeType);
+          overrideeType = ((JavaType.ParametrizedTypeJavaType) classType).typeSubstitution.substitutedType(overrideeType);
           if (overrideeType == null) {
             overrideeType = overridee.getParametersTypes().get(i);
           }
