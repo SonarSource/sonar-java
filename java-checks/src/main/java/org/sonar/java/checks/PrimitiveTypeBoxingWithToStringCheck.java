@@ -89,6 +89,6 @@ public class PrimitiveTypeBoxingWithToStringCheck extends AbstractMethodDetectio
       .typeDefinition(type.fullyQualifiedName())
       .name("valueOf")
       .addParameter(((JavaType) type).primitiveType().fullyQualifiedName());
-    return valueOfMatcher.matches((MethodInvocationTree) abstractTypedTree, getSemanticModel());
+    return valueOfMatcher.matches((MethodInvocationTree) abstractTypedTree);
   }
 }

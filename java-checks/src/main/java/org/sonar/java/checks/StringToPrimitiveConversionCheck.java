@@ -125,7 +125,7 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
     }
 
     private void checkMethodInvocation(MethodInvocationTree methodInvocationTree) {
-      if (unboxingInvocationMatcher.matches(methodInvocationTree, getSemanticModel())) {
+      if (unboxingInvocationMatcher.matches(methodInvocationTree)) {
         MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
         checkInstanciation(methodSelect.expression());
       }
@@ -142,7 +142,7 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
       if (expression.is(Tree.Kind.NEW_CLASS)) {
         result = isStringBasedConstructor((NewClassTree) expression);
       } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-        result = valueOfInvocationMatcher.matches((MethodInvocationTree) expression, getSemanticModel());
+        result = valueOfInvocationMatcher.matches((MethodInvocationTree) expression);
       } else if (expression.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) expression;
         Symbol reference = identifier.symbol();
