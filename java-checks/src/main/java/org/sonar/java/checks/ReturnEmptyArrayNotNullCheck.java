@@ -26,6 +26,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -37,6 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.List;
 import java.util.Set;
@@ -140,7 +143,11 @@ public class ReturnEmptyArrayNotNullCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
-      returnType.push(Returns.getReturnType(methodTree.returnType()));
+      if (isAllowingNull(methodTree)) {
+        returnType.push(Returns.OTHERS);
+      } else {
+        returnType.push(Returns.getReturnType(methodTree.returnType()));
+      }
     } else if (tree.is(Tree.Kind.CONSTRUCTOR)) {
       returnType.push(Returns.OTHERS);
     } else {
@@ -166,4 +173,13 @@ public class ReturnEmptyArrayNotNullCheck extends SubscriptionBaseVisitor {
     return tree.expression() != null && tree.expression().is(Tree.Kind.NULL_LITERAL);
   }
 
+  private boolean isAllowingNull(MethodTree methodTree) {
+    for (AnnotationTree annotation : methodTree.modifiers().annotations()) {
+      Type type = annotation.annotationType().symbolType();
+      if (type.is("javax.annotation.Nullable") || type.is("javax.annotation.CheckForNull")) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

@@ -35,20 +35,23 @@ public class ReturnEmptyArrayNotNullCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ReturnEmptyArrayyNotNullCheck.java"), new VisitorsBridge(new ReturnEmptyArrayNotNullCheck()));
+    SourceFile file = JavaAstScanner.scanSingleFile(
+      new File("src/test/files/checks/ReturnEmptyArrayNotNullCheck.java"), new VisitorsBridge(new ReturnEmptyArrayNotNullCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(16).withMessage("Return an empty array instead of null.")
-      .next().atLine(25)
-      .next().atLine(35)
-      .next().atLine(40)
-      .next().atLine(44)
+      .next().atLine(29).withMessage("Return an empty array instead of null.")
+      .next().atLine(38)
       .next().atLine(48)
-      .next().atLine(53).withMessage("Return an empty collection instead of null.")
-      .next().atLine(57).withMessage("Return an empty array instead of null.")
+      .next().atLine(53)
+      .next().atLine(57)
       .next().atLine(61)
-      .next().atLine(72)
-      .next().atLine(80)
-      .next().atLine(88);
+      .next().atLine(66).withMessage("Return an empty collection instead of null.")
+      .next().atLine(70).withMessage("Return an empty array instead of null.")
+      .next().atLine(74)
+      .next().atLine(84)
+      .next().atLine(92)
+      .next().atLine(100)
+      .next().atLine(111)
+      .noMore();
   }
 
 }
