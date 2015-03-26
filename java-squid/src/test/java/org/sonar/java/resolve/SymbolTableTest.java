@@ -140,6 +140,7 @@ public class SymbolTableTest {
     assertThat(typeSymbol.symbolMetadata.isAnnotatedWith("java.lang.Override")).isFalse();
     assertThat(typeSymbol.members.lookup("super")).hasSize(1);
     superSymbol = typeSymbol.members.lookup("super").get(0);
+    assertThat(superSymbol.owner).isSameAs(typeSymbol);
     assertThat(((JavaSymbol.VariableJavaSymbol) superSymbol).type.symbol).isSameAs(typeSymbol.getSuperclass().symbol);
 
     JavaSymbol superclass = typeSymbol.getSuperclass().symbol;
