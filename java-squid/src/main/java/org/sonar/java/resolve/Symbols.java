@@ -88,10 +88,15 @@ public class Symbols {
 
   static {
     rootPackage = new JavaSymbol.PackageJavaSymbol("", null);
-    unknownSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, /* TODO name */"", rootPackage) {
+    unknownSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "!unknownSymbol!", rootPackage) {
       @Override
       public void addUsage(IdentifierTree tree) {
         //noop
+      }
+
+      @Override
+      public boolean isTypeSymbol() {
+        return false;
       }
 
       @Override
