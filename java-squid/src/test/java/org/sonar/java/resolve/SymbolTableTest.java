@@ -229,6 +229,7 @@ public class SymbolTableTest {
         result.symbol("FirstInterface").type,
         result.symbol("SecondInterface").type);
     assertThat(interfaceSymbol.members.lookup("this")).isEmpty();
+    assertThat(interfaceSymbol.members.lookup("super")).isEmpty();
 
     JavaSymbol.VariableJavaSymbol variableSymbol = (JavaSymbol.VariableJavaSymbol) result.symbol("FIRST_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(interfaceSymbol);
