@@ -48,12 +48,12 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
   private void checkInvocation(Tree tree, MethodInvocationMatcher invocationMatcher) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
-      if (invocationMatcher.matches(mit, getSemanticModel())) {
+      if (invocationMatcher.matches(mit)) {
         onMethodFound(mit);
       }
     } else if (tree.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) tree;
-      if (invocationMatcher.matches(newClassTree, getSemanticModel())) {
+      if (invocationMatcher.matches(newClassTree)) {
         onConstructorFound(newClassTree);
       }
     }
@@ -62,7 +62,7 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
   protected abstract List<MethodInvocationMatcher> getMethodInvocationMatchers();
 
   protected void onMethodFound(MethodInvocationTree mit) {
-    //Do nothing by default
+    // Do nothing by default
   }
 
   protected void onConstructorFound(NewClassTree newClassTree) {

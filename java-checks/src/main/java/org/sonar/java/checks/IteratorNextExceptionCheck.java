@@ -98,7 +98,7 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-      if (NEXT_INVOCATION_MATCHER.matches(methodInvocation, getSemanticModel()) || throwsNoSuchElementException(methodInvocation)) {
+      if (NEXT_INVOCATION_MATCHER.matches(methodInvocation) || throwsNoSuchElementException(methodInvocation)) {
         foundThrow = true;
       }
       super.visitMethodInvocation(methodInvocation);

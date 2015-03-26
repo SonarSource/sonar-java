@@ -41,6 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
+
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,6 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   private static final String[] GREGORIAN_PARAMETERS = {"year", "month", "dayOfMonth", "hourOfDay", "minute", "second"};
   private static final String[] DATE_GET_METHODS = {"getDate", "getMonth", "getHours", "getMinutes", "getSeconds"};
   private static final String[] DATE_SET_METHODS = {"setDate", "setMonth", "setHours", "setMinutes", "setSeconds"};
-
 
   private static final List<MethodInvocationMatcher> DATE_METHODS_COMPARISON = ImmutableList.<MethodInvocationMatcher>builder()
     .add(MethodInvocationMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("get").addParameter("int"))
@@ -113,7 +113,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       String name = getMethodName(mit);
       for (MethodInvocationMatcher methodInvocationMatcher : DATE_METHODS_COMPARISON) {
-        if (methodInvocationMatcher.matches(mit, getSemanticModel())) {
+        if (methodInvocationMatcher.matches(mit)) {
           if ("get".equals(name)) {
             // Calendar
             return getReferencedCalendarName(mit.arguments().get(0));
@@ -167,7 +167,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
       ExpressionTree arg0 = mit.arguments().get(0);
       ExpressionTree arg1 = mit.arguments().get(1);
       String referenceName = getReferencedCalendarName(arg0);
-      if(referenceName != null) {
+      if (referenceName != null) {
         checkArgument(arg1, referenceName, "\"{0}\" is not a valid value for setting \"{1}\".");
       }
     } else {
@@ -190,7 +190,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     if (arg.is(Tree.Kind.INT_LITERAL)) {
       literal = (LiteralTree) arg;
     } else if (arg.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS) && ((UnaryExpressionTree) arg).expression().is(Tree.Kind.INT_LITERAL)) {
-      if(arg.is(Tree.Kind.UNARY_MINUS)) {
+      if (arg.is(Tree.Kind.UNARY_MINUS)) {
         sign = -1;
       }
       literal = (LiteralTree) ((UnaryExpressionTree) arg).expression();

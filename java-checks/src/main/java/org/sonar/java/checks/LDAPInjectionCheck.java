@@ -40,18 +40,18 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 public class LDAPInjectionCheck extends AbstractInjectionChecker {
 
   private static final MethodInvocationMatcher LDAP_SEARCH_MATCHER = MethodInvocationMatcher.create()
-      .typeDefinition("javax.naming.directory.DirContext")
-      .name("search").withNoParameterConstraint();
+    .typeDefinition("javax.naming.directory.DirContext")
+    .name("search").withNoParameterConstraint();
 
   private static final MethodInvocationMatcher SEARCH_CONTROLS_MATCHER = MethodInvocationMatcher.create()
-      .typeDefinition("javax.naming.directory.SearchControls")
-      .name("setReturningAttributes").addParameter("java.lang.String[]");
+    .typeDefinition("javax.naming.directory.SearchControls")
+    .name("setReturningAttributes").addParameter("java.lang.String[]");
 
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
     if (isDirContextSearchCall(mit)) {
-      //Check the first two arguments of search method
+      // Check the first two arguments of search method
       checkDirContextArg(mit.arguments().get(0), mit);
       checkDirContextArg(mit.arguments().get(1), mit);
     } else if (isSearchControlCall(mit)) {
@@ -72,7 +72,6 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
     addIssue(tree, "Make sure that \"" + parameterName + "\" is sanitized before use in this LDAP request.");
   }
 
-
   private boolean isDynamicArray(ExpressionTree arg, MethodInvocationTree mit) {
     if (arg.is(Tree.Kind.NEW_ARRAY)) {
       NewArrayTree nat = (NewArrayTree) arg;
@@ -88,11 +87,11 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
   }
 
   private boolean isDirContextSearchCall(MethodInvocationTree methodTree) {
-    return hasSemantic() && LDAP_SEARCH_MATCHER.matches(methodTree, getSemanticModel());
+    return hasSemantic() && LDAP_SEARCH_MATCHER.matches(methodTree);
   }
 
   private boolean isSearchControlCall(MethodInvocationTree methodTree) {
-    return hasSemantic() && SEARCH_CONTROLS_MATCHER.matches(methodTree, getSemanticModel());
+    return hasSemantic() && SEARCH_CONTROLS_MATCHER.matches(methodTree);
   }
 
 }

@@ -33,6 +33,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
@@ -45,8 +46,8 @@ import java.util.List;
 public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
   private static final MethodInvocationMatcher RUNTIME_EXEC_MATCHER = MethodInvocationMatcher.create()
-      .typeDefinition("java.lang.Runtime")
-      .name("exec").withNoParameterConstraint();
+    .typeDefinition("java.lang.Runtime")
+    .name("exec").withNoParameterConstraint();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -56,7 +57,7 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      if (tree.is(Tree.Kind.METHOD_INVOCATION) && RUNTIME_EXEC_MATCHER.matches((MethodInvocationTree) tree, getSemanticModel())) {
+      if (tree.is(Tree.Kind.METHOD_INVOCATION) && RUNTIME_EXEC_MATCHER.matches((MethodInvocationTree) tree)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
         checkForIssue(tree, mit.arguments().get(0));
       } else if (tree.is(Tree.Kind.NEW_CLASS) && ((NewClassTree) tree).symbolType().is("java.lang.ProcessBuilder")) {
@@ -69,7 +70,7 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
   private void checkForIssue(Tree tree, ExpressionTree arg) {
     if (isDynamicArray(arg, tree)) {
-      addIssue(arg, "Make sure \""+parameterName+"\" is properly sanitized before use in this OS command.");
+      addIssue(arg, "Make sure \"" + parameterName + "\" is properly sanitized before use in this OS command.");
     }
   }
 
