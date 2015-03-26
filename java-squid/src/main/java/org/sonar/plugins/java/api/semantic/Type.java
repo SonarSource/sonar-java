@@ -143,7 +143,7 @@ public interface Type {
    */
   Type erasure();
 
-  interface ArrayTypeSemantic extends Type {
+  interface ArrayType extends Type {
 
     Type elementType();
 

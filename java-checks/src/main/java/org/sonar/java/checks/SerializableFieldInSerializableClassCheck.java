@@ -109,7 +109,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
       return true;
     }
     if (type.isArray()) {
-      return implementsSerializable(((Type.ArrayTypeSemantic) type).elementType());
+      return implementsSerializable(((Type.ArrayType) type).elementType());
     }
     if (type.isClass() || ((JavaType) type).isTagged(JavaType.TYPEVAR)) {
       return type.erasure().isSubtypeOf("java.io.Serializable");

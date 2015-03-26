@@ -97,7 +97,7 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
   private Type getExpectedType(Type providedType, List<Type> parametersTypes, int index, boolean varargs) {
     int lastParameterIndex = parametersTypes.size() - 1;
     Type lastParameterType = parametersTypes.get(lastParameterIndex);
-    Type lastExpectedType = varargs ? ((Type.ArrayTypeSemantic) lastParameterType).elementType() : lastParameterType;
+    Type lastExpectedType = varargs ? ((Type.ArrayType) lastParameterType).elementType() : lastParameterType;
     if (index > lastParameterIndex || (index == lastParameterIndex && varargs && !providedType.isArray())) {
       return lastExpectedType;
     }

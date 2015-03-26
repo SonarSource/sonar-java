@@ -239,7 +239,7 @@ public class JavaType implements Type {
     }
   }
 
-  public static class ArrayJavaType extends JavaType implements org.sonar.plugins.java.api.semantic.Type.ArrayTypeSemantic {
+  public static class ArrayJavaType extends JavaType implements ArrayType {
 
     private final ArrayJavaType erasure;
     /**
