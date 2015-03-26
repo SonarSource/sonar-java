@@ -60,13 +60,15 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     Set<Type> interfaces = new HashSet<>();
     for (TypeTree superInterface : classTree.superInterfaces()) {
       Type interfaceType = superInterface.symbolType();
-      String interfaceName = interfaceType.fullyQualifiedName();
-      if (interfaces.contains(interfaceType)) {
-        super.addIssue(superInterface, String.format("\"%s\" is listed multiple times.", interfaceName));
-      } else {
-        checkExtending(classTree, interfaceType, interfaceName);
+      if (!interfaceType.isUnknown()) {
+        String interfaceName = interfaceType.fullyQualifiedName();
+        if (interfaces.contains(interfaceType)) {
+          super.addIssue(superInterface, String.format("\"%s\" is listed multiple times.", interfaceName));
+        } else {
+          checkExtending(classTree, interfaceType, interfaceName);
+        }
+        interfaces.add(interfaceType);
       }
-      interfaces.add(interfaceType);
     }
   }
 
