@@ -271,6 +271,7 @@ public class SymbolTableTest {
     Map.Entry<JavaType.TypeVariableJavaType, JavaType> entry = superType.typeSubstitution.substitutionEntries().iterator().next();
     assertThat(entry.getKey()).isSameAs(superclass.typeParameters.lookup("E").get(0).type);
     assertThat(entry.getValue()).isSameAs(enumSymbol.type);
+    assertThat(enumSymbol.superClass()).isSameAs(result.symbol("parameterizedDeclaration").type);
 
     assertThat(enumSymbol.members.lookup("super")).hasSize(1);
     JavaSymbol.VariableJavaSymbol superSymbol = (JavaSymbol.VariableJavaSymbol) enumSymbol.members.lookup("super").get(0);
