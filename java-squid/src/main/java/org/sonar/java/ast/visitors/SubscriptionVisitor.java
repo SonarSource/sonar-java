@@ -116,10 +116,6 @@ public abstract class SubscriptionVisitor implements JavaFileScanner, CodeVisito
     }
   }
 
-  public SemanticModel getSemanticModel() {
-    return semanticModel;
-  }
-
   public boolean hasSemantic(){
     return semanticModel != null;
   }
