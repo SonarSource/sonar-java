@@ -62,7 +62,7 @@ public class SemanticModel {
     try {
       Resolve resolve = new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache);
       TypeAndReferenceSolver typeAndReferenceSolver = new TypeAndReferenceSolver(semanticModel, symbols, resolve, parametrizedTypeCache);
-      new FirstPass(semanticModel, symbols, resolve, typeAndReferenceSolver).visitCompilationUnit(tree);
+      new FirstPass(semanticModel, symbols, resolve, parametrizedTypeCache, typeAndReferenceSolver).visitCompilationUnit(tree);
       typeAndReferenceSolver.visitCompilationUnit(tree);
       new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
     } finally {

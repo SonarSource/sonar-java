@@ -43,7 +43,7 @@ class SubClass extends SuperClass {
     super.finalMethod();
     super.nonFinalPublicMethod(); //NonCompliant
   }
-  
+
 }
 
 final class FinalClass {
@@ -66,4 +66,18 @@ class OuterClass {
     }
   }
   
+}
+
+class NestedClassContainer extends SuperClass {
+
+  public NestedClassContainer() {
+    new Object() {
+      @Override
+      public String toString() {
+        super.nonFinalPublicMethod(); // Compliant
+        return "";
+      }
+    };
+  }
+
 }

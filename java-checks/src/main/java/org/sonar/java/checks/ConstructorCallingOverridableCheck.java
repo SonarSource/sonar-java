@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -71,6 +72,11 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
 
     public ConstructorBodyVisitor(TypeJavaSymbol constructorType) {
       this.constructorType = constructorType;
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      // prevents visit of anonymous class in constructors.
     }
 
     @Override
