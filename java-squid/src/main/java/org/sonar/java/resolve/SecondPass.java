@@ -105,7 +105,7 @@ public class SecondPass implements JavaSymbol.Completer {
         // the type given in the extends clause of the declaration of C
         // if an extends clause is present, or Object otherwise.
         type.supertype = symbols.objectType;
-        symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", symbols.objectType, symbols.objectType.getSymbol()));
+        symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", type.supertype, symbol));
       } else if(tree.is(Tree.Kind.INTERFACE)) {
         // JLS8 9.1.3: While every class is an extension of class Object, there is no single interface of which all interfaces are
         // extensions.
