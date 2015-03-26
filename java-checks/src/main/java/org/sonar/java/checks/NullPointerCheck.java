@@ -334,6 +334,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) tree).symbol();
       if (isSymbolLocalVariableOrMethodParameter(symbol) && isVariableNull((VariableSymbol) symbol)) {
+        // prevents reporting issue multiple times
+        currentState.setVariableValue((VariableSymbol) symbol, AbstractValue.NOTNULL);
         context.addIssue(tree, RULE_KEY, String.format(nullableMessage, symbol.name()));
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
