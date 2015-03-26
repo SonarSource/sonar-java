@@ -280,8 +280,8 @@ class NullPointerTest {
       object = null;
     }
     object.hashCode(); // False negative
-    for(Object object = null; true; object.hashCode()) { // Noncompliant
-      object.hashCode(); // Noncompliant
+    for(Object object1 = null, object2 = null; true; object2.hashCode()) { // Noncompliant
+      object1.hashCode(); // Noncompliant
     }
   }
 
@@ -301,13 +301,13 @@ class NullPointerTest {
   public void testWhileLoop() {
     Object object1 = null, object2 = null, object3 = null;
     while(object1.hashCode()) { // Noncompliant
-      object1.hashCode(); // Noncompliant
+      object2.hashCode(); // False negative, object2 is modified in the loop
       object2 = null;
       object2.hashCode(); // Noncompliant
      }
-    object1.hashCode(); // Noncompliant
+    object1.hashCode(); // Compliant, issue already raised
     object2.hashCode(); // Compliant
-    object2.hashCode(); // Compliant
+    object3.hashCode(); // Noncompliant
   }
 
   public void testHoistedLoop(boolean condition) {
@@ -329,12 +329,12 @@ class NullPointerTest {
   }
 
   public void testSwitch() {
-    String str = null;
-    switch(str) { // Noncompliant
+    String str1 = null, str2 = null, str3 = null;
+    switch(str1) { // Noncompliant
     case "ONE":
-      str.length(); // Noncompliant
+      str2.length(); // Noncompliant
     }
-    str.length(); // Noncompliant
+    str3.length(); // Noncompliant
   }
 
   public void testMergeOnParameter(@Nullable Object o) {
