@@ -28,32 +28,32 @@ import java.util.List;
 import java.util.Map;
 
 public class TypeSubstitution {
-  private Map<JavaType.TypeVariableJavaType, JavaType> typeSubstitution = Maps.newLinkedHashMap();
+  private Map<JavaType.TypeVariableJavaType, JavaType> substitutions = Maps.newLinkedHashMap();
 
   @CheckForNull
   public JavaType substitutedType(JavaType javaType) {
-    return typeSubstitution.get(javaType);
+    return substitutions.get(javaType);
   }
 
   public List<JavaType.TypeVariableJavaType> typeVariables() {
-    return Lists.newArrayList(typeSubstitution.keySet());
+    return Lists.newArrayList(substitutions.keySet());
   }
 
   public List<Map.Entry<JavaType.TypeVariableJavaType, JavaType>> substitutionEntries() {
-    return Lists.newArrayList(typeSubstitution.entrySet());
+    return Lists.newArrayList(substitutions.entrySet());
   }
 
   public List<JavaType> substitutedTypes() {
-    return Lists.newArrayList(typeSubstitution.values());
+    return Lists.newArrayList(substitutions.values());
   }
 
   public TypeSubstitution add(JavaType.TypeVariableJavaType typeVariableType, JavaType javaType) {
-    typeSubstitution.put(typeVariableType, javaType);
+    substitutions.put(typeVariableType, javaType);
     return this;
   }
 
   public int size() {
-    return typeSubstitution.size();
+    return substitutions.size();
   }
 
   @Override
@@ -66,7 +66,7 @@ public class TypeSubstitution {
       TypeSubstitution newSubstitution = (TypeSubstitution) obj;
 
       // take order of entries into account
-      return typeSubstitution.equals(newSubstitution.typeSubstitution)
+      return substitutions.equals(newSubstitution.substitutions)
         && this.substitutionEntries().equals(newSubstitution.substitutionEntries());
     }
   }
