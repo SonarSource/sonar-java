@@ -22,12 +22,15 @@ package org.sonar.java.resolve;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import javax.annotation.CheckForNull;
+
 import java.util.List;
 import java.util.Map;
 
 public class TypeSubstitution {
   private Map<JavaType.TypeVariableJavaType, JavaType> typeSubstitution = Maps.newLinkedHashMap();
 
+  @CheckForNull
   public JavaType substitutedType(JavaType javaType) {
     return typeSubstitution.get(javaType);
   }
