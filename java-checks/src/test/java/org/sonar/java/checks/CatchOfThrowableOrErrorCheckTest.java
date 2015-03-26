@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
@@ -35,15 +36,20 @@ public class CatchOfThrowableOrErrorCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchOfThrowableOrErrorCheck.java"), new VisitorsBridge(new CatchOfThrowableOrErrorCheck()));
+    SourceFile file = JavaAstScanner.scanSingleFile(
+      new File("src/test/files/checks/CatchOfThrowableOrErrorCheck.java"),
+      new VisitorsBridge(new CatchOfThrowableOrErrorCheck(), ImmutableList.of(new File("target/test-classes"))));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(5).withMessage("Catch Exception instead of Throwable.")
-      .next().atLine(6).withMessage("Catch Exception instead of Throwable.")
-      .next().atLine(7).withMessage("Catch Exception instead of Error.")
-      .next().atLine(10).withMessage("Catch Exception instead of Error.")
-      .next().atLine(14)
-      .next().atLine(16).withMessage("Catch Exception instead of Throwable.")
-      .next().atLine(17).withMessage("Catch Exception instead of Error.");
+      .next().atLine(8).withMessage("Catch Exception instead of Throwable.")
+      .next().atLine(9).withMessage("Catch Exception instead of Error.")
+      .next().atLine(12).withMessage("Catch Exception instead of Error.")
+      .next().atLine(15).withMessage("Catch Exception instead of Error.")
+      .next().atLine(17).withMessage("Catch Exception instead of Throwable.")
+      .next().atLine(18).withMessage("Catch Exception instead of Error.")
+      .next().atLine(24).withMessage("Catch Exception instead of Throwable.")
+      .next().atLine(26).withMessage("Catch Exception instead of Throwable.")
+      .next().atLine(32).withMessage("Catch Exception instead of Throwable.")
+      .next().atLine(34).withMessage("Catch Exception instead of Throwable.")
+      .noMore();
   }
-
 }
