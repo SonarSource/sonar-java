@@ -88,9 +88,9 @@ class NullPointerTest {
     i = nullableField.length; // False negative, instance and static fields are not checked
 
     Object[] array2 = nullableMethod();
-    i = array2.length; // Noncompliant
+    i = array2.length; // Compliant
 
-    i = nullableMethod().length; // Noncompliant
+    i = nullableMethod().length; // Compliant
   }
 
   public class A {
@@ -224,7 +224,7 @@ class NullPointerTest {
     String var1 = null;
     if (var1.equals("")) { } // Noncompliant
     String var2 = nullableMethod();
-    if (var2.equals("")) { } // Noncompliant
+    if (var2.equals("")) { } // Compliant
   }
 
   public void testTry() {
@@ -349,7 +349,7 @@ class NullPointerTest {
   public void testAssignNullableMethod() {
     Object object;
     object = nullableMethod();
-    if(object.hashCode()) { } // Noncompliant
+    if(object.hashCode()) { } // Compliant
     object = null;
     if(object.hashCode()) { } // Noncompliant
   }
