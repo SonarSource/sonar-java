@@ -57,6 +57,7 @@ public class NullPointerCheckTest {
       .next().atLine(16).withMessage("null is dereferenced")
       .next().atLine(76).withMessage("NullPointerException might be thrown as 'array2' is nullable here")
       .next().atLine(78).withMessage("NullPointerException might be thrown as 'checkForNullMethod' is nullable here")
+      .next().atLine(107).withMessage("NullPointerException might be thrown as 'a2' is nullable here")
       .next().atLine(144).withMessage("'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument")
       .next().atLine(145).withMessage("'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument")
       .next().atLine(146).withMessage("'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument")
