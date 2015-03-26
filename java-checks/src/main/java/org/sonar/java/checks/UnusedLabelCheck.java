@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -47,7 +48,7 @@ public class UnusedLabelCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic() && getSemanticModel().getSymbol(tree).usages().isEmpty()) {
+    if (hasSemantic() && ((LabeledStatementTree) tree).symbol().usages().isEmpty()) {
       addIssue(tree, "Remove this unused label.");
     }
   }

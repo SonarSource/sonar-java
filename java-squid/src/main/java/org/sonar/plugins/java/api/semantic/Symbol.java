@@ -21,6 +21,7 @@ package org.sonar.plugins.java.api.semantic;
 
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -150,6 +151,16 @@ public interface Symbol {
     @Nullable
     @Override
     MethodTree declaration();
+
+  }
+
+  interface LabelSymbol {
+
+    String name();
+
+    List<IdentifierTree> usages();
+
+    LabeledStatementTree declaration();
 
   }
 

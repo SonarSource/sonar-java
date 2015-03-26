@@ -23,6 +23,7 @@ import org.sonar.api.source.Symbol;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -112,14 +113,21 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   }
 
   private void createSymbol(Tree tree, IdentifierTree identifier) {
-    Symbol symbol = symbolTableBuilder.newSymbol(startOffsetFor(identifier), endOffsetFor(identifier));
     org.sonar.plugins.java.api.semantic.Symbol semanticSymbol = semanticModel.getSymbol(tree);
-    if (semanticSymbol != null) {
+    if (semanticSymbol == null) {
+      semanticSymbol = Symbols.unknownSymbol;
+    }
+    createSymbol(semanticSymbol, identifier);
+  }
+
+  private void createSymbol(org.sonar.plugins.java.api.semantic.Symbol semanticSymbol, IdentifierTree identifier) {
+    Symbol symbol = symbolTableBuilder.newSymbol(startOffsetFor(identifier), endOffsetFor(identifier));
       for (IdentifierTree usage : semanticSymbol.usages()) {
         symbolTableBuilder.newReference(symbol, startOffsetFor(usage));
-      }
     }
   }
+
+
 
   private int startOffsetFor(IdentifierTree tree) {
     return ((InternalSyntaxToken) tree.identifierToken()).getFromIndex();

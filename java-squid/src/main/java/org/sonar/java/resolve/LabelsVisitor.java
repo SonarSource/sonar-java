@@ -21,6 +21,8 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.Maps;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.model.statement.LabeledStatementTreeImpl;
+import org.sonar.java.resolve.JavaSymbol.JavaLabelSymbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
@@ -32,8 +34,10 @@ import java.util.Map;
 
 public class LabelsVisitor extends BaseTreeVisitor {
 
-  private final SemanticModel semanticModel;
   private final Map<String, LabeledStatementTree> labelTrees;
+  //FIXME (benzonico) The dependency of this class upon SemanticModel should be removed. This holds as long as Result relies on SemanticModel.
+  //As a result of this removal, this visitor should always be executed, regardless semantic analysis is activated or not.
+  private final SemanticModel semanticModel;
 
 
   public LabelsVisitor(SemanticModel semanticModel) {
@@ -43,7 +47,9 @@ public class LabelsVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitLabeledStatement(LabeledStatementTree tree) {
-    semanticModel.associateSymbol(tree, new JavaSymbol(0, 0, tree.label().name(), null));
+    JavaLabelSymbol symbol = new JavaLabelSymbol(tree);
+    ((LabeledStatementTreeImpl) tree).setSymbol(symbol);
+    semanticModel.associateSymbol(tree, symbol);
     labelTrees.put(tree.label().name(), tree);
     super.visitLabeledStatement(tree);
   }
@@ -66,7 +72,7 @@ public class LabelsVisitor extends BaseTreeVisitor {
     }
     LabeledStatementTree labelTree = labelTrees.get(label.name());
     if (labelTree != null) {
-      JavaSymbol symbol = (JavaSymbol) semanticModel.getSymbol(labelTree);
+      JavaSymbol symbol = (JavaSymbol) labelTree.symbol();
       semanticModel.associateReference(label, symbol);
       ((IdentifierTreeImpl) label).setSymbol(symbol);
       symbol.addUsage(label);

@@ -28,6 +28,7 @@ import org.sonar.java.resolve.Scope.OrderedScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -581,6 +582,23 @@ public class JavaSymbol implements Symbol {
       //This probably implies to refactor this class to not inherit form TypeJavaSymbol and/or to implement its dedicated interface
       return null;
     }
+  }
+
+  public static class JavaLabelSymbol extends JavaSymbol implements Symbol.LabelSymbol {
+
+    private LabeledStatementTree declaration;
+
+    public JavaLabelSymbol(LabeledStatementTree tree) {
+      super(0, 0, tree.label().name(), null);
+      declaration = tree;
+    }
+
+    @Override
+    public LabeledStatementTree declaration() {
+      return declaration;
+    }
+
+
   }
 
 }

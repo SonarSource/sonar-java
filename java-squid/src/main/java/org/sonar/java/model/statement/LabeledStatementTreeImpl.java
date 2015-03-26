@@ -25,6 +25,8 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -37,6 +39,7 @@ import java.util.Iterator;
 public class LabeledStatementTreeImpl extends JavaTree implements LabeledStatementTree {
   private final IdentifierTree label;
   private final StatementTree statement;
+  private Symbol.LabelSymbol symbol;
 
   public LabeledStatementTreeImpl(IdentifierTree label, StatementTree statement, AstNode... children) {
     super(Kind.LABELED_STATEMENT);
@@ -69,6 +72,11 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
   }
 
   @Override
+  public Symbol.LabelSymbol symbol() {
+    return symbol;
+  }
+
+  @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitLabeledStatement(this);
   }
@@ -80,4 +88,7 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
       statement);
   }
 
+  public void setSymbol(JavaSymbol.JavaLabelSymbol symbol) {
+    this.symbol = symbol;
+  }
 }

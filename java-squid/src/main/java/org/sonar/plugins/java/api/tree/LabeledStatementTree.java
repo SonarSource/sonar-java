@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 /**
  * Labeled statement.
@@ -41,4 +42,5 @@ public interface LabeledStatementTree extends StatementTree {
 
   StatementTree statement();
 
+  Symbol.LabelSymbol symbol();
 }
