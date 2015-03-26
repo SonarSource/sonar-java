@@ -5,13 +5,13 @@ At worst, it could expose debugging information that would be useful to an attac
 </p>
 
 <p>
-Note that when they are present, this rule takes advantage of <code>@Nullable</code>, <code>@CheckForNull</code> and <code>@NonNull</code> annotations defined in
-<a href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values are or are not nullable. <code>@Nullable</code> and <code>@CheckForNull</code> annotations are interchangeable.
+Note that when they are present, this rule takes advantage of <code>@CheckForNull</code> and <code>@Nonnull</code> annotations defined in
+<a href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values are or are not nullable.
 </p>
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-@Nullable
+@CheckForNull
 String getName() {...}
 
 public boolean isNameEmpty() {
@@ -36,9 +36,9 @@ try {
 </pre>
 
 <pre>
-private void merge(@NonNull Color firstColor, @NonNull Color secondColor){...}
+private void merge(@Nonnull Color firstColor, @Nonnull Color secondColor){...}
 
-public void append(@Nullable Color color) {
+public void append(@CheckForNull Color color) {
     merge(currentColor, color); // Noncompliant; color should be null-checked because merge(...) doesn't accept nullable parameters
 }
 </pre>
