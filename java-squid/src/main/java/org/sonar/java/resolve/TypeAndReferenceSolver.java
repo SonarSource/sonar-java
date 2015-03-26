@@ -594,15 +594,15 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
     resolveAs(methodReferenceTree.expression(), JavaSymbol.VAR | JavaSymbol.TYP);
     //TODO resolve which method it is refered to
-    registerType(methodReferenceTree.method(), symbols.unknownType);
-    registerType(methodReferenceTree, symbols.unknownType);
+    registerType(methodReferenceTree.method(), Symbols.unknownType);
+    registerType(methodReferenceTree, Symbols.unknownType);
     scan(methodReferenceTree.typeArguments());
     scan(methodReferenceTree.method());
   }
 
   @Override
   public void visitOther(Tree tree) {
-    registerType(tree, symbols.unknownType);
+    registerType(tree, Symbols.unknownType);
   }
 
   private JavaType getTypeOfSymbol(JavaSymbol symbol, JavaType callSite) {
@@ -613,7 +613,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (symbol.kind < JavaSymbol.ERRONEOUS) {
       return symbol.type;
     } else {
-      return symbols.unknownType;
+      return Symbols.unknownType;
     }
   }
 

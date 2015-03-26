@@ -150,6 +150,7 @@ public class SemanticModel {
     return symbolsTree.get(tree);
   }
 
+  @Nullable
   public Tree getTree(Symbol symbol) {
     return symbolsTree.inverse().get(symbol);
   }

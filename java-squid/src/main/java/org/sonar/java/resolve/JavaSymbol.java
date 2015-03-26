@@ -32,7 +32,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -283,7 +282,6 @@ public class JavaSymbol implements Symbol {
     Scope members;
     Scope typeParameters;
     List<JavaType.TypeVariableJavaType> typeVariableTypes;
-    @CheckForNull
     ClassTree declaration;
 
     public TypeJavaSymbol(int flags, String name, JavaSymbol owner) {
@@ -388,7 +386,6 @@ public class JavaSymbol implements Symbol {
    */
   public static class VariableJavaSymbol extends JavaSymbol implements VariableSymbol {
 
-    @CheckForNull
     VariableTree declaration;
 
     public VariableJavaSymbol(int flags, String name, JavaSymbol owner) {
@@ -415,7 +412,6 @@ public class JavaSymbol implements Symbol {
     OrderedScope parameters;
     Scope typeParameters;
     List<JavaType.TypeVariableJavaType> typeVariableTypes;
-    @CheckForNull
     MethodTree declaration;
 
     public MethodJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner) {
