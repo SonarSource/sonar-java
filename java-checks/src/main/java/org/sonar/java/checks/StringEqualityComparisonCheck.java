@@ -33,6 +33,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   key = "StringEqualityComparisonCheck",
   name = "Strings should be compared using \"equals()\"",
   tags = {"bug", "cwe"},
+  status = "DEPRECATED",
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
