@@ -9,6 +9,11 @@ Note that when they are present, this rule takes advantage of <code>@CheckForNul
 <a href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values are or are not nullable.
 </p>
 
+<p>
+@Nullable denotes that, under some unspecified circumstances, the value might be null. To keep false positives low, this annotation is ignored.
+Whether an explicit test is required or not is left to the developer's discretion.
+</p>
+
 <h2>Noncompliant Code Example</h2>
 <pre>
 @CheckForNull

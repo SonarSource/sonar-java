@@ -49,6 +49,8 @@ import java.util.Set;
 @SqaleConstantRemediation("1min")
 public class UselessExtendsCheck extends SubscriptionBaseVisitor implements JavaFileScanner {
 
+  private final String ERROR_MESSAGE = "\"%s\" is listed multiple times.";
+
   @Override
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(Kind.CLASS);
@@ -67,7 +69,7 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
       if (interfaceType.isClass()) {
         String interfaceName = interfaceType.fullyQualifiedName();
         if (interfaces.contains(interfaceType)) {
-          addIssue(superInterfaceTree, String.format("\"%s\" is listed multiple times.", interfaceName));
+          addIssue(superInterfaceTree, String.format(ERROR_MESSAGE, interfaceName));
         } else {
           checkExtending(classTree, interfaceType, interfaceName);
         }
@@ -82,7 +84,7 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     for (TypeTree superInterfaceTree : classTree.superInterfaces()) {
       if (!currentInterfaceType.equals(superInterfaceTree.symbolType()) && currentInterfaceType.isSubtypeOf(superInterfaceTree.symbolType())) {
         String interfaceName = superInterfaceTree.symbolType().fullyQualifiedName();
-        addIssue(superInterfaceTree, String.format("\"%s\" is an \"%s\" so \"%s\" can be removed from the extension list.",
+        addIssue(superInterfaceTree, String.format("\"%s\" is a \"%s\" so \"%s\" can be removed from the extension list.",
           currentInterfaceName, interfaceName, interfaceName));
       }
     }
@@ -91,7 +93,7 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
   private void checkExtending(ClassTree classTree, TypeTree currentInterfaceTree) {
     for (TypeTree superInterfaceTree : classTree.superInterfaces()) {
       if (!currentInterfaceTree.equals(superInterfaceTree) && SyntacticEquivalence.areEquivalent(currentInterfaceTree, superInterfaceTree)) {
-        addIssue(superInterfaceTree, String.format("\"%s\" is listed multiple times.", extractInterfaceName(currentInterfaceTree)));
+        addIssue(superInterfaceTree, String.format(ERROR_MESSAGE, extractInterfaceName(currentInterfaceTree)));
       }
     }
   }
