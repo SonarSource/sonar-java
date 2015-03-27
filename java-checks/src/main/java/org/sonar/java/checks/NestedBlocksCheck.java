@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -37,7 +36,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.List;
 
 @Rule(
-  key = NestedBlocksCheck.RULE_KEY,
+  key = "S1199",
   name = "Nested code blocks should not be used",
   tags = {"bad-practice"},
   priority = Priority.MAJOR)
@@ -45,9 +44,6 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
 public class NestedBlocksCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1199";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -72,7 +68,7 @@ public class NestedBlocksCheck extends BaseTreeVisitor implements JavaFileScanne
   private void checkStatements(List<StatementTree> statements) {
     for (StatementTree statement : statements) {
       if (statement.is(Tree.Kind.BLOCK)) {
-        context.addIssue(statement, ruleKey, "Extract this nested code block into a method.");
+        context.addIssue(statement, this, "Extract this nested code block into a method.");
       }
     }
   }

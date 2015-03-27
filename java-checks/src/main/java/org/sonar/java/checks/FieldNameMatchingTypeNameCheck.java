@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -40,7 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Collection;
 
 @Rule(
-  key = FieldNameMatchingTypeNameCheck.RULE_KEY,
+  key = "S1700",
   name = "A field should not duplicate the name of its containing class",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
@@ -48,9 +47,6 @@ import java.util.Collection;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
 public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1700";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
   private SemanticModel semanticModel;
@@ -95,7 +91,7 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
   public void visitVariable(VariableTree tree) {
     String name = tree.simpleName().name();
     if (fields.contains(tree) && currentClassName.equalsIgnoreCase(name)) {
-      context.addIssue(tree, ruleKey, "Rename field \"" + name + "\"");
+      context.addIssue(tree, this, "Rename field \"" + name + "\"");
     }
     super.visitVariable(tree);
   }

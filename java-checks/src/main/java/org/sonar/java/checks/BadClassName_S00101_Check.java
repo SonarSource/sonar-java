@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -36,7 +35,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = BadClassName_S00101_Check.RULE_KEY,
+  key = "S00101",
   name = "Class names should comply with a naming convention",
   tags = {"convention"},
   priority = Priority.MINOR)
@@ -44,9 +43,6 @@ import java.util.regex.Pattern;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 public class BadClassName_S00101_Check extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S00101";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^[A-Z][a-zA-Z0-9]*$";
 
@@ -71,7 +67,7 @@ public class BadClassName_S00101_Check extends BaseTreeVisitor implements JavaFi
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null && !pattern.matcher(tree.simpleName().name()).matches()) {
-      context.addIssue(tree, ruleKey, "Rename this class name to match the regular expression '" + format + "'.");
+      context.addIssue(tree, this, "Rename this class name to match the regular expression '" + format + "'.");
     }
 
     super.visitClass(tree);

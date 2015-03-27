@@ -20,7 +20,6 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -36,11 +35,11 @@ public interface JavaFileScannerContext {
 
   CompilationUnitTree getTree();
 
-  void addIssue(Tree tree, RuleKey ruleKey, String message);
+  void addIssue(Tree tree, Object check, String message);
 
-  void addIssueOnFile(RuleKey ruleKey, String message);
+  void addIssueOnFile(Object check, String message);
 
-  void addIssue(int line, RuleKey ruleKey, String message);
+  void addIssue(int line, Object check, String message);
 
   void addIssue(Tree tree, CheckMessage checkMessage);
 

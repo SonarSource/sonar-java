@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
@@ -53,7 +52,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = UndocumentedApiCheck.RULE_KEY,
+  key = "UndocumentedApi",
   name = "Public types, methods and fields (API) should be documented with Javadoc",
   tags = {"convention"},
   priority = Priority.MINOR)
@@ -65,7 +64,6 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
 
   private static final String DEFAULT_FOR_CLASSES = "**";
-  public static final String RULE_KEY = "UndocumentedApi";
 
   @RuleProperty(
     key = "forClasses",
@@ -82,7 +80,6 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   private final Pattern setterPattern = Pattern.compile("set[A-Z].*");
   private final Pattern getterPattern = Pattern.compile("(get|is)[A-Z].*");
   private JavaFileScannerContext context;
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -133,14 +130,14 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     if (!isExcluded(tree)) {
       String javadoc = publicApiChecker.getApiJavadoc(tree);
       if (javadoc == null) {
-        context.addIssue(tree, ruleKey, "Document this public " + getType(tree) + ".");
+        context.addIssue(tree, this, "Document this public " + getType(tree) + ".");
       } else if (!javadoc.contains("{@inheritDoc}")) {
         List<String> undocumentedParameters = getUndocumentedParameters(javadoc, getParameters(tree));
         if (!undocumentedParameters.isEmpty()) {
-          context.addIssue(tree, ruleKey, "Document the parameter(s): " + Joiner.on(", ").join(undocumentedParameters));
+          context.addIssue(tree, this, "Document the parameter(s): " + Joiner.on(", ").join(undocumentedParameters));
         }
         if (hasNonVoidReturnType(tree) && !hasReturnJavadoc(javadoc)) {
-          context.addIssue(tree, ruleKey, "Document this method return value.");
+          context.addIssue(tree, this, "Document this method return value.");
         }
       }
     }

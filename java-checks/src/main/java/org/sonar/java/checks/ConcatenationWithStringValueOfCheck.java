@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -40,7 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Set;
 
 @Rule(
-  key = ConcatenationWithStringValueOfCheck.RULE_KEY,
+  key = "S1153",
   name = "String.valueOf() should not be appended to a String",
   tags = {"clumsy"},
   priority = Priority.MINOR)
@@ -48,9 +47,6 @@ import java.util.Set;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1153";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -92,7 +88,7 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
   }
 
   private void addIssue(ExpressionTree tree) {
-    context.addIssue(tree, ruleKey, "Directly append the argument of String.valueOf().");
+    context.addIssue(tree, this, "Directly append the argument of String.valueOf().");
   }
 
   private static boolean isStringValueOf(ExpressionTree tree) {

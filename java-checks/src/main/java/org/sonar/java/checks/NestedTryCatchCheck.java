@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -32,7 +31,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = NestedTryCatchCheck.RULE_KEY,
+  key = "S1141",
   name = "Try-catch blocks should not be nested",
   tags = {"confusing"},
   priority = Priority.MAJOR)
@@ -41,9 +40,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("20min")
 public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-
-  public static final String RULE_KEY = "S1141";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private JavaFileScannerContext context;
   private int nestingLevel;
 
@@ -60,7 +56,7 @@ public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScan
     if (!tree.catches().isEmpty()) {
       nestingLevel++;
       if (nestingLevel > 1) {
-        context.addIssue(tree.block(), ruleKey, "Extract this nested try block into a separate method.");
+        context.addIssue(tree.block(), this, "Extract this nested try block into a separate method.");
       }
     }
     scan(tree.block());

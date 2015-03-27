@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -33,7 +32,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = TooManyParameters_S00107_Check.RULE_KEY,
+  key = "S00107",
   name = "Methods should not have too many parameters",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
@@ -41,9 +40,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("20min")
 public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S00107";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final int DEFAULT_MAXIMUM = 7;
 
@@ -65,7 +61,7 @@ public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements J
   public void visitMethod(MethodTree tree) {
     int count = tree.parameters().size();
     if (count > maximum) {
-      context.addIssue(tree, ruleKey, "Method has " + count + " parameters, which is greater than " + maximum + " authorized.");
+      context.addIssue(tree, this, "Method has " + count + " parameters, which is greater than " + maximum + " authorized.");
     }
 
     super.visitMethod(tree);

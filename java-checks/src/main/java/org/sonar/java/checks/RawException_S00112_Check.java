@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.BooleanUtils;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -42,7 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Set;
 
 @Rule(
-  key = RawException_S00112_Check.RULE_KEY,
+  key = "S00112",
   name = "Generic exceptions should never be thrown",
   tags = {"cwe", "error-handling"},
   priority = Priority.MAJOR)
@@ -50,9 +49,6 @@ import java.util.Set;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("20min")
 public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S00112";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final Set<String> RAW_EXCEPTIONS = ImmutableSet.of("Throwable", "Error", "Exception", "RuntimeException");
 
@@ -84,7 +80,7 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
 
   private void checkExceptionAndRaiseIssue(Tree tree) {
     if (isRawException(tree)) {
-      context.addIssue(tree, ruleKey, "Define and throw a dedicated exception instead of using a generic one.");
+      context.addIssue(tree, this, "Define and throw a dedicated exception instead of using a generic one.");
     }
   }
 

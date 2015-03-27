@@ -34,7 +34,6 @@ import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class UnusedPrivateMethodCheckTest {
@@ -71,11 +70,6 @@ public class UnusedPrivateMethodCheckTest {
     SourceFile file = scan(check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .noMore();
-  }
-
-  @Test
-  public void test_toString() {
-    assertThat(check.toString()).isEqualTo("UnusedPrivateMethod rule");
   }
 
 }

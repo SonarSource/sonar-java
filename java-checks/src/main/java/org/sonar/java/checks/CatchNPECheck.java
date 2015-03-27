@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -37,16 +36,13 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = CatchNPECheck.RULE_KEY,
+  key = "S1696",
   name = "\"NullPointerException\" should not be caught",
   tags = {"cert", "cwe", "error-handling"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")
 public class CatchNPECheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1696";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -102,7 +98,7 @@ public class CatchNPECheck extends BaseTreeVisitor implements JavaFileScanner {
   }
 
   private void addIssue(Tree tree) {
-    context.addIssue(tree, ruleKey, "Avoid catching NullPointerException.");
+    context.addIssue(tree, this, "Avoid catching NullPointerException.");
   }
 
 }

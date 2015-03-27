@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -40,7 +39,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 @Rule(
-  key = PrintStackTraceCalledWithoutArgumentCheck.RULE_KEY,
+  key = "S1148",
   name = "Throwable.printStackTrace(...) should not be called",
   tags = {"error-handling"},
   priority = Priority.CRITICAL)
@@ -49,8 +48,6 @@ import java.util.LinkedList;
 @SqaleConstantRemediation("10min")
 public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1148";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private final Deque<Symbol.TypeSymbol> enclosingClass = new LinkedList<>();
   private JavaFileScannerContext context;
 
@@ -74,7 +71,7 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
     if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       IdentifierTree identifierTree = ((MemberSelectExpressionTree) tree.methodSelect()).identifier();
       if (!enclosingClassExtendsThrowable() && "printStackTrace".equals(identifierTree.name()) && calledOnTypeInheritedFromThrowable(tree)) {
-        context.addIssue(identifierTree, ruleKey, "Use a logger to log this exception.");
+        context.addIssue(identifierTree, this, "Use a logger to log this exception.");
       }
     }
   }

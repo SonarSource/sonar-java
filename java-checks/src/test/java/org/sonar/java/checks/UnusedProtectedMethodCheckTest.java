@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.squidbridge.api.SourceFile;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 public class UnusedProtectedMethodCheckTest {
 
@@ -35,11 +33,6 @@ public class UnusedProtectedMethodCheckTest {
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().withMessage("Protected method 'unusedProtectedMethod(...)' is never used.") // TODO verify line?
       .noMore();
-  }
-
-  @Test
-  public void test_toString() {
-    assertThat(check.toString()).isEqualTo("UnusedProtectedMethod rule");
   }
 
 }

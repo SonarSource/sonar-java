@@ -90,9 +90,4 @@ public class ArchitectureCheckTest {
 
   }
 
-  @Test
-  public void test_toString() {
-    assertThat(check.toString()).isEqualTo("ArchitecturalConstraint rule");
-  }
-
 }

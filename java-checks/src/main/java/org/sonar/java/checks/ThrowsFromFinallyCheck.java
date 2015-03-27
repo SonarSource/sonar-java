@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -34,7 +33,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = ThrowsFromFinallyCheck.KEY,
+  key = "S1163",
   name = "Exceptions should not be thrown in finally blocks",
   tags = {"error-handling"},
   priority = Priority.MAJOR)
@@ -43,8 +42,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("30min")
 public class ThrowsFromFinallyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String KEY = "S1163";
-  private static final RuleKey RULEKEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
   private JavaFileScannerContext context;
 
   private int finallyLevel = 0;
@@ -69,7 +66,7 @@ public class ThrowsFromFinallyCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
     if(isInFinally() && !isInMethodWithinFinally){
-      context.addIssue(tree, RULEKEY, "Refactor this code to not throw exceptions in finally blocks.");
+      context.addIssue(tree, this, "Refactor this code to not throw exceptions in finally blocks.");
     }
     super.visitThrowStatement(tree);
   }

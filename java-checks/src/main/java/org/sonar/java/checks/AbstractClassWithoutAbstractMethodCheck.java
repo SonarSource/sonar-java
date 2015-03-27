@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -36,16 +35,13 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Collection;
 
 @Rule(
-  key = AbstractClassWithoutAbstractMethodCheck.RULE_KEY,
+  key = "S1694",
   name = "An abstract class should have both abstract and concrete methods",
   tags = {"convention"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1694";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -64,11 +60,11 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
         int abstractMethod = countAbstractMethods(symbols);
         if (isExtendingObject(tree) && abstractMethod == symbols.size() - 2) {
           //emtpy abstract class or only abstract method
-          context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to an interface");
+          context.addIssue(tree, this, "Convert this \"" + typeSymbol + "\" class to an interface");
         }
         if (symbols.size() > 2 && abstractMethod == 0 && !isPartialImplementation(tree)) {
           //Not empty abstract class with no abstract method
-          context.addIssue(tree, ruleKey, "Convert this \"" + typeSymbol + "\" class to a concrete class with a private constructor");
+          context.addIssue(tree, this, "Convert this \"" + typeSymbol + "\" class to a concrete class with a private constructor");
         }
       }
     }

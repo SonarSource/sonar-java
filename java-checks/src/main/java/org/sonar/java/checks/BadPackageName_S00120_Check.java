@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -50,9 +49,6 @@ import java.util.regex.Pattern;
 @SqaleConstantRemediation("10min")
 public class BadPackageName_S00120_Check extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final String RULE_KEY = "S00120";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
   private static final String DEFAULT_FORMAT = "^[a-z]+(\\.[a-z][a-z0-9]*)*$";
 
   @RuleProperty(
@@ -78,7 +74,7 @@ public class BadPackageName_S00120_Check extends BaseTreeVisitor implements Java
     if (tree.packageName() != null) {
       String name = concatenate(tree.packageName());
       if (!pattern.matcher(name).matches()) {
-        context.addIssue(tree, ruleKey, "Rename this package name to match the regular expression '" + format + "'.");
+        context.addIssue(tree, this, "Rename this package name to match the regular expression '" + format + "'.");
       }
     }
   }

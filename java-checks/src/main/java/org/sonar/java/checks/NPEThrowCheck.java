@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -37,16 +36,13 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = NPEThrowCheck.RULE_KEY,
+  key = "S1695",
   name = "\"NullPointerException\" should not be explicitly thrown",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class NPEThrowCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1695";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -74,7 +70,7 @@ public class NPEThrowCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private void raiseIssueOnNpe(Tree tree, Type type) {
     if (type.is("java.lang.NullPointerException")) {
-      context.addIssue(treeAtFault(tree), ruleKey, "Throw some other exception here, such as \"IllegalArgumentException\".");
+      context.addIssue(treeAtFault(tree), this, "Throw some other exception here, such as \"IllegalArgumentException\".");
     }
   }
 

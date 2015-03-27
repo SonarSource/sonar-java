@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -39,7 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.List;
 
 @Rule(
-  key = AnonymousClassShouldBeLambdaCheck.RULE_KEY,
+  key = "S1604",
   name = "Anonymous inner classes containing only one method should become lambdas",
   tags = {"java8"},
   priority = Priority.MAJOR)
@@ -47,8 +46,6 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1604";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private JavaFileScannerContext context;
   private List<IdentifierTree> enumConstants;
 
@@ -72,7 +69,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     if (tree.classBody() != null) {
       List<Tree> members = tree.classBody().members();
       if (!useThisIdentifier(tree.classBody()) && !enumConstants.contains(tree.identifier()) && members.size() == 1 && members.get(0).is(Tree.Kind.METHOD)) {
-        context.addIssue(tree.identifier(), RULE, "Make this anonymous inner class a lambda");
+        context.addIssue(tree.identifier(), this, "Make this anonymous inner class a lambda");
       }
     }
   }

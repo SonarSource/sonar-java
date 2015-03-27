@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -38,16 +37,13 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.List;
 
 @Rule(
-  key = RepeatAnnotationCheck.RULE_KEY,
+  key = "S1710",
   name = "Annotation repetitions should not be wrapped",
   tags = {"java8"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1710";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -62,7 +58,7 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
     if (isArrayInitialized(annotationTree)) {
       NewArrayTree arrayTree = (NewArrayTree) annotationTree.arguments().get(0);
       if (isAllSameAnnotation(arrayTree.initializers()) && isAnnotationRepeatable(arrayTree.initializers().get(0))) {
-        context.addIssue(annotationTree, ruleKey, "Remove the '" + getAnnotationName(annotationTree) + "' wrapper from this annotation group");
+        context.addIssue(annotationTree, this, "Remove the '" + getAnnotationName(annotationTree) + "' wrapper from this annotation group");
       }
     }
     super.visitAnnotation(annotationTree);

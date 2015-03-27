@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -37,7 +36,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = CollectionIsEmptyCheck.RULE_KEY,
+  key = "S1155",
   name = "Collection.isEmpty() should be used to test for emptiness",
   tags = {"clumsy"},
   priority = Priority.MAJOR)
@@ -45,9 +44,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1155";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -63,7 +59,7 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
     super.visitBinaryExpression(tree);
 
     if (hasCallToSizeMethod(tree) && isEmptyComparison(tree)) {
-      context.addIssue(tree, RULE, "Use isEmpty() to check whether the collection is empty or not.");
+      context.addIssue(tree, this, "Use isEmpty() to check whether the collection is empty or not.");
     }
   }
 

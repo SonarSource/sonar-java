@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -38,7 +37,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 @Rule(
-  key = CollapsibleIfCandidateCheck.RULE_KEY,
+  key = "S1066",
   name = "Collapsible \"if\" statements should be merged",
   tags = {"clumsy"},
   priority = Priority.MAJOR)
@@ -46,9 +45,6 @@ import java.util.Deque;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1066";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
   private Deque<Boolean> outerIf = new ArrayDeque<Boolean>();
@@ -63,7 +59,7 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
   public void visitIfStatement(IfStatementTree tree) {
 
     if (!outerIf.isEmpty() && !hasElseClause(tree)) {
-      context.addIssue(tree, ruleKey, "Merge this if statement with the enclosing one.");
+      context.addIssue(tree, this, "Merge this if statement with the enclosing one.");
     }
 
     if (!hasElseClause(tree) && hasBodySingleIfStatement(tree.thenStatement())) {

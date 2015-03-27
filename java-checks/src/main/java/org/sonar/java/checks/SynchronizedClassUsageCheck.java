@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -41,11 +40,10 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.Map;
 
 @Rule(
-  key = SynchronizedClassUsageCheck.RULE_KEY,
+  key = "S1149",
   name = "Synchronized classes Vector, Hashtable, Stack and StringBuffer should not be used",
   tags = {"multi-threading", "performance"},
   priority = Priority.MAJOR)
@@ -54,8 +52,6 @@ import java.util.Map;
 @SqaleConstantRemediation("20min")
 public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1149";
-  private static final RuleKey RULE_KEY_FOR_REPOSITORY = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String>builder()
     .put("java.util.Vector", "\"ArrayList\" or \"LinkedList\"")
     .put("java.util.Hashtable", "\"HashMap\"")
@@ -134,7 +130,7 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
 
   private void reportIssue(Tree tree, String type) {
     String simpleTypeName = type.substring(type.lastIndexOf('.') + 1);
-    context.addIssue(tree, RULE_KEY_FOR_REPOSITORY, "Replace the synchronized class \"" + simpleTypeName + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type) + ".");
+    context.addIssue(tree, this, "Replace the synchronized class \"" + simpleTypeName + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type) + ".");
   }
 
   private boolean isOverriding(MethodTree tree) {

@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -44,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 @Rule(
-  key = ImmediatelyReturnedVariableCheck.RULE_KEY,
+  key = "S1488",
   name = "Local Variables should not be declared and then immediately returned or thrown",
   tags = {"clumsy"},
   priority = Priority.MINOR)
@@ -53,8 +52,6 @@ import java.util.Map;
 @SqaleConstantRemediation("2min")
 public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1488";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final Map<Kind, String> MESSAGE_KEYS = ImmutableMap.of(Kind.THROW_STATEMENT, "throw", Kind.RETURN_STATEMENT, "return");
 
   private JavaFileScannerContext context;
@@ -79,7 +76,7 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
         String identifier = getVariableDeclarationIdentifier(butLastSatement);
 
         if (StringUtils.equals(lastStatementIdentifier, identifier)) {
-          context.addIssue(butLastSatement, RULE, "Immediately " + lastTypeForMessage + " this expression instead of assigning it to the temporary variable \"" + identifier
+          context.addIssue(butLastSatement, this, "Immediately " + lastTypeForMessage + " this expression instead of assigning it to the temporary variable \"" + identifier
             + "\".");
         }
       }

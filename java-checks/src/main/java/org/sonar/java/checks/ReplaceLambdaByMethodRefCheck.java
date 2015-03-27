@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -35,16 +34,13 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = ReplaceLambdaByMethodRefCheck.RULE_KEY,
+  key = "S1612",
   name = "Replace lambdas with method references when possible",
   tags = {"java8"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1612";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -57,7 +53,7 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   @Override
   public void visitLambdaExpression(LambdaExpressionTree tree) {
     if (isMethodInvocation(tree.body()) || isBlockInvokingMethod(tree.body())) {
-      context.addIssue(tree, ruleKey, "Replace this lambda with a method reference.");
+      context.addIssue(tree, this, "Replace this lambda with a method reference.");
     }
     super.visitLambdaExpression(tree);
   }

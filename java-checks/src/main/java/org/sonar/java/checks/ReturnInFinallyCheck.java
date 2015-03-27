@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -37,7 +36,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 @Rule(
-  key = ReturnInFinallyCheck.RULE_KEY,
+  key = "S1143",
   name = "\"return\" statements should not occur in \"finally\" blocks",
   tags = {"bug", "cwe"},
   priority = Priority.BLOCKER)
@@ -46,8 +45,6 @@ import java.util.LinkedList;
 @SqaleConstantRemediation("30min")
 public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileScanner{
 
-  public static final String RULE_KEY = "S1143";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private final Deque<Boolean> isInFinally = new LinkedList<Boolean>();
   private JavaFileScannerContext context;
 
@@ -80,7 +77,7 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
   @Override
   public void visitReturnStatement(ReturnStatementTree tree) {
     if(isInFinally()) {
-      context.addIssue(tree, ruleKey, "Remove this return statement from this finally block.");
+      context.addIssue(tree, this, "Remove this return statement from this finally block.");
     }
     super.visitReturnStatement(tree);
   }

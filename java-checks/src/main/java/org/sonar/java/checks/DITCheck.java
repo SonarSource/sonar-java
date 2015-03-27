@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -34,16 +33,13 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = DITCheck.RULE_KEY,
+  key = "MaximumInheritanceDepth",
   name = "Inheritance tree of classes should not be too deep",
   tags = {"design"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("4h")
 public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "MaximumInheritanceDepth";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   public static final int DEFAULT_MAX = 5;
 
@@ -73,7 +69,7 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
       superClass = superClass.symbol().superClass();
     }
     if(dit > max) {
-      context.addIssue(tree, ruleKey, "This class has "+dit+" parents which is greater than "+max+" authorized.");
+      context.addIssue(tree, this, "This class has "+dit+" parents which is greater than "+max+" authorized.");
     }
     super.visitClass(tree);
   }
@@ -81,11 +77,6 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
   @VisibleForTesting
   void setMax(int max) {
     this.max = max;
-  }
-
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
   }
 
 }

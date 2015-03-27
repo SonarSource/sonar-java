@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -54,7 +53,7 @@ import java.util.Set;
 import java.util.Stack;
 
 @Rule(
-  key = ClassCouplingCheck.RULE_KEY,
+  key = "S1200",
   name = "Classes should not be coupled to too many other classes (Single Responsibility Principle)",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
@@ -62,7 +61,6 @@ import java.util.Stack;
 @SqaleConstantRemediation("2h")
 public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1200";
   private static final int DEFAULT_MAX = 20;
 
   @RuleProperty(
@@ -71,10 +69,9 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
       defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private final Stack<Set<String>> nesting = new Stack<Set<String>>();
+  private final Stack<Set<String>> nesting = new Stack<>();
   private Set<String> types;
   private JavaFileScannerContext context;
-  private RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -95,7 +92,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
       if (types.size() > max) {
         context.addIssue(
             tree,
-            ruleKey,
+            this,
             "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from " +
                 types.size() + " to the maximum authorized " + max + " or less.");
       }

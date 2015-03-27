@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -45,7 +44,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.List;
 
 @Rule(
-  key = SAMAnnotatedCheck.RULE_KEY,
+  key = "S1609",
   name = "@FunctionalInterface annotation should be used to flag Single Abstract Method interfaces",
   tags = {"java8"},
   priority = Priority.MAJOR)
@@ -53,8 +52,6 @@ import java.util.List;
 @SqaleConstantRemediation("2min")
 public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1609";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final ImmutableMultimap<String, List<String>> OBJECT_METHODS = new ImmutableMultimap.Builder<String, List<String>>().
       put("equals", ImmutableList.of("Object")).
       put("getClass", ImmutableList.<String>of()).
@@ -79,7 +76,7 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
   @Override
   public void visitClass(ClassTree tree) {
     if (isSAM(tree) && !isAnnotated(tree)) {
-      context.addIssue(tree, RULE, "Annotate the \"" + tree.simpleName().name() + "\" interface with the @FunctionInterface annotation");
+      context.addIssue(tree, this, "Annotate the \"" + tree.simpleName().name() + "\" interface with the @FunctionInterface annotation");
     }
     super.visitClass(tree);
   }

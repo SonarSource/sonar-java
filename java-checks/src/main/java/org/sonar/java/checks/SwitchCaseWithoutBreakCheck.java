@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Iterables;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -41,7 +40,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 @Rule(
-  key = SwitchCaseWithoutBreakCheck.RULE_KEY,
+  key = "S128",
   name = "Switch cases should end with an unconditional \"break\" statement",
   tags = {"cert", "cwe", "misra", "pitfall"},
   priority = Priority.CRITICAL)
@@ -49,9 +48,6 @@ import java.util.Deque;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S128";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -80,7 +76,7 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
     super.visitCaseGroup(tree);
 
     if (invalidCaseGroups.remove(tree)) {
-      context.addIssue(Iterables.getLast(tree.labels()), ruleKey, "End this switch case with an unconditional break, continue, return or throw statement.");
+      context.addIssue(Iterables.getLast(tree.labels()), this, "End this switch case with an unconditional break, continue, return or throw statement.");
     }
     currentTree = invalidCaseGroups.peek();
   }

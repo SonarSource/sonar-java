@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -42,7 +41,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 @Rule(
-  key = SunPackagesUsedCheck.RULE_KEY,
+  key = "S1191",
   name = "Classes from \"sun.*\" packages should not be used",
   tags = {"lock-in", "pitfall"},
   priority = Priority.MAJOR)
@@ -51,7 +50,6 @@ import java.util.Set;
 @SqaleConstantRemediation("1h")
 public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1191";
   private Set<Integer> reportedLines = new HashSet<Integer>();
 
   private static final String DEFAULT_EXCLUDE = "";
@@ -63,7 +61,6 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   public String exclude = DEFAULT_EXCLUDE;
   private String[] excludePackages = null;
   private JavaFileScannerContext context;
-  private RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -79,7 +76,7 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
     if (!isExcluded(reference)) {
       int line = ((JavaTree) tree).getLine();
       if (!reportedLines.contains(line) && isSunClass(reference)) {
-        context.addIssue(line, ruleKey, "Replace this usage of Sun classes by ones from the Java API.");
+        context.addIssue(line, this, "Replace this usage of Sun classes by ones from the Java API.");
         reportedLines.add(line);
       }
       super.visitMemberSelectExpression(tree);

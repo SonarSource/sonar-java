@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -40,7 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Map;
 
 @Rule(
-  key = StringLiteralDuplicatedCheck.RULE_KEY,
+  key = "S1192",
   name = "String literals should not be duplicated",
   tags = {"design"},
   priority = Priority.MINOR)
@@ -49,9 +48,7 @@ import java.util.Map;
 @SqaleLinearWithOffsetRemediation(coeff = "2min", offset = "2min", effortToFixDescription = "number of duplicate instances")
 public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1192";
   private static final int DEFAULT_THRESHOLD = 3;
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final Integer MINIMAL_LITERAL_LENGTH = 7;
   @RuleProperty(
@@ -71,7 +68,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     for (String literal : occurences.elementSet()) {
       int literalOccurence = occurences.count(literal);
       if (literalOccurence >= threshold) {
-        context.addIssue(firstOccurrence.get(literal), ruleKey, "Define a constant instead of duplicating this literal " + literal + " " + literalOccurence + " times.");
+        context.addIssue(firstOccurrence.get(literal), this, "Define a constant instead of duplicating this literal " + literal + " " + literalOccurence + " times.");
       }
     }
   }

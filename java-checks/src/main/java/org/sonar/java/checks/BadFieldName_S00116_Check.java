@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -38,7 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = BadFieldName_S00116_Check.RULE_KEY,
+  key = "S00116",
   name = "Field names should comply with a naming convention",
   tags = {"convention"},
   priority = Priority.MINOR)
@@ -46,9 +45,6 @@ import java.util.regex.Pattern;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class BadFieldName_S00116_Check extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S00116";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^[a-z][a-zA-Z0-9]*$";
 
@@ -76,7 +72,7 @@ public class BadFieldName_S00116_Check extends BaseTreeVisitor implements JavaFi
       if ((tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) && member.is(Tree.Kind.VARIABLE)) {
         VariableTree field = (VariableTree) member;
         if (isNotStatic(field) && !pattern.matcher(field.simpleName().name()).matches()) {
-          context.addIssue(field, ruleKey, "Rename this field name to match the regular expression '" + format + "'.");
+          context.addIssue(field, this, "Rename this field name to match the regular expression '" + format + "'.");
         }
       }
       scan(member);

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -32,7 +31,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = EnumAsIdentifierCheck.RULE_KEY,
+  key = "S1190",
   name = "Future keywords should not be used as names",
   tags = {"obsolete", "pitfall"},
   priority = Priority.MAJOR)
@@ -41,8 +40,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("5min")
 public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1190";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private JavaFileScannerContext context;
 
   @Override
@@ -54,7 +51,7 @@ public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileSc
   @Override
   public void visitVariable(VariableTree tree) {
     if ("enum".equals(tree.simpleName().name())) {
-      context.addIssue(tree, ruleKey, "Use a different name than \"enum\".");
+      context.addIssue(tree, this, "Use a different name than \"enum\".");
     }
 
     super.visitVariable(tree);

@@ -26,7 +26,6 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
@@ -40,6 +39,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.CheckMessage;
+import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -169,24 +169,24 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     }
 
     @Override
-    public void addIssue(Tree tree, RuleKey ruleKey, String message) {
-      addIssue(((JavaTree) tree).getLine(), ruleKey, message);
+    public void addIssue(Tree tree, Object codeVisitor, String message) {
+      addIssue(((JavaTree) tree).getLine(), codeVisitor, message);
     }
 
     @Override
-    public void addIssueOnFile(RuleKey ruleKey, String message) {
-      addIssue(-1, ruleKey, message);
+    public void addIssueOnFile(Object codeVisitor, String message) {
+      addIssue(-1, codeVisitor, message);
     }
 
     @Override
-    public void addIssue(int line, RuleKey ruleKey, String message) {
-      Preconditions.checkNotNull(ruleKey);
+    public void addIssue(int line, Object codeVisitor, String message) {
+      Preconditions.checkNotNull(codeVisitor);
+      Preconditions.checkArgument(codeVisitor instanceof CodeVisitor);
       Preconditions.checkNotNull(message);
-      CheckMessage checkMessage = new CheckMessage(ruleKey, message);
+      CheckMessage checkMessage = new CheckMessage(codeVisitor, message);
       if (line > 0) {
         checkMessage.setLine(line);
       }
-      checkMessage.setBypassExclusion("NoSonar".equals(ruleKey.rule()));
       sourceFile.log(checkMessage);
     }
 

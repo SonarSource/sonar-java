@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -40,7 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Set;
 
 @Rule(
-  key = StringBufferAndBuilderWithCharCheck.RULE_KEY,
+  key = "S1317",
   name = "\"StringBuilder\" and \"StringBuffer\" should not be instantiated with a character ",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
@@ -49,9 +48,6 @@ import java.util.Set;
 @SqaleConstantRemediation("5min")
 public class StringBufferAndBuilderWithCharCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-
-  public static final String RULE_KEY = "S1317";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private JavaFileScannerContext context;
   private static final Set<String> TARGETED_CLASS = ImmutableSet.of("StringBuilder", "StringBuffer");
 
@@ -68,7 +64,7 @@ public class StringBufferAndBuilderWithCharCheck extends BaseTreeVisitor impleme
 
       if (argument.is(Tree.Kind.CHAR_LITERAL)) {
         String character = ((LiteralTree) argument).value();
-        context.addIssue(tree, ruleKey, "Replace the constructor character parameter " + character + " with string parameter " + character.replace("'", "\"") + ".");
+        context.addIssue(tree, this, "Replace the constructor character parameter " + character + " with string parameter " + character.replace("'", "\"") + ".");
       }
     }
   }

@@ -19,12 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.squidbridge.api.SourceFile;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 public class RedundantThrowsDeclarationCheckTest {
 
@@ -78,11 +76,6 @@ public class RedundantThrowsDeclarationCheckTest {
 
         .next()
         .atLine(73);
-  }
-
-  @Test
-  public void test_toString() {
-    assertThat(check.toString()).isEqualTo("RedundantThrowsDeclarationCheck rule");
   }
 
 }

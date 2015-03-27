@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -36,16 +35,13 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = BadAbstractClassName_S00118_Check.RULE_KEY,
+  key = "S00118",
   name = "Abstract class names should comply with a naming convention",
   tags = {"convention"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")
 public class BadAbstractClassName_S00118_Check extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S00118";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^Abstract[A-Z][a-zA-Z0-9]*$";
 
@@ -72,11 +68,11 @@ public class BadAbstractClassName_S00118_Check extends BaseTreeVisitor implement
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
       if (pattern.matcher(tree.simpleName().name()).matches()) {
         if (!isAbstract(tree)) {
-          context.addIssue(tree, ruleKey, "Make this class abstract or rename it, since it matches the regular expression '" + format + "'.");
+          context.addIssue(tree, this, "Make this class abstract or rename it, since it matches the regular expression '" + format + "'.");
         }
       } else {
         if (isAbstract(tree)) {
-          context.addIssue(tree, ruleKey, "Rename this abstract class name to match the regular expression '" + format + "'.");
+          context.addIssue(tree, this, "Rename this abstract class name to match the regular expression '" + format + "'.");
         }
       }
     }

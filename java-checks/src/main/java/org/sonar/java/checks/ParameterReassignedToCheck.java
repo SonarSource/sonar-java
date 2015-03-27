@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -44,7 +43,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Set;
 
 @Rule(
-  key = ParameterReassignedToCheck.RULE_KEY,
+  key = "S1226",
   name = "Method parameters, caught exceptions and foreach variables should not be reassigned",
   tags = {"misra", "pitfall"},
   priority = Priority.MAJOR)
@@ -52,9 +51,6 @@ import java.util.Set;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1226";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private final Set<Symbol> variables = Sets.newHashSet();
 
@@ -115,7 +111,7 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
       IdentifierTree identifier = (IdentifierTree) tree;
       Symbol reference = identifier.symbol();
       if (reference.isVariableSymbol() && variables.contains(reference)) {
-        context.addIssue(identifier, ruleKey, "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".");
+        context.addIssue(identifier, this, "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".");
       }
     }
   }

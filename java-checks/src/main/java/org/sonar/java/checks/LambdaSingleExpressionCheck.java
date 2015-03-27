@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.annotations.Beta;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -38,7 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.List;
 
 @Rule(
-  key = LambdaSingleExpressionCheck.RULE_KEY,
+  key = "S1602",
   name = "Lamdbas containing only one statement should not nest this statement in a block",
   tags = {"java8"},
   priority = Priority.MAJOR)
@@ -47,10 +46,6 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 public class LambdaSingleExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1602";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
 
   private JavaFileScannerContext context;
 
@@ -67,7 +62,7 @@ public class LambdaSingleExpressionCheck extends BaseTreeVisitor implements Java
       if (singleStatementIsReturn(lambdaExpressionTree)) {
         message += " and then remove useless return keyword";
       }
-      context.addIssue(lambdaExpressionTree.body(), RULE, message);
+      context.addIssue(lambdaExpressionTree.body(), this, message);
     }
     super.visitLambdaExpression(lambdaExpressionTree);
   }

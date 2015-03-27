@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -40,16 +39,13 @@ import java.text.ParseException;
 import java.util.List;
 
 @Rule(
-  key = MagicNumberCheck.RULE_KEY,
+  key = "S109",
   name = "Magic numbers should not be used",
   tags = {"brain-overload"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
 @SqaleConstantRemediation("5min")
 public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S109";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -72,7 +68,7 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
 
       }
       if (checked != null && !isExcluded(checked)) {
-        context.addIssue(tree, ruleKey, "Assign this magic number " + tree.value() + " to a well-named constant, and use the constant instead.");
+        context.addIssue(tree, this, "Assign this magic number " + tree.value() + " to a well-named constant, and use the constant instead.");
       }
     }
   }

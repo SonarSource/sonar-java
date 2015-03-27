@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -39,7 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = AnonymousClassesTooBigCheck.RULE_KEY,
+  key = "S1188",
   name = "Lambdas and anonymous classes should not have too many lines",
   tags = {"java8"},
   priority = Priority.MAJOR)
@@ -48,8 +47,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("20min")
 public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1188";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final int DEFAULT_MAX = 20;
 
   @RuleProperty(key = "Max",
@@ -75,7 +72,7 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
     if (tree.classBody() != null && !isEnumConstantBody) {
       int lines = getNumberOfLines(tree.classBody());
       if (lines > max) {
-        context.addIssue(tree, RULE, "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.");
+        context.addIssue(tree, this, "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.");
       }
     }
     isEnumConstantBody = false;
@@ -92,7 +89,7 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
     int lines = getNumberOfLines(((JavaTree) lambdaExpressionTree.body()).getAstNode());
     if (lines > max) {
-      context.addIssue(lambdaExpressionTree, RULE, "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".");
+      context.addIssue(lambdaExpressionTree, this, "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".");
     }
     super.visitLambdaExpression(lambdaExpressionTree);
   }

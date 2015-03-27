@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -40,7 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = LoggersDeclarationCheck.KEY,
+  key = "S1312",
   name = "Loggers should be \"private static final\" and should share a naming convention",
   tags = {"convention"},
   priority = Priority.MINOR)
@@ -48,9 +47,6 @@ import java.util.regex.Pattern;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String KEY = "S1312";
-  private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
   private static final String DEFAULT_FORMAT = "LOG(?:GER)?";
 
@@ -107,11 +103,11 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
       boolean hasValidLoggerName = isValidLoggerName(tree.simpleName().name());
 
       if (!isPrivateStaticFinal && !hasValidLoggerName) {
-        context.addIssue(tree, RULE_KEY, getPrivateStaticFinalMessage(tree.simpleName().name()) + " and rename it to comply with the format \"" + format + "\".");
+        context.addIssue(tree, this, getPrivateStaticFinalMessage(tree.simpleName().name()) + " and rename it to comply with the format \"" + format + "\".");
       } else if (!isPrivateStaticFinal) {
-        context.addIssue(tree, RULE_KEY, getPrivateStaticFinalMessage(tree.simpleName().name()) + ".");
+        context.addIssue(tree, this, getPrivateStaticFinalMessage(tree.simpleName().name()) + ".");
       } else if (!hasValidLoggerName) {
-        context.addIssue(tree, RULE_KEY, "Rename the \"" + tree.simpleName() + "\" logger to comply with the format \"" + format + "\".");
+        context.addIssue(tree, this, "Rename the \"" + tree.simpleName() + "\" logger to comply with the format \"" + format + "\".");
       }
     }
   }

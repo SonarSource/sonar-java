@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.AstNode;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -39,7 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = EmptyMethodsCheck.RULE_KEY,
+  key = "S1186",
   name = "Methods should not be empty",
   tags = {"bug"},
   priority = Priority.MAJOR)
@@ -47,9 +46,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class EmptyMethodsCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1186";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -85,7 +81,7 @@ public class EmptyMethodsCheck extends BaseTreeVisitor implements JavaFileScanne
 
     BlockTree block = tree.block();
     if (block != null && block.body().isEmpty() && !tree.is(Kind.CONSTRUCTOR) && !containsComment(block)) {
-      context.addIssue(tree, ruleKey, "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
+      context.addIssue(tree, this, "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
     }
   }
 

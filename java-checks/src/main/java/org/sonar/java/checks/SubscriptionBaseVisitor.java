@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
-import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -34,13 +32,6 @@ public abstract class SubscriptionBaseVisitor extends IssuableSubscriptionVisito
     semanticModel = (SemanticModel) context.getSemanticModel();
     super.scanFile(context);
   }
-
-
-  @Override
-  protected RuleKey ruleKey() {
-    return RuleKey.of(CheckList.REPOSITORY_KEY, RuleAnnotationUtils.getRuleKey(this.getClass()));
-  }
-
 
   public SemanticModel getSemanticModel() {
     return semanticModel;

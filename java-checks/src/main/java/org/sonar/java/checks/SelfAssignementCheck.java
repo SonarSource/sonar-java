@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -33,16 +32,13 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = SelfAssignementCheck.RULE_KEY,
+  key = "S1656",
   name = "Variables should not be self-assigned",
   tags = {"bug", "cert"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("3min")
 public class SelfAssignementCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1656";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -56,7 +52,7 @@ public class SelfAssignementCheck extends BaseTreeVisitor implements JavaFileSca
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     //Check only = kind of assignements (not +=, *=, etc.)
     if (tree.is(Tree.Kind.ASSIGNMENT) && SyntacticEquivalence.areEquivalent(tree.expression(), tree.variable())) {
-      context.addIssue(tree, ruleKey, "Remove or correct this useless self-assignment");
+      context.addIssue(tree, this, "Remove or correct this useless self-assignment");
     }
     super.visitAssignmentExpression(tree);
   }

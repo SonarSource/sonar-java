@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -42,7 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import javax.annotation.Nullable;
 
 @Rule(
-  key = AssignmentInSubExpressionCheck.RULE_KEY,
+  key = "AssignmentInSubExpressionCheck",
   name = "Assignments should not be made from within sub-expressions",
   tags = {"bug", "cwe", "misra"},
   priority = Priority.MAJOR)
@@ -50,9 +49,6 @@ import javax.annotation.Nullable;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "AssignmentInSubExpressionCheck";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -135,7 +131,7 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     super.visitAssignmentExpression(tree);
 
-    context.addIssue(tree, ruleKey, "Extract the assignment out of this expression.");
+    context.addIssue(tree, this, "Extract the assignment out of this expression.");
   }
 
 }

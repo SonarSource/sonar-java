@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -33,7 +32,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = IncorrectOrderOfMembersCheck.RULE_KEY,
+  key = "S1213",
   name = "The members of an interface declaration or class should appear in a pre-defined order",
   tags = {"convention"},
   priority = Priority.MINOR)
@@ -41,9 +40,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1213";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String[] NAMES = {"variable", "constructor", "method"};
 
@@ -71,7 +67,7 @@ public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements Jav
         continue;
       }
       if (priority < prev) {
-        context.addIssue(member, ruleKey, "Move this " + NAMES[priority] + " to comply with Java Code Conventions.");
+        context.addIssue(member, this, "Move this " + NAMES[priority] + " to comply with Java Code Conventions.");
       } else {
         prev = priority;
       }

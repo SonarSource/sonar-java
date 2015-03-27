@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -37,16 +36,13 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = NullDereferenceInConditionalCheck.RULE_KEY,
+  key = "S1697",
   name = "Short-circuit logic should be used to prevent null pointer dereferences in conditionals",
   tags = {"bug"},
   priority = Priority.BLOCKER)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.FAULT_TOLERANCE)
 @SqaleConstantRemediation("2min")
 public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1697";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -65,7 +61,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
         IdentifierVisitor visitor = new IdentifierVisitor(identifierTree);
         tree.rightOperand().accept(visitor);
         if (visitor.raiseIssue) {
-          context.addIssue(tree, ruleKey, "Either reverse the equality operator in the \"" +
+          context.addIssue(tree, this, "Either reverse the equality operator in the \"" +
               identifierTree.name() + "\" null test, or reverse the logical operator that follows it.");
         }
       }

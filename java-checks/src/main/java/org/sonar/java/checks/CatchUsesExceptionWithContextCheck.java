@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -51,7 +50,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
-  key = CatchUsesExceptionWithContextCheck.RULE_KEY,
+  key = "S1166",
   name = "Exception handlers should preserve the original exception",
   tags = {"error-handling"},
   priority = Priority.CRITICAL)
@@ -59,9 +58,6 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("10min")
 public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1166";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String EXCLUDED_EXCEPTION_TYPE = "java.lang.InterruptedException, " +
       "java.lang.NumberFormatException, " +
@@ -104,7 +100,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       super.visitCatch(tree);
       Collection<IdentifierTree> usages = validUsagesStack.pop();
       if (usages.isEmpty()) {
-        context.addIssue(tree, ruleKey, "Either log or rethrow this exception.");
+        context.addIssue(tree, this, "Either log or rethrow this exception.");
       }
     }
   }

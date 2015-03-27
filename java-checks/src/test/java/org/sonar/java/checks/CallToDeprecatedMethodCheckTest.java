@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.squidbridge.api.SourceFile;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 public class CallToDeprecatedMethodCheckTest {
 
@@ -37,10 +35,4 @@ public class CallToDeprecatedMethodCheckTest {
       .next().atLine(27).withMessage("Constructor 'CallToDeprecatedMethod$DeprecatedConstructor(...)' is deprecated.")
       .noMore();
   }
-
-  @Test
-  public void test_toString() {
-    assertThat(check.toString()).isEqualTo("CallToDeprecatedMethod rule");
-  }
-
 }

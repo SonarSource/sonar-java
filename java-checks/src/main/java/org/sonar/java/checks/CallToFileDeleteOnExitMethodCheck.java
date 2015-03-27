@@ -32,7 +32,7 @@ import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
 @Rule(
-  key = CallToFileDeleteOnExitMethodCheck.RULE_KEY,
+  key = "CallToFileDeleteOnExitMethod",
   name = "\"deleteOnExit\" should not be used",
   tags = {"performance"},
   priority = Priority.MAJOR)
@@ -40,7 +40,6 @@ import org.sonar.squidbridge.api.SourceFile;
 @SqaleConstantRemediation("30min")
 public class  CallToFileDeleteOnExitMethodCheck extends BytecodeVisitor {
 
-  public static final String RULE_KEY = "CallToFileDeleteOnExitMethod";
   private AsmClass asmClass;
 
   @Override
@@ -60,11 +59,6 @@ public class  CallToFileDeleteOnExitMethodCheck extends BytecodeVisitor {
         sourceFile.log(message);
       }
     }
-  }
-
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
   }
 
 }

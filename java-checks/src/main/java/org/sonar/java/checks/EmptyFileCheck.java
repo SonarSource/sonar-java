@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -30,7 +29,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = EmptyFileCheck.RULE_KEY,
+  key = "EmptyFile",
   name = "Files should not be empty",
   tags = {"unused"},
   priority = Priority.MAJOR)
@@ -38,14 +37,11 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("5min")
 public final class EmptyFileCheck implements JavaFileScanner {
 
-  public static final String RULE_KEY = "EmptyFile";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
   @Override
   public void scanFile(JavaFileScannerContext context) {
     CompilationUnitTree tree = context.getTree();
     if (tree.packageName() == null && tree.types().isEmpty()) {
-      context.addIssue(context.getTree(), ruleKey, "This Java file is empty.");
+      context.addIssue(context.getTree(), this, "This Java file is empty.");
     }
   }
 

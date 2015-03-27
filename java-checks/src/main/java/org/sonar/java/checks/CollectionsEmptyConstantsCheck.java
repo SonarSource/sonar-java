@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -37,7 +36,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Map;
 
 @Rule(
-  key = CollectionsEmptyConstantsCheck.RULE_KEY,
+  key = "S1596",
   name = "Collections.emptyList(), emptyMap() and emptySet() should be used instead of Collections.EMPTY_LIST, EMPTY_MAP and EMPTY_SET",
   tags = {"obsolete", "pitfall"},
   priority = Priority.MAJOR)
@@ -46,8 +45,6 @@ import java.util.Map;
 @SqaleConstantRemediation("2min")
 public class CollectionsEmptyConstantsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1596";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final Map<String, String> IDENTIFIER_REPLACEMENT = new ImmutableMap.Builder<String, String>()
     .put("EMPTY_LIST", "emptyList()")
     .put("EMPTY_MAP", "emptyMap()")
@@ -69,7 +66,7 @@ public class CollectionsEmptyConstantsCheck extends BaseTreeVisitor implements J
     boolean isCollectionsCall = tree.expression().is(Kind.IDENTIFIER) && "Collections".equals(((IdentifierTree) tree.expression()).name());
     boolean callEmptyConstant = identifier.startsWith("EMPTY_");
     if (isCollectionsCall && callEmptyConstant) {
-      context.addIssue(tree, RULE, "Replace \"Collections."+identifier+"\" by \"Collections."+ IDENTIFIER_REPLACEMENT.get(identifier)+"\".");
+      context.addIssue(tree, this, "Replace \"Collections."+identifier+"\" by \"Collections."+ IDENTIFIER_REPLACEMENT.get(identifier)+"\".");
     }
   }
 

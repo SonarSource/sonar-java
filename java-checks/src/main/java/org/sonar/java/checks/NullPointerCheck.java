@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -78,9 +77,6 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   private static final String MESSAGE_NULLABLE_EXPRESSION = "NullPointerException might be thrown as '%s' is nullable here";
 
   private static final String MESSAGE_NULL_LITERAL = "null is dereferenced";
-
-  public static final String KEY = "S2259";
-  private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
   @Nullable
   private ConditionalState currentConditionalState;
@@ -336,15 +332,15 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       if (checkNullity(tree) == AbstractValue.NULL) {
         // prevents reporting issue multiple times
         currentState.setVariableValue((VariableSymbol) symbol, AbstractValue.UNKNOWN);
-        context.addIssue(tree, RULE_KEY, String.format(nullableMessage, symbol.name()));
+        context.addIssue(tree, this, String.format(nullableMessage, symbol.name()));
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTree) tree).symbol();
       if (checkNullity(symbol) == AbstractValue.NULL) {
-        context.addIssue(tree, RULE_KEY, String.format(nullableMessage, symbol.name()));
+        context.addIssue(tree, this, String.format(nullableMessage, symbol.name()));
       }
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
-      context.addIssue(tree, RULE_KEY, nullMessage);
+      context.addIssue(tree, this, nullMessage);
     }
   }
 

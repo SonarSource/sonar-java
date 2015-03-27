@@ -31,7 +31,7 @@ import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
 @Rule(
-  key = UnusedProtectedMethodCheck.RULE_KEY,
+  key = "UnusedProtectedMethod",
   name = "Unused protected methods should be removed",
   tags = {"unused"},
   priority = Priority.MAJOR)
@@ -39,7 +39,6 @@ import org.sonar.squidbridge.api.SourceFile;
 @SqaleConstantRemediation("10min")
 public class UnusedProtectedMethodCheck extends BytecodeVisitor {
 
-  public static final String RULE_KEY = "UnusedProtectedMethod";
   private AsmClass asmClass;
 
   @Override
@@ -59,11 +58,6 @@ public class UnusedProtectedMethodCheck extends BytecodeVisitor {
       SourceFile file = getSourceFile(asmClass);
       file.log(message);
     }
-  }
-
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
   }
 
 }

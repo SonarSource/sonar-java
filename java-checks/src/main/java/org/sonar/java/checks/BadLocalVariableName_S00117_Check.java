@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -39,7 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = BadLocalVariableName_S00117_Check.RULE_KEY,
+  key = "S00117",
   name = "Local variable and method parameter names should comply with a naming convention",
   tags = {"convention"},
   priority = Priority.MINOR)
@@ -47,9 +46,6 @@ import java.util.regex.Pattern;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class BadLocalVariableName_S00117_Check  extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S00117";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String DEFAULT_FORMAT = "^[a-z][a-zA-Z0-9]*$";
 
@@ -96,7 +92,7 @@ public class BadLocalVariableName_S00117_Check  extends BaseTreeVisitor implemen
   @Override
   public void visitVariable(VariableTree tree) {
     if (!pattern.matcher(tree.simpleName().name()).matches()) {
-      context.addIssue(tree, ruleKey, "Rename this local variable name to match the regular expression '" + format + "'.");
+      context.addIssue(tree, this, "Rename this local variable name to match the regular expression '" + format + "'.");
     }
     super.visitVariable(tree);
   }

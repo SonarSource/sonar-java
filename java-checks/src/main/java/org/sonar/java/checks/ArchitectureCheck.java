@@ -37,14 +37,12 @@ import org.sonar.squidbridge.api.SourceFile;
 import java.util.Map;
 
 @Rule(
-  key = ArchitectureCheck.RULE_KEY,
+  key = "ArchitecturalConstraint",
   name = "Architectural constraint",
   priority = Priority.MAJOR)
 @RuleTemplate
 @NoSqale
 public class ArchitectureCheck extends BytecodeVisitor {
-
-  public static final String RULE_KEY = "ArchitecturalConstraint";
 
   @RuleProperty(description = "Optional. If this property is not defined, all classes should adhere to this constraint. Ex : **.web.**")
   private String fromClasses = "";
@@ -145,10 +143,4 @@ public class ArchitectureCheck extends BytecodeVisitor {
     }
     return toPatterns;
   }
-
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
-  }
-
 }

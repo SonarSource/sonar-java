@@ -39,7 +39,7 @@ import org.sonar.squidbridge.api.SourceFile;
 import java.util.List;
 
 @Rule(
-  key = UnusedPrivateMethodCheck.RULE_KEY,
+  key = "UnusedPrivateMethod",
   name = "Unused private method should be removed",
   tags = {"unused"},
   priority = Priority.MAJOR)
@@ -48,7 +48,6 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
-  public static final String RULE_KEY = "UnusedPrivateMethod";
   private AsmClass asmClass;
 
   @Override
@@ -88,11 +87,6 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
   private boolean isExcludedFromCheck(AsmMethod asmMethod) {
     return asmMethod.isSynthetic() || asmMethod.isDefaultConstructor() || SerializableContract.methodMatch(asmMethod);
-  }
-
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
   }
 
 }

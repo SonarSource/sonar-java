@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -40,7 +39,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 @Rule(
-  key = MismatchPackageDirectoryCheck.RULE_KEY,
+  key = "S1598",
   name = "Package declaration should match source file directory",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
@@ -48,9 +47,6 @@ import java.util.LinkedList;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1598";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -68,13 +64,13 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
       File javaFile = context.getFile();
       String dir = javaFile.getParent();
       if (!dir.endsWith(packageName)) {
-        context.addIssue(tree.packageName(), ruleKey, "This file \"" + javaFile.getName() + "\" should be located in \"" + packageName + "\" directory, not in \"" + dir + "\".");
+        context.addIssue(tree.packageName(), this, "This file \"" + javaFile.getName() + "\" should be located in \"" + packageName + "\" directory, not in \"" + dir + "\".");
       }
     }
   }
 
   private String concatenate(ExpressionTree tree) {
-    Deque<String> pieces = new LinkedList<String>();
+    Deque<String> pieces = new LinkedList<>();
 
     ExpressionTree expr = tree;
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {

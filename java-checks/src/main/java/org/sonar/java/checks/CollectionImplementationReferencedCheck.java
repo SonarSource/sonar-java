@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -39,7 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Map;
 
 @Rule(
-  key = CollectionImplementationReferencedCheck.KEY,
+  key = "S1319",
   name = "Declarations should use Java collection interfaces such as \"List\" rather than specific implementation classes such as \"LinkedList\"",
   tags = {"bad-practice"},
   priority = Priority.MAJOR)
@@ -47,9 +46,6 @@ import java.util.Map;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("10min")
 public class CollectionImplementationReferencedCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String KEY = "S1319";
-  private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
   private static final String DEQUE = "Deque";
   private static final String LIST = "List";
@@ -114,7 +110,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     if (collectionInterface != null) {
       context.addIssue(
         tree.type(),
-        RULE_KEY,
+          this,
         "The type of the \"" + tree.simpleName() + "\" object " + messageRemainder(collectionImplementation, collectionInterface));
     }
   }
@@ -129,7 +125,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     if (collectionInterface != null) {
       context.addIssue(
         tree.returnType(),
-        RULE_KEY,
+        this,
         "The return type of this method " + messageRemainder(collectionImplementation, collectionInterface));
     }
   }

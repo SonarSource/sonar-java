@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.base.Splitter;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -37,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = HardcodedIpCheck.RULE_KEY,
+  key = "S1313",
   name = "IP addresses should not be hardcoded",
   tags = {"cert", "security"},
   priority = Priority.MAJOR)
@@ -45,9 +44,6 @@ import java.util.regex.Pattern;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("30min")
 public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1313";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final Matcher IP = Pattern.compile("[^\\d.]*?((?:\\d{1,3}\\.){3}\\d{1,3}(?!\\d|\\.)).*?").matcher("");
 
@@ -66,7 +62,7 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
       if (IP.matches()) {
         String ip = IP.group(1);
         if (areAllBelow256(Splitter.on('.').split(ip))) {
-          context.addIssue(tree, ruleKey, "Make this IP \"" + ip + "\" address configurable.");
+          context.addIssue(tree, this, "Make this IP \"" + ip + "\" address configurable.");
         }
       }
     }

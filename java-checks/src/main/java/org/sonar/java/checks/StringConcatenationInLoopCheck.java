@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -49,16 +48,13 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 @Rule(
-  key = StringConcatenationInLoopCheck.RULE_KEY,
+  key = "S1643",
   name = "Strings should not be concatenated using '+' in a loop",
   tags = {"performance"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("10min")
 public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1643";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
   private Deque<Tree> loopLevel = new LinkedList<Tree>();
@@ -76,7 +72,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     if (!loopLevel.isEmpty() && isStringConcatenation(tree) && isNotLoopLocalVar(tree)) {
-      context.addIssue(tree, ruleKey, "Use a StringBuilder instead.");
+      context.addIssue(tree, this, "Use a StringBuilder instead.");
     }
     super.visitAssignmentExpression(tree);
   }

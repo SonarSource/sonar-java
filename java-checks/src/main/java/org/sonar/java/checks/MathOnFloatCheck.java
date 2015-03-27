@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -33,16 +32,13 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = MathOnFloatCheck.RULE_KEY,
+  key = "S2164",
   name = "Math should not be performed on floats",
   tags = {"bug"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("15min")
 public class MathOnFloatCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S2164";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -57,7 +53,7 @@ public class MathOnFloatCheck extends BaseTreeVisitor implements JavaFileScanner
     if (tree.is(Tree.Kind.PLUS, Tree.Kind.MINUS, Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE)) {
       BinaryExpressionTreeImpl expressionTree = (BinaryExpressionTreeImpl) tree;
       if (expressionTree.symbolType().is("float")) {
-        context.addIssue(tree, ruleKey, "Use a \"double\" or \"BigDecimal\" instead.");
+        context.addIssue(tree, this, "Use a \"double\" or \"BigDecimal\" instead.");
         // do not look for other issues in sub-tree
         return;
       }

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -34,7 +33,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = MethodNameSameAsClassCheck.RULE_KEY,
+  key = "S1223",
   name = "Non-constructor methods should not have the same name as the enclosing class",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
@@ -42,9 +41,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class MethodNameSameAsClassCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1223";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -60,7 +56,7 @@ public class MethodNameSameAsClassCheck extends BaseTreeVisitor implements JavaF
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree method = (MethodTree) member;
         if (tree.simpleName()!=null && method.simpleName().name().equals(tree.simpleName().name())) {
-          context.addIssue(method, ruleKey, "Rename this method to prevent any misunderstanding or make it a constructor.");
+          context.addIssue(method, this, "Rename this method to prevent any misunderstanding or make it a constructor.");
         }
       }
     }

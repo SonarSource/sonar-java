@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -34,7 +33,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = AbstractClassNoFieldShouldBeInterfaceCheck.RULE_KEY,
+  key = "S1610",
   name = "Abstract classes without fields should be converted to interfaces",
   tags = {"java8"},
   priority = Priority.MAJOR)
@@ -43,8 +42,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 public class AbstractClassNoFieldShouldBeInterfaceCheck extends BaseTreeVisitor implements JavaFileScanner {
 
 
-  public static final String RULE_KEY = "S1610";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private JavaFileScannerContext context;
 
   @Override
@@ -56,7 +53,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends BaseTreeVisitor 
   @Override
   public void visitClass(ClassTree tree) {
     if(classIsAbstract(tree) && classHasNoField(tree) && !classHasProtectedMethod(tree)) {
-      context.addIssue(tree, RULE, "Convert the abstract class \""+tree.simpleName().name()+"\" into an interface");
+      context.addIssue(tree, this, "Convert the abstract class \""+tree.simpleName().name()+"\" into an interface");
     }
     super.visitClass(tree);
   }

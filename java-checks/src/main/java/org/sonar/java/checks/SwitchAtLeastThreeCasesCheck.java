@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -33,7 +32,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = SwitchAtLeastThreeCasesCheck.RULE_KEY,
+  key = "S1301",
   name = "\"switch\" statements should have at least 3 \"case\" clauses",
   tags = {"misra"},
   priority = Priority.MINOR)
@@ -41,9 +40,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 public class SwitchAtLeastThreeCasesCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1301";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -60,7 +56,7 @@ public class SwitchAtLeastThreeCasesCheck extends BaseTreeVisitor implements Jav
       count += caseGroup.labels().size();
     }
     if (count < 3) {
-      context.addIssue(tree, ruleKey, "Replace this \"switch\" statement by \"if\" statements to increase readability.");
+      context.addIssue(tree, this, "Replace this \"switch\" statement by \"if\" statements to increase readability.");
     }
 
     super.visitSwitchStatement(tree);

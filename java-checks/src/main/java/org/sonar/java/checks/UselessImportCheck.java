@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -50,7 +49,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Rule(
-  key = UselessImportCheck.RULE_KEY,
+  key = "UselessImportCheck",
   name = "Useless imports should be removed",
   tags = {"unused"},
   priority = Priority.MINOR)
@@ -58,9 +57,6 @@ import java.util.Set;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "UselessImportCheck";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private final Map<String, Integer> lineByImportReference = Maps.newHashMap();
   private final Set<String> pendingImports = Sets.newHashSet();
@@ -82,14 +78,14 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
       if (!importTree.isStatic()) {
         String importName = concatenate((ExpressionTree) importTree.qualifiedIdentifier());
         if ("java.lang.*".equals(importName)) {
-          context.addIssue(importTree, ruleKey, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
+          context.addIssue(importTree, this, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
         } else if (isImportFromSamePackage(importName)) {
-          context.addIssue(importTree, ruleKey, "Remove this unnecessary import: same package classes are always implicitly imported.");
+          context.addIssue(importTree, this, "Remove this unnecessary import: same package classes are always implicitly imported.");
         } else if (!isImportOnDemand(importName)) {
           if (isJavaLangImport(importName)) {
-            context.addIssue(importTree, ruleKey, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
+            context.addIssue(importTree, this, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
           } else if (isDuplicatedImport(importName)) {
-            context.addIssue(importTree, ruleKey, "Remove this duplicated import.");
+            context.addIssue(importTree, this, "Remove this duplicated import.");
           } else {
             lineByImportReference.put(importName, ((JavaTree) importTree).getLine());
             pendingImports.add(importName);
@@ -154,7 +150,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     }
 
     for (String pendingImport : pendingImports) {
-      context.addIssue(lineByImportReference.get(pendingImport), ruleKey, "Remove this unused import '" + pendingImport + "'.");
+      context.addIssue(lineByImportReference.get(pendingImport), this, "Remove this unused import '" + pendingImport + "'.");
     }
   }
 

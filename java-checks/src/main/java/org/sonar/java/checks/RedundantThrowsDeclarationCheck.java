@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Set;
 
 @Rule(
-  key = RedundantThrowsDeclarationCheck.RULE_KEY,
+  key = "RedundantThrowsDeclarationCheck",
   name = "Throws declarations should not be redundant",
   tags = {"error-handling"},
   priority = Priority.MINOR)
@@ -45,7 +45,6 @@ import java.util.Set;
 @SqaleConstantRemediation("5min")
 public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
 
-  public static final String RULE_KEY = "RedundantThrowsDeclarationCheck";
   private AsmClass asmClass;
 
   @Override
@@ -121,11 +120,6 @@ public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
       }
     }
     return false;
-  }
-
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
   }
 
 }

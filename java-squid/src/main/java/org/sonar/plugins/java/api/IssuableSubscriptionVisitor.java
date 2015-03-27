@@ -19,24 +19,21 @@
  */
 package org.sonar.plugins.java.api;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
   public void addIssue(Tree tree, String message) {
-    context.addIssue(tree, ruleKey(), message);
+    context.addIssue(tree, this, message);
   }
 
   public void addIssue(int line, String message) {
-    context.addIssue(line, ruleKey(), message);
+    context.addIssue(line, this, message);
   }
 
   public void addIssueOnFile(String message) {
-    context.addIssueOnFile(ruleKey(), message);
+    context.addIssueOnFile(this, message);
   }
-
-  protected abstract RuleKey ruleKey();
 
 }

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -36,7 +35,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = ErrorClassExtendedCheck.RULE_KEY,
+  key = "S1194",
   name = "\"java.lang.Error\" should not be extended",
   tags = {"error-handling"},
   priority = Priority.MAJOR)
@@ -45,9 +44,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("10min")
 public class ErrorClassExtendedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1194";
-
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private JavaFileScannerContext context;
 
   @Override
@@ -62,12 +58,12 @@ public class ErrorClassExtendedCheck extends BaseTreeVisitor implements JavaFile
       if (tree.superClass().is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree idt = (IdentifierTree) tree.superClass();
         if ("Error".equals(idt.name())) {
-          context.addIssue(tree, ruleKey, "Extend \"java.lang.Exception\" or one of its subclasses.");
+          context.addIssue(tree, this, "Extend \"java.lang.Exception\" or one of its subclasses.");
         }
       } else if (tree.superClass().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree.superClass();
         if ("Error".equals(mse.identifier().name()) && isJavaLang(mse.expression())) {
-          context.addIssue(tree, ruleKey, "Extend \"java.lang.Exception\" or one of its subclasses.");
+          context.addIssue(tree, this, "Extend \"java.lang.Exception\" or one of its subclasses.");
         }
       }
     }

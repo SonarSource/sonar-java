@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -35,7 +34,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = PublicStaticFieldShouldBeFinalCheck.RULE_KEY,
+  key = "S1444",
   name = "\"public static\" fields should always be constant",
   tags = {"cert", "cwe", "security"},
   priority = Priority.CRITICAL)
@@ -44,9 +43,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("20min")
 public class PublicStaticFieldShouldBeFinalCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1444";
   private JavaFileScannerContext context;
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
@@ -59,7 +56,7 @@ public class PublicStaticFieldShouldBeFinalCheck extends BaseTreeVisitor impleme
     if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) {
       for (Tree member : tree.members()) {
         if (member.is(Tree.Kind.VARIABLE) && isPublicStaticNotFinal((VariableTree) member)) {
-          context.addIssue(member, ruleKey, "Make this \"public static " + ((VariableTree) member).simpleName() + "\" field final");
+          context.addIssue(member, this, "Make this \"public static " + ((VariableTree) member).simpleName() + "\" field final");
         }
       }
     }

@@ -19,15 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 import java.io.File;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class DITCheckTest {
 
@@ -47,11 +45,6 @@ public class DITCheckTest {
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(22).withMessage("This class has 3 parents which is greater than 2 authorized.")
       .noMore();
-  }
-
-  @Test
-  public void test_toString() {
-    assertThat(check.toString()).isEqualTo("MaximumInheritanceDepth rule");
   }
 
 }

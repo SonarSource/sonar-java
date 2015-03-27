@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -41,7 +40,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = NestedIfStatementsCheck.KEY,
+  key = "S134",
   name = "Control flow statements \"if\", \"for\", \"while\", \"switch\" and \"try\" should not be nested too deeply",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
@@ -49,9 +48,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_CHANGEABILITY)
 @SqaleConstantRemediation("10min")
 public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String KEY = "S134";
-  private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
   private static final int DEFAULT_MAX = 3;
 
@@ -130,7 +126,7 @@ public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFile
 
   private void checkNesting(Tree tree) {
     if (nestingLevel == max + 1) {
-      context.addIssue(tree, RULE_KEY, "Refactor this code to not nest more than " + max + " if/for/while/switch/try statements.");
+      context.addIssue(tree, this, "Refactor this code to not nest more than " + max + " if/for/while/switch/try statements.");
     }
   }
 

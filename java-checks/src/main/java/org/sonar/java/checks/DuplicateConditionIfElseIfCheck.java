@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -36,7 +35,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = DuplicateConditionIfElseIfCheck.RULE_KEY,
+  key = "S1862",
   name = "Conditions in related \"if/else if\" statements should not have the same condition",
   tags = {"bug", "cert", "pitfall", "unused"},
   priority = Priority.CRITICAL)
@@ -44,9 +43,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class DuplicateConditionIfElseIfCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1862";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -67,7 +63,7 @@ public class DuplicateConditionIfElseIfCheck extends BaseTreeVisitor implements 
       if (SyntacticEquivalence.areEquivalent(condition, ifStatement.condition())) {
         context.addIssue(
           ifStatement.condition(),
-          ruleKey,
+          this,
           "This branch can not be reached because the condition duplicates a previous condition in the same sequence of \"if/else if\" statements"
         );
       }
