@@ -23,9 +23,13 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -38,7 +42,7 @@ import java.util.Set;
 
 @Rule(
   key = "S1939",
-  name = "Object should not be extended",
+  name = "Extensions and implementations should not be redundant",
   tags = {"clumsy"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
@@ -55,18 +59,22 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     ClassTree classTree = (ClassTree) tree;
     TypeTree superClass = classTree.superClass();
     if (superClass != null && superClass.symbolType().is("java.lang.Object")) {
-      super.addIssue(superClass, "\"Object\" should not be explicitly extended.");
+      addIssue(superClass, "\"Object\" should not be explicitly extended.");
     }
     Set<Type> interfaces = new HashSet<>();
     for (TypeTree superInterface : classTree.superInterfaces()) {
       Type interfaceType = superInterface.symbolType();
-      String interfaceName = interfaceType.fullyQualifiedName();
-      if (interfaces.contains(interfaceType)) {
-        super.addIssue(superInterface, String.format("\"%s\" is listed multiple times.", interfaceName));
+      if (interfaceType.isClass()) {
+        String interfaceName = interfaceType.fullyQualifiedName();
+        if (interfaces.contains(interfaceType)) {
+          addIssue(superInterface, String.format("\"%s\" is listed multiple times.", interfaceName));
+        } else {
+          checkExtending(classTree, interfaceType, interfaceName);
+        }
+        interfaces.add(interfaceType);
       } else {
-        checkExtending(classTree, interfaceType, interfaceName);
+        checkExtending(classTree, superInterface);
       }
-      interfaces.add(interfaceType);
     }
   }
 
@@ -74,10 +82,29 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     for (TypeTree superInterface : classTree.superInterfaces()) {
       if (!currentInterfaceType.equals(superInterface.symbolType()) && currentInterfaceType.isSubtypeOf(superInterface.symbolType())) {
         String interfaceName = superInterface.symbolType().fullyQualifiedName();
-        super.addIssue(superInterface, String.format("\"%s\" is an \"%s\" so \"%s\" can be removed from the extension list.",
+        addIssue(superInterface, String.format("\"%s\" is an \"%s\" so \"%s\" can be removed from the extension list.",
           currentInterfaceName, interfaceName, interfaceName));
       }
     }
+  }
+
+  private void checkExtending(ClassTree classTree, TypeTree currentInterfaceTree) {
+    for (TypeTree superInterface : classTree.superInterfaces()) {
+      if (!currentInterfaceTree.equals(superInterface) && SyntacticEquivalence.areEquivalent(currentInterfaceTree, superInterface)) {
+        addIssue(superInterface, String.format("\"%s\" is listed multiple times.", extractInterfaceName(currentInterfaceTree)));
+      }
+    }
+  }
+
+  private String extractInterfaceName(TypeTree interfaceTree) {
+    if (interfaceTree.is(Tree.Kind.IDENTIFIER)) {
+      return ((IdentifierTree) interfaceTree).name();
+    } else if (interfaceTree.is(Tree.Kind.MEMBER_SELECT)) {
+      return ((MemberSelectExpressionTree) interfaceTree).identifier().name();
+    } else if (interfaceTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      return extractInterfaceName(((ParameterizedTypeTree) interfaceTree).type());
+    }
+    throw new IllegalStateException("cannot process " + interfaceTree.toString());
   }
 
 }
