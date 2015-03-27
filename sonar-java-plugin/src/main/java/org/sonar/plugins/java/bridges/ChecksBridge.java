@@ -56,21 +56,23 @@ public class ChecksBridge {
     if (squidFile.hasCheckMessages()) {
       Issuable issuable = resourcePerspectives.as(Issuable.class, sonarFile);
       Set<CheckMessage> messages = squidFile.getCheckMessages();
-      for (CheckMessage checkMessage : messages) {
-        Object check = checkMessage.getCheck();
-        RuleKey ruleKey;
-        if (check instanceof RuleKey) {
-          // VisitorsBridge uses RuleKey
-          ruleKey = (RuleKey) check;
-        } else {
-          ruleKey = checks.ruleKey((CodeVisitor) checkMessage.getCheck());
-        }
-        if (ruleKey != null) {
-          Issue issue = issuable.newIssueBuilder()
-              .ruleKey(ruleKey)
-              .line(checkMessage.getLine())
-              .message(checkMessage.formatDefaultMessage()).build();
-          issuable.addIssue(issue);
+      if(issuable != null) {
+        for (CheckMessage checkMessage : messages) {
+          Object check = checkMessage.getCheck();
+          RuleKey ruleKey;
+          if (check instanceof RuleKey) {
+            // VisitorsBridge uses RuleKey
+            ruleKey = (RuleKey) check;
+          } else {
+            ruleKey = checks.ruleKey((CodeVisitor) checkMessage.getCheck());
+          }
+          if (ruleKey != null) {
+            Issue issue = issuable.newIssueBuilder()
+                .ruleKey(ruleKey)
+                .line(checkMessage.getLine())
+                .message(checkMessage.formatDefaultMessage()).build();
+            issuable.addIssue(issue);
+          }
         }
       }
       // Remove from memory:
