@@ -42,7 +42,7 @@ import java.util.Set;
 
 @Rule(
   key = "S1939",
-  name = "Object should not be extended",
+  name = "Extensions and implementations should not be redundant",
   tags = {"clumsy"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
