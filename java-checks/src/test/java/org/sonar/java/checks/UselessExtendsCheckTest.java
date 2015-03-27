@@ -43,7 +43,13 @@ public class UselessExtendsCheckTest {
       .next().atLine(12).withMessage("\"I1\" is listed multiple times.")
       .next().atLine(16).withMessage("\"I3\" is an \"I1\" so \"I1\" can be removed from the extension list.")
       .next().atLine(17).withMessage("\"I3\" is an \"I2\" so \"I2\" can be removed from the extension list.")
-      .next().atLine(24).withMessage("\"Object\" should not be explicitly extended.");
+      .next().atLine(24).withMessage("\"Object\" should not be explicitly extended.")
+      .next().atLine(31).withMessage("\"UnknownInterface\" is listed multiple times.")
+      .next().atLine(32).withMessage("\"UnknownInterface\" is listed multiple times.")
+      .next().atLine(33).withMessage("\"UnknownInterface\" is listed multiple times.")
+      .next().atLine(34).withMessage("\"UnknownInterface\" is listed multiple times.")
+      .next().atLine(35).withMessage("\"UnknownParametrized\" is listed multiple times.")
+      .next().atLine(36).withMessage("\"UnknownParametrized\" is listed multiple times.");
   }
 
 }

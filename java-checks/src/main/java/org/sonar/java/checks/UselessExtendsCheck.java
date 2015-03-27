@@ -23,9 +23,13 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -68,6 +72,8 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
           checkExtending(classTree, interfaceType, interfaceName);
         }
         interfaces.add(interfaceType);
+      } else {
+        checkExtending(classTree, superInterface);
       }
     }
   }
@@ -80,6 +86,25 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
           currentInterfaceName, interfaceName, interfaceName));
       }
     }
+  }
+
+  private void checkExtending(ClassTree classTree, TypeTree currentInterfaceTree) {
+    for (TypeTree superInterface : classTree.superInterfaces()) {
+      if (!currentInterfaceTree.equals(superInterface) && SyntacticEquivalence.areEquivalent(currentInterfaceTree, superInterface)) {
+        addIssue(superInterface, String.format("\"%s\" is listed multiple times.", extractInterfaceName(currentInterfaceTree)));
+      }
+    }
+  }
+
+  private String extractInterfaceName(TypeTree interfaceTree) {
+    if (interfaceTree.is(Tree.Kind.IDENTIFIER)) {
+      return ((IdentifierTree) interfaceTree).name();
+    } else if (interfaceTree.is(Tree.Kind.MEMBER_SELECT)) {
+      return ((MemberSelectExpressionTree) interfaceTree).identifier().name();
+    } else if (interfaceTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      return extractInterfaceName(((ParameterizedTypeTree) interfaceTree).type());
+    }
+    throw new IllegalStateException("cannot process " + interfaceTree.toString());
   }
 
 }
